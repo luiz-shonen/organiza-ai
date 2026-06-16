@@ -1,0 +1,72 @@
+<mat-card class="item-list" appearance="outlined">
+  <mat-card-header>
+    <mat-icon matCardAvatar class="item-list__icon">checklist</mat-icon>
+    <mat-card-title>Lista de Itens</mat-card-title>
+    <mat-card-subtitle>
+      {{ claimedCount() }} de {{ items().length }} itens atribuídos
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (items().length === 0) {
+      <p class="item-list__empty">Nenhum item cadastrado para este evento.</p>
+    } @else {
+      <ul class="item-list__items" role="list">
+        @for (item of items(); track item.id) {
+          <li
+            class="item-list__item"
+            [class.item-list__item--claimed]="item.claimedBy !== null"
+            [class.item-list__item--mine]="isClaimedByMe(item)"
+            role="listitem"
+          >
+            <div class="item-list__item-info">
+              <span class="item-list__item-name">
+                @if (item.claimedBy) {
+                  <mat-icon class="item-list__item-check">check_circle</mat-icon>
+                } @else {
+                  <mat-icon class="item-list__item-pending">radio_button_unchecked</mat-icon>
+                }
+                {{ item.name }}
+                @if (item.quantity > 1) {
+                  <mat-chip-set aria-label="Quantidade">
+                    <mat-chip>× {{ item.quantity }}</mat-chip>
+                  </mat-chip-set>
+                }
+              </span>
+
+              @if (item.claimedBy) {
+                <span class="item-list__item-claimed-by">
+                  <mat-icon>person</mat-icon>
+                  {{ item.claimedBy.name }}
+                </span>
+              }
+            </div>
+
+            <div class="item-list__item-actions">
+              @if (item.claimedBy === null) {
+                <button
+                  mat-stroked-button
+                  (click)="claimItem.emit(item)"
+                  aria-label="Eu levo {{ item.name }}"
+                >
+                  <mat-icon>volunteer_activism</mat-icon>
+                  Eu levo!
+                </button>
+              } @else if (isClaimedByMe(item)) {
+                <button
+                  mat-stroked-button
+                  color="warn"
+                  (click)="unclaimItem.emit(item)"
+                  aria-label="Cancelar {{ item.name }}"
+                >
+                  <mat-icon>undo</mat-icon>
+                  Cancelar
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </mat-card-content>
+</mat-card>

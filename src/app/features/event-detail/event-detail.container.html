@@ -1,0 +1,40 @@
+@if (loading()) {
+  <div class="event-detail__loading" role="status" aria-label="Carregando evento">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Carregando evento...</p>
+  </div>
+} @else if (event(); as event) {
+  <article class="event-detail">
+    <app-event-header [event]="event" [guestCount]="guestCount()" />
+
+    <div class="event-detail__content">
+      <div class="event-detail__main">
+        <app-event-info-card [event]="event" />
+
+        <app-rsvp-card
+          [session]="session()"
+          [guestCount]="guestCount()"
+          (rsvpClicked)="onRsvp()"
+        />
+
+        <app-item-list
+          [items]="items()"
+          [session]="session()"
+          (claimItem)="onClaimItem($event)"
+          (unclaimItem)="onUnclaimItem($event)"
+        />
+      </div>
+
+      <aside class="event-detail__sidebar">
+        @if (event.pixKey) {
+          <app-pix-card [pixKey]="event.pixKey" (copied)="onPixCopied()" />
+        }
+      </aside>
+    </div>
+  </article>
+} @else {
+  <div class="event-detail__not-found" role="alert">
+    <h2>Evento não encontrado</h2>
+    <p>O evento que você procura não existe ou foi removido.</p>
+  </div>
+}

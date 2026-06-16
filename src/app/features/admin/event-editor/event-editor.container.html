@@ -1,0 +1,174 @@
+<section class="editor" aria-label="Editor de evento">
+  <header class="editor__header">
+    <button mat-icon-button (click)="router.navigate(['/admin'])" aria-label="Voltar">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="editor__title">
+      {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
+    </h1>
+  </header>
+
+  @if (loading()) {
+    <div class="editor__loading" role="status">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  } @else {
+    <div class="editor__grid">
+      <!-- Event Form -->
+      <mat-card class="editor__card" appearance="outlined">
+        <mat-card-header>
+          <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
+          <mat-card-title>Dados do Evento</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="editor__form" id="event-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Título do Evento</mat-label>
+              <input matInput formControlName="title" placeholder="Ex: Festa Junina 2026" required />
+              @if (form.controls.title.hasError('required')) {
+                <mat-error>Título é obrigatório</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Descrição</mat-label>
+              <textarea
+                matInput
+                formControlName="description"
+                rows="4"
+                placeholder="Descreva o evento..."
+                required
+              ></textarea>
+              @if (form.controls.description.hasError('required')) {
+                <mat-error>Descrição é obrigatória</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Data e Hora</mat-label>
+              <input
+                matInput
+                formControlName="date"
+                type="datetime-local"
+                required
+              />
+              @if (form.controls.date.hasError('required')) {
+                <mat-error>Data é obrigatória</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Local</mat-label>
+              <input matInput formControlName="location" placeholder="Ex: Rua das Festas, 123" required />
+              <mat-icon matPrefix>location_on</mat-icon>
+              @if (form.controls.location.hasError('required')) {
+                <mat-error>Local é obrigatório</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Chave Pix (opcional)</mat-label>
+              <input matInput formControlName="pixKey" placeholder="CPF, e-mail ou chave aleatória" />
+              <mat-icon matPrefix>pix</mat-icon>
+              <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
+            </mat-form-field>
+
+            <button
+              mat-flat-button
+              class="editor__save-btn"
+              [disabled]="form.invalid || saving()"
+              (click)="saveEvent()"
+              aria-label="Salvar evento"
+            >
+              @if (saving()) {
+                <mat-spinner diameter="20"></mat-spinner>
+              }
+              @if (!saving()) {
+                <mat-icon>save</mat-icon>
+                {{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}
+              }
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Items Manager (only when editing) -->
+      @if (isEditing()) {
+        <div class="editor__side">
+          <mat-card class="editor__card" appearance="outlined">
+            <mat-card-header>
+              <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
+              <mat-card-title>Lista de Itens</mat-card-title>
+              <mat-card-subtitle>{{ items().length }} itens cadastrados</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="editor__add-item">
+                <mat-form-field appearance="outline" class="editor__item-name-field">
+                  <mat-label>Nome do item</mat-label>
+                  <input
+                    matInput
+                    [value]="newItemName()"
+                    (input)="newItemName.set($any($event.target).value)"
+                    placeholder="Ex: Bolo de milho"
+                    (keyup.enter)="addItem()"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="editor__item-qty-field">
+                  <mat-label>Qtd</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    min="1"
+                    [value]="newItemQuantity()"
+                    (input)="newItemQuantity.set(+$any($event.target).value)"
+                  />
+                </mat-form-field>
+                <button
+                  mat-icon-button
+                  (click)="addItem()"
+                  [disabled]="!newItemName().trim()"
+                  aria-label="Adicionar item"
+                  class="editor__add-btn"
+                >
+                  <mat-icon>add_circle</mat-icon>
+                </button>
+              </div>
+
+              @if (items().length > 0) {
+                <ul class="editor__items" role="list">
+                  @for (item of items(); track item.id) {
+                    <li class="editor__item" role="listitem">
+                      <div class="editor__item-info">
+                        <span class="editor__item-name">{{ item.name }}</span>
+                        @if (item.quantity > 1) {
+                          <span class="editor__item-qty">× {{ item.quantity }}</span>
+                        }
+                        @if (item.claimedBy) {
+                          <span class="editor__item-claimed">
+                            <mat-icon>person</mat-icon>
+                            {{ item.claimedBy.name }}
+                          </span>
+                        }
+                      </div>
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        (click)="removeItem(item)"
+                        [attr.aria-label]="'Remover ' + item.name"
+                      >
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Share Panel -->
+          <app-share-panel [eventUrl]="eventUrl()" [eventTitle]="form.controls.title.value" />
+        </div>
+      }
+    </div>
+  }
+</section>

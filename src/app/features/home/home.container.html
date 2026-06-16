@@ -1,0 +1,57 @@
+<section class="home" aria-label="Eventos disponíveis">
+  <header class="home__header">
+    <h1 class="home__title">
+      <mat-icon class="home__icon">celebration</mat-icon>
+      Eventos
+    </h1>
+    <p class="home__subtitle">Escolha um evento para participar</p>
+  </header>
+
+  @if (events$ | async; as events) {
+    @if (events.length === 0) {
+      <article class="home__empty" aria-label="Nenhum evento encontrado">
+        <mat-icon class="home__empty-icon">event_busy</mat-icon>
+        <p>Nenhum evento disponível no momento.</p>
+      </article>
+    } @else {
+      <nav class="home__grid" aria-label="Lista de eventos">
+        @for (event of events; track event.id) {
+          <mat-card class="home__card" appearance="outlined">
+            <mat-card-header>
+              <mat-icon matCardAvatar class="home__card-avatar">festival</mat-icon>
+              <mat-card-title>{{ event.title }}</mat-card-title>
+              <mat-card-subtitle>
+                <mat-icon class="home__card-inline-icon">calendar_today</mat-icon>
+                {{ formatDate(event.date) }}
+              </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <p class="home__card-description">{{ event.description }}</p>
+              <p class="home__card-location">
+                <mat-icon class="home__card-inline-icon">location_on</mat-icon>
+                {{ event.location }}
+              </p>
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+              <a
+                mat-flat-button
+                [routerLink]="['/evento', event.id]"
+                [attr.aria-label]="'Ver detalhes do evento ' + event.title"
+              >
+                <mat-icon>visibility</mat-icon>
+                Ver Evento
+              </a>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </nav>
+    }
+  } @else {
+    <div class="home__loading" role="status" aria-label="Carregando eventos">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Carregando eventos...</p>
+    </div>
+  }
+</section>

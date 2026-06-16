@@ -1,0 +1,107 @@
+.home {
+  padding: 32px 16px;
+  max-width: 960px;
+  margin-inline: auto;
+
+  &__header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--mat-sys-primary);
+    margin: 0 0 8px;
+  }
+
+  &__icon {
+    font-size: 2.5rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  &__subtitle {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  &__card {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+  }
+
+  &__card-avatar {
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  &__card-description {
+    margin: 12px 0 8px;
+    color: var(--mat-sys-on-surface-variant);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__card-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  &__card-inline-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 64px 16px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__empty-icon {
+    font-size: 4rem;
+    width: 64px;
+    height: 64px;
+    opacity: 0.5;
+  }
+
+  &__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 64px 16px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

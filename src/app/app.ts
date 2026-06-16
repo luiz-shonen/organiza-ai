@@ -1,12 +1,36 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, computed, signal } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from './core/services';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, MatIconModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  host: {
+    '(window:offline)': 'setOffline()',
+    '(window:online)': 'setOnline()'
+  }
 })
 export class App {
-  protected readonly title = signal('organizaai');
+  private readonly authService = inject(AuthService);
+  protected readonly isAdmin = this.authService.isAdmin;
+  protected readonly userName = computed(() => this.authService.currentUser()?.email ?? '');
+  protected readonly isOffline = signal(!navigator.onLine);
+
+  protected async logout(): Promise<void> {
+    await this.authService.logout();
+  }
+
+  protected setOffline(): void {
+    this.isOffline.set(true);
+  }
+
+  protected setOnline(): void {
+    this.isOffline.set(false);
+  }
 }

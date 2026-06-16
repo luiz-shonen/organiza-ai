@@ -1,0 +1,63 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  &__title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+
+  &__label {
+    margin-left: 4px;
+
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+}
+
+.app-content {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.app-offline-banner {
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}

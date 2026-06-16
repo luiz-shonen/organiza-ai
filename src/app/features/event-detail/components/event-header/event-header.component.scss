@@ -1,0 +1,42 @@
+.event-header {
+  background: linear-gradient(135deg, var(--mat-sys-primary) 0%, var(--mat-sys-tertiary) 100%);
+  color: var(--mat-sys-on-primary);
+  padding: 48px 24px 32px;
+  border-radius: 0 0 24px 24px;
+
+  &__content {
+    max-width: 960px;
+    margin-inline: auto;
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+
+    @media (max-width: 480px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.95rem;
+    opacity: 0.9;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

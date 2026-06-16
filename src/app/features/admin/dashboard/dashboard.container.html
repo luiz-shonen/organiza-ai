@@ -1,0 +1,125 @@
+<section class="dashboard" aria-label="Painel administrativo">
+  <header class="dashboard__header">
+    <h1 class="dashboard__title">
+      <mat-icon>dashboard</mat-icon>
+      Painel do Organizador
+    </h1>
+    <a
+      mat-flat-button
+      routerLink="/admin/evento/novo"
+      aria-label="Criar novo evento"
+    >
+      <mat-icon>add</mat-icon>
+      Novo Evento
+    </a>
+  </header>
+
+  @if (events$ | async; as events) {
+    @if (events.length === 0) {
+      <mat-card class="dashboard__empty" appearance="outlined">
+        <mat-card-content>
+          <mat-icon class="dashboard__empty-icon">event_note</mat-icon>
+          <p>Nenhum evento criado ainda.</p>
+          <a mat-flat-button routerLink="/admin/evento/novo">
+            <mat-icon>add</mat-icon>
+            Criar primeiro evento
+          </a>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <!-- Desktop table -->
+      <div class="dashboard__table-wrapper">
+        <table mat-table [dataSource]="events" class="dashboard__table" aria-label="Lista de eventos">
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Evento</th>
+            <td mat-cell *matCellDef="let event">
+              <strong>{{ event.title }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Data</th>
+            <td mat-cell *matCellDef="let event">{{ formatDate(event.date) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="location">
+            <th mat-header-cell *matHeaderCellDef>Local</th>
+            <td mat-cell *matCellDef="let event">{{ event.location }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let event">
+              <div class="dashboard__actions">
+                <button
+                  mat-icon-button
+                  (click)="editEvent(event)"
+                  [attr.aria-label]="'Editar ' + event.title"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="shareWhatsApp(event)"
+                  [attr.aria-label]="'Compartilhar ' + event.title + ' no WhatsApp'"
+                >
+                  <mat-icon>share</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  (click)="copyLink(event)"
+                  [attr.aria-label]="'Copiar link de ' + event.title"
+                >
+                  <mat-icon>link</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteEvent(event)"
+                  [attr.aria-label]="'Excluir ' + event.title"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+
+      <!-- Mobile cards -->
+      <div class="dashboard__mobile-cards">
+        @for (event of events; track event.id) {
+          <mat-card class="dashboard__mobile-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ event.title }}</mat-card-title>
+              <mat-card-subtitle>
+                {{ formatDate(event.date) }} · {{ event.location }}
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions>
+              <button mat-icon-button (click)="editEvent(event)" aria-label="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="shareWhatsApp(event)" aria-label="Compartilhar">
+                <mat-icon>share</mat-icon>
+              </button>
+              <button mat-icon-button (click)="copyLink(event)" aria-label="Copiar link">
+                <mat-icon>link</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteEvent(event)" aria-label="Excluir">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+  } @else {
+    <div class="dashboard__loading" role="status">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+  }
+</section>

@@ -83,20 +83,25 @@
               </div>
 
               <mat-form-field appearance="outline">
-                <mat-label>Local</mat-label>
-                <input matInput formControlName="location" placeholder="Ex: Rua das Festas, 123" required [matAutocomplete]="auto" />
-                <mat-icon matPrefix>location_on</mat-icon>
-                <mat-autocomplete #auto="matAutocomplete">
-                  @for (suggestion of locationSuggestions(); track suggestion.displayName) {
-                    <mat-option [value]="suggestion.displayName">
-                      {{ suggestion.displayName }}
-                    </mat-option>
-                  }
-                </mat-autocomplete>
-                @if (form.controls.location.hasError('required')) {
-                  <mat-error>Local é obrigatório</mat-error>
-                }
+                <mat-label>CEP</mat-label>
+                <input matInput formControlName="cep" placeholder="00000-000" />
               </mat-form-field>
+
+              <div class="editor__date-time-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Endereço</mat-label>
+                  <input matInput formControlName="address" placeholder="Ex: Rua das Festas, Centro" required />
+                  <mat-icon matPrefix>location_on</mat-icon>
+                  @if (form.controls.address.hasError('required')) {
+                    <mat-error>Endereço é obrigatório</mat-error>
+                  }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Número</mat-label>
+                  <input matInput formControlName="number" placeholder="Ex: 123" />
+                </mat-form-field>
+              </div>
 
               <mat-form-field appearance="outline">
                 <mat-label>Chave Pix (opcional)</mat-label>

@@ -1,0 +1,115 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="partyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF4D94" />
+      <stop offset="50%" stop-color="#FF8C42" />
+      <stop offset="100%" stop-color="#FFC837" />
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#FF8C42" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <style>
+    /* Estilos base do traço (Doodle) */
+    .doodle {
+      stroke: #2D3436;
+      stroke-width: 6; /* Mais espesso para não sumir no favicon */
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* O Pulo do Calendário (Centro exato: 100, 100) */
+    .calendar-icon {
+      transform-origin: 100px 100px;
+      animation: iconBounce 6s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+    }
+
+    @keyframes iconBounce {
+      0%, 27% { transform: scale(1) translateY(0); }
+      30% { transform: scale(1.1) translateY(-6px); }
+      38%, 95% { transform: scale(1) translateY(0); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    /* O Checkmark Sendo Desenhado */
+    .check {
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+      filter: url(#glow);
+      animation: drawCheck 6s ease-out infinite;
+    }
+
+    @keyframes drawCheck {
+      0%, 15% { stroke-dashoffset: 80; opacity: 1; }
+      30%, 85% { stroke-dashoffset: 0; opacity: 1; }
+      90%, 100% { stroke-dashoffset: 0; opacity: 0; }
+    }
+
+    /* A Chuva de Confetes Radial (360 graus) */
+    .confetti {
+      opacity: 0;
+      transform-origin: 100px 100px;
+      animation: confettiBurst 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    }
+
+    @keyframes confettiBurst {
+      0%, 29% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0) rotate(0deg);
+      }
+      31% {
+        opacity: 1;
+        transform: translate(var(--bx), var(--by)) scale(1.2) rotate(var(--r1));
+      }
+      80% {
+        opacity: 1;
+        transform: translate(var(--fx), var(--fy)) scale(1) rotate(var(--r2));
+      }
+      90%, 100% {
+        opacity: 0;
+        transform: translate(var(--fx), calc(var(--fy) + 20px)) scale(0) rotate(var(--r2));
+      }
+    }
+  </style>
+
+  <g class="calendar-icon">
+    <rect x="50" y="45" width="100" height="110" rx="12" fill="#FFFFFF" class="doodle" />
+    
+    <path d="M50,85 L150,85 L150,57 C150,50.37 144.63,45 138,45 L62,45 C55.37,45 50,50.37 50,57 Z" fill="#FF4D94" class="doodle"/>
+    
+    <rect x="70" y="35" width="8" height="20" rx="4" fill="#2D3436" />
+    <rect x="122" y="35" width="8" height="20" rx="4" fill="#2D3436" />
+
+    <g stroke="#E2E8F0" stroke-width="4" stroke-linecap="round" fill="none">
+      <rect x="65" y="100" width="20" height="20" rx="4" />
+      <rect x="90" y="100" width="20" height="20" rx="4" stroke="#2D3436" stroke-dasharray="3 3"/>
+      <rect x="115" y="100" width="20" height="20" rx="4" />
+      <rect x="65" y="125" width="20" height="20" rx="4" />
+      <rect x="90" y="125" width="20" height="20" rx="4" />
+      <rect x="115" y="125" width="20" height="20" rx="4" />
+    </g>
+
+    <path class="check" d="M 85,110 L 95,120 L 125,90" fill="none" stroke="url(#partyGradient)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <circle class="confetti" cx="100" cy="100" r="6" fill="#FF4D94" style="--bx: -35px; --by: -45px; --fx: -40px; --fy: 0px; --r1: 45deg; --r2: 120deg;" />
+  <polygon class="confetti" points="100,93 107,107 93,107" fill="#4DEDFF" style="--bx: -55px; --by: -20px; --fx: -60px; --fy: 20px; --r1: -30deg; --r2: 45deg;" />
+  <circle class="confetti" cx="100" cy="100" r="4" fill="#9B59B6" style="--bx: -20px; --by: -60px; --fx: -25px; --fy: -5px; --r1: 0deg; --r2: 0deg;" />
+
+  <rect class="confetti" x="96" y="96" width="8" height="8" fill="#FFC837" style="--bx: 0px; --by: -65px; --fx: 0px; --fy: -10px; --r1: 15deg; --r2: -90deg;" />
+  <polygon class="confetti" points="100,95 105,105 95,105" fill="#FF4D94" style="--bx: 15px; --by: -50px; --fx: 20px; --fy: 10px; --r1: 40deg; --r2: 200deg;" />
+
+  <rect class="confetti" x="95" y="95" width="10" height="10" rx="3" fill="#FF4D94" style="--bx: 40px; --by: -45px; --fx: 45px; --fy: 5px; --r1: 60deg; --r2: 180deg;" />
+  <path class="confetti" d="M95,100 Q100,88 105,100" stroke="#FF8C42" stroke-width="5" stroke-linecap="round" fill="none" style="--bx: 55px; --by: -25px; --fx: 60px; --fy: 15px; --r1: 45deg; --r2: -45deg;" />
+
+  <circle class="confetti" cx="100" cy="100" r="7" fill="#FFC837" style="--bx: -65px; --by: 10px; --fx: -70px; --fy: 40px; --r1: 0deg; --r2: 0deg;" />
+  <rect class="confetti" x="96" y="96" width="8" height="8" fill="#4DEDFF" style="--bx: 65px; --by: -5px; --fx: 70px; --fy: 30px; --r1: -45deg; --r2: 45deg;" />
+  <circle class="confetti" cx="100" cy="100" r="5" fill="#4DEDFF" style="--bx: 50px; --by: 25px; --fx: 55px; --fy: 50px; --r1: 0deg; --r2: 360deg;" />
+
+  <path class="confetti" d="M94,98 Q102,88 106,102" stroke="#FF4D94" stroke-width="4" stroke-linecap="round" fill="none" style="--bx: -35px; --by: 45px; --fx: -40px; --fy: 70px; --r1: -30deg; --r2: 60deg;" />
+  <rect class="confetti" x="96" y="96" width="8" height="8" rx="2" fill="#FF8C42" style="--bx: 30px; --by: 55px; --fx: 35px; --fy: 80px; --r1: -10deg; --r2: 120deg;" />
+  <rect class="confetti" x="97" y="97" width="6" height="6" fill="#9B59B6" style="--bx: -15px; --by: 50px; --fx: -20px; --fy: 75px; --r1: 20deg; --r2: 90deg;" />
+  <polygon class="confetti" points="100,94 105,106 95,106" fill="#FFC837" style="--bx: 10px; --by: 40px; --fx: 15px; --fy: 65px; --r1: 45deg; --r2: -45deg;" />
+</svg>

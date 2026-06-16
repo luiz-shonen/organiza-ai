@@ -22,7 +22,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { EventService, ItemService, GuestService } from '../../../core/services';
-import { LocationService, LocationSuggestion } from '../../../core/services/location.service';
+import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
@@ -68,25 +68,29 @@ export class EventEditorContainer implements OnInit {
   protected readonly newItemName = signal('');
   protected readonly newItemQuantity = signal(1);
   protected readonly eventUrl = signal('');
-  protected readonly locationSuggestions = signal<LocationSuggestion[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
     description: ['', [Validators.required]],
     date: [null as Date | null, [Validators.required]],
     time: ['', [Validators.required]],
-    location: ['', [Validators.required]],
+    cep: [''],
+    address: ['', [Validators.required]],
+    number: [''],
     pixKey: [''],
   });
 
   ngOnInit(): void {
-    // Autocomplete for location
-    this.form.controls.location.valueChanges.pipe(
+    // ViaCEP listener
+    this.form.controls.cep.valueChanges.pipe(
       debounceTime(400),
       distinctUntilChanged(),
-      switchMap(query => this.locationService.searchLocation(query))
-    ).subscribe(suggestions => {
-      this.locationSuggestions.set(suggestions);
+      switchMap(cep => this.locationService.getViaCep(cep))
+    ).subscribe(res => {
+      if (res && !res.erro) {
+        const addressText = `${res.logradouro} - ${res.bairro}, ${res.localidade}/${res.uf}`;
+        this.form.controls.address.patchValue(addressText);
+      }
     });
 
     const eventId = this.id();
@@ -107,7 +111,9 @@ export class EventEditorContainer implements OnInit {
               description: event.description,
               date: d,
               time: timeStr,
-              location: event.location,
+              address: event.location, // Colocamos o location inteiro no address por legado
+              cep: '',
+              number: '',
               pixKey: event.pixKey ?? '',
             });
           }
@@ -140,7 +146,7 @@ export class EventEditorContainer implements OnInit {
     if (this.form.invalid) return;
 
     this.saving.set(true);
-    const { title, description, date, time, location, pixKey } = this.form.getRawValue();
+    const { title, description, date, time, cep, address, number, pixKey } = this.form.getRawValue();
 
     let finalDate = new Date();
     if (date) {
@@ -150,6 +156,7 @@ export class EventEditorContainer implements OnInit {
     }
     const dateStr = finalDate.toISOString();
 
+    const location = number ? `${address}, ${number}` : address;
     const eventData = { title, description, date: dateStr, location, pixKey: pixKey || null };
 
     try {

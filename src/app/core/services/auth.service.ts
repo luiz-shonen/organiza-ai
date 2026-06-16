@@ -23,10 +23,16 @@ export class AuthService {
   private readonly _currentUser = signal<User | null>(null);
   private readonly _loading = signal(true);
   private readonly _isAdmin = signal(false);
+  private readonly _isSuperAdmin = signal(false);
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAdmin = this._isAdmin.asReadonly();
+  readonly isSuperAdmin = this._isSuperAdmin.asReadonly();
   readonly loading = this._loading.asReadonly();
+
+  private checkSuperAdmin(email: string | null): boolean {
+    return email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com';
+  }
 
   constructor() {
     onAuthStateChanged(this.auth, async (user) => {
@@ -34,14 +40,17 @@ export class AuthService {
         const isAdmin = await this.verifyAdminStatus(user);
         if (isAdmin) {
           this._isAdmin.set(true);
+          this._isSuperAdmin.set(this.checkSuperAdmin(user.email));
           this._currentUser.set(user);
         } else {
           this._isAdmin.set(false);
+          this._isSuperAdmin.set(false);
           this._currentUser.set(null);
           await this.logout();
         }
       } else {
         this._isAdmin.set(false);
+        this._isSuperAdmin.set(false);
         this._currentUser.set(user);
       }
       this._loading.set(false);
@@ -93,19 +102,13 @@ export class AuthService {
     }
   }
 
-  async registerAdmin(email: string, password: string): Promise<void> {
-    const secondaryApp = initializeApp(environment.firebase, 'SecondaryAppForCreation');
-    const secondaryAuth = getAuth(secondaryApp);
-    
-    try {
-      await createUserWithEmailAndPassword(secondaryAuth, email, password);
-      // Register in admins collection
-      await setDoc(doc(this.firestore, 'admins', email), {
-        createdAt: new Date().toISOString()
-      });
-      await signOut(secondaryAuth);
-    } finally {
-      await deleteApp(secondaryApp);
+  async registerAdmin(email: string): Promise<void> {
+    if (!this._isSuperAdmin()) {
+      throw new Error('Apenas super administradores podem cadastrar novos admins.');
     }
+    // Register in admins collection
+    await setDoc(doc(this.firestore, 'admins', email), {
+      createdAt: new Date().toISOString()
+    });
   }
 }

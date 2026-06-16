@@ -33,30 +33,15 @@ import { AuthService } from '../../../../../core/services';
       </p>
 
       <form [formGroup]="form" id="admin-form" (ngSubmit)="submit()">
-        <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 8px;">
-          <mat-label>E-mail</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="email@exemplo.com" required autocomplete="username" />
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>E-mail do novo administrador</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="email@exemplo.com" required autocomplete="email" />
           <mat-icon matPrefix>email</mat-icon>
           @if (form.controls.email.hasError('required')) {
             <mat-error>E-mail é obrigatório</mat-error>
           }
           @if (form.controls.email.hasError('email')) {
             <mat-error>E-mail inválido</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width: 100%;">
-          <mat-label>Senha</mat-label>
-          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())" [attr.aria-label]="'Ocultar senha'" [attr.aria-pressed]="hidePassword()">
-            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          @if (form.controls.password.hasError('required')) {
-            <mat-error>Senha é obrigatória</mat-error>
-          }
-          @if (form.controls.password.hasError('minlength')) {
-            <mat-error>Mínimo de 6 caracteres</mat-error>
           }
         </mat-form-field>
       </form>
@@ -81,12 +66,10 @@ export class AdminFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AdminFormDialogComponent>);
   private readonly snackBar = inject(MatSnackBar);
 
-  protected readonly hidePassword = signal(true);
   protected readonly loading = signal(false);
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
   protected async submit(): Promise<void> {
@@ -94,16 +77,14 @@ export class AdminFormDialogComponent {
 
     this.loading.set(true);
     try {
-      const { email, password } = this.form.getRawValue();
-      await this.authService.registerAdmin(email, password);
-      this.snackBar.open('Administrador cadastrado com sucesso!', 'OK', { duration: 3000 });
+      const { email } = this.form.getRawValue();
+      await this.authService.registerAdmin(email);
+      this.snackBar.open('Administrador adicionado à whitelist com sucesso!', 'OK', { duration: 3000 });
       this.dialogRef.close(true);
     } catch (error: any) {
       let message = 'Erro ao cadastrar administrador.';
-      if (error.code === 'auth/email-already-in-use') {
-        message = 'Este e-mail já está em uso.';
-      } else if (error.code === 'auth/weak-password') {
-        message = 'A senha é muito fraca.';
+      if (error instanceof Error) {
+        message = error.message;
       }
       this.snackBar.open(message, 'OK', { duration: 4000 });
     } finally {

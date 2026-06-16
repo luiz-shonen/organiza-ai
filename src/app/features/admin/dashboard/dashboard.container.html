@@ -5,14 +5,16 @@
       Painel do Organizador
     </h1>
     <div style="display: flex; gap: 8px;">
-      <button
-        mat-stroked-button
-        (click)="openAdminDialog()"
-        aria-label="Adicionar novo admin"
-      >
-        <mat-icon>person_add</mat-icon>
-        Novo Admin
-      </button>
+      @if (isSuperAdmin()) {
+        <button
+          mat-stroked-button
+          (click)="openAdminDialog()"
+          aria-label="Adicionar novo admin"
+        >
+          <mat-icon>person_add</mat-icon>
+          Novo Admin
+        </button>
+      }
       <a
         mat-flat-button
         routerLink="/admin/evento/novo"

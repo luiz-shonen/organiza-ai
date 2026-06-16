@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { EventService } from '../../../core/services';
+import { EventService, AuthService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
 
@@ -30,12 +30,14 @@ import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-f
 })
 export class DashboardContainer {
   private readonly eventService = inject(EventService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly clipboard = inject(Clipboard);
   private readonly dialog = inject(MatDialog);
 
   protected readonly events$ = this.eventService.listEvents();
+  protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly displayedColumns = ['title', 'date', 'location', 'actions'];
 
   protected editEvent(event: PartyEvent): void {

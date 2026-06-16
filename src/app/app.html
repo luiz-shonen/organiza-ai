@@ -15,17 +15,17 @@
 
     <app-theme-toggle />
 
-    @if (user(); as u) {
+    @if (user() && (!user()!.isAnonymous || session())) {
       <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu do usuário" class="app-toolbar__user-btn">
-        @if (u.photoURL) {
-          <img [src]="u.photoURL" alt="Avatar" class="app-toolbar__avatar">
+        @if (user()!.photoURL) {
+          <img [src]="user()!.photoURL" alt="Avatar" class="app-toolbar__avatar">
         } @else {
           <mat-icon>account_circle</mat-icon>
         }
       </button>
       <mat-menu #userMenu="matMenu">
         <div class="px-4 py-2 text-sm text-gray-500 border-b border-gray-100 dark:border-gray-800">
-          {{ u.email }}
+          {{ session()?.name || user()!.displayName || user()!.email || session()?.phone || 'Convidado' }}
         </div>
         <button mat-menu-item (click)="logout()">
           <mat-icon>logout</mat-icon>

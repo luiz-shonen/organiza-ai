@@ -130,8 +130,49 @@
       </div>
     }
   } @else {
-    <div class="dashboard__loading" role="status">
-      <mat-spinner diameter="48"></mat-spinner>
+    <div aria-hidden="true">
+      <!-- Skeleton Desktop table -->
+      <div class="dashboard__table-wrapper skeleton-table-wrapper">
+        <div class="skeleton-table">
+          <!-- Header fake -->
+          <div class="skeleton-table-header">
+            <div class="skeleton-box h-4 w-20"></div>
+            <div class="skeleton-box h-4 w-16"></div>
+            <div class="skeleton-box h-4 w-24"></div>
+            <div class="skeleton-box h-4 w-16"></div>
+          </div>
+          <!-- Rows fakes -->
+          @for (i of [1,2,3,4]; track i) {
+            <div class="skeleton-table-row">
+              <div class="skeleton-box h-5 w-40"></div>
+              <div class="skeleton-box h-5 w-24"></div>
+              <div class="skeleton-box h-5 w-32"></div>
+              <div class="flex gap-2">
+                <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+                <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+                <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Skeleton Mobile cards -->
+      <div class="dashboard__mobile-cards">
+        @for (i of [1,2,3]; track i) {
+          <mat-card class="dashboard__mobile-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title><div class="skeleton-box h-6 w-48 mb-2"></div></mat-card-title>
+              <mat-card-subtitle><div class="skeleton-box h-4 w-32"></div></mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-actions>
+              <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+              <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+              <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
     </div>
   }
 </section>

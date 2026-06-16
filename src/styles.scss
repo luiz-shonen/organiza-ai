@@ -69,3 +69,13 @@ body {
   --mdc-snackbar-container-color: var(--mat-sys-inverse-surface);
   --mdc-snackbar-supporting-text-color: var(--mat-sys-inverse-on-surface);
 }
+
+// ──────────────────────────────────────────────
+// Skeleton loaders
+// ──────────────────────────────────────────────
+
+.skeleton-box {
+  @apply animate-pulse rounded;
+  background-color: var(--mat-sys-surface-container-highest);
+  opacity: 0.7;
+}

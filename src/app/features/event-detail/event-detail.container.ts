@@ -11,6 +11,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 import { EventService, GuestSessionService, ItemService, GuestService, AuthService } from '../../core/services';
 import { PartyEvent, PartyItem, GuestSession, Guest } from '../../core/models';
 import { EventHeaderComponent } from './components/event-header/event-header.component';
@@ -25,6 +26,7 @@ import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatProgressSpinnerModule,
+    MatCardModule,
     EventHeaderComponent,
     EventInfoCardComponent,
     ItemListComponent,

@@ -27,6 +27,9 @@ Goal: Generate production-ready, highly reusable, and scalable Angular code. You
    - For every component generated, provide the `.spec.ts` file.
    - Tests must focus on the Component API (Input changes update the template, user interactions trigger Outputs) and accessibility rendering.
 
+6. Task & Kanban Quality:
+   - Every project task or issue (e.g. on Linear) must strictly feature a **História de Usuário (User Story)** and clear **Critérios de Aceite (Acceptance Criteria)**.
+
 Context Protocol:
 
 - ALWAYS refer to `docs/specs/DESIGN.md` for UI guidelines before styling components.

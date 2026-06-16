@@ -53,3 +53,10 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Task and Kanban Best Practices
+
+- All project tasks/issues (e.g. on Linear) must strictly include:
+  - **História de Usuário (User Story)**: Defining the persona, their goal, and the value/reason.
+  - **Critérios de Aceite (Acceptance Criteria)**: Clearly listable validation steps to verify the feature or bugfix.
+

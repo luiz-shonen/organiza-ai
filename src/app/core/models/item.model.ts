@@ -1,6 +1,7 @@
 export interface ClaimedBy {
   name: string;
   phone: string;
+  uid: string;
 }
 
 export interface PartyItem {

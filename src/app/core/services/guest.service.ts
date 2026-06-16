@@ -13,11 +13,13 @@ import {
   getDocs,
 } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
+import { AuthService } from './auth.service';
 import { Guest, GuestCreate } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class GuestService {
   private readonly firestore = inject(FirebaseService).firestore;
+  private readonly authService = inject(AuthService);
 
   private guestsCollection(eventId: string) {
     return collection(this.firestore, 'events', eventId, 'guests');
@@ -44,8 +46,10 @@ export class GuestService {
   }
 
   async addGuest(eventId: string, data: GuestCreate): Promise<string> {
+    const user = this.authService.currentUser();
     const docRef = await addDoc(this.guestsCollection(eventId), {
       ...data,
+      uid: user ? user.uid : '',
       createdAt: new Date().toISOString(),
     });
     return docRef.id;

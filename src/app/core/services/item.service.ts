@@ -11,11 +11,13 @@ import {
   query,
 } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
+import { AuthService } from './auth.service';
 import { PartyItem, PartyItemCreate, ClaimedBy } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ItemService {
   private readonly firestore = inject(FirebaseService).firestore;
+  private readonly authService = inject(AuthService);
 
   private itemsCollection(eventId: string) {
     return collection(this.firestore, 'events', eventId, 'items');
@@ -49,9 +51,10 @@ export class ItemService {
     return docRef.id;
   }
 
-  async claimItem(eventId: string, itemId: string, claimedBy: ClaimedBy): Promise<void> {
+  async claimItem(eventId: string, itemId: string, claimedBy: Omit<ClaimedBy, 'uid'>): Promise<void> {
+    const user = this.authService.currentUser();
     const docRef = doc(this.firestore, 'events', eventId, 'items', itemId);
-    await updateDoc(docRef, { claimedBy });
+    await updateDoc(docRef, { claimedBy: { ...claimedBy, uid: user ? user.uid : '' } });
   }
 
   async unclaimItem(eventId: string, itemId: string): Promise<void> {

@@ -1,9 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { AuthService, ThemeService } from './core/services';
 
 @Component({
@@ -21,9 +23,20 @@ export class App {
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  
   protected readonly isAdmin = this.authService.isAdmin;
   protected readonly user = this.authService.currentUser;
   protected readonly isOffline = signal(!navigator.onLine);
+
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(event => (event as NavigationEnd).urlAfterRedirects)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  protected readonly showHeader = computed(() => !this.currentUrl().includes('/login'));
 
   protected async logout(): Promise<void> {
     await this.authService.logout();

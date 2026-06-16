@@ -1,42 +1,44 @@
-<mat-toolbar class="app-toolbar" role="banner">
-  <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
-    <mat-icon>celebration</mat-icon>
-    <span class="app-toolbar__title">Organiza AI</span>
-  </a>
-
-  <span class="app-toolbar__spacer"></span>
-
-  @if (isAdmin()) {
-    <a mat-button routerLink="/admin" aria-label="Painel administrativo" style="margin-right: 8px;">
-      <mat-icon>dashboard</mat-icon>
-      <span class="app-toolbar__label">Painel Admin</span>
+@if (showHeader()) {
+  <mat-toolbar class="app-toolbar" role="banner">
+    <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
+      <mat-icon>celebration</mat-icon>
+      <span class="app-toolbar__title">Organiza AI</span>
     </a>
-  }
 
-  @if (user(); as u) {
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu do usuário">
-      @if (u.photoURL) {
-        <img [src]="u.photoURL" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%;">
-      } @else {
-        <mat-icon>account_circle</mat-icon>
-      }
-    </button>
-    <mat-menu #userMenu="matMenu">
-      <div class="px-4 py-2 text-sm text-gray-500 border-b border-gray-100 dark:border-gray-800">
-        {{ u.email }}
-      </div>
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        <span>Sair</span>
+    <span class="app-toolbar__spacer"></span>
+
+    @if (isAdmin()) {
+      <a mat-button routerLink="/admin" aria-label="Painel administrativo" style="margin-right: 8px;">
+        <mat-icon>dashboard</mat-icon>
+        <span class="app-toolbar__label">Painel Admin</span>
+      </a>
+    }
+
+    @if (user(); as u) {
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu do usuário">
+        @if (u.photoURL) {
+          <img [src]="u.photoURL" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%;">
+        } @else {
+          <mat-icon>account_circle</mat-icon>
+        }
       </button>
-    </mat-menu>
-  } @else {
-    <a mat-flat-button routerLink="/login" aria-label="Acessar ou cadastrar">
-      <mat-icon>login</mat-icon>
-      <span>Entrar / Cadastrar</span>
-    </a>
-  }
-</mat-toolbar>
+      <mat-menu #userMenu="matMenu">
+        <div class="px-4 py-2 text-sm text-gray-500 border-b border-gray-100 dark:border-gray-800">
+          {{ u.email }}
+        </div>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Sair</span>
+        </button>
+      </mat-menu>
+    } @else {
+      <a mat-flat-button routerLink="/login" aria-label="Acessar ou cadastrar">
+        <mat-icon>login</mat-icon>
+        <span>Entrar / Cadastrar</span>
+      </a>
+    }
+  </mat-toolbar>
+}
 
 @if (isOffline()) {
   <div class="app-offline-banner" role="alert" aria-live="assertive">

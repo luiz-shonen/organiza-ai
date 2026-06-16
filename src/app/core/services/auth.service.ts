@@ -12,7 +12,7 @@ import {
   signInAnonymously,
 } from 'firebase/auth';
 import { initializeApp, deleteApp } from 'firebase/app';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { environment } from '../../../environments/environment';
 import { FirebaseService } from './firebase.service';
 
@@ -108,7 +108,7 @@ export class AuthService {
     }
     // Register in admins collection
     await setDoc(doc(this.firestore, 'admins', email), {
-      createdAt: new Date().toISOString()
+      createdAt: serverTimestamp()
     });
   }
 }

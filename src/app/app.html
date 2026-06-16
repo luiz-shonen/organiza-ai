@@ -7,17 +7,34 @@
   <span class="app-toolbar__spacer"></span>
 
   @if (isAdmin()) {
-    <a mat-button routerLink="/admin" aria-label="Painel administrativo">
+    <a mat-button routerLink="/admin" aria-label="Painel administrativo" style="margin-right: 8px;">
       <mat-icon>dashboard</mat-icon>
-      <span class="app-toolbar__label">Admin</span>
+      <span class="app-toolbar__label">Painel Admin</span>
     </a>
-    <button
-      mat-icon-button
-      (click)="logout()"
-      aria-label="Sair da conta"
-    >
-      <mat-icon>logout</mat-icon>
+  }
+
+  @if (user(); as u) {
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu do usuário">
+      @if (u.photoURL) {
+        <img [src]="u.photoURL" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%;">
+      } @else {
+        <mat-icon>account_circle</mat-icon>
+      }
     </button>
+    <mat-menu #userMenu="matMenu">
+      <div class="px-4 py-2 text-sm text-gray-500 border-b border-gray-100 dark:border-gray-800">
+        {{ u.email }}
+      </div>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Sair</span>
+      </button>
+    </mat-menu>
+  } @else {
+    <a mat-flat-button routerLink="/login" aria-label="Acessar ou cadastrar">
+      <mat-icon>login</mat-icon>
+      <span>Entrar / Cadastrar</span>
+    </a>
   }
 </mat-toolbar>
 

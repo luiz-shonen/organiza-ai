@@ -62,7 +62,8 @@ O **Organiza AI** é uma plataforma web para gestão simplificada de eventos col
 
 ## 5. Próximos Passos (Roadmap & Backlog)
 > *Esta seção deve ser alimentada em conversas futuras.*
-- [ ] Construir funcionalidade visual de gerenciamento de Admins (onde os Super Admins poderão ver a lista e revogar acessos).
-- [ ] Funcionalidade de foto de perfil (Avatar) sincronizada com a conta do Google na header do Painel.
-- [ ] Opção de "Desfazer/Sair" da confirmação de presença (RSVP) do lado do convidado.
+- [x] Construir funcionalidade visual de gerenciamento de Admins (onde os Super Admins poderão ver a lista e revogar acessos).
+- [x] Funcionalidade de foto de perfil (Avatar) sincronizada com a conta do Google na header do Painel.
+- [x] Opção de "Desfazer/Sair" da confirmação de presença (RSVP) do lado do convidado.
+- [x] Transformar o projeto em um PWA (Progressive Web App) instalável.
 - [ ] Exportação de lista de convidados para Excel/PDF para impressão no dia do evento.

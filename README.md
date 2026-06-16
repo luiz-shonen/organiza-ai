@@ -1,59 +1,32 @@
-# Organizaai
+# Organiza AI
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.15.
+Organiza AI is a Modern Festive Planner application designed to transform task management and event organizing from a chore into a celebration. 
 
-## Development server
+## Project Architecture
 
-To start a local development server, run:
+This project is built using **Angular v21** and **Firebase**.
 
-```bash
-ng serve
-```
+### Key Architectural Decisions
+1. **Smart / Dumb Components**: The UI is strictly separated into Presentational (Dumb) components and Container (Smart) components.
+2. **Signals-based State**: Angular Signals (`signal`, `computed`, `effect`) are used everywhere instead of RxJS for local component state.
+3. **OnPush Change Detection**: All components strictly use `ChangeDetectionStrategy.OnPush`.
+4. **Firebase backend**: 
+   - Firestore for database (events, guests, items)
+   - Firebase Auth for authentication (Email/Password, Google).
+   - Supports Anonymous Login for guests confirming RSVP.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Design System
+The UI is styled using **Glassmorphism** and a "Vibrant Collaboration System". 
+We use **Angular Material** as the base component library, but customize it heavily using CSS variables prefixing with `--mat-sys-` and `--org-`.
+For full design specifications, read **`docs/specs/DESIGN.md`**.
 
-## Code scaffolding
+## For AI Agents
+If you are an AI Assistant (Claude, Gemini, Cursor, etc), please refer to `CLAUDE.md` or `GEMINI.md` for specific instructions on how to write code for this repository.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Commands
 
-```bash
-ng generate component component-name
-```
+### Development server
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Build
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.

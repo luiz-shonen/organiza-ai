@@ -1,7 +1,32 @@
 @use '@angular/material' as mat;
 @use "tailwindcss";
 
-// Organiza AI — Festa Junina inspired warm theme
+:root {
+  // Vibrant Collaboration System (Stitch)
+  --org-primary: #630ed4;
+  --org-on-primary: #ffffff;
+  --org-primary-container: #7c3aed;
+  --org-on-primary-container: #ede0ff;
+  --org-secondary: #a14000;
+  --org-on-secondary: #ffffff;
+  --org-secondary-container: #fd762b;
+  --org-on-secondary-container: #5e2300;
+  --org-tertiary: #733e53;
+  --org-on-tertiary: #ffffff;
+  --org-tertiary-container: #8e556b;
+  --org-on-tertiary-container: #ffdde7;
+  --org-background: #fef7ff;
+  --org-on-background: #231043;
+  --org-surface: #fef7ff;
+  --org-on-surface: #231043;
+  --org-surface-variant: #ebddff;
+  --org-on-surface-variant: #4a4455;
+  --org-outline: #7b7487;
+  --org-outline-variant: #ccc3d8;
+  --org-radius-lg: 0.5rem;
+  --org-radius-full: 9999px;
+}
+
 html {
   height: 100%;
   
@@ -9,12 +34,36 @@ html {
   @include mat.theme((
     color: (
       theme-type: light,
-      primary: mat.$orange-palette,
-      tertiary: mat.$violet-palette,
+      primary: mat.$violet-palette,
+      tertiary: mat.$orange-palette,
     ),
-    typography: Roboto,
+    typography: 'Plus Jakarta Sans',
     density: 0,
   ));
+
+  // Aplicação dos tokens do Stitch no Tema Light
+  &:not(.dark) {
+    --mat-sys-primary: var(--org-primary);
+    --mat-sys-on-primary: var(--org-on-primary);
+    --mat-sys-primary-container: var(--org-primary-container);
+    --mat-sys-on-primary-container: var(--org-on-primary-container);
+    --mat-sys-secondary: var(--org-secondary);
+    --mat-sys-on-secondary: var(--org-on-secondary);
+    --mat-sys-secondary-container: var(--org-secondary-container);
+    --mat-sys-on-secondary-container: var(--org-on-secondary-container);
+    --mat-sys-tertiary: var(--org-tertiary);
+    --mat-sys-on-tertiary: var(--org-on-tertiary);
+    --mat-sys-tertiary-container: var(--org-tertiary-container);
+    --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
+    --mat-sys-background: var(--org-background);
+    --mat-sys-on-background: var(--org-on-background);
+    --mat-sys-surface: var(--org-surface);
+    --mat-sys-on-surface: var(--org-on-surface);
+    --mat-sys-surface-variant: var(--org-surface-variant);
+    --mat-sys-on-surface-variant: var(--org-on-surface-variant);
+    --mat-sys-outline: var(--org-outline);
+    --mat-sys-outline-variant: var(--org-outline-variant);
+  }
 
   // Tema Dark (Ativado pela classe .dark)
   &.dark {
@@ -22,9 +71,10 @@ html {
     @include mat.theme((
       color: (
         theme-type: dark,
-        primary: mat.$orange-palette,
-        tertiary: mat.$violet-palette,
-      )
+        primary: mat.$violet-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: 'Plus Jakarta Sans'
     ));
   }
 }
@@ -91,4 +141,115 @@ body {
   @apply animate-pulse rounded;
   background-color: var(--mat-sys-surface-container-highest);
   opacity: 0.7;
+}
+
+// ──────────────────────────────────────────────
+// Stitch Design System: Global Decorators
+// ──────────────────────────────────────────────
+
+.bg-blobs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--mat-sys-background);
+  pointer-events: none;
+}
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  animation: float 20s infinite alternate ease-in-out;
+}
+.blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: var(--mat-sys-primary-container);
+}
+.blob-2 {
+  bottom: -20%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: var(--mat-sys-secondary-container);
+  animation-delay: -5s;
+}
+.blob-3 {
+  top: 40%;
+  left: 30%;
+  width: 40vw;
+  height: 40vw;
+  background: var(--mat-sys-tertiary-container);
+  opacity: 0.2;
+  animation-duration: 25s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5%, 10%) scale(1.05); }
+  100% { transform: translate(-5%, -5%) scale(0.95); }
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.dark .glass-card {
+  background: rgba(29, 27, 32, 0.6);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  margin: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(99, 14, 212, 0.4), rgba(161, 64, 0, 0.4));
+}
+
+.btn-primary-org {
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary-container));
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px rgba(124, 58, 237, 0.3);
+  transition: all 0.3s ease;
+  color: #fff;
+}
+
+.btn-primary-org:hover {
+  transform: scale(1.05);
+  backdrop-filter: blur(24px);
+}
+
+.org-gradient-text {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, var(--mat-sys-on-background), var(--mat-sys-primary));
+}
+
+.glass-input {
+  background-color: rgba(253, 118, 43, 0.05);
+  border-bottom: 2px solid var(--mat-sys-outline-variant);
+  transition: all 0.3s ease;
+}
+.dark .glass-input {
+  background-color: rgba(253, 118, 43, 0.1);
+}
+
+.glass-input:focus {
+  border-bottom-color: transparent;
+  border-image: linear-gradient(to right, var(--mat-sys-primary), var(--mat-sys-secondary-container));
+  border-image-slice: 1;
+  background-color: rgba(253, 118, 43, 0.1);
+  outline: none;
 }

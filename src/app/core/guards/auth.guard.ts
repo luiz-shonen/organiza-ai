@@ -19,7 +19,7 @@ export const authGuard: CanActivateFn = () => {
           if (authService.isAdmin()) {
             resolve(true);
           } else {
-            router.navigate(['/login']);
+            router.navigate(['/']);
             resolve(false);
           }
         }
@@ -27,6 +27,6 @@ export const authGuard: CanActivateFn = () => {
     });
   }
 
-  router.navigate(['/login']);
+  router.navigate(['/']);
   return false;
 };

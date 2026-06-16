@@ -1,0 +1,79 @@
+    <div class="px-6 mt-8 mb-20 relative z-20">
+      <div class="flex justify-between items-end mb-6">
+        <h2 class="font-headline-md text-2xl font-bold org-gradient-text">
+          O que trazer
+        </h2>
+        <span class="text-xs font-bold px-3 py-1 rounded-full" style="color: var(--mat-sys-primary); background-color: var(--mat-sys-primary-container);">
+          Lista Colaborativa
+        </span>
+      </div>
+      
+      <!-- List Items (Stacked Glass Effect) -->
+      <div class="flex flex-col gap-3">
+        @for (item of items(); track item.id) {
+          <div 
+            class="glass-card rounded-xl p-4 flex items-center justify-between"
+            [class.opacity-80]="item.claimedBy"
+          >
+            <div class="flex items-center gap-4">
+              
+              <!-- Avatar or Icon based on status -->
+              @if (item.claimedBy) {
+                <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: var(--mat-sys-surface-container-lowest); color: var(--mat-sys-outline);">
+                  <mat-icon>person</mat-icon>
+                </div>
+              } @else {
+                <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: var(--mat-sys-surface-container-high); color: var(--mat-sys-secondary);">
+                  <mat-icon>shopping_cart</mat-icon>
+                </div>
+              }
+
+              <div>
+                <p 
+                  class="text-lg font-medium text-on-surface"
+                  [class.line-through]="item.claimedBy"
+                  [class.decoration-outline]="item.claimedBy"
+                >
+                  {{ item.name }}
+                </p>
+                <p 
+                  class="text-sm font-bold"
+                  [style.color]="item.claimedBy ? 'var(--mat-sys-outline)' : 'var(--mat-sys-secondary)'"
+                >
+                  {{ item.claimedBy ? 'Levado por ' + item.claimedBy.name : 'Disponível' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex items-center">
+              @if (!item.claimedBy) {
+                <button
+                  (click)="onClaim.emit(item.id!)"
+                  [disabled]="!currentUserId()"
+                  class="px-4 py-2 rounded-full border border-outline-variant font-bold text-sm hover:bg-surface-variant transition-colors disabled:opacity-50"
+                  style="color: var(--mat-sys-on-surface);"
+                >
+                  Eu Levo
+                </button>
+              } @else if (item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()) {
+                <button
+                  (click)="onUnclaim.emit(item.id!)"
+                  class="px-4 py-2 rounded-full font-bold text-sm hover:bg-error-container transition-colors text-error border border-error"
+                >
+                  Desistir
+                </button>
+              } @else {
+                <div class="flex items-center justify-center w-10 h-10" style="color: var(--mat-sys-primary);">
+                  <mat-icon>check_circle</mat-icon>
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="p-4 text-center text-on-surface-variant font-medium">
+            Nenhum item adicionado a este evento ainda.
+          </div>
+        }
+      </div>
+    </div>

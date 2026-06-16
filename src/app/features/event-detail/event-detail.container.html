@@ -1,114 +1,62 @@
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
 @if (loading()) {
-  <div class="event-detail" aria-hidden="true">
-    <header class="event-header" style="background: transparent; box-shadow: none;">
-      <div class="event-header__content w-full">
-        <div class="skeleton-box h-10 w-3/4 mb-4"></div>
-        <div class="flex gap-4">
-          <div class="skeleton-box h-6 w-32"></div>
-          <div class="skeleton-box h-6 w-32"></div>
-          <div class="skeleton-box h-6 w-32"></div>
-        </div>
-      </div>
-    </header>
-
-    <div class="event-detail__content">
-      <div class="event-detail__main">
-        <mat-card appearance="outlined" class="mb-4">
-          <mat-card-header>
-            <div matCardAvatar class="skeleton-box h-10 w-10 !rounded-full"></div>
-            <mat-card-title><div class="skeleton-box h-6 w-40"></div></mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="skeleton-box h-4 w-full mb-2 mt-4"></div>
-            <div class="skeleton-box h-4 w-full mb-2"></div>
-            <div class="skeleton-box h-4 w-2/3"></div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card appearance="outlined" class="mb-4">
-          <mat-card-header>
-            <div matCardAvatar class="skeleton-box h-10 w-10 !rounded-full"></div>
-            <mat-card-title><div class="skeleton-box h-6 w-48"></div></mat-card-title>
-            <mat-card-subtitle><div class="skeleton-box h-4 w-32"></div></mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="skeleton-box h-4 w-full mt-4"></div>
-          </mat-card-content>
-          <mat-card-actions>
-            <div class="skeleton-box h-10 w-40"></div>
-          </mat-card-actions>
-        </mat-card>
-        
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <div matCardAvatar class="skeleton-box h-10 w-10 !rounded-full"></div>
-            <mat-card-title><div class="skeleton-box h-6 w-32"></div></mat-card-title>
-            <mat-card-subtitle><div class="skeleton-box h-4 w-24"></div></mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            @for (i of [1,2,3]; track i) {
-              <div class="flex justify-between items-center py-3 border-b border-[var(--mat-sys-outline-variant)]">
-                <div>
-                  <div class="skeleton-box h-5 w-32 mb-1"></div>
-                  <div class="skeleton-box h-4 w-20"></div>
-                </div>
-                <div class="skeleton-box h-10 w-24"></div>
-              </div>
-            }
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <aside class="event-detail__sidebar">
-        <mat-card appearance="outlined">
-          <mat-card-header>
-            <div matCardAvatar class="skeleton-box h-10 w-10 !rounded-full"></div>
-            <mat-card-title><div class="skeleton-box h-6 w-40"></div></mat-card-title>
-            <mat-card-subtitle><div class="skeleton-box h-4 w-32"></div></mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="skeleton-box h-12 w-full mt-2"></div>
-          </mat-card-content>
-          <mat-card-actions>
-            <div class="skeleton-box h-10 w-32"></div>
-          </mat-card-actions>
-        </mat-card>
-      </aside>
-    </div>
+  <div class="w-full max-w-[480px] mx-auto pt-10" aria-hidden="true">
+    <div class="skeleton-box h-[300px] w-full rounded-3xl mb-4"></div>
+    <div class="skeleton-box h-40 w-full rounded-2xl mb-4"></div>
+    <div class="skeleton-box h-40 w-full rounded-2xl mb-4"></div>
   </div>
 } @else if (event(); as event) {
-  <article class="event-detail">
-    <app-event-header [event]="event" [guestCount]="guestCount()" />
+  <main class="w-full max-w-[480px] mx-auto pb-[100px] relative z-10">
+    <app-event-card [event]="event" />
 
-    <div class="event-detail__content">
-      <div class="event-detail__main">
-        <app-event-info-card [event]="event" />
-
-        <app-rsvp-card
-          [session]="session()"
-          [guestCount]="guestCount()"
-          (rsvpClicked)="onRsvp()"
-          (cancelRsvpClicked)="cancelRsvp()"
-        />
-
-        <app-item-list
-          [items]="items()"
-          [session]="session()"
-          (claimItem)="onClaimItem($event)"
-          (unclaimItem)="onUnclaimItem($event)"
-        />
+    @if (!session()) {
+      <app-rsvp-form
+        [isSubmitting]="false"
+        (onConfirm)="onRsvpConfirm($event)"
+      />
+    } @else {
+      <!-- User has confirmed presence, show a quick summary or cancel button -->
+      <div class="px-6 mt-8">
+        <h2 class="font-headline-md text-2xl font-bold mb-4 org-gradient-text">
+          Você está na lista! 🎉
+        </h2>
+        <div class="glass-card rounded-2xl p-6 flex flex-col items-center">
+          <p class="font-bold text-lg mb-2">Presença confirmada</p>
+          <p class="text-on-surface-variant text-center mb-4">
+            Estamos te esperando. Seus itens assumidos estão marcados abaixo.
+          </p>
+          <button
+            class="px-4 py-2 rounded-full border border-error text-error font-bold text-sm hover:bg-error-container transition-colors"
+            (click)="cancelRsvp()"
+          >
+            Não poderei ir
+          </button>
+        </div>
       </div>
+    }
 
-      <aside class="event-detail__sidebar">
-        @if (event.pixKey) {
-          <app-pix-card [pixKey]="event.pixKey" (copied)="onPixCopied()" />
-        }
-      </aside>
-    </div>
-  </article>
+    <app-item-list-card
+      [items]="items()"
+      [currentUserId]="session()?.phone ?? null"
+      (onClaim)="onClaimItemById($event)"
+      (onUnclaim)="onUnclaimItemById($event)"
+    />
+
+    @if (event.pixKey) {
+      <div class="px-6 mt-8">
+        <h2 class="font-headline-md text-2xl font-bold mb-4 org-gradient-text">Contribuição</h2>
+        <app-pix-card [pixKey]="event.pixKey" (copied)="onPixCopied()" />
+      </div>
+    }
+  </main>
 } @else {
-  <div class="event-detail__not-found" role="alert">
-    <h2>Evento não encontrado</h2>
-    <p>O evento que você procura não existe ou foi removido.</p>
+  <div class="w-full max-w-[480px] mx-auto pt-20 text-center" role="alert">
+    <h2 class="text-2xl font-bold text-error">Evento não encontrado</h2>
+    <p class="text-on-surface-variant mt-2">O evento que você procura não existe ou foi removido.</p>
   </div>
 }

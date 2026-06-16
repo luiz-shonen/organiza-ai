@@ -38,16 +38,9 @@ export class AuthService {
     onAuthStateChanged(this.auth, async (user) => {
       if (user && !user.isAnonymous && user.email) {
         const isAdmin = await this.verifyAdminStatus(user);
-        if (isAdmin) {
-          this._isAdmin.set(true);
-          this._isSuperAdmin.set(this.checkSuperAdmin(user.email));
-          this._currentUser.set(user);
-        } else {
-          this._isAdmin.set(false);
-          this._isSuperAdmin.set(false);
-          this._currentUser.set(null);
-          await this.logout();
-        }
+        this._isAdmin.set(isAdmin);
+        this._isSuperAdmin.set(this.checkSuperAdmin(user.email));
+        this._currentUser.set(user);
       } else {
         this._isAdmin.set(false);
         this._isSuperAdmin.set(false);
@@ -67,14 +60,17 @@ export class AuthService {
     }
   }
 
+  async register(email: string, password: string): Promise<void> {
+    const result = await createUserWithEmailAndPassword(this.auth, email, password);
+    const isAdmin = await this.verifyAdminStatus(result.user);
+    this._isAdmin.set(isAdmin);
+    this._currentUser.set(result.user);
+  }
+
   async login(email: string, password: string): Promise<void> {
     const result = await signInWithEmailAndPassword(this.auth, email, password);
     const isAdmin = await this.verifyAdminStatus(result.user);
-    if (!isAdmin) {
-      await this.logout();
-      throw new Error('NOT_ADMIN');
-    }
-    this._isAdmin.set(true);
+    this._isAdmin.set(isAdmin);
     this._currentUser.set(result.user);
   }
 
@@ -86,11 +82,7 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(this.auth, provider);
     const isAdmin = await this.verifyAdminStatus(result.user);
-    if (!isAdmin) {
-      await this.logout();
-      throw new Error('NOT_ADMIN');
-    }
-    this._isAdmin.set(true);
+    this._isAdmin.set(isAdmin);
     this._currentUser.set(result.user);
   }
 

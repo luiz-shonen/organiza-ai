@@ -1,105 +1,103 @@
-<section class="login" aria-label="Login administrativo">
-  <mat-card class="login__card" appearance="outlined">
-    <mat-card-header>
-      <mat-icon matCardAvatar class="login__avatar">account_circle</mat-icon>
-      <mat-card-title>Acesso ao Sistema</mat-card-title>
-      <mat-card-subtitle>Entre ou cadastre-se</mat-card-subtitle>
-    </mat-card-header>
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
 
-    <mat-card-content>
-      <form
-        [formGroup]="form"
-        (ngSubmit)="submit()"
-        class="login__form"
-        id="login-form"
+<main class="w-full max-w-[400px] mx-auto pt-[100px] pb-10 px-6 relative z-10 flex flex-col items-center">
+  
+  <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center mb-6" style="color: var(--mat-sys-primary);">
+    <mat-icon style="transform: scale(1.5);">celebration</mat-icon>
+  </div>
+  
+  <h1 class="font-headline-md text-3xl font-bold org-gradient-text mb-2">
+    Organiza AI
+  </h1>
+  <p class="text-on-surface-variant font-medium mb-8 text-center">
+    {{ isRegisterMode() ? 'Crie sua conta para organizar eventos' : 'Acesse sua conta para continuar' }}
+  </p>
+
+  <div class="glass-card rounded-2xl p-6 w-full flex flex-col gap-4">
+    
+    <div class="flex p-1 bg-surface-container-low rounded-lg mb-2" style="background-color: rgba(255,255,255,0.4);">
+      <button
+        type="button"
+        (click)="isRegisterMode.set(false)"
+        [class]="!isRegisterMode() ? 'flex-1 py-2 rounded-md bg-white shadow-sm font-label-sm text-sm font-bold text-on-surface text-center' : 'flex-1 py-2 rounded-md font-label-sm text-sm text-on-surface-variant text-center hover:bg-white/50 transition-colors'"
       >
-        @if (errorMessage(); as error) {
-          <p class="login__error" role="alert">
-            <mat-icon>error</mat-icon>
-            {{ error }}
-          </p>
+        Entrar
+      </button>
+      <button
+        type="button"
+        (click)="isRegisterMode.set(true)"
+        [class]="isRegisterMode() ? 'flex-1 py-2 rounded-md bg-white shadow-sm font-label-sm text-sm font-bold text-on-surface text-center' : 'flex-1 py-2 rounded-md font-label-sm text-sm text-on-surface-variant text-center hover:bg-white/50 transition-colors'"
+      >
+        Cadastrar
+      </button>
+    </div>
+
+    @if (errorMessage(); as error) {
+      <div class="p-3 bg-error-container text-error text-sm font-bold rounded-lg flex items-center gap-2">
+        <mat-icon>error</mat-icon>
+        {{ error }}
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+      
+      <div class="relative">
+        <mat-icon class="absolute left-3 top-3 text-on-surface-variant">email</mat-icon>
+        <input 
+          formControlName="email" type="email" autocomplete="email" required
+          class="w-full glass-input rounded-t-lg pl-10 pr-4 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-0"
+          placeholder="E-mail" 
+        />
+      </div>
+
+      <div class="relative">
+        <mat-icon class="absolute left-3 top-3 text-on-surface-variant">lock</mat-icon>
+        <input 
+          formControlName="password" [type]="hidePassword() ? 'password' : 'text'" autocomplete="current-password" required
+          class="w-full glass-input rounded-b-lg pl-10 pr-12 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-0"
+          placeholder="Senha" 
+        />
+        <button 
+          type="button" (click)="hidePassword.set(!hidePassword())"
+          class="absolute right-2 top-2 w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full transition-colors"
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+      </div>
+
+      <button 
+        type="submit"
+        [disabled]="form.invalid || loading()"
+        class="w-full btn-primary-org rounded-full py-3 mt-2 font-bold text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        @if (loading()) {
+          <mat-spinner diameter="20" color="accent"></mat-spinner>
+        } @else {
+          {{ isRegisterMode() ? 'Criar Conta' : 'Entrar' }}
         }
+      </button>
 
-        <mat-form-field appearance="outline">
-          <mat-label>E-mail</mat-label>
-          <input
-            matInput
-            formControlName="email"
-            type="email"
-            autocomplete="email"
-            placeholder="admin@organizaai.com"
-            required
-          />
-          <mat-icon matPrefix>email</mat-icon>
-          @if (form.controls.email.hasError('required')) {
-            <mat-error>E-mail é obrigatório</mat-error>
-          }
-          @if (form.controls.email.hasError('email')) {
-            <mat-error>E-mail inválido</mat-error>
-          }
-        </mat-form-field>
+    </form>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Senha</mat-label>
-          <input
-            matInput
-            formControlName="password"
-            [type]="hidePassword() ? 'password' : 'text'"
-            autocomplete="current-password"
-            required
-          />
-          <mat-icon matPrefix>lock</mat-icon>
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            (click)="hidePassword.set(!hidePassword())"
-            [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'"
-          >
-            <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
-          </button>
-          @if (form.controls.password.hasError('required')) {
-            <mat-error>Senha é obrigatória</mat-error>
-          }
-          @if (form.controls.password.hasError('minlength')) {
-            <mat-error>Mínimo 6 caracteres</mat-error>
-          }
-        </mat-form-field>
+    <div class="flex items-center gap-4 my-2">
+      <div class="h-px bg-outline-variant flex-1"></div>
+      <span class="text-xs font-bold text-on-surface-variant">OU</span>
+      <div class="h-px bg-outline-variant flex-1"></div>
+    </div>
 
-        <button
-          mat-flat-button
-          type="submit"
-          class="login__submit"
-          [disabled]="form.invalid || loading()"
-          aria-label="Entrar"
-        >
-          @if (loading()) {
-            <mat-spinner diameter="20"></mat-spinner>
-          }
-          @if (!loading()) {
-            <mat-icon>login</mat-icon>
-          }
-          @if (!loading()) {
-            <span>Entrar</span>
-          }
-        </button>
+    <button
+      type="button"
+      [disabled]="loading()"
+      (click)="loginWithGoogle()"
+      class="w-full bg-white border border-outline-variant rounded-full py-3 font-bold text-on-surface flex items-center justify-center gap-3 hover:bg-surface-variant transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-5 h-5" />
+      Entrar com Google
+    </button>
 
-        <div class="login__divider">
-          <span>ou</span>
-        </div>
-
-        <button
-          mat-stroked-button
-          type="button"
-          class="login__google"
-          [disabled]="loading()"
-          (click)="loginWithGoogle()"
-          aria-label="Entrar com Google"
-        >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="login__google-icon" />
-          Entrar com Google
-        </button>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</section>
+  </div>
+</main>

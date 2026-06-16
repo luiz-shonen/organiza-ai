@@ -1,7 +1,7 @@
 @use '@angular/material' as mat;
-@import "tailwindcss";
+@use "tailwindcss";
 
-// OrganizaAí — Festa Junina inspired warm theme
+// Organiza AI — Festa Junina inspired warm theme
 html {
   height: 100%;
   @include mat.theme(

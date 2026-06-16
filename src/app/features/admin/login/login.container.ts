@@ -58,4 +58,18 @@ export class LoginContainer {
       this.loading.set(false);
     }
   }
+
+  protected async loginWithGoogle(): Promise<void> {
+    this.loading.set(true);
+    this.errorMessage.set('');
+
+    try {
+      await this.authService.loginWithGoogle();
+      await this.router.navigate(['/admin']);
+    } catch (error: unknown) {
+      this.errorMessage.set('Falha ao autenticar com o Google.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
 }

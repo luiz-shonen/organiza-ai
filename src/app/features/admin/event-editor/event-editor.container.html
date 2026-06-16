@@ -85,7 +85,9 @@
               }
               @if (!saving()) {
                 <mat-icon>save</mat-icon>
-                {{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}
+              }
+              @if (!saving()) {
+                <span>{{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}</span>
               }
             </button>
           </form>

@@ -11,7 +11,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { EventService, GuestSessionService, ItemService, GuestService } from '../../core/services';
+import { EventService, GuestSessionService, ItemService, GuestService, AuthService } from '../../core/services';
 import { PartyEvent, PartyItem, GuestSession, Guest } from '../../core/models';
 import { EventHeaderComponent } from './components/event-header/event-header.component';
 import { EventInfoCardComponent } from './components/event-info-card/event-info-card.component';
@@ -44,6 +44,7 @@ export class EventDetailContainer implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -58,6 +59,9 @@ export class EventDetailContainer implements OnInit {
 
   ngOnInit(): void {
     const eventId = this.id();
+
+    // Inicia a sessão anônima do convidado para garantir acesso e segurança
+    this.authService.loginAnonymously().catch(console.error);
 
     const eventSub = this.eventService.getEvent(eventId).subscribe({
       next: (event) => {

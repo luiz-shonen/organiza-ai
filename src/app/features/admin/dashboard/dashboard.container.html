@@ -4,14 +4,24 @@
       <mat-icon>dashboard</mat-icon>
       Painel do Organizador
     </h1>
-    <a
-      mat-flat-button
-      routerLink="/admin/evento/novo"
-      aria-label="Criar novo evento"
-    >
-      <mat-icon>add</mat-icon>
-      Novo Evento
-    </a>
+    <div style="display: flex; gap: 8px;">
+      <button
+        mat-stroked-button
+        (click)="openAdminDialog()"
+        aria-label="Adicionar novo admin"
+      >
+        <mat-icon>person_add</mat-icon>
+        Novo Admin
+      </button>
+      <a
+        mat-flat-button
+        routerLink="/admin/evento/novo"
+        aria-label="Criar novo evento"
+      >
+        <mat-icon>add</mat-icon>
+        Novo Evento
+      </a>
+    </div>
   </header>
 
   @if (events$ | async; as events) {

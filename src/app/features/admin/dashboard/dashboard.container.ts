@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { EventService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
+import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,6 +33,7 @@ export class DashboardContainer {
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly clipboard = inject(Clipboard);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly events$ = this.eventService.listEvents();
   protected readonly displayedColumns = ['title', 'date', 'location', 'actions'];
@@ -71,6 +73,14 @@ export class DashboardContainer {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
+    });
+  }
+
+  protected openAdminDialog(): void {
+    this.dialog.open(AdminFormDialogComponent, {
+      width: '100%',
+      maxWidth: '400px',
+      disableClose: true
     });
   }
 }

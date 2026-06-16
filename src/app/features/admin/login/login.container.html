@@ -78,8 +78,26 @@
           }
           @if (!loading()) {
             <mat-icon>login</mat-icon>
-            Entrar
           }
+          @if (!loading()) {
+            <span>Entrar</span>
+          }
+        </button>
+
+        <div class="login__divider">
+          <span>ou</span>
+        </div>
+
+        <button
+          mat-stroked-button
+          type="button"
+          class="login__google"
+          [disabled]="loading()"
+          (click)="loginWithGoogle()"
+          aria-label="Entrar com Google"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="login__google-icon" />
+          Entrar com Google
         </button>
       </form>
     </mat-card-content>

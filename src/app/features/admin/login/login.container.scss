@@ -52,4 +52,42 @@
     height: 48px;
     font-size: 1rem;
   }
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    margin: 16px 0;
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    &::before {
+      margin-right: 12px;
+    }
+
+    &::after {
+      margin-left: 12px;
+    }
+  }
+
+  &__google {
+    height: 48px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
 }

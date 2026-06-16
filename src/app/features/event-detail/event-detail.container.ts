@@ -12,7 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
-import { EventService, GuestSessionService, ItemService, GuestService, AuthService } from '../../core/services';
+import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService } from '../../core/services';
 import { PartyEvent, PartyItem, GuestSession, Guest } from '../../core/models';
 import { EventHeaderComponent } from './components/event-header/event-header.component';
 import { EventInfoCardComponent } from './components/event-info-card/event-info-card.component';
@@ -47,6 +47,7 @@ export class EventDetailContainer implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -138,6 +139,11 @@ export class EventDetailContainer implements OnInit {
       if (!result) return;
 
       this.guestSession.saveSession({ name: result.name, phone: result.phone });
+
+      const user = this.authService.currentUser();
+      if (user?.uid) {
+        this.userService.upsertProfile(user.uid, { name: result.name, phone: result.phone }).catch(console.error);
+      }
 
       // RSVP — add or update guest record
       const existingGuest = await this.guestService.getGuestByPhone(this.id(), result.phone);

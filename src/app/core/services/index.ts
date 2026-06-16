@@ -4,5 +4,6 @@ export { GuestSessionService } from './guest-session.service';
 export { EventService } from './event.service';
 export { ThemeService } from './theme.service';
 export type { ThemeMode } from './theme.service';
+export { UserService } from './user.service';
 export { GuestService } from './guest.service';
 export { ItemService } from './item.service';

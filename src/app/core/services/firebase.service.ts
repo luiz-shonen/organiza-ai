@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FirebaseApp, initializeApp } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
-import { Firestore, getFirestore } from 'firebase/firestore';
+import { Firestore, initializeFirestore } from 'firebase/firestore';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -13,6 +13,8 @@ export class FirebaseService {
   constructor() {
     this.app = initializeApp(environment.firebase);
     this.auth = getAuth(this.app);
-    this.firestore = getFirestore(this.app);
+    this.firestore = initializeFirestore(this.app, {
+      experimentalForceLongPolling: true
+    } as any);
   }
 }

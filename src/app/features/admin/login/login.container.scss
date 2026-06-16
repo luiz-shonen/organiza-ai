@@ -80,14 +80,17 @@
   &__google {
     height: 48px;
     font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    
+    ::ng-deep .mdc-button__label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
   }
 
   &__google-icon {
     width: 20px;
     height: 20px;
-    margin-right: 8px;
   }
 }

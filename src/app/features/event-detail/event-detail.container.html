@@ -12,7 +12,7 @@
   </div>
 } @else if (event(); as event) {
   <main class="event-detail">
-    <app-event-card [event]="event" />
+    <app-event-card [event]="event" [guestCount]="guestCount()" />
 
     <div class="event-detail__grid">
       <div class="event-detail__col-left">

@@ -16,7 +16,9 @@
           <div class="event-card__hero-content">
             <div class="event-card__tags">
               <span class="event-card__badge">Festa da Turma</span>
-              <span class="event-card__badge event-card__badge--secondary">👥 Confirmados: 30 / Limite: 50</span>
+              <span class="event-card__badge event-card__badge--secondary" style="display: flex; align-items: center; gap: 4px;">
+                <mat-icon inline style="font-size: 16px; width: 16px; height: 16px;">group</mat-icon> Confirmados: {{ guestCount() }} / Limite: 50
+              </span>
             </div>
             <h1 class="event-card__title">
               {{ ev.title }}
@@ -34,8 +36,8 @@
                 <span class="event-card__icon-box-day">{{ ev.date | date: 'dd' }}</span>
               </div>
               <div class="event-card__info-text">
-                <p class="event-card__info-title">{{ ev.date | date: 'EEEE, HH:mm' }}</p>
-                <p class="event-card__info-subtitle">Adicionar ao calendário</p>
+                <p class="event-card__info-title">{{ (ev.date | date: 'EEEE') | titlecase }}, {{ ev.date | date: 'HH:mm' }}</p>
+                <a class="event-card__info-subtitle" style="text-decoration: underline; cursor: pointer; color: inherit; outline: none; border: none; background: none; padding: 0;" [href]="googleCalendarUrl()" target="_blank" rel="noopener noreferrer">Adicionar ao calendário</a>
               </div>
             </div>
             

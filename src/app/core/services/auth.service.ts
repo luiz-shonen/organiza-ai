@@ -38,6 +38,7 @@ export class AuthService {
 
   async login(email: string, password: string): Promise<void> {
     await signInWithEmailAndPassword(this.auth, email, password);
+    this._currentUser.set(this.auth.currentUser);
   }
 
   async logout(): Promise<void> {
@@ -47,12 +48,14 @@ export class AuthService {
   async loginWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(this.auth, provider);
+    this._currentUser.set(this.auth.currentUser);
   }
 
   async loginAnonymously(): Promise<void> {
     // Only sign in anonymously if not already signed in.
     if (!this.auth.currentUser) {
       await signInAnonymously(this.auth);
+      this._currentUser.set(this.auth.currentUser);
     }
   }
 

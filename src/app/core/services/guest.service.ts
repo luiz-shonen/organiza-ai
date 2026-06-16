@@ -5,6 +5,7 @@ import {
   doc,
   addDoc,
   updateDoc,
+  deleteDoc,
   onSnapshot,
   query,
   where,
@@ -58,10 +59,15 @@ export class GuestService {
   async updateGuest(
     eventId: string,
     guestId: string,
-    data: Partial<GuestCreate>
+    data: Partial<Guest>
   ): Promise<void> {
-    const docRef = doc(this.firestore, 'events', eventId, 'guests', guestId);
-    await updateDoc(docRef, { ...data });
+    const docRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
+    await updateDoc(docRef, data);
+  }
+
+  async deleteGuest(eventId: string, guestId: string): Promise<void> {
+    const docRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
+    await deleteDoc(docRef);
   }
 
   async getGuestByPhone(eventId: string, phone: string): Promise<Guest | null> {

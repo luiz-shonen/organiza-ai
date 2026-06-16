@@ -15,4 +15,5 @@ export class RsvpCardComponent {
   readonly session = input<GuestSession | null>(null);
   readonly guestCount = input(0);
   readonly rsvpClicked = output<void>();
+  readonly cancelRsvpClicked = output<void>();
 }

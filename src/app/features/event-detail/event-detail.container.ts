@@ -169,4 +169,30 @@ export class EventDetailContainer implements OnInit {
       }
     });
   }
+
+  async cancelRsvp(): Promise<void> {
+    const session = this.guestSession.session();
+    if (!session?.phone) return;
+
+    if (confirm('Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.')) {
+      try {
+        const existingGuest = await this.guestService.getGuestByPhone(this.id(), session.phone);
+        if (existingGuest) {
+          await this.guestService.deleteGuest(this.id(), existingGuest.id);
+          
+          // Unclaim all items claimed by this guest
+          const itemsToUnclaim = this.items().filter(item => item.claimedBy?.phone === session.phone);
+          for (const item of itemsToUnclaim) {
+            await this.itemService.unclaimItem(this.id(), item.id!);
+          }
+          
+          this.guestSession.clearSession();
+          this.snackBar.open('Sua presença foi cancelada.', 'OK', { duration: 3000 });
+        }
+      } catch (err: any) {
+        console.error(err);
+        this.snackBar.open('Erro ao cancelar presença.', 'OK', { duration: 3000 });
+      }
+    }
+  }
 }

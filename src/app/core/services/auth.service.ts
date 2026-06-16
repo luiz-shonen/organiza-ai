@@ -111,4 +111,24 @@ export class AuthService {
       createdAt: serverTimestamp()
     });
   }
+
+  async listAdmins(): Promise<string[]> {
+    if (!this._isSuperAdmin()) {
+      throw new Error('Apenas super administradores podem listar admins.');
+    }
+    const { collection, getDocs } = await import('firebase/firestore');
+    const snap = await getDocs(collection(this.firestore, 'admins'));
+    return snap.docs.map(d => d.id);
+  }
+
+  async removeAdmin(email: string): Promise<void> {
+    if (!this._isSuperAdmin()) {
+      throw new Error('Apenas super administradores podem remover admins.');
+    }
+    if (this.checkSuperAdmin(email)) {
+      throw new Error('Super administradores não podem ser removidos.');
+    }
+    const { deleteDoc } = await import('firebase/firestore');
+    await deleteDoc(doc(this.firestore, 'admins', email));
+  }
 }

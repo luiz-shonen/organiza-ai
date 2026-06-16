@@ -17,13 +17,26 @@
     }
   </mat-card-content>
   <mat-card-actions>
-    <button
-      mat-flat-button
-      (click)="rsvpClicked.emit()"
-      [attr.aria-label]="session() ? 'Editar dados de presença' : 'Confirmar presença'"
-    >
-      <mat-icon>{{ session() ? 'edit' : 'person_add' }}</mat-icon>
-      {{ session() ? 'Editar Dados' : 'Confirmar Presença' }}
-    </button>
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%;">
+      <button
+        mat-flat-button
+        (click)="rsvpClicked.emit()"
+        [attr.aria-label]="session() ? 'Editar dados de presença' : 'Confirmar presença'"
+      >
+        <mat-icon>{{ session() ? 'edit' : 'person_add' }}</mat-icon>
+        {{ session() ? 'Editar Dados' : 'Confirmar Presença' }}
+      </button>
+
+      @if (session()) {
+        <button
+          mat-button
+          color="warn"
+          (click)="cancelRsvpClicked.emit()"
+          aria-label="Não poderei mais ir"
+        >
+          Não poderei mais ir
+        </button>
+      }
+    </div>
   </mat-card-actions>
 </mat-card>

@@ -39,6 +39,7 @@ O **Organiza AI** é uma plataforma web para gestão simplificada de eventos col
 - **Criação/Edição de Eventos:** Formulário para título, descrição, data/hora, endereço e chave Pix opcional.
 - **Gestão de Itens:** Adicionar itens (ex: "Refrigerante 2L") e quantidades necessárias. 
 - **Share Panel:** Painel fácil para copiar o link público do evento para enviar via WhatsApp.
+- **Exportação de Dados:** Exportação de lista de convidados confirmados para Excel (CSV) ou impressão de alta qualidade nativa em PDF (`@media print`).
 
 ### Módulo do Convidado (Página do Evento)
 - **Visualização Otimizada:** Interface focada em conversão mobile-first.
@@ -66,4 +67,4 @@ O **Organiza AI** é uma plataforma web para gestão simplificada de eventos col
 - [x] Funcionalidade de foto de perfil (Avatar) sincronizada com a conta do Google na header do Painel.
 - [x] Opção de "Desfazer/Sair" da confirmação de presença (RSVP) do lado do convidado.
 - [x] Transformar o projeto em um PWA (Progressive Web App) instalável.
-- [ ] Exportação de lista de convidados para Excel/PDF para impressão no dia do evento.
+- [x] Exportação de lista de convidados para Excel/PDF para impressão no dia do evento.

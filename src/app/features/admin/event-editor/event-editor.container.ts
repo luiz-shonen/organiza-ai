@@ -19,8 +19,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { EventService, ItemService } from '../../../core/services';
-import { PartyItem } from '../../../core/models';
+import { EventService, ItemService, GuestService } from '../../../core/services';
+import { PartyItem, Guest } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
@@ -58,6 +58,7 @@ export class EventEditorContainer implements OnInit {
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly items = signal<PartyItem[]>([]);
+  protected readonly guests = signal<Guest[]>([]);
   protected readonly newItemName = signal('');
   protected readonly newItemQuantity = signal(1);
   protected readonly eventUrl = signal('');
@@ -96,9 +97,14 @@ export class EventEditorContainer implements OnInit {
         next: (items) => this.items.set(items),
       });
 
+      const guestsSub = inject(GuestService).listGuests(eventId).subscribe({
+        next: (guests) => this.guests.set(guests),
+      });
+
       this.destroyRef.onDestroy(() => {
         eventSub.unsubscribe();
         itemsSub.unsubscribe();
+        guestsSub.unsubscribe();
       });
     }
   }
@@ -158,5 +164,35 @@ export class EventEditorContainer implements OnInit {
     } catch {
       this.snackBar.open('Erro ao remover item.', 'OK', { duration: 3000 });
     }
+  }
+
+  protected exportToCsv(): void {
+    const guestsList = this.guests();
+    if (!guestsList.length) {
+      this.snackBar.open('Nenhum convidado para exportar.', 'OK', { duration: 3000 });
+      return;
+    }
+
+    const headers = ['Nome,Telefone,Data de Confirmação'];
+    const rows = guestsList.map(g => {
+      const date = g.createdAt ? new Date(g.createdAt).toLocaleDateString('pt-BR') : '';
+      return `"${g.name}","${g.phone}","${date}"`;
+    });
+
+    const csvContent = headers.concat(rows).join('\n');
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `convidados-${this.form.controls.title.value || 'evento'}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  protected printList(): void {
+    window.print();
   }
 }

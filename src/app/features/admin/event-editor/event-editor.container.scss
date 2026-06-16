@@ -134,3 +134,76 @@
     padding: 96px;
   }
 }
+
+.guest-table-container {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.guest-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+    background-color: var(--mat-sys-surface-container-lowest);
+  }
+
+  tr:hover td {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+}
+
+// Print Styles
+@media print {
+  // Hide everything that shouldn't be printed
+  body * {
+    visibility: hidden;
+  }
+
+  // Only show the print section and its children
+  .print-section, .print-section * {
+    visibility: visible;
+  }
+
+  // Reset positioning for the print section so it takes up the whole page
+  .print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  // Hide the UI actions
+  .no-print {
+    display: none !important;
+  }
+
+  // Simplify colors for print
+  .guest-table {
+    th {
+      background-color: #f5f5f5 !important;
+      color: #000 !important;
+    }
+    td {
+      color: #000 !important;
+      border-bottom: 1px solid #ddd !important;
+    }
+  }
+
+  @page {
+    margin: 1.5cm;
+  }
+}

@@ -12,33 +12,61 @@ import {
   signInAnonymously,
 } from 'firebase/auth';
 import { initializeApp, deleteApp } from 'firebase/app';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { environment } from '../../../environments/environment';
 import { FirebaseService } from './firebase.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly auth: Auth = inject(FirebaseService).auth;
+  private readonly firestore = inject(FirebaseService).firestore;
   private readonly _currentUser = signal<User | null>(null);
   private readonly _loading = signal(true);
+  private readonly _isAdmin = signal(false);
 
   readonly currentUser = this._currentUser.asReadonly();
-  // Admins are authenticated users who are NOT anonymous.
-  readonly isAdmin = computed(() => {
-    const user = this._currentUser();
-    return user !== null && !user.isAnonymous;
-  });
+  readonly isAdmin = this._isAdmin.asReadonly();
   readonly loading = this._loading.asReadonly();
 
   constructor() {
-    onAuthStateChanged(this.auth, (user) => {
-      this._currentUser.set(user);
+    onAuthStateChanged(this.auth, async (user) => {
+      if (user && !user.isAnonymous && user.email) {
+        const isAdmin = await this.verifyAdminStatus(user);
+        if (isAdmin) {
+          this._isAdmin.set(true);
+          this._currentUser.set(user);
+        } else {
+          this._isAdmin.set(false);
+          this._currentUser.set(null);
+          await this.logout();
+        }
+      } else {
+        this._isAdmin.set(false);
+        this._currentUser.set(user);
+      }
       this._loading.set(false);
     });
   }
 
+  private async verifyAdminStatus(user: User): Promise<boolean> {
+    if (!user.email) return false;
+    try {
+      const adminDoc = await getDoc(doc(this.firestore, 'admins', user.email));
+      return adminDoc.exists();
+    } catch {
+      return false;
+    }
+  }
+
   async login(email: string, password: string): Promise<void> {
-    await signInWithEmailAndPassword(this.auth, email, password);
-    this._currentUser.set(this.auth.currentUser);
+    const result = await signInWithEmailAndPassword(this.auth, email, password);
+    const isAdmin = await this.verifyAdminStatus(result.user);
+    if (!isAdmin) {
+      await this.logout();
+      throw new Error('NOT_ADMIN');
+    }
+    this._isAdmin.set(true);
+    this._currentUser.set(result.user);
   }
 
   async logout(): Promise<void> {
@@ -47,8 +75,14 @@ export class AuthService {
 
   async loginWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(this.auth, provider);
-    this._currentUser.set(this.auth.currentUser);
+    const result = await signInWithPopup(this.auth, provider);
+    const isAdmin = await this.verifyAdminStatus(result.user);
+    if (!isAdmin) {
+      await this.logout();
+      throw new Error('NOT_ADMIN');
+    }
+    this._isAdmin.set(true);
+    this._currentUser.set(result.user);
   }
 
   async loginAnonymously(): Promise<void> {
@@ -65,8 +99,12 @@ export class AuthService {
     
     try {
       await createUserWithEmailAndPassword(secondaryAuth, email, password);
+      // Register in admins collection
+      await setDoc(doc(this.firestore, 'admins', email), {
+        createdAt: new Date().toISOString()
+      });
+      await signOut(secondaryAuth);
     } finally {
-      await secondaryAuth.signOut();
       await deleteApp(secondaryApp);
     }
   }

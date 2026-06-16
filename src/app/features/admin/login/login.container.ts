@@ -49,10 +49,11 @@ export class LoginContainer {
       await this.authService.login(email, password);
       await this.router.navigate(['/admin']);
     } catch (error: unknown) {
-      const msg =
-        error instanceof Error && error.message.includes('invalid-credential')
-          ? 'E-mail ou senha incorretos.'
-          : 'Erro ao fazer login. Tente novamente.';
+      let msg = 'Erro ao fazer login. Tente novamente.';
+      if (error instanceof Error) {
+        if (error.message.includes('invalid-credential')) msg = 'E-mail ou senha incorretos.';
+        if (error.message === 'NOT_ADMIN') msg = 'Acesso Negado: Seu e-mail não tem permissão administrativa.';
+      }
       this.errorMessage.set(msg);
     } finally {
       this.loading.set(false);
@@ -67,7 +68,11 @@ export class LoginContainer {
       await this.authService.loginWithGoogle();
       await this.router.navigate(['/admin']);
     } catch (error: unknown) {
-      this.errorMessage.set('Falha ao autenticar com o Google.');
+      let msg = 'Falha ao autenticar com o Google.';
+      if (error instanceof Error && error.message === 'NOT_ADMIN') {
+        msg = 'Acesso Negado: Seu e-mail não tem permissão administrativa.';
+      }
+      this.errorMessage.set(msg);
     } finally {
       this.loading.set(false);
     }

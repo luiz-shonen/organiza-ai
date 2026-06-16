@@ -21,6 +21,7 @@ Este arquivo contém instruções de IA para agentes (Antigravity, Claude Code, 
 Siga o padrão estrito de separação entre Container (Smart) e Presentational (Dumb):
 - **Smart (Container)**: Exemplo: `DashboardContainer`. Concentram a injeção de serviços, buscam dados no Firebase e repassam as informações para os filhos. Normalmente têm o sufixo `Container`.
 - **Dumb (Presentational)**: Exemplo: `EventInfoCard`, `SharePanelComponent`. Focados apenas em exibição e interatividade do usuário. **Não possuem lógica de negócio ou chamada a banco de dados.** Recebem dados via `input()` e emitem eventos via `output()`.
+- **Arquivos Dedicados**: Todos os componentes devem obrigatoriamente possuir um arquivo `.html` dedicado (`templateUrl`) e `.scss` (`styleUrl`). Nunca usar `template:` ou `style:` inline.
 
 ## 5. Gerenciamento de Sessão e Acesso (RBAC)
 - **Super Admins**: `luiz.gmr.dev@gmail.com` e `jessica.calm.dev@gmail.com` estão "hardcoded" como Super Admins no frontend e no `firestore.rules`. Apenas eles podem acessar a UI de convite de novos organizadores.

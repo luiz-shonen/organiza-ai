@@ -1,0 +1,33 @@
+.rsvp-card {
+  &__icon {
+    background-color: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 0;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__check {
+    color: #4caf50;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &__prompt {
+    margin: 8px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

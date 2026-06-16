@@ -1,0 +1,41 @@
+@if (eventUrl()) {
+  <mat-card class="share-panel" appearance="outlined">
+    <mat-card-header>
+      <mat-icon matCardAvatar class="share-panel__icon">qr_code_2</mat-icon>
+      <mat-card-title>Compartilhar</mat-card-title>
+      <mat-card-subtitle>Convide seus amigos!</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="share-panel__qr-container">
+        <canvas
+          #qrCanvas
+          class="share-panel__qr"
+          aria-label="QR Code do evento"
+        ></canvas>
+      </div>
+
+      <div class="share-panel__link">
+        <code class="share-panel__url">{{ eventUrl() }}</code>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button
+        mat-stroked-button
+        (click)="copyLink()"
+        aria-label="Copiar link do evento"
+      >
+        <mat-icon>content_copy</mat-icon>
+        Copiar Link
+      </button>
+      <button
+        mat-flat-button
+        (click)="shareWhatsApp()"
+        aria-label="Compartilhar no WhatsApp"
+        class="share-panel__whatsapp-btn"
+      >
+        <mat-icon>share</mat-icon>
+        WhatsApp
+      </button>
+    </mat-card-actions>
+  </mat-card>
+}

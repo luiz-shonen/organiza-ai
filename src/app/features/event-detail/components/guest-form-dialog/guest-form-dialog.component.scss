@@ -1,0 +1,15 @@
+.guest-dialog {
+  &__icon {
+    vertical-align: middle;
+    margin-right: 8px;
+    color: var(--mat-sys-primary);
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 280px;
+    padding-top: 8px;
+  }
+}

@@ -21,44 +21,7 @@ import { AuthService } from '../../../../../core/services';
     MatIconModule,
     MatProgressSpinnerModule,
   ],
-  template: `
-    <h2 mat-dialog-title>
-      <mat-icon style="vertical-align: middle; margin-right: 8px;">person_add</mat-icon>
-      Novo Administrador
-    </h2>
-    
-    <mat-dialog-content>
-      <p style="margin-bottom: 16px; color: var(--mat-sys-on-surface-variant);">
-        Cadastre um novo usuário administrador para gerenciar os eventos.
-      </p>
-
-      <form [formGroup]="form" id="admin-form" (ngSubmit)="submit()">
-        <mat-form-field appearance="outline" style="width: 100%;">
-          <mat-label>E-mail do novo administrador</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="email@exemplo.com" required autocomplete="email" />
-          <mat-icon matPrefix>email</mat-icon>
-          @if (form.controls.email.hasError('required')) {
-            <mat-error>E-mail é obrigatório</mat-error>
-          }
-          @if (form.controls.email.hasError('email')) {
-            <mat-error>E-mail inválido</mat-error>
-          }
-        </mat-form-field>
-      </form>
-    </mat-dialog-content>
-
-    <mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close [disabled]="loading()">Cancelar</button>
-      <button mat-flat-button type="submit" form="admin-form" [disabled]="form.invalid || loading()">
-        @if (loading()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        }
-        @if (!loading()) {
-          Cadastrar
-        }
-      </button>
-    </mat-dialog-actions>
-  `,
+  templateUrl: './admin-form-dialog.component.html',
 })
 export class AdminFormDialogComponent {
   private readonly fb = inject(FormBuilder);

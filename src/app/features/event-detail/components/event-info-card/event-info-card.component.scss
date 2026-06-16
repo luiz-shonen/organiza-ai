@@ -1,0 +1,20 @@
+.info-card {
+  &__icon {
+    background-color: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+  }
+
+  &__description {
+    font-size: 1rem;
+    line-height: 1.6;
+    white-space: pre-line;
+    margin: 8px 0 0;
+  }
+}

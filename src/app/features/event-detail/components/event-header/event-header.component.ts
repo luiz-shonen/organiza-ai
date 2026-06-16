@@ -1,11 +1,13 @@
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { DatePipe } from '@angular/common';
 import { PartyEvent } from '../../../../core/models';
+import { ThemeToggleComponent } from '../../../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-event-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule],
+  imports: [MatIconModule, ThemeToggleComponent],
   templateUrl: './event-header.component.html',
   styleUrl: './event-header.component.scss',
 })

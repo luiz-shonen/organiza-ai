@@ -1,6 +1,9 @@
 <header class="event-header" role="banner">
   <div class="event-header__content">
-    <h1 class="event-header__title">{{ event().title }}</h1>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <h1 class="event-header__title" style="margin: 0;">{{ event().title }}</h1>
+      <app-theme-toggle />
+    </div>
     <div class="event-header__meta">
       <span class="event-header__detail">
         <mat-icon>calendar_today</mat-icon>

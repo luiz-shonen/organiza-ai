@@ -4,16 +4,29 @@
 // Organiza AI — Festa Junina inspired warm theme
 html {
   height: 100%;
-  @include mat.theme(
-    (
+  
+  // Tema Light (Padrão)
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$orange-palette,
+      tertiary: mat.$violet-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+
+  // Tema Dark (Ativado pela classe .dark)
+  &.dark {
+    color-scheme: dark;
+    @include mat.theme((
       color: (
+        theme-type: dark,
         primary: mat.$orange-palette,
         tertiary: mat.$violet-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
+      )
+    ));
+  }
 }
 
 body {

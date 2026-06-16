@@ -4,7 +4,8 @@
       <mat-icon>dashboard</mat-icon>
       Painel do Organizador
     </h1>
-    <div style="display: flex; gap: 8px;">
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <app-theme-toggle />
       @if (isSuperAdmin()) {
         <button
           mat-stroked-button

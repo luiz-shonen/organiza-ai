@@ -12,6 +12,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { EventService, AuthService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
+import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +25,7 @@ import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-f
     MatIconModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    ThemeToggleComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',

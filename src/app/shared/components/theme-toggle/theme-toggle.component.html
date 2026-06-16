@@ -1,0 +1,20 @@
+<button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Alterar tema" title="Alterar tema">
+  <mat-icon>
+    {{ themeService.mode() === 'light' ? 'light_mode' : (themeService.mode() === 'dark' ? 'dark_mode' : 'brightness_auto') }}
+  </mat-icon>
+</button>
+
+<mat-menu #themeMenu="matMenu">
+  <button mat-menu-item (click)="setMode('light')">
+    <mat-icon [color]="themeService.mode() === 'light' ? 'primary' : undefined">light_mode</mat-icon>
+    <span>Claro</span>
+  </button>
+  <button mat-menu-item (click)="setMode('dark')">
+    <mat-icon [color]="themeService.mode() === 'dark' ? 'primary' : undefined">dark_mode</mat-icon>
+    <span>Escuro</span>
+  </button>
+  <button mat-menu-item (click)="setMode('system')">
+    <mat-icon [color]="themeService.mode() === 'system' ? 'primary' : undefined">brightness_auto</mat-icon>
+    <span>Sistema</span>
+  </button>
+</mat-menu>

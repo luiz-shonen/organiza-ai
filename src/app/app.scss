@@ -8,9 +8,16 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--mat-sys-on-surface);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+
+  .dark & {
+    background: rgba(30, 30, 30, 0.4);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
 
   &__brand {
     display: flex;
@@ -22,7 +29,7 @@
   }
 
   &__logo {
-    height: 28px;
+    height: 36px;
     width: auto;
   }
 

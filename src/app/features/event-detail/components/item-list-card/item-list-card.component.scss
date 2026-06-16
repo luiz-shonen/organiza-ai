@@ -5,25 +5,30 @@
   position: relative;
   z-index: 20;
 
-  &__header {
+  &__header-main {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 24px;
+    align-items: center;
+    margin-bottom: 16px;
   }
 
   &__title {
     font-size: 1.5rem;
     font-weight: 700;
+    line-height: 1.4;
+    padding-bottom: 4px;
+    margin: 0;
   }
 
   &__badge {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 9999px;
-    color: var(--mat-sys-primary);
-    background-color: var(--mat-sys-primary-container);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mat-sys-secondary);
+  }
+
+  &__card {
+    border-radius: 16px;
+    padding: 24px;
   }
 
   &__items {

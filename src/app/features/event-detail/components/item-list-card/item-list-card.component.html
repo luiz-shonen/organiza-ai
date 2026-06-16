@@ -1,5 +1,5 @@
     <div class="item-list-card">
-      <div class="item-list-card__header">
+      <div class="item-list-card__header-main">
         <h2 class="item-list-card__title org-gradient-text">
           O que trazer
         </h2>
@@ -8,7 +8,8 @@
         </span>
       </div>
       
-      <!-- List Items (Stacked Glass Effect) -->
+      <div class="glass-card item-list-card__card">
+        <!-- List Items (Stacked Glass Effect) -->
       <div class="item-list-card__items">
         @for (item of items(); track item.id) {
           <div 
@@ -72,6 +73,7 @@
           <div class="item-list-card__empty">
             Nenhum item adicionado a este evento ainda.
           </div>
+        }
         }
       </div>
     </div>

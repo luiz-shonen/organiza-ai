@@ -57,8 +57,9 @@
     border: 1px solid rgba(255, 255, 255, 0.4);
 
     &--secondary {
-      background: rgba(0, 0, 0, 0.3);
-      border-color: transparent;
+      background: rgba(var(--mat-sys-secondary-container-rgb), 0.7);
+      color: var(--mat-sys-on-secondary-container);
+      border-color: rgba(var(--mat-sys-on-secondary-container-rgb), 0.2);
     }
   }
 
@@ -66,7 +67,8 @@
     color: #ffffff;
     font-size: 1.875rem;
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.4;
+    padding-bottom: 4px;
     text-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     margin: 0;
     
@@ -214,16 +216,5 @@
     font-size: 0.875rem;
     color: var(--mat-sys-on-surface-variant);
     margin: 0;
-  }
-
-  &__chat-btn {
-    margin-left: auto;
-    background-color: var(--mat-sys-surface-container-highest);
-    color: var(--mat-sys-primary);
-    transition: transform 0.2s;
-
-    &:active {
-      transform: scale(0.95);
-    }
   }
 }

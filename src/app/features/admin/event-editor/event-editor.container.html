@@ -1,13 +1,11 @@
 <section class="editor" aria-label="Editor de evento">
   <header class="editor__header">
-    <button mat-icon-button (click)="router.navigate(['/admin'])" aria-label="Voltar">
-      <mat-icon>arrow_back</mat-icon>
+    <button mat-icon-button (click)="router.navigate(['/admin'])" matTooltip="Voltar" aria-label="Voltar">
+      <mat-icon>arrow_back_ios_new</mat-icon>
     </button>
     <h1 class="editor__title">
       {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
     </h1>
-    <div style="flex: 1;"></div>
-    <app-theme-toggle />
   </header>
 
   @if (loading()) {
@@ -33,89 +31,103 @@
     </div>
   } @else {
     <div class="editor__grid">
-      <!-- Event Form -->
-      <mat-card class="editor__card" appearance="outlined">
-        <mat-card-header>
-          <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
-          <mat-card-title>Dados do Evento</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <form [formGroup]="form" class="editor__form" id="event-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Título do Evento</mat-label>
-              <input matInput formControlName="title" placeholder="Ex: Festa Junina 2026" required />
-              @if (form.controls.title.hasError('required')) {
-                <mat-error>Título é obrigatório</mat-error>
-              }
-            </mat-form-field>
+      <div class="editor__col">
+        <!-- Event Form -->
+        <mat-card class="editor__card" appearance="outlined">
+          <mat-card-header>
+            <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
+            <mat-card-title>Dados do Evento</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="form" class="editor__form" id="event-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Título do Evento</mat-label>
+                <input matInput formControlName="title" placeholder="Ex: Festa Junina 2026" required />
+                @if (form.controls.title.hasError('required')) {
+                  <mat-error>Título é obrigatório</mat-error>
+                }
+              </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Descrição</mat-label>
-              <textarea
-                matInput
-                formControlName="description"
-                rows="4"
-                placeholder="Descreva o evento..."
-                required
-              ></textarea>
-              @if (form.controls.description.hasError('required')) {
-                <mat-error>Descrição é obrigatória</mat-error>
-              }
-            </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Descrição</mat-label>
+                <textarea
+                  matInput
+                  formControlName="description"
+                  rows="4"
+                  placeholder="Descreva o evento..."
+                  required
+                ></textarea>
+                @if (form.controls.description.hasError('required')) {
+                  <mat-error>Descrição é obrigatória</mat-error>
+                }
+              </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Data e Hora</mat-label>
-              <input
-                matInput
-                formControlName="date"
-                type="datetime-local"
-                required
-              />
-              @if (form.controls.date.hasError('required')) {
-                <mat-error>Data é obrigatória</mat-error>
-              }
-            </mat-form-field>
+              <div class="editor__date-time-row">
+                <mat-form-field appearance="outline" class="editor__date-field">
+                  <mat-label>Data do Evento</mat-label>
+                  <input matInput [matDatepicker]="picker" formControlName="date" required />
+                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
+                  @if (form.controls.date.hasError('required')) {
+                    <mat-error>Data é obrigatória</mat-error>
+                  }
+                </mat-form-field>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Local</mat-label>
-              <input matInput formControlName="location" placeholder="Ex: Rua das Festas, 123" required />
-              <mat-icon matPrefix>location_on</mat-icon>
-              @if (form.controls.location.hasError('required')) {
-                <mat-error>Local é obrigatório</mat-error>
-              }
-            </mat-form-field>
+                <mat-form-field appearance="outline" class="editor__time-field">
+                  <mat-label>Hora</mat-label>
+                  <input matInput type="time" formControlName="time" required />
+                  @if (form.controls.time.hasError('required')) {
+                    <mat-error>Hora é obrigatória</mat-error>
+                  }
+                </mat-form-field>
+              </div>
 
-            <mat-form-field appearance="outline">
-              <mat-label>Chave Pix (opcional)</mat-label>
-              <input matInput formControlName="pixKey" placeholder="CPF, e-mail ou chave aleatória" />
-              <mat-icon matPrefix>pix</mat-icon>
-              <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
-            </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Local</mat-label>
+                <input matInput formControlName="location" placeholder="Ex: Rua das Festas, 123" required [matAutocomplete]="auto" />
+                <mat-icon matPrefix>location_on</mat-icon>
+                <mat-autocomplete #auto="matAutocomplete">
+                  @for (suggestion of locationSuggestions(); track suggestion.displayName) {
+                    <mat-option [value]="suggestion.displayName">
+                      {{ suggestion.displayName }}
+                    </mat-option>
+                  }
+                </mat-autocomplete>
+                @if (form.controls.location.hasError('required')) {
+                  <mat-error>Local é obrigatório</mat-error>
+                }
+              </mat-form-field>
 
-            <button
-              mat-flat-button
-              class="editor__save-btn"
-              [disabled]="form.invalid || saving()"
-              (click)="saveEvent()"
-              aria-label="Salvar evento"
-            >
-              @if (saving()) {
-                <mat-spinner diameter="20"></mat-spinner>
-              }
-              @if (!saving()) {
-                <mat-icon>save</mat-icon>
-              }
-              @if (!saving()) {
-                <span>{{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}</span>
-              }
-            </button>
-          </form>
-        </mat-card-content>
-      </mat-card>
+              <mat-form-field appearance="outline">
+                <mat-label>Chave Pix (opcional)</mat-label>
+                <input matInput formControlName="pixKey" placeholder="CPF, e-mail ou chave aleatória" />
+                <mat-icon matPrefix>pix</mat-icon>
+                <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
+              </mat-form-field>
 
-      <!-- Items Manager (only when editing) -->
-      @if (isEditing()) {
-        <div class="editor__side">
+              <button
+                mat-flat-button
+                class="editor__save-btn"
+                [disabled]="form.invalid || saving()"
+                (click)="saveEvent()"
+                aria-label="Salvar evento"
+              >
+                @if (saving()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                }
+                @if (!saving()) {
+                  <mat-icon>save</mat-icon>
+                }
+                @if (!saving()) {
+                  <span>{{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}</span>
+                }
+              </button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Items Manager (only when editing) -->
+        @if (isEditing()) {
           <mat-card class="editor__card" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
@@ -185,7 +197,11 @@
               }
             </mat-card-content>
           </mat-card>
+        }
+      </div>
 
+      @if (isEditing()) {
+        <div class="editor__col">
           <!-- Share Panel -->
           <app-share-panel [eventUrl]="eventUrl()" [eventTitle]="form.controls.title.value" />
 
@@ -197,13 +213,13 @@
               <mat-card-subtitle>{{ guests().length }} confirmados</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <div class="flex gap-2 mb-4 no-print">
+              <div class="editor__guest-actions no-print">
                 <button
                   mat-stroked-button
                   (click)="exportToCsv()"
                   [disabled]="guests().length === 0"
                   aria-label="Exportar para Excel (CSV)"
-                  class="flex-1"
+                  class="editor__guest-action-btn"
                 >
                   <mat-icon>download</mat-icon>
                   Excel
@@ -213,7 +229,7 @@
                   (click)="printList()"
                   [disabled]="guests().length === 0"
                   aria-label="Imprimir Lista (PDF)"
-                  class="flex-1"
+                  class="editor__guest-action-btn"
                 >
                   <mat-icon>print</mat-icon>
                   Imprimir
@@ -240,7 +256,7 @@
                   </table>
                 </div>
               } @else {
-                <p class="text-on-surface-variant text-center py-4 no-print">Nenhum convidado confirmou presença ainda.</p>
+                <p class="editor__guest-empty no-print">Nenhum convidado confirmou presença ainda.</p>
               }
             </mat-card-content>
           </mat-card>

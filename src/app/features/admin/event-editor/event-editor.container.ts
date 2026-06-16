@@ -19,10 +19,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { EventService, ItemService, GuestService } from '../../../core/services';
+import { LocationService, LocationSuggestion } from '../../../core/services/location.service';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
-import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-event-editor',
@@ -38,8 +41,9 @@ import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/th
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
     SharePanelComponent,
-    ThemeToggleComponent,
   ],
   templateUrl: './event-editor.container.html',
   styleUrl: './event-editor.container.scss',
@@ -49,6 +53,8 @@ export class EventEditorContainer implements OnInit {
 
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
+  private readonly locationService = inject(LocationService);
+  private readonly guestService = inject(GuestService);
   protected readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
@@ -62,16 +68,27 @@ export class EventEditorContainer implements OnInit {
   protected readonly newItemName = signal('');
   protected readonly newItemQuantity = signal(1);
   protected readonly eventUrl = signal('');
+  protected readonly locationSuggestions = signal<LocationSuggestion[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
     description: ['', [Validators.required]],
-    date: ['', [Validators.required]],
+    date: [null as Date | null, [Validators.required]],
+    time: ['', [Validators.required]],
     location: ['', [Validators.required]],
     pixKey: [''],
   });
 
   ngOnInit(): void {
+    // Autocomplete for location
+    this.form.controls.location.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(query => this.locationService.searchLocation(query))
+    ).subscribe(suggestions => {
+      this.locationSuggestions.set(suggestions);
+    });
+
     const eventId = this.id();
     if (eventId && eventId !== 'novo') {
       this.isEditing.set(true);
@@ -81,23 +98,33 @@ export class EventEditorContainer implements OnInit {
       const eventSub = this.eventService.getEvent(eventId).subscribe({
         next: (event) => {
           if (event) {
+            let d = new Date(event.date);
+            if (isNaN(d.getTime())) d = new Date();
+            const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+            
             this.form.patchValue({
               title: event.title,
               description: event.description,
-              date: event.date,
+              date: d,
+              time: timeStr,
               location: event.location,
               pixKey: event.pixKey ?? '',
             });
           }
           this.loading.set(false);
         },
+        error: (err) => {
+          console.error(err);
+          this.loading.set(false);
+          this.snackBar.open('Erro ao carregar evento', 'OK', { duration: 3000 });
+        }
       });
 
       const itemsSub = this.itemService.listItems(eventId).subscribe({
         next: (items) => this.items.set(items),
       });
 
-      const guestsSub = inject(GuestService).listGuests(eventId).subscribe({
+      const guestsSub = this.guestService.listGuests(eventId).subscribe({
         next: (guests) => this.guests.set(guests),
       });
 
@@ -111,24 +138,27 @@ export class EventEditorContainer implements OnInit {
 
   protected async saveEvent(): Promise<void> {
     if (this.form.invalid) return;
+
     this.saving.set(true);
+    const { title, description, date, time, location, pixKey } = this.form.getRawValue();
+
+    let finalDate = new Date();
+    if (date) {
+      finalDate = new Date(date);
+      const [h, m] = time.split(':');
+      finalDate.setHours(Number(h) || 0, Number(m) || 0, 0, 0);
+    }
+    const dateStr = finalDate.toISOString();
+
+    const eventData = { title, description, date: dateStr, location, pixKey: pixKey || null };
 
     try {
-      const formValue = this.form.getRawValue();
-      const data = {
-        title: formValue.title,
-        description: formValue.description,
-        date: formValue.date,
-        location: formValue.location,
-        pixKey: formValue.pixKey || null,
-      };
-
       const eventId = this.id();
       if (this.isEditing() && eventId) {
-        await this.eventService.updateEvent(eventId, data);
+        await this.eventService.updateEvent(eventId, eventData);
         this.snackBar.open('Evento atualizado!', 'OK', { duration: 3000 });
       } else {
-        const newId = await this.eventService.createEvent(data);
+        const newId = await this.eventService.createEvent(eventData);
         this.snackBar.open('Evento criado com sucesso!', '🎉', { duration: 3000 });
         await this.router.navigate(['/admin/evento', newId]);
       }

@@ -197,16 +197,17 @@ body {
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
   border: 1.5px solid transparent;
   background-clip: padding-box;
   position: relative;
+  box-shadow: 0 12px 40px rgba(35, 16, 67, 0.1);
 }
 
 .dark .glass-card {
-  background: rgba(29, 27, 32, 0.6);
+  background: rgba(29, 27, 32, 0.4);
 }
 
 .glass-card::before {
@@ -217,6 +218,10 @@ body {
   margin: -1.5px;
   border-radius: inherit;
   background: linear-gradient(135deg, rgba(99, 14, 212, 0.4), rgba(161, 64, 0, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1.5px;
 }
 
 .btn-primary-org {
@@ -239,6 +244,7 @@ body {
 
 .glass-input {
   background-color: rgba(253, 118, 43, 0.05);
+  border: none;
   border-bottom: 2px solid var(--mat-sys-outline-variant);
   transition: all 0.3s ease;
 }
@@ -253,3 +259,41 @@ body {
   background-color: rgba(253, 118, 43, 0.1);
   outline: none;
 }
+
+// Correção para o input do tipo time que estava cortando a escrita no MatFormField
+input[type="time"] {
+  padding: 8px 0;
+  line-height: normal;
+  align-items: center;
+  height: auto;
+}
+
+// Global gradient borders para todos os cartões (UI mais vibrante)
+.mat-mdc-card-outlined {
+  position: relative;
+  border: none !important;
+  background-clip: padding-box !important;
+
+  /* Glassmorphism Global */
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+
+  .dark & {
+    background: rgba(29, 27, 32, 0.4) !important;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px; /* espessura da borda */
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary-container));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+

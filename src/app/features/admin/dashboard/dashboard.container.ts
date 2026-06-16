@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,7 +14,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { EventService, AuthService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
-import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -26,8 +27,8 @@ import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/th
     MatIconModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     MatMenuModule,
-    ThemeToggleComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',

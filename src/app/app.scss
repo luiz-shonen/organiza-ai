@@ -31,6 +31,21 @@
     flex: 1;
   }
 
+  &__admin-btn {
+    margin-right: 8px;
+  }
+
+  &__user-btn {
+    margin-left: 8px;
+  }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
   &__label {
     margin-left: 4px;
 

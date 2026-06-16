@@ -7,3 +7,4 @@ export type { ThemeMode } from './theme.service';
 export { UserService } from './user.service';
 export { GuestService } from './guest.service';
 export { ItemService } from './item.service';
+export { LocationService } from './location.service';

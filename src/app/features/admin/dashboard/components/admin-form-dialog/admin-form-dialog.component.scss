@@ -1,0 +1,53 @@
+.admin-dialog {
+  &__header-icon {
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  &__description {
+    margin-bottom: 16px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__list-container {
+    margin-bottom: 24px;
+  }
+
+  &__spinner {
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface-container-lowest);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--empty {
+      padding: 16px;
+      text-align: center;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__form-field {
+    width: 100%;
+  }
+}

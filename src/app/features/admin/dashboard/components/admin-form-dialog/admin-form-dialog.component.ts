@@ -22,6 +22,7 @@ import { AuthService } from '../../../../../core/services';
     MatProgressSpinnerModule,
   ],
   templateUrl: './admin-form-dialog.component.html',
+  styleUrl: './admin-form-dialog.component.scss',
 })
 export class AdminFormDialogComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

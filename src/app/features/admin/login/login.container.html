@@ -4,66 +4,53 @@
   <div class="blob blob-3"></div>
 </div>
 
-<main class="w-full max-w-[400px] mx-auto pt-[100px] pb-10 px-6 relative z-10 flex flex-col items-center">
-  
-  <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center mb-6" style="color: var(--mat-sys-primary);">
-    <mat-icon style="transform: scale(1.5);">celebration</mat-icon>
-  </div>
-  
-  <h1 class="font-headline-md text-3xl font-bold org-gradient-text mb-2">
-    Organiza AI
-  </h1>
-  <p class="text-on-surface-variant font-medium mb-8 text-center">
-    {{ isRegisterMode() ? 'Crie sua conta para organizar eventos' : 'Acesse sua conta para continuar' }}
-  </p>
-
-  <div class="glass-card rounded-2xl p-6 w-full flex flex-col gap-4">
-    
-    <div class="flex p-1 bg-surface-container-low rounded-lg mb-2" style="background-color: rgba(255,255,255,0.4);">
-      <button
-        type="button"
-        (click)="isRegisterMode.set(false)"
-        [class]="!isRegisterMode() ? 'flex-1 py-2 rounded-md bg-white shadow-sm font-label-sm text-sm font-bold text-on-surface text-center' : 'flex-1 py-2 rounded-md font-label-sm text-sm text-on-surface-variant text-center hover:bg-white/50 transition-colors'"
-      >
-        Entrar
-      </button>
-      <button
-        type="button"
-        (click)="isRegisterMode.set(true)"
-        [class]="isRegisterMode() ? 'flex-1 py-2 rounded-md bg-white shadow-sm font-label-sm text-sm font-bold text-on-surface text-center' : 'flex-1 py-2 rounded-md font-label-sm text-sm text-on-surface-variant text-center hover:bg-white/50 transition-colors'"
-      >
-        Cadastrar
-      </button>
+<main class="login">
+  <div class="login__header">
+    <div class="login__avatar">
+      <mat-icon style="transform: scale(1.5);">celebration</mat-icon>
     </div>
+    
+    <h1 class="login__title org-gradient-text">
+      Organiza AI
+    </h1>
+    <p class="login__subtitle">
+      Acesse sua conta ou crie uma nova automaticamente
+    </p>
+  </div>
+
+  <div class="login__card glass-card">
+    
 
     @if (errorMessage(); as error) {
-      <div class="p-3 bg-error-container text-error text-sm font-bold rounded-lg flex items-center gap-2">
+      <div class="login__error">
         <mat-icon>error</mat-icon>
         {{ error }}
       </div>
     }
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
+    <form id="login-form" [formGroup]="form" (ngSubmit)="submit()" class="login__form" action="#" method="post">
       
-      <div class="relative">
-        <mat-icon class="absolute left-3 top-3 text-on-surface-variant">email</mat-icon>
+      <div class="login__input-group">
+        <mat-icon class="login__input-icon">email</mat-icon>
         <input 
-          formControlName="email" type="email" autocomplete="email" required
-          class="w-full glass-input rounded-t-lg pl-10 pr-4 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-0"
+          id="username"
+          formControlName="email" name="username" type="email" autocomplete="username" required
+          class="glass-input login__input"
           placeholder="E-mail" 
         />
       </div>
 
-      <div class="relative">
-        <mat-icon class="absolute left-3 top-3 text-on-surface-variant">lock</mat-icon>
+      <div class="login__input-group">
+        <mat-icon class="login__input-icon">lock</mat-icon>
         <input 
-          formControlName="password" [type]="hidePassword() ? 'password' : 'text'" autocomplete="current-password" required
-          class="w-full glass-input rounded-b-lg pl-10 pr-12 py-3 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-0"
+          id="password"
+          formControlName="password" name="password" [type]="hidePassword() ? 'password' : 'text'" autocomplete="current-password" required
+          class="glass-input login__input login__input--password"
           placeholder="Senha" 
         />
         <button 
           type="button" (click)="hidePassword.set(!hidePassword())"
-          class="absolute right-2 top-2 w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-on-surface rounded-full transition-colors"
+          class="login__visibility-btn"
         >
           <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
@@ -72,30 +59,28 @@
       <button 
         type="submit"
         [disabled]="form.invalid || loading()"
-        class="w-full btn-primary-org rounded-full py-3 mt-2 font-bold text-white flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="btn-primary-org login__submit"
       >
         @if (loading()) {
           <mat-spinner diameter="20" color="accent"></mat-spinner>
         } @else {
-          {{ isRegisterMode() ? 'Criar Conta' : 'Entrar' }}
+          Entrar ou Cadastrar
         }
       </button>
 
     </form>
 
-    <div class="flex items-center gap-4 my-2">
-      <div class="h-px bg-outline-variant flex-1"></div>
-      <span class="text-xs font-bold text-on-surface-variant">OU</span>
-      <div class="h-px bg-outline-variant flex-1"></div>
+    <div class="login__divider">
+      <span class="login__divider-text">OU</span>
     </div>
 
     <button
       type="button"
       [disabled]="loading()"
       (click)="loginWithGoogle()"
-      class="w-full bg-white border border-outline-variant rounded-full py-3 font-bold text-on-surface flex items-center justify-center gap-3 hover:bg-surface-variant transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      class="login__google"
     >
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-5 h-5" />
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="login__google-icon" />
       Entrar com Google
     </button>
 

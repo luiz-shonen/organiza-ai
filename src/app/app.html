@@ -8,16 +8,18 @@
     <span class="app-toolbar__spacer"></span>
 
     @if (isAdmin()) {
-      <a mat-button routerLink="/admin" aria-label="Painel administrativo" style="margin-right: 8px;">
+      <a mat-button routerLink="/admin" aria-label="Painel administrativo" class="app-toolbar__admin-btn">
         <mat-icon>dashboard</mat-icon>
         <span class="app-toolbar__label">Painel Admin</span>
       </a>
     }
 
+    <app-theme-toggle />
+
     @if (user(); as u) {
-      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu do usuário">
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu do usuário" class="app-toolbar__user-btn">
         @if (u.photoURL) {
-          <img [src]="u.photoURL" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%;">
+          <img [src]="u.photoURL" alt="Avatar" class="app-toolbar__avatar">
         } @else {
           <mat-icon>account_circle</mat-icon>
         }

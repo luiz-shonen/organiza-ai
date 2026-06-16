@@ -1,32 +1,40 @@
     <div class="rsvp">
-      <h2 class="rsvp__title org-gradient-text">
-        Você vai?
+      <h2 class="rsvp__title">
+        Confirme sua Presença
       </h2>
       
       <div class="glass-card rsvp__card">
         <!-- Optional Tabs (Visual only for now) -->
         <div class="rsvp__tabs">
-          <button class="rsvp__tab rsvp__tab--active">
-            Somente Eu
+          <button 
+            type="button"
+            class="rsvp__tab" 
+            [class.rsvp__tab--active]="selectedMode() === 'solo'"
+            (click)="setMode('solo')"
+          >
+            Apenas Eu
           </button>
-          <button class="rsvp__tab">
-            Com Família
+          <button 
+            type="button"
+            class="rsvp__tab"
+            [class.rsvp__tab--active]="selectedMode() === 'family'"
+            (click)="setMode('family')"
+          >
+            Família
           </button>
         </div>
 
         <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="rsvp__form">
           
           <div class="rsvp__input-group">
-            <mat-icon class="rsvp__input-icon">person</mat-icon>
             <input 
               name="name" ngModel required 
               class="glass-input rsvp__input"
-              placeholder="Nome completo (Ex: João da Silva)" 
+              placeholder="Nome Completo (Ex: João Silva)" 
             />
           </div>
 
           <div class="rsvp__input-group">
-            <mat-icon class="rsvp__input-icon">phone</mat-icon>
             <input 
               name="phone" ngModel required 
               class="glass-input rsvp__input"
@@ -39,12 +47,12 @@
             <button 
               type="submit"
               [disabled]="f.invalid || isSubmitting()"
-              class="btn-primary-org rsvp__submit"
+              class="rsvp__submit"
             >
               @if (isSubmitting()) {
                 <mat-spinner diameter="20" color="accent"></mat-spinner>
               } @else {
-                Confirmar Presença
+                Confirmar RSVP <mat-icon class="rsvp__submit-icon">check_circle</mat-icon>
               }
             </button>
           </div>

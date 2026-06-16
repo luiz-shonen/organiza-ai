@@ -14,45 +14,51 @@
   <main class="event-detail">
     <app-event-card [event]="event" />
 
-    @if (!session()) {
-      <app-rsvp-form
-        [isSubmitting]="false"
-        (onConfirm)="onRsvpConfirm($event)"
-      />
-    } @else {
-      <!-- User has confirmed presence, show a quick summary or cancel button -->
-      <div class="event-detail__section">
-        <h2 class="event-detail__section-title org-gradient-text">
-          Você está na lista! 🎉
-        </h2>
-        <div class="glass-card event-detail__success-card">
-          <p class="event-detail__success-title">Presença confirmada</p>
-          <p class="event-detail__success-desc">
-            Estamos te esperando. Seus itens assumidos estão marcados abaixo.
-          </p>
-          <button
-            class="event-detail__cancel-btn"
-            (click)="cancelRsvp()"
-          >
-            Não poderei ir
-          </button>
-        </div>
+    <div class="event-detail__grid">
+      <div class="event-detail__col-left">
+        @if (!session()) {
+          <app-rsvp-form
+            [isSubmitting]="false"
+            (onConfirm)="onRsvpConfirm($event)"
+          />
+        } @else {
+          <!-- User has confirmed presence, show a quick summary or cancel button -->
+          <div class="event-detail__section">
+            <h2 class="event-detail__section-title org-gradient-text">
+              Você está na lista! 🎉
+            </h2>
+            <div class="glass-card event-detail__success-card">
+              <p class="event-detail__success-title">Presença confirmada</p>
+              <p class="event-detail__success-desc">
+                Estamos te esperando. Seus itens assumidos estão marcados abaixo.
+              </p>
+              <button
+                class="event-detail__cancel-btn"
+                (click)="cancelRsvp()"
+              >
+                Não poderei ir
+              </button>
+            </div>
+          </div>
+        }
       </div>
-    }
 
-    <app-item-list-card
-      [items]="items()"
-      [currentUserId]="session()?.phone ?? null"
-      (onClaim)="onClaimItemById($event)"
-      (onUnclaim)="onUnclaimItemById($event)"
-    />
+      <div class="event-detail__col-right">
+        <app-item-list-card
+          [items]="items()"
+          [currentUserId]="session()?.phone ?? null"
+          (onClaim)="onClaimItemById($event)"
+          (onUnclaim)="onUnclaimItemById($event)"
+        />
 
-    @if (event.pixKey) {
-      <div class="event-detail__section">
-        <h2 class="event-detail__section-title org-gradient-text">Contribuição</h2>
-        <app-pix-card [pixKey]="event.pixKey" (copied)="onPixCopied()" />
+        @if (event.pixKey) {
+          <div class="event-detail__section">
+            <h2 class="event-detail__section-title org-gradient-text">Contribuição</h2>
+            <app-pix-card [pixKey]="event.pixKey" (copied)="onPixCopied()" />
+          </div>
+        }
       </div>
-    }
+    </div>
   </main>
 } @else {
   <div class="event-detail__not-found" role="alert">

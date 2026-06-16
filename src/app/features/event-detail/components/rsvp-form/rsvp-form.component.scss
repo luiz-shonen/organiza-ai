@@ -83,10 +83,11 @@
 
   &__input {
     width: 100%;
-    border-radius: 8px 8px 0 0;
-    padding: 12px 16px 12px 40px;
+    border-radius: 8px;
+    padding: 12px 16px;
     font-size: 1rem;
     color: var(--mat-sys-on-surface);
+    border: 1px solid var(--mat-sys-outline-variant);
 
     &::placeholder {
       color: var(--mat-sys-on-surface-variant);
@@ -109,11 +110,28 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: opacity 0.2s;
+    background: linear-gradient(135deg, #d81b60, #8e24aa);
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
 
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
+  }
+
+  &__submit-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
   }
 }

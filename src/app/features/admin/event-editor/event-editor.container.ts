@@ -21,7 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { EventService, ItemService, GuestService } from '../../../core/services';
+import { EventService, ItemService, GuestService, ConfettiService } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest } from '../../../core/models';
@@ -55,6 +55,7 @@ export class EventEditorContainer implements OnInit {
   private readonly itemService = inject(ItemService);
   private readonly locationService = inject(LocationService);
   private readonly guestService = inject(GuestService);
+  private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
@@ -166,6 +167,7 @@ export class EventEditorContainer implements OnInit {
         this.snackBar.open('Evento atualizado!', 'OK', { duration: 3000 });
       } else {
         const newId = await this.eventService.createEvent(eventData);
+        this.confetti.fireSuccessConfetti();
         this.snackBar.open('Evento criado com sucesso!', '🎉', { duration: 3000 });
         await this.router.navigate(['/admin/evento', newId]);
       }

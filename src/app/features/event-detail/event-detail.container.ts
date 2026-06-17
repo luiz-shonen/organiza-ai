@@ -11,7 +11,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService } from '../../core/services';
+import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService, ConfettiService } from '../../core/services';
 import { PartyEvent, PartyItem, Guest } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -43,6 +43,7 @@ export class EventDetailContainer implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly confetti = inject(ConfettiService);
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -105,9 +106,11 @@ export class EventDetailContainer implements OnInit {
         name: data.name,
         phone: data.phone,
         companionsCount: 0,
+        status: 'confirmed'
       });
     }
 
+    this.confetti.fireSuccessConfetti();
     this.snackBar.open('Presença confirmada!', '🎉', { duration: 3000 });
   }
 
@@ -123,6 +126,7 @@ export class EventDetailContainer implements OnInit {
         name: session.name,
         phone: session.phone,
       });
+      this.confetti.fireSuccessConfetti();
       this.snackBar.open('Item assumido com sucesso!', 'OK', { duration: 3000 });
     } catch {
       this.snackBar.open('Erro ao assumir item. Tente novamente.', 'OK', { duration: 3000 });

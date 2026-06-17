@@ -342,6 +342,5 @@ input[type="time"] {
   }
 }
 
-. a n i m a t e d - g r a d i e n t   {   b a c k g r o u n d - s i z e :   2 0 0 %   a u t o ;   a n i m a t i o n :   g r a d i e n t M o v e   3 s   e a s e   i n f i n i t e   a l t e r n a t e ;   }  
- @ k e y f r a m e s   g r a d i e n t M o v e   {   0 %   {   b a c k g r o u n d - p o s i t i o n :   0 %   5 0 % ;   }   1 0 0 %   {   b a c k g r o u n d - p o s i t i o n :   1 0 0 %   5 0 % ;   }   }  
- 
+.animated-gradient { background-size: 200% auto; animation: gradientMove 3s ease infinite alternate; }
+@keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }

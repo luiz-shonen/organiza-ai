@@ -106,7 +106,6 @@ export class EventDetailContainer implements OnInit {
         name: data.name,
         phone: data.phone,
         companionsCount: 0,
-        status: 'confirmed'
       });
     }
 

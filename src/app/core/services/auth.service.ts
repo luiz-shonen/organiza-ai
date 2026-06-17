@@ -117,7 +117,7 @@ export class AuthService {
     if (!this._isSuperAdmin()) {
       throw new Error('Apenas super administradores podem remover admins.');
     }
-    if (this.checkSuperAdmin(email)) {
+    if (this.isSuperAdminEmail(email)) {
       throw new Error('Super administradores não podem ser removidos.');
     }
     const { deleteDoc } = await import('firebase/firestore');

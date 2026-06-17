@@ -51,7 +51,7 @@ export class LoginContainer {
           const regMsg = registerError instanceof Error ? registerError.message : String(registerError);
           
           if (regMsg.includes('email-already-in-use')) {
-            this.errorMessage.set('Senha incorreta.');
+            this.errorMessage.set('E-mail ou senha inválidos.');
           } else if (regMsg.includes('weak-password')) {
             this.errorMessage.set('A senha deve ter pelo menos 6 caracteres.');
           } else {

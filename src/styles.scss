@@ -125,6 +125,12 @@ body {
   height: 100%;
 }
 
+h1, h2, h3, h4, h5, h6,
+.mat-mdc-card-title,
+.mat-mdc-dialog-title {
+  font-family: 'Shantell Sans', sans-serif !important;
+}
+
 // ──────────────────────────────────────────────
 // Global utility classes
 // ──────────────────────────────────────────────

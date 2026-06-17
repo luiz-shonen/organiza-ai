@@ -26,21 +26,15 @@
 
         <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="rsvp__form">
           
-          <div class="rsvp__input-group">
-            <input 
-              name="name" ngModel required 
-              class="glass-input rsvp__input"
-              placeholder="Nome Completo (Ex: João Silva)" 
-            />
-          </div>
+          <mat-form-field appearance="outline" class="rsvp__input-field">
+            <mat-label>Nome Completo (Ex: João Silva)</mat-label>
+            <input matInput name="name" ngModel required />
+          </mat-form-field>
 
-          <div class="rsvp__input-group">
-            <input 
-              name="phone" ngModel required 
-              class="glass-input rsvp__input"
-              placeholder="WhatsApp (Ex: 11999999999)" 
-            />
-          </div>
+          <mat-form-field appearance="outline" class="rsvp__input-field">
+            <mat-label>WhatsApp (Ex: 11999999999)</mat-label>
+            <input matInput name="phone" ngModel required />
+          </mat-form-field>
 
           <!-- Action -->
           <div class="rsvp__actions">

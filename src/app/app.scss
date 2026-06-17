@@ -59,11 +59,19 @@
       display: none;
     }
   }
+
+  &__user-info {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
 }
 
 .app-content {
   padding: 16px;
   overflow-y: auto;
+  flex: 1;
 }
 
 .app-offline-banner {

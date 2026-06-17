@@ -28,6 +28,22 @@
     }
   }
 
+  &__skeleton-input {
+    height: 56px;
+    width: 100%;
+  }
+
+  &__skeleton-textarea {
+    height: 112px;
+    width: 100%;
+  }
+
+  &__skeleton-btn {
+    height: 48px;
+    width: 128px;
+    margin-top: 8px;
+  }
+
   &__col {
     display: flex;
     flex-direction: column;

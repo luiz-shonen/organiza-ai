@@ -1,8 +1,5 @@
 @use '@angular/material' as mat;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 :root {
   // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
   --org-primary: #FF4D94;
@@ -342,5 +339,5 @@ input[type="time"] {
   }
 }
 
-.animated-gradient { background-size: 200% auto; animation: gradientMove 3s ease infinite alternate; }
+.animated-gradient { background-size: 200% auto; animation: gradientMove 2s ease infinite alternate; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }

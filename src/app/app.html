@@ -30,7 +30,7 @@
         }
       </button>
       <mat-menu #userMenu="matMenu">
-        <div class="px-4 py-4 text-sm text-gray-500 border-b border-gray-100 dark:border-gray-800">
+        <div class="app-toolbar__user-info">
           {{ session()?.name || user()!.displayName || user()!.email || session()?.phone || 'Convidado' }}
         </div>
         <button mat-menu-item (click)="logout()">

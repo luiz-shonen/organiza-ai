@@ -30,7 +30,7 @@ export class AuthService {
   readonly isSuperAdmin = this._isSuperAdmin.asReadonly();
   readonly loading = this._loading.asReadonly();
 
-  private checkSuperAdmin(email: string | null): boolean {
+  isSuperAdminEmail(email: string | null): boolean {
     return email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com';
   }
 
@@ -39,7 +39,7 @@ export class AuthService {
       if (user && !user.isAnonymous && user.email) {
         const isAdmin = await this.verifyAdminStatus(user);
         this._isAdmin.set(isAdmin);
-        this._isSuperAdmin.set(this.checkSuperAdmin(user.email));
+        this._isSuperAdmin.set(this.isSuperAdminEmail(user.email));
         this._currentUser.set(user);
       } else {
         this._isAdmin.set(false);

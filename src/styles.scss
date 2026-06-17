@@ -1,6 +1,8 @@
 @use '@angular/material' as mat;
 
-
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
   // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
   --org-primary: #FF4D94;
@@ -176,7 +178,12 @@ body {
 // ──────────────────────────────────────────────
 
 .skeleton-box {
-  @apply animate-pulse rounded;
+  border-radius: 0.25rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
   background-color: var(--mat-sys-surface-container-highest);
   opacity: 0.7;
 }

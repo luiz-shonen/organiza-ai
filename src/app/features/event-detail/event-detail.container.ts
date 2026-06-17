@@ -9,9 +9,11 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService } from '../../core/services';
 import { PartyEvent, PartyItem, Guest } from '../../core/models';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpFormComponent } from './components/rsvp-form/rsvp-form.component';
@@ -140,29 +142,42 @@ export class EventDetailContainer implements OnInit {
     this.snackBar.open('Chave Pix copiada!', 'OK', { duration: 2000 });
   }
 
+  private readonly dialog = inject(MatDialog);
+
   async cancelRsvp(): Promise<void> {
     const session = this.guestSession.session();
     if (!session?.phone) return;
 
-    if (confirm('Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.')) {
-      try {
-        const existingGuest = await this.guestService.getGuestByPhone(this.id(), session.phone);
-        if (existingGuest) {
-          await this.guestService.deleteGuest(this.id(), existingGuest.id);
-          
-          // Unclaim all items claimed by this guest
-          const itemsToUnclaim = this.items().filter(item => item.claimedBy?.phone === session.phone);
-          for (const item of itemsToUnclaim) {
-            await this.itemService.unclaimItem(this.id(), item.id!);
-          }
-          
-          this.guestSession.clearSession();
-          this.snackBar.open('Sua presença foi cancelada.', 'OK', { duration: 3000 });
-        }
-      } catch (err: any) {
-        console.error(err);
-        this.snackBar.open('Erro ao cancelar presença.', 'OK', { duration: 3000 });
+    const confirmRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Cancelar Presença',
+        message: 'Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.',
+        confirmLabel: 'Sim, cancelar'
       }
-    }
+    });
+
+    confirmRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        try {
+          const existingGuest = await this.guestService.getGuestByPhone(this.id(), session.phone);
+          if (existingGuest) {
+            await this.guestService.deleteGuest(this.id(), existingGuest.id);
+            
+            // Unclaim all items claimed by this guest
+            const itemsToUnclaim = this.items().filter(item => item.claimedBy?.phone === session.phone);
+            for (const item of itemsToUnclaim) {
+              await this.itemService.unclaimItem(this.id(), item.id!);
+            }
+            
+            this.guestSession.clearSession();
+            this.snackBar.open('Sua presença foi cancelada.', 'OK', { duration: 3000 });
+          }
+        } catch (err: any) {
+          console.error(err);
+          this.snackBar.open('Erro ao cancelar presença.', 'OK', { duration: 3000 });
+        }
+      }
+    });
   }
 }

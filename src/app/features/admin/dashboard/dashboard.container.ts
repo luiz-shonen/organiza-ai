@@ -14,6 +14,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { EventService, AuthService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 
 @Component({
@@ -53,14 +54,25 @@ export class DashboardContainer implements OnInit {
   }
 
   protected async deleteEvent(event: PartyEvent): Promise<void> {
-    if (!confirm(`Tem certeza que deseja excluir o evento "${event.title}"?`)) return;
+    const confirmRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Excluir Evento',
+        message: `Tem certeza que deseja excluir o evento "${event.title}"?`,
+        confirmLabel: 'Excluir'
+      }
+    });
 
-    try {
-      await this.eventService.deleteEvent(event.id);
-      this.snackBar.open('Evento excluído com sucesso!', 'OK', { duration: 3000 });
-    } catch {
-      this.snackBar.open('Erro ao excluir evento.', 'OK', { duration: 3000 });
-    }
+    confirmRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        try {
+          await this.eventService.deleteEvent(event.id);
+          this.snackBar.open('Evento excluído com sucesso!', 'OK', { duration: 3000 });
+        } catch {
+          this.snackBar.open('Erro ao excluir evento.', 'OK', { duration: 3000 });
+        }
+      }
+    });
   }
 
   async logout(): Promise<void> {

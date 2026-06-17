@@ -8,15 +8,15 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   color: var(--mat-sys-on-surface);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(255, 77, 148, 0.15);
 
   .dark & {
-    background: rgba(30, 30, 30, 0.4);
-    border-bottom-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
+    border-bottom-color: rgba(255, 77, 148, 0.25);
   }
 
   &__brand {

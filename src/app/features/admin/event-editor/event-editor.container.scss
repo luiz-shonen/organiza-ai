@@ -8,13 +8,21 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 24px;
+    position: relative;
   }
 
   &__title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     color: var(--mat-sys-primary);
     margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -0.05em;
+    line-height: 1.3;
+    padding-bottom: 4px;
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   &__grid {
@@ -25,6 +33,13 @@
     @media (min-width: 900px) {
       grid-template-columns: 1fr 350px;
       align-items: start;
+    }
+
+    &--single {
+      @media (min-width: 900px) {
+        grid-template-columns: 800px;
+        justify-content: center;
+      }
     }
   }
 
@@ -65,11 +80,47 @@
   &__form {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding-top: 16px;
+    gap: 24px;
+    padding: 40px 16px;
+
+    @media (min-width: 600px) {
+      padding: 40px 32px;
+    }
+  }
+
+  &__card.mat-mdc-card-outlined {
+    background: rgba(255, 200, 55, 0.4) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+  }
+
+  &__category-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  &__category-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+    padding-left: 16px;
+  }
+
+  &__category-error {
+    font-size: 0.75rem;
+    padding-left: 16px;
+    color: var(--mat-sys-error);
   }
 
   &__date-time-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+  }
+
+  &__address-row {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
@@ -247,5 +298,52 @@
 
   @page {
     margin: 1.5cm;
+  }
+}
+
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-gradient {
+  to {
+    --border-angle: 360deg;
+  }
+}
+
+// Global Form Aesthetics (Org-Input)
+::ng-deep {
+  .org-input {
+    width: 100%;
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border: none !important;
+    }
+
+    &.mat-focused {
+      .mdc-text-field {
+        background: 
+          linear-gradient(#fff, #fff) padding-box,
+          conic-gradient(from var(--border-angle), var(--mat-sys-primary), var(--mat-sys-secondary), var(--mat-sys-tertiary), var(--mat-sys-primary)) border-box !important;
+        animation: rotate-gradient 3s linear infinite;
+        box-shadow: 0 4px 16px rgba(255, 77, 148, 0.15) !important;
+      }
+    }
+
+    .mdc-text-field {
+      background-color: rgba(255, 255, 255, 0.8) !important;
+      border-radius: 6px !important;
+      border: 2px solid transparent !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+    }
   }
 }

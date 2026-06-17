@@ -37,8 +37,17 @@
   --org-outline-dark: #a08c95;
   --org-outline-variant-dark: #4f3d46;
   
-  --org-radius-lg: 0.5rem;
+  --org-radius-lg: 1rem;
   --org-radius-full: 9999px;
+
+  /* Global rounding overrides for Material 3 to make everything less square */
+  --mdc-shape-small: 16px;
+  --mdc-shape-medium: 24px;
+  --mdc-shape-large: 32px;
+  --mdc-outlined-text-field-container-shape: 16px;
+  --mdc-filled-text-field-container-shape: 16px;
+  --mdc-dialog-container-shape: 28px;
+  --mat-menu-container-shape: 16px;
 }
 
 html {
@@ -51,7 +60,7 @@ html {
       primary: mat.$violet-palette,
       tertiary: mat.$orange-palette,
     ),
-    typography: 'Plus Jakarta Sans',
+    typography: 'Roboto',
     density: 0,
   ));
 
@@ -88,7 +97,7 @@ html {
         primary: mat.$violet-palette,
         tertiary: mat.$orange-palette,
       ),
-      typography: 'Plus Jakarta Sans'
+      typography: 'Roboto'
     ));
 
     // Superfícies e Cores do Tema Dark
@@ -128,7 +137,8 @@ body {
 h1, h2, h3, h4, h5, h6,
 .mat-mdc-card-title,
 .mat-mdc-dialog-title {
-  font-family: 'Shantell Sans', sans-serif !important;
+  font-family: 'Original Surfer', sans-serif !important;
+  letter-spacing: -0.05em !important;
 }
 
 // ──────────────────────────────────────────────
@@ -347,3 +357,53 @@ input[type="time"] {
 
 .animated-gradient { background-size: 200% auto; animation: gradientMove 2s ease infinite alternate; }
 @keyframes gradientMove { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+
+// Global Category Chips
+.org-chip {
+  &.cat-aniversario { --chip-bg: #FFE499; --chip-color: #d35400; }
+  &.cat-casamento { --chip-bg: #fce1ed; --chip-color: #8e44ad; }
+  &.cat-festa { --chip-bg: #FFB380; --chip-color: #c0392b; }
+  &.cat-churrasco { --chip-bg: #d5dbdb; --chip-color: #2c3e50; }
+  &.cat-happy { --chip-bg: #aed6f1; --chip-color: #2980b9; }
+  &.cat-formatura { --chip-bg: #d2b4de; --chip-color: #4a235a; }
+  &.cat-outros { --chip-bg: #e5e7e9; --chip-color: #7f8c8d; }
+
+  // override mat-chip styles based on variables
+  &.mdc-evolution-chip {
+    background-color: var(--chip-bg, #eee) !important;
+    border-radius: 9999px !important;
+    border: none !important;
+    outline: none !important;
+    transition: all 0.3s ease;
+    
+    .mdc-evolution-chip__outline {
+      border: none !important;
+    }
+    
+    .mdc-evolution-chip__text-label {
+      color: var(--chip-color, #333) !important;
+      font-weight: 700;
+    }
+    
+    &.mdc-evolution-chip--selected {
+      background: var(--chip-color, #333) !important;
+      transform: scale(1.05);
+      
+      .mdc-evolution-chip__text-label {
+        color: #fff !important;
+      }
+      
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 2px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(0,0,0,0.1));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+      }
+    }
+  }
+}

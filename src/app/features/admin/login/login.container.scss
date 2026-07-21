@@ -93,55 +93,8 @@
     gap: 16px;
   }
 
-  &__field {
-    position: relative;
+  &__form-field {
     width: 100%;
-  }
-
-  &__field-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--org-on-surface-variant);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  &__input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 16px 12px 44px;
-    border-radius: 12px 12px 0 0;
-    font-size: 0.95rem;
-    color: var(--org-on-surface);
-
-    &::placeholder {
-      color: var(--org-on-surface-variant);
-      opacity: 0.6;
-    }
-  }
-
-  &__toggle-pwd {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 0;
-    color: var(--org-on-surface-variant);
-    cursor: pointer;
-    border-radius: 50%;
-    transition: color 0.2s ease;
-
-    &:hover {
-      color: var(--org-on-surface);
-    }
   }
 
   &__submit-btn {

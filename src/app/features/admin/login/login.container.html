@@ -37,36 +37,42 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
       
-      <div class="login__field">
-        <mat-icon class="login__field-icon">email</mat-icon>
-        <input 
-          formControlName="email" type="email" autocomplete="username" required
-          class="glass-input login__input"
-          placeholder="E-mail" 
-        />
+      <mat-form-field appearance="outline" class="login__form-field">
+        <mat-label>E-mail</mat-label>
+        <mat-icon matPrefix>email</mat-icon>
+        <input matInput formControlName="email" type="email" autocomplete="username" placeholder="seu@email.com" />
         @if (form.controls.email.hasError('required')) {
           <mat-error>E-mail é obrigatório</mat-error>
+        } @else if (form.controls.email.hasError('email')) {
+          <mat-error>Digite um e-mail válido</mat-error>
         }
-      </div>
+      </mat-form-field>
 
-      <div class="login__field">
-        <mat-icon class="login__field-icon">lock</mat-icon>
+      <mat-form-field appearance="outline" class="login__form-field">
+        <mat-label>Senha</mat-label>
+        <mat-icon matPrefix>lock</mat-icon>
         <input 
-          formControlName="password" [type]="hidePassword() ? 'password' : 'text'" autocomplete="current-password" required
-          class="glass-input login__input"
-          placeholder="Senha" 
+          matInput
+          formControlName="password"
+          [type]="hidePassword() ? 'password' : 'text'"
+          autocomplete="current-password"
+          placeholder="Sua senha" 
         />
         <button 
-          type="button" (click)="hidePassword.set(!hidePassword())"
-          class="login__toggle-pwd"
+          mat-icon-button 
+          matSuffix 
+          type="button" 
+          (click)="hidePassword.set(!hidePassword())"
           [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'"
         >
           <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
         @if (form.controls.password.hasError('required')) {
           <mat-error>Senha é obrigatória</mat-error>
+        } @else if (form.controls.password.hasError('minlength')) {
+          <mat-error>Mínimo 6 caracteres</mat-error>
         }
-      </div>
+      </mat-form-field>
 
       <button 
         type="submit"

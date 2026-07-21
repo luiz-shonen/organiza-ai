@@ -6,23 +6,25 @@
   <div class="glass-card rsvp-form__card">
     <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="rsvp-form__body">
       
-      <div class="rsvp-form__field">
-        <mat-icon class="rsvp-form__field-icon">person</mat-icon>
+      <mat-form-field appearance="outline" class="rsvp-form__field">
+        <mat-label>Nome Completo</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
         <input 
+          matInput
           name="name" ngModel required 
-          class="glass-input rsvp-form__input"
-          placeholder="Nome completo (Ex: João da Silva)" 
+          placeholder="Ex: João da Silva" 
         />
-      </div>
+      </mat-form-field>
 
-      <div class="rsvp-form__field">
-        <mat-icon class="rsvp-form__field-icon">phone</mat-icon>
+      <mat-form-field appearance="outline" class="rsvp-form__field">
+        <mat-label>WhatsApp</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
         <input 
+          matInput
           name="phone" ngModel required 
-          class="glass-input rsvp-form__input"
-          placeholder="WhatsApp (Ex: 11999999999)" 
+          placeholder="Ex: (11) 99999-9999" 
         />
-      </div>
+      </mat-form-field>
 
       <!-- Action -->
       <div class="rsvp-form__actions">

@@ -20,32 +20,7 @@
   }
 
   &__field {
-    position: relative;
     width: 100%;
-  }
-
-  &__field-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--org-on-surface-variant);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  &__input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 16px 12px 44px;
-    border-radius: 12px 12px 0 0;
-    font-size: 0.95rem;
-    color: var(--org-on-surface);
-
-    &::placeholder {
-      color: var(--org-on-surface-variant);
-      opacity: 0.6;
-    }
   }
 
   &__actions {

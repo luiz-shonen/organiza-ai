@@ -151,11 +151,25 @@ a,
   touch-action: manipulation;
 }
 
-mat-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
+mat-icon,
+.mat-icon,
+.material-icons,
+.material-icons-outlined,
+.material-symbols-outlined {
+  font-family: 'Material Icons', 'Material Icons Outlined' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  word-wrap: normal !important;
+  direction: ltr !important;
+  -webkit-font-smoothing: antialiased !important;
 }
 
 /* Clear Disabled Button State & Cursor Indication */
@@ -373,18 +387,48 @@ button[disabled],
   background-image: linear-gradient(to right, var(--mat-sys-on-background), var(--mat-sys-primary));
 }
 
+*:not(mat-icon):not(.mat-icon):not(.material-icons):not(.material-symbols-outlined),
+*::before:not(mat-icon):not(.mat-icon),
+*::after:not(mat-icon):not(.mat-icon),
+body,
+input,
+textarea,
+select,
+button:not(mat-icon),
+.mat-mdc-button-base:not(mat-icon),
+.mat-mdc-input-element,
+.mat-mdc-form-field:not(mat-icon),
+.mat-mdc-floating-label,
+.mat-mdc-select-value,
+.mat-mdc-option,
+.mat-mdc-chip,
+.mat-mdc-card-title,
+.mat-mdc-card-subtitle,
+.mat-mdc-card-content {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
 /* Angular Material Form Fields (.mat-mdc-form-field) - CosturaAI Glassmorphism System */
 .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-color: transparent !important;
+  --mdc-filled-text-field-container-color: transparent !important;
+  --mdc-outlined-text-field-input-text-color: var(--mat-sys-on-surface) !important;
   --mdc-outlined-text-field-label-text-color: var(--mat-sys-on-surface-variant) !important;
+  --mdc-outlined-text-field-hover-label-text-color: var(--org-primary) !important;
   --mdc-outlined-text-field-focus-label-text-color: var(--org-primary) !important;
   width: 100%;
 
   .mat-mdc-text-field-wrapper {
-    background: var(--org-glass-bg) !important;
-    backdrop-filter: var(--org-glass-blur) !important;
-    -webkit-backdrop-filter: var(--org-glass-blur) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
     border-radius: 16px !important;
     transition: box-shadow 200ms ease, background-color 200ms ease !important;
+  }
+
+  .mdc-text-field--filled {
+    background-color: transparent !important;
+    &::before, &::after { display: none !important; }
   }
 
   .mat-mdc-form-field-focus-overlay {
@@ -397,11 +441,13 @@ button[disabled],
     outline: none !important;
     box-shadow: none !important;
     color: var(--mat-sys-on-surface) !important;
-    font-family: inherit !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
   }
 
   /* Transparent Floating Label sitting inside open native notch gap */
   .mat-mdc-floating-label {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    
     &.mdc-floating-label--float-above {
       background: transparent !important;
       backdrop-filter: none !important;
@@ -420,7 +466,9 @@ button[disabled],
     color: var(--mat-sys-on-surface-variant);
     padding: 0 8px;
 
-    mat-icon {
+    mat-icon,
+    .mat-icon {
+      font-family: 'Material Icons', 'Material Icons Outlined' !important;
       font-size: 20px !important;
       width: 20px !important;
       height: 20px !important;

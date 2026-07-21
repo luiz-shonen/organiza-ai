@@ -1,16 +1,20 @@
 <main class="login">
+  <div class="login__orb login__orb--1" aria-hidden="true"></div>
+  <div class="login__orb login__orb--2" aria-hidden="true"></div>
+  <div class="login__orb login__orb--3" aria-hidden="true"></div>
+
   <div class="login__header">
-    <img src="icons/logo.svg" alt="Organiza AI" class="login__logo" style="height: 80px;" />
-    <h1 class="login__title org-gradient-text">
-      Organiza AI
-    </h1>
+    <img src="icons/logo.svg" alt="Organiza AI" class="login__logo" style="height: 76px" />
     <p class="login__subtitle">
-      {{ isRegisterMode() ? 'Crie sua conta para organizar eventos' : 'Acesse sua conta para continuar' }}
+      {{
+        isRegisterMode()
+          ? 'Crie sua conta para organizar eventos'
+          : 'Acesse sua conta para continuar'
+      }}
     </p>
   </div>
 
   <div class="glass-card login__card">
-    
     <div class="login__tabs">
       <button
         type="button"
@@ -36,11 +40,16 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
-      
       <mat-form-field appearance="outline" class="login__form-field">
         <mat-label>E-mail</mat-label>
         <mat-icon matPrefix>email</mat-icon>
-        <input matInput formControlName="email" type="email" autocomplete="username" placeholder="seu@email.com" />
+        <input
+          matInput
+          formControlName="email"
+          type="email"
+          autocomplete="username"
+          placeholder="seu@email.com"
+        />
         @if (form.controls.email.hasError('required')) {
           <mat-error>E-mail é obrigatório</mat-error>
         } @else if (form.controls.email.hasError('email')) {
@@ -51,17 +60,17 @@
       <mat-form-field appearance="outline" class="login__form-field">
         <mat-label>Senha</mat-label>
         <mat-icon matPrefix>lock</mat-icon>
-        <input 
+        <input
           matInput
           formControlName="password"
           [type]="hidePassword() ? 'password' : 'text'"
           autocomplete="current-password"
-          placeholder="Sua senha" 
+          placeholder="Sua senha"
         />
-        <button 
-          mat-icon-button 
-          matSuffix 
-          type="button" 
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
           (click)="hidePassword.set(!hidePassword())"
           [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'"
         >
@@ -74,7 +83,7 @@
         }
       </mat-form-field>
 
-      <button 
+      <button
         type="submit"
         [disabled]="form.invalid || loading()"
         class="btn-primary-org login__submit-btn"
@@ -85,7 +94,6 @@
           {{ isRegisterMode() ? 'Cadastrar' : 'Entrar' }}
         }
       </button>
-
     </form>
 
     <div class="login__divider">
@@ -98,9 +106,12 @@
       (click)="loginWithGoogle()"
       class="login__google-btn"
     >
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="login__google-icon" />
+      <img
+        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+        alt="Google"
+        class="login__google-icon"
+      />
       Entrar com Google
     </button>
-
   </div>
 </main>

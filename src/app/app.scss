@@ -4,6 +4,12 @@
   height: 100vh;
 }
 
+.app-sidenav-container {
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
 .app-toolbar {
   position: sticky;
   top: 0;

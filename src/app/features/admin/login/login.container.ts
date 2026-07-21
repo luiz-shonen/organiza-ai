@@ -35,7 +35,6 @@ export class LoginContainer {
   protected readonly loading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly hidePassword = signal(true);
-  protected readonly isRegisterMode = signal(false);
 
   protected async submit(): Promise<void> {
     if (this.form.invalid) return;
@@ -45,21 +44,28 @@ export class LoginContainer {
     const { email, password } = this.form.getRawValue();
 
     try {
-      if (this.isRegisterMode()) {
-        await this.authService.register(email, password);
-      } else {
-        await this.authService.login(email, password);
-      }
+      await this.authService.login(email, password);
       await this.redirectAfterAuth();
     } catch (authError: unknown) {
       const msg = authError instanceof Error ? authError.message : String(authError);
       
-      if (msg.includes('invalid-credential') || msg.includes('user-not-found') || msg.includes('wrong-password')) {
+      // If user doesn't exist yet, attempt automatic creation
+      if (msg.includes('user-not-found') || msg.includes('invalid-credential')) {
+        try {
+          await this.authService.register(email, password);
+          await this.redirectAfterAuth();
+        } catch (regError: unknown) {
+          const regMsg = regError instanceof Error ? regError.message : String(regError);
+          if (regMsg.includes('email-already-in-use') || regMsg.includes('wrong-password')) {
+            this.errorMessage.set('E-mail ou senha incorretos.');
+          } else if (regMsg.includes('weak-password')) {
+            this.errorMessage.set('A senha deve ter pelo menos 6 caracteres.');
+          } else {
+            this.errorMessage.set('Erro ao acessar a conta. Tente novamente.');
+          }
+        }
+      } else if (msg.includes('wrong-password')) {
         this.errorMessage.set('E-mail ou senha incorretos.');
-      } else if (msg.includes('email-already-in-use')) {
-        this.errorMessage.set('E-mail já está em uso.');
-      } else if (msg.includes('weak-password')) {
-        this.errorMessage.set('A senha deve ter pelo menos 6 caracteres.');
       } else {
         this.errorMessage.set('Erro na autenticação. Tente novamente.');
       }

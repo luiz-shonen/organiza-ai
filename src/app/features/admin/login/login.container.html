@@ -6,32 +6,11 @@
   <div class="login__header">
     <img src="icons/logo.svg" alt="Organiza AI" class="login__logo" style="height: 76px" />
     <p class="login__subtitle">
-      {{
-        isRegisterMode()
-          ? 'Crie sua conta para organizar eventos'
-          : 'Acesse sua conta para continuar'
-      }}
+      Acesse ou crie sua conta para continuar
     </p>
   </div>
 
   <div class="glass-card login__card">
-    <div class="login__tabs">
-      <button
-        type="button"
-        (click)="isRegisterMode.set(false)"
-        [class]="!isRegisterMode() ? 'login__tab login__tab--active' : 'login__tab'"
-      >
-        Entrar
-      </button>
-      <button
-        type="button"
-        (click)="isRegisterMode.set(true)"
-        [class]="isRegisterMode() ? 'login__tab login__tab--active' : 'login__tab'"
-      >
-        Cadastrar
-      </button>
-    </div>
-
     @if (errorMessage(); as error) {
       <div class="login__error">
         <mat-icon>error</mat-icon>
@@ -91,7 +70,7 @@
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
         } @else {
-          {{ isRegisterMode() ? 'Cadastrar' : 'Entrar' }}
+          Entrar
         }
       </button>
     </form>

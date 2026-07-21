@@ -5,7 +5,7 @@
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 99; // just below dialogs & toolbars
+  z-index: 1001; // Above top navbar header
   overflow: hidden;
 
   /* FESTA JUNINA / JULINA THEME */
@@ -14,12 +14,12 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 120px;
+    height: 140px;
   }
 
   &__string-svg {
     position: absolute;
-    top: 0;
+    top: 44px;
     left: 0;
     width: 100%;
     height: 60px;
@@ -27,12 +27,12 @@
 
   &__bandeirolas {
     position: absolute;
-    top: 15px;
+    top: 48px;
     left: 0;
     width: 100%;
     display: flex;
     justify-content: space-around;
-    padding: 0 10px;
+    padding: 0 16px;
     box-sizing: border-box;
 
     .bandeirola {
@@ -40,7 +40,7 @@
       height: 36px;
       background-color: var(--c);
       clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
       transform-origin: top center;
       animation: bandeirolaSway 3.5s ease-in-out infinite alternate;
       animation-delay: var(--d);

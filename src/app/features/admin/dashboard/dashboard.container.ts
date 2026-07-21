@@ -111,8 +111,10 @@ export class DashboardContainer implements OnInit {
   protected openAdminDialog(): void {
     this.dialog.open(AdminFormDialogComponent, {
       width: '100%',
-      maxWidth: '400px',
-      disableClose: true
+      maxWidth: '480px',
+      panelClass: 'app-drawer-panel',
+      position: { bottom: '0' },
+      disableClose: false
     });
   }
 }

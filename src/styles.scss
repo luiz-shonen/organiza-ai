@@ -369,23 +369,63 @@ button[disabled],
   background: rgba(29, 27, 32, 0.65);
 }
 
-/* Angular Material Button Theme Integration & Ripple Support */
+/* Angular Material Button Theme Integration & Master Icon Alignment System */
 .mat-mdc-button-base {
   position: relative !important;
   overflow: hidden !important;
   border-radius: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
 
   .mdc-button__label {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 8px !important;
+    line-height: 1 !important;
     width: 100% !important;
     height: 100% !important;
+  }
+
+  mat-icon,
+  .mat-icon,
+  .material-icons,
+  .material-symbols-outlined {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .mat-ripple,
   .mat-mdc-button-ripple {
     border-radius: inherit !important;
+  }
+}
+
+.mat-mdc-icon-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+
+  mat-icon,
+  .mat-icon,
+  .material-icons,
+  .material-symbols-outlined {
+    margin: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
   }
 }
 
@@ -405,6 +445,25 @@ button.btn-primary-org {
 
   &:active:not(:disabled) {
     transform: scale(0.98) !important;
+  }
+}
+
+/* Master Drawer / BottomSheet Panel System */
+.app-drawer-panel .mdc-dialog__surface,
+.mat-bottom-sheet-container,
+.mat-mdc-bottom-sheet-container {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border-top-left-radius: 24px !important;
+  border-top-right-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.22) !important;
+
+  .dark & {
+    background: rgba(29, 27, 32, 0.9) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: var(--mat-sys-on-surface) !important;
   }
 }
 
@@ -495,12 +554,18 @@ button:not(mat-icon),
     padding: 0 4px !important;
 
     mat-icon,
-    .mat-icon {
+    .mat-icon,
+    .material-icons,
+    .material-symbols-outlined {
       font-family: 'Material Icons', 'Material Icons Outlined' !important;
       font-size: 20px !important;
       width: 20px !important;
       height: 20px !important;
-      line-height: 20px !important;
+      line-height: 1 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      vertical-align: middle !important;
       margin: 0 !important;
     }
 
@@ -513,8 +578,13 @@ button:not(mat-icon),
       justify-content: center !important;
 
       mat-icon,
-      .mat-icon {
+      .mat-icon,
+      .material-icons,
+      .material-symbols-outlined {
         margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
     }
   }

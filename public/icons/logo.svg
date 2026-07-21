@@ -22,13 +22,13 @@
 
     /* 1. O Pulo do Calendário */
     .calendar-icon {
-      transform-origin: 125px 80px;
-      animation: iconBounce 6s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+      transform-origin: 145px 80px;
+      animation: iconBounce 5s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
     }
 
     @keyframes iconBounce {
       0%, 27% { transform: scale(1) translateY(0); }
-      30% { transform: scale(1.1) translateY(-6px); }
+      30% { transform: scale(1.08) translateY(-7px); }
       38%, 95% { transform: scale(1) translateY(0); }
       100% { transform: scale(1) translateY(0); }
     }
@@ -38,7 +38,7 @@
       stroke-dasharray: 80;
       stroke-dashoffset: 80;
       filter: url(#glow);
-      animation: drawCheck 6s ease-out infinite;
+      animation: drawCheck 5s ease-out infinite;
     }
 
     @keyframes drawCheck {
@@ -47,29 +47,54 @@
       90%, 100% { stroke-dashoffset: 0; opacity: 0; }
     }
 
-    /* 3. A Chuva de Confetes Volumosa e Equilibrada */
+    /* 3. A Chuva de Confetes Volumosa e Multidirecional */
     .confetti {
       opacity: 0;
-      transform-origin: 125px 80px;
-      animation: confettiRain 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+      transform-origin: 145px 80px;
+      animation: confettiRain 5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    }
+
+    .confetti-alt {
+      opacity: 0;
+      transform-origin: 300px 80px;
+      animation: confettiRainAlt 5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
     }
 
     @keyframes confettiRain {
-      0%, 29% {
+      0%, 25% {
         opacity: 0;
         transform: translate(0, 0) scale(0) rotate(0deg);
       }
-      31% {
+      28% {
         opacity: 1;
         transform: translate(var(--bx), var(--by)) scale(1.2) rotate(var(--r1));
       }
-      80% {
+      78% {
         opacity: 1;
         transform: translate(var(--fx), var(--fy)) scale(1) rotate(var(--r2));
       }
-      90%, 100% {
+      88%, 100% {
         opacity: 0;
-        transform: translate(var(--fx), calc(var(--fy) + 40px)) scale(0) rotate(var(--r2));
+        transform: translate(var(--fx), calc(var(--fy) + 35px)) scale(0) rotate(var(--r2));
+      }
+    }
+
+    @keyframes confettiRainAlt {
+      0%, 28% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0) rotate(0deg);
+      }
+      32% {
+        opacity: 1;
+        transform: translate(var(--bx), var(--by)) scale(1.3) rotate(var(--r1));
+      }
+      82% {
+        opacity: 1;
+        transform: translate(var(--fx), var(--fy)) scale(0.9) rotate(var(--r2));
+      }
+      92%, 100% {
+        opacity: 0;
+        transform: translate(var(--fx), calc(var(--fy) + 45px)) scale(0) rotate(var(--r2));
       }
     }
 
@@ -77,13 +102,14 @@
     .brand-text {
       font-family: 'Plus Jakarta Sans', 'Poppins', system-ui, sans-serif;
       font-weight: 800;
-      font-size: 56px;
-      letter-spacing: -1.5px;
+      font-size: 58px;
+      letter-spacing: -1.8px;
       fill: url(#partyGradient);
     }
   </style>
 
-  <g class="calendar-icon" transform="translate(45, 0)">
+  <!-- Calendário Posicionado Mais Próximo do Texto -->
+  <g class="calendar-icon" transform="translate(65, 0)">
     <rect x="30" y="30" width="100" height="110" rx="12" fill="#FFFFFF" class="doodle" />
     <path d="M30,70 L130,70 L130,42 C130,35.37 124.63,30 118,30 L42,30 C35.37,30 30,35.37 30,42 Z" fill="#FF4D94" class="doodle"/>
     
@@ -102,33 +128,40 @@
     <path class="check" d="M 65,95 L 75,105 L 105,75" fill="none" stroke="url(#partyGradient)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
   </g>
 
-  <text x="205" y="105" text-anchor="start" class="brand-text">
+  <!-- Texto Organiza AI com Espaçamento Ajustado -->
+  <text x="212" y="106" text-anchor="start" class="brand-text">
     Organiza AI
   </text>
 
-  <!-- Left Confetti Burst -->
-  <circle class="confetti" cx="125" cy="80" r="5" fill="#FF4D94" style="--bx: -50px; --by: -50px; --fx: -80px; --fy: 20px; --r1: 45deg; --r2: 120deg;" />
-  <rect class="confetti" x="120" y="75" width="8" height="8" fill="#FFC837" style="--bx: -40px; --by: -70px; --fx: -60px; --fy: 30px; --r1: 15deg; --r2: -90deg;" />
-  <polygon class="confetti" points="125,73 131,85 119,85" fill="#4DEDFF" style="--bx: -65px; --by: -20px; --fx: -90px; --fy: 40px; --r1: -30deg; --r2: 45deg;" />
-  <circle class="confetti" cx="125" cy="80" r="4" fill="#9B59B6" style="--bx: -30px; --by: -90px; --fx: -45px; --fy: 10px; --r1: 0deg; --r2: 180deg;" />
+  <!-- Lote 1: Confetes na Esquerda -->
+  <circle class="confetti" cx="145" cy="80" r="5" fill="#FF4D94" style="--bx: -60px; --by: -50px; --fx: -95px; --fy: 20px; --r1: 45deg; --r2: 120deg;" />
+  <rect class="confetti" x="140" y="75" width="8" height="8" fill="#FFC837" style="--bx: -50px; --by: -70px; --fx: -80px; --fy: 30px; --r1: 15deg; --r2: -90deg;" />
+  <polygon class="confetti" points="145,73 151,85 139,85" fill="#4DEDFF" style="--bx: -75px; --by: -20px; --fx: -110px; --fy: 40px; --r1: -30deg; --r2: 45deg;" />
+  <circle class="confetti" cx="145" cy="80" r="4" fill="#9B59B6" style="--bx: -40px; --by: -90px; --fx: -65px; --fy: 10px; --r1: 0deg; --r2: 180deg;" />
+  <circle class="confetti-alt" cx="145" cy="80" r="6" fill="#2ECC71" style="--bx: -85px; --by: -40px; --fx: -125px; --fy: 15px; --r1: 30deg; --r2: 150deg;" />
 
-  <!-- Center-Right Confetti Burst -->
-  <path class="confetti" d="M120,80 Q125,70 130,80" stroke="#FF8C42" stroke-width="4" stroke-linecap="round" fill="none" style="--bx: 20px; --by: -100px; --fx: 20px; --fy: 20px; --r1: 45deg; --r2: -45deg;" />
-  <rect class="confetti" x="121" y="76" width="10" height="10" rx="2" fill="#FF4D94" style="--bx: 50px; --by: -110px; --fx: 60px; --fy: -10px; --r1: 60deg; --r2: 180deg;" />
-  <polygon class="confetti" points="125,74 131,86 119,86" fill="#FFC837" style="--bx: 80px; --by: -120px; --fx: 95px; --fy: 0px; --r1: 90deg; --r2: 270deg;" />
-  <circle class="confetti" cx="125" cy="80" r="6" fill="#4DEDFF" style="--bx: 110px; --by: -90px; --fx: 130px; --fy: 40px; --r1: 0deg; --r2: 0deg;" />
-  <rect class="confetti" x="122" y="77" width="6" height="6" fill="#9B59B6" style="--bx: 135px; --by: -110px; --fx: 160px; --fy: 15px; --r1: 20deg; --r2: 90deg;" />
+  <!-- Lote 2: Confetes Superior e Centro-Esquerda -->
+  <path class="confetti" d="M140,80 Q145,70 150,80" stroke="#FF8C42" stroke-width="4" stroke-linecap="round" fill="none" style="--bx: -10px; --by: -100px; --fx: -10px; --fy: -20px; --r1: 45deg; --r2: -45deg;" />
+  <rect class="confetti" x="141" y="76" width="10" height="10" rx="2" fill="#FF4D94" style="--bx: 25px; --by: -110px; --fx: 30px; --fy: -30px; --r1: 60deg; --r2: 180deg;" />
+  <polygon class="confetti" points="145,74 151,86 139,86" fill="#FFC837" style="--bx: 60px; --by: -120px; --fx: 75px; --fy: -25px; --r1: 90deg; --r2: 270deg;" />
+  <circle class="confetti-alt" cx="145" cy="80" r="5" fill="#FF8C42" style="--bx: 0px; --by: -120px; --fx: 5px; --fy: -40px; --r1: -15deg; --r2: 90deg;" />
 
-  <!-- Right Confetti Burst -->
-  <circle class="confetti" cx="125" cy="80" r="7" fill="#FF8C42" style="--bx: 160px; --by: -80px; --fx: 190px; --fy: 30px; --r1: 0deg; --r2: 360deg;" />
-  <path class="confetti" d="M119,78 Q127,68 131,82" stroke="#FF4D94" stroke-width="4" stroke-linecap="round" fill="none" style="--bx: 190px; --by: -100px; --fx: 220px; --fy: 10px; --r1: -30deg; --r2: 60deg;" />
-  <polygon class="confetti" points="125,72 133,84 117,84" fill="#FFC837" style="--bx: 220px; --by: -60px; --fx: 250px; --fy: 45px; --r1: 45deg; --r2: -45deg;" />
-  <rect class="confetti" x="120" y="75" width="9" height="9" fill="#4DEDFF" style="--bx: 240px; --by: -110px; --fx: 275px; --fy: -5px; --r1: 15deg; --r2: 135deg;" />
-  <circle class="confetti" cx="125" cy="80" r="4" fill="#9B59B6" style="--bx: 260px; --by: -70px; --fx: 300px; --fy: 35px; --r1: 0deg; --r2: 0deg;" />
+  <!-- Lote 3: Confetes no Topo do Texto -->
+  <circle class="confetti" cx="145" cy="80" r="6" fill="#4DEDFF" style="--bx: 90px; --by: -90px; --fx: 110px; --fy: -15px; --r1: 0deg; --r2: 0deg;" />
+  <rect class="confetti" x="142" y="77" width="6" height="6" fill="#9B59B6" style="--bx: 120px; --by: -110px; --fx: 145px; --fy: -35px; --r1: 20deg; --r2: 90deg;" />
+  <path class="confetti-alt" d="M140,78 Q148,68 152,82" stroke="#FF4D94" stroke-width="4" stroke-linecap="round" fill="none" style="--bx: 155px; --by: -105px; --fx: 180px; --fy: -30px; --r1: -30deg; --r2: 60deg;" />
+
+  <!-- Lote 4: Confetes na Direita do Texto -->
+  <circle class="confetti" cx="145" cy="80" r="7" fill="#FF8C42" style="--bx: 185px; --by: -80px; --fx: 215px; --fy: 10px; --r1: 0deg; --r2: 360deg;" />
+  <polygon class="confetti" points="145,72 153,84 137,84" fill="#FFC837" style="--bx: 215px; --by: -60px; --fx: 245px; --fy: 25px; --r1: 45deg; --r2: -45deg;" />
+  <rect class="confetti" x="140" y="75" width="9" height="9" fill="#4DEDFF" style="--bx: 235px; --by: -110px; --fx: 270px; --fy: -15px; --r1: 15deg; --r2: 135deg;" />
+  <circle class="confetti" cx="145" cy="80" r="4" fill="#9B59B6" style="--bx: 255px; --by: -70px; --fx: 290px; --fy: 30px; --r1: 0deg; --r2: 0deg;" />
+  <circle class="confetti-alt" cx="145" cy="80" r="6" fill="#2ECC71" style="--bx: 275px; --by: -95px; --fx: 315px; --fy: -5px; --r1: 40deg; --r2: 160deg;" />
   
-  <rect class="confetti" x="121" y="76" width="7" height="7" rx="2" fill="#FF4D94" style="--bx: 280px; --by: -90px; --fx: 325px; --fy: 20px; --r1: -10deg; --r2: 120deg;" />
-  <path class="confetti" d="M120,80 Q125,70 130,80" stroke="#FFC837" stroke-width="5" stroke-linecap="round" fill="none" style="--bx: 300px; --by: -115px; --fx: 350px; --fy: 5px; --r1: 70deg; --r2: -20deg;" />
-  <circle class="confetti" cx="125" cy="80" r="6" fill="#FF8C42" style="--bx: 320px; --by: -60px; --fx: 370px; --fy: 50px; --r1: 0deg; --r2: 0deg;" />
-  <polygon class="confetti" points="125,74 130,86 120,86" fill="#4DEDFF" style="--bx: 340px; --by: -100px; --fx: 395px; --fy: 15px; --r1: 40deg; --r2: 200deg;" />
-  <rect class="confetti" x="120" y="75" width="10" height="10" fill="#9B59B6" style="--bx: 360px; --by: -80px; --fx: 420px; --fy: 40px; --r1: -45deg; --r2: 45deg;" />
+  <!-- Lote 5: Confetes no Canto Direiro Superior/Inferior -->
+  <rect class="confetti" x="141" y="76" width="7" height="7" rx="2" fill="#FF4D94" style="--bx: 280px; --by: -90px; --fx: 330px; --fy: 10px; --r1: -10deg; --r2: 120deg;" />
+  <path class="confetti" d="M140,80 Q145,70 150,80" stroke="#FFC837" stroke-width="5" stroke-linecap="round" fill="none" style="--bx: 300px; --by: -115px; --fx: 350px; --fy: -20px; --r1: 70deg; --r2: -20deg;" />
+  <circle class="confetti" cx="145" cy="80" r="6" fill="#FF8C42" style="--bx: 320px; --by: -60px; --fx: 370px; --fy: 35px; --r1: 0deg; --r2: 0deg;" />
+  <polygon class="confetti" points="145,74 150,86 140,86" fill="#4DEDFF" style="--bx: 340px; --by: -100px; --fx: 395px; --fy: 0px; --r1: 40deg; --r2: 200deg;" />
+  <rect class="confetti" x="140" y="75" width="10" height="10" fill="#9B59B6" style="--bx: 360px; --by: -80px; --fx: 415px; --fy: 25px; --r1: -45deg; --r2: 45deg;" />
 </svg>

@@ -1,36 +1,35 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService, DrawerService } from '../../../../../core/services';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
-  selector: 'app-admin-form-dialog',
+  selector: 'app-admin-form-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
   ],
-  templateUrl: './admin-form-dialog.component.html',
-  styleUrl: './admin-form-dialog.component.scss',
+  templateUrl: './admin-form-drawer.component.html',
+  styleUrl: './admin-form-drawer.component.scss',
 })
-export class AdminFormDialogComponent implements OnInit {
+export class AdminFormDrawerComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   protected readonly drawerService = inject(DrawerService);
-  private readonly dialogRef = inject(MatDialogRef<AdminFormDialogComponent>, { optional: true });
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
 
   readonly close = output<void>();
 
@@ -58,8 +57,6 @@ export class AdminFormDialogComponent implements OnInit {
       this.loadingAdmins.set(false);
     }
   }
-
-  private readonly dialog = inject(MatDialog);
 
   protected async removeAdmin(email: string): Promise<void> {
     const confirmRef = this.dialog.open(ConfirmDialogComponent, {
@@ -106,9 +103,6 @@ export class AdminFormDialogComponent implements OnInit {
   }
 
   protected onClose(): void {
-    if (this.dialogRef) {
-      this.dialogRef.close();
-    }
     this.close.emit();
     this.drawerService.close();
   }

@@ -14,30 +14,28 @@
       Usuários na lista abaixo têm permissão para criar e editar eventos.
     </p>
 
-    <div class="admin-list-card">
-      @if (loadingAdmins()) {
-        <div class="admin-list__spinner">
-          <mat-spinner diameter="28"></mat-spinner>
-        </div>
-      } @else {
-        <ul class="admin-list">
-          @for (admin of admins(); track admin) {
-            <li class="admin-list__item">
-              <div class="admin-list__info">
-                <mat-icon class="admin-list__badge-icon">person</mat-icon>
-                <span class="admin-list__email">{{ admin }}</span>
-              </div>
-              <button mat-icon-button color="warn" (click)="removeAdmin(admin)" aria-label="Remover administrador">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </li>
-          }
-          @if (admins().length === 0) {
-            <li class="admin-list__item admin-list__item--empty">Nenhum administrador encontrado.</li>
-          }
-        </ul>
-      }
-    </div>
+    @if (loadingAdmins()) {
+      <div class="admin-list__spinner">
+        <mat-spinner diameter="28"></mat-spinner>
+      </div>
+    } @else {
+      <ul class="admin-list">
+        @for (admin of admins(); track admin) {
+          <li class="admin-list__item">
+            <div class="admin-list__info">
+              <mat-icon class="admin-list__badge-icon">person</mat-icon>
+              <span class="admin-list__email">{{ admin }}</span>
+            </div>
+            <button mat-icon-button color="warn" (click)="removeAdmin(admin)" aria-label="Remover administrador">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </li>
+        }
+        @if (admins().length === 0) {
+          <li class="admin-list__item admin-list__item--empty">Nenhum administrador encontrado.</li>
+        }
+      </ul>
+    }
 
     <form [formGroup]="form" id="admin-form" (ngSubmit)="submit()" class="admin-form">
       <mat-form-field appearance="outline" class="admin-form__field">

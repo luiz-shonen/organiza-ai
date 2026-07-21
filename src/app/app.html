@@ -8,7 +8,7 @@
     class="app-sidenav-drawer"
   >
     @if (drawerService.drawerType() === 'admin') {
-      <app-admin-form-dialog (close)="drawerService.close()" />
+      <app-admin-form-drawer (close)="drawerService.close()" />
     }
   </mat-sidenav>
 

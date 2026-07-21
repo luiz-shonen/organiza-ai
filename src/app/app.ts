@@ -10,7 +10,7 @@ import { filter, map } from 'rxjs';
 import { AuthService, ThemeService, GuestSessionService, DrawerService } from './core/services';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
-import { AdminFormDialogComponent } from './features/admin/dashboard/components/admin-form-dialog/admin-form-dialog.component';
+import { AdminFormDrawerComponent } from './features/admin/dashboard/components/admin-form-drawer/admin-form-drawer.component';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +25,7 @@ import { AdminFormDialogComponent } from './features/admin/dashboard/components/
     MatSidenavModule,
     ThemeToggleComponent,
     SeasonalOverlayComponent,
-    AdminFormDialogComponent,
+    AdminFormDrawerComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

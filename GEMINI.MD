@@ -20,8 +20,9 @@ Goal: Generate production-ready, highly reusable, and scalable Angular code. You
    - Use CSS Custom Properties (Variables) for colors, spacing, and typography to allow for easy theming by consuming applications.
    - For Organiza AI: Use the `--org-` prefixed variables defined in `src/styles.scss`. Customizações devem usar a paleta "Vibrant Modernism" (Glassmorphism).
 
-4. Type Safety:
+4. Type Safety & SOLID:
    - Enforce Strict TypeScript. No `any` types. Define clear Interfaces or Types for component state, inputs, and events.
+   - One File Per Responsibility: Never mix multiple classes or interfaces in the same file unless tightly coupled (e.g., small local types). Always export DTOs and Interfaces (like API responses) to their own dedicated files within the `/models` directory to maintain SOLID principles.
 
 5. Testing (Unit & Component API):
    - For every component generated, provide the `.spec.ts` file.

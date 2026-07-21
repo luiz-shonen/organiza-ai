@@ -1,37 +1,61 @@
 @use '@angular/material' as mat;
 
 :root {
-  // Vibrant Collaboration System (Stitch)
-  --org-primary: #630ed4;
+  // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
+  --org-primary: #FF4D94;
   --org-on-primary: #ffffff;
-  --org-primary-container: #7c3aed;
-  --org-on-primary-container: #ede0ff;
-  --org-secondary: #a14000;
+  --org-primary-container: #FF80B3;
+  --org-on-primary-container: #3d001a;
+
+  --org-secondary: #FF8C42;
   --org-on-secondary: #ffffff;
-  --org-secondary-container: #fd762b;
-  --org-on-secondary-container: #5e2300;
-  --org-tertiary: #733e53;
-  --org-on-tertiary: #ffffff;
-  --org-tertiary-container: #8e556b;
-  --org-on-tertiary-container: #ffdde7;
-  --org-background: #fef7ff;
-  --org-on-background: #231043;
-  --org-surface: #fef7ff;
-  --org-on-surface: #231043;
-  --org-surface-variant: #ebddff;
-  --org-on-surface-variant: #4a4455;
-  --org-outline: #7b7487;
-  --org-outline-variant: #ccc3d8;
-  --org-radius-lg: 0.5rem;
+  --org-secondary-container: #FFB380;
+  --org-on-secondary-container: #3d1400;
+
+  --org-tertiary: #FFC837;
+  --org-on-tertiary: #2a1f00;
+  --org-tertiary-container: #FFE499;
+  --org-on-tertiary-container: #332600;
+
+  // Light Theme Surfaces
+  --org-background-light: #fff8f8;
+  --org-on-background-light: #2a101f;
+  --org-surface-light: #fff8f8;
+  --org-on-surface-light: #2a101f;
+  --org-surface-variant-light: #fce1ed;
+  --org-on-surface-variant-light: #4f3d46;
+  --org-outline-light: #85737b;
+  --org-outline-variant-light: #d8c2cb;
+
+  // Dark Theme Surfaces
+  --org-background-dark: #1f1a1d;
+  --org-on-background-dark: #fdecf2;
+  --org-surface-dark: #1f1a1d;
+  --org-on-surface-dark: #fdecf2;
+  --org-surface-variant-dark: #4f3d46;
+  --org-on-surface-variant-dark: #d8c2cb;
+  --org-outline-dark: #a08c95;
+  --org-outline-variant-dark: #4f3d46;
+  
+  --org-radius-lg: 1rem;
   --org-radius-full: 9999px;
 
   /* Glassmorphism & Gradients */
-  --org-gradient-primary: linear-gradient(135deg, #630ed4 0%, #7c3aed 50%, #fd762b 100%);
-  --org-gradient-border: linear-gradient(135deg, rgba(99, 14, 212, 0.5), rgba(253, 118, 43, 0.4));
-  --org-gradient-border-focus: linear-gradient(135deg, #630ed4 0%, #7c3aed 50%, #fd762b 100%);
+  --org-gradient-primary: linear-gradient(135deg, #FF4D94 0%, #FF8C42 50%, #FFC837 100%);
+  --org-gradient-border: linear-gradient(135deg, rgba(255, 77, 148, 0.5), rgba(255, 140, 66, 0.4));
+  --org-gradient-border-focus: linear-gradient(135deg, #FF4D94 0%, #FF8C42 50%, #FFC837 100%);
   --org-glass-blur: blur(28px) saturate(210%);
   --org-glass-bg: rgba(255, 255, 255, 0.65);
   --org-glass-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(35, 16, 67, 0.08);
+
+  /* Global rounding overrides for Material 3 */
+  --mdc-shape-small: 16px;
+  --mdc-shape-medium: 24px;
+  --mdc-shape-large: 32px;
+  --mdc-outlined-text-field-container-shape: 16px;
+  --mdc-filled-text-field-container-shape: 16px;
+  --mdc-dialog-container-shape: 28px;
+  --mat-menu-container-shape: 16px;
 }
 
 html {
@@ -50,7 +74,7 @@ html {
     density: 0,
   ));
 
-  // Aplicação dos tokens do Stitch no Tema Light
+  // Superfícies e Cores do Tema Light
   &:not(.dark) {
     --mat-sys-primary: var(--org-primary);
     --mat-sys-on-primary: var(--org-on-primary);
@@ -64,17 +88,17 @@ html {
     --mat-sys-on-tertiary: var(--org-on-tertiary);
     --mat-sys-tertiary-container: var(--org-tertiary-container);
     --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
-    --mat-sys-background: var(--org-background);
-    --mat-sys-on-background: var(--org-on-background);
-    --mat-sys-surface: var(--org-surface);
-    --mat-sys-on-surface: var(--org-on-surface);
-    --mat-sys-surface-variant: var(--org-surface-variant);
-    --mat-sys-on-surface-variant: var(--org-on-surface-variant);
-    --mat-sys-outline: var(--org-outline);
-    --mat-sys-outline-variant: var(--org-outline-variant);
+    --mat-sys-background: var(--org-background-light);
+    --mat-sys-on-background: var(--org-on-background-light);
+    --mat-sys-surface: var(--org-surface-light);
+    --mat-sys-on-surface: var(--org-on-surface-light);
+    --mat-sys-surface-variant: var(--org-surface-variant-light);
+    --mat-sys-on-surface-variant: var(--org-on-surface-variant-light);
+    --mat-sys-outline: var(--org-outline-light);
+    --mat-sys-outline-variant: var(--org-outline-variant-light);
   }
 
-  // Tema Dark (Ativado pela classe .dark)
+  // Tema Dark
   &.dark {
     color-scheme: dark;
     @include mat.theme((
@@ -85,6 +109,29 @@ html {
       ),
       typography: 'Plus Jakarta Sans'
     ));
+
+    // Superfícies e Cores do Tema Dark
+    --mat-sys-primary: var(--org-primary);
+    --mat-sys-on-primary: var(--org-on-primary);
+    --mat-sys-primary-container: var(--org-primary-container);
+    --mat-sys-on-primary-container: var(--org-on-primary-container);
+    --mat-sys-secondary: var(--org-secondary);
+    --mat-sys-on-secondary: var(--org-on-secondary);
+    --mat-sys-secondary-container: var(--org-secondary-container);
+    --mat-sys-on-secondary-container: var(--org-on-secondary-container);
+    --mat-sys-tertiary: var(--org-tertiary);
+    --mat-sys-on-tertiary: var(--org-on-tertiary);
+    --mat-sys-tertiary-container: var(--org-tertiary-container);
+    --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
+
+    --mat-sys-background: var(--org-background-dark);
+    --mat-sys-on-background: var(--org-on-background-dark);
+    --mat-sys-surface: var(--org-surface-dark);
+    --mat-sys-on-surface: var(--org-on-surface-dark);
+    --mat-sys-surface-variant: var(--org-surface-variant-dark);
+    --mat-sys-on-surface-variant: var(--org-on-surface-variant-dark);
+    --mat-sys-outline: var(--org-outline-dark);
+    --mat-sys-outline-variant: var(--org-outline-variant-dark);
   }
 }
 
@@ -214,6 +261,8 @@ button[disabled],
 .items-center { align-items: center; }
 .mb-2 { margin-bottom: 0.5rem; }
 .mt-2 { margin-top: 0.5rem; }
+.flex { display: flex; }
+.gap-2 { gap: 0.5rem; }
 
 // ──────────────────────────────────────────────
 // Stitch Design System: Global Decorators
@@ -308,7 +357,7 @@ button[disabled],
 
 .btn-primary-org {
   background: var(--org-gradient-primary);
-  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px rgba(124, 58, 237, 0.3);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px rgba(255, 77, 148, 0.3);
   transition: all 0.3s ease;
   color: #fff;
 }
@@ -325,24 +374,73 @@ button[disabled],
 }
 
 .glass-input {
-  background-color: rgba(253, 118, 43, 0.05);
+  background-color: rgba(255, 140, 66, 0.05);
   border: 0;
   border-bottom: 2px solid var(--mat-sys-outline-variant);
   outline: 0;
   transition: all 0.3s ease;
 }
 .dark .glass-input {
-  background-color: rgba(253, 118, 43, 0.1);
+  background-color: rgba(255, 140, 66, 0.1);
 }
 
 .glass-input:focus {
   border-bottom-color: transparent;
-  border-image: linear-gradient(to right, var(--mat-sys-primary), var(--mat-sys-secondary-container));
+  border-image: linear-gradient(to right, var(--mat-sys-primary), var(--mat-sys-secondary));
   border-image-slice: 1;
-  background-color: rgba(253, 118, 43, 0.1);
+  background-color: rgba(255, 140, 66, 0.1);
   outline: none;
 }
 
-// Layout helpers (skeleton & utility)
-.flex { display: flex; }
-.gap-2 { gap: 0.5rem; }
+input[type="time"] {
+  padding: 8px 0;
+  line-height: normal;
+  align-items: center;
+  height: auto;
+}
+
+.animated-gradient {
+  background-size: 200% auto;
+  animation: gradientMove 2s ease infinite alternate;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+// Global Category Chips
+.org-chip {
+  &.cat-aniversario { --chip-bg: #FFE499; --chip-color: #d35400; }
+  &.cat-casamento { --chip-bg: #fce1ed; --chip-color: #8e44ad; }
+  &.cat-festa { --chip-bg: #FFB380; --chip-color: #c0392b; }
+  &.cat-churrasco { --chip-bg: #d5dbdb; --chip-color: #2c3e50; }
+  &.cat-happy { --chip-bg: #aed6f1; --chip-color: #2980b9; }
+  &.cat-formatura { --chip-bg: #d2b4de; --chip-color: #4a235a; }
+  &.cat-outros { --chip-bg: #e5e7e9; --chip-color: #7f8c8d; }
+
+  &.mdc-evolution-chip {
+    background-color: var(--chip-bg, #eee) !important;
+    border-radius: 9999px !important;
+    border: none !important;
+    outline: none !important;
+    transition: all 0.3s ease;
+    
+    .mdc-evolution-chip__outline {
+      border: none !important;
+    }
+    
+    .mdc-evolution-chip__text-label {
+      color: var(--chip-color, #333) !important;
+      font-weight: 700;
+    }
+    
+    &.mdc-evolution-chip--selected {
+      background: var(--chip-color, #333) !important;
+      transform: scale(1.05);
+      
+      .mdc-evolution-chip__text-label {
+        color: #fff !important;
+      }
+    }
+  }
+}

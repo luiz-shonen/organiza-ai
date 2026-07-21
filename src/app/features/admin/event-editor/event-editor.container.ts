@@ -19,7 +19,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
-import { EventService, ItemService, GuestService } from '../../../core/services';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatChipsModule } from '@angular/material/chips';
+import { EventService, ItemService, GuestService, ConfettiService } from '../../../core/services';
+import { LocationService } from '../../../core/services/location.service';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 
@@ -37,6 +42,9 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatDividerModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
+    MatChipsModule,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
@@ -47,6 +55,9 @@ export class EventEditorContainer implements OnInit {
 
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
+  private readonly locationService = inject(LocationService);
+  private readonly guestService = inject(GuestService);
+  private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
@@ -55,21 +66,52 @@ export class EventEditorContainer implements OnInit {
   protected readonly isEditing = signal(false);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
+  protected readonly minDate = new Date();
   protected readonly items = signal<PartyItem[]>([]);
   protected readonly guests = signal<Guest[]>([]);
   protected readonly newItemName = signal('');
   protected readonly newItemQuantity = signal(1);
   protected readonly eventUrl = signal('');
+  protected readonly categories = [
+    { name: 'Aniversário', class: 'cat-aniversario' },
+    { name: 'Casamento', class: 'cat-casamento' },
+    { name: 'Festa Junina', class: 'cat-festa' },
+    { name: 'Churrasco', class: 'cat-churrasco' },
+    { name: 'Happy Hour', class: 'cat-happy' },
+    { name: 'Formatura', class: 'cat-formatura' },
+    { name: 'Outros', class: 'cat-outros' }
+  ];
 
   protected readonly form = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
+    category: ['', [Validators.required]],
     description: ['', [Validators.required]],
-    date: ['', [Validators.required]],
-    location: ['', [Validators.required]],
+    date: [null as Date | null, [Validators.required]],
+    time: ['', [Validators.required]],
+    cep: [''],
+    address: ['', [Validators.required]],
+    neighborhood: [''],
+    city: [''],
+    number: [''],
     pixKey: [''],
   });
 
   ngOnInit(): void {
+    // ViaCEP listener
+    this.form.controls.cep.valueChanges.pipe(
+      debounceTime(400),
+      distinctUntilChanged(),
+      switchMap(cep => this.locationService.getViaCep(cep))
+    ).subscribe(res => {
+      if (res && !res.erro) {
+        this.form.patchValue({
+          address: res.logradouro || '',
+          neighborhood: res.bairro || '',
+          city: (res.localidade && res.uf) ? `${res.localidade}/${res.uf}` : ''
+        });
+      }
+    });
+
     const eventId = this.id();
     if (eventId && eventId !== 'novo') {
       this.isEditing.set(true);
@@ -79,23 +121,38 @@ export class EventEditorContainer implements OnInit {
       const eventSub = this.eventService.getEvent(eventId).subscribe({
         next: (event) => {
           if (event) {
+            let d = new Date(event.date);
+            if (isNaN(d.getTime())) d = new Date();
+            const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+            
             this.form.patchValue({
               title: event.title,
+              category: event.category || '',
               description: event.description,
-              date: event.date,
-              location: event.location,
+              date: d,
+              time: timeStr,
+              address: event.location, // Colocamos o location inteiro no address por legado
+              neighborhood: '',
+              city: '',
+              cep: '',
+              number: '',
               pixKey: event.pixKey ?? '',
             });
           }
           this.loading.set(false);
         },
+        error: (err) => {
+          console.error(err);
+          this.loading.set(false);
+          this.snackBar.open('Erro ao carregar evento', 'OK', { duration: 3000 });
+        }
       });
 
       const itemsSub = this.itemService.listItems(eventId).subscribe({
         next: (items) => this.items.set(items),
       });
 
-      const guestsSub = inject(GuestService).listGuests(eventId).subscribe({
+      const guestsSub = this.guestService.listGuests(eventId).subscribe({
         next: (guests) => this.guests.set(guests),
       });
 
@@ -108,25 +165,46 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected async saveEvent(): Promise<void> {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.saving.set(true);
+    const { title, category, description, date, time, cep, address, neighborhood, city, number, pixKey } = this.form.getRawValue();
+
+    let finalDate = new Date();
+    if (date) {
+      finalDate = new Date(date);
+      const [h, m] = time.split(':');
+      finalDate.setHours(Number(h) || 0, Number(m) || 0, 0, 0);
+      
+      if (finalDate < new Date()) {
+        this.snackBar.open('A data e hora do evento não podem ser no passado.', 'OK', { duration: 3000 });
+        this.saving.set(false);
+        return;
+      }
+    }
+    const dateStr = finalDate.toISOString();
+
+    const fullAddress = [
+      address && number ? `${address}, ${number}` : address || number,
+      neighborhood,
+      city,
+      cep ? `CEP: ${cep}` : ''
+    ].filter(Boolean).join(' - ');
+
+    const location = fullAddress || '';
+    const eventData = { title, category, description, date: dateStr, location, pixKey: pixKey || null };
 
     try {
-      const formValue = this.form.getRawValue();
-      const data = {
-        title: formValue.title,
-        description: formValue.description,
-        date: formValue.date,
-        location: formValue.location,
-        pixKey: formValue.pixKey || null,
-      };
-
       const eventId = this.id();
       if (this.isEditing() && eventId) {
-        await this.eventService.updateEvent(eventId, data);
+        await this.eventService.updateEvent(eventId, eventData);
         this.snackBar.open('Evento atualizado!', 'OK', { duration: 3000 });
       } else {
-        const newId = await this.eventService.createEvent(data);
+        const newId = await this.eventService.createEvent(eventData);
+        this.confetti.fireSuccessConfetti();
         this.snackBar.open('Evento criado com sucesso!', '🎉', { duration: 3000 });
         await this.router.navigate(['/admin/evento', newId]);
       }
@@ -192,5 +270,24 @@ export class EventEditorContainer implements OnInit {
 
   protected printList(): void {
     window.print();
+  }
+
+  protected formatCep(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 5) {
+      value = value.substring(0, 5) + '-' + value.substring(5, 8);
+    }
+    this.form.controls.cep.setValue(value, { emitEvent: false });
+  }
+
+  protected formatDate(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 2) value = value.substring(0, 2) + '/' + value.substring(2);
+    if (value.length > 5) value = value.substring(0, 5) + '/' + value.substring(5, 9);
+    
+    // update value only in the raw input visually to not mess with matDatepicker internals prematurely
+    input.value = value;
   }
 }

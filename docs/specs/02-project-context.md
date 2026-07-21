@@ -7,7 +7,7 @@ Este arquivo contém instruções de IA para agentes (Antigravity, Claude Code, 
 
 ## 2. Pilha de Tecnologia
 - **Frontend**: Angular v21+ (exclusivamente com Standalone Components).
-- **UI/UX**: Angular Material para a fundação de componentes. Tailwind CSS v4 para classes utilitárias de layout (flex, grid, margens) sem corromper o Material. SCSS puro com metodologia BEM para estilos encapsulados dos componentes.
+- **UI/UX**: Angular Material para a fundação de componentes. Tailwind CSS v3 para classes utilitárias de layout (flex, grid, margens) sem corromper o Material, utilizando `tailwind.config.js`. SCSS puro com metodologia BEM para estilos encapsulados dos componentes.
 - **Backend/BaaS**: Firebase Modular SDK (Firestore, Auth). **NÃO utilizar `@angular/fire`** devido a problemas de dependência; a injeção do Firebase é feita manualmente no `FirebaseService`.
 - **PWA**: Instalável offline, suporte a QR Code para convites (`qrcode`) e compartilhamento via WhatsApp.
 

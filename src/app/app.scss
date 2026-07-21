@@ -8,9 +8,16 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--mat-sys-on-surface);
+  border-bottom: 1px solid rgba(255, 77, 148, 0.15);
+
+  .dark & {
+    background: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
+    border-bottom-color: rgba(255, 77, 148, 0.25);
+  }
 
   &__brand {
     display: flex;
@@ -21,14 +28,28 @@
     cursor: pointer;
   }
 
-  &__title {
-    font-weight: 700;
-    font-size: 1.25rem;
-    letter-spacing: -0.02em;
+  &__logo {
+    height: 48px;
+    width: auto;
   }
 
   &__spacer {
     flex: 1;
+  }
+
+  &__admin-btn {
+    margin-right: 8px;
+  }
+
+  &__user-btn {
+    margin-left: 8px;
+  }
+
+  &__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
   }
 
   &__label {
@@ -38,11 +59,19 @@
       display: none;
     }
   }
+
+  &__user-info {
+    padding: 16px;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
 }
 
 .app-content {
   padding: 0;
   overflow-y: auto;
+  flex: 1;
 }
 
 .app-toolbar__user-email {

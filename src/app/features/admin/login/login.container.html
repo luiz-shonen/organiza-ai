@@ -1,20 +1,13 @@
-<div class="bg-blobs">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
-</div>
-
 <main class="login">
-  <div class="login__icon-badge">
-    <mat-icon>celebration</mat-icon>
+  <div class="login__header">
+    <img src="icons/logo.svg" alt="Organiza AI" class="login__logo" style="height: 80px;" />
+    <h1 class="login__title org-gradient-text">
+      Organiza AI
+    </h1>
+    <p class="login__subtitle">
+      {{ isRegisterMode() ? 'Crie sua conta para organizar eventos' : 'Acesse sua conta para continuar' }}
+    </p>
   </div>
-  
-  <h1 class="login__title org-gradient-text">
-    Organiza AI
-  </h1>
-  <p class="login__subtitle">
-    {{ isRegisterMode() ? 'Crie sua conta para organizar eventos' : 'Acesse sua conta para continuar' }}
-  </p>
 
   <div class="glass-card login__card">
     
@@ -42,15 +35,18 @@
       </div>
     }
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="login__form">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
       
       <div class="login__field">
         <mat-icon class="login__field-icon">email</mat-icon>
         <input 
-          formControlName="email" type="email" autocomplete="email" required
+          formControlName="email" type="email" autocomplete="username" required
           class="glass-input login__input"
           placeholder="E-mail" 
         />
+        @if (form.controls.email.hasError('required')) {
+          <mat-error>E-mail é obrigatório</mat-error>
+        }
       </div>
 
       <div class="login__field">
@@ -63,9 +59,13 @@
         <button 
           type="button" (click)="hidePassword.set(!hidePassword())"
           class="login__toggle-pwd"
+          [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'"
         >
           <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
         </button>
+        @if (form.controls.password.hasError('required')) {
+          <mat-error>Senha é obrigatória</mat-error>
+        }
       </div>
 
       <button 
@@ -74,16 +74,16 @@
         class="btn-primary-org login__submit-btn"
       >
         @if (loading()) {
-          <mat-spinner diameter="20" color="accent"></mat-spinner>
+          <mat-spinner diameter="20"></mat-spinner>
         } @else {
-          {{ isRegisterMode() ? 'Criar Conta' : 'Entrar' }}
+          {{ isRegisterMode() ? 'Cadastrar' : 'Entrar' }}
         }
       </button>
 
     </form>
 
     <div class="login__divider">
-      <span>OU</span>
+      <span class="login__divider-text">OU</span>
     </div>
 
     <button

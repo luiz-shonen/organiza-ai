@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,7 +14,8 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { EventService, AuthService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
-import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -26,8 +28,8 @@ import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/th
     MatIconModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
     MatMenuModule,
-    ThemeToggleComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
@@ -52,14 +54,25 @@ export class DashboardContainer implements OnInit {
   }
 
   protected async deleteEvent(event: PartyEvent): Promise<void> {
-    if (!confirm(`Tem certeza que deseja excluir o evento "${event.title}"?`)) return;
+    const confirmRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Excluir Evento',
+        message: `Tem certeza que deseja excluir o evento "${event.title}"?`,
+        confirmLabel: 'Excluir'
+      }
+    });
 
-    try {
-      await this.eventService.deleteEvent(event.id);
-      this.snackBar.open('Evento excluído com sucesso!', 'OK', { duration: 3000 });
-    } catch {
-      this.snackBar.open('Erro ao excluir evento.', 'OK', { duration: 3000 });
-    }
+    confirmRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        try {
+          await this.eventService.deleteEvent(event.id);
+          this.snackBar.open('Evento excluído com sucesso!', 'OK', { duration: 3000 });
+        } catch {
+          this.snackBar.open('Erro ao excluir evento.', 'OK', { duration: 3000 });
+        }
+      }
+    });
   }
 
   async logout(): Promise<void> {

@@ -124,4 +124,32 @@
     opacity: 0.5;
   }
 
+  &__actions-top {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__user-email {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    .dark & {
+      border-bottom-color: var(--mat-sys-outline);
+    }
+  }
+
+  &__skeleton-actions {
+    display: flex;
+    gap: 8px;
+  }
 }

@@ -1,6 +1,7 @@
 .event-card {
   width: 100%;
   position: relative;
+  z-index: 10;
 
   &__hero {
     position: relative;
@@ -9,6 +10,13 @@
     border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  &__hero-fallback {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary));
+    opacity: 0.8;
   }
 
   &__hero-img {
@@ -71,6 +79,19 @@
     display: flex;
     align-items: center;
     gap: 16px;
+
+    &--link {
+      text-decoration: none;
+      color: inherit;
+      border-radius: 12px;
+      padding: 8px;
+      margin: -8px;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: var(--mat-sys-surface-variant);
+      }
+    }
   }
 
   &__date-badge {
@@ -167,7 +188,7 @@
     height: 48px;
     border-radius: 50%;
     border: 2px solid var(--org-primary-container);
-    background-color: rgba(99, 14, 212, 0.1);
+    background-color: rgba(255, 77, 148, 0.1);
     color: var(--org-primary);
     display: flex;
     align-items: center;

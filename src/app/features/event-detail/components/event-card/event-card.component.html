@@ -2,11 +2,13 @@
   <article class="event-card">
     <!-- Hero Image Container -->
     <div class="event-card__hero">
+      <div class="event-card__hero-fallback"></div>
       <img
         alt=""
         class="event-card__hero-img"
         loading="eager"
         src="https://images.unsplash.com/photo-1533174000273-e18f142b4d99?auto=format&fit=crop&w=1200&q=80"
+        onerror="this.style.display='none'"
       />
       <div class="event-card__hero-overlay"></div>
 
@@ -30,15 +32,20 @@
             <span class="event-card__date-day">{{ ev.date | date: 'dd' }}</span>
           </div>
           <div class="event-card__date-text">
-            <p class="event-card__date-full">{{ ev.date | date: 'EEEE, HH:mm' }}</p>
-            <p class="event-card__date-sub">Adicionar ao calendário</p>
+            <p class="event-card__date-full">{{ (ev.date | date: 'EEEE, HH:mm') | titlecase }}</p>
+            <a class="event-card__date-sub" [href]="googleCalendarUrl()" target="_blank" rel="noopener noreferrer">Adicionar ao calendário</a>
           </div>
         </div>
 
         <hr class="event-card__divider" />
 
         <!-- Location -->
-        <div class="event-card__detail-row">
+        <a
+          class="event-card__detail-row event-card__detail-row--link"
+          [href]="'https://www.google.com/maps/search/?api=1&query=' + ev.location"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <div class="event-card__location-icon-badge">
             <mat-icon>location_on</mat-icon>
           </div>
@@ -46,7 +53,7 @@
             <p class="event-card__location-title">{{ ev.location }}</p>
             <p class="event-card__location-desc">{{ ev.description }}</p>
           </div>
-        </div>
+        </a>
       </div>
     </div>
 

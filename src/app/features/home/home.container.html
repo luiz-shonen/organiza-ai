@@ -16,7 +16,7 @@
     } @else {
       <nav class="home__grid" aria-label="Lista de eventos">
         @for (event of events; track event.id) {
-          <mat-card class="home__card" appearance="outlined">
+          <mat-card class="home__card" appearance="outlined" [routerLink]="['/evento', event.id]" style="cursor: pointer; transition: transform 0.2s;">
             <mat-card-header>
               <mat-icon matCardAvatar class="home__card-avatar">festival</mat-icon>
               <mat-card-title>{{ event.title }}</mat-card-title>
@@ -33,17 +33,6 @@
                 {{ event.location }}
               </p>
             </mat-card-content>
-
-            <mat-card-actions align="end">
-              <a
-                mat-flat-button
-                [routerLink]="['/evento', event.id]"
-                [attr.aria-label]="'Ver detalhes do evento ' + event.title"
-              >
-                <mat-icon>visibility</mat-icon>
-                Ver Evento
-              </a>
-            </mat-card-actions>
           </mat-card>
         }
       </nav>

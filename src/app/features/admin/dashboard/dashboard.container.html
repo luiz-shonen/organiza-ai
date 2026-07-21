@@ -5,11 +5,11 @@
       Painel do Organizador
     </h1>
     <div class="dashboard__header-actions">
-      <app-theme-toggle />
       @if (isSuperAdmin()) {
         <button
           mat-stroked-button
           (click)="openAdminDialog()"
+          matTooltip="Adicionar novo administrador"
           aria-label="Adicionar novo admin"
         >
           <mat-icon>person_add</mat-icon>
@@ -19,6 +19,7 @@
       <a
         mat-flat-button
         routerLink="/admin/evento/novo"
+        matTooltip="Criar um novo evento"
         aria-label="Criar novo evento"
       >
         <mat-icon>add</mat-icon>
@@ -86,6 +87,7 @@
                 <button
                   mat-icon-button
                   (click)="editEvent(event)"
+                  matTooltip="Editar"
                   [attr.aria-label]="'Editar ' + event.title"
                 >
                   <mat-icon>edit</mat-icon>
@@ -93,6 +95,7 @@
                 <button
                   mat-icon-button
                   (click)="shareWhatsApp(event)"
+                  matTooltip="Compartilhar no WhatsApp"
                   [attr.aria-label]="'Compartilhar ' + event.title + ' no WhatsApp'"
                 >
                   <mat-icon>share</mat-icon>
@@ -100,6 +103,7 @@
                 <button
                   mat-icon-button
                   (click)="copyLink(event)"
+                  matTooltip="Copiar Link"
                   [attr.aria-label]="'Copiar link de ' + event.title"
                 >
                   <mat-icon>link</mat-icon>
@@ -108,6 +112,7 @@
                   mat-icon-button
                   color="warn"
                   (click)="deleteEvent(event)"
+                  matTooltip="Excluir"
                   [attr.aria-label]="'Excluir ' + event.title"
                 >
                   <mat-icon>delete</mat-icon>
@@ -132,16 +137,16 @@
               </mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions>
-              <button mat-icon-button (click)="editEvent(event)" aria-label="Editar">
+              <button mat-icon-button (click)="editEvent(event)" matTooltip="Editar" aria-label="Editar">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="shareWhatsApp(event)" aria-label="Compartilhar">
+              <button mat-icon-button (click)="shareWhatsApp(event)" matTooltip="Compartilhar no WhatsApp" aria-label="Compartilhar">
                 <mat-icon>share</mat-icon>
               </button>
-              <button mat-icon-button (click)="copyLink(event)" aria-label="Copiar link">
+              <button mat-icon-button (click)="copyLink(event)" matTooltip="Copiar Link" aria-label="Copiar link">
                 <mat-icon>link</mat-icon>
               </button>
-              <button mat-icon-button color="warn" (click)="deleteEvent(event)" aria-label="Excluir">
+              <button mat-icon-button color="warn" (click)="deleteEvent(event)" matTooltip="Excluir" aria-label="Excluir">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-card-actions>

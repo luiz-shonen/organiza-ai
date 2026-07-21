@@ -1,32 +1,30 @@
-import { inject } from '@angular/core';
+import { inject, effect, Injector } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = async () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const injector = inject(Injector);
+
+  if (authService.loading()) {
+    // Wait for the auth loading signal to turn false using native Angular Signal effect
+    await new Promise<void>((resolve) => {
+      const effectRef = effect(
+        () => {
+          if (!authService.loading()) {
+            effectRef.destroy();
+            resolve();
+          }
+        },
+        { injector }
+      );
+    });
+  }
 
   if (authService.isAdmin()) {
     return true;
   }
 
-  if (authService.loading()) {
-    // Auth state still loading — wait for it
-    return new Promise<boolean>((resolve) => {
-      const checkInterval = setInterval(() => {
-        if (!authService.loading()) {
-          clearInterval(checkInterval);
-          if (authService.isAdmin()) {
-            resolve(true);
-          } else {
-            router.navigate(['/']);
-            resolve(false);
-          }
-        }
-      }, 50);
-    });
-  }
-
-  router.navigate(['/']);
-  return false;
+  return router.createUrlTree(['/']);
 };

@@ -1,86 +1,66 @@
-    @if (event(); as ev) {
-      <div class="w-full relative z-10">
-        <!-- Hero Event Image -->
-        <div class="relative w-full h-[300px] rounded-b-3xl overflow-hidden shadow-lg">
-          <img
-            alt="Capa do Evento"
-            class="w-full h-full object-cover"
-            src="https://images.unsplash.com/photo-1533174000273-e18f142b4d99?auto=format&fit=crop&w=1200&q=80"
-          />
-          <!-- Overlay Gradient for Text Legibility -->
-          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-          
-          <!-- Event Title Floating over Image -->
-          <div class="absolute bottom-6 left-6 right-6">
-            <span
-              class="inline-block px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-bold text-label-bold mb-2 shadow-sm"
-              style="background-color: var(--mat-sys-secondary-container); color: var(--mat-sys-on-secondary-container);"
-            >
-              Festa & Celebração
-            </span>
-            <h1 class="font-display-lg-mobile md:font-display-lg text-white drop-shadow-md leading-tight text-3xl font-bold">
-              {{ ev.title }}
-            </h1>
+@if (event(); as ev) {
+  <article class="event-card">
+    <!-- Hero Image Container -->
+    <div class="event-card__hero">
+      <img
+        alt="Capa do Evento"
+        class="event-card__hero-img"
+        src="https://images.unsplash.com/photo-1533174000273-e18f142b4d99?auto=format&fit=crop&w=1200&q=80"
+      />
+      <div class="event-card__hero-overlay"></div>
+
+      <div class="event-card__hero-info">
+        <span class="event-card__category-badge">
+          Festa & Celebração
+        </span>
+        <h1 class="event-card__title">
+          {{ ev.title }}
+        </h1>
+      </div>
+    </div>
+
+    <!-- Main Glass Card -->
+    <div class="event-card__details-wrapper">
+      <div class="glass-card event-card__details-card">
+        <!-- Date & Time -->
+        <div class="event-card__detail-row">
+          <div class="event-card__date-badge">
+            <span class="event-card__date-month">{{ ev.date | date: 'MMM' }}</span>
+            <span class="event-card__date-day">{{ ev.date | date: 'dd' }}</span>
+          </div>
+          <div class="event-card__date-text">
+            <p class="event-card__date-full">{{ ev.date | date: 'EEEE, HH:mm' }}</p>
+            <p class="event-card__date-sub">Adicionar ao calendário</p>
           </div>
         </div>
 
-        <!-- Event Details Card -->
-        <div class="px-6 mt-[-20px] relative z-20">
-          <div class="glass-card rounded-2xl p-6 flex flex-col gap-4">
-            <!-- Date & Time -->
-            <div class="flex items-center gap-4">
-              <div
-                class="w-12 h-12 rounded-full flex flex-col items-center justify-center"
-                style="background-color: var(--mat-sys-surface-container-high); color: var(--mat-sys-primary);"
-              >
-                <span class="text-[10px] uppercase font-bold">{{ ev.date | date: 'MMM' }}</span>
-                <span class="text-xl leading-none font-bold">{{ ev.date | date: 'dd' }}</span>
-              </div>
-              <div>
-                <p class="text-lg text-on-surface font-medium">{{ ev.date | date: 'EEEE, HH:mm' }}</p>
-                <p class="text-sm text-on-surface-variant">Adicionar ao calendário</p>
-              </div>
-            </div>
-            
-            <hr class="border-outline-variant/30 my-2" />
-            
-            <!-- Location -->
-            <div class="flex items-start gap-4">
-              <div
-                class="w-12 h-12 rounded-full flex items-center justify-center"
-                style="background-color: var(--mat-sys-surface-container-high); color: var(--mat-sys-secondary);"
-              >
-                <mat-icon>location_on</mat-icon>
-              </div>
-              <div class="flex-1">
-                <p class="text-lg text-on-surface font-medium">{{ ev.location }}</p>
-                <p class="text-sm text-on-surface-variant">{{ ev.description }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <hr class="event-card__divider" />
 
-        <!-- Hosted By -->
-        <div class="px-6 mt-8">
-          <p class="font-label-bold text-sm text-on-surface-variant uppercase tracking-wider mb-3">
-            Organizado Por
-          </p>
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full border-2 border-primary-container bg-primary/10 flex items-center justify-center">
-              <mat-icon style="color: var(--mat-sys-primary);">person</mat-icon>
-            </div>
-            <div>
-              <p class="text-lg text-on-surface font-medium">Você (Admin)</p>
-              <p class="text-sm text-on-surface-variant">Organiza AI</p>
-            </div>
-            <button
-              mat-icon-button
-              class="ml-auto bg-surface-container-highest active:scale-95 transition-transform"
-              style="color: var(--mat-sys-primary);"
-            >
-              <mat-icon>chat</mat-icon>
-            </button>
+        <!-- Location -->
+        <div class="event-card__detail-row">
+          <div class="event-card__location-icon-badge">
+            <mat-icon>location_on</mat-icon>
+          </div>
+          <div class="event-card__location-text">
+            <p class="event-card__location-title">{{ ev.location }}</p>
+            <p class="event-card__location-desc">{{ ev.description }}</p>
           </div>
         </div>
       </div>
-    }
+    </div>
+
+    <!-- Hosted By -->
+    <div class="event-card__host-section">
+      <p class="event-card__host-label">Organizado Por</p>
+      <div class="event-card__host-info">
+        <div class="event-card__host-avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="event-card__host-details">
+          <p class="event-card__host-name">Você (Admin)</p>
+          <p class="event-card__host-sub">Organiza AI</p>
+        </div>
+      </div>
+    </div>
+  </article>
+}

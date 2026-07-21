@@ -5,13 +5,13 @@
 </div>
 
 @if (loading()) {
-  <div class="w-full max-w-[480px] mx-auto pt-10" aria-hidden="true">
-    <div class="skeleton-box h-[300px] w-full rounded-3xl mb-4"></div>
-    <div class="skeleton-box h-40 w-full rounded-2xl mb-4"></div>
-    <div class="skeleton-box h-40 w-full rounded-2xl mb-4"></div>
+  <div class="event-detail__loading" aria-hidden="true">
+    <div class="skeleton-box event-detail__skeleton-hero"></div>
+    <div class="skeleton-box event-detail__skeleton-card"></div>
+    <div class="skeleton-box event-detail__skeleton-card"></div>
   </div>
 } @else if (event(); as event) {
-  <main class="w-full max-w-[480px] mx-auto pb-[100px] relative z-10">
+  <main class="event-detail">
     <app-event-card [event]="event" />
 
     @if (!session()) {
@@ -20,24 +20,24 @@
         (onConfirm)="onRsvpConfirm($event)"
       />
     } @else {
-      <!-- User has confirmed presence, show a quick summary or cancel button -->
-      <div class="px-6 mt-8">
-        <h2 class="font-headline-md text-2xl font-bold mb-4 org-gradient-text">
+      <!-- User has confirmed presence -->
+      <section class="event-detail__section">
+        <h2 class="event-detail__section-title org-gradient-text">
           Você está na lista! 🎉
         </h2>
-        <div class="glass-card rounded-2xl p-6 flex flex-col items-center">
-          <p class="font-bold text-lg mb-2">Presença confirmada</p>
-          <p class="text-on-surface-variant text-center mb-4">
+        <div class="glass-card event-detail__confirmed-card">
+          <p class="event-detail__confirmed-title">Presença confirmada</p>
+          <p class="event-detail__confirmed-subtitle">
             Estamos te esperando. Seus itens assumidos estão marcados abaixo.
           </p>
           <button
-            class="px-4 py-2 rounded-full border border-error text-error font-bold text-sm hover:bg-error-container transition-colors"
+            class="event-detail__cancel-btn"
             (click)="cancelRsvp()"
           >
             Não poderei ir
           </button>
         </div>
-      </div>
+      </section>
     }
 
     <app-item-list-card
@@ -48,15 +48,15 @@
     />
 
     @if (event.pixKey) {
-      <div class="px-6 mt-8">
-        <h2 class="font-headline-md text-2xl font-bold mb-4 org-gradient-text">Contribuição</h2>
+      <section class="event-detail__section">
+        <h2 class="event-detail__section-title org-gradient-text">Contribuição</h2>
         <app-pix-card [pixKey]="event.pixKey" (copied)="onPixCopied()" />
-      </div>
+      </section>
     }
   </main>
 } @else {
-  <div class="w-full max-w-[480px] mx-auto pt-20 text-center" role="alert">
-    <h2 class="text-2xl font-bold text-error">Evento não encontrado</h2>
-    <p class="text-on-surface-variant mt-2">O evento que você procura não existe ou foi removido.</p>
+  <div class="event-detail__not-found" role="alert">
+    <h2>Evento não encontrado</h2>
+    <p>O evento que você procura não existe ou foi removido.</p>
   </div>
 }

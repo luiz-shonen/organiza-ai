@@ -1,1 +1,158 @@
-// Item List Card Styles
+.item-list-card {
+  padding: 0 24px;
+  margin-top: 32px;
+  margin-bottom: 80px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  &__tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    color: var(--org-primary);
+    background-color: var(--org-primary-container);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__item {
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: opacity 0.2s ease;
+
+    &--claimed {
+      opacity: 0.85;
+    }
+  }
+
+  &__item-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &--claimed {
+      background-color: #ffffff;
+      color: var(--org-outline);
+    }
+
+    &--available {
+      background-color: var(--mat-sys-surface-container-high, #f0e3ff);
+      color: var(--org-secondary);
+    }
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--org-on-surface);
+    margin: 0;
+
+    &--claimed {
+      text-decoration: line-through;
+      color: var(--org-outline);
+    }
+  }
+
+  &__status {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--org-secondary);
+    margin: 0;
+
+    &--claimed {
+      color: var(--org-outline);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+  }
+
+  &__claim-btn {
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: 1px solid var(--org-outline-variant);
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--org-on-surface);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--org-surface-variant);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__unclaim-btn {
+    padding: 8px 16px;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: #ba1a1a;
+    border: 1px solid #ba1a1a;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #ffdad6;
+    }
+  }
+
+  &__check-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--org-primary);
+  }
+
+  &__empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--org-on-surface-variant);
+    font-weight: 500;
+  }
+}

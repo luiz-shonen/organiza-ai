@@ -1,58 +1,67 @@
-<h2 mat-dialog-title>
-  <mat-icon class="admin-dialog__header-icon">manage_accounts</mat-icon>
-  Gerenciar Administradores
-</h2>
+<div class="drawer-container">
+  <header class="drawer-header">
+    <div class="drawer-header__title-group">
+      <mat-icon class="drawer-header__icon">manage_accounts</mat-icon>
+      <h2 class="drawer-header__title">Gerenciar Administradores</h2>
+    </div>
+    <button mat-icon-button type="button" (click)="onClose()" aria-label="Fechar drawer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
 
-<mat-dialog-content class="admin-dialog">
-  <p class="admin-dialog__description">
-    Usuários na lista abaixo têm permissão para criar e editar eventos.
-  </p>
+  <div class="drawer-body">
+    <p class="drawer-description">
+      Usuários na lista abaixo têm permissão para criar e editar eventos.
+    </p>
 
-  <div class="admin-dialog__list-container">
-    @if (loadingAdmins()) {
-      <div class="admin-dialog__spinner">
-        <mat-spinner diameter="30"></mat-spinner>
-      </div>
-    } @else {
-      <ul class="admin-dialog__list">
-        @for (admin of admins(); track admin) {
-          <li class="admin-dialog__item">
-            <span>{{ admin }}</span>
-            <button mat-icon-button color="warn" (click)="removeAdmin(admin)" aria-label="Remover administrador">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </li>
+    <div class="admin-list-card">
+      @if (loadingAdmins()) {
+        <div class="admin-list__spinner">
+          <mat-spinner diameter="28"></mat-spinner>
+        </div>
+      } @else {
+        <ul class="admin-list">
+          @for (admin of admins(); track admin) {
+            <li class="admin-list__item">
+              <div class="admin-list__info">
+                <mat-icon class="admin-list__badge-icon">person</mat-icon>
+                <span class="admin-list__email">{{ admin }}</span>
+              </div>
+              <button mat-icon-button color="warn" (click)="removeAdmin(admin)" aria-label="Remover administrador">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </li>
+          }
+          @if (admins().length === 0) {
+            <li class="admin-list__item admin-list__item--empty">Nenhum administrador encontrado.</li>
+          }
+        </ul>
+      }
+    </div>
+
+    <form [formGroup]="form" id="admin-form" (ngSubmit)="submit()" class="admin-form">
+      <mat-form-field appearance="outline" class="admin-form__field">
+        <mat-label>E-mail do novo administrador</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="email@exemplo.com" required autocomplete="email" />
+        <mat-icon matPrefix>email</mat-icon>
+        @if (form.controls.email.hasError('required')) {
+          <mat-error>E-mail é obrigatório</mat-error>
         }
-        @if (admins().length === 0) {
-          <li class="admin-dialog__item admin-dialog__item--empty">Nenhum administrador encontrado.</li>
+        @if (form.controls.email.hasError('email')) {
+          <mat-error>E-mail inválido</mat-error>
         }
-      </ul>
-    }
+      </mat-form-field>
+    </form>
   </div>
 
-  <form [formGroup]="form" id="admin-form" (ngSubmit)="submit()">
-    <mat-form-field appearance="outline" class="admin-dialog__form-field">
-      <mat-label>E-mail do novo administrador</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="email@exemplo.com" required autocomplete="email" />
-      <mat-icon matPrefix>email</mat-icon>
-      @if (form.controls.email.hasError('required')) {
-        <mat-error>E-mail é obrigatório</mat-error>
+  <footer class="drawer-footer">
+    <button mat-button type="button" (click)="onClose()" [disabled]="loading()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" form="admin-form" [disabled]="form.invalid || loading()">
+      @if (loading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        Adicionar
       }
-      @if (form.controls.email.hasError('email')) {
-        <mat-error>E-mail inválido</mat-error>
-      }
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-
-<mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="onClose()" [disabled]="loading()">Fechar</button>
-  <button mat-flat-button type="submit" form="admin-form" [disabled]="form.invalid || loading()">
-    @if (loading()) {
-      <mat-spinner diameter="20"></mat-spinner>
-    }
-    @if (!loading()) {
-      Adicionar
-    }
-  </button>
-</mat-dialog-actions>
+    </button>
+  </footer>
+</div>

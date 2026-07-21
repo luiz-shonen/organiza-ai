@@ -455,33 +455,14 @@ button[disabled],
   -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
   border-top-left-radius: 20px !important;
   border-bottom-left-radius: 20px !important;
-  box-shadow: -12px 0 36px rgba(0, 0, 0, 0.18) !important;
-  border: 1px solid transparent !important;
-  background-clip: padding-box !important;
+  box-shadow: -16px 0 40px rgba(0, 0, 0, 0.25) !important;
+  border: none !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.4) !important;
 
   .dark & {
-    background: rgba(29, 27, 32, 0.94) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(24, 23, 28, 0.95) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
     color: var(--mat-sys-on-surface) !important;
-  }
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-top-left-radius: 20px;
-    border-bottom-left-radius: 20px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    padding: 2px;
-    background: var(--org-gradient-primary);
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: 10;
   }
 }
 

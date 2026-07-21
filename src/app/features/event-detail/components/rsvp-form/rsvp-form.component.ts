@@ -5,11 +5,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-rsvp-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatIconModule, MatProgressSpinnerModule, MatInputModule, MatFormFieldModule],
+  imports: [CommonModule, FormsModule, MatIconModule, MatProgressSpinnerModule, MatInputModule, MatFormFieldModule, MatButtonModule],
   templateUrl: './rsvp-form.component.html',
   styleUrl: './rsvp-form.component.scss',
 })

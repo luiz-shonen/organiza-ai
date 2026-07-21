@@ -63,6 +63,8 @@
       </mat-form-field>
 
       <button
+        mat-flat-button
+        color="primary"
         type="submit"
         [disabled]="form.invalid || loading()"
         class="btn-primary-org login__submit-btn"
@@ -80,6 +82,7 @@
     </div>
 
     <button
+      mat-stroked-button
       type="button"
       [disabled]="loading()"
       (click)="loginWithGoogle()"

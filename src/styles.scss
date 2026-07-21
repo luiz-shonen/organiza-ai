@@ -369,16 +369,35 @@ button[disabled],
   background: rgba(29, 27, 32, 0.65);
 }
 
-.btn-primary-org {
-  background: var(--org-gradient-primary);
-  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px rgba(255, 77, 148, 0.3);
-  transition: all 0.3s ease;
-  color: #fff;
+/* Angular Material Button Theme Integration & Ripple Support */
+.mat-mdc-button-base {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 28px !important;
+
+  .mat-ripple,
+  .mat-mdc-button-ripple {
+    border-radius: inherit !important;
+  }
 }
 
-.btn-primary-org:hover {
-  transform: scale(1.04);
-  backdrop-filter: blur(24px);
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-flat-button.mat-primary,
+button.btn-primary-org {
+  background: var(--org-gradient-primary) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px rgba(255, 77, 148, 0.3) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px) scale(1.02) !important;
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.4), 0px 14px 28px rgba(255, 77, 148, 0.45) !important;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98) !important;
+  }
 }
 
 .org-gradient-text {

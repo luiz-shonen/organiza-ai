@@ -13,7 +13,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { EventService, AuthService, DrawerService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
-import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 

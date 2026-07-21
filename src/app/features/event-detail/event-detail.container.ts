@@ -11,7 +11,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService, ConfettiService } from '../../core/services';
+import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService, ConfettiService, SeasonalThemeService } from '../../core/services';
 import { PartyEvent, PartyItem, Guest } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -44,6 +44,7 @@ export class EventDetailContainer implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly confetti = inject(ConfettiService);
+  private readonly seasonalThemeService = inject(SeasonalThemeService);
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -65,6 +66,9 @@ export class EventDetailContainer implements OnInit {
     const eventSub = this.eventService.getEvent(eventId).subscribe({
       next: (event) => {
         this.event.set(event);
+        if (event) {
+          this.seasonalThemeService.evaluateEventTheme(event.date, event.title);
+        }
         this.loading.set(false);
       },
       error: () => this.loading.set(false),
@@ -82,6 +86,7 @@ export class EventDetailContainer implements OnInit {
       eventSub.unsubscribe();
       itemsSub.unsubscribe();
       guestsSub.unsubscribe();
+      this.seasonalThemeService.resetToAuto();
     });
   }
 

@@ -1,0 +1,207 @@
+.seasonal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99; // just below dialogs & toolbars
+  overflow: hidden;
+
+  /* FESTA JUNINA / JULINA THEME */
+  &__junina {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+  }
+
+  &__string-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+  }
+
+  &__bandeirolas {
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 10px;
+    box-sizing: border-box;
+
+    .bandeirola {
+      width: 24px;
+      height: 36px;
+      background-color: var(--c);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transform-origin: top center;
+      animation: bandeirolaSway 3.5s ease-in-out infinite alternate;
+      animation-delay: var(--d);
+
+      @media (min-width: 768px) {
+        width: 32px;
+        height: 48px;
+      }
+    }
+  }
+
+  /* NATAL DE JESUS THEME */
+  &__natal {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 85% 15%,
+      rgba(255, 200, 55, 0.15) 0%,
+      rgba(255, 140, 66, 0.05) 40%,
+      transparent 70%
+    );
+  }
+
+  &__star-wrapper {
+    position: absolute;
+    top: 12px;
+    right: 24px;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media (min-width: 768px) {
+      top: 20px;
+      right: 48px;
+      width: 110px;
+      height: 110px;
+    }
+  }
+
+  &__star-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.8));
+    animation: starPulse 4s ease-in-out infinite alternate;
+  }
+
+  &__star-beam {
+    width: 2px;
+    height: 180px;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 215, 0, 0.6),
+      rgba(255, 215, 0, 0.1) 70%,
+      transparent
+    );
+    filter: blur(1px);
+    opacity: 0.7;
+    animation: beamGlow 4s ease-in-out infinite alternate;
+  }
+
+  &__starlight {
+    position: absolute;
+    inset: 0;
+
+    .star-particle {
+      position: absolute;
+      font-size: 1.2rem;
+      opacity: 0.6;
+      animation: starlightFloat 6s ease-in-out infinite alternate;
+
+      &.p1 { top: 15%; left: 20%; animation-delay: 0s; }
+      &.p2 { top: 35%; left: 75%; animation-delay: 1.5s; }
+      &.p3 { top: 60%; left: 15%; animation-delay: 3s; }
+      &.p4 { top: 25%; left: 45%; animation-delay: 4.5s; }
+      &.p5 { top: 75%; left: 80%; animation-delay: 2s; }
+    }
+  }
+
+  /* PASCOA THEME */
+  &__pascoa {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 100%,
+      rgba(255, 235, 150, 0.15) 0%,
+      transparent 60%
+    );
+  }
+
+  /* ANO NOVO THEME */
+  &__ano-novo {
+    position: absolute;
+    inset: 0;
+
+    .sparkle {
+      position: absolute;
+      font-size: 1.4rem;
+      animation: sparklePop 4s ease-in-out infinite alternate;
+
+      &.s1 { top: 15%; left: 10%; animation-delay: 0.5s; }
+      &.s2 { top: 20%; right: 15%; animation-delay: 1.2s; }
+      &.s3 { top: 50%; left: 85%; animation-delay: 2s; }
+    }
+  }
+}
+
+/* KEYFRAMES */
+@keyframes bandeirolaSway {
+  0% {
+    transform: rotate(-8deg);
+  }
+  100% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes starPulse {
+  0% {
+    transform: scale(0.95);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.6));
+  }
+  100% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 24px rgba(255, 215, 0, 0.95));
+  }
+}
+
+@keyframes beamGlow {
+  0% {
+    opacity: 0.4;
+    height: 140px;
+  }
+  100% {
+    opacity: 0.85;
+    height: 220px;
+  }
+}
+
+@keyframes starlightFloat {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 0.3;
+  }
+}
+
+@keyframes sparklePop {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1.2) rotate(15deg);
+    opacity: 0.8;
+  }
+}

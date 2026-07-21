@@ -1,0 +1,84 @@
+@let theme = config().activeTheme;
+
+@if (theme !== 'default') {
+  <aside class="seasonal-overlay" [attr.data-theme]="theme" aria-hidden="true">
+    @switch (theme) {
+      @case ('junina') {
+        <!-- String of animated SVG bandeirolas across header -->
+        <div class="seasonal-overlay__junina">
+          <svg class="seasonal-overlay__string-svg" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none">
+            <!-- Varal Line -->
+            <path d="M0,20 Q300,70 600,20 Q900,70 1200,20" stroke="#8D6E63" stroke-width="2" stroke-dasharray="6 4"/>
+          </svg>
+
+          <div class="seasonal-overlay__bandeirolas">
+            <div class="bandeirola b1" style="--c: #FF4D94; --d: 0s;"></div>
+            <div class="bandeirola b2" style="--c: #FF8C42; --d: 0.3s;"></div>
+            <div class="bandeirola b3" style="--c: #FFC837; --d: 0.6s;"></div>
+            <div class="bandeirola b4" style="--c: #4DEDFF; --d: 0.9s;"></div>
+            <div class="bandeirola b5" style="--c: #2ECC71; --d: 1.2s;"></div>
+            <div class="bandeirola b6" style="--c: #9B59B6; --d: 1.5s;"></div>
+            <div class="bandeirola b7" style="--c: #FF4D94; --d: 1.8s;"></div>
+            <div class="bandeirola b8" style="--c: #FF8C42; --d: 2.1s;"></div>
+            <div class="bandeirola b9" style="--c: #FFC837; --d: 2.4s;"></div>
+            <div class="bandeirola b10" style="--c: #4DEDFF; --d: 2.7s;"></div>
+            <div class="bandeirola b11" style="--c: #2ECC71; --d: 3.0s;"></div>
+            <div class="bandeirola b12" style="--c: #9B59B6; --d: 3.3s;"></div>
+          </div>
+        </div>
+      }
+
+      @case ('natal') {
+        <!-- Christian Christmas Theme: Estrela de Belém & Divine Light -->
+        <div class="seasonal-overlay__natal">
+          <!-- Estrela de Belém SVG -->
+          <div class="seasonal-overlay__star-wrapper">
+            <svg class="seasonal-overlay__star-svg" viewBox="0 0 100 100" fill="none">
+              <!-- Divine Rays -->
+              <circle cx="50" cy="50" r="45" fill="url(#starGlow)" opacity="0.4" />
+              <!-- 8-pointed Star of Bethlehem -->
+              <path d="M50 0 L56 38 L94 44 L62 60 L74 96 L50 70 L26 96 L38 60 L6 44 L44 38 Z" fill="url(#goldGrad)" />
+              <defs>
+                <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FFD700" stop-opacity="0.9" />
+                  <stop offset="100%" stop-color="#FF8C42" stop-opacity="0" />
+                </radialGradient>
+                <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FFF5C0" />
+                  <stop offset="50%" stop-color="#FFC837" />
+                  <stop offset="100%" stop-color="#FF8C42" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="seasonal-overlay__star-beam"></div>
+          </div>
+
+          <!-- Starlight Particles -->
+          <div class="seasonal-overlay__starlight">
+            <span class="star-particle p1">✨</span>
+            <span class="star-particle p2">⭐</span>
+            <span class="star-particle p3">✨</span>
+            <span class="star-particle p4">⭐</span>
+            <span class="star-particle p5">✨</span>
+          </div>
+        </div>
+      }
+
+      @case ('pascoa') {
+        <div class="seasonal-overlay__pascoa">
+          <div class="seasonal-overlay__resurrection-rays"></div>
+        </div>
+      }
+
+      @case ('ano-novo') {
+        <div class="seasonal-overlay__ano-novo">
+          <div class="seasonal-overlay__sparkles">
+            <span class="sparkle s1">✨</span>
+            <span class="sparkle s2">🎆</span>
+            <span class="sparkle s3">✨</span>
+          </div>
+        </div>
+      }
+    }
+  </aside>
+}

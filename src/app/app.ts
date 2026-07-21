@@ -8,11 +8,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { AuthService, ThemeService, GuestSessionService } from './core/services';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
+import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, ThemeToggleComponent],
+  imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, ThemeToggleComponent, SeasonalOverlayComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   host: {

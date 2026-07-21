@@ -383,7 +383,6 @@ button[disabled],
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
     line-height: 1 !important;
     width: 100% !important;
     height: 100% !important;
@@ -401,12 +400,7 @@ button[disabled],
     height: 20px !important;
     line-height: 1 !important;
     vertical-align: middle !important;
-    margin: 0 !important;
     flex-shrink: 0 !important;
-
-    &:not(:only-child) {
-      margin-right: 8px !important;
-    }
   }
 
   .mat-ripple,
@@ -415,6 +409,17 @@ button[disabled],
   }
 }
 
+/* Icon margin exclusively for text buttons with leading icons */
+.mat-mdc-button-base:not(.mat-mdc-icon-button) {
+  mat-icon,
+  .mat-icon,
+  .material-icons,
+  .material-symbols-outlined {
+    margin-right: 8px !important;
+  }
+}
+
+/* Icon-only buttons: 100% centered, zero margins */
 .mat-mdc-icon-button {
   display: inline-flex !important;
   align-items: center !important;
@@ -430,6 +435,53 @@ button[disabled],
     align-items: center !important;
     justify-content: center !important;
     line-height: 1 !important;
+    vertical-align: middle !important;
+  }
+}
+
+/* CosturaAI Master mat-drawer & mat-sidenav Container System */
+.app-sidenav-container {
+  min-height: 100dvh;
+  background: transparent !important;
+}
+
+.app-sidenav-drawer,
+.mat-drawer,
+.mat-sidenav {
+  width: 440px !important;
+  max-width: 100vw !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(28px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
+  border-top-left-radius: 20px !important;
+  border-bottom-left-radius: 20px !important;
+  box-shadow: -12px 0 36px rgba(0, 0, 0, 0.18) !important;
+  border: 1px solid transparent !important;
+  background-clip: padding-box !important;
+
+  .dark & {
+    background: rgba(29, 27, 32, 0.94) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    color: var(--mat-sys-on-surface) !important;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 2px;
+    background: var(--org-gradient-primary);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 10;
   }
 }
 

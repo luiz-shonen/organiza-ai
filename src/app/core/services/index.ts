@@ -10,3 +10,4 @@ export { ItemService } from './item.service';
 export { LocationService } from './location.service';
 export { ConfettiService } from './confetti.service';
 export { SeasonalThemeService } from './seasonal-theme.service';
+export { DrawerService } from './drawer.service';

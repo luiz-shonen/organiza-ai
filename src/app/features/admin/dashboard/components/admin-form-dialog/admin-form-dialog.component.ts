@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from '../../../../../core/services';
+import { AuthService, DrawerService } from '../../../../../core/services';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -28,8 +28,11 @@ import { ConfirmDialogComponent } from '../../../../../shared/components/confirm
 export class AdminFormDialogComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
-  private readonly dialogRef = inject(MatDialogRef<AdminFormDialogComponent>);
+  protected readonly drawerService = inject(DrawerService);
+  private readonly dialogRef = inject(MatDialogRef<AdminFormDialogComponent>, { optional: true });
   private readonly snackBar = inject(MatSnackBar);
+
+  readonly close = output<void>();
 
   protected readonly loading = signal(false);
   protected readonly admins = signal<string[]>([]);
@@ -100,5 +103,13 @@ export class AdminFormDialogComponent implements OnInit {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected onClose(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+    this.close.emit();
+    this.drawerService.close();
   }
 }

@@ -46,7 +46,7 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close [disabled]="loading()">Fechar</button>
+  <button mat-button type="button" (click)="onClose()" [disabled]="loading()">Fechar</button>
   <button mat-flat-button type="submit" form="admin-form" [disabled]="form.invalid || loading()">
     @if (loading()) {
       <mat-spinner diameter="20"></mat-spinner>

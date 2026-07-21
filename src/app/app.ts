@@ -4,29 +4,43 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { AuthService, ThemeService, GuestSessionService } from './core/services';
+import { AuthService, ThemeService, GuestSessionService, DrawerService } from './core/services';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
+import { AdminFormDialogComponent } from './features/admin/dashboard/components/admin-form-dialog/admin-form-dialog.component';
 
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, ThemeToggleComponent, SeasonalOverlayComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatSidenavModule,
+    ThemeToggleComponent,
+    SeasonalOverlayComponent,
+    AdminFormDialogComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   host: {
     '(window:offline)': 'setOffline()',
-    '(window:online)': 'setOnline()'
-  }
+    '(window:online)': 'setOnline()',
+  },
 })
 export class App {
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly guestSession = inject(GuestSessionService);
-  
+  protected readonly drawerService = inject(DrawerService);
+
   protected readonly isAdmin = this.authService.isAdmin;
   protected readonly user = this.authService.currentUser;
   protected readonly isOffline = signal(!navigator.onLine);
@@ -34,10 +48,10 @@ export class App {
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      map(event => (event as NavigationEnd).urlAfterRedirects)
+      filter((event) => event instanceof NavigationEnd),
+      map((event) => (event as NavigationEnd).urlAfterRedirects),
     ),
-    { initialValue: this.router.url }
+    { initialValue: this.router.url },
   );
 
   protected readonly showHeader = computed(() => !this.currentUrl().includes('/login'));

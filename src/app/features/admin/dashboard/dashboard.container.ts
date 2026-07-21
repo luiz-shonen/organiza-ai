@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { EventService, AuthService } from '../../../core/services';
+import { EventService, AuthService, DrawerService } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { AdminFormDialogComponent } from './components/admin-form-dialog/admin-form-dialog.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -37,6 +37,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
 export class DashboardContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly authService = inject(AuthService);
+  private readonly drawerService = inject(DrawerService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly clipboard = inject(Clipboard);
@@ -109,12 +110,6 @@ export class DashboardContainer implements OnInit {
   }
 
   protected openAdminDialog(): void {
-    this.dialog.open(AdminFormDialogComponent, {
-      width: '100%',
-      maxWidth: '480px',
-      panelClass: 'app-drawer-panel',
-      position: { bottom: '0' },
-      disableClose: false
-    });
+    this.drawerService.openAdminDrawer();
   }
 }

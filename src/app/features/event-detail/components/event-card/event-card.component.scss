@@ -151,11 +151,9 @@
 
   &__host-label {
     font-size: 0.875rem;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--org-on-surface-variant);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 12px;
+    margin: 0 0 8px;
   }
 
   &__host-info {

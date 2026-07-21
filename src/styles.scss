@@ -211,6 +211,7 @@ button[disabled],
 .w-48 { width: 12rem; }
 .w-full { width: 100%; }
 .rounded-full { border-radius: 9999px; }
+.items-center { align-items: center; }
 .mb-2 { margin-bottom: 0.5rem; }
 .mt-2 { margin-top: 0.5rem; }
 
@@ -325,7 +326,9 @@ button[disabled],
 
 .glass-input {
   background-color: rgba(253, 118, 43, 0.05);
+  border: 0;
   border-bottom: 2px solid var(--mat-sys-outline-variant);
+  outline: 0;
   transition: all 0.3s ease;
 }
 .dark .glass-input {
@@ -339,3 +342,7 @@ button[disabled],
   background-color: rgba(253, 118, 43, 0.1);
   outline: none;
 }
+
+// Layout helpers (skeleton & utility)
+.flex { display: flex; }
+.gap-2 { gap: 0.5rem; }

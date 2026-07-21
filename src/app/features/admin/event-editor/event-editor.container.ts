@@ -22,7 +22,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { EventService, ItemService, GuestService } from '../../../core/services';
 import { PartyItem, Guest } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
-import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-event-editor',
@@ -39,7 +38,6 @@ import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/th
     MatProgressSpinnerModule,
     MatDividerModule,
     SharePanelComponent,
-    ThemeToggleComponent,
   ],
   templateUrl: './event-editor.container.html',
   styleUrl: './event-editor.container.scss',

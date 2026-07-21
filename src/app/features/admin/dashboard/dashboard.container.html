@@ -4,7 +4,7 @@
       <mat-icon>dashboard</mat-icon>
       Painel do Organizador
     </h1>
-    <div style="display: flex; gap: 8px; align-items: center;">
+    <div class="dashboard__header-actions">
       <app-theme-toggle />
       @if (isSuperAdmin()) {
         <button
@@ -167,7 +167,7 @@
               <div class="skeleton-box h-5 w-40"></div>
               <div class="skeleton-box h-5 w-24"></div>
               <div class="skeleton-box h-5 w-32"></div>
-              <div class="flex gap-2">
+              <div class="dashboard__skeleton-actions">
                 <div class="skeleton-box h-10 w-10 !rounded-full"></div>
                 <div class="skeleton-box h-10 w-10 !rounded-full"></div>
                 <div class="skeleton-box h-10 w-10 !rounded-full"></div>

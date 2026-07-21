@@ -6,8 +6,6 @@
     <h1 class="editor__title">
       {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
     </h1>
-    <div style="flex: 1;"></div>
-    <app-theme-toggle />
   </header>
 
   @if (loading()) {
@@ -197,13 +195,13 @@
               <mat-card-subtitle>{{ guests().length }} confirmados</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-              <div class="flex gap-2 mb-4 no-print">
+              <div class="editor__guest-actions no-print">
                 <button
                   mat-stroked-button
                   (click)="exportToCsv()"
                   [disabled]="guests().length === 0"
                   aria-label="Exportar para Excel (CSV)"
-                  class="flex-1"
+                  class="editor__guest-action-btn"
                 >
                   <mat-icon>download</mat-icon>
                   Excel
@@ -213,7 +211,7 @@
                   (click)="printList()"
                   [disabled]="guests().length === 0"
                   aria-label="Imprimir Lista (PDF)"
-                  class="flex-1"
+                  class="editor__guest-action-btn"
                 >
                   <mat-icon>print</mat-icon>
                   Imprimir
@@ -240,7 +238,7 @@
                   </table>
                 </div>
               } @else {
-                <p class="text-on-surface-variant text-center py-4 no-print">Nenhum convidado confirmou presença ainda.</p>
+                <p class="editor__empty-guests no-print">Nenhum convidado confirmou presença ainda.</p>
               }
             </mat-card-content>
           </mat-card>

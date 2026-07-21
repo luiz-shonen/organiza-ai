@@ -43,6 +43,13 @@
 
   &__user-btn {
     margin-left: 8px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    .mat-icon {
+      margin: 0 !important;
+    }
   }
 
   &__avatar {
@@ -50,6 +57,8 @@
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
+    display: block !important;
+    margin: 0 auto !important;
   }
 
   &__label {

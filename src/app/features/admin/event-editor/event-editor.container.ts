@@ -52,8 +52,6 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
   templateUrl: './event-editor.container.html',
   styleUrl: './event-editor.container.scss',
 })
-
-
 export class EventEditorContainer implements OnInit {
   readonly id = input<string>();
 
@@ -85,7 +83,7 @@ export class EventEditorContainer implements OnInit {
     { name: 'Churrasco', class: 'cat-churrasco' },
     { name: 'Happy Hour', class: 'cat-happy' },
     { name: 'Formatura', class: 'cat-formatura' },
-    { name: 'Outros', class: 'cat-outros' }
+    { name: 'Outros', class: 'cat-outros' },
   ];
 
   protected readonly form = this.fb.nonNullable.group({
@@ -102,21 +100,23 @@ export class EventEditorContainer implements OnInit {
     pixKey: [''],
   });
 
-ngOnInit(): void {
+  ngOnInit(): void {
     // ViaCEP listener
-    this.form.controls.cep.valueChanges.pipe(
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap(cep => this.locationService.getViaCep(cep))
-    ).subscribe(res => {
-      if (res && !res.erro) {
-        this.form.patchValue({
-          address: res.logradouro || '',
-          neighborhood: res.bairro || '',
-          city: (res.localidade && res.uf) ? `${res.localidade}/${res.uf}` : ''
-        });
-      }
-    });
+    this.form.controls.cep.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap((cep) => this.locationService.getViaCep(cep)),
+      )
+      .subscribe((res) => {
+        if (res && !res.erro) {
+          this.form.patchValue({
+            address: res.logradouro || '',
+            neighborhood: res.bairro || '',
+            city: res.localidade && res.uf ? `${res.localidade}/${res.uf}` : '',
+          });
+        }
+      });
 
     const eventId = this.id();
     if (eventId && eventId !== 'novo') {
@@ -130,7 +130,7 @@ ngOnInit(): void {
             let d = new Date(event.date);
             if (isNaN(d.getTime())) d = new Date();
             const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-            
+
             this.form.patchValue({
               title: event.title,
               category: event.category || '',
@@ -151,7 +151,7 @@ ngOnInit(): void {
           console.error(err);
           this.loading.set(false);
           this.snackBar.open('Erro ao carregar evento', 'OK', { duration: 3000 });
-        }
+        },
       });
 
       const itemsSub = this.itemService.listItems(eventId).subscribe({
@@ -170,23 +170,37 @@ ngOnInit(): void {
     }
   }
 
-protected async saveEvent(): Promise<void> {
+  protected async saveEvent(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.saving.set(true);
-    const { title, category, description, date, time, cep, address, neighborhood, city, number, pixKey } = this.form.getRawValue();
+    const {
+      title,
+      category,
+      description,
+      date,
+      time,
+      cep,
+      address,
+      neighborhood,
+      city,
+      number,
+      pixKey,
+    } = this.form.getRawValue();
 
     let finalDate = new Date();
     if (date) {
       finalDate = new Date(date);
       const [h, m] = time.split(':');
       finalDate.setHours(Number(h) || 0, Number(m) || 0, 0, 0);
-      
+
       if (finalDate < new Date()) {
-        this.snackBar.open('A data e hora do evento não podem ser no passado.', 'OK', { duration: 3000 });
+        this.snackBar.open('A data e hora do evento não podem ser no passado.', 'OK', {
+          duration: 3000,
+        });
         this.saving.set(false);
         return;
       }
@@ -197,11 +211,20 @@ protected async saveEvent(): Promise<void> {
       address && number ? `${address}, ${number}` : address || number,
       neighborhood,
       city,
-      cep ? `CEP: ${cep}` : ''
-    ].filter(Boolean).join(' - ');
+      cep ? `CEP: ${cep}` : '',
+    ]
+      .filter(Boolean)
+      .join(' - ');
 
     const location = fullAddress || '';
-    const eventData = { title, category, description, date: dateStr, location, pixKey: pixKey || null };
+    const eventData = {
+      title,
+      category,
+      description,
+      date: dateStr,
+      location,
+      pixKey: pixKey || null,
+    };
 
     try {
       const eventId = this.id();
@@ -256,7 +279,7 @@ protected async saveEvent(): Promise<void> {
     }
 
     const headers = ['Nome,Telefone,Data de Confirmação'];
-    const rows = guestsList.map(g => {
+    const rows = guestsList.map((g) => {
       const date = g.createdAt ? new Date(g.createdAt).toLocaleDateString('pt-BR') : '';
       return `"${g.name}","${g.phone}","${date}"`;
     });
@@ -264,7 +287,7 @@ protected async saveEvent(): Promise<void> {
     const csvContent = headers.concat(rows).join('\n');
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `convidados-${this.form.controls.title.value || 'evento'}.csv`;
@@ -292,7 +315,7 @@ protected async saveEvent(): Promise<void> {
     let value = input.value.replace(/\D/g, '');
     if (value.length > 2) value = value.substring(0, 2) + '/' + value.substring(2);
     if (value.length > 5) value = value.substring(0, 5) + '/' + value.substring(5, 9);
-    
+
     // update value only in the raw input visually to not mess with matDatepicker internals prematurely
     input.value = value;
   }

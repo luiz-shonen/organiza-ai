@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, Output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  input,
+  Output,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +17,15 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-rsvp-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatIconModule, MatProgressSpinnerModule, MatInputModule, MatFormFieldModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+  ],
   templateUrl: './rsvp-form.component.html',
   styleUrl: './rsvp-form.component.scss',
 })

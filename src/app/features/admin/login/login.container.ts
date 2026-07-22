@@ -48,7 +48,7 @@ export class LoginContainer {
       await this.redirectAfterAuth();
     } catch (authError: unknown) {
       const msg = authError instanceof Error ? authError.message : String(authError);
-      
+
       // If user doesn't exist yet, attempt automatic creation
       if (msg.includes('user-not-found') || msg.includes('invalid-credential')) {
         try {

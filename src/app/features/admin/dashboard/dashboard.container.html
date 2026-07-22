@@ -29,7 +29,6 @@
   </header>
 
   @if (events() !== undefined) {
-    
     @if (nextEvent(); as event) {
       <div class="dashboard__alert-banner glass-card" (click)="openPublicEvent(event)">
         <div class="dashboard__alert-content">
@@ -52,7 +51,12 @@
     }
 
     <div class="dashboard__filters">
-      <mat-chip-listbox #chipList [value]="activeFilter()" (change)="activeFilter.set($event.value || 'all'); chipList.value = activeFilter()" aria-label="Filtro de eventos">
+      <mat-chip-listbox
+        #chipList
+        [value]="activeFilter()"
+        (change)="activeFilter.set($event.value || 'all'); chipList.value = activeFilter()"
+        aria-label="Filtro de eventos"
+      >
         <mat-chip-option value="all">Todos</mat-chip-option>
         <mat-chip-option value="upcoming">Em breve</mat-chip-option>
         <mat-chip-option value="history">Histórico</mat-chip-option>
@@ -70,7 +74,12 @@
     } @else {
       <!-- Desktop table -->
       <div class="dashboard__table-wrapper glass-card">
-        <table mat-table [dataSource]="filteredEvents()" class="dashboard__table" aria-label="Lista de eventos">
+        <table
+          mat-table
+          [dataSource]="filteredEvents()"
+          class="dashboard__table"
+          aria-label="Lista de eventos"
+        >
           <ng-container matColumnDef="title">
             <th mat-header-cell *matHeaderCellDef>Evento</th>
             <td mat-cell *matCellDef="let event">
@@ -130,14 +139,27 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openPublicEvent(row)" class="dashboard__row dashboard__clickable-row" [class.cancelled]="row.status === 'cancelled'" [class.history]="isHistoryEvent(row.date) && row.status !== 'cancelled'"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            (click)="openPublicEvent(row)"
+            class="dashboard__row dashboard__clickable-row"
+            [class.cancelled]="row.status === 'cancelled'"
+            [class.history]="isHistoryEvent(row.date) && row.status !== 'cancelled'"
+          ></tr>
         </table>
       </div>
 
       <!-- Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (event of filteredEvents(); track event.id) {
-          <mat-card class="dashboard__mobile-card glass-card dashboard__clickable-card" [class.cancelled]="event.status === 'cancelled'" [class.history]="isHistoryEvent(event.date) && event.status !== 'cancelled'" appearance="outlined" (click)="openPublicEvent(event)">
+          <mat-card
+            class="dashboard__mobile-card glass-card dashboard__clickable-card"
+            [class.cancelled]="event.status === 'cancelled'"
+            [class.history]="isHistoryEvent(event.date) && event.status !== 'cancelled'"
+            appearance="outlined"
+            (click)="openPublicEvent(event)"
+          >
             <mat-card-header>
               <mat-card-title>{{ event.title }}</mat-card-title>
               <mat-card-subtitle>
@@ -145,16 +167,37 @@
               </mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions>
-              <button mat-icon-button (click)="$event.stopPropagation(); editEvent(event)" matTooltip="Editar" aria-label="Editar">
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); editEvent(event)"
+                matTooltip="Editar"
+                aria-label="Editar"
+              >
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="$event.stopPropagation(); shareWhatsApp(event)" matTooltip="Compartilhar no WhatsApp" aria-label="Compartilhar">
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); shareWhatsApp(event)"
+                matTooltip="Compartilhar no WhatsApp"
+                aria-label="Compartilhar"
+              >
                 <mat-icon>share</mat-icon>
               </button>
-              <button mat-icon-button (click)="$event.stopPropagation(); copyLink(event)" matTooltip="Copiar Link" aria-label="Copiar link">
+              <button
+                mat-icon-button
+                (click)="$event.stopPropagation(); copyLink(event)"
+                matTooltip="Copiar Link"
+                aria-label="Copiar link"
+              >
                 <mat-icon>link</mat-icon>
               </button>
-              <button mat-icon-button color="warn" (click)="$event.stopPropagation(); cancelEvent(event)" matTooltip="Cancelar" aria-label="Cancelar">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="$event.stopPropagation(); cancelEvent(event)"
+                matTooltip="Cancelar"
+                aria-label="Cancelar"
+              >
                 <mat-icon>block</mat-icon>
               </button>
             </mat-card-actions>
@@ -175,7 +218,7 @@
             <div class="skeleton-box h-4 w-16"></div>
           </div>
           <!-- Rows fakes -->
-          @for (i of [1,2,3,4]; track i) {
+          @for (i of [1, 2, 3, 4]; track i) {
             <div class="skeleton-table-row">
               <div class="skeleton-box h-5 w-40"></div>
               <div class="skeleton-box h-5 w-24"></div>
@@ -192,7 +235,7 @@
 
       <!-- Skeleton Mobile cards -->
       <div class="dashboard__mobile-cards">
-        @for (i of [1,2,3]; track i) {
+        @for (i of [1, 2, 3]; track i) {
           <mat-card class="dashboard__mobile-card glass-card" appearance="outlined">
             <mat-card-header>
               <mat-card-title><div class="skeleton-box h-6 w-48 mb-2"></div></mat-card-title>

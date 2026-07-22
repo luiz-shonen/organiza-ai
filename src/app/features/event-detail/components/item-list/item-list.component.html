@@ -1,13 +1,13 @@
 <mat-card class="item-list glass-card" appearance="outlined">
-  <mat-card-header >
+  <mat-card-header>
     <mat-icon matCardAvatar class="item-list__icon">checklist</mat-icon>
-    <mat-card-title >Lista de Itens</mat-card-title>
-    <mat-card-subtitle >
+    <mat-card-title>Lista de Itens</mat-card-title>
+    <mat-card-subtitle>
       {{ claimedCount() }} de {{ items().length }} itens atribuídos
     </mat-card-subtitle>
   </mat-card-header>
 
-  <mat-card-content >
+  <mat-card-content>
     @if (items().length === 0) {
       <p class="item-list__empty">Nenhum item cadastrado para este evento.</p>
     } @else {

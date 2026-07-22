@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  DestroyRef,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,10 +21,14 @@ import { MatChipsModule } from '@angular/material/chips';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { effect } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { EventService, AuthService, DrawerService, NotificationService } from '../../../core/services';
+import {
+  EventService,
+  AuthService,
+  DrawerService,
+  NotificationService,
+} from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -50,7 +62,7 @@ export class DashboardContainer implements OnInit {
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly user = this.authService.currentUser;
   protected readonly displayedColumns = ['title', 'date', 'location', 'actions'];
-  
+
   protected readonly activeFilter = signal<'all' | 'upcoming' | 'history' | 'cancelled'>('all');
 
   protected readonly filteredEvents = computed(() => {
@@ -81,7 +93,7 @@ export class DashboardContainer implements OnInit {
   protected readonly nextEvent = computed(() => {
     const all = this.events();
     if (!all) return null;
-    const upcoming = all.filter(e => {
+    const upcoming = all.filter((e) => {
       const isCancelled = e.status === 'cancelled';
       const eventDate = new Date(e.date);
       const now = new Date();
@@ -115,7 +127,7 @@ export class DashboardContainer implements OnInit {
 
           this.notificationService.sendLocalNotification(
             'Evento se aproximando!',
-            `Seu evento "${event.title}" está chegando. ${timeText}.`
+            `Seu evento "${event.title}" está chegando. ${timeText}.`,
           );
           localStorage.setItem(notifiedKey, 'true');
         }
@@ -147,8 +159,8 @@ export class DashboardContainer implements OnInit {
       data: {
         title: 'Cancelar Evento',
         message: `Tem certeza que deseja cancelar o evento "${event.title}"? Ele será movido para os cancelados e o link público avisará sobre o cancelamento.`,
-        confirmLabel: 'Cancelar Evento'
-      }
+        confirmLabel: 'Cancelar Evento',
+      },
     });
 
     confirmRef.afterClosed().subscribe(async (result) => {

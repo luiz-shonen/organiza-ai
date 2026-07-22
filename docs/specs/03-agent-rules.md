@@ -1,4 +1,3 @@
-
 You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
 
 ## TypeScript Best Practices
@@ -59,4 +58,3 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - All project tasks/issues (e.g. on Linear) must strictly include:
   - **História de Usuário (User Story)**: Defining the persona, their goal, and the value/reason.
   - **Critérios de Aceite (Acceptance Criteria)**: Clearly listable validation steps to verify the feature or bugfix.
-

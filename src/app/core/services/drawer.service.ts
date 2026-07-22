@@ -3,7 +3,7 @@ import { Injectable, signal, computed } from '@angular/core';
 export type AppDrawerType = 'admin' | 'event' | null;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DrawerService {
   readonly drawerType = signal<AppDrawerType>(null);

@@ -39,7 +39,7 @@ export class GuestService {
           }));
           subscriber.next(guests);
         },
-        (error) => subscriber.error(error)
+        (error) => subscriber.error(error),
       );
 
       return () => unsubscribe();
@@ -56,11 +56,7 @@ export class GuestService {
     return docRef.id;
   }
 
-  async updateGuest(
-    eventId: string,
-    guestId: string,
-    data: Partial<Guest>
-  ): Promise<void> {
+  async updateGuest(eventId: string, guestId: string, data: Partial<Guest>): Promise<void> {
     const docRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
     await updateDoc(docRef, data);
   }
@@ -71,11 +67,7 @@ export class GuestService {
   }
 
   async getGuestByPhone(eventId: string, phone: string): Promise<Guest | null> {
-    const q = query(
-      this.guestsCollection(eventId),
-      where('phone', '==', phone),
-      limit(1)
-    );
+    const q = query(this.guestsCollection(eventId), where('phone', '==', phone), limit(1));
     const snapshot = await getDocs(q);
     if (snapshot.empty) {
       return null;

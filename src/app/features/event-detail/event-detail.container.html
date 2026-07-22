@@ -9,27 +9,17 @@
     <app-event-card [event]="event" [guestCount]="guestCount()" />
 
     @if (!session()) {
-      <app-rsvp-form
-        [isSubmitting]="false"
-        (onConfirm)="onRsvpConfirm($event)"
-      />
+      <app-rsvp-form [isSubmitting]="false" (onConfirm)="onRsvpConfirm($event)" />
     } @else {
       <!-- User has confirmed presence -->
       <section class="event-detail__section">
-        <h2 class="event-detail__section-title org-gradient-text">
-          Você está na lista! 🎉
-        </h2>
+        <h2 class="event-detail__section-title org-gradient-text">Você está na lista! 🎉</h2>
         <div class="glass-card event-detail__confirmed-card">
           <p class="event-detail__confirmed-title">Presença confirmada</p>
           <p class="event-detail__confirmed-subtitle">
             Estamos te esperando. Seus itens assumidos estão marcados abaixo.
           </p>
-          <button
-            class="event-detail__cancel-btn"
-            (click)="cancelRsvp()"
-          >
-            Não poderei ir
-          </button>
+          <button class="event-detail__cancel-btn" (click)="cancelRsvp()">Não poderei ir</button>
         </div>
       </section>
     }

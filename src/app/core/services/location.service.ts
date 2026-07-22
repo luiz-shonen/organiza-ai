@@ -5,7 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { ViaCepResponse } from '../models/via-cep.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LocationService {
   private readonly http = inject(HttpClient);
@@ -18,11 +18,11 @@ export class LocationService {
     }
 
     return this.http.get<ViaCepResponse>(`${this.VIACEP_URL}/${cleanCep}/json/`).pipe(
-      map(res => {
+      map((res) => {
         if (res.erro) return null;
         return res;
       }),
-      catchError(() => of(null))
+      catchError(() => of(null)),
     );
   }
 }

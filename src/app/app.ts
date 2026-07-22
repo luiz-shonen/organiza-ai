@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, effect, Renderer2 } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  computed,
+  effect,
+  Renderer2,
+} from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +16,14 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { AuthService, ThemeService, GuestSessionService, DrawerService, SeasonalThemeService, HeaderService } from './core/services';
+import {
+  AuthService,
+  ThemeService,
+  GuestSessionService,
+  DrawerService,
+  SeasonalThemeService,
+  HeaderService,
+} from './core/services';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { AdminFormDrawerComponent } from './features/admin/dashboard/components/admin-form-drawer/admin-form-drawer.component';
@@ -51,12 +66,12 @@ export class App {
     effect(() => {
       const activeTheme = this.seasonalService.config().activeTheme;
       const htmlElement = document.documentElement;
-      
+
       // Clean up previous seasonal theme classes
-      ['theme-junina', 'theme-natal', 'theme-pascoa', 'theme-ano-novo'].forEach(cls => {
+      ['theme-junina', 'theme-natal', 'theme-pascoa', 'theme-ano-novo'].forEach((cls) => {
         this.renderer.removeClass(htmlElement, cls);
       });
-      
+
       // Apply new theme class if not default
       if (activeTheme !== 'default') {
         this.renderer.addClass(htmlElement, `theme-${activeTheme}`);

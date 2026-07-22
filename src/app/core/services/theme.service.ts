@@ -28,7 +28,7 @@ export class ThemeService {
     effect(() => {
       const user = this.auth.currentUser();
       if (user?.uid && !user.isAnonymous) {
-        this.userService.getProfile(user.uid).then(profile => {
+        this.userService.getProfile(user.uid).then((profile) => {
           if (profile?.themePref) {
             this.mode.set(profile.themePref);
             this.updateIsDark(profile.themePref);

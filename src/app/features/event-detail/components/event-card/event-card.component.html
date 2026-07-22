@@ -8,14 +8,12 @@
         class="event-card__hero-img"
         loading="eager"
         src="https://images.unsplash.com/photo-1533174000273-e18f142b4d99?auto=format&fit=crop&w=1200&q=80"
-        onerror="this.style.display='none'"
+        onerror="this.style.display = 'none'"
       />
       <div class="event-card__hero-overlay"></div>
 
       <div class="event-card__hero-info">
-        <span class="event-card__category-badge">
-          Festa & Celebração
-        </span>
+        <span class="event-card__category-badge"> Festa & Celebração </span>
         <h1 class="event-card__title">
           {{ ev.title }}
         </h1>
@@ -32,8 +30,14 @@
             <span class="event-card__date-day">{{ ev.date | date: 'dd' }}</span>
           </div>
           <div class="event-card__date-text">
-            <p class="event-card__date-full">{{ (ev.date | date: 'EEEE, HH:mm') | titlecase }}</p>
-            <a class="event-card__date-sub" [href]="googleCalendarUrl()" target="_blank" rel="noopener noreferrer">Adicionar ao calendário</a>
+            <p class="event-card__date-full">{{ ev.date | date: 'EEEE, HH:mm' | titlecase }}</p>
+            <a
+              class="event-card__date-sub"
+              [href]="googleCalendarUrl()"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Adicionar ao calendário</a
+            >
           </div>
         </div>
 

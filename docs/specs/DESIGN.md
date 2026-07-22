@@ -111,22 +111,26 @@ spacing:
 ---
 
 ## Brand & Style
-The design system is built on a "Modern Festive Planner" narrative, designed to transform task management from a chore into a celebration. The target audience includes creative professionals, event planners, and individuals who thrive in high-energy, visually stimulating environments. 
+
+The design system is built on a "Modern Festive Planner" narrative, designed to transform task management from a chore into a celebration. The target audience includes creative professionals, event planners, and individuals who thrive in high-energy, visually stimulating environments.
 
 The aesthetic is a maximalist blend of **Glassmorphism** and **Vibrant Modernism**. It prioritizes depth through translucent layering, organic movement via background shapes, and a "bubbly" personality. Every interaction should feel energetic and high-fidelity, utilizing "Organiza-inspired" color transitions to guide the eye and evoke a sense of playfulness and momentum.
 
 ## Colors
-The palette is dominated by a royal **Deep Purple** for structure and authority, contrasted sharply by a **Vibrant Orange** for action and urgency. A **Soft Peach** serves as the bridge between these extremes, often used in gradients to create a festive "sunset" glow. 
+
+The palette is dominated by a royal **Deep Purple** for structure and authority, contrasted sharply by a **Vibrant Orange** for action and urgency. A **Soft Peach** serves as the bridge between these extremes, often used in gradients to create a festive "sunset" glow.
 
 Backgrounds are never flat; they utilize a soft peach-to-lavender base layered with blurred, floating organic shapes in primary and secondary hues (20% opacity) to create a sense of living space behind the UI.
 
 ## Typography
-This design system uses **Plus Jakarta Sans** across all roles to maintain a cohesive, rounded, and welcoming feel while ensuring legibility. 
+
+This design system uses **Plus Jakarta Sans** across all roles to maintain a cohesive, rounded, and welcoming feel while ensuring legibility.
 
 Headlines utilize the heaviest weights (Bold/ExtraBold) to achieve the "bubbly" festive look, often paired with tight letter spacing for a punchy, modern impact. Body text remains medium weight to ensure it holds its own against the vibrant, high-contrast backgrounds. All labels should be treated with uppercase styling and increased tracking when used for categorization.
 
 ## Layout & Spacing
-The layout follows a **Fluid Grid** philosophy with generous margins to allow the background organic shapes to breathe. 
+
+The layout follows a **Fluid Grid** philosophy with generous margins to allow the background organic shapes to breathe.
 
 - **Desktop:** 12-column grid, 64px outer margins, 24px gutters.
 - **Mobile:** 4-column grid, 20px outer margins, 16px gutters.
@@ -134,7 +138,8 @@ The layout follows a **Fluid Grid** philosophy with generous margins to allow th
 Spacing follows an 8px rhythmic scale. Components should prioritize internal padding (`md` or 24px) to emphasize the "glass" container's surface area. Negative space is used aggressively around headlines to maintain the "Modern Festive" clarity.
 
 ## Elevation & Depth
-Depth is achieved through **Glassmorphism** rather than traditional drop shadows. 
+
+Depth is achieved through **Glassmorphism** rather than traditional drop shadows.
 
 1.  **Base Layer:** Soft gradient background with blurred organic blobs.
 2.  **Surface Layer (Cards/Modals):** Translucent white (`rgba(255, 255, 255, 0.6)`) with a `backdrop-filter: blur(20px)`.
@@ -143,27 +148,33 @@ Depth is achieved through **Glassmorphism** rather than traditional drop shadows
 5.  **Micro-interações e Celebração:** Textos de destaque (como o título do Login) utilizam a classe `.animated-gradient` para transicionar as cores do gradiente dinamicamente. Ações de sucesso significativas (confirmação de RSVP, itens assumidos) disparam chuvas de confetes através do `ConfettiService` integrado com `canvas-confetti`.
 
 ## Shapes
-Shapes are unapologetically rounded to reinforce the "bubbly" and "friendly" brand vibe. 
+
+Shapes are unapologetically rounded to reinforce the "bubbly" and "friendly" brand vibe.
 
 The standard radius for cards and major containers is `1rem` (Rounded). Smaller interactive elements like checkboxes or tags should use a fully pill-shaped (`rounded-xl`) radius. Avoid sharp corners entirely to maintain the organic, festive flow of the interface.
 
 ## Components
 
 ### Buttons
+
 - **Primary:** Gradient fill (Deep Purple to Vibrant Orange), pill-shaped, white text, 1.5px inner glow border.
 - **Secondary:** Glass-morphic fill, gradient border, purple text.
 - **Interaction:** On hover, buttons should scale slightly (1.05x) and increase backdrop blur intensity.
 
 ### Cards
+
 All cards must feature `backdrop-filter: blur(24px)` and a background color of `white` at 50-70% opacity. Borders must use the signature "Organiza" gradient (Purple/Pink/Orange).
 
 ### Inputs & Selection
+
 - **Text Fields:** Soft peach background (10% opacity) with a 2px bottom border that animates into a full gradient border on focus.
 - **Chips/Tags:** Pill-shaped with vibrant, semi-transparent fills. Each category should have a unique gradient-tinted background.
 - **Checkboxes:** Circular (not square) to match the bubbly aesthetic, filling with the primary gradient when active.
 
 ### Lists
+
 - Lists should be presented as floating glass tiles with `sm` (12px) vertical spacing between items, creating a "stacked glass" effect.
 
 ### Modals & Dialogs
+
 - **ConfirmDialogComponent:** Diálogos genéricos de confirmação de exclusão/cancelamento devem usar o padrão `ConfirmDialogComponent` em vez de `alert()` ou `confirm()` nativos do navegador. Ele encapsula botões de ação e segue o design system de forma consistente.

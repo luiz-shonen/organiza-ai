@@ -153,7 +153,9 @@
     justify-content: center;
     background: var(--org-gradient-primary) !important;
     box-shadow: 0 6px 20px rgba(255, 77, 148, 0.4) !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease !important;
 
     &:hover {
       transform: translateY(-1px);
@@ -242,14 +244,26 @@
 }
 
 @keyframes orbFloat1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(40px, -30px) scale(1.15); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(40px, -30px) scale(1.15);
+  }
 }
 @keyframes orbFloat2 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-30px, 40px) scale(1.1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(-30px, 40px) scale(1.1);
+  }
 }
 @keyframes orbFloat3 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(25px, 25px) scale(1.2); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(25px, 25px) scale(1.2);
+  }
 }

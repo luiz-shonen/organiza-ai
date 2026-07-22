@@ -18,8 +18,10 @@ export class EventCardComponent {
   public googleCalendarUrl = computed(() => {
     const ev = this.event();
     if (!ev) return '#';
-    const dateStr = new Date(ev.date).toISOString().replace(/-|:|\.\d\d\d/g, "");
-    const endDateStr = new Date(new Date(ev.date).getTime() + 4 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+    const dateStr = new Date(ev.date).toISOString().replace(/-|:|\.\d\d\d/g, '');
+    const endDateStr = new Date(new Date(ev.date).getTime() + 4 * 60 * 60 * 1000)
+      .toISOString()
+      .replace(/-|:|\.\d\d\d/g, '');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(ev.title)}&dates=${dateStr}/${endDateStr}&details=${encodeURIComponent(ev.description)}&location=${encodeURIComponent(ev.location)}`;
   });
 }

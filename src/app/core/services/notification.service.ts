@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationService {
   private hasPermission = false;
@@ -32,7 +32,7 @@ export class NotificationService {
         body,
         icon: icon || '/assets/icons/icon-192x192.png',
         badge: '/assets/icons/icon-72x72.png',
-        vibrate: [200, 100, 200]
+        vibrate: [200, 100, 200],
       } as any);
     } catch (e) {
       console.error('Erro ao disparar notificação local', e);

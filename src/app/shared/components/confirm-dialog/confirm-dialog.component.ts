@@ -20,9 +20,11 @@ export interface ConfirmDialogData {
     </mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>{{ data.cancelLabel || 'Cancelar' }}</button>
-      <button mat-flat-button color="warn" [mat-dialog-close]="true">{{ data.confirmLabel || 'Confirmar' }}</button>
+      <button mat-flat-button color="warn" [mat-dialog-close]="true">
+        {{ data.confirmLabel || 'Confirmar' }}
+      </button>
     </mat-dialog-actions>
-  `
+  `,
 })
 export class ConfirmDialogComponent {
   readonly data: ConfirmDialogData = inject(MAT_DIALOG_DATA);

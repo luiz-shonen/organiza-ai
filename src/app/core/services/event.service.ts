@@ -21,10 +21,7 @@ export class EventService {
 
   listEvents(): Observable<PartyEvent[]> {
     return new Observable<PartyEvent[]>((subscriber) => {
-      const q = query(
-        collection(this.firestore, this.collectionName),
-        orderBy('date', 'asc')
-      );
+      const q = query(collection(this.firestore, this.collectionName), orderBy('date', 'asc'));
 
       const unsubscribe = onSnapshot(
         q,
@@ -32,7 +29,7 @@ export class EventService {
           const events = snapshot.docs.map((d) => this.mapDoc(d));
           subscriber.next(events);
         },
-        (error) => subscriber.error(error)
+        (error) => subscriber.error(error),
       );
 
       return () => unsubscribe();
@@ -52,7 +49,7 @@ export class EventService {
             subscriber.next(null);
           }
         },
-        (error) => subscriber.error(error)
+        (error) => subscriber.error(error),
       );
 
       return () => unsubscribe();
@@ -87,16 +84,19 @@ export class EventService {
   }
 
   private mapDoc(
-    snapshot: import('firebase/firestore').DocumentSnapshot | import('firebase/firestore').QueryDocumentSnapshot
+    snapshot:
+      | import('firebase/firestore').DocumentSnapshot
+      | import('firebase/firestore').QueryDocumentSnapshot,
   ): PartyEvent {
     const data = snapshot.data();
     return {
       id: snapshot.id,
       title: (data?.['title'] as string) ?? '',
       description: (data?.['description'] as string) ?? '',
-      date: data?.['date'] instanceof Timestamp
-        ? (data['date'] as Timestamp).toDate().toISOString()
-        : (data?.['date'] as string) ?? '',
+      date:
+        data?.['date'] instanceof Timestamp
+          ? (data['date'] as Timestamp).toDate().toISOString()
+          : ((data?.['date'] as string) ?? ''),
       location: (data?.['location'] as string) ?? '',
       pixKey: (data?.['pixKey'] as string | null) ?? null,
       status: (data?.['status'] as 'active' | 'cancelled') ?? 'active',

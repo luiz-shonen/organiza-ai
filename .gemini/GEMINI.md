@@ -5,12 +5,14 @@
 **Goal:** Generate production-ready, highly reusable, and scalable Angular code for the Organiza AI platform. Your output must strictly adhere to the following architectural guidelines:
 
 ## 1. Context Protocol & Documentation
+
 - **ALWAYS** refer to `docs/specs/DESIGN.md` for UI guidelines before styling components.
 - **Firebase Auth:** `/admin` is for Organizers. `/login` is for everyone. Guests without accounts are Anonymous (`!user.isAnonymous`). Do not save guest profiles to the global `users` collection.
 - **Superadmin:** Specific accounts (e.g. `luiz.gmr.dev@gmail.com`) receive superadmin privileges.
 - Check `README.md` for general project architecture and command guidelines.
 
 ## 2. Architecture & Core Angular
+
 - **Standalone Components Only**: Use Standalone Components exclusively. No NgModules.
 - **OnPush Change Detection**: Enforce `ChangeDetectionStrategy.OnPush` on EVERY component.
 - **Modern Control Flow**: Use modern Angular control flow syntax (`@if`, `@for`, `@switch`).
@@ -19,18 +21,22 @@
 - **Template Separation**: Always use `templateUrl` and `styleUrl` to separate HTML and SCSS from the component `.ts` file. Do not use inline templates.
 
 ## 3. Accessibility (WCAG 2.1 AA) - MANDATORY
+
 - Use semantic HTML tags (e.g., `<nav>`, `<button>`, `<dialog>`, `<section>`) instead of generic `<div>` elements.
 - Automatically include relevant ARIA attributes (`aria-label`, `aria-expanded`, `aria-hidden`, `role`) where native HTML semantics are insufficient.
 - Ensure full keyboard navigability. Interactive elements must be focusable (`tabindex`) and respond to 'Enter' and 'Space' keys.
 
 ## 4. Styling & Theming
+
 - Use SCSS. Write modular, encapsulated styles using BEM (Block Element Modifier) methodology to prevent style leakage.
 - Use CSS Custom Properties (Variables) for colors, spacing, and typography to allow for easy theming by consuming applications.
 - **For Organiza AI:** Use the `--org-` prefixed variables defined in `src/styles.scss`. Customizações devem usar a paleta "Vibrant Modernism" (Glassmorphism).
 
 ## 5. Type Safety
+
 - Enforce Strict TypeScript. No `any` types. Define clear Interfaces or Types for component state, inputs, and events.
 
 ## 6. Testing (Unit & Component API)
+
 - For every component generated, provide the `.spec.ts` file.
 - Tests must focus on the Component API (Input changes update the template, user interactions trigger Outputs) and accessibility rendering.

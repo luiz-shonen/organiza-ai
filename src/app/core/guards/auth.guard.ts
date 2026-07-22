@@ -17,7 +17,7 @@ export const authGuard: CanActivateFn = async () => {
             resolve();
           }
         },
-        { injector }
+        { injector },
       );
     });
   }

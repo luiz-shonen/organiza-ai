@@ -11,7 +11,16 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { EventService, GuestSessionService, ItemService, GuestService, AuthService, UserService, ConfettiService, SeasonalThemeService } from '../../core/services';
+import {
+  EventService,
+  GuestSessionService,
+  ItemService,
+  GuestService,
+  AuthService,
+  UserService,
+  ConfettiService,
+  SeasonalThemeService,
+} from '../../core/services';
 import { PartyEvent, PartyItem, Guest } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -95,7 +104,9 @@ export class EventDetailContainer implements OnInit {
 
     const user = this.authService.currentUser();
     if (user?.uid && !user.isAnonymous) {
-      this.userService.upsertProfile(user.uid, { name: data.name, phone: data.phone }).catch(console.error);
+      this.userService
+        .upsertProfile(user.uid, { name: data.name, phone: data.phone })
+        .catch(console.error);
     }
 
     // RSVP — add or update guest record
@@ -160,9 +171,10 @@ export class EventDetailContainer implements OnInit {
       width: '400px',
       data: {
         title: 'Cancelar Presença',
-        message: 'Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.',
-        confirmLabel: 'Sim, cancelar'
-      }
+        message:
+          'Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.',
+        confirmLabel: 'Sim, cancelar',
+      },
     });
 
     confirmRef.afterClosed().subscribe(async (result) => {
@@ -171,13 +183,15 @@ export class EventDetailContainer implements OnInit {
           const existingGuest = await this.guestService.getGuestByPhone(this.id(), session.phone);
           if (existingGuest) {
             await this.guestService.deleteGuest(this.id(), existingGuest.id);
-            
+
             // Unclaim all items claimed by this guest
-            const itemsToUnclaim = this.items().filter(item => item.claimedBy?.phone === session.phone);
+            const itemsToUnclaim = this.items().filter(
+              (item) => item.claimedBy?.phone === session.phone,
+            );
             for (const item of itemsToUnclaim) {
               await this.itemService.unclaimItem(this.id(), item.id!);
             }
-            
+
             this.guestSession.clearSession();
             this.snackBar.open('Sua presença foi cancelada.', 'OK', { duration: 3000 });
           }

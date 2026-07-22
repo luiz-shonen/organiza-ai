@@ -53,7 +53,7 @@
 
   .skeleton-table {
     width: 100%;
-    
+
     &-header {
       display: grid;
       grid-template-columns: 2fr 1fr 1.5fr 150px;
@@ -61,7 +61,7 @@
       border-bottom: 1px solid var(--mat-sys-outline-variant);
       background-color: var(--mat-sys-surface-container-low);
     }
-    
+
     &-row {
       display: grid;
       grid-template-columns: 2fr 1fr 1.5fr 150px;
@@ -78,18 +78,24 @@
   &__table {
     width: 100%;
     background: transparent !important;
-    
+
     // Ensure all cells and rows are transparent to let the glass effect through
     --mat-table-background-color: transparent;
     --mat-table-header-container-background-color: transparent;
-    
+
     ::ng-deep {
       .mat-mdc-table,
       .mat-mdc-header-row,
       .mat-mdc-row,
       .mat-mdc-header-cell,
       .mat-mdc-cell,
-      table, thead, tbody, tfoot, tr, th, td {
+      table,
+      thead,
+      tbody,
+      tfoot,
+      tr,
+      th,
+      td {
         background: transparent !important;
       }
     }
@@ -182,7 +188,7 @@
   /* Filters */
   &__filters {
     margin-bottom: 24px;
-    
+
     ::ng-deep {
       .mat-mdc-chip-listbox {
         padding: 4px;
@@ -198,7 +204,11 @@
     padding: 16px 24px;
     margin-bottom: 24px;
     border-radius: 16px;
-    background: linear-gradient(135deg, rgba(var(--mat-sys-primary-rgb), 0.1), rgba(var(--mat-sys-tertiary-rgb), 0.05));
+    background: linear-gradient(
+      135deg,
+      rgba(var(--mat-sys-primary-rgb), 0.1),
+      rgba(var(--mat-sys-tertiary-rgb), 0.05)
+    );
     border: 1px solid rgba(var(--mat-sys-primary-rgb), 0.2);
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -206,7 +216,11 @@
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      background: linear-gradient(135deg, rgba(var(--mat-sys-primary-rgb), 0.15), rgba(var(--mat-sys-tertiary-rgb), 0.1));
+      background: linear-gradient(
+        135deg,
+        rgba(var(--mat-sys-primary-rgb), 0.15),
+        rgba(var(--mat-sys-tertiary-rgb), 0.1)
+      );
     }
   }
 
@@ -243,8 +257,10 @@
   /* Cancelled state */
   .cancelled {
     opacity: 0.6;
-    
-    td, .mat-mdc-card-title, .mat-mdc-card-subtitle {
+
+    td,
+    .mat-mdc-card-title,
+    .mat-mdc-card-subtitle {
       text-decoration: line-through;
     }
   }
@@ -253,11 +269,12 @@
   .history {
     opacity: 0.8;
     background-color: rgba(var(--mat-sys-on-surface-rgb), 0.02) !important;
-    
-    td, .mat-mdc-card-title {
+
+    td,
+    .mat-mdc-card-title {
       color: var(--mat-sys-on-surface-variant);
     }
-    
+
     mat-icon {
       filter: grayscale(100%);
     }
@@ -265,11 +282,25 @@
 }
 
 @keyframes ring {
-  0% { transform: rotate(0); }
-  5% { transform: rotate(15deg); }
-  10% { transform: rotate(-10deg); }
-  15% { transform: rotate(5deg); }
-  20% { transform: rotate(-5deg); }
-  25% { transform: rotate(0); }
-  100% { transform: rotate(0); }
+  0% {
+    transform: rotate(0);
+  }
+  5% {
+    transform: rotate(15deg);
+  }
+  10% {
+    transform: rotate(-10deg);
+  }
+  15% {
+    transform: rotate(5deg);
+  }
+  20% {
+    transform: rotate(-5deg);
+  }
+  25% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(0);
+  }
 }

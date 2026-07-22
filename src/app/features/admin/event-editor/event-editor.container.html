@@ -1,5 +1,4 @@
 <section class="editor" aria-label="Editor de evento">
-
   @if (loading()) {
     <header class="editor__header editor__header--single">
       <button mat-icon-button disabled class="editor__back-btn">
@@ -12,23 +11,23 @@
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
         <mat-card class="editor__card glass-card" appearance="outlined">
-        <mat-card-header>
-          <div matCardAvatar class="skeleton-box editor__card-icon"></div>
-          <mat-card-title>
-            <div class="skeleton-box h-6 w-40"></div>
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="editor__form">
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-textarea"></div>
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-btn"></div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+          <mat-card-header>
+            <div matCardAvatar class="skeleton-box editor__card-icon"></div>
+            <mat-card-title>
+              <div class="skeleton-box h-6 w-40"></div>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="editor__form">
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-textarea"></div>
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-btn"></div>
+            </div>
+          </mat-card-content>
+        </mat-card>
       </div>
     </div>
   } @else {
@@ -48,7 +47,6 @@
     </header>
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
-
         <!-- Event Form -->
         <mat-card class="editor__card glass-card" appearance="outlined">
           <mat-card-header>
@@ -155,7 +153,10 @@
               </div>
 
               <div class="editor__address-row-single">
-                <mat-form-field appearance="outline" class="editor__address-field org-input editor__disabled-field">
+                <mat-form-field
+                  appearance="outline"
+                  class="editor__address-field org-input editor__disabled-field"
+                >
                   <mat-label>Endereço</mat-label>
                   <input
                     matInput
@@ -186,7 +187,13 @@
 
                 <mat-form-field appearance="outline" class="org-input editor__disabled-field">
                   <mat-label>Cidade/UF</mat-label>
-                  <input matInput formControlName="city" placeholder="Ex: São Paulo/SP" readonly tabindex="-1" />
+                  <input
+                    matInput
+                    formControlName="city"
+                    placeholder="Ex: São Paulo/SP"
+                    readonly
+                    tabindex="-1"
+                  />
                 </mat-form-field>
               </div>
 

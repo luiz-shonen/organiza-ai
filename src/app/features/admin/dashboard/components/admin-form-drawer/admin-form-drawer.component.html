@@ -21,26 +21,31 @@
     } @else {
       <ul class="admin-list">
         @for (admin of admins(); track admin) {
-          <li class="admin-list__item" [class.admin-list__item--super]="isSuperAdmin(admin)">
+          <li class="admin-list__item">
             <div class="admin-list__info">
-              <mat-icon class="admin-list__badge-icon" [class.admin-list__badge-icon--super]="isSuperAdmin(admin)">
-                {{ isSuperAdmin(admin) ? 'verified_user' : 'person' }}
-              </mat-icon>
-              <span class="admin-list__email">{{ admin }}</span>
               @if (isSuperAdmin(admin)) {
-                <span class="admin-list__super-chip">Super Admin</span>
+                <mat-icon class="admin-list__badge-icon admin-list__badge-icon--super">verified_user</mat-icon>
+              } @else {
+                <mat-icon class="admin-list__badge-icon">person</mat-icon>
               }
+              <span class="admin-list__email">{{ admin }}</span>
             </div>
-            <button
-              mat-icon-button
-              color="warn"
-              (click)="removeAdmin(admin)"
-              [disabled]="isSuperAdmin(admin)"
-              [matTooltip]="isSuperAdmin(admin) ? 'Super Admin não pode ser removido' : 'Remover administrador'"
-              aria-label="Remover administrador"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
+
+            @if (isSuperAdmin(admin)) {
+              <mat-chip-set class="admin-list__chip-set">
+                <mat-chip class="admin-list__super-chip" highlighted color="primary">Super Admin</mat-chip>
+              </mat-chip-set>
+            } @else {
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="removeAdmin(admin)"
+                matTooltip="Remover administrador"
+                aria-label="Remover administrador"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
           </li>
         }
         @if (admins().length === 0) {
@@ -52,7 +57,14 @@
     <form [formGroup]="form" id="admin-form" (ngSubmit)="submit()" class="admin-form">
       <mat-form-field appearance="outline" class="admin-form__field">
         <mat-label>E-mail do novo administrador</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="email@exemplo.com" required autocomplete="email" />
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          placeholder="email@exemplo.com"
+          required
+          autocomplete="email"
+        />
         <mat-icon matPrefix>email</mat-icon>
         @if (form.controls.email.hasError('required')) {
           <mat-error>E-mail é obrigatório</mat-error>
@@ -66,7 +78,13 @@
 
   <footer class="drawer-footer">
     <button mat-button type="button" (click)="onClose()" [disabled]="loading()">Cancelar</button>
-    <button mat-flat-button color="primary" type="submit" form="admin-form" [disabled]="form.invalid || loading()">
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="admin-form"
+      [disabled]="form.invalid || loading()"
+    >
       @if (loading()) {
         <mat-spinner diameter="20"></mat-spinner>
       } @else {

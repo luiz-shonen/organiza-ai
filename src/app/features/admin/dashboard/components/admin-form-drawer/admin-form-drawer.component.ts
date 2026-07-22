@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { AuthService, DrawerService } from '../../../../../core/services';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -22,6 +23,7 @@ import { ConfirmDialogComponent } from '../../../../../shared/components/confirm
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatChipsModule,
   ],
   templateUrl: './admin-form-drawer.component.html',
   styleUrl: './admin-form-drawer.component.scss',

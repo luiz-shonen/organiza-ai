@@ -1,4 +1,14 @@
 <section class="editor" aria-label="Editor de evento">
+
+  <header class="editor__header">
+    <button mat-icon-button routerLink="/admin" aria-label="Voltar" class="editor__back-btn">
+      <mat-icon>west</mat-icon>
+    </button>
+    <h1 class="editor__title">
+      {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
+    </h1>
+  </header>
+
   
 
   @if (loading()) {

@@ -7,7 +7,6 @@ import {
   input,
   OnInit,
   DestroyRef,
-  effect,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -103,15 +102,7 @@ export class EventEditorContainer implements OnInit, OnDestroy {
     pixKey: [''],
   });
 
-  constructor() {
-    effect(() => {
-      this.headerService.title.set(this.isEditing() ? 'Editar Evento' : 'Novo Evento');
-      this.headerService.showBackBtn.set(true);
-      this.headerService.backUrl.set('/admin');
-    });
-  }
-
-  ngOnInit(): void {
+ngOnInit(): void {
     // ViaCEP listener
     this.form.controls.cep.valueChanges.pipe(
       debounceTime(400),
@@ -179,12 +170,7 @@ export class EventEditorContainer implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.headerService.title.set(null);
-    this.headerService.showBackBtn.set(false);
-  }
-
-  protected async saveEvent(): Promise<void> {
+protected async saveEvent(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

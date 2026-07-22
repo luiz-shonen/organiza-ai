@@ -600,6 +600,14 @@ button:not(mat-icon),
     font-family: 'Plus Jakarta Sans', sans-serif !important;
   }
 
+  /* Fix for Chrome/Safari native time input dropping its baseline below text inputs */
+  input[type="time"] {
+    align-items: center;
+    display: inline-flex;
+    position: relative;
+    top: -2px; /* Pixel-perfect baseline matching with text inputs */
+  }
+
   /* Transparent Floating Label sitting inside open native notch gap */
   .mat-mdc-floating-label {
     font-family: 'Plus Jakarta Sans', sans-serif !important;

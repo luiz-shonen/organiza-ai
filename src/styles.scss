@@ -367,8 +367,7 @@ button[disabled],
 }
 
 .org-glass,
-.glass-card,
-.mat-mdc-card {
+.glass-card {
   background: var(--org-glass-bg) !important;
   backdrop-filter: var(--org-glass-blur) !important;
   -webkit-backdrop-filter: var(--org-glass-blur) !important;
@@ -401,8 +400,7 @@ button[disabled],
 }
 
 .dark .org-glass,
-.dark .glass-card,
-.dark .mat-mdc-card {
+.dark .glass-card {
   background: rgba(255, 255, 255, 0.05) !important;
 }
 

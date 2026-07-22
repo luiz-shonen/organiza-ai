@@ -30,7 +30,7 @@
 
   @if (events$ | async; as events) {
     @if (events.length === 0) {
-      <mat-card class="dashboard__empty" appearance="outlined">
+      <mat-card class="dashboard__empty glass-card" appearance="outlined">
         <mat-card-content>
           <mat-icon class="dashboard__empty-icon">event_note</mat-icon>
           <p>Nenhum evento criado ainda.</p>
@@ -42,7 +42,7 @@
       </mat-card>
     } @else {
       <!-- Desktop table -->
-      <div class="dashboard__table-wrapper">
+      <div class="dashboard__table-wrapper glass-card">
         <table mat-table [dataSource]="events" class="dashboard__table" aria-label="Lista de eventos">
           <ng-container matColumnDef="title">
             <th mat-header-cell *matHeaderCellDef>Evento</th>
@@ -110,7 +110,7 @@
       <!-- Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (event of events; track event.id) {
-          <mat-card class="dashboard__mobile-card" appearance="outlined">
+          <mat-card class="dashboard__mobile-card glass-card" appearance="outlined">
             <mat-card-header>
               <mat-card-title>{{ event.title }}</mat-card-title>
               <mat-card-subtitle>
@@ -166,7 +166,7 @@
       <!-- Skeleton Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (i of [1,2,3]; track i) {
-          <mat-card class="dashboard__mobile-card" appearance="outlined">
+          <mat-card class="dashboard__mobile-card glass-card" appearance="outlined">
             <mat-card-header>
               <mat-card-title><div class="skeleton-box h-6 w-48 mb-2"></div></mat-card-title>
               <mat-card-subtitle><div class="skeleton-box h-4 w-32"></div></mat-card-subtitle>

@@ -16,17 +16,17 @@
     } @else {
       <nav class="home__grid" aria-label="Lista de eventos">
         @for (event of events; track event.id) {
-          <mat-card class="home__card" appearance="outlined" [routerLink]="['/evento', event.id]" style="cursor: pointer; transition: transform 0.2s;">
-            <mat-card-header>
+          <mat-card class="home__card glass-card" appearance="outlined" [routerLink]="['/evento', event.id]" style="cursor: pointer; transition: transform 0.2s;">
+            <mat-card-header class="glass-card">
               <mat-icon matCardAvatar class="home__card-avatar">festival</mat-icon>
-              <mat-card-title>{{ event.title }}</mat-card-title>
-              <mat-card-subtitle>
+              <mat-card-title class="glass-card">{{ event.title }}</mat-card-title>
+              <mat-card-subtitle class="glass-card">
                 <mat-icon class="home__card-inline-icon">calendar_today</mat-icon>
                 {{ formatDate(event.date) }}
               </mat-card-subtitle>
             </mat-card-header>
 
-            <mat-card-content>
+            <mat-card-content class="glass-card">
               <p class="home__card-description">{{ event.description }}</p>
               <p class="home__card-location">
                 <mat-icon class="home__card-inline-icon">location_on</mat-icon>

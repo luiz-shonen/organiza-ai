@@ -10,14 +10,14 @@
 
   @if (loading()) {
     <div class="editor__grid" aria-hidden="true">
-      <mat-card class="editor__card" appearance="outlined">
-        <mat-card-header>
+      <mat-card class="editor__card glass-card" appearance="outlined">
+        <mat-card-header class="glass-card">
           <div matCardAvatar class="skeleton-box editor__card-icon"></div>
-          <mat-card-title>
+          <mat-card-title class="glass-card">
             <div class="skeleton-box h-6 w-40"></div>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content>
+        <mat-card-content class="glass-card">
           <div class="editor__form">
             <div class="skeleton-box editor__skeleton-input"></div>
             <div class="skeleton-box editor__skeleton-textarea"></div>
@@ -33,12 +33,12 @@
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
         <!-- Event Form -->
-        <mat-card class="editor__card" appearance="outlined">
-          <mat-card-header>
+        <mat-card class="editor__card glass-card" appearance="outlined">
+          <mat-card-header class="glass-card">
             <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
-            <mat-card-title>Dados do Evento</mat-card-title>
+            <mat-card-title class="glass-card">Dados do Evento</mat-card-title>
           </mat-card-header>
-          <mat-card-content>
+          <mat-card-content class="glass-card">
             <form [formGroup]="form" class="editor__form" id="event-form">
               <mat-form-field appearance="outline" class="org-input">
                 <mat-label>Título do Evento</mat-label>
@@ -163,13 +163,13 @@
 
         <!-- Items Manager (only when editing) -->
         @if (isEditing()) {
-          <mat-card class="editor__card" appearance="outlined">
-            <mat-card-header>
+          <mat-card class="editor__card glass-card" appearance="outlined">
+            <mat-card-header class="glass-card">
               <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
-              <mat-card-title>Lista de Itens</mat-card-title>
-              <mat-card-subtitle>{{ items().length }} itens cadastrados</mat-card-subtitle>
+              <mat-card-title class="glass-card">Lista de Itens</mat-card-title>
+              <mat-card-subtitle class="glass-card">{{ items().length }} itens cadastrados</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content>
+            <mat-card-content class="glass-card">
               <div class="editor__add-item">
                 <mat-form-field appearance="outline" class="editor__item-name-field">
                   <mat-label>Nome do item</mat-label>
@@ -241,13 +241,13 @@
           <app-share-panel [eventUrl]="eventUrl()" [eventTitle]="form.controls.title.value" />
 
           <!-- Guest List Card -->
-          <mat-card class="editor__card print-section" appearance="outlined">
-            <mat-card-header>
+          <mat-card class="editor__card print-section glass-card" appearance="outlined">
+            <mat-card-header class="glass-card">
               <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
-              <mat-card-title>Lista de Convidados</mat-card-title>
-              <mat-card-subtitle>{{ guests().length }} confirmados</mat-card-subtitle>
+              <mat-card-title class="glass-card">Lista de Convidados</mat-card-title>
+              <mat-card-subtitle class="glass-card">{{ guests().length }} confirmados</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content>
+            <mat-card-content class="glass-card">
               <div class="editor__guest-actions no-print">
                 <button
                   mat-stroked-button

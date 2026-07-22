@@ -87,6 +87,7 @@ export class AuthService {
   }
 
   async loginAnonymously(): Promise<void> {
+    await this.auth.authStateReady();
     // Only sign in anonymously if not already signed in.
     if (!this.auth.currentUser) {
       await signInAnonymously(this.auth);

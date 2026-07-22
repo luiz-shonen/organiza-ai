@@ -167,4 +167,14 @@
     display: flex;
     gap: 8px;
   }
+
+  &__clickable-row,
+  &__clickable-card {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(128, 128, 128, 0.1) !important;
+    }
+  }
 }

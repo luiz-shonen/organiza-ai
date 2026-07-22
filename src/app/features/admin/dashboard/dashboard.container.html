@@ -103,14 +103,14 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openPublicEvent(row)" class="dashboard__row cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openPublicEvent(row)" class="dashboard__row dashboard__clickable-row"></tr>
         </table>
       </div>
 
       <!-- Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (event of events; track event.id) {
-          <mat-card class="dashboard__mobile-card glass-card cursor-pointer hover:bg-black/5 dark:hover:bg-white/5" appearance="outlined" (click)="openPublicEvent(event)">
+          <mat-card class="dashboard__mobile-card glass-card dashboard__clickable-card" appearance="outlined" (click)="openPublicEvent(event)">
             <mat-card-header>
               <mat-card-title>{{ event.title }}</mat-card-title>
               <mat-card-subtitle>

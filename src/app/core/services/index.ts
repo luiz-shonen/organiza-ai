@@ -13,3 +13,4 @@ export { SeasonalThemeService } from './seasonal-theme.service';
 export { DrawerService } from './drawer.service';
 
 export * from './header.service';
+export { NotificationService } from './notification.service';

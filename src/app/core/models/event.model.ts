@@ -6,6 +6,7 @@ export interface PartyEvent {
   date: string;
   location: string;
   pixKey: string | null;
+  status?: 'active' | 'cancelled';
   createdAt: string;
   updatedAt: string;
 }

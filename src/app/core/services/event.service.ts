@@ -63,6 +63,7 @@ export class EventService {
     const now = new Date().toISOString();
     const docRef = await addDoc(collection(this.firestore, this.collectionName), {
       ...data,
+      status: 'active',
       createdAt: now,
       updatedAt: now,
     });
@@ -77,9 +78,12 @@ export class EventService {
     });
   }
 
-  async deleteEvent(eventId: string): Promise<void> {
+  async cancelEvent(eventId: string): Promise<void> {
     const docRef = doc(this.firestore, this.collectionName, eventId);
-    await deleteDoc(docRef);
+    await updateDoc(docRef, {
+      status: 'cancelled',
+      updatedAt: new Date().toISOString(),
+    });
   }
 
   private mapDoc(
@@ -95,6 +99,7 @@ export class EventService {
         : (data?.['date'] as string) ?? '',
       location: (data?.['location'] as string) ?? '',
       pixKey: (data?.['pixKey'] as string | null) ?? null,
+      status: (data?.['status'] as 'active' | 'cancelled') ?? 'active',
       createdAt: (data?.['createdAt'] as string) ?? '',
       updatedAt: (data?.['updatedAt'] as string) ?? '',
     };

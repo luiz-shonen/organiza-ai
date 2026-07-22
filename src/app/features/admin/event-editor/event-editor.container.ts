@@ -7,7 +7,7 @@ import {
   OnInit,
   DestroyRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -33,6 +33,7 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,

@@ -1,26 +1,24 @@
 <section class="editor" aria-label="Editor de evento">
 
-  <header class="editor__header">
-    <button mat-icon-button routerLink="/admin" aria-label="Voltar" class="editor__back-btn">
-      <mat-icon>west</mat-icon>
-    </button>
-    <h1 class="editor__title">
-      {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
-    </h1>
-  </header>
-
-  
-
   @if (loading()) {
     <div class="editor__grid" aria-hidden="true">
-      <mat-card class="editor__card glass-card" appearance="outlined">
-        <mat-card-header >
+      <div class="editor__col">
+        <header class="editor__header">
+          <button mat-icon-button disabled class="editor__back-btn">
+            <mat-icon>west</mat-icon>
+          </button>
+          <h1 class="editor__title">
+            <div class="skeleton-box h-8 w-48"></div>
+          </h1>
+        </header>
+        <mat-card class="editor__card glass-card" appearance="outlined">
+        <mat-card-header>
           <div matCardAvatar class="skeleton-box editor__card-icon"></div>
-          <mat-card-title >
+          <mat-card-title>
             <div class="skeleton-box h-6 w-40"></div>
           </mat-card-title>
         </mat-card-header>
-        <mat-card-content >
+        <mat-card-content>
           <div class="editor__form">
             <div class="skeleton-box editor__skeleton-input"></div>
             <div class="skeleton-box editor__skeleton-textarea"></div>
@@ -31,21 +29,42 @@
           </div>
         </mat-card-content>
       </mat-card>
+      </div>
     </div>
   } @else {
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
+        <header class="editor__header">
+          <button
+            mat-icon-button
+            routerLink="/admin"
+            matTooltip="Voltar"
+            aria-label="Voltar"
+            class="editor__back-btn"
+          >
+            <mat-icon>west</mat-icon>
+          </button>
+          <h1 class="editor__title">
+            {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
+          </h1>
+        </header>
+
         <!-- Event Form -->
         <mat-card class="editor__card glass-card" appearance="outlined">
-          <mat-card-header >
+          <mat-card-header>
             <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
-            <mat-card-title >Dados do Evento</mat-card-title>
+            <mat-card-title>Dados do Evento</mat-card-title>
           </mat-card-header>
-          <mat-card-content >
+          <mat-card-content>
             <form [formGroup]="form" class="editor__form" id="event-form">
               <mat-form-field appearance="outline" class="org-input">
                 <mat-label>Título do Evento</mat-label>
-                <input matInput formControlName="title" placeholder="Ex: Festa Junina 2026" required />
+                <input
+                  matInput
+                  formControlName="title"
+                  placeholder="Ex: Festa Junina 2026"
+                  required
+                />
                 @if (form.controls.title.hasError('required')) {
                   <mat-error>Título é obrigatório</mat-error>
                 }
@@ -55,10 +74,14 @@
                 <mat-label class="editor__category-label">Categoria do Evento</mat-label>
                 <mat-chip-listbox formControlName="category" required>
                   @for (cat of categories; track cat.name) {
-                    <mat-chip-option [value]="cat.name" [class]="'org-chip ' + cat.class">{{ cat.name }}</mat-chip-option>
+                    <mat-chip-option [value]="cat.name" [class]="'org-chip ' + cat.class">{{
+                      cat.name
+                    }}</mat-chip-option>
                   }
                 </mat-chip-listbox>
-                @if (form.controls.category.hasError('required') && form.controls.category.touched) {
+                @if (
+                  form.controls.category.hasError('required') && form.controls.category.touched
+                ) {
                   <mat-error class="editor__category-error">Selecione uma categoria</mat-error>
                 }
               </div>
@@ -80,7 +103,16 @@
               <div class="editor__date-time-row">
                 <mat-form-field appearance="outline" class="editor__date-field org-input">
                   <mat-label>Data do Evento</mat-label>
-                  <input matInput [matDatepicker]="picker" formControlName="date" required [min]="minDate" (input)="formatDate($event)" placeholder="DD/MM/AAAA" maxlength="10" />
+                  <input
+                    matInput
+                    [matDatepicker]="picker"
+                    formControlName="date"
+                    required
+                    [min]="minDate"
+                    (input)="formatDate($event)"
+                    placeholder="DD/MM/AAAA"
+                    maxlength="10"
+                  />
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                   @if (form.controls.date.hasError('required')) {
@@ -105,13 +137,25 @@
 
               <mat-form-field appearance="outline" class="org-input">
                 <mat-label>CEP</mat-label>
-                <input matInput formControlName="cep" placeholder="00000-000" maxlength="9" (input)="formatCep($event)" />
+                <input
+                  matInput
+                  formControlName="cep"
+                  placeholder="00000-000"
+                  maxlength="9"
+                  (input)="formatCep($event)"
+                />
               </mat-form-field>
 
               <div class="editor__address-row">
                 <mat-form-field appearance="outline" class="editor__address-field org-input">
                   <mat-label>Endereço</mat-label>
-                  <input matInput formControlName="address" placeholder="Ex: Rua das Festas" required readonly />
+                  <input
+                    matInput
+                    formControlName="address"
+                    placeholder="Ex: Rua das Festas"
+                    required
+                    readonly
+                  />
                   <mat-icon matPrefix>location_on</mat-icon>
                   @if (form.controls.address.hasError('required')) {
                     <mat-error>Endereço é obrigatório</mat-error>
@@ -127,7 +171,12 @@
               <div class="editor__address-row">
                 <mat-form-field appearance="outline" class="org-input">
                   <mat-label>Bairro</mat-label>
-                  <input matInput formControlName="neighborhood" placeholder="Ex: Centro" readonly />
+                  <input
+                    matInput
+                    formControlName="neighborhood"
+                    placeholder="Ex: Centro"
+                    readonly
+                  />
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="org-input">
@@ -138,7 +187,11 @@
 
               <mat-form-field appearance="outline" class="org-input">
                 <mat-label>Chave Pix (opcional)</mat-label>
-                <input matInput formControlName="pixKey" placeholder="CPF, e-mail ou chave aleatória" />
+                <input
+                  matInput
+                  formControlName="pixKey"
+                  placeholder="CPF, e-mail ou chave aleatória"
+                />
                 <mat-icon matPrefix>pix</mat-icon>
                 <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
               </mat-form-field>
@@ -167,12 +220,12 @@
         <!-- Items Manager (only when editing) -->
         @if (isEditing()) {
           <mat-card class="editor__card glass-card" appearance="outlined">
-            <mat-card-header >
+            <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
-              <mat-card-title >Lista de Itens</mat-card-title>
-              <mat-card-subtitle >{{ items().length }} itens cadastrados</mat-card-subtitle>
+              <mat-card-title>Lista de Itens</mat-card-title>
+              <mat-card-subtitle>{{ items().length }} itens cadastrados</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content >
+            <mat-card-content>
               <div class="editor__add-item">
                 <mat-form-field appearance="outline" class="editor__item-name-field">
                   <mat-label>Nome do item</mat-label>
@@ -245,12 +298,12 @@
 
           <!-- Guest List Card -->
           <mat-card class="editor__card print-section glass-card" appearance="outlined">
-            <mat-card-header >
+            <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
-              <mat-card-title >Lista de Convidados</mat-card-title>
-              <mat-card-subtitle >{{ guests().length }} confirmados</mat-card-subtitle>
+              <mat-card-title>Lista de Convidados</mat-card-title>
+              <mat-card-subtitle>{{ guests().length }} confirmados</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content >
+            <mat-card-content>
               <div class="editor__guest-actions no-print">
                 <button
                   mat-stroked-button
@@ -294,7 +347,9 @@
                   </table>
                 </div>
               } @else {
-                <p class="editor__empty-guests no-print">Nenhum convidado confirmou presença ainda.</p>
+                <p class="editor__empty-guests no-print">
+                  Nenhum convidado confirmou presença ainda.
+                </p>
               }
             </mat-card-content>
           </mat-card>

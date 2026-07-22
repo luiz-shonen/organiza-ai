@@ -170,6 +170,11 @@ export class EventEditorContainer implements OnInit, OnDestroy {
     }
   }
 
+  ngOnDestroy(): void {
+    this.headerService.title.set(null);
+    this.headerService.showBackBtn.set(false);
+  }
+
   protected async saveEvent(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

@@ -8,6 +8,7 @@
   flex: 1;
   height: 100%;
   width: 100%;
+  background: transparent !important;
 }
 
 .app-toolbar {
@@ -111,4 +112,10 @@
     width: 20px;
     height: 20px;
   }
+}
+
+
+mat-sidenav-content,
+.mat-drawer-container {
+  background: transparent !important;
 }

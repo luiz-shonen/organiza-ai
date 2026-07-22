@@ -1,12 +1,27 @@
-<div class="bg-blobs" aria-hidden="true">
+
+
+<mat-sidenav-container class="app-sidenav-container">
+  <mat-sidenav
+    #drawer
+    position="end"
+    mode="over"
+    [opened]="drawerService.isOpen()"
+    (closed)="drawerService.close()"
+    class="app-sidenav-drawer glass-drawer"
+  >
+    @if (drawerService.drawerType() === 'admin') {
+      <app-admin-form-drawer (close)="drawerService.close()" />
+    }
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="bg-blobs" aria-hidden="true">
   <div class="blob blob-1"></div>
   <div class="blob blob-2"></div>
   <div class="blob blob-3"></div>
 </div>
-
-<app-seasonal-overlay />
-
-@if (showHeader()) {
+    <app-seasonal-overlay />
+    @if (showHeader()) {
   <mat-toolbar class="app-toolbar" role="banner">
     @if (headerService.showBackBtn()) {
       <button mat-icon-button [routerLink]="headerService.backUrl()" aria-label="Voltar" class="app-toolbar__back-btn">
@@ -74,21 +89,6 @@
   </mat-toolbar>
 }
 
-<mat-sidenav-container class="app-sidenav-container">
-  <mat-sidenav
-    #drawer
-    position="end"
-    mode="over"
-    [opened]="drawerService.isOpen()"
-    (closed)="drawerService.close()"
-    class="app-sidenav-drawer glass-card"
-  >
-    @if (drawerService.drawerType() === 'admin') {
-      <app-admin-form-drawer (close)="drawerService.close()" />
-    }
-  </mat-sidenav>
-
-  <mat-sidenav-content>
     @if (isOffline()) {
       <div class="app-offline-banner" role="alert" aria-live="assertive">
         <mat-icon>cloud_off</mat-icon>

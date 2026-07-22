@@ -12,9 +12,7 @@
 }
 
 .app-toolbar {
-  position: fixed;
-  width: 100%;
-  left: 0;
+  position: sticky;
   top: 0;
   z-index: 1000;
   background: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
@@ -138,6 +136,19 @@ mat-sidenav-content,
 }
 
 
-mat-sidenav-content {
-  padding-top: 64px !important;
+
+.glass-drawer {
+  background: var(--org-glass-bg) !important;
+  backdrop-filter: var(--org-glass-blur) !important;
+  -webkit-backdrop-filter: var(--org-glass-blur) !important;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  width: 400px;
+  max-width: 90vw;
+  
+  .dark & {
+    border-left: 1.5px solid rgba(255, 255, 255, 0.05);
+  }
 }

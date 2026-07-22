@@ -6,11 +6,12 @@
   pointer-events: none;
   z-index: 0; // Sits right behind the glassmorphism layout
   overflow: hidden;
-  opacity: 0.18; // Atmospheric watermark
+  opacity: 0.20; // Atmospheric watermark
   mix-blend-mode: multiply;
+  background: var(--org-gradient-primary);
 
   .dark & {
-    opacity: 0.08;
+    opacity: 0.12;
     mix-blend-mode: screen;
   }
 
@@ -26,18 +27,42 @@
   // Passing bandeirolas fixed at absolute top
   &__garland {
     position: absolute;
-    top: 64px;
     left: 0;
     width: 100%;
     height: 35px;
     background-image: url('/seasonal/junina-garland.svg');
     background-size: auto 100%;
     background-repeat: repeat-x;
-    animation: panGarland 25s linear infinite;
     opacity: 1;
 
     @media (min-width: 768px) {
       height: 45px;
+    }
+
+    &--1 {
+      top: 5%;
+      animation: panGarland 25s linear infinite;
+    }
+    
+    &--2 {
+      top: 35%;
+      animation: panGarland 35s linear infinite reverse;
+      opacity: 0.6;
+      transform: scale(0.8);
+    }
+    
+    &--3 {
+      top: 65%;
+      animation: panGarland 28s linear infinite;
+      opacity: 0.4;
+      transform: scale(0.6);
+    }
+    
+    &--4 {
+      top: 90%;
+      animation: panGarland 40s linear infinite reverse;
+      opacity: 0.3;
+      transform: scale(0.5);
     }
   }
 

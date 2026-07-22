@@ -602,7 +602,7 @@ button:not(mat-icon),
 
   /* Fix for Chrome/Safari native time input expanding the container height */
   input[type="time"] {
-    height: 24px !important; /* Force identical height to text inputs */
+    height: 22px !important; /* Force identical height to text inputs */
     line-height: 24px !important;
     padding: 0 !important;
     margin: 0 !important;

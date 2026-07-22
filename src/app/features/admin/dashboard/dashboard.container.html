@@ -52,7 +52,7 @@
     }
 
     <div class="dashboard__filters">
-      <mat-chip-listbox [value]="activeFilter()" (change)="activeFilter.set($event.value || 'all')" aria-label="Filtro de eventos">
+      <mat-chip-listbox #chipList [value]="activeFilter()" (change)="activeFilter.set($event.value || 'all'); chipList.value = activeFilter()" aria-label="Filtro de eventos">
         <mat-chip-option value="all">Todos</mat-chip-option>
         <mat-chip-option value="upcoming">Em breve</mat-chip-option>
         <mat-chip-option value="history">Histórico</mat-chip-option>

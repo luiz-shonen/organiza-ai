@@ -21,12 +21,24 @@
     } @else {
       <ul class="admin-list">
         @for (admin of admins(); track admin) {
-          <li class="admin-list__item">
+          <li class="admin-list__item" [class.admin-list__item--super]="isSuperAdmin(admin)">
             <div class="admin-list__info">
-              <mat-icon class="admin-list__badge-icon">person</mat-icon>
+              <mat-icon class="admin-list__badge-icon" [class.admin-list__badge-icon--super]="isSuperAdmin(admin)">
+                {{ isSuperAdmin(admin) ? 'verified_user' : 'person' }}
+              </mat-icon>
               <span class="admin-list__email">{{ admin }}</span>
+              @if (isSuperAdmin(admin)) {
+                <span class="admin-list__super-chip">Super Admin</span>
+              }
             </div>
-            <button mat-icon-button color="warn" (click)="removeAdmin(admin)" aria-label="Remover administrador">
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="removeAdmin(admin)"
+              [disabled]="isSuperAdmin(admin)"
+              [matTooltip]="isSuperAdmin(admin) ? 'Super Admin não pode ser removido' : 'Remover administrador'"
+              aria-label="Remover administrador"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </li>

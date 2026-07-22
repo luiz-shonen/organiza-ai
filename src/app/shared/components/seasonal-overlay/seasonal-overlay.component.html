@@ -4,26 +4,251 @@
   <aside class="seasonal-overlay" [attr.data-theme]="theme" aria-hidden="true">
     @switch (theme) {
       @case ('junina') {
-        <!-- String of animated SVG bandeirolas across header -->
+        <!-- MODERN ANIMATED FESTA JUNINA SVG OVERLAY SYSTEM -->
         <div class="seasonal-overlay__junina">
-          <svg class="seasonal-overlay__string-svg" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none">
-            <!-- Varal Line -->
-            <path d="M0,20 Q300,70 600,20 Q900,70 1200,20" stroke="#8D6E63" stroke-width="2" stroke-dasharray="6 4"/>
+          <!-- Top Garland 1: Arching 3D Faceted Flags -->
+          <svg class="seasonal-overlay__garland-svg" viewBox="0 0 1440 180" preserveAspectRatio="none" fill="none">
+            <!-- Main String 1 -->
+            <path d="M-20,15 Q360,110 720,40 T1460,20" stroke="rgba(255,255,255,0.7)" stroke-width="2" stroke-dasharray="8 4"/>
+
+            <!-- Garland 1 3D Faceted Flags -->
+            <!-- Flag 1 Red/Pink -->
+            <g class="flag-group fg1" transform="translate(60, 22) rotate(-4)">
+              <polygon points="0,0 36,0 18,52" fill="#FF4D94" />
+              <polygon points="18,0 36,0 18,52" fill="#D6336C" />
+            </g>
+            <!-- Flag 2 Sky Blue -->
+            <g class="flag-group fg2" transform="translate(140, 36) rotate(2)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#00D2FF" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#0099CC" />
+            </g>
+            <!-- Flag 3 Yellow -->
+            <g class="flag-group fg3" transform="translate(220, 48) rotate(-2)">
+              <polygon points="0,0 36,0 18,52" fill="#FFC837" />
+              <polygon points="18,0 36,0 18,52" fill="#E6A100" />
+            </g>
+            <!-- Flag 4 Green -->
+            <g class="flag-group fg4" transform="translate(300, 56) rotate(3)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#2ECC71" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#27AE60" />
+            </g>
+            <!-- Flag 5 Purple -->
+            <g class="flag-group fg5" transform="translate(380, 58) rotate(-1)">
+              <polygon points="0,0 36,0 18,52" fill="#9B59B6" />
+              <polygon points="18,0 36,0 18,52" fill="#8E44AD" />
+            </g>
+            <!-- Flag 6 Orange -->
+            <g class="flag-group fg6" transform="translate(460, 54) rotate(4)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#FF8C42" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#E66A1F" />
+            </g>
+            <!-- Flag 7 Coral -->
+            <g class="flag-group fg7" transform="translate(540, 46) rotate(-3)">
+              <polygon points="0,0 36,0 18,52" fill="#FF6B6B" />
+              <polygon points="18,0 36,0 18,52" fill="#EE5253" />
+            </g>
+            <!-- Flag 8 Cyan -->
+            <g class="flag-group fg8" transform="translate(620, 38) rotate(1)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#4DEDFF" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#00B8D4" />
+            </g>
+            <!-- Flag 9 Pink -->
+            <g class="flag-group fg9" transform="translate(700, 32) rotate(-2)">
+              <polygon points="0,0 36,0 18,52" fill="#FF4D94" />
+              <polygon points="18,0 36,0 18,52" fill="#D6336C" />
+            </g>
+            <!-- Flag 10 Yellow -->
+            <g class="flag-group fg10" transform="translate(780, 30) rotate(3)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#FFC837" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#E6A100" />
+            </g>
+            <!-- Flag 11 Lime -->
+            <g class="flag-group fg11" transform="translate(860, 32) rotate(-4)">
+              <polygon points="0,0 36,0 18,52" fill="#2ECC71" />
+              <polygon points="18,0 36,0 18,52" fill="#27AE60" />
+            </g>
+            <!-- Flag 12 Purple -->
+            <g class="flag-group fg12" transform="translate(940, 36) rotate(2)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#9B59B6" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#8E44AD" />
+            </g>
+            <!-- Flag 13 Orange -->
+            <g class="flag-group fg13" transform="translate(1020, 38) rotate(-1)">
+              <polygon points="0,0 36,0 18,52" fill="#FF8C42" />
+              <polygon points="18,0 36,0 18,52" fill="#E66A1F" />
+            </g>
+            <!-- Flag 14 Cyan -->
+            <g class="flag-group fg14" transform="translate(1100, 36) rotate(3)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#00D2FF" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#0099CC" />
+            </g>
+            <!-- Flag 15 Red -->
+            <g class="flag-group fg15" transform="translate(1180, 32) rotate(-2)">
+              <polygon points="0,0 36,0 18,52" fill="#FF4D94" />
+              <polygon points="18,0 36,0 18,52" fill="#D6336C" />
+            </g>
+            <!-- Flag 16 Gold -->
+            <g class="flag-group fg16" transform="translate(1260, 26) rotate(1)">
+              <polygon points="0,0 36,0 36,54 18,42 0,54" fill="#FFC837" />
+              <polygon points="18,0 36,0 36,54 18,42" fill="#E6A100" />
+            </g>
+            <!-- Flag 17 Green -->
+            <g class="flag-group fg17" transform="translate(1340, 18) rotate(-3)">
+              <polygon points="0,0 36,0 18,52" fill="#2ECC71" />
+              <polygon points="18,0 36,0 18,52" fill="#27AE60" />
+            </g>
           </svg>
 
-          <div class="seasonal-overlay__bandeirolas">
-            <div class="bandeirola b1" style="--c: #FF4D94; --d: 0s;"></div>
-            <div class="bandeirola b2" style="--c: #FF8C42; --d: 0.3s;"></div>
-            <div class="bandeirola b3" style="--c: #FFC837; --d: 0.6s;"></div>
-            <div class="bandeirola b4" style="--c: #4DEDFF; --d: 0.9s;"></div>
-            <div class="bandeirola b5" style="--c: #2ECC71; --d: 1.2s;"></div>
-            <div class="bandeirola b6" style="--c: #9B59B6; --d: 1.5s;"></div>
-            <div class="bandeirola b7" style="--c: #FF4D94; --d: 1.8s;"></div>
-            <div class="bandeirola b8" style="--c: #FF8C42; --d: 2.1s;"></div>
-            <div class="bandeirola b9" style="--c: #FFC837; --d: 2.4s;"></div>
-            <div class="bandeirola b10" style="--c: #4DEDFF; --d: 2.7s;"></div>
-            <div class="bandeirola b11" style="--c: #2ECC71; --d: 3.0s;"></div>
-            <div class="bandeirola b12" style="--c: #9B59B6; --d: 3.3s;"></div>
+          <!-- 3D JUNINO LANTERN (BALÃO JUNINO 1 - TOP LEFT) -->
+          <div class="seasonal-overlay__lantern lantern-left">
+            <svg viewBox="0 0 80 160" class="lantern-svg">
+              <!-- Hanging Thread -->
+              <line x1="40" y1="0" x2="40" y2="35" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+              <!-- Top Ring -->
+              <circle cx="40" cy="35" r="3" fill="#FFC837" />
+              <!-- Faceted Balloon Body -->
+              <g class="lantern-body">
+                <!-- Upper Facets -->
+                <polygon points="40,38 20,70 40,75" fill="#FF4D94" />
+                <polygon points="40,38 40,75 60,70" fill="#FF8C42" />
+                <polygon points="20,70 40,75 40,110 15,100" fill="#00D2FF" />
+                <polygon points="60,70 40,75 40,110 65,100" fill="#2ECC71" />
+                <!-- Lower Facets -->
+                <polygon points="40,75 15,100 40,120" fill="#FFC837" />
+                <polygon points="40,75 65,100 40,120" fill="#9B59B6" />
+                <!-- Glowing Core -->
+                <circle cx="40" cy="80" r="14" fill="url(#lanternLight)" opacity="0.85"/>
+              </g>
+              <!-- Ribbons Tail -->
+              <path d="M30,120 Q24,140 28,160" stroke="#FF4D94" stroke-width="2.5" fill="none"/>
+              <path d="M40,120 Q40,142 42,160" stroke="#FFC837" stroke-width="2.5" fill="none"/>
+              <path d="M50,120 Q56,140 52,160" stroke="#00D2FF" stroke-width="2.5" fill="none"/>
+              <defs>
+                <radialGradient id="lanternLight" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FFF5C0" stop-opacity="1"/>
+                  <stop offset="100%" stop-color="#FF8C42" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- 3D JUNINO LANTERN (BALÃO JUNINO 2 - TOP RIGHT) -->
+          <div class="seasonal-overlay__lantern lantern-right">
+            <svg viewBox="0 0 80 160" class="lantern-svg">
+              <line x1="40" y1="0" x2="40" y2="45" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+              <circle cx="40" cy="45" r="3" fill="#FF4D94" />
+              <g class="lantern-body">
+                <polygon points="40,48 18,80 40,85" fill="#00D2FF" />
+                <polygon points="40,48 40,85 62,80" fill="#2ECC71" />
+                <polygon points="18,80 40,85 40,120 12,110" fill="#FFC837" />
+                <polygon points="62,80 40,85 40,120 68,110" fill="#FF4D94" />
+                <polygon points="40,85 12,110 40,130" fill="#9B59B6" />
+                <polygon points="40,85 68,110 40,130" fill="#FF8C42" />
+                <circle cx="40" cy="90" r="14" fill="url(#lanternLight2)" opacity="0.85"/>
+              </g>
+              <path d="M28,130 Q22,148 26,160" stroke="#00D2FF" stroke-width="2.5" fill="none"/>
+              <path d="M40,130 Q40,148 40,160" stroke="#FF4D94" stroke-width="2.5" fill="none"/>
+              <path d="M52,130 Q58,148 54,160" stroke="#FFC837" stroke-width="2.5" fill="none"/>
+              <defs>
+                <radialGradient id="lanternLight2" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+                  <stop offset="100%" stop-color="#FF4D94" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- ANIMATED BONFIRE OF SÃO JOÃO (FOGUEIRA DE SÃO JOÃO - BOTTOM LEFT) -->
+          <div class="seasonal-overlay__bonfire">
+            <svg viewBox="0 0 160 160" class="bonfire-svg">
+              <!-- Radial Fire Glow -->
+              <circle cx="80" cy="110" r="65" fill="url(#fireAura)" opacity="0.6"/>
+              
+              <!-- Wooden Logs -->
+              <g class="bonfire-logs">
+                <rect x="25" y="125" width="110" height="16" rx="6" fill="url(#logGrad1)" transform="rotate(-12 80 133)" />
+                <rect x="25" y="125" width="110" height="16" rx="6" fill="url(#logGrad2)" transform="rotate(12 80 133)" />
+                <rect x="35" y="115" width="90" height="14" rx="5" fill="url(#logGrad1)" transform="rotate(-4 80 122)" />
+              </g>
+
+              <!-- Dancing Fire Flame Tongues -->
+              <g class="bonfire-flames">
+                <!-- Outer Red Flame -->
+                <path class="flame flame-outer" d="M80,30 Q115,75 105,115 Q80,135 55,115 Q45,75 80,30 Z" fill="url(#flameOuterGrad)" />
+                <!-- Mid Orange Flame -->
+                <path class="flame flame-mid" d="M80,45 Q102,80 94,115 Q80,130 66,115 Q58,80 80,45 Z" fill="url(#flameMidGrad)" />
+                <!-- Core Yellow Flame -->
+                <path class="flame flame-core" d="M80,65 Q90,90 85,115 Q80,122 75,115 Q70,90 80,65 Z" fill="url(#flameCoreGrad)" />
+              </g>
+
+              <!-- Ember Sparks -->
+              <circle class="ember e1" cx="70" cy="60" r="2.5" fill="#FFC837"/>
+              <circle class="ember e2" cx="90" cy="50" r="3" fill="#FF8C42"/>
+              <circle class="ember e3" cx="75" cy="35" r="2" fill="#FFF5C0"/>
+              <circle class="ember e4" cx="85" cy="25" r="2.5" fill="#FF4D94"/>
+
+              <defs>
+                <radialGradient id="fireAura" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#FF8C42" stop-opacity="0.8" />
+                  <stop offset="100%" stop-color="#FF4D94" stop-opacity="0" />
+                </radialGradient>
+                <linearGradient id="logGrad1" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#4A2511" />
+                  <stop offset="50%" stop-color="#8B4513" />
+                  <stop offset="100%" stop-color="#361A0C" />
+                </linearGradient>
+                <linearGradient id="logGrad2" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#361A0C" />
+                  <stop offset="50%" stop-color="#A0522D" />
+                  <stop offset="100%" stop-color="#4A2511" />
+                </linearGradient>
+                <linearGradient id="flameOuterGrad" x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0%" stop-color="#FF4D94" />
+                  <stop offset="60%" stop-color="#FF8C42" />
+                  <stop offset="100%" stop-color="#FFC837" stop-opacity="0.8" />
+                </linearGradient>
+                <linearGradient id="flameMidGrad" x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0%" stop-color="#FF8C42" />
+                  <stop offset="70%" stop-color="#FFC837" />
+                  <stop offset="100%" stop-color="#FFF5C0" opacity="0.9"/>
+                </linearGradient>
+                <linearGradient id="flameCoreGrad" x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0%" stop-color="#FFC837" />
+                  <stop offset="100%" stop-color="#FFFFFF" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <!-- FIREWORKS SPARKLES (FOGOS DE ARTIFÍCIO NA TELA) -->
+          <div class="seasonal-overlay__sparklines">
+            <svg viewBox="0 0 200 200" class="firework f1">
+              <g stroke="#00D2FF" stroke-width="1.5" stroke-linecap="round" opacity="0.7">
+                <line x1="100" y1="100" x2="100" y2="60" />
+                <line x1="100" y1="100" x2="100" y2="140" />
+                <line x1="100" y1="100" x2="60" y2="100" />
+                <line x1="100" y1="100" x2="140" y2="100" />
+                <line x1="100" y1="100" x2="72" y2="72" />
+                <line x1="100" y1="100" x2="128" y2="128" />
+                <line x1="100" y1="100" x2="128" y2="72" />
+                <line x1="100" y1="100" x2="72" y2="128" />
+              </g>
+              <circle cx="100" cy="100" r="4" fill="#FFC837"/>
+            </svg>
+
+            <svg viewBox="0 0 200 200" class="firework f2">
+              <g stroke="#FF4D94" stroke-width="1.5" stroke-linecap="round" opacity="0.7">
+                <line x1="100" y1="100" x2="100" y2="60" />
+                <line x1="100" y1="100" x2="100" y2="140" />
+                <line x1="100" y1="100" x2="60" y2="100" />
+                <line x1="100" y1="100" x2="140" y2="100" />
+                <line x1="100" y1="100" x2="72" y2="72" />
+                <line x1="100" y1="100" x2="128" y2="128" />
+                <line x1="100" y1="100" x2="128" y2="72" />
+                <line x1="100" y1="100" x2="72" y2="128" />
+              </g>
+              <circle cx="100" cy="100" r="4" fill="#00D2FF"/>
+            </svg>
           </div>
         </div>
       }

@@ -11,43 +11,139 @@
   /* FESTA JUNINA / JULINA THEME */
   &__junina {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 140px;
+    inset: 0;
   }
 
-  &__string-svg {
-    position: absolute;
-    top: 44px;
-    left: 0;
-    width: 100%;
-    height: 60px;
-  }
-
-  &__bandeirolas {
+  &__garland-svg {
     position: absolute;
     top: 48px;
     left: 0;
     width: 100%;
-    display: flex;
-    justify-content: space-around;
-    padding: 0 16px;
-    box-sizing: border-box;
+    height: 120px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
 
-    .bandeirola {
-      width: 24px;
-      height: 36px;
-      background-color: var(--c);
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    .flag-group {
       transform-origin: top center;
-      animation: bandeirolaSway 3.5s ease-in-out infinite alternate;
-      animation-delay: var(--d);
+      animation: flagSway 4s ease-in-out infinite alternate;
 
-      @media (min-width: 768px) {
-        width: 32px;
-        height: 48px;
+      &.fg1 { animation-delay: 0.1s; }
+      &.fg2 { animation-delay: 0.3s; }
+      &.fg3 { animation-delay: 0.5s; }
+      &.fg4 { animation-delay: 0.7s; }
+      &.fg5 { animation-delay: 0.9s; }
+      &.fg6 { animation-delay: 1.1s; }
+      &.fg7 { animation-delay: 1.3s; }
+      &.fg8 { animation-delay: 1.5s; }
+      &.fg9 { animation-delay: 1.7s; }
+      &.fg10 { animation-delay: 1.9s; }
+      &.fg11 { animation-delay: 2.1s; }
+      &.fg12 { animation-delay: 2.3s; }
+      &.fg13 { animation-delay: 2.5s; }
+      &.fg14 { animation-delay: 2.7s; }
+      &.fg15 { animation-delay: 2.9s; }
+      &.fg16 { animation-delay: 3.1s; }
+      &.fg17 { animation-delay: 3.3s; }
+    }
+  }
+
+  /* 3D BALÕES JUNINOS (FLOATING LANTERNS) */
+  &__lantern {
+    position: absolute;
+    width: 70px;
+    height: 140px;
+    transform-origin: top center;
+    filter: drop-shadow(0 6px 20px rgba(255, 140, 66, 0.45));
+
+    @media (min-width: 768px) {
+      width: 90px;
+      height: 180px;
+    }
+
+    &.lantern-left {
+      top: 48px;
+      left: 5%;
+      animation: lanternSwayLeft 5.5s ease-in-out infinite alternate;
+    }
+
+    &.lantern-right {
+      top: 54px;
+      right: 6%;
+      animation: lanternSwayRight 6.2s ease-in-out infinite alternate;
+    }
+
+    .lantern-svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  /* FOGUEIRA DE SÃO JOÃO ANIMADA (BONFIRE BOTTOM LEFT CORNER) */
+  &__bonfire {
+    position: absolute;
+    bottom: 12px;
+    left: 24px;
+    width: 120px;
+    height: 120px;
+    filter: drop-shadow(0 -4px 20px rgba(255, 140, 66, 0.5));
+
+    @media (min-width: 768px) {
+      width: 150px;
+      height: 150px;
+      left: 48px;
+      bottom: 20px;
+    }
+
+    .bonfire-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .flame-outer {
+      animation: flameFlickerOuter 2s ease-in-out infinite alternate;
+      transform-origin: 80px 120px;
+    }
+
+    .flame-mid {
+      animation: flameFlickerMid 1.6s ease-in-out infinite alternate;
+      transform-origin: 80px 120px;
+    }
+
+    .flame-core {
+      animation: flameFlickerCore 1.2s ease-in-out infinite alternate;
+      transform-origin: 80px 120px;
+    }
+
+    .ember {
+      animation: emberRise 3s ease-out infinite;
+
+      &.e1 { animation-delay: 0.2s; }
+      &.e2 { animation-delay: 0.8s; }
+      &.e3 { animation-delay: 1.4s; }
+      &.e4 { animation-delay: 2.1s; }
+    }
+  }
+
+  /* FOGOS DE ARTIFÍCIO */
+  &__sparklines {
+    position: absolute;
+    inset: 0;
+
+    .firework {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      animation: fireworkPulse 4s ease-in-out infinite alternate;
+
+      &.f1 {
+        top: 80px;
+        right: 22%;
+        animation-delay: 0.5s;
+      }
+
+      &.f2 {
+        top: 120px;
+        left: 20%;
+        animation-delay: 2.2s;
       }
     }
   }
@@ -150,12 +246,103 @@
 }
 
 /* KEYFRAMES */
-@keyframes bandeirolaSway {
+@keyframes flagSway {
   0% {
-    transform: rotate(-8deg);
+    transform: rotate(-6deg);
   }
   100% {
-    transform: rotate(8deg);
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes lanternSwayLeft {
+  0% {
+    transform: rotate(-7deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(6px);
+  }
+  100% {
+    transform: rotate(7deg) translateY(0);
+  }
+}
+
+@keyframes lanternSwayRight {
+  0% {
+    transform: rotate(6deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-4deg) translateY(8px);
+  }
+  100% {
+    transform: rotate(-6deg) translateY(0);
+  }
+}
+
+@keyframes flameFlickerOuter {
+  0% {
+    transform: scale(0.96) skewX(-2deg);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.04) skewX(3deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(0.98) skewX(-1deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes flameFlickerMid {
+  0% {
+    transform: scale(1.02) skewX(2deg);
+  }
+  50% {
+    transform: scale(0.95) skewX(-3deg);
+  }
+  100% {
+    transform: scale(1.05) skewX(1deg);
+  }
+}
+
+@keyframes flameFlickerCore {
+  0% {
+    transform: scale(0.94);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(0.96);
+  }
+}
+
+@keyframes emberRise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-80px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes fireworkPulse {
+  0% {
+    transform: scale(0.7) rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.1) rotate(20deg);
+    opacity: 0.2;
   }
 }
 

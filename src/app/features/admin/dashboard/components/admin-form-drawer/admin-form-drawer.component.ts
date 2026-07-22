@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService, DrawerService } from '../../../../../core/services';
 import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -20,6 +21,7 @@ import { ConfirmDialogComponent } from '../../../../../shared/components/confirm
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   templateUrl: './admin-form-drawer.component.html',
   styleUrl: './admin-form-drawer.component.scss',
@@ -45,11 +47,22 @@ export class AdminFormDrawerComponent implements OnInit {
     this.loadAdmins();
   }
 
+  protected isSuperAdmin(email: string): boolean {
+    return this.authService.isSuperAdminEmail(email);
+  }
+
   private async loadAdmins(): Promise<void> {
     try {
       this.loadingAdmins.set(true);
       const list = await this.authService.listAdmins();
-      this.admins.set(list.filter(admin => !this.authService.isSuperAdminEmail(admin)));
+      const sorted = [...list].sort((a, b) => {
+        const aSuper = this.authService.isSuperAdminEmail(a);
+        const bSuper = this.authService.isSuperAdminEmail(b);
+        if (aSuper && !bSuper) return -1;
+        if (!aSuper && bSuper) return 1;
+        return a.localeCompare(b);
+      });
+      this.admins.set(sorted);
     } catch (err) {
       console.error(err);
       this.snackBar.open('Erro ao carregar administradores.', 'OK', { duration: 3000 });
@@ -64,8 +77,8 @@ export class AdminFormDrawerComponent implements OnInit {
       data: {
         title: 'Remover Administrador',
         message: `Tem certeza que deseja remover ${email}?`,
-        confirmLabel: 'Remover'
-      }
+        confirmLabel: 'Remover',
+      },
     });
 
     confirmRef.afterClosed().subscribe(async (result) => {
@@ -88,7 +101,9 @@ export class AdminFormDrawerComponent implements OnInit {
     try {
       const { email } = this.form.getRawValue();
       await this.authService.registerAdmin(email);
-      this.snackBar.open('Administrador adicionado à whitelist com sucesso!', 'OK', { duration: 3000 });
+      this.snackBar.open('Administrador adicionado à whitelist com sucesso!', 'OK', {
+        duration: 3000,
+      });
       this.form.reset();
       await this.loadAdmins();
     } catch (error: any) {

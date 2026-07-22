@@ -65,6 +65,15 @@
             <th mat-header-cell *matHeaderCellDef>Ações</th>
             <td mat-cell *matCellDef="let event">
               <div class="dashboard__actions">
+                <a
+                  mat-icon-button
+                  [routerLink]="['/evento', event.id]"
+                  target="_blank"
+                  matTooltip="Visualizar evento"
+                  [attr.aria-label]="'Visualizar ' + event.title"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </a>
                 <button
                   mat-icon-button
                   (click)="editEvent(event)"
@@ -118,6 +127,9 @@
               </mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions>
+              <a mat-icon-button [routerLink]="['/evento', event.id]" target="_blank" matTooltip="Visualizar evento" aria-label="Visualizar evento">
+                <mat-icon>visibility</mat-icon>
+              </a>
               <button mat-icon-button (click)="editEvent(event)" matTooltip="Editar" aria-label="Editar">
                 <mat-icon>edit</mat-icon>
               </button>

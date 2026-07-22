@@ -135,6 +135,13 @@ mat-sidenav-content,
   background: transparent !important;
 }
 
+mat-sidenav-content {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
 
 
 .glass-drawer {

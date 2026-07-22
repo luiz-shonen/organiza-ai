@@ -1,5 +1,3 @@
-
-
 <mat-sidenav-container class="app-sidenav-container">
   <mat-sidenav
     #drawer
@@ -16,71 +14,71 @@
 
   <mat-sidenav-content>
     <div class="bg-blobs" aria-hidden="true">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
-</div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
     <app-seasonal-overlay />
     @if (showHeader()) {
-  <mat-toolbar class="app-toolbar" role="banner">
-    <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
-      <img src="icons/logo.svg" alt="Organiza AI" class="app-toolbar__logo" />
-    </a>
+      <mat-toolbar class="app-toolbar" role="banner">
+        <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
+          <img src="icons/logo.svg" alt="Organiza AI" class="app-toolbar__logo" />
+        </a>
 
-    <span class="app-toolbar__spacer"></span>
+        <span class="app-toolbar__spacer"></span>
 
-    @if (isAdmin()) {
-      <a
-        mat-button
-        routerLink="/admin"
-        aria-label="Painel administrativo"
-        matTooltip="Painel Administrativo"
-        class="app-toolbar__admin-btn"
-      >
-        <mat-icon>dashboard</mat-icon>
-        <span class="app-toolbar__label">Painel Admin</span>
-      </a>
-    }
-
-    <app-theme-toggle />
-
-    @if (user() && (!user()!.isAnonymous || session())) {
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="userMenu"
-        aria-label="Menu do usuário"
-        matTooltip="Menu do Usuário"
-        class="app-toolbar__user-btn"
-      >
-        @if (user()!.photoURL) {
-          <img [src]="user()!.photoURL" alt="Avatar" class="app-toolbar__avatar" />
-        } @else {
-          <mat-icon>account_circle</mat-icon>
+        @if (isAdmin()) {
+          <a
+            mat-button
+            routerLink="/admin"
+            aria-label="Painel administrativo"
+            matTooltip="Painel Administrativo"
+            class="app-toolbar__admin-btn"
+          >
+            <mat-icon>dashboard</mat-icon>
+            <span class="app-toolbar__label">Painel Admin</span>
+          </a>
         }
-      </button>
-      <mat-menu #userMenu="matMenu">
-        <div class="app-toolbar__user-email">
-          {{
-            session()?.name ||
-              user()?.displayName ||
-              user()?.email ||
-              session()?.phone ||
-              'Convidado'
-          }}
-        </div>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Sair</span>
-        </button>
-      </mat-menu>
-    } @else {
-      <a mat-flat-button routerLink="/login" aria-label="Acessar ou cadastrar">
-        <mat-icon>login</mat-icon>
-        <span>Entrar / Cadastrar</span>
-      </a>
+
+        <app-theme-toggle />
+
+        @if (user() && (!user()!.isAnonymous || session())) {
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Menu do usuário"
+            matTooltip="Menu do Usuário"
+            class="app-toolbar__user-btn"
+          >
+            @if (user()!.photoURL) {
+              <img [src]="user()!.photoURL" alt="Avatar" class="app-toolbar__avatar" />
+            } @else {
+              <mat-icon>account_circle</mat-icon>
+            }
+          </button>
+          <mat-menu #userMenu="matMenu">
+            <div class="app-toolbar__user-email">
+              {{
+                session()?.name ||
+                  user()?.displayName ||
+                  user()?.email ||
+                  session()?.phone ||
+                  'Convidado'
+              }}
+            </div>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              <span>Sair</span>
+            </button>
+          </mat-menu>
+        } @else {
+          <a mat-flat-button routerLink="/login" aria-label="Acessar ou cadastrar" class="app-toolbar__login-btn">
+            <mat-icon>login</mat-icon>
+            <span>Entrar / Cadastrar</span>
+          </a>
+        }
+      </mat-toolbar>
     }
-  </mat-toolbar>
-}
 
     @if (isOffline()) {
       <div class="app-offline-banner" role="alert" aria-live="assertive">

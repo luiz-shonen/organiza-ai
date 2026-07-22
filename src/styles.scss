@@ -444,6 +444,12 @@ button[disabled],
   }
 }
 
+/* Fix for Angular Material visually hidden accessibility elements breaking out of clip due to flex overrides */
+.cdk-visually-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* Icon-only buttons: 100% centered, zero margins */
 .mat-mdc-icon-button {
   display: inline-flex !important;

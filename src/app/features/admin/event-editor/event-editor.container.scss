@@ -126,6 +126,7 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
+    align-items: start;
   }
 
   &__section-title {
@@ -156,14 +157,19 @@
 
   &__disabled-field {
     opacity: 0.6;
-    pointer-events: none !important;
+    position: relative;
     user-select: none !important;
     
-    ::ng-deep * {
-      pointer-events: none !important;
+    /* Bulletproof click blocker overlay */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 999;
+      cursor: not-allowed;
     }
     
-    .mat-mdc-text-field-wrapper {
+    ::ng-deep .mat-mdc-text-field-wrapper {
       background: var(--mat-sys-surface-container-low) !important;
     }
     input {

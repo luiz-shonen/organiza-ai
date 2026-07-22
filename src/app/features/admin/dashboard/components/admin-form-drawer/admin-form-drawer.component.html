@@ -32,9 +32,7 @@
             </div>
 
             @if (isSuperAdmin(admin)) {
-              <mat-chip-set class="admin-list__chip-set">
-                <mat-chip class="admin-list__super-chip" highlighted color="primary">Super Admin</mat-chip>
-              </mat-chip-set>
+              <span class="admin-list__super-pill">Super Admin</span>
             } @else {
               <button
                 mat-icon-button

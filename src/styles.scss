@@ -135,6 +135,37 @@ html {
   }
 }
 
+// ──────────────────────────────────────────────
+// Seasonal Theme Color Overrides
+// ──────────────────────────────────────────────
+html.theme-junina {
+  --org-primary: #FF5722;
+  --org-primary-container: #FF8A65;
+  --org-secondary: #FFB300;
+  --org-gradient-primary: linear-gradient(135deg, #FF5722 0%, #FF8C42 50%, #FFB300 100%);
+}
+
+html.theme-natal {
+  --org-primary: #D32F2F;
+  --org-primary-container: #EF5350;
+  --org-secondary: #388E3C;
+  --org-gradient-primary: linear-gradient(135deg, #D32F2F 0%, #E53935 50%, #388E3C 100%);
+}
+
+html.theme-pascoa {
+  --org-primary: #8E24AA;
+  --org-primary-container: #BA68C8;
+  --org-secondary: #FBC02D;
+  --org-gradient-primary: linear-gradient(135deg, #8E24AA 0%, #BA68C8 50%, #FBC02D 100%);
+}
+
+html.theme-ano-novo {
+  --org-primary: #FBC02D;
+  --org-primary-container: #FFF176;
+  --org-secondary: #757575;
+  --org-gradient-primary: linear-gradient(135deg, #FBC02D 0%, #FFF59D 50%, #E0E0E0 100%);
+}
+
 body {
   color-scheme: light;
   background-color: var(--mat-sys-surface);

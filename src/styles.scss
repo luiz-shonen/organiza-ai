@@ -600,12 +600,13 @@ button:not(mat-icon),
     font-family: 'Plus Jakarta Sans', sans-serif !important;
   }
 
-  /* Fix for Chrome/Safari native time input dropping its baseline below text inputs */
+  /* Fix for Chrome/Safari native time input expanding the container height */
   input[type="time"] {
-    align-items: center;
-    display: inline-flex;
-    position: relative;
-    top: -2px; /* Pixel-perfect baseline matching with text inputs */
+    height: 24px !important; /* Force identical height to text inputs */
+    line-height: 24px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
   }
 
   /* Transparent Floating Label sitting inside open native notch gap */

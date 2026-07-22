@@ -7,7 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { AuthService, ThemeService, GuestSessionService, DrawerService, SeasonalThemeService } from './core/services';
+import { AuthService, ThemeService, GuestSessionService, DrawerService, SeasonalThemeService, HeaderService } from './core/services';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { AdminFormDrawerComponent } from './features/admin/dashboard/components/admin-form-drawer/admin-form-drawer.component';
@@ -40,6 +40,8 @@ export class App {
   private readonly router = inject(Router);
   private readonly guestSession = inject(GuestSessionService);
   protected readonly drawerService = inject(DrawerService);
+  protected readonly headerService = inject(HeaderService);
+
   private readonly seasonalService = inject(SeasonalThemeService);
   private readonly renderer = inject(Renderer2);
 

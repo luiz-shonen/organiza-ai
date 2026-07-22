@@ -1,12 +1,5 @@
 <section class="editor" aria-label="Editor de evento">
-  <header class="editor__header">
-    <button mat-icon-button (click)="router.navigate(['/admin'])" matTooltip="Voltar" aria-label="Voltar" class="editor__back-btn">
-      <mat-icon>west</mat-icon>
-    </button>
-    <h1 class="editor__title">
-      {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
-    </h1>
-  </header>
+  
 
   @if (loading()) {
     <div class="editor__grid" aria-hidden="true">

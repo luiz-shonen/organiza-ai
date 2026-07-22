@@ -1,5 +1,6 @@
 import {
   Component,
+  OnDestroy,
   ChangeDetectionStrategy,
   inject,
   signal,
@@ -20,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HeaderService } from '../../../core/services';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { EventService, ItemService, GuestService, ConfettiService } from '../../../core/services';
@@ -50,7 +52,9 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
   templateUrl: './event-editor.container.html',
   styleUrl: './event-editor.container.scss',
 })
-export class EventEditorContainer implements OnInit {
+
+
+export class EventEditorContainer implements OnInit, OnDestroy {
   readonly id = input<string>();
 
   private readonly eventService = inject(EventService);
@@ -60,6 +64,8 @@ export class EventEditorContainer implements OnInit {
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly headerService = inject(HeaderService);
+
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 

@@ -12,9 +12,11 @@
 }
 
 .app-toolbar {
-  position: sticky;
+  position: fixed;
+  width: 100%;
+  left: 0;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   background: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -24,6 +26,21 @@
   .dark & {
     background: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
     border-bottom-color: rgba(255, 77, 148, 0.25);
+  }
+
+  
+  &__back-btn {
+    margin-right: 8px;
+  }
+
+  &__dynamic-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--mat-sys-primary);
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   &__brand {
@@ -118,4 +135,9 @@
 mat-sidenav-content,
 .mat-drawer-container {
   background: transparent !important;
+}
+
+
+mat-sidenav-content {
+  padding-top: 64px !important;
 }

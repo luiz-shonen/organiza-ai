@@ -8,9 +8,18 @@
 
 @if (showHeader()) {
   <mat-toolbar class="app-toolbar" role="banner">
-    <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
-      <img src="icons/logo.svg" alt="Organiza AI" class="app-toolbar__logo" />
-    </a>
+    @if (headerService.showBackBtn()) {
+      <button mat-icon-button [routerLink]="headerService.backUrl()" aria-label="Voltar" class="app-toolbar__back-btn">
+        <mat-icon>west</mat-icon>
+      </button>
+    }
+    @if (headerService.title()) {
+      <h1 class="app-toolbar__dynamic-title">{{ headerService.title() }}</h1>
+    } @else {
+      <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
+        <img src="icons/logo.svg" alt="Organiza AI" class="app-toolbar__logo" />
+      </a>
+    }
 
     <span class="app-toolbar__spacer"></span>
 

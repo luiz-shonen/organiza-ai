@@ -1,16 +1,16 @@
 <section class="editor" aria-label="Editor de evento">
 
   @if (loading()) {
+    <header class="editor__header editor__header--single">
+      <button mat-icon-button disabled class="editor__back-btn">
+        <mat-icon>west</mat-icon>
+      </button>
+      <h1 class="editor__title">
+        <div class="skeleton-box h-8 w-48"></div>
+      </h1>
+    </header>
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
-        <header class="editor__header">
-          <button mat-icon-button disabled class="editor__back-btn">
-            <mat-icon>west</mat-icon>
-          </button>
-          <h1 class="editor__title">
-            <div class="skeleton-box h-8 w-48"></div>
-          </h1>
-        </header>
         <mat-card class="editor__card glass-card" appearance="outlined">
         <mat-card-header>
           <div matCardAvatar class="skeleton-box editor__card-icon"></div>
@@ -32,22 +32,22 @@
       </div>
     </div>
   } @else {
+    <header class="editor__header" [class.editor__header--single]="!isEditing()">
+      <button
+        mat-icon-button
+        routerLink="/admin"
+        matTooltip="Voltar"
+        aria-label="Voltar"
+        class="editor__back-btn"
+      >
+        <mat-icon>west</mat-icon>
+      </button>
+      <h1 class="editor__title">
+        {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
+      </h1>
+    </header>
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
-        <header class="editor__header">
-          <button
-            mat-icon-button
-            routerLink="/admin"
-            matTooltip="Voltar"
-            aria-label="Voltar"
-            class="editor__back-btn"
-          >
-            <mat-icon>west</mat-icon>
-          </button>
-          <h1 class="editor__title">
-            {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
-          </h1>
-        </header>
 
         <!-- Event Form -->
         <mat-card class="editor__card glass-card" appearance="outlined">

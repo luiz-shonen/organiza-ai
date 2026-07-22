@@ -126,15 +126,6 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
-
-    /* Fix Datepicker Icon Alignment */
-    mat-datepicker-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      margin-bottom: 0 !important;
-    }
   }
 
   &__section-title {
@@ -168,7 +159,7 @@
     pointer-events: none !important;
     user-select: none !important;
     
-    * {
+    ::ng-deep * {
       pointer-events: none !important;
     }
     

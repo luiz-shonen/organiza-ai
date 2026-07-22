@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { SeasonalThemeService } from '../../../core/services';
 
 @Component({
   selector: 'app-seasonal-overlay',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './seasonal-overlay.component.html',
   styleUrl: './seasonal-overlay.component.scss'
 })

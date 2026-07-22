@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" fill="none">
+  <defs>
+    <linearGradient id="dawnGrad" x1="0.5" y1="1" x2="0.5" y2="0">
+      <stop offset="0%" stop-color="#FF8C42" stop-opacity="0.15"/>
+      <stop offset="30%" stop-color="#FFD700" stop-opacity="0.1"/>
+      <stop offset="60%" stop-color="#FFF8DC" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="sunriseGlow" cx="50%" cy="100%" r="80%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#FFD700" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Dawn gradient base -->
+  <rect x="0" y="0" width="800" height="200" fill="url(#dawnGrad)"/>
+
+  <!-- Sunrise radial glow from bottom center -->
+  <ellipse cx="400" cy="200" rx="400" ry="150" fill="url(#sunriseGlow)" class="sunrise-glow"/>
+
+  <!-- Light rays fanning upward from bottom center -->
+  <g class="dawn-rays" opacity="0.2" stroke="#FFD700" stroke-linecap="round">
+    <line x1="400" y1="200" x2="200" y2="0" stroke-width="1.5" class="dawn-ray r1"/>
+    <line x1="400" y1="200" x2="300" y2="0" stroke-width="2" class="dawn-ray r2"/>
+    <line x1="400" y1="200" x2="400" y2="0" stroke-width="2.5" class="dawn-ray r3"/>
+    <line x1="400" y1="200" x2="500" y2="0" stroke-width="2" class="dawn-ray r4"/>
+    <line x1="400" y1="200" x2="600" y2="0" stroke-width="1.5" class="dawn-ray r5"/>
+    <line x1="400" y1="200" x2="100" y2="40" stroke-width="1" class="dawn-ray r6"/>
+    <line x1="400" y1="200" x2="700" y2="40" stroke-width="1" class="dawn-ray r7"/>
+  </g>
+</svg>

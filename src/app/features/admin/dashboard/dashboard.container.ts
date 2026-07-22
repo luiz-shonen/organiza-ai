@@ -53,6 +53,10 @@ export class DashboardContainer implements OnInit {
     this.router.navigate(['/admin/evento', event.id]);
   }
 
+  protected openPublicEvent(event: PartyEvent): void {
+    window.open(`/evento/${event.id}`, '_blank');
+  }
+
   protected async deleteEvent(event: PartyEvent): Promise<void> {
     const confirmRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',

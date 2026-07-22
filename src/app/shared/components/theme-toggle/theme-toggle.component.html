@@ -1,4 +1,4 @@
-<button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Alterar tema" title="Alterar tema">
+<button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Alterar tema" matTooltip="Alterar tema">
   <mat-icon>
     {{ themeService.mode() === 'light' ? 'light_mode' : (themeService.mode() === 'dark' ? 'dark_mode' : 'brightness_auto') }}
   </mat-icon>

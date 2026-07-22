@@ -34,6 +34,7 @@
         mat-button
         routerLink="/admin"
         aria-label="Painel administrativo"
+        matTooltip="Painel Administrativo"
         class="app-toolbar__admin-btn"
       >
         <mat-icon>dashboard</mat-icon>
@@ -48,6 +49,7 @@
         mat-icon-button
         [matMenuTriggerFor]="userMenu"
         aria-label="Menu do usuário"
+        matTooltip="Menu do Usuário"
         class="app-toolbar__user-btn"
       >
         @if (user()!.photoURL) {

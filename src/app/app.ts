@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { AuthService, ThemeService, GuestSessionService, DrawerService, SeasonalThemeService, HeaderService } from './core/services';
@@ -23,6 +24,7 @@ import { AdminFormDrawerComponent } from './features/admin/dashboard/components/
     MatIconModule,
     MatMenuModule,
     MatSidenavModule,
+    MatTooltipModule,
     ThemeToggleComponent,
     SeasonalOverlayComponent,
     AdminFormDrawerComponent,

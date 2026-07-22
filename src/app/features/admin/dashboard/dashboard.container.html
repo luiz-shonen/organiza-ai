@@ -65,18 +65,9 @@
             <th mat-header-cell *matHeaderCellDef>Ações</th>
             <td mat-cell *matCellDef="let event">
               <div class="dashboard__actions">
-                <a
-                  mat-icon-button
-                  [routerLink]="['/evento', event.id]"
-                  target="_blank"
-                  matTooltip="Visualizar evento"
-                  [attr.aria-label]="'Visualizar ' + event.title"
-                >
-                  <mat-icon>visibility</mat-icon>
-                </a>
                 <button
                   mat-icon-button
-                  (click)="editEvent(event)"
+                  (click)="$event.stopPropagation(); editEvent(event)"
                   matTooltip="Editar"
                   [attr.aria-label]="'Editar ' + event.title"
                 >
@@ -84,7 +75,7 @@
                 </button>
                 <button
                   mat-icon-button
-                  (click)="shareWhatsApp(event)"
+                  (click)="$event.stopPropagation(); shareWhatsApp(event)"
                   matTooltip="Compartilhar no WhatsApp"
                   [attr.aria-label]="'Compartilhar ' + event.title + ' no WhatsApp'"
                 >
@@ -92,7 +83,7 @@
                 </button>
                 <button
                   mat-icon-button
-                  (click)="copyLink(event)"
+                  (click)="$event.stopPropagation(); copyLink(event)"
                   matTooltip="Copiar Link"
                   [attr.aria-label]="'Copiar link de ' + event.title"
                 >
@@ -101,7 +92,7 @@
                 <button
                   mat-icon-button
                   color="warn"
-                  (click)="deleteEvent(event)"
+                  (click)="$event.stopPropagation(); deleteEvent(event)"
                   matTooltip="Excluir"
                   [attr.aria-label]="'Excluir ' + event.title"
                 >
@@ -112,14 +103,14 @@
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openPublicEvent(row)" class="dashboard__row cursor-pointer hover:bg-black/5 dark:hover:bg-white/5"></tr>
         </table>
       </div>
 
       <!-- Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (event of events; track event.id) {
-          <mat-card class="dashboard__mobile-card glass-card" appearance="outlined">
+          <mat-card class="dashboard__mobile-card glass-card cursor-pointer hover:bg-black/5 dark:hover:bg-white/5" appearance="outlined" (click)="openPublicEvent(event)">
             <mat-card-header>
               <mat-card-title>{{ event.title }}</mat-card-title>
               <mat-card-subtitle>
@@ -127,19 +118,16 @@
               </mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions>
-              <a mat-icon-button [routerLink]="['/evento', event.id]" target="_blank" matTooltip="Visualizar evento" aria-label="Visualizar evento">
-                <mat-icon>visibility</mat-icon>
-              </a>
-              <button mat-icon-button (click)="editEvent(event)" matTooltip="Editar" aria-label="Editar">
+              <button mat-icon-button (click)="$event.stopPropagation(); editEvent(event)" matTooltip="Editar" aria-label="Editar">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="shareWhatsApp(event)" matTooltip="Compartilhar no WhatsApp" aria-label="Compartilhar">
+              <button mat-icon-button (click)="$event.stopPropagation(); shareWhatsApp(event)" matTooltip="Compartilhar no WhatsApp" aria-label="Compartilhar">
                 <mat-icon>share</mat-icon>
               </button>
-              <button mat-icon-button (click)="copyLink(event)" matTooltip="Copiar Link" aria-label="Copiar link">
+              <button mat-icon-button (click)="$event.stopPropagation(); copyLink(event)" matTooltip="Copiar Link" aria-label="Copiar link">
                 <mat-icon>link</mat-icon>
               </button>
-              <button mat-icon-button color="warn" (click)="deleteEvent(event)" matTooltip="Excluir" aria-label="Excluir">
+              <button mat-icon-button color="warn" (click)="$event.stopPropagation(); deleteEvent(event)" matTooltip="Excluir" aria-label="Excluir">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-card-actions>

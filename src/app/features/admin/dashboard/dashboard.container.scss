@@ -42,12 +42,9 @@
 
   &__table-wrapper {
     display: none;
-    background-color: var(--mat-sys-surface);
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    border-radius: var(--mdc-shape-medium, 24px);
     margin-bottom: 24px;
-    border: 1px solid var(--mat-sys-outline-variant);
 
     @media (min-width: 768px) {
       display: block;
@@ -80,6 +77,22 @@
 
   &__table {
     width: 100%;
+    background: transparent !important;
+    
+    // Ensure all cells and rows are transparent to let the glass effect through
+    --mat-table-background-color: transparent;
+    --mat-table-header-container-background-color: transparent;
+    
+    ::ng-deep {
+      .mat-mdc-table,
+      .mat-mdc-header-row,
+      .mat-mdc-row,
+      .mat-mdc-header-cell,
+      .mat-mdc-cell,
+      table, thead, tbody, tfoot, tr, th, td {
+        background: transparent !important;
+      }
+    }
   }
 
   &__actions {
@@ -98,6 +111,7 @@
   }
 
   &__mobile-card {
+    background-color: transparent !important; // override mat-card background
     mat-card-actions {
       display: flex;
       justify-content: flex-end;
@@ -107,6 +121,7 @@
   &__empty {
     text-align: center;
     padding: 48px 24px;
+    background-color: transparent !important; // override mat-card background
 
     mat-card-content {
       display: flex;

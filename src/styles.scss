@@ -41,11 +41,11 @@
   --org-radius-full: 9999px;
 
   /* Glassmorphism & Gradients */
-  --org-gradient-primary: linear-gradient(135deg, #FF4D94 0%, #FF8C42 50%, #FFC837 100%);
-  --org-gradient-border: linear-gradient(135deg, rgba(255, 77, 148, 0.5), rgba(255, 140, 66, 0.4));
-  --org-gradient-border-focus: linear-gradient(135deg, #FF4D94 0%, #FF8C42 50%, #FFC837 100%);
-  --org-glass-blur: blur(28px) saturate(210%);
-  --org-glass-bg: rgba(255, 255, 255, 0.65);
+  --org-gradient-primary: linear-gradient(135deg, var(--org-primary) 0%, var(--org-secondary) 50%, var(--org-tertiary) 100%);
+  --org-gradient-border: linear-gradient(135deg, color-mix(in srgb, var(--org-primary) 50%, transparent), color-mix(in srgb, var(--org-secondary) 40%, transparent));
+  --org-gradient-border-focus: var(--org-gradient-primary);
+  --org-glass-blur: blur(16px) saturate(210%);
+  --org-glass-bg: rgba(255, 255, 255, 0.25);
   --org-glass-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(35, 16, 67, 0.08);
 
   /* Global rounding overrides for Material 3 */
@@ -141,28 +141,32 @@ html {
 html.theme-junina {
   --org-primary: #FF5722;
   --org-primary-container: #FF8A65;
-  --org-secondary: #FFB300;
+  --org-secondary: #FF8C42;
+  --org-tertiary: #FFB300;
   --org-gradient-primary: linear-gradient(135deg, #FF5722 0%, #FF8C42 50%, #FFB300 100%);
 }
 
 html.theme-natal {
   --org-primary: #D32F2F;
   --org-primary-container: #EF5350;
-  --org-secondary: #388E3C;
+  --org-secondary: #E53935;
+  --org-tertiary: #388E3C;
   --org-gradient-primary: linear-gradient(135deg, #D32F2F 0%, #E53935 50%, #388E3C 100%);
 }
 
 html.theme-pascoa {
   --org-primary: #8E24AA;
   --org-primary-container: #BA68C8;
-  --org-secondary: #FBC02D;
+  --org-secondary: #BA68C8;
+  --org-tertiary: #FBC02D;
   --org-gradient-primary: linear-gradient(135deg, #8E24AA 0%, #BA68C8 50%, #FBC02D 100%);
 }
 
 html.theme-ano-novo {
   --org-primary: #FBC02D;
   --org-primary-container: #FFF176;
-  --org-secondary: #757575;
+  --org-secondary: #FFF59D;
+  --org-tertiary: #E0E0E0;
   --org-gradient-primary: linear-gradient(135deg, #FBC02D 0%, #FFF59D 50%, #E0E0E0 100%);
 }
 
@@ -363,10 +367,11 @@ button[disabled],
 }
 
 .org-glass,
-.glass-card {
-  background: var(--org-glass-bg);
-  backdrop-filter: var(--org-glass-blur);
-  -webkit-backdrop-filter: var(--org-glass-blur);
+.glass-card,
+.mat-mdc-card {
+  background: var(--org-glass-bg) !important;
+  backdrop-filter: var(--org-glass-blur) !important;
+  -webkit-backdrop-filter: var(--org-glass-blur) !important;
   box-shadow: var(--org-glass-shadow);
   border: 1.5px solid transparent;
   background-clip: padding-box;
@@ -396,8 +401,9 @@ button[disabled],
 }
 
 .dark .org-glass,
-.dark .glass-card {
-  background: rgba(29, 27, 32, 0.65);
+.dark .glass-card,
+.dark .mat-mdc-card {
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Angular Material Button Theme Integration & Master Icon Alignment System */
@@ -499,18 +505,18 @@ button[disabled],
   }
 }
 
-.mat-mdc-unelevated-button.mat-primary,
-.mat-mdc-flat-button.mat-primary,
+.mat-mdc-unelevated-button:not([color="accent"]):not([color="warn"]),
+.mat-mdc-flat-button:not([color="accent"]):not([color="warn"]),
 button.btn-primary-org {
   background: var(--org-gradient-primary) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px rgba(255, 77, 148, 0.3) !important;
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.3), 0px 10px 20px color-mix(in srgb, var(--org-primary) 30%, transparent) !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease !important;
 
   &:hover:not(:disabled) {
     transform: translateY(-1px) scale(1.02) !important;
-    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.4), 0px 14px 28px rgba(255, 77, 148, 0.45) !important;
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.4), 0px 14px 28px color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
   }
 
   &:active:not(:disabled) {
@@ -672,8 +678,8 @@ input:-webkit-autofill:active {
 
   &.mat-focused .mat-mdc-text-field-wrapper {
     box-shadow:
-      0 4px 20px rgba(255, 77, 148, 0.25),
-      0 0 12px rgba(255, 140, 66, 0.2) !important;
+      0 4px 20px color-mix(in srgb, var(--org-primary) 25%, transparent),
+      0 0 12px color-mix(in srgb, var(--org-secondary) 20%, transparent) !important;
   }
 }
 
@@ -692,31 +698,31 @@ input:-webkit-autofill:active {
 
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
   .mdc-notched-outline__leading {
-    border-color: rgba(255, 77, 148, 0.45) !important;
+    border-color: color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
     transition: border-color 200ms ease !important;
   }
 
   .mdc-notched-outline__notch {
-    border-color: rgba(255, 140, 66, 0.4) !important;
+    border-color: color-mix(in srgb, var(--org-secondary) 40%, transparent) !important;
     transition: border-color 200ms ease !important;
   }
 
   .mdc-notched-outline__trailing {
-    border-color: rgba(255, 200, 55, 0.45) !important;
+    border-color: color-mix(in srgb, var(--org-tertiary) 45%, transparent) !important;
     transition: border-color 200ms ease !important;
   }
 
   &:hover {
     .mdc-notched-outline__leading {
-      border-color: rgba(255, 77, 148, 0.8) !important;
+      border-color: color-mix(in srgb, var(--org-primary) 80%, transparent) !important;
     }
 
     .mdc-notched-outline__notch {
-      border-color: rgba(255, 140, 66, 0.75) !important;
+      border-color: color-mix(in srgb, var(--org-secondary) 75%, transparent) !important;
     }
 
     .mdc-notched-outline__trailing {
-      border-color: rgba(255, 200, 55, 0.8) !important;
+      border-color: color-mix(in srgb, var(--org-tertiary) 80%, transparent) !important;
     }
   }
 
@@ -763,8 +769,8 @@ input:-webkit-autofill:active {
   &:focus {
     border-color: var(--org-primary);
     box-shadow:
-      0 4px 20px rgba(255, 77, 148, 0.25),
-      0 0 12px rgba(255, 140, 66, 0.2);
+      0 4px 20px color-mix(in srgb, var(--org-primary) 25%, transparent),
+      0 0 12px color-mix(in srgb, var(--org-secondary) 20%, transparent);
     background: rgba(255, 255, 255, 0.85);
     outline: none;
   }

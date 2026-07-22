@@ -57,7 +57,7 @@
           </mat-card-header>
           <mat-card-content>
             <form [formGroup]="form" class="editor__form" id="event-form">
-              <mat-form-field appearance="outline" class="org-input">
+              <mat-form-field appearance="outline" >
                 <mat-label>Título do Evento</mat-label>
                 <input
                   matInput
@@ -86,7 +86,7 @@
                 }
               </div>
 
-              <mat-form-field appearance="outline" class="org-input">
+              <mat-form-field appearance="outline" >
                 <mat-label>Descrição</mat-label>
                 <textarea
                   matInput
@@ -135,7 +135,7 @@
                 </mat-form-field>
               </div>
 
-              <mat-form-field appearance="outline" class="org-input">
+              <mat-form-field appearance="outline" >
                 <mat-label>CEP</mat-label>
                 <input
                   matInput
@@ -169,7 +169,7 @@
               </div>
 
               <div class="editor__address-row">
-                <mat-form-field appearance="outline" class="org-input">
+                <mat-form-field appearance="outline" >
                   <mat-label>Bairro</mat-label>
                   <input
                     matInput
@@ -179,13 +179,13 @@
                   />
                 </mat-form-field>
 
-                <mat-form-field appearance="outline" class="org-input">
+                <mat-form-field appearance="outline" >
                   <mat-label>Cidade/UF</mat-label>
                   <input matInput formControlName="city" placeholder="Ex: São Paulo/SP" readonly />
                 </mat-form-field>
               </div>
 
-              <mat-form-field appearance="outline" class="org-input">
+              <mat-form-field appearance="outline" >
                 <mat-label>Chave Pix (opcional)</mat-label>
                 <input
                   matInput

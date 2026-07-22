@@ -45,7 +45,7 @@
   --org-gradient-border: linear-gradient(135deg, color-mix(in srgb, var(--org-primary) 50%, transparent), color-mix(in srgb, var(--org-secondary) 40%, transparent));
   --org-gradient-border-focus: var(--org-gradient-primary);
   --org-glass-blur: blur(16px) saturate(210%);
-  --org-glass-bg: rgba(255, 255, 255, 0.25);
+  --org-glass-bg: rgba(255, 255, 255, 0.65);
   --org-glass-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(35, 16, 67, 0.08);
 
   /* Global rounding overrides for Material 3 */
@@ -132,6 +132,7 @@ html {
     --mat-sys-on-surface-variant: var(--org-on-surface-variant-dark);
     --mat-sys-outline: var(--org-outline-dark);
     --mat-sys-outline-variant: var(--org-outline-variant-dark);
+    --org-glass-bg: rgba(31, 26, 29, 0.7);
   }
 }
 

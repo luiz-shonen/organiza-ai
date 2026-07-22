@@ -7,6 +7,7 @@ import {
   input,
   OnInit,
   DestroyRef,
+  effect,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -101,6 +102,14 @@ export class EventEditorContainer implements OnInit, OnDestroy {
     number: [''],
     pixKey: [''],
   });
+
+  constructor() {
+    effect(() => {
+      this.headerService.title.set(this.isEditing() ? 'Editar Evento' : 'Novo Evento');
+      this.headerService.showBackBtn.set(true);
+      this.headerService.backUrl.set('/admin');
+    });
+  }
 
   ngOnInit(): void {
     // ViaCEP listener

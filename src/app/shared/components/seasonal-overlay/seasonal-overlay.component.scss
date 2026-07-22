@@ -16,11 +16,11 @@
 
   &__garland-svg {
     position: absolute;
-    top: 48px;
+    top: 0;
     left: 0;
     width: 100%;
     height: 120px;
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 
     .flag-group {
       transform-origin: top center;
@@ -49,25 +49,25 @@
   /* 3D BALÕES JUNINOS (FLOATING LANTERNS) */
   &__lantern {
     position: absolute;
-    width: 70px;
-    height: 140px;
+    width: 65px;
+    height: 130px;
     transform-origin: top center;
-    filter: drop-shadow(0 6px 20px rgba(255, 140, 66, 0.45));
+    filter: drop-shadow(0 6px 24px rgba(255, 140, 66, 0.6));
 
     @media (min-width: 768px) {
-      width: 90px;
-      height: 180px;
+      width: 80px;
+      height: 160px;
     }
 
     &.lantern-left {
-      top: 48px;
-      left: 5%;
+      top: 0;
+      left: 3%;
       animation: lanternSwayLeft 5.5s ease-in-out infinite alternate;
     }
 
     &.lantern-right {
-      top: 54px;
-      right: 6%;
+      top: 0;
+      right: 4%;
       animation: lanternSwayRight 6.2s ease-in-out infinite alternate;
     }
 
@@ -80,17 +80,17 @@
   /* FOGUEIRA DE SÃO JOÃO ANIMADA (BONFIRE BOTTOM LEFT CORNER) */
   &__bonfire {
     position: absolute;
-    bottom: 12px;
+    bottom: 16px;
     left: 24px;
-    width: 120px;
-    height: 120px;
-    filter: drop-shadow(0 -4px 20px rgba(255, 140, 66, 0.5));
+    width: 130px;
+    height: 130px;
+    filter: drop-shadow(0 -4px 28px rgba(255, 140, 66, 0.7));
 
     @media (min-width: 768px) {
-      width: 150px;
-      height: 150px;
+      width: 160px;
+      height: 160px;
       left: 48px;
-      bottom: 20px;
+      bottom: 24px;
     }
 
     .bonfire-svg {

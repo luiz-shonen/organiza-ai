@@ -93,13 +93,14 @@
     @media (min-width: 600px) {
       padding: 40px 32px;
     }
+
+    // Improve input legibility over the gradient/glass card background
+    .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface) !important;
+      opacity: 0.9;
+    }
   }
 
-  &__card.mat-mdc-card-outlined {
-    background: rgba(255, 200, 55, 0.4) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-  }
 
   &__category-field {
     display: flex;
@@ -125,12 +126,66 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
+
+    /* Fix Datepicker Icon Alignment */
+    mat-datepicker-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      margin-bottom: 0 !important;
+    }
+
+    /* Fix Time Input Native Rendering */
+    input[type="time"] {
+      padding: 0;
+      margin: 0;
+      border: none;
+      outline: none;
+      height: 100%;
+      background: transparent;
+      &::-webkit-datetime-edit-fields-wrapper {
+        padding: 0;
+      }
+    }
+  }
+
+  &__section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mat-sys-primary);
+    margin: 8px 0 0 0;
+    border-bottom: 1px solid rgba(var(--mat-sys-primary-rgb), 0.1);
+    padding-bottom: 4px;
+  }
+
+  &__address-row-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  &__address-row-single {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   &__address-row {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
+  }
+
+  &__disabled-field {
+    opacity: 0.6;
+    pointer-events: none;
+    
+    .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface-container-low) !important;
+    }
+    input {
+      color: var(--mat-sys-on-surface-variant) !important;
+    }
   }
 
   &__save-btn {
@@ -144,6 +199,12 @@
     gap: 8px;
     align-items: flex-start;
     padding-top: 12px;
+
+    // Improve input legibility over the gradient/glass card background
+    .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface) !important;
+      opacity: 0.9;
+    }
   }
 
   &__item-name-field {

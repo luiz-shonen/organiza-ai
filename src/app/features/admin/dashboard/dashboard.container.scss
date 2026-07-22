@@ -171,10 +171,105 @@
   &__clickable-row,
   &__clickable-card {
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      background-color: rgba(128, 128, 128, 0.1) !important;
+      background-color: rgba(0, 0, 0, 0.04) !important;
+      transform: translateY(-2px);
     }
   }
+
+  /* Filters */
+  &__filters {
+    margin-bottom: 24px;
+    
+    ::ng-deep {
+      .mat-mdc-chip-listbox {
+        padding: 4px;
+      }
+    }
+  }
+
+  /* Alert Banner */
+  &__alert-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(var(--mat-sys-primary-rgb), 0.1), rgba(var(--mat-sys-tertiary-rgb), 0.05));
+    border: 1px solid rgba(var(--mat-sys-primary-rgb), 0.2);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, rgba(var(--mat-sys-primary-rgb), 0.15), rgba(var(--mat-sys-tertiary-rgb), 0.1));
+    }
+  }
+
+  &__alert-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__alert-icon {
+    color: var(--mat-sys-primary);
+    animation: ring 4s infinite;
+  }
+
+  &__alert-text {
+    font-size: 1rem;
+    color: var(--mat-sys-on-surface);
+
+    strong {
+      color: var(--mat-sys-primary);
+    }
+    span {
+      font-weight: 500;
+      opacity: 0.8;
+      margin-left: 4px;
+    }
+  }
+
+  &__alert-arrow {
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.5;
+  }
+
+  /* Cancelled state */
+  .cancelled {
+    opacity: 0.6;
+    
+    td, .mat-mdc-card-title, .mat-mdc-card-subtitle {
+      text-decoration: line-through;
+    }
+  }
+
+  /* History state */
+  .history {
+    opacity: 0.8;
+    background-color: rgba(var(--mat-sys-on-surface-rgb), 0.02) !important;
+    
+    td, .mat-mdc-card-title {
+      color: var(--mat-sys-on-surface-variant);
+    }
+    
+    mat-icon {
+      filter: grayscale(100%);
+    }
+  }
+}
+
+@keyframes ring {
+  0% { transform: rotate(0); }
+  5% { transform: rotate(15deg); }
+  10% { transform: rotate(-10deg); }
+  15% { transform: rotate(5deg); }
+  20% { transform: rotate(-5deg); }
+  25% { transform: rotate(0); }
+  100% { transform: rotate(0); }
 }

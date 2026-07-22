@@ -1,6 +1,5 @@
 import {
   Component,
-  OnDestroy,
   ChangeDetectionStrategy,
   inject,
   signal,
@@ -54,7 +53,7 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
 })
 
 
-export class EventEditorContainer implements OnInit, OnDestroy {
+export class EventEditorContainer implements OnInit {
   readonly id = input<string>();
 
   private readonly eventService = inject(EventService);

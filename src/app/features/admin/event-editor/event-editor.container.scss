@@ -105,6 +105,7 @@
   &__step-actions {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     gap: 16px;
     margin-top: 24px;
     padding-top: 16px;
@@ -204,7 +205,7 @@
   }
 
   &__save-btn {
-    margin-top: 8px;
+    margin-top: 0;
     height: 48px;
     font-size: 1rem;
   }

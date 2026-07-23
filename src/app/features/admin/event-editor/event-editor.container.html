@@ -264,7 +264,9 @@
                     <button
                       mat-flat-button
                       class="editor__save-btn btn-primary-org"
-                      [disabled]="basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()"
+                      [disabled]="
+                        basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
+                      "
                       (click)="saveEvent()"
                       aria-label="Salvar evento"
                     >
@@ -275,7 +277,7 @@
                         <mat-icon>save</mat-icon>
                       }
                       @if (!saving()) {
-                        <span>{{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}</span>
+                        <span>{{ isEditing() ? 'Salvar' : 'Criar Evento' }}</span>
                       }
                     </button>
                   </div>
@@ -362,7 +364,10 @@
       @if (isEditing()) {
         <div class="editor__col">
           <!-- Share Panel -->
-          <app-share-panel [eventUrl]="eventUrl()" [eventTitle]="basicInfoForm.controls.title.value" />
+          <app-share-panel
+            [eventUrl]="eventUrl()"
+            [eventTitle]="basicInfoForm.controls.title.value"
+          />
 
           <!-- Guest List Card -->
           <mat-card class="editor__card print-section glass-card" appearance="outlined">

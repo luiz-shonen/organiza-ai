@@ -884,59 +884,87 @@ input[type='time'] {
   }
 }
 
-// Global Category Chips
+// Global Category Chips (Costura AI style)
 .org-chip {
   &.cat-aniversario {
     --chip-bg: #ffe499;
     --chip-color: #d35400;
+    --chip-selected-bg: #e67e22;
   }
   &.cat-casamento {
     --chip-bg: #fce1ed;
     --chip-color: #8e44ad;
+    --chip-selected-bg: #9b59b6;
   }
   &.cat-festa {
     --chip-bg: #ffb380;
     --chip-color: #c0392b;
+    --chip-selected-bg: #e74c3c;
   }
   &.cat-churrasco {
     --chip-bg: #d5dbdb;
     --chip-color: #2c3e50;
+    --chip-selected-bg: #34495e;
   }
   &.cat-happy {
     --chip-bg: #aed6f1;
     --chip-color: #2980b9;
+    --chip-selected-bg: #3498db;
   }
   &.cat-formatura {
     --chip-bg: #d2b4de;
     --chip-color: #4a235a;
+    --chip-selected-bg: #8e44ad;
   }
   &.cat-outros {
     --chip-bg: #e5e7e9;
     --chip-color: #7f8c8d;
+    --chip-selected-bg: #95a5a6;
   }
 
+  &.mat-mdc-chip-option,
+  &.mat-mdc-chip,
   &.mdc-evolution-chip {
+    --mdc-chip-outline-color: transparent !important;
+    --mdc-chip-outline-width: 0px !important;
+    --mat-chip-outline-color: transparent !important;
+    --mat-chip-outline-width: 0px !important;
+    --mdc-chip-container-shape: 9999px !important;
+    --mat-chip-container-shape: 9999px !important;
+
     background-color: var(--chip-bg, #eee) !important;
     border-radius: 9999px !important;
     border: none !important;
     outline: none !important;
-    transition: all 0.3s ease;
+    box-shadow: none !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 
-    .mdc-evolution-chip__outline {
+    .mdc-evolution-chip__outline,
+    .mat-mdc-chip-outline,
+    .mdc-evolution-chip__container,
+    .mdc-evolution-chip__action {
       border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
     }
 
-    .mdc-evolution-chip__text-label {
+    .mdc-evolution-chip__text-label,
+    .mat-mdc-chip-action-label,
+    span {
       color: var(--chip-color, #333) !important;
-      font-weight: 700;
+      font-weight: 700 !important;
     }
 
+    &.mat-mdc-chip-selected,
     &.mdc-evolution-chip--selected {
-      background: var(--chip-color, #333) !important;
-      transform: scale(1.05);
+      background: var(--chip-selected-bg, var(--chip-color, #333)) !important;
+      transform: scale(1.03);
 
-      .mdc-evolution-chip__text-label {
-        color: #fff !important;
+      .mdc-evolution-chip__text-label,
+      .mat-mdc-chip-action-label,
+      span,
+      mat-icon {
+        color: #ffffff !important;
       }
     }
   }

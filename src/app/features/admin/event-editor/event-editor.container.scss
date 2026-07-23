@@ -91,7 +91,7 @@
   &__stepper {
     background: transparent !important;
     border-radius: 20px;
-    
+
     ::ng-deep .mat-horizontal-stepper-header-container {
       padding: 16px 24px;
       border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
@@ -140,7 +140,6 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--mat-sys-on-surface-variant);
-    padding-left: 16px;
   }
 
   &__category-error {

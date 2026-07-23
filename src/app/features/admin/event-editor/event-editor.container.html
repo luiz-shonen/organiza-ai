@@ -144,7 +144,7 @@
                       matStepperNext
                       type="button"
                       class="btn-primary-org"
-                      (click)="basicInfoForm.markAllAsTouched()"
+                      [disabled]="basicInfoForm.invalid"
                     >
                       Próximo
                       <mat-icon iconPositionEnd>arrow_forward</mat-icon>
@@ -231,7 +231,7 @@
                       matStepperNext
                       type="button"
                       class="btn-primary-org"
-                      (click)="addressForm.markAllAsTouched()"
+                      [disabled]="addressForm.invalid"
                     >
                       Próximo
                       <mat-icon iconPositionEnd>arrow_forward</mat-icon>

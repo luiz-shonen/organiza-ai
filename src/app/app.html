@@ -5,7 +5,7 @@
     mode="over"
     [opened]="drawerService.isOpen()"
     (closed)="drawerService.close()"
-    class="app-sidenav-drawer"
+    class="app-sidenav-drawer glass-drawer"
   >
     @if (drawerService.drawerType() === 'admin') {
       <app-admin-form-drawer (close)="drawerService.close()" />
@@ -18,9 +18,7 @@
       <div class="blob blob-2"></div>
       <div class="blob blob-3"></div>
     </div>
-
     <app-seasonal-overlay />
-
     @if (showHeader()) {
       <mat-toolbar class="app-toolbar" role="banner">
         <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
@@ -34,6 +32,7 @@
             mat-button
             routerLink="/admin"
             aria-label="Painel administrativo"
+            matTooltip="Painel Administrativo"
             class="app-toolbar__admin-btn"
           >
             <mat-icon>dashboard</mat-icon>
@@ -48,6 +47,7 @@
             mat-icon-button
             [matMenuTriggerFor]="userMenu"
             aria-label="Menu do usuário"
+            matTooltip="Menu do Usuário"
             class="app-toolbar__user-btn"
           >
             @if (user()!.photoURL) {
@@ -72,7 +72,12 @@
             </button>
           </mat-menu>
         } @else {
-          <a mat-flat-button routerLink="/login" aria-label="Acessar ou cadastrar">
+          <a
+            mat-flat-button
+            routerLink="/login"
+            aria-label="Acessar ou cadastrar"
+            class="app-toolbar__login-btn"
+          >
             <mat-icon>login</mat-icon>
             <span>Entrar / Cadastrar</span>
           </a>

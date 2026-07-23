@@ -1,6 +1,13 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit, DestroyRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  DestroyRef,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,17 +17,23 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatChipsModule } from '@angular/material/chips';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { effect } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { EventService, AuthService, DrawerService } from '../../../core/services';
+import {
+  EventService,
+  AuthService,
+  DrawerService,
+  NotificationService,
+} from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    AsyncPipe,
     RouterLink,
     MatCardModule,
     MatButtonModule,
@@ -29,6 +42,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatMenuModule,
+    MatChipsModule,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
@@ -41,11 +55,85 @@ export class DashboardContainer implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
   private readonly clipboard = inject(Clipboard);
   private readonly dialog = inject(MatDialog);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly events$ = this.eventService.listEvents();
+  protected readonly events = toSignal(this.events$);
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly user = this.authService.currentUser;
   protected readonly displayedColumns = ['title', 'date', 'location', 'actions'];
+
+  protected readonly activeFilter = signal<'all' | 'upcoming' | 'history' | 'cancelled'>('all');
+
+  protected readonly filteredEvents = computed(() => {
+    const all = this.events();
+    if (!all) return [];
+    const filter = this.activeFilter();
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Start of today
+
+    return all.filter((e) => {
+      const isCancelled = e.status === 'cancelled';
+      const eventDate = new Date(e.date);
+
+      switch (filter) {
+        case 'upcoming':
+          return !isCancelled && eventDate >= now;
+        case 'history':
+          return !isCancelled && eventDate < now;
+        case 'cancelled':
+          return isCancelled;
+        case 'all':
+        default:
+          return true;
+      }
+    });
+  });
+
+  protected readonly nextEvent = computed(() => {
+    const all = this.events();
+    if (!all) return null;
+    const upcoming = all.filter((e) => {
+      const isCancelled = e.status === 'cancelled';
+      const eventDate = new Date(e.date);
+      const now = new Date();
+      return !isCancelled && eventDate >= now;
+    });
+    // Already ordered by date ASC from the service
+    return upcoming.length > 0 ? upcoming[0] : null;
+  });
+
+  protected readonly nextEventDays = computed(() => {
+    const event = this.nextEvent();
+    if (!event) return null;
+    const eventDate = new Date(event.date);
+    const now = new Date();
+    eventDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+    const diffTime = Math.abs(eventDate.getTime() - now.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  });
+
+  constructor() {
+    effect(() => {
+      const event = this.nextEvent();
+      const days = this.nextEventDays();
+      if (event && days !== null && days <= 7) {
+        const notifiedKey = `notified_event_${event.id}`;
+        if (!localStorage.getItem(notifiedKey)) {
+          let timeText = `Faltam ${days} dias`;
+          if (days === 0) timeText = 'É hoje!';
+          if (days === 1) timeText = 'Amanhã!';
+
+          this.notificationService.sendLocalNotification(
+            'Evento se aproximando!',
+            `Seu evento "${event.title}" está chegando. ${timeText}.`,
+          );
+          localStorage.setItem(notifiedKey, 'true');
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {}
 
@@ -53,23 +141,35 @@ export class DashboardContainer implements OnInit {
     this.router.navigate(['/admin/evento', event.id]);
   }
 
-  protected async deleteEvent(event: PartyEvent): Promise<void> {
+  protected openPublicEvent(event: PartyEvent): void {
+    window.open(`/evento/${event.id}`, '_blank');
+  }
+
+  protected isHistoryEvent(dateStr: string): boolean {
+    const eventDate = new Date(dateStr);
+    const now = new Date();
+    eventDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+    return eventDate < now;
+  }
+
+  protected async cancelEvent(event: PartyEvent): Promise<void> {
     const confirmRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
-        title: 'Excluir Evento',
-        message: `Tem certeza que deseja excluir o evento "${event.title}"?`,
-        confirmLabel: 'Excluir'
-      }
+        title: 'Cancelar Evento',
+        message: `Tem certeza que deseja cancelar o evento "${event.title}"? Ele será movido para os cancelados e o link público avisará sobre o cancelamento.`,
+        confirmLabel: 'Cancelar Evento',
+      },
     });
 
     confirmRef.afterClosed().subscribe(async (result) => {
       if (result) {
         try {
-          await this.eventService.deleteEvent(event.id);
-          this.snackBar.open('Evento excluído com sucesso!', 'OK', { duration: 3000 });
+          await this.eventService.cancelEvent(event.id);
+          this.snackBar.open('Evento cancelado com sucesso!', 'OK', { duration: 3000 });
         } catch {
-          this.snackBar.open('Erro ao excluir evento.', 'OK', { duration: 3000 });
+          this.snackBar.open('Erro ao cancelar evento.', 'OK', { duration: 3000 });
         }
       }
     });

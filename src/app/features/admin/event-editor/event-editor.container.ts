@@ -7,9 +7,10 @@ import {
   OnInit,
   DestroyRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,6 +21,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { HeaderService } from '../../../core/services';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { EventService, ItemService, GuestService, ConfettiService } from '../../../core/services';
@@ -32,6 +34,7 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    RouterLink,
     ReactiveFormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -45,6 +48,9 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
     MatTooltipModule,
     MatAutocompleteModule,
     MatChipsModule,
+    MatNativeDateModule,
+    MatCardModule,
+    MatStepperModule,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
@@ -60,6 +66,8 @@ export class EventEditorContainer implements OnInit {
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly headerService = inject(HeaderService);
+
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -79,38 +87,46 @@ export class EventEditorContainer implements OnInit {
     { name: 'Churrasco', class: 'cat-churrasco' },
     { name: 'Happy Hour', class: 'cat-happy' },
     { name: 'Formatura', class: 'cat-formatura' },
-    { name: 'Outros', class: 'cat-outros' }
+    { name: 'Outros', class: 'cat-outros' },
   ];
 
-  protected readonly form = this.fb.nonNullable.group({
+  protected readonly basicInfoForm = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
     category: ['', [Validators.required]],
     description: ['', [Validators.required]],
     date: [null as Date | null, [Validators.required]],
     time: ['', [Validators.required]],
-    cep: [''],
+  });
+
+  protected readonly addressForm = this.fb.nonNullable.group({
+    cep: ['', [Validators.required]],
     address: ['', [Validators.required]],
-    neighborhood: [''],
-    city: [''],
-    number: [''],
+    neighborhood: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    number: ['', [Validators.required]],
+  });
+
+  protected readonly pixForm = this.fb.nonNullable.group({
     pixKey: [''],
   });
 
   ngOnInit(): void {
     // ViaCEP listener
-    this.form.controls.cep.valueChanges.pipe(
-      debounceTime(400),
-      distinctUntilChanged(),
-      switchMap(cep => this.locationService.getViaCep(cep))
-    ).subscribe(res => {
-      if (res && !res.erro) {
-        this.form.patchValue({
-          address: res.logradouro || '',
-          neighborhood: res.bairro || '',
-          city: (res.localidade && res.uf) ? `${res.localidade}/${res.uf}` : ''
-        });
-      }
-    });
+    this.addressForm.controls.cep.valueChanges
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap((cep) => this.locationService.getViaCep(cep)),
+      )
+      .subscribe((res) => {
+        if (res && !res.erro) {
+          this.addressForm.patchValue({
+            address: res.logradouro || '',
+            neighborhood: res.bairro || '',
+            city: res.localidade && res.uf ? `${res.localidade}/${res.uf}` : '',
+          });
+        }
+      });
 
     const eventId = this.id();
     if (eventId && eventId !== 'novo') {
@@ -124,18 +140,24 @@ export class EventEditorContainer implements OnInit {
             let d = new Date(event.date);
             if (isNaN(d.getTime())) d = new Date();
             const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
-            
-            this.form.patchValue({
+
+            this.basicInfoForm.patchValue({
               title: event.title,
               category: event.category || '',
               description: event.description,
               date: d,
               time: timeStr,
-              address: event.location, // Colocamos o location inteiro no address por legado
-              neighborhood: '',
-              city: '',
-              cep: '',
-              number: '',
+            });
+
+            this.addressForm.patchValue({
+              cep: event.addressDetails?.cep || '',
+              address: event.addressDetails?.address || event.location || '',
+              number: event.addressDetails?.number || '',
+              neighborhood: event.addressDetails?.neighborhood || '',
+              city: event.addressDetails?.city || '',
+            });
+
+            this.pixForm.patchValue({
               pixKey: event.pixKey ?? '',
             });
           }
@@ -145,7 +167,7 @@ export class EventEditorContainer implements OnInit {
           console.error(err);
           this.loading.set(false);
           this.snackBar.open('Erro ao carregar evento', 'OK', { duration: 3000 });
-        }
+        },
       });
 
       const itemsSub = this.itemService.listItems(eventId).subscribe({
@@ -165,22 +187,29 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected async saveEvent(): Promise<void> {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+    if (this.basicInfoForm.invalid || this.addressForm.invalid || this.pixForm.invalid) {
+      this.basicInfoForm.markAllAsTouched();
+      this.addressForm.markAllAsTouched();
+      this.pixForm.markAllAsTouched();
       return;
     }
 
     this.saving.set(true);
-    const { title, category, description, date, time, cep, address, neighborhood, city, number, pixKey } = this.form.getRawValue();
+
+    const { title, category, description, date, time } = this.basicInfoForm.getRawValue();
+    const { cep, address, neighborhood, city, number } = this.addressForm.getRawValue();
+    const { pixKey } = this.pixForm.getRawValue();
 
     let finalDate = new Date();
     if (date) {
       finalDate = new Date(date);
       const [h, m] = time.split(':');
       finalDate.setHours(Number(h) || 0, Number(m) || 0, 0, 0);
-      
+
       if (finalDate < new Date()) {
-        this.snackBar.open('A data e hora do evento não podem ser no passado.', 'OK', { duration: 3000 });
+        this.snackBar.open('A data e hora do evento não podem ser no passado.', 'OK', {
+          duration: 3000,
+        });
         this.saving.set(false);
         return;
       }
@@ -191,11 +220,29 @@ export class EventEditorContainer implements OnInit {
       address && number ? `${address}, ${number}` : address || number,
       neighborhood,
       city,
-      cep ? `CEP: ${cep}` : ''
-    ].filter(Boolean).join(' - ');
+      cep ? `CEP: ${cep}` : '',
+    ]
+      .filter(Boolean)
+      .join(' - ');
+
+    const addressDetails = {
+      cep,
+      address,
+      number,
+      neighborhood,
+      city,
+    };
 
     const location = fullAddress || '';
-    const eventData = { title, category, description, date: dateStr, location, pixKey: pixKey || null };
+    const eventData = {
+      title,
+      category,
+      description,
+      date: dateStr,
+      location,
+      addressDetails,
+      pixKey: pixKey || null,
+    };
 
     try {
       const eventId = this.id();
@@ -250,7 +297,7 @@ export class EventEditorContainer implements OnInit {
     }
 
     const headers = ['Nome,Telefone,Data de Confirmação'];
-    const rows = guestsList.map(g => {
+    const rows = guestsList.map((g) => {
       const date = g.createdAt ? new Date(g.createdAt).toLocaleDateString('pt-BR') : '';
       return `"${g.name}","${g.phone}","${date}"`;
     });
@@ -258,10 +305,10 @@ export class EventEditorContainer implements OnInit {
     const csvContent = headers.concat(rows).join('\n');
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    
+
     const link = document.createElement('a');
     link.href = url;
-    link.download = `convidados-${this.form.controls.title.value || 'evento'}.csv`;
+    link.download = `convidados-${this.basicInfoForm.controls.title.value || 'evento'}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -278,7 +325,7 @@ export class EventEditorContainer implements OnInit {
     if (value.length > 5) {
       value = value.substring(0, 5) + '-' + value.substring(5, 8);
     }
-    this.form.controls.cep.setValue(value, { emitEvent: false });
+    this.addressForm.controls.cep.setValue(value, { emitEvent: false });
   }
 
   protected formatDate(event: Event): void {
@@ -286,7 +333,7 @@ export class EventEditorContainer implements OnInit {
     let value = input.value.replace(/\D/g, '');
     if (value.length > 2) value = value.substring(0, 2) + '/' + value.substring(2);
     if (value.length > 5) value = value.substring(0, 5) + '/' + value.substring(5, 9);
-    
+
     // update value only in the raw input visually to not mess with matDatepicker internals prematurely
     input.value = value;
   }

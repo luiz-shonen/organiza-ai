@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 180" fill="none">
+  <defs>
+    <radialGradient id="lanternGlow" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#FFF5C0" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#FFC837" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#FF8C42" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .lantern-core { animation: glowPulse 2.5s ease-in-out infinite alternate; }
+      .ribbon-1 { animation: ribbonWave1 3s ease-in-out infinite alternate; transform-origin: 28px 126px; }
+      .ribbon-2 { animation: ribbonWave2 3.5s ease-in-out infinite alternate; transform-origin: 40px 126px; }
+      .ribbon-3 { animation: ribbonWave3 2.8s ease-in-out infinite alternate; transform-origin: 52px 126px; }
+
+      @keyframes glowPulse {
+        0%   { opacity: 0.7; transform: scale(0.95); }
+        100% { opacity: 1;   transform: scale(1.08); }
+      }
+      @keyframes ribbonWave1 {
+        0%   { transform: rotate(-4deg); }
+        100% { transform: rotate(6deg); }
+      }
+      @keyframes ribbonWave2 {
+        0%   { transform: rotate(5deg); }
+        100% { transform: rotate(-5deg); }
+      }
+      @keyframes ribbonWave3 {
+        0%   { transform: rotate(-6deg); }
+        100% { transform: rotate(4deg); }
+      }
+    </style>
+  </defs>
+
+  <!-- Hanging Thread -->
+  <line x1="40" y1="0" x2="40" y2="35" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+
+  <!-- Top Ring -->
+  <circle cx="40" cy="35" r="3.5" fill="#FFC837" stroke="#E6A100" stroke-width="0.8"/>
+
+  <!-- Faceted Balloon Body -->
+  <g class="lantern-body">
+    <!-- Upper Facets -->
+    <polygon points="40,38 18,72 40,78" fill="#FF4D94"/>
+    <polygon points="40,38 40,78 62,72" fill="#FF8C42"/>
+
+    <!-- Mid Facets -->
+    <polygon points="18,72 40,78 40,116 12,104" fill="#00D2FF"/>
+    <polygon points="62,72 40,78 40,116 68,104" fill="#2ECC71"/>
+
+    <!-- Lower Facets -->
+    <polygon points="40,78 12,104 40,126" fill="#FFC837"/>
+    <polygon points="40,78 68,104 40,126" fill="#FF6B6B"/>
+
+    <!-- Inner glow -->
+    <circle cx="40" cy="86" r="16" fill="url(#lanternGlow)" class="lantern-core"/>
+  </g>
+
+  <!-- Ribbon Tails -->
+  <path class="ribbon-1" d="M28,126 Q20,148 24,175" stroke="#FF4D94" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path class="ribbon-2" d="M40,126 Q40,150 42,175" stroke="#FFC837" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path class="ribbon-3" d="M52,126 Q60,148 56,175" stroke="#00D2FF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

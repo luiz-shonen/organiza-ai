@@ -58,20 +58,18 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
 
   &__item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    gap: 8px;
+    padding: 12px 4px;
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
-    &--super {
-      background: linear-gradient(135deg, rgba(255, 77, 148, 0.1), rgba(255, 140, 66, 0.1));
-      border-color: rgba(255, 77, 148, 0.3);
+    &:last-child {
+      border-bottom: none;
     }
 
     &--empty {
@@ -85,7 +83,9 @@
   &__info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
   }
 
   &__badge-icon {
@@ -93,27 +93,38 @@
     width: 18px;
     height: 18px;
     color: var(--mat-sys-on-surface-variant);
+    flex-shrink: 0;
 
     &--super {
       color: var(--org-primary, #ff4d94);
     }
   }
 
-  &__super-chip {
+  &__super-pill {
     font-size: 10px;
     font-weight: 700;
-    padding: 2px 8px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: 1;
+    padding: 5px 10px;
     border-radius: 9999px;
     background: var(--org-gradient-primary);
     color: #ffffff;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    box-shadow: 0 2px 6px rgba(255, 77, 148, 0.35);
+    margin-left: auto;
+    flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(255, 77, 148, 0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__email {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__spinner {

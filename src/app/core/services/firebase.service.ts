@@ -14,7 +14,7 @@ export class FirebaseService {
     this.app = initializeApp(environment.firebase);
     this.auth = getAuth(this.app);
     this.firestore = initializeFirestore(this.app, {
-      experimentalForceLongPolling: true
+      experimentalForceLongPolling: true,
     } as any);
   }
 }

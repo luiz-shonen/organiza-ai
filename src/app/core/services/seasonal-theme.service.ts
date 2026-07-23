@@ -9,7 +9,17 @@ const DEFAULT_SEASONAL_RULES: SeasonalThemeRule[] = [
     startDay: 1,
     endMonth: 7,
     endDay: 31,
-    keywords: ['junina', 'julina', 'são joão', 'sao joao', 'arraial', 'arraiá', 'quermesse', 'milho', 'caipira']
+    keywords: [
+      'junina',
+      'julina',
+      'são joão',
+      'sao joao',
+      'arraial',
+      'arraiá',
+      'quermesse',
+      'milho',
+      'caipira',
+    ],
   },
   {
     id: 'natal',
@@ -18,7 +28,16 @@ const DEFAULT_SEASONAL_RULES: SeasonalThemeRule[] = [
     startDay: 1,
     endMonth: 12,
     endDay: 31,
-    keywords: ['natal', 'christmas', 'jesus', 'presépio', 'presepio', 'estrela de belém', 'estrela de belem', 'noite feliz']
+    keywords: [
+      'natal',
+      'christmas',
+      'jesus',
+      'presépio',
+      'presepio',
+      'estrela de belém',
+      'estrela de belem',
+      'noite feliz',
+    ],
   },
   {
     id: 'pascoa',
@@ -27,7 +46,14 @@ const DEFAULT_SEASONAL_RULES: SeasonalThemeRule[] = [
     startDay: 20,
     endMonth: 4,
     endDay: 30,
-    keywords: ['páscoa', 'pascoa', 'ressurreição', 'ressurreicao', 'santa ceia', 'sexta-feira santa']
+    keywords: [
+      'páscoa',
+      'pascoa',
+      'ressurreição',
+      'ressurreicao',
+      'santa ceia',
+      'sexta-feira santa',
+    ],
   },
   {
     id: 'ano-novo',
@@ -36,12 +62,12 @@ const DEFAULT_SEASONAL_RULES: SeasonalThemeRule[] = [
     startDay: 31,
     endMonth: 1,
     endDay: 2,
-    keywords: ['ano novo', 'reveillon', 'réveillon', 'virada', '2025', '2026', '2027']
-  }
+    keywords: ['ano novo', 'reveillon', 'réveillon', 'virada', '2025', '2026', '2027'],
+  },
 ];
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SeasonalThemeService {
   private readonly rules = signal<SeasonalThemeRule[]>(DEFAULT_SEASONAL_RULES);
@@ -52,7 +78,7 @@ export class SeasonalThemeService {
   public readonly config = computed<SeasonalThemeConfig>(() => ({
     activeTheme: this.activeThemeId(),
     isOverride: this.isOverride(),
-    themeName: this.activeThemeName()
+    themeName: this.activeThemeName(),
   }));
 
   constructor() {
@@ -66,7 +92,7 @@ export class SeasonalThemeService {
     const month = referenceDate.getMonth() + 1; // 1-12
     const day = referenceDate.getDate();
 
-    const matchedRule = this.rules().find(rule => {
+    const matchedRule = this.rules().find((rule) => {
       if (rule.startMonth <= rule.endMonth) {
         return (
           (month > rule.startMonth || (month === rule.startMonth && day >= rule.startDay)) &&
@@ -103,8 +129,8 @@ export class SeasonalThemeService {
     // 1. Check title keywords first
     if (eventTitle) {
       const titleLower = eventTitle.toLowerCase();
-      const matchedKeywordRule = this.rules().find(rule =>
-        rule.keywords.some(kw => titleLower.includes(kw))
+      const matchedKeywordRule = this.rules().find((rule) =>
+        rule.keywords.some((kw) => titleLower.includes(kw)),
       );
       if (matchedKeywordRule) {
         this.activeThemeId.set(matchedKeywordRule.id);
@@ -121,7 +147,7 @@ export class SeasonalThemeService {
         const month = parsedDate.getMonth() + 1;
         const day = parsedDate.getDate();
 
-        const matchedDateRule = this.rules().find(rule => {
+        const matchedDateRule = this.rules().find((rule) => {
           if (rule.startMonth <= rule.endMonth) {
             return (
               (month > rule.startMonth || (month === rule.startMonth && day >= rule.startDay)) &&

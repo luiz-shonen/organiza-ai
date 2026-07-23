@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 180" fill="none">
+  <defs>
+    <radialGradient id="fireAura" cx="50%" cy="65%" r="50%">
+      <stop offset="0%" stop-color="#FF8C42" stop-opacity="0.6"/>
+      <stop offset="70%" stop-color="#FF4D00" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#FF4D00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="logGrad1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3E1A08"/>
+      <stop offset="50%" stop-color="#8B4513"/>
+      <stop offset="100%" stop-color="#2C0E02"/>
+    </linearGradient>
+    <linearGradient id="logGrad2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2C0E02"/>
+      <stop offset="50%" stop-color="#A0522D"/>
+      <stop offset="100%" stop-color="#3E1A08"/>
+    </linearGradient>
+    <linearGradient id="flameOuterGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#CC2200"/>
+      <stop offset="45%" stop-color="#FF4D00"/>
+      <stop offset="80%" stop-color="#FF8C42"/>
+      <stop offset="100%" stop-color="#FFC837" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="flameMidGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FF6600"/>
+      <stop offset="60%" stop-color="#FFC837"/>
+      <stop offset="100%" stop-color="#FFF5C0" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="flameCoreGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FFC837"/>
+      <stop offset="70%" stop-color="#FFF5C0"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+
+    <style>
+      .flame-outer { transform-origin: 80px 145px; animation: flamePulseOuter 2.2s ease-in-out infinite alternate; }
+      .flame-mid   { transform-origin: 80px 145px; animation: flamePulseMid 1.7s ease-in-out infinite alternate; }
+      .flame-core  { transform-origin: 80px 145px; animation: flamePulseCore 1.3s ease-in-out infinite alternate; }
+      .ember       { animation: emberFloat 3s ease-out infinite; }
+      .e1 { animation-delay: 0.2s; }
+      .e2 { animation-delay: 0.9s; }
+      .e3 { animation-delay: 1.6s; }
+      .e4 { animation-delay: 2.3s; }
+
+      @keyframes flamePulseOuter {
+        0%   { transform: scaleY(0.96) scaleX(0.98); }
+        50%  { transform: scaleY(1.04) scaleX(1.02); }
+        100% { transform: scaleY(0.98) scaleX(0.99); }
+      }
+      @keyframes flamePulseMid {
+        0%   { transform: scaleY(1.02) scaleX(1.01); }
+        50%  { transform: scaleY(0.96) scaleX(0.97); }
+        100% { transform: scaleY(1.05) scaleX(1.02); }
+      }
+      @keyframes flamePulseCore {
+        0%   { transform: scale(0.95); }
+        50%  { transform: scale(1.06); }
+        100% { transform: scale(0.97); }
+      }
+      @keyframes emberFloat {
+        0%   { transform: translateY(0) scale(1); opacity: 0.9; }
+        80%  { opacity: 0.6; }
+        100% { transform: translateY(-70px) scale(0.3); opacity: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- Warm Fire Aura Glow -->
+  <ellipse cx="80" cy="140" rx="70" ry="35" fill="url(#fireAura)"/>
+
+  <!-- Stacked Wooden Logs -->
+  <g class="bonfire-logs">
+    <rect x="15" y="142" width="130" height="18" rx="7" fill="url(#logGrad1)" transform="rotate(-10 80 151)"/>
+    <rect x="15" y="142" width="130" height="18" rx="7" fill="url(#logGrad2)" transform="rotate(10 80 151)"/>
+    <rect x="35" y="132" width="90" height="15" rx="6" fill="url(#logGrad1)" transform="rotate(-2 80 139)"/>
+  </g>
+
+  <!-- Smooth Organic Teardrop Flames (NO horns!) -->
+  <g class="bonfire-flames">
+    <!-- Outer Flame: Perfect teardrop without outward tangency at tip -->
+    <path class="flame-outer" d="
+      M80,20
+      C80,60 115,95 115,125
+      C115,145 95,152 80,152
+      C65,152 45,145 45,125
+      C45,95 80,60 80,20
+      Z
+    " fill="url(#flameOuterGrad)"/>
+
+    <!-- Mid Flame -->
+    <path class="flame-mid" d="
+      M80,45
+      C80,75 105,100 105,126
+      C105,142 92,148 80,148
+      C68,148 55,142 55,126
+      C55,100 80,75 80,45
+      Z
+    " fill="url(#flameMidGrad)"/>
+
+    <!-- Core Flame -->
+    <path class="flame-core" d="
+      M80,70
+      C80,90 95,110 95,130
+      C95,142 88,146 80,146
+      C72,146 65,142 65,130
+      C65,110 80,90 80,70
+      Z
+    " fill="url(#flameCoreGrad)"/>
+
+    <!-- Inner hot white center -->
+    <ellipse cx="80" cy="136" rx="12" ry="7" fill="#FFFFFF" opacity="0.65"/>
+  </g>
+
+  <!-- Rising Embers / Sparks -->
+  <circle class="ember e1" cx="72" cy="50" r="2.5" fill="#FFC837"/>
+  <circle class="ember e2" cx="90" cy="42" r="3" fill="#FF8C42"/>
+  <circle class="ember e3" cx="78" cy="25" r="2" fill="#FFF5C0"/>
+  <circle class="ember e4" cx="86" cy="18" r="2.5" fill="#FFC837"/>
+</svg>

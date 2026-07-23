@@ -1,3 +1,11 @@
+export interface AddressDetails {
+  cep?: string;
+  address?: string;
+  number?: string;
+  neighborhood?: string;
+  city?: string;
+}
+
 export interface PartyEvent {
   id: string;
   title: string;
@@ -5,7 +13,9 @@ export interface PartyEvent {
   description: string;
   date: string;
   location: string;
+  addressDetails?: AddressDetails;
   pixKey: string | null;
+  status?: 'active' | 'cancelled';
   createdAt: string;
   updatedAt: string;
 }

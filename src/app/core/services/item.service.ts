@@ -36,7 +36,7 @@ export class ItemService {
           }));
           subscriber.next(items);
         },
-        (error) => subscriber.error(error)
+        (error) => subscriber.error(error),
       );
 
       return () => unsubscribe();
@@ -51,7 +51,11 @@ export class ItemService {
     return docRef.id;
   }
 
-  async claimItem(eventId: string, itemId: string, claimedBy: Omit<ClaimedBy, 'uid'>): Promise<void> {
+  async claimItem(
+    eventId: string,
+    itemId: string,
+    claimedBy: Omit<ClaimedBy, 'uid'>,
+  ): Promise<void> {
     const user = this.authService.currentUser();
     const docRef = doc(this.firestore, 'events', eventId, 'items', itemId);
     await updateDoc(docRef, { claimedBy: { ...claimedBy, uid: user ? user.uid : '' } });

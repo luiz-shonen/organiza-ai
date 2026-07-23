@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" fill="none">
+  <defs>
+    <linearGradient id="crossGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFF8DC"/>
+      <stop offset="30%" stop-color="#FFD700"/>
+      <stop offset="70%" stop-color="#DAA520"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <radialGradient id="crossGlow" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.75"/>
+      <stop offset="40%" stop-color="#FFD700" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="innerLight" cx="50%" cy="35%" r="25%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#FFF8DC" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .cross-glow { transform-origin: 80px 75px; animation: crossGlowPulse 4s ease-in-out infinite alternate; }
+      .cross-body { transform-origin: 80px 100px; animation: crossScale 5s ease-in-out infinite alternate; }
+      .particle   { animation: pAscend 4s ease-out infinite; }
+      .p1 { animation-delay: 0.2s; }
+      .p2 { animation-delay: 1.1s; }
+      .p3 { animation-delay: 2.0s; }
+      .p4 { animation-delay: 2.9s; }
+
+      @keyframes crossGlowPulse {
+        0%   { transform: scale(0.9);  opacity: 0.5; }
+        100% { transform: scale(1.15); opacity: 1; }
+      }
+      @keyframes crossScale {
+        0%   { transform: scale(0.97); }
+        100% { transform: scale(1.03); }
+      }
+      @keyframes pAscend {
+        0%   { transform: translateY(0); opacity: 0.9; }
+        100% { transform: translateY(-50px); opacity: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- Divine light behind cross -->
+  <circle cx="80" cy="75" r="75" fill="url(#crossGlow)" class="cross-glow"/>
+
+  <!-- Light rays emanating from behind cross -->
+  <g class="cross-rays" opacity="0.45">
+    <line x1="80" y1="75" x2="80" y2="0" stroke="#FFD700" stroke-width="2"/>
+    <line x1="80" y1="75" x2="160" y2="30" stroke="#FFD700" stroke-width="1.5"/>
+    <line x1="80" y1="75" x2="160" y2="75" stroke="#FFD700" stroke-width="1.8"/>
+    <line x1="80" y1="75" x2="160" y2="120" stroke="#FFD700" stroke-width="1.5"/>
+    <line x1="80" y1="75" x2="0" y2="30" stroke="#FFD700" stroke-width="1.5"/>
+    <line x1="80" y1="75" x2="0" y2="75" stroke="#FFD700" stroke-width="1.8"/>
+    <line x1="80" y1="75" x2="0" y2="120" stroke="#FFD700" stroke-width="1.5"/>
+  </g>
+
+  <!-- Empty Cross (symbol of resurrection) -->
+  <g class="cross-body">
+    <rect x="72" y="20" width="16" height="160" rx="2" fill="url(#crossGold)"/>
+    <rect x="38" y="52" width="84" height="14" rx="2" fill="url(#crossGold)"/>
+  </g>
+
+  <!-- Inner light at intersection -->
+  <circle cx="80" cy="59" r="18" fill="url(#innerLight)"/>
+
+  <!-- Ascending golden particles -->
+  <circle class="particle p1" cx="65" cy="40" r="2" fill="#FFD700"/>
+  <circle class="particle p2" cx="95" cy="35" r="2.5" fill="#FFC837"/>
+  <circle class="particle p3" cx="55" cy="55" r="1.8" fill="#FFF8DC"/>
+  <circle class="particle p4" cx="105" cy="50" r="2" fill="#DAA520"/>
+</svg>

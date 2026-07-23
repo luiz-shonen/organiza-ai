@@ -87,6 +87,7 @@ export class AuthService {
   }
 
   async loginAnonymously(): Promise<void> {
+    await this.auth.authStateReady();
     // Only sign in anonymously if not already signed in.
     if (!this.auth.currentUser) {
       await signInAnonymously(this.auth);
@@ -100,7 +101,7 @@ export class AuthService {
     }
     // Register in admins collection
     await setDoc(doc(this.firestore, 'admins', email), {
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
   }
 
@@ -110,7 +111,7 @@ export class AuthService {
     }
     const { collection, getDocs } = await import('firebase/firestore');
     const snap = await getDocs(collection(this.firestore, 'admins'));
-    return snap.docs.map(d => d.id);
+    return snap.docs.map((d) => d.id);
   }
 
   async removeAdmin(email: string): Promise<void> {

@@ -9,6 +9,13 @@
     gap: 8px;
     margin-bottom: 24px;
     position: relative;
+
+    &--single {
+      @media (min-width: 900px) {
+        max-width: 800px;
+        margin-inline: auto;
+      }
+    }
   }
 
   &__title {
@@ -77,6 +84,34 @@
     font-size: 24px;
   }
 
+  &__card-content-stepper {
+    padding: 0 !important;
+  }
+
+  &__stepper {
+    background: transparent !important;
+    border-radius: 20px;
+
+    ::ng-deep .mat-horizontal-stepper-header-container {
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
+    }
+
+    ::ng-deep .mat-horizontal-content-container {
+      padding: 24px !important;
+    }
+  }
+
+  &__step-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(var(--mat-sys-outline-rgb), 0.2);
+  }
+
   &__form {
     display: flex;
     flex-direction: column;
@@ -86,12 +121,12 @@
     @media (min-width: 600px) {
       padding: 40px 32px;
     }
-  }
 
-  &__card.mat-mdc-card-outlined {
-    background: rgba(255, 200, 55, 0.4) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+    // Improve input legibility over the gradient/glass card background
+    .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface) !important;
+      opacity: 0.9;
+    }
   }
 
   &__category-field {
@@ -105,7 +140,6 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--mat-sys-on-surface-variant);
-    padding-left: 16px;
   }
 
   &__category-error {
@@ -118,6 +152,27 @@
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 16px;
+    align-items: start;
+  }
+
+  &__section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--mat-sys-primary);
+    margin: 8px 0 0 0;
+    border-bottom: 1px solid rgba(var(--mat-sys-primary-rgb), 0.1);
+    padding-bottom: 4px;
+  }
+
+  &__address-row-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  &__address-row-single {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   &__address-row {
@@ -126,8 +181,30 @@
     gap: 16px;
   }
 
+  &__disabled-field {
+    opacity: 0.6;
+    position: relative;
+    user-select: none !important;
+
+    /* Bulletproof click blocker overlay */
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 999;
+      cursor: not-allowed;
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface-container-low) !important;
+    }
+    input {
+      color: var(--mat-sys-on-surface-variant) !important;
+    }
+  }
+
   &__save-btn {
-    margin-top: 8px;
+    margin-top: 0;
     height: 48px;
     font-size: 1rem;
   }
@@ -137,6 +214,12 @@
     gap: 8px;
     align-items: flex-start;
     padding-top: 12px;
+
+    // Improve input legibility over the gradient/glass card background
+    .mat-mdc-text-field-wrapper {
+      background: var(--mat-sys-surface) !important;
+      opacity: 0.9;
+    }
   }
 
   &__item-name-field {
@@ -144,7 +227,7 @@
   }
 
   &__item-qty-field {
-    width: 72px;
+    width: 106px;
   }
 
   &__add-btn {
@@ -255,7 +338,8 @@
   border-collapse: collapse;
   font-size: 0.9rem;
 
-  th, td {
+  th,
+  td {
     padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid var(--mat-sys-outline-variant);
@@ -280,7 +364,8 @@
   }
 
   // Only show the print section and its children
-  .print-section, .print-section * {
+  .print-section,
+  .print-section * {
     visibility: visible;
   }
 
@@ -315,52 +400,5 @@
 
   @page {
     margin: 1.5cm;
-  }
-}
-
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes rotate-gradient {
-  to {
-    --border-angle: 360deg;
-  }
-}
-
-// Global Form Aesthetics (Org-Input)
-::ng-deep {
-  .org-input {
-    width: 100%;
-
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border: none !important;
-    }
-
-    &.mat-focused {
-      .mdc-text-field {
-        background: 
-          linear-gradient(#fff, #fff) padding-box,
-          conic-gradient(from var(--border-angle), var(--mat-sys-primary), var(--mat-sys-secondary), var(--mat-sys-tertiary), var(--mat-sys-primary)) border-box !important;
-        animation: rotate-gradient 3s linear infinite;
-        box-shadow: 0 4px 16px rgba(255, 77, 148, 0.15) !important;
-      }
-    }
-
-    .mdc-text-field {
-      background-color: rgba(255, 255, 255, 0.8) !important;
-      border-radius: 6px !important;
-      border: 2px solid transparent !important;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-      transition: all 0.3s ease;
-      
-      &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
-    }
   }
 }

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 40" width="1200" height="40" preserveAspectRatio="none">
+  <defs>
+    <style>
+      .flag {
+        transform-origin: 0px 0px;
+        animation: sway 2.5s ease-in-out infinite alternate;
+      }
+      .d1 { animation-delay: 0.1s; }
+      .d2 { animation-delay: 0.4s; }
+      .d3 { animation-delay: 0.7s; }
+      @keyframes sway {
+        0% { transform: rotate(-8deg); }
+        100% { transform: rotate(8deg); }
+      }
+    </style>
+  </defs>
+  
+  <path d="M0,5 Q75,25 150,5 Q225,25 300,5 Q375,25 450,5 Q525,25 600,5 Q675,25 750,5 Q825,25 900,5 Q975,25 1050,5 Q1125,25 1200,5" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+  
+  <!-- Valleys (y=15) -->
+  <g transform="translate(75, 15)"><g class="flag d1"><polygon points="-10,0 10,0 0,22" fill="#FF4D94"/></g></g>
+  <g transform="translate(225, 15)"><g class="flag d2"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#FFC837"/></g></g>
+  <g transform="translate(375, 15)"><g class="flag d3"><polygon points="-10,0 10,0 0,22" fill="#00D2FF"/></g></g>
+  <g transform="translate(525, 15)"><g class="flag d1"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#2ECC71"/></g></g>
+  <g transform="translate(675, 15)"><g class="flag d2"><polygon points="-10,0 10,0 0,22" fill="#FF8C42"/></g></g>
+  <g transform="translate(825, 15)"><g class="flag d3"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#FF4D94"/></g></g>
+  <g transform="translate(975, 15)"><g class="flag d1"><polygon points="-10,0 10,0 0,22" fill="#00D2FF"/></g></g>
+  <g transform="translate(1125, 15)"><g class="flag d2"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#FFC837"/></g></g>
+
+  <!-- Peaks (y=5) -->
+  <g transform="translate(150, 5)"><g class="flag d3"><polygon points="-10,0 10,0 0,22" fill="#FF8C42"/></g></g>
+  <g transform="translate(300, 5)"><g class="flag d1"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#2ECC71"/></g></g>
+  <g transform="translate(450, 5)"><g class="flag d2"><polygon points="-10,0 10,0 0,22" fill="#FF4D94"/></g></g>
+  <g transform="translate(600, 5)"><g class="flag d3"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#00D2FF"/></g></g>
+  <g transform="translate(750, 5)"><g class="flag d1"><polygon points="-10,0 10,0 0,22" fill="#FFC837"/></g></g>
+  <g transform="translate(900, 5)"><g class="flag d2"><polygon points="-10,0 10,0 10,22 0,16 -10,22" fill="#FF8C42"/></g></g>
+  <g transform="translate(1050, 5)"><g class="flag d3"><polygon points="-10,0 10,0 0,22" fill="#2ECC71"/></g></g>
+</svg>

@@ -8,12 +8,13 @@
   flex: 1;
   height: 100%;
   width: 100%;
+  background: transparent !important;
 }
 
 .app-toolbar {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   background: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -23,6 +24,20 @@
   .dark & {
     background: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
     border-bottom-color: rgba(255, 77, 148, 0.25);
+  }
+
+  &__back-btn {
+    margin-right: 8px;
+  }
+
+  &__dynamic-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--mat-sys-primary);
+    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   &__brand {
@@ -45,6 +60,10 @@
 
   &__admin-btn {
     margin-right: 8px;
+  }
+
+  &__login-btn {
+    margin-left: 8px;
   }
 
   &__user-btn {
@@ -105,10 +124,38 @@
   gap: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  
+
   mat-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
+  }
+}
+
+mat-sidenav-content,
+.mat-drawer-container {
+  background: transparent !important;
+}
+
+mat-sidenav-content {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+.glass-drawer {
+  background: var(--org-glass-bg) !important;
+  backdrop-filter: var(--org-glass-blur) !important;
+  -webkit-backdrop-filter: var(--org-glass-blur) !important;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  width: 400px;
+  max-width: 90vw;
+
+  .dark & {
+    border-left: 1.5px solid rgba(255, 255, 255, 0.05);
   }
 }

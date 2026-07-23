@@ -10,7 +10,7 @@ describe('SeasonalOverlayComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SeasonalOverlayComponent],
-      providers: [SeasonalThemeService]
+      providers: [SeasonalThemeService],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SeasonalOverlayComponent);

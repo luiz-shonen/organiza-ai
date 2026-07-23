@@ -1,169 +1,310 @@
 <section class="editor" aria-label="Editor de evento">
-  <header class="editor__header">
-    <button mat-icon-button (click)="router.navigate(['/admin'])" matTooltip="Voltar" aria-label="Voltar" class="editor__back-btn">
-      <mat-icon>west</mat-icon>
-    </button>
-    <h1 class="editor__title">
-      {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
-    </h1>
-  </header>
-
   @if (loading()) {
+    <header class="editor__header editor__header--single">
+      <button mat-icon-button disabled class="editor__back-btn">
+        <mat-icon>west</mat-icon>
+      </button>
+      <h1 class="editor__title">
+        <div class="skeleton-box h-8 w-48"></div>
+      </h1>
+    </header>
     <div class="editor__grid" aria-hidden="true">
-      <mat-card class="editor__card" appearance="outlined">
-        <mat-card-header>
-          <div matCardAvatar class="skeleton-box editor__card-icon"></div>
-          <mat-card-title>
-            <div class="skeleton-box h-6 w-40"></div>
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="editor__form">
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-textarea"></div>
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-input"></div>
-            <div class="skeleton-box editor__skeleton-btn"></div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="editor__col">
+        <mat-card class="editor__card glass-card" appearance="outlined">
+          <mat-card-header>
+            <div matCardAvatar class="skeleton-box editor__card-icon"></div>
+            <mat-card-title>
+              <div class="skeleton-box h-6 w-40"></div>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="editor__form">
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-textarea"></div>
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-input"></div>
+              <div class="skeleton-box editor__skeleton-btn"></div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   } @else {
+    <header class="editor__header" [class.editor__header--single]="!isEditing()">
+      <button
+        mat-icon-button
+        routerLink="/admin"
+        matTooltip="Voltar"
+        aria-label="Voltar"
+        class="editor__back-btn"
+      >
+        <mat-icon>west</mat-icon>
+      </button>
+      <h1 class="editor__title">
+        {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
+      </h1>
+    </header>
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
         <!-- Event Form -->
-        <mat-card class="editor__card" appearance="outlined">
+        <mat-card class="editor__card glass-card" appearance="outlined">
           <mat-card-header>
             <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
             <mat-card-title>Dados do Evento</mat-card-title>
           </mat-card-header>
-          <mat-card-content>
-            <form [formGroup]="form" class="editor__form" id="event-form">
-              <mat-form-field appearance="outline" class="org-input">
-                <mat-label>Título do Evento</mat-label>
-                <input matInput formControlName="title" placeholder="Ex: Festa Junina 2026" required />
-                @if (form.controls.title.hasError('required')) {
-                  <mat-error>Título é obrigatório</mat-error>
-                }
-              </mat-form-field>
+          <mat-card-content class="editor__card-content-stepper">
+            <mat-stepper linear #stepper class="editor__stepper">
+              <!-- Step 1: Basic Info -->
+              <mat-step [stepControl]="basicInfoForm">
+                <ng-template matStepLabel>Informações</ng-template>
+                <form [formGroup]="basicInfoForm" class="editor__form" id="basic-info-form">
+                  <mat-form-field appearance="outline" class="org-input">
+                    <mat-label>Título do Evento</mat-label>
+                    <input
+                      matInput
+                      formControlName="title"
+                      placeholder="Ex: Festa Junina 2026"
+                      required
+                    />
+                    @if (basicInfoForm.controls.title.hasError('required')) {
+                      <mat-error>Título é obrigatório</mat-error>
+                    }
+                  </mat-form-field>
 
-              <div class="editor__category-field">
-                <mat-label class="editor__category-label">Categoria do Evento</mat-label>
-                <mat-chip-listbox formControlName="category" required>
-                  @for (cat of categories; track cat.name) {
-                    <mat-chip-option [value]="cat.name" [class]="'org-chip ' + cat.class">{{ cat.name }}</mat-chip-option>
-                  }
-                </mat-chip-listbox>
-                @if (form.controls.category.hasError('required') && form.controls.category.touched) {
-                  <mat-error class="editor__category-error">Selecione uma categoria</mat-error>
-                }
-              </div>
+                  <div class="editor__category-field">
+                    <mat-label class="editor__category-label">Categoria do Evento</mat-label>
+                    <mat-chip-listbox formControlName="category" required>
+                      @for (cat of categories; track cat.name) {
+                        <mat-chip-option [value]="cat.name" [class]="'org-chip ' + cat.class">{{
+                          cat.name
+                        }}</mat-chip-option>
+                      }
+                    </mat-chip-listbox>
+                    @if (
+                      basicInfoForm.controls.category.hasError('required') &&
+                      basicInfoForm.controls.category.touched
+                    ) {
+                      <mat-error class="editor__category-error">Selecione uma categoria</mat-error>
+                    }
+                  </div>
 
-              <mat-form-field appearance="outline" class="org-input">
-                <mat-label>Descrição</mat-label>
-                <textarea
-                  matInput
-                  formControlName="description"
-                  rows="4"
-                  placeholder="Descreva o evento..."
-                  required
-                ></textarea>
-                @if (form.controls.description.hasError('required')) {
-                  <mat-error>Descrição é obrigatória</mat-error>
-                }
-              </mat-form-field>
+                  <mat-form-field appearance="outline" class="org-input">
+                    <mat-label>Descrição</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="description"
+                      rows="4"
+                      placeholder="Descreva o evento..."
+                      required
+                    ></textarea>
+                    @if (basicInfoForm.controls.description.hasError('required')) {
+                      <mat-error>Descrição é obrigatória</mat-error>
+                    }
+                  </mat-form-field>
 
-              <div class="editor__date-time-row">
-                <mat-form-field appearance="outline" class="editor__date-field org-input">
-                  <mat-label>Data do Evento</mat-label>
-                  <input matInput [matDatepicker]="picker" formControlName="date" required [min]="minDate" (input)="formatDate($event)" placeholder="DD/MM/AAAA" maxlength="10" />
-                  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                  @if (form.controls.date.hasError('required')) {
-                    <mat-error>Data é obrigatória</mat-error>
-                  }
-                  @if (form.controls.date.hasError('matDatepickerMin')) {
-                    <mat-error>Data não pode ser no passado</mat-error>
-                  }
-                  @if (form.controls.date.hasError('matDatepickerParse')) {
-                    <mat-error>Data inválida</mat-error>
-                  }
-                </mat-form-field>
+                  <div class="editor__date-time-row">
+                    <mat-form-field appearance="outline" class="editor__date-field org-input">
+                      <mat-label>Data do Evento</mat-label>
+                      <input
+                        matInput
+                        [matDatepicker]="picker"
+                        formControlName="date"
+                        required
+                        [min]="minDate"
+                        (input)="formatDate($event)"
+                        placeholder="DD/MM/AAAA"
+                        maxlength="10"
+                      />
+                      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                      <mat-datepicker #picker></mat-datepicker>
+                      @if (basicInfoForm.controls.date.hasError('required')) {
+                        <mat-error>Data é obrigatória</mat-error>
+                      }
+                      @if (basicInfoForm.controls.date.hasError('matDatepickerMin')) {
+                        <mat-error>Data não pode ser no passado</mat-error>
+                      }
+                      @if (basicInfoForm.controls.date.hasError('matDatepickerParse')) {
+                        <mat-error>Data inválida</mat-error>
+                      }
+                    </mat-form-field>
 
-                <mat-form-field appearance="outline" class="editor__time-field org-input">
-                  <mat-label>Hora</mat-label>
-                  <input matInput type="time" formControlName="time" required />
-                  @if (form.controls.time.hasError('required')) {
-                    <mat-error>Hora é obrigatória</mat-error>
-                  }
-                </mat-form-field>
-              </div>
+                    <mat-form-field appearance="outline" class="editor__time-field org-input">
+                      <mat-label>Hora</mat-label>
+                      <input matInput type="time" formControlName="time" required />
+                      @if (basicInfoForm.controls.time.hasError('required')) {
+                        <mat-error>Hora é obrigatória</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
 
-              <mat-form-field appearance="outline" class="org-input">
-                <mat-label>CEP</mat-label>
-                <input matInput formControlName="cep" placeholder="00000-000" maxlength="9" (input)="formatCep($event)" />
-              </mat-form-field>
+                  <div class="editor__step-actions">
+                    <button
+                      mat-flat-button
+                      matStepperNext
+                      type="button"
+                      class="btn-primary-org"
+                      [disabled]="basicInfoForm.invalid"
+                    >
+                      Próximo
+                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                    </button>
+                  </div>
+                </form>
+              </mat-step>
 
-              <div class="editor__address-row">
-                <mat-form-field appearance="outline" class="editor__address-field org-input">
-                  <mat-label>Endereço</mat-label>
-                  <input matInput formControlName="address" placeholder="Ex: Rua das Festas" required readonly />
-                  <mat-icon matPrefix>location_on</mat-icon>
-                  @if (form.controls.address.hasError('required')) {
-                    <mat-error>Endereço é obrigatório</mat-error>
-                  }
-                </mat-form-field>
+              <!-- Step 2: Address -->
+              <mat-step [stepControl]="addressForm">
+                <ng-template matStepLabel>Endereço</ng-template>
+                <form [formGroup]="addressForm" class="editor__form" id="address-form">
+                  <h3 class="editor__section-title">Endereço</h3>
+                  <div class="editor__address-row-top">
+                    <mat-form-field appearance="outline" class="org-input editor__cep-field">
+                      <mat-label>CEP</mat-label>
+                      <input
+                        matInput
+                        formControlName="cep"
+                        placeholder="00000-000"
+                        maxlength="9"
+                        required
+                        (input)="formatCep($event)"
+                      />
+                      @if (addressForm.controls.cep.hasError('required')) {
+                        <mat-error>CEP é obrigatório</mat-error>
+                      }
+                    </mat-form-field>
 
-                <mat-form-field appearance="outline" class="editor__number-field org-input">
-                  <mat-label>Número</mat-label>
-                  <input matInput formControlName="number" placeholder="Ex: 123" />
-                </mat-form-field>
-              </div>
+                    <mat-form-field appearance="outline" class="editor__number-field org-input">
+                      <mat-label>Número</mat-label>
+                      <input matInput formControlName="number" placeholder="Ex: 123" required />
+                      @if (addressForm.controls.number.hasError('required')) {
+                        <mat-error>Número é obrigatório</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
 
-              <div class="editor__address-row">
-                <mat-form-field appearance="outline" class="org-input">
-                  <mat-label>Bairro</mat-label>
-                  <input matInput formControlName="neighborhood" placeholder="Ex: Centro" readonly />
-                </mat-form-field>
+                  <div class="editor__address-row-single">
+                    <mat-form-field
+                      appearance="outline"
+                      class="editor__address-field org-input editor__disabled-field"
+                    >
+                      <mat-label>Endereço</mat-label>
+                      <input
+                        matInput
+                        formControlName="address"
+                        placeholder="Ex: Rua das Festas"
+                        required
+                        readonly
+                        tabindex="-1"
+                      />
+                      <mat-icon matPrefix>location_on</mat-icon>
+                      @if (addressForm.controls.address.hasError('required')) {
+                        <mat-error>Endereço é obrigatório</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
 
-                <mat-form-field appearance="outline" class="org-input">
-                  <mat-label>Cidade/UF</mat-label>
-                  <input matInput formControlName="city" placeholder="Ex: São Paulo/SP" readonly />
-                </mat-form-field>
-              </div>
+                  <div class="editor__address-row">
+                    <mat-form-field appearance="outline" class="org-input editor__disabled-field">
+                      <mat-label>Bairro</mat-label>
+                      <input
+                        matInput
+                        formControlName="neighborhood"
+                        placeholder="Ex: Centro"
+                        required
+                        readonly
+                        tabindex="-1"
+                      />
+                      @if (addressForm.controls.neighborhood.hasError('required')) {
+                        <mat-error>Bairro é obrigatório</mat-error>
+                      }
+                    </mat-form-field>
 
-              <mat-form-field appearance="outline" class="org-input">
-                <mat-label>Chave Pix (opcional)</mat-label>
-                <input matInput formControlName="pixKey" placeholder="CPF, e-mail ou chave aleatória" />
-                <mat-icon matPrefix>pix</mat-icon>
-                <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
-              </mat-form-field>
+                    <mat-form-field appearance="outline" class="org-input editor__disabled-field">
+                      <mat-label>Cidade/UF</mat-label>
+                      <input
+                        matInput
+                        formControlName="city"
+                        placeholder="Ex: São Paulo/SP"
+                        required
+                        readonly
+                        tabindex="-1"
+                      />
+                      @if (addressForm.controls.city.hasError('required')) {
+                        <mat-error>Cidade/UF é obrigatória</mat-error>
+                      }
+                    </mat-form-field>
+                  </div>
 
-              <button
-                mat-flat-button
-                class="editor__save-btn btn-primary-org"
-                [disabled]="form.invalid || saving()"
-                (click)="saveEvent()"
-                aria-label="Salvar evento"
-              >
-                @if (saving()) {
-                  <mat-spinner diameter="20"></mat-spinner>
-                }
-                @if (!saving()) {
-                  <mat-icon>save</mat-icon>
-                }
-                @if (!saving()) {
-                  <span>{{ isEditing() ? 'Salvar Alterações' : 'Criar Evento' }}</span>
-                }
-              </button>
-            </form>
+                  <div class="editor__step-actions">
+                    <button mat-button matStepperPrevious type="button">
+                      <mat-icon>arrow_back</mat-icon>
+                      Voltar
+                    </button>
+                    <button
+                      mat-flat-button
+                      matStepperNext
+                      type="button"
+                      class="btn-primary-org"
+                      [disabled]="addressForm.invalid"
+                    >
+                      Próximo
+                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                    </button>
+                  </div>
+                </form>
+              </mat-step>
+
+              <!-- Step 3: Pix -->
+              <mat-step [stepControl]="pixForm">
+                <ng-template matStepLabel>Pix</ng-template>
+                <form [formGroup]="pixForm" class="editor__form" id="pix-form">
+                  <h3 class="editor__section-title">Pagamento (Pix)</h3>
+                  <mat-form-field appearance="outline" class="org-input">
+                    <mat-label>Chave Pix (opcional)</mat-label>
+                    <input
+                      matInput
+                      formControlName="pixKey"
+                      placeholder="CPF, e-mail ou chave aleatória"
+                    />
+                    <mat-icon matPrefix>pix</mat-icon>
+                    <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
+                  </mat-form-field>
+
+                  <div class="editor__step-actions">
+                    <button mat-button matStepperPrevious type="button">
+                      <mat-icon>arrow_back</mat-icon>
+                      Voltar
+                    </button>
+                    <button
+                      mat-flat-button
+                      class="editor__save-btn btn-primary-org"
+                      [disabled]="
+                        basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
+                      "
+                      (click)="saveEvent()"
+                      aria-label="Salvar evento"
+                    >
+                      @if (saving()) {
+                        <mat-spinner diameter="20"></mat-spinner>
+                      }
+                      @if (!saving()) {
+                        <mat-icon>save</mat-icon>
+                      }
+                      @if (!saving()) {
+                        <span>{{ isEditing() ? 'Salvar' : 'Criar Evento' }}</span>
+                      }
+                    </button>
+                  </div>
+                </form>
+              </mat-step>
+            </mat-stepper>
           </mat-card-content>
         </mat-card>
 
         <!-- Items Manager (only when editing) -->
         @if (isEditing()) {
-          <mat-card class="editor__card" appearance="outlined">
+          <mat-card class="editor__card glass-card" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
               <mat-card-title>Lista de Itens</mat-card-title>
@@ -171,7 +312,7 @@
             </mat-card-header>
             <mat-card-content>
               <div class="editor__add-item">
-                <mat-form-field appearance="outline" class="editor__item-name-field">
+                <mat-form-field appearance="outline" class="editor__item-name-field org-input">
                   <mat-label>Nome do item</mat-label>
                   <input
                     matInput
@@ -181,7 +322,7 @@
                     (keyup.enter)="addItem()"
                   />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="editor__item-qty-field">
+                <mat-form-field appearance="outline" class="editor__item-qty-field org-input">
                   <mat-label>Quantidade</mat-label>
                   <input
                     matInput
@@ -238,10 +379,13 @@
       @if (isEditing()) {
         <div class="editor__col">
           <!-- Share Panel -->
-          <app-share-panel [eventUrl]="eventUrl()" [eventTitle]="form.controls.title.value" />
+          <app-share-panel
+            [eventUrl]="eventUrl()"
+            [eventTitle]="basicInfoForm.controls.title.value"
+          />
 
           <!-- Guest List Card -->
-          <mat-card class="editor__card print-section" appearance="outlined">
+          <mat-card class="editor__card print-section glass-card" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
               <mat-card-title>Lista de Convidados</mat-card-title>
@@ -291,7 +435,9 @@
                   </table>
                 </div>
               } @else {
-                <p class="editor__empty-guests no-print">Nenhum convidado confirmou presença ainda.</p>
+                <p class="editor__empty-guests no-print">
+                  Nenhum convidado confirmou presença ainda.
+                </p>
               }
             </mat-card-content>
           </mat-card>

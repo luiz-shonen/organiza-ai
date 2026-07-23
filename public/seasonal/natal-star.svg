@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <radialGradient id="starHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.9"/>
+      <stop offset="40%" stop-color="#FFD700" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="starGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF8DC"/>
+      <stop offset="30%" stop-color="#FFD700"/>
+      <stop offset="70%" stop-color="#FFC837"/>
+      <stop offset="100%" stop-color="#DAA520"/>
+    </linearGradient>
+    <radialGradient id="starCenter" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .star-halo   { transform-origin: 60px 60px; animation: haloGlow 3.5s ease-in-out infinite alternate; }
+      .star-body   { transform-origin: 60px 60px; animation: starScale 4s ease-in-out infinite alternate; }
+      @keyframes haloGlow {
+        0%   { transform: scale(0.9);  opacity: 0.6; }
+        100% { transform: scale(1.15); opacity: 1; }
+      }
+      @keyframes starScale {
+        0%   { transform: scale(0.95); }
+        100% { transform: scale(1.05); }
+      }
+    </style>
+  </defs>
+
+  <!-- Divine light halo -->
+  <circle cx="60" cy="60" r="55" fill="url(#starHalo)" class="star-halo"/>
+
+  <!-- 8-pointed Star of Bethlehem -->
+  <path d="
+    M60,5
+    L65,45 L95,30 L72,55
+    L115,60
+    L72,65 L95,90 L65,75
+    L60,115
+    L55,75 L25,90 L48,65
+    L5,60
+    L48,55 L25,30 L55,45
+    Z
+  " fill="url(#starGold)" class="star-body"/>
+
+  <!-- Inner bright center -->
+  <circle cx="60" cy="60" r="12" fill="url(#starCenter)"/>
+
+  <!-- Small cross at center of star -->
+  <line x1="60" y1="52" x2="60" y2="68" stroke="#DAA520" stroke-width="1.5" opacity="0.6"/>
+  <line x1="52" y1="60" x2="68" y2="60" stroke="#DAA520" stroke-width="1.5" opacity="0.6"/>
+</svg>

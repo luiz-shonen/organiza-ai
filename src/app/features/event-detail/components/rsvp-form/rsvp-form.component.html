@@ -1,34 +1,23 @@
 <section class="rsvp-form">
-  <h2 class="rsvp-form__title org-gradient-text">
-    Você vai?
-  </h2>
-  
+  <h2 class="rsvp-form__title org-gradient-text">Você vai?</h2>
+
   <div class="glass-card rsvp-form__card">
     <form #f="ngForm" (ngSubmit)="onSubmit(f)" class="rsvp-form__body">
-      
       <mat-form-field appearance="outline" class="rsvp-form__field">
         <mat-label>Nome Completo</mat-label>
         <mat-icon matPrefix>person</mat-icon>
-        <input 
-          matInput
-          name="name" ngModel required 
-          placeholder="Ex: João da Silva" 
-        />
+        <input matInput name="name" ngModel required placeholder="Ex: João da Silva" />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="rsvp-form__field">
         <mat-label>WhatsApp</mat-label>
         <mat-icon matPrefix>phone</mat-icon>
-        <input 
-          matInput
-          name="phone" ngModel required 
-          placeholder="Ex: (11) 99999-9999" 
-        />
+        <input matInput name="phone" ngModel required placeholder="Ex: (11) 99999-9999" />
       </mat-form-field>
 
       <!-- Action -->
       <div class="rsvp-form__actions">
-        <button 
+        <button
           mat-flat-button
           color="primary"
           type="submit"

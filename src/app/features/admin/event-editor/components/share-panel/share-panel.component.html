@@ -1,5 +1,5 @@
 @if (eventUrl()) {
-  <mat-card class="share-panel" appearance="outlined">
+  <mat-card class="share-panel glass-card" appearance="outlined">
     <mat-card-header>
       <mat-icon matCardAvatar class="share-panel__icon">qr_code_2</mat-icon>
       <mat-card-title>Compartilhar</mat-card-title>
@@ -7,11 +7,7 @@
     </mat-card-header>
     <mat-card-content>
       <div class="share-panel__qr-container">
-        <canvas
-          #qrCanvas
-          class="share-panel__qr"
-          aria-label="QR Code do evento"
-        ></canvas>
+        <canvas #qrCanvas class="share-panel__qr" aria-label="QR Code do evento"></canvas>
       </div>
 
       <div class="share-panel__link">
@@ -19,11 +15,7 @@
       </div>
     </mat-card-content>
     <mat-card-actions>
-      <button
-        mat-stroked-button
-        (click)="copyLink()"
-        aria-label="Copiar link do evento"
-      >
+      <button mat-stroked-button (click)="copyLink()" aria-label="Copiar link do evento">
         <mat-icon>content_copy</mat-icon>
         Copiar Link
       </button>

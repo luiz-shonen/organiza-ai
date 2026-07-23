@@ -19,7 +19,7 @@ export class ItemListComponent {
   readonly unclaimItem = output<PartyItem>();
 
   protected readonly claimedCount = computed(
-    () => this.items().filter((i) => i.claimedBy !== null).length
+    () => this.items().filter((i) => i.claimedBy !== null).length,
   );
 
   protected isClaimedByMe(item: PartyItem): boolean {

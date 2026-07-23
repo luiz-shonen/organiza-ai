@@ -1,17 +1,13 @@
 <section class="item-list-card">
   <div class="item-list-card__header">
-    <h2 class="item-list-card__title org-gradient-text">
-      O que trazer
-    </h2>
-    <span class="item-list-card__tag">
-      Lista Colaborativa
-    </span>
+    <h2 class="item-list-card__title org-gradient-text">O que trazer</h2>
+    <span class="item-list-card__tag"> Lista Colaborativa </span>
   </div>
-  
+
   <!-- List Items -->
   <div class="item-list-card__list">
     @for (item of items(); track item.id) {
-      <div 
+      <div
         class="glass-card item-list-card__item"
         [class.item-list-card__item--claimed]="item.claimedBy"
       >
@@ -28,13 +24,10 @@
           }
 
           <div class="item-list-card__details">
-            <p 
-              class="item-list-card__name"
-              [class.item-list-card__name--claimed]="item.claimedBy"
-            >
+            <p class="item-list-card__name" [class.item-list-card__name--claimed]="item.claimedBy">
               {{ item.name }}
             </p>
-            <p 
+            <p
               class="item-list-card__status"
               [class.item-list-card__status--claimed]="item.claimedBy"
             >
@@ -53,11 +46,10 @@
             >
               Eu Levo
             </button>
-          } @else if (item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()) {
-            <button
-              (click)="onUnclaim.emit(item.id!)"
-              class="item-list-card__unclaim-btn"
-            >
+          } @else if (
+            item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()
+          ) {
+            <button (click)="onUnclaim.emit(item.id!)" class="item-list-card__unclaim-btn">
               Desistir
             </button>
           } @else {
@@ -68,9 +60,7 @@
         </div>
       </div>
     } @empty {
-      <div class="item-list-card__empty">
-        Nenhum item adicionado a este evento ainda.
-      </div>
+      <div class="item-list-card__empty">Nenhum item adicionado a este evento ainda.</div>
     }
   </div>
 </section>

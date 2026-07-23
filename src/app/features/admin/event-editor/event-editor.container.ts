@@ -189,22 +189,9 @@ export class EventEditorContainer implements OnInit {
 
     this.saving.set(true);
 
-    const {
-      title,
-      category,
-      description,
-      date,
-      time,
-    } = this.basicInfoForm.getRawValue();
+    const { title, category, description, date, time } = this.basicInfoForm.getRawValue();
 
-    const {
-      cep,
-      address,
-      neighborhood,
-      city,
-      number,
-      pixKey,
-    } = this.addressForm.getRawValue();
+    const { cep, address, neighborhood, city, number, pixKey } = this.addressForm.getRawValue();
 
     let finalDate = new Date();
     if (date) {
@@ -305,7 +292,7 @@ export class EventEditorContainer implements OnInit {
 
     const link = document.createElement('a');
     link.href = url;
-    link.download = `convidados-${this.form.controls.title.value || 'evento'}.csv`;
+    link.download = `convidados-${this.basicInfoForm.controls.title.value || 'evento'}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -322,7 +309,7 @@ export class EventEditorContainer implements OnInit {
     if (value.length > 5) {
       value = value.substring(0, 5) + '-' + value.substring(5, 8);
     }
-    this.form.controls.cep.setValue(value, { emitEvent: false });
+    this.addressForm.controls.cep.setValue(value, { emitEvent: false });
   }
 
   protected formatDate(event: Event): void {

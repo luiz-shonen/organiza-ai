@@ -227,20 +227,6 @@
                 <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
               </mat-form-field>
 
-              <button
-                mat-flat-button
-                class="editor__save-btn btn-primary-org"
-                [disabled]="form.invalid || saving()"
-                (click)="saveEvent()"
-                aria-label="Salvar evento"
-              >
-                @if (saving()) {
-                  <mat-spinner diameter="20"></mat-spinner>
-                }
-                @if (!saving()) {
-                  <mat-icon>save</mat-icon>
-                }
-                @if (!saving()) {
 
                   <div class="editor__step-actions">
                     <button mat-button matStepperPrevious type="button">

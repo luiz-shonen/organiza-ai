@@ -104,6 +104,9 @@ export class EventEditorContainer implements OnInit {
     neighborhood: [''],
     city: [''],
     number: [''],
+  });
+
+  protected readonly pixForm = this.fb.nonNullable.group({
     pixKey: [''],
   });
 
@@ -152,6 +155,9 @@ export class EventEditorContainer implements OnInit {
               city: '',
               cep: '',
               number: '',
+            });
+
+            this.pixForm.patchValue({
               pixKey: event.pixKey ?? '',
             });
           }
@@ -181,17 +187,18 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected async saveEvent(): Promise<void> {
-    if (this.basicInfoForm.invalid || this.addressForm.invalid) {
+    if (this.basicInfoForm.invalid || this.addressForm.invalid || this.pixForm.invalid) {
       this.basicInfoForm.markAllAsTouched();
       this.addressForm.markAllAsTouched();
+      this.pixForm.markAllAsTouched();
       return;
     }
 
     this.saving.set(true);
 
     const { title, category, description, date, time } = this.basicInfoForm.getRawValue();
-
-    const { cep, address, neighborhood, city, number, pixKey } = this.addressForm.getRawValue();
+    const { cep, address, neighborhood, city, number } = this.addressForm.getRawValue();
+    const { pixKey } = this.pixForm.getRawValue();
 
     let finalDate = new Date();
     if (date) {

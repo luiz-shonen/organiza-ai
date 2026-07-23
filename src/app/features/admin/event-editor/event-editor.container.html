@@ -139,7 +139,13 @@
                   </div>
 
                   <div class="editor__step-actions">
-                    <button mat-flat-button matStepperNext type="button" class="btn-primary-org">
+                    <button
+                      mat-flat-button
+                      matStepperNext
+                      type="button"
+                      class="btn-primary-org"
+                      (click)="basicInfoForm.markAllAsTouched()"
+                    >
                       Próximo
                       <mat-icon iconPositionEnd>arrow_forward</mat-icon>
                     </button>
@@ -147,9 +153,9 @@
                 </form>
               </mat-step>
 
-              <!-- Step 2: Address and Finance -->
+              <!-- Step 2: Address -->
               <mat-step [stepControl]="addressForm">
-                <ng-template matStepLabel>Local e Pix</ng-template>
+                <ng-template matStepLabel>Endereço</ng-template>
                 <form [formGroup]="addressForm" class="editor__form" id="address-form">
                   <h3 class="editor__section-title">Endereço</h3>
                   <div class="editor__address-row-top">
@@ -215,6 +221,30 @@
                     </mat-form-field>
                   </div>
 
+                  <div class="editor__step-actions">
+                    <button mat-button matStepperPrevious type="button">
+                      <mat-icon>arrow_back</mat-icon>
+                      Voltar
+                    </button>
+                    <button
+                      mat-flat-button
+                      matStepperNext
+                      type="button"
+                      class="btn-primary-org"
+                      (click)="addressForm.markAllAsTouched()"
+                    >
+                      Próximo
+                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+                    </button>
+                  </div>
+                </form>
+              </mat-step>
+
+              <!-- Step 3: Pix -->
+              <mat-step [stepControl]="pixForm">
+                <ng-template matStepLabel>Pix</ng-template>
+                <form [formGroup]="pixForm" class="editor__form" id="pix-form">
+                  <h3 class="editor__section-title">Pagamento (Pix)</h3>
                   <mat-form-field appearance="outline" class="org-input">
                     <mat-label>Chave Pix (opcional)</mat-label>
                     <input
@@ -234,7 +264,7 @@
                     <button
                       mat-flat-button
                       class="editor__save-btn btn-primary-org"
-                      [disabled]="basicInfoForm.invalid || addressForm.invalid || saving()"
+                      [disabled]="basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()"
                       (click)="saveEvent()"
                       aria-label="Salvar evento"
                     >

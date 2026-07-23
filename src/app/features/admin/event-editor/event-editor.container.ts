@@ -99,11 +99,11 @@ export class EventEditorContainer implements OnInit {
   });
 
   protected readonly addressForm = this.fb.nonNullable.group({
-    cep: [''],
+    cep: ['', [Validators.required]],
     address: ['', [Validators.required]],
-    neighborhood: [''],
-    city: [''],
-    number: [''],
+    neighborhood: ['', [Validators.required]],
+    city: ['', [Validators.required]],
+    number: ['', [Validators.required]],
   });
 
   protected readonly pixForm = this.fb.nonNullable.group({
@@ -150,11 +150,11 @@ export class EventEditorContainer implements OnInit {
             });
 
             this.addressForm.patchValue({
-              address: event.location, // Colocamos o location inteiro no address por legado
-              neighborhood: '',
-              city: '',
-              cep: '',
-              number: '',
+              cep: event.addressDetails?.cep || '',
+              address: event.addressDetails?.address || event.location || '',
+              number: event.addressDetails?.number || '',
+              neighborhood: event.addressDetails?.neighborhood || '',
+              city: event.addressDetails?.city || '',
             });
 
             this.pixForm.patchValue({
@@ -225,6 +225,14 @@ export class EventEditorContainer implements OnInit {
       .filter(Boolean)
       .join(' - ');
 
+    const addressDetails = {
+      cep,
+      address,
+      number,
+      neighborhood,
+      city,
+    };
+
     const location = fullAddress || '';
     const eventData = {
       title,
@@ -232,6 +240,7 @@ export class EventEditorContainer implements OnInit {
       description,
       date: dateStr,
       location,
+      addressDetails,
       pixKey: pixKey || null,
     };
 

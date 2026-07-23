@@ -92,12 +92,14 @@ export class EventService {
     return {
       id: snapshot.id,
       title: (data?.['title'] as string) ?? '',
+      category: (data?.['category'] as string) ?? '',
       description: (data?.['description'] as string) ?? '',
       date:
         data?.['date'] instanceof Timestamp
           ? (data['date'] as Timestamp).toDate().toISOString()
           : ((data?.['date'] as string) ?? ''),
       location: (data?.['location'] as string) ?? '',
+      addressDetails: data?.['addressDetails'],
       pixKey: (data?.['pixKey'] as string | null) ?? null,
       status: (data?.['status'] as 'active' | 'cancelled') ?? 'active',
       createdAt: (data?.['createdAt'] as string) ?? '',

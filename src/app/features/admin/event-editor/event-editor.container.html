@@ -166,13 +166,20 @@
                         formControlName="cep"
                         placeholder="00000-000"
                         maxlength="9"
+                        required
                         (input)="formatCep($event)"
                       />
+                      @if (addressForm.controls.cep.hasError('required')) {
+                        <mat-error>CEP é obrigatório</mat-error>
+                      }
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="editor__number-field org-input">
                       <mat-label>Número</mat-label>
-                      <input matInput formControlName="number" placeholder="Ex: 123" />
+                      <input matInput formControlName="number" placeholder="Ex: 123" required />
+                      @if (addressForm.controls.number.hasError('required')) {
+                        <mat-error>Número é obrigatório</mat-error>
+                      }
                     </mat-form-field>
                   </div>
 
@@ -204,9 +211,13 @@
                         matInput
                         formControlName="neighborhood"
                         placeholder="Ex: Centro"
+                        required
                         readonly
                         tabindex="-1"
                       />
+                      @if (addressForm.controls.neighborhood.hasError('required')) {
+                        <mat-error>Bairro é obrigatório</mat-error>
+                      }
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" class="org-input editor__disabled-field">
@@ -215,9 +226,13 @@
                         matInput
                         formControlName="city"
                         placeholder="Ex: São Paulo/SP"
+                        required
                         readonly
                         tabindex="-1"
                       />
+                      @if (addressForm.controls.city.hasError('required')) {
+                        <mat-error>Cidade/UF é obrigatória</mat-error>
+                      }
                     </mat-form-field>
                   </div>
 

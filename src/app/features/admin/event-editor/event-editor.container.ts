@@ -10,6 +10,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -47,6 +48,9 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
     MatTooltipModule,
     MatAutocompleteModule,
     MatChipsModule,
+    MatNativeDateModule,
+    MatCardModule,
+    MatStepperModule,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
@@ -86,12 +90,15 @@ export class EventEditorContainer implements OnInit {
     { name: 'Outros', class: 'cat-outros' },
   ];
 
-  protected readonly form = this.fb.nonNullable.group({
+  protected readonly basicInfoForm = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
     category: ['', [Validators.required]],
     description: ['', [Validators.required]],
     date: [null as Date | null, [Validators.required]],
     time: ['', [Validators.required]],
+  });
+
+  protected readonly addressForm = this.fb.nonNullable.group({
     cep: [''],
     address: ['', [Validators.required]],
     neighborhood: [''],
@@ -102,7 +109,7 @@ export class EventEditorContainer implements OnInit {
 
   ngOnInit(): void {
     // ViaCEP listener
-    this.form.controls.cep.valueChanges
+    this.addressForm.controls.cep.valueChanges
       .pipe(
         debounceTime(400),
         distinctUntilChanged(),
@@ -110,7 +117,7 @@ export class EventEditorContainer implements OnInit {
       )
       .subscribe((res) => {
         if (res && !res.erro) {
-          this.form.patchValue({
+          this.addressForm.patchValue({
             address: res.logradouro || '',
             neighborhood: res.bairro || '',
             city: res.localidade && res.uf ? `${res.localidade}/${res.uf}` : '',
@@ -131,12 +138,15 @@ export class EventEditorContainer implements OnInit {
             if (isNaN(d.getTime())) d = new Date();
             const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 
-            this.form.patchValue({
+            this.basicInfoForm.patchValue({
               title: event.title,
               category: event.category || '',
               description: event.description,
               date: d,
               time: timeStr,
+            });
+
+            this.addressForm.patchValue({
               address: event.location, // Colocamos o location inteiro no address por legado
               neighborhood: '',
               city: '',
@@ -171,25 +181,30 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected async saveEvent(): Promise<void> {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+    if (this.basicInfoForm.invalid || this.addressForm.invalid) {
+      this.basicInfoForm.markAllAsTouched();
+      this.addressForm.markAllAsTouched();
       return;
     }
 
     this.saving.set(true);
+
     const {
       title,
       category,
       description,
       date,
       time,
+    } = this.basicInfoForm.getRawValue();
+
+    const {
       cep,
       address,
       neighborhood,
       city,
       number,
       pixKey,
-    } = this.form.getRawValue();
+    } = this.addressForm.getRawValue();
 
     let finalDate = new Date();
     if (date) {

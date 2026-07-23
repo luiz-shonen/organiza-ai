@@ -84,6 +84,33 @@
     font-size: 24px;
   }
 
+  &__card-content-stepper {
+    padding: 0 !important;
+  }
+
+  &__stepper {
+    background: transparent !important;
+    border-radius: 20px;
+    
+    ::ng-deep .mat-horizontal-stepper-header-container {
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
+    }
+
+    ::ng-deep .mat-horizontal-content-container {
+      padding: 24px !important;
+    }
+  }
+
+  &__step-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(var(--mat-sys-outline-rgb), 0.2);
+  }
+
   &__form {
     display: flex;
     flex-direction: column;

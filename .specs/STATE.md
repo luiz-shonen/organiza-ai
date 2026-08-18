@@ -3,12 +3,12 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-17  
-**State:** Spec phase — retroactive SDD applied to existing MVP & new architecture pivot defined.  
-**Next step:** User review of updated feature specs under .specs/features/. Proceed to Design and Tasks for 04-testing-strategy and new features.
+**State:** Spec phase — Architecture refined to eliminate guest friction, ensure 100% verified RSVP identities, and simplify organizer tooling.  
+**Next step:** Update feature specs under .specs/features/ with AD-020 to AD-026, then proceed to Design and Tasks for implementation.
 
 **Active branches:** main (production; PWA deployed to Firebase Hosting)  
 **What exists:** Auth, Event CRUD, Guest RSVP, Item claiming, Admin dashboard, Export, PWA, Dark mode, Seasonal themes.  
-**Open gaps:** Zero test coverage (critical); Open registration & event collaborator model to implement; Personal family roster to design.
+**Open gaps:** Test coverage (critical); Rename /admin to /meus-eventos and scope /admin to Super Admin analytics; Guest RSVP identity verification via Google/verified profile; Collaborator auto-claim on login; Financial split/target calculation on Pix card; Notification on event modification/cancellation.
 
 ---
 
@@ -48,17 +48,16 @@
 
 ### AD-005 — Hardcoded Super Admin Whitelist
 **Date:** Project inception (narrowed 2026-08-17)  
-**Decision:** Super Admin emails (luiz.gmr.dev@gmail.com, jessica.calm.dev@gmail.com) are hardcoded in the frontend (AuthService.isSuperAdmin) and mirrored in firestore.rules for global system management privileges only.  
-**Rationale:** Super Admins oversee global health and administrative tools, not event creation gating.  
+**Decision:** Super Admin emails (luiz.gmr.dev@gmail.com, jessica.calm.dev@gmail.com) are hardcoded in the frontend (AuthService.isSuperAdmin) and mirrored in firestore.rules for global system management privileges and analytics dashboard access only.  
+**Rationale:** Super Admins oversee global health, metrics and administrative tools, not event creation gating.  
 **Status:** In force (system management scope).
 
 ---
 
 ### AD-006 — Guest Session via localStorage Only (No Firestore for Anonymous Guests)
-**Date:** Project inception  
-**Decision:** Guest identity (name + phone) is stored in localStorage via GuestSessionService. Firestore users collection is NOT written for anonymous guests. The upsertProfile call only executes when !user.isAnonymous.  
-**Rationale:** Privacy-first for anonymous users; avoids polluting the users collection with unverified records.  
-**Status:** In force. Evolution to automatic guest pre-registration specified in 06-guest-profile (P2).
+**Date:** Project inception (Superceded by AD-024)  
+**Decision:** Guest identity is anchored in verified profile authentication (Google / verified account) rather than anonymous unverified phone numbers.  
+**Status:** Superceded by AD-024.
 
 ---
 
@@ -78,11 +77,10 @@
 
 ---
 
-### AD-009 — Anonymous Firebase Auth for Guests
-**Date:** Project inception  
-**Decision:** When a guest opens the event detail page, AuthService.loginAnonymously() is called automatically. This gives the guest a Firebase UID for Firestore write rules, without requiring account creation.  
-**Rationale:** Reduces friction to zero for RSVPs. Firestore rules allow anonymous writes to events/{id}/guests and events/{id}/items (claim only).  
-**Status:** In force.
+### AD-009 — Anonymous Firebase Auth for Guests (Superceded by AD-024)
+**Date:** Project inception (Superceded by AD-024)  
+**Decision:** Anonymous unverified guest RSVP is replaced by 1-touch verified identity (Google OAuth / verified profile) to prevent identity forgery (e.g. entering another person's contact number).  
+**Status:** Superceded by AD-024.
 
 ---
 
@@ -116,9 +114,9 @@
 ---
 
 ### AD-014 — Home Page Shows All Events (Architectural Smell - Replaced)
-**Date:** 2026-08-17 (retroactive, replaced by AD-017)  
+**Date:** 2026-08-17 (retroactive, replaced by AD-017 & AD-020)  
 **Decision:** The unauthenticated global event query on the home page is recognized as an architectural smell and replaced by a scoped user feed (owned + collaborated events).  
-**Status:** Replaced by AD-017 & spec 05-event-collaboration.
+**Status:** Replaced by AD-017 & AD-020.
 
 ---
 
@@ -158,3 +156,59 @@
 **Decision:** Users can manage a private list of family members in their personal account profile. In RSVP flows, a collapsible 'Adicionar Família' toggle allows one-click or selective batch confirmation for family members.  
 **Rationale:** Drastically speeds up multi-person RSVPs without exposing family member data globally.  
 **Status:** Specified in 07-family-roster.
+
+---
+
+### AD-020 — Route Renaming: /meus-eventos for Organizers and /admin for Super Admin Metrics
+**Date:** 2026-08-17  
+**Decision:** The organizer dashboard route is renamed from /admin to /meus-eventos. The /admin route is repurposed exclusively as a global platform analytics & system insights dashboard for Super Admins.  
+**Rationale:** /admin misrepresents normal event organizers as system administrators; /meus-eventos reflects user-owned event feeds.  
+**Status:** In force.
+
+---
+
+### AD-021 — Retirement of Manual Admin Management UI Drawer
+**Date:** 2026-08-17  
+**Decision:** The admin-form-drawer component and the "Novo Admin" button in the organizer UI are retired.  
+**Rationale:** With open registration (AD-016), any authenticated user can organize events, making manual admin promotion obsolete.  
+**Status:** In force.
+
+---
+
+### AD-022 — Collaborator Email Invitations with Auto-Claim on Login
+**Date:** 2026-08-17  
+**Decision:** Event owners invite collaborators by email (events/{id}/invitations/{email}). When the invited user signs in (Google or Email/Password), the app automatically associates their UID into collaborators: [uid] and removes the pending invitation.  
+**Rationale:** 100% free, requires zero paid transactional email infrastructure, and integrates seamlessly with WhatsApp link sharing.  
+**Status:** In force.
+
+---
+
+### AD-023 — Non-Blocking Email Verification for Email/Password Accounts
+**Date:** 2026-08-17  
+**Decision:** For users registering via Email/Password, Firebase Auth's native sendEmailVerification is triggered automatically. The user is immediately granted access to /meus-eventos with an informational top banner displaying verification status and a "Reenviar Confirmação" button with a 60s cooldown.  
+**Rationale:** Eliminates sign-up drop-off while providing zero-cost email ownership verification.  
+**Status:** In force.
+
+---
+
+### AD-024 — Verified RSVP Identity (1-Touch Google / Verified Profile)
+**Date:** 2026-08-17  
+**Decision:** Guest RSVP confirmations require verified identity (1-touch Google sign-in or authenticated profile) instead of unverified arbitrary phone number text inputs. If the Google account has an associated phone number, it is automatically reused as the contact.  
+**Rationale:** Completely eliminates impersonation, fake numbers, and prank RSVPs from Day 1 at zero infrastructure cost.  
+**Status:** In force.
+
+---
+
+### AD-025 — Smart Contribution / Split Estimation (Rachadinha com Meta)
+**Date:** 2026-08-17  
+**Decision:** Event organizers can optionally define an estimated total budget for the event (estimatedBudget). The public event page dynamically calculates and displays the suggested split per confirmed guest (estimatedBudget / guestCount) alongside the 1-click Pix copy button.  
+**Rationale:** Empowers transparent group cost-sharing and increases financial contribution conversion.  
+**Status:** In force.
+
+---
+
+### AD-026 — Automated Event Change & Cancellation Notifications
+**Date:** 2026-08-17  
+**Decision:** When an organizer cancels an event or updates critical details (date, time, address), the system automatically triggers notifications (Web Push via PWA / In-App / Firebase email) to all confirmed guests.  
+**Rationale:** Keeps attendees informed in real time without requiring manual organizer messaging.  
+**Status:** In force.

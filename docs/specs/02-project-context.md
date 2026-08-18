@@ -1,59 +1,80 @@
 # Contexto do Projeto: Organiza AI
 
-Este arquivo contém instruções de IA para agentes (Antigravity, Claude Code, Cursor, etc.) garantindo a consistência arquitetural na manutenção do projeto **Organiza AI**.
+Este arquivo consolida as diretrizes de contexto para agentes de IA (Antigravity, Claude Code, Cursor, etc.), garantindo a consistência arquitetural na manutenção e evolução do **Organiza AI**.
+
+---
 
 ## 1. Visão Geral
 
-**Organiza AI** é um Progressive Web App (PWA) focado na organização colaborativa de eventos (como festas juninas, churrascos, etc.). O organizador (Admin) cria eventos, e os convidados (Guests) confirmam presença (RSVP) e podem "assumir" a responsabilidade de levar itens da lista (bebidas, comidas, etc).
+**Organiza AI** é um Progressive Web App (PWA) focado na organização colaborativa e descomplicada de eventos (festas juninas, churrascos, encontros familiares, etc.). Qualquer usuário autenticado pode criar eventos, convidar colaboradores e compartilhar links públicos para que convidados confirmem presença (RSVP) e assumam itens da lista com zero atrito.
+
+---
 
 ## 2. Pilha de Tecnologia
 
-- **Frontend**: Angular v21+ (exclusivamente com Standalone Components).
-- **UI/UX**: Angular Material para a fundação de componentes. Tailwind CSS v3 para classes utilitárias de layout (flex, grid, margens) sem corromper o Material, utilizando `tailwind.config.js`. SCSS puro com metodologia BEM para estilos encapsulados dos componentes.
-- **Backend/BaaS**: Firebase Modular SDK (Firestore, Auth). **NÃO utilizar `@angular/fire`** devido a problemas de dependência; a injeção do Firebase é feita manualmente no `FirebaseService`.
-- **PWA**: Instalável offline, suporte a QR Code para convites (`qrcode`) e compartilhamento via WhatsApp.
+- **Frontend**: Angular v21+ (Standalone Components exclusivamente).
+- **UI/UX & Estilização**:
+  - **Angular Material** como biblioteca base de componentes.
+  - **SCSS Puro com Metodologia BEM** para estilização encapsulada dos componentes.
+  - **CSS Custom Properties (Tokens)**: Uso obrigatório das variáveis com prefixo `--org-` e `--mat-sys-` definidas em `src/styles.scss` (Design System *Vibrant Modernism / Glassmorphism*).
+  - **Tailwind CSS NÃO é utilizado** (removido para evitar conflitos de especificidade com o Material e garantir encapsulamento).
+- **Backend / BaaS**:
+  - **Firebase Modular SDK** direto (Firestore, Authentication).
+  - **NÃO utilizar `@angular/fire`** (devido a incompatibilidades de dependência com Angular v21). A inicialização e injeção do Firebase é feita centralizadamente no `FirebaseService`.
+- **PWA**: Configuração oficial via `@angular/pwa` (`ngsw-config.json`), suporte a QR Code (`qrcode`) e compartilhamento nativo via WhatsApp.
 
-## 3. Arquitetura Angular
+---
 
-- **Signals**: O estado local, inputs e outputs **devem** ser construídos usando Signals (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`).
-- **Sem RxJS para UI Local**: Use RxJS apenas para fluxos de dados complexos ou integrações de serviços assíncronos que naturalmente lidam com Observables (ex: retornos do Firestore).
-- **Control Flow**: Utilize exclusivamente o novo Control Flow do Angular (`@if`, `@for`, `@switch`).
-- **OnPush**: O `ChangeDetectionStrategy.OnPush` é **obrigatório** em todos os componentes.
+## 3. Padrões de Arquitetura Angular
 
-## 4. Padrão Smart / Dumb Components
+- **Signals Nativos**: O estado local, inputs e outputs **devem** ser construídos usando Signals (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`).
+- **RxJS Apenas para Streams Externas**: Use RxJS apenas para Observables retornados pelo Firestore ou integrações de APIs assíncronas externas (convertendo para Signals com `toSignal()`).
+- **Control Flow**: Utilize exclusivamente a sintaxe de novo Control Flow do Angular (`@if`, `@for`, `@switch`).
+- **OnPush Obrigatório**: `ChangeDetectionStrategy.OnPush` é **obrigatório** em 100% dos componentes.
+- **Smart / Dumb Components**:
+  - **Smart (Container)**: Exemplo: `DashboardContainer`, `EventDetailContainer`. Injetam serviços, buscam dados no Firebase e orquestram o fluxo de estado. Sufixo `.container.ts`.
+  - **Dumb (Presentational)**: Exemplo: `EventCardComponent`, `ItemListComponent`. Focados unicamente em apresentação e acessibilidade. **Zero chamadas a serviços ou banco de dados.** Recebem dados via `input()` e emitem eventos via `output()`. Sufixo `.component.ts`.
+- **Arquivos Dedicados**: Todos os componentes devem obrigatoriamente possuir arquivo `.html` dedicado (`templateUrl`) e `.scss` (`styleUrl`). Nunca usar `template:` ou `style:` inline.
 
-Siga o padrão estrito de separação entre Container (Smart) e Presentational (Dumb):
+---
 
-- **Smart (Container)**: Exemplo: `DashboardContainer`. Concentram a injeção de serviços, buscam dados no Firebase e repassam as informações para os filhos. Normalmente têm o sufixo `Container`.
-- **Dumb (Presentational)**: Exemplo: `EventInfoCard`, `SharePanelComponent`. Focados apenas em exibição e interatividade do usuário. **Não possuem lógica de negócio ou chamada a banco de dados.** Recebem dados via `input()` e emitem eventos via `output()`.
-- **Arquivos Dedicados**: Todos os componentes devem obrigatoriamente possuir um arquivo `.html` dedicado (`templateUrl`) e `.scss` (`styleUrl`). Nunca usar `template:` ou `style:` inline.
+## 4. Gestão de Sessão, Perfis e RBAC
 
-## 5. Gerenciamento de Sessão e Acesso (RBAC)
+- **Super Admins**: Usuários com permissões globais de supervisão do sistema (`luiz.gmr.dev@gmail.com`, `jessica.calm.dev@gmail.com`). Definidos no frontend (`AuthService.isSuperAdmin`) e protegidos no `firestore.rules`.
+- **Organizadores (Qualquer Usuário Autenticado - AD-016)**:
+  - Qualquer usuário autenticado com conta Google pode criar e gerenciar seus próprios eventos sem necessidade de pré-aprovação em whitelist.
+  - O criador do evento é o seu **Único Dono (Owner)** com autoridade total sobre o evento.
+- **Colaboradores de Evento (AD-017)**:
+  - O dono do evento pode convidar colaboradores por e-mail.
+  - Colaboradores podem gerenciar itens e visualizar a lista de convidados, mas **não podem** alterar dados core do evento (título, data, local) ou excluir o evento.
+- **Convidados (Guests - AD-006 / AD-009)**:
+  - Acessam o evento via link público `/evento/:id`.
+  - Uma sessão anônima no Firebase é inicializada automaticamente nos bastidores (`AuthService.loginAnonymously()`) para permissões de escrita seguras.
+  - A identidade local do convidado é armazenada no `localStorage` via `GuestSessionService`. Convidados anônimos **não** criam registros na coleção global `users`.
 
-- **Super Admins**: `luiz.gmr.dev@gmail.com` e `jessica.calm.dev@gmail.com` estão "hardcoded" como Super Admins no frontend e no `firestore.rules`. Apenas eles podem acessar a UI de convite de novos organizadores.
-- **Admins (Organizadores)**: Utilizam a conta do Google (Firebase Authentication) para entrar no sistema.
-  - **Convites Passwordless**: O fluxo de criação de contas de Email/Senha foi **removido**. Para convidar um novo Admin, o Super Admin simplesmente digita o e-mail na UI. O e-mail é salvo na coleção `admins` (whitelist). Quando essa pessoa loga com sua própria conta Google, o acesso é liberado via `firestore.rules`.
-- **Guest (Convidado)**: Possui um "pseudo-login" salvo no `localStorage` do browser por meio do `GuestSessionService`. O app checa `isPlatformBrowser` antes de usar a API nativa para evitar quebra no SSR.
+---
 
-## 6. Acessibilidade (MANDATÓRIO)
+## 5. Acessibilidade (WCAG 2.1 AA)
 
-Todo HTML gerado precisa ser **WCAG 2.1 AA compliant**.
+- Use tags semânticas da Web (`<header>`, `<main>`, `<section>`, `<dialog>`, `<button>`, `<nav>`).
+- Nunca utilize `<div (click)="...">`.
+- Todos os botões contendo apenas ícones devem ter `aria-label`.
+- Skeletons e elementos puramente decorativos devem ter `aria-hidden="true"`.
 
-- Use tags semânticas da Web (ex: `<header>`, `<main>`, `<section>`, `<dialog>`, `<button>`).
-- Nunca utilize `<div (click)="acao()">`.
-- Certifique-se de que `aria-label` e focos de teclado (tabindex) estejam devidamente implementados.
+---
 
-## 7. Banco de Dados (Firestore)
+## 6. Banco de Dados (Firestore)
 
-- **Segurança Real via Rules**: O RBAC é implementado em `firestore.rules`. Admins não têm acesso de "Administrador Firebase/GCP", são apenas usuários finais (`request.auth.token.email`) filtrados na coleção `admins`.
-- **Estrutura**:
-  - `admins/{email}`: Whitelist de organizadores aprovados. Protegida para leitura e escrita apenas por Super Admins.
-  - `events/{eventId}`: Documento principal do evento (acesso de leitura pública).
-  - `events/{eventId}/guests/{guestId}`: Sub-coleção de convidados (escrita anônima restrita via Rules).
-  - `events/{eventId}/items/{itemId}`: Sub-coleção de itens da lista de rachadinha (criação restrita a admin, porém com leitura e update de `claimedBy` público).
-- Todas as operações devem passar pela validação rigorosa em `firestore.rules`.
+- **`users/{uid}`**: Perfil de usuários autenticados (nome, email, tema preferido, foto).
+- **`users/{uid}/family/{memberId}`**: Roster de familiares cadastrados pelo usuário para confirmação rápida em lote.
+- **`events/{eventId}`**: Documento do evento (`createdBy`, `collaborators: []`, `title`, `date`, `location`, `pixKey`, `status`).
+- **`events/{eventId}/guests/{guestId}`**: Sub-coleção de presenças confirmadas.
+- **`events/{eventId}/items/{itemId}`**: Sub-coleção de itens de contribuição coletiva.
+- **`guest_profiles/{phone}`**: Pre-cadastro leve de convidados por telefone.
 
-## 8. Idioma e Versionamento
+---
 
-- **Interface e Comunicação**: A linguagem primária da UI e da comunicação no projeto é o **Português do Brasil (pt-BR)**.
-- **Git Commits**: É MANDATÓRIO o uso do padrão **Conventional Commits** (ex: `feat(...)`, `fix(...)`, `chore(...)`) para todos os commits no repositório.
+## 7. Versionamento e SDD
+
+- **Conventional Commits**: Obrigatório em todos os commits (`feat(...)`, `fix(...)`, `chore(...)`, etc.).
+- **Spec-Driven Development (TLC SDD)**: O diretório `.specs/` é a fonte canônica da verdade para especificações, decisões arquiteturais (`STATE.md`) e rastreabilidade de requisitos.

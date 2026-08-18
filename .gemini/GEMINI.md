@@ -6,7 +6,7 @@
 
 ## 1. Context Protocol & Documentation
 
-- **ALWAYS** refer to `docs/DESIGN.md` for UI guidelines before styling components.
+- **ALWAYS** refer to `DESIGN.md` for UI guidelines before styling components.
 - **Firebase Auth:** `/admin` is for Organizers. `/login` is for everyone. Guests without accounts are Anonymous (`!user.isAnonymous`). Do not save guest profiles to the global `users` collection.
 - **Superadmin:** Specific accounts (e.g. `luiz.gmr.dev@gmail.com`) receive superadmin privileges.
 - Check `README.md` for general project architecture and command guidelines.

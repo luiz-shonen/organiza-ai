@@ -5,7 +5,7 @@
 
 ## 1. Documentation to Read First
 
-- `docs/DESIGN.md`: Contains the Design System, color palette, and styling rules (Glassmorphism, Vibrant Modernism).
+- `DESIGN.md`: Contains the Design System, color palette, and styling rules (Glassmorphism, Vibrant Modernism).
 - `README.md`: Contains the project architecture and Firebase details.
 
 ## 2. Architecture & Core Angular

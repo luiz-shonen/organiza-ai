@@ -20,7 +20,7 @@ This project is built using **Angular v21** and **Firebase**.
 
 The UI is styled using **Glassmorphism** and a "Vibrant Collaboration System".
 We use **Angular Material** as the base component library, but customize it heavily using CSS variables prefixing with `--mat-sys-` and `--org-`.
-For full design specifications, read **`docs/DESIGN.md`**.
+For full design specifications, read **`DESIGN.md`**.
 
 ## For AI Agents
 

@@ -33,6 +33,6 @@ Goal: Generate production-ready, highly reusable, and scalable Angular code. You
 
 Context Protocol:
 
-- ALWAYS refer to `docs/specs/DESIGN.md` for UI guidelines before styling components.
+- ALWAYS refer to `docs/DESIGN.md` for UI guidelines before styling components.
 - Firebase Auth: `/admin` is for Organizers. `/login` is for everyone. Guests without accounts are Anonymous (`!user.isAnonymous`). Do not save guest profiles to the global `users` collection.
 - Superadmin: Specific accounts (e.g. `luiz.gmr.dev@gmail.com`) receive superadmin privileges.

@@ -145,6 +145,7 @@ Depth is achieved through **Glassmorphism** rather than traditional drop shadows
 2.  **Surface Layer (Cards/Modals):** Translucent white (`rgba(255, 255, 255, 0.6)`) with a `backdrop-filter: blur(20px)`.
 3.  **Borders:** A 1.5px solid border using a linear gradient (Purple to Orange) at 40% opacity.
 4.  **Interactive Layer:** Primary buttons use a high-saturation gradient and a soft, colored glow shadow (`0px 10px 20px rgba(124, 58, 237, 0.3)`).
+5.  **Micro-interações e Celebração:** Textos de destaque (como o título do Login) utilizam a classe `.animated-gradient` para transicionar as cores do gradiente dinamicamente. Ações de sucesso significativas (confirmação de RSVP, itens assumidos) disparam chuvas de confetes através do `ConfettiService` integrado com `canvas-confetti`.
 
 ## Shapes
 
@@ -173,3 +174,7 @@ All cards must feature `backdrop-filter: blur(24px)` and a background color of `
 ### Lists
 
 - Lists should be presented as floating glass tiles with `sm` (12px) vertical spacing between items, creating a "stacked glass" effect.
+
+### Modals & Dialogs
+
+- **ConfirmDialogComponent:** Diálogos genéricos de confirmação de exclusão/cancelamento devem usar o padrão `ConfirmDialogComponent` em vez de `alert()` ou `confirm()` nativos do navegador. Ele encapsula botões de ação e segue o design system de forma consistente.

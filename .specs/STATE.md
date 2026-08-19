@@ -207,8 +207,8 @@
 
 ---
 
-### AD-026 — Automated Event Change & Cancellation Notifications
-**Date:** 2026-08-17  
-**Decision:** When an organizer cancels an event or updates critical details (date, time, address), the system automatically triggers notifications (Web Push via PWA / In-App / Firebase email) to all confirmed guests.  
-**Rationale:** Keeps attendees informed in real time without requiring manual organizer messaging.  
+### AD-026 — Automated Event Change, Cancellation & Countdown Notifications (7 Days & 1 Day)
+**Date:** 2026-08-17 (Updated 2026-08-19)  
+**Decision:** The notification system triggers automated notifications (Web Push via PWA / In-App) for: (1) Event cancellation or critical updates (date, time, address) to all confirmed guests; (2) 7-day reminder before the event; (3) 1-day (24 hours) countdown reminder before the event for both organizers and confirmed attendees.  
+**Rationale:** Keeps attendees informed in real time and drastically minimizes event no-shows without requiring manual organizer messaging.  
 **Status:** In force.

@@ -142,9 +142,10 @@ Organizers need to create, edit, and manage collaborative events intuitively. Th
 3. WHEN organizer selects the "Histórico" filter THEN system SHALL display only events with date < today and status != cancelled
 4. WHEN organizer selects the "Cancelados" filter THEN system SHALL display only events with status = cancelled
 5. WHEN no events match the selected filter THEN system SHALL display an empty state with a contextual message
-6. WHEN the next event is 7 days or fewer away THEN system SHALL fire a single local notification reminder
+6. WHEN an upcoming confirmed or organized event is 7 days away THEN system SHALL fire a 7-day reminder notification
+7. WHEN an upcoming confirmed or organized event is 1 day (24 hours) away THEN system SHALL fire a 1-day countdown reminder notification
 
-**Independent Test**: Organizer with 5 events (2 upcoming, 2 past, 1 cancelled) verifies each filter shows the correct count.
+**Independent Test**: Organizer with 5 events (2 upcoming, 2 past, 1 cancelled) verifies each filter shows the correct count and 7-day/1-day notifications trigger as scheduled.
 
 ---
 
@@ -209,8 +210,9 @@ Organizers need to create, edit, and manage collaborative events intuitively. Th
 | EVMG-13 | P2: Export CSV | - | Verified (built) |
 | EVMG-14 | P2: Print | - | Verified (built) |
 | EVMG-15 | P2: Delete Event | - | Verified (built) |
+| EVMG-16 | P1: 1-day countdown notification | Design | Pending |
 
-**Coverage:** 15 total, 13 verified built, 2 pending design/task.
+**Coverage:** 16 total, 13 verified built, 3 pending design/task.
 
 ---
 

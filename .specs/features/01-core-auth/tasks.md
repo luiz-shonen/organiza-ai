@@ -87,9 +87,9 @@ T5 → T6
 
 **Done when**:
 
-- [ ] `AuthUser` interface exported with `uid`, `email`, `displayName`, `photoURL`, and `emailVerified` fields
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `AuthUser` interface exported with `uid`, `email`, `displayName`, `photoURL`, and `emailVerified` fields
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

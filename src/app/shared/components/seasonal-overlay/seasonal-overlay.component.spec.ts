@@ -25,14 +25,14 @@ describe('SeasonalOverlayComponent', () => {
   it('should render junina bandeirolas when junina theme is active', () => {
     themeService.evaluateEventTheme(null, 'Festa Junina da Família');
     fixture.detectChanges();
-    const bandeirolas = fixture.nativeElement.querySelector('.seasonal-overlay__bandeirolas');
-    expect(bandeirolas).toBeTruthy();
+    const juninaEl = fixture.nativeElement.querySelector('.seasonal-overlay__junina');
+    expect(juninaEl).toBeTruthy();
   });
 
   it('should render Estrela de Belém star when natal theme is active', () => {
     themeService.evaluateEventTheme(null, 'Natal de Jesus 2026');
     fixture.detectChanges();
-    const starSvg = fixture.nativeElement.querySelector('.seasonal-overlay__star-svg');
-    expect(starSvg).toBeTruthy();
+    const starImg = fixture.nativeElement.querySelector('.seasonal-overlay__star');
+    expect(starImg).toBeTruthy();
   });
 });

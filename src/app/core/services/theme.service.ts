@@ -59,11 +59,13 @@ export class ThemeService {
   }
 
   private setupListeners(): void {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if (this.mode() === 'system') {
-        this.updateIsDark('system');
-      }
-    });
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (this.mode() === 'system') {
+          this.updateIsDark('system');
+        }
+      });
+    }
   }
 
   private updateIsDark(currentMode: ThemeMode): void {
@@ -72,7 +74,10 @@ export class ThemeService {
     } else if (currentMode === 'light') {
       this.isDark.set(false);
     } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const prefersDark =
+        typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          : false;
       this.isDark.set(prefersDark);
     }
   }

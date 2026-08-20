@@ -9,13 +9,19 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }], ['list']],
   use: {
     baseURL: 'http://localhost:4200',
-    trace: 'on-first-retry',
+    testIdAttribute: 'data-testid',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
     },
   ],
   webServer: {
@@ -25,3 +31,4 @@ export default defineConfig({
     timeout: 120 * 1000,
   },
 });
+

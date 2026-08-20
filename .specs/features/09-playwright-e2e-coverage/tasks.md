@@ -144,10 +144,10 @@ T34
 
 **Done when**:
 
-- [ ] `playwright.config.ts` configured with `testIdAttribute: 'data-testid'`, `trace: 'retain-on-failure'`, `screenshot: 'only-on-failure'`, `video: 'retain-on-failure'`
-- [ ] `webServer` block configured with `command: 'npm start'`, `timeout: 120 * 1000`, `reuseExistingServer: !process.env['CI']`
-- [ ] `package.json` contains scripts: `test:e2e`, `test:e2e:ci`, `test:e2e:mobile`
-- [ ] Build gate passes: `npm run build`
+- [x] `playwright.config.ts` configured with `testIdAttribute: 'data-testid'`, `trace: 'retain-on-failure'`, `screenshot: 'only-on-failure'`, `video: 'retain-on-failure'`
+- [x] `webServer` block configured with `command: 'npm start'`, `timeout: 120 * 1000`, `reuseExistingServer: !process.env['CI']`
+- [x] `package.json` contains scripts: `test:e2e`, `test:e2e:ci`, `test:e2e:mobile`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

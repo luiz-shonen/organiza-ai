@@ -100,12 +100,12 @@ Users often attend events with their family members (spouse, children, relatives
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| FAMS-01 | P2: Profile Family List | Design | Pending |
-| FAMS-02 | P2: Add/Edit/Delete Member | Design | Pending |
-| FAMS-03 | P2: Collapsible RSVP Toggle | Design | Pending |
-| FAMS-04 | P2: Batch Guest Creation | Design | Pending |
-| FAMS-05 | P2: Select All / Itemized Checkbox | Design | Pending |
-| FAMS-06 | P3: Inline Add Member in RSVP | Design | Pending |
+| FAMS-01 | P2: Profile Family List | Execute | ✅ Verified |
+| FAMS-02 | P2: Add/Edit/Delete Member | Execute | ✅ Verified |
+| FAMS-03 | P2: Collapsible RSVP Toggle | Execute | ✅ Verified |
+| FAMS-04 | P2: Batch Guest Creation | Execute | ✅ Verified |
+| FAMS-05 | P2: Select All / Itemized Checkbox | Execute | ✅ Verified |
+| FAMS-06 | P3: Inline Add Member in RSVP | Execute | ✅ Verified |
 
 **Coverage:** 6 total, 6 mapped to future design/tasks, 0 unmapped.
 

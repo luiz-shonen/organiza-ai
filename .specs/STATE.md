@@ -2,10 +2,11 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-08-19  
-**State:** Wave 1 & Wave 2 Feature Execution Completed & Fully Verified — Features 01, 02, 03, 04, 05, 06, and 07 are implemented, integrated on `main`, and 100% verified.  
+**Last updated:** 2026-08-20  
+**State:** Feature 08 (`08-playwright-e2e-coverage`) Specification Completed & Verified — 31 traceable EARS requirements across 15 user stories covering all project journeys, CI workflow, visual layout inspection, and real-time concurrency.  
 **Test Suite:** 29 test files passed, 199 unit tests passed (0 failures), production build green (`npm run build`).  
-**Validation Gate:** `validate_state.py` reports 0 errors across all 7 features (`[01-core-auth, 02-event-management, 03-guest-experience, 04-testing-strategy, 05-event-collaboration, 06-guest-profile, 07-family-roster]`).  
+**Validation Gate:** `validate_spec.py 08-playwright-e2e-coverage` reports 0 errors, 0 warnings.  
+**Next step:** Execute `/tlc-spec-driven design` or `/tlc-spec-driven tasks` for Feature 08.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -16,6 +17,7 @@
 - **Feature 05 (`05-event-collaboration`)**: Scoped feeds (owned + collaborated events), email invitation auto-claim via Firestore `writeBatch`, collaborator invite dialog with MatChips, role badges on event cards, field protection for non-owners.
 - **Feature 06 (`06-guest-profile`)**: `UserProfile` model, `/perfil` route protected by `authGuard`, profile editing with `ProfileInfoCardComponent`, attended events history.
 - **Feature 07 (`07-family-roster`)**: `FamilyMember` model, `FamilyService` for `users/{uid}/family` subcollection, `FamilyRosterManagerComponent` on Profile page, `FamilySelectorComponent` for batch RSVP, `GuestService.batchConfirmRsvp` atomically creating primary + linked guest records, cascading cancellation.
+- **Feature 08 (`08-playwright-e2e-coverage`)**: Spec complete for full Playwright E2E coverage across all flows, GitHub Actions CI pipeline, visual layout inspection against `DESIGN.md`, real-time multi-user concurrency, and PWA offline resilience.
 
 ---
 

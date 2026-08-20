@@ -324,9 +324,9 @@ T34
 
 **Done when**:
 
-- [ ] `EventEditorPage` extends `BasePage` and defines locators: `titleInput`, `dateInput`, `cepInput`, `streetInput`, `saveBtn`, `cancelEventBtn`
-- [ ] Implements methods: `fillBasicInfo(...)`, `fillCep(cep)`, `saveEvent()`, `addWishlistItem(...)`
-- [ ] Build gate passes: `npm run build`
+- [x] `EventEditorPage` extends `BasePage` and defines locators: `titleInput`, `dateInput`, `cepInput`, `streetInput`, `saveBtn`, `cancelEventBtn`
+- [x] Implements methods: `fillBasicInfo(...)`, `fillCep(cep)`, `saveEvent()`, `addWishlistItem(...)`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

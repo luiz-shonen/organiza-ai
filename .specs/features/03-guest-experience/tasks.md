@@ -200,13 +200,13 @@ T5
 
 **Done when**:
 
-- [ ] Clicking RSVP initiates 1-touch Google sign-in if unauthenticated
-- [ ] Confirmed RSVP triggers celebratory confetti via `ConfettiService`
-- [ ] Passes `estimatedBudget` and `confirmedGuestCount` to `PixCardComponent`
-- [ ] Invokes atomic `GuestService.cancelRsvp` on cancellation confirmation
-- [ ] Unit tests cover: RSVP confirmation flow, split props binding, and cancellation invocation
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Clicking RSVP initiates 1-touch Google sign-in if unauthenticated
+- [x] Confirmed RSVP triggers celebratory confetti via `ConfettiService`
+- [x] Passes `estimatedBudget` and `confirmedGuestCount` to `PixCardComponent`
+- [x] Invokes atomic `GuestService.cancelRsvp` on cancellation confirmation
+- [x] Unit tests cover: RSVP confirmation flow, split props binding, and cancellation invocation
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

@@ -15,6 +15,8 @@ export interface PartyEvent {
   location: string;
   addressDetails?: AddressDetails;
   pixKey: string | null;
+  pixType?: string;
+  estimatedBudget?: number | null;
   status?: 'active' | 'cancelled';
   createdAt: string;
   updatedAt: string;

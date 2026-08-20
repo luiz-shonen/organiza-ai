@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 08 (`08-codebase-refactoring-and-quality`) Specification & Technical Design Approved and Committed. Feature 09 (`09-playwright-e2e-coverage`) queued for execution after codebase refactor.  
+**State:** Feature 08 (`08-codebase-refactoring-and-quality`) Specification, Technical Design, and Task Breakdown (23 tasks across 4 phases) Approved and Validated (`validate_tasks.py` passed).  
 **Test Suite:** 31 test files, 241 unit tests passing (`npm test -- --watch=false`), production build green (`npm run build`).  
-**Validation Gate:** Technical Design completed with clean 3-domain architecture (`organizer`, `admin`, `auth`), MDC tokens standard, and 100% test coverage plan.  
-**Next step:** Proceed to Tasks breakdown (`/tlc-spec-driven tasks`) for Feature 08.  
+**Validation Gate:** 23 atomic tasks mapped to 3 sub-agent worker batches with independent Verifier gate.  
+**Next step:** Execute Feature 08 via sub-agent worker batches (`tlc-spec-driven implement` / `execute`).  
 
 **Active branches:** `main` (production)  
 **What exists:**

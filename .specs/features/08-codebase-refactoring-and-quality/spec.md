@@ -136,19 +136,19 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| REFACTOR-01 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Design | Pending |
-| REFACTOR-02 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Design | Pending |
-| REFACTOR-03 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Design | Pending |
-| REFACTOR-04 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Design | Pending |
-| REFACTOR-05 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Design | Pending |
-| REFACTOR-06 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Design | Pending |
-| REFACTOR-07 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Design | Pending |
-| REFACTOR-08 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Design | Pending |
-| REFACTOR-09 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Design | Pending |
-| REFACTOR-10 | P2: Accessibility & Glassmorphism Design System Compliance | Design | Pending |
-| REFACTOR-11 | P2: Accessibility & Glassmorphism Design System Compliance | Design | Pending |
-| REFACTOR-12 | P3: Complete Spec & Unit Test Suite Coverage | Design | Pending |
-| REFACTOR-13 | P3: Complete Spec & Unit Test Suite Coverage | Design | Pending |
+| REFACTOR-01 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Ready |
+| REFACTOR-02 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Ready |
+| REFACTOR-03 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Ready |
+| REFACTOR-04 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Ready |
+| REFACTOR-05 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Ready |
+| REFACTOR-06 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Ready |
+| REFACTOR-07 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Ready |
+| REFACTOR-08 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Ready |
+| REFACTOR-09 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Ready |
+| REFACTOR-10 | P2: Accessibility & Glassmorphism Design System Compliance | Tasks | Ready |
+| REFACTOR-11 | P2: Accessibility & Glassmorphism Design System Compliance | Tasks | Ready |
+| REFACTOR-12 | P3: Complete Spec & Unit Test Suite Coverage | Tasks | Ready |
+| REFACTOR-13 | P3: Complete Spec & Unit Test Suite Coverage | Tasks | Ready |
 
 **ID format:** `REFACTOR-[NUMBER]`
 

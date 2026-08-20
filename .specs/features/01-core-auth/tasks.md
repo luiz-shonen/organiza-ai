@@ -112,12 +112,12 @@ T5 → T6
 
 **Done when**:
 
-- [ ] `superAdminGuard` implemented as `CanActivateFn` checking `authService.isSuperAdmin()`
-- [ ] Redirects non-superadmin users to `/meus-eventos` via `UrlTree`
-- [ ] Waits for `authService.loading()` signal to resolve
-- [ ] Unit tests cover: superadmin access allowed, regular user redirected, unauthenticated user redirected
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `superAdminGuard` implemented as `CanActivateFn` checking `authService.isSuperAdmin()`
+- [x] Redirects non-superadmin users to `/meus-eventos` via `UrlTree`
+- [x] Waits for `authService.loading()` signal to resolve
+- [x] Unit tests cover: superadmin access allowed, regular user redirected, unauthenticated user redirected
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

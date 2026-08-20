@@ -1,4 +1,4 @@
-import type { ThemeMode } from '../services/theme.service';
+import type { ThemeMode } from './theme.model';
 
 export interface UserProfile {
   uid: string;

@@ -1,8 +1,9 @@
 import { Injectable, effect, signal, inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
+import type { ThemeMode } from '../models';
 
-export type ThemeMode = 'light' | 'dark' | 'system';
+export type { ThemeMode };
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

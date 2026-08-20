@@ -112,9 +112,9 @@ T23
 
 **Done when**:
 
-- [ ] `ThemeMode` type (`'light' | 'dark' | 'system'`) is exported from `src/app/core/models/theme.model.ts`
-- [ ] Exported cleanly via `src/app/core/models/index.ts`
-- [ ] Build gate passes: `npm run build`
+- [x] `ThemeMode` type (`'light' | 'dark' | 'system'`) is exported from `src/app/core/models/theme.model.ts`
+- [x] Exported cleanly via `src/app/core/models/index.ts`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

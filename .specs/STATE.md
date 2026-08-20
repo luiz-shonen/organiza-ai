@@ -3,12 +3,12 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-19  
-**State:** Tasks Phase Completed — Granular, atomic tasks generated and validated across all 7 features (`01-core-auth` through `07-family-roster`).  
-**Next step:** Execute Feature 01 (`01-core-auth`) tasks via `/tlc-spec-driven implement` following atomic commit and test-gated protocols.
+**State:** Feature 01 (`01-core-auth`) Completed and Verified — All 6 tasks implemented via branch subagents, 47 unit tests passing, discrimination sensor passed (5/5 killed), validation report PASS.  
+**Next step:** Execute Feature 02 (`02-event-management`) tasks via `/tlc-spec-driven implement`.
 
 **Active branches:** main (production; PWA deployed to Firebase Hosting)  
-**What exists:** Auth, Event CRUD, Guest RSVP, Item claiming, Admin dashboard, Export, PWA, Dark mode, Seasonal themes. All 7 feature specs, technical designs, and atomic tasks breakdowns are fully generated and validated.  
-**Open gaps:** Execute implementation of tasks (01 to 07): open registration & email verification banner, notifications, 1-touch verified RSVP & split, test harness setup, collaborator auto-claim, profile page, and family roster batch RSVP.
+**What exists:** Feature 01 (`01-core-auth`) with open registration, email verification banner with cooldown, `authGuard`, and `superAdminGuard`. Auth, Event CRUD, Guest RSVP, Item claiming, Admin dashboard, Export, PWA, Dark mode, Seasonal themes. All 7 feature specs, technical designs, and atomic tasks breakdowns are fully generated and validated.  
+**Open gaps:** Execute implementation of tasks (02 to 07): notifications, 1-touch verified RSVP & split, test harness setup, collaborator auto-claim, profile page, and family roster batch RSVP.
 
 ---
 

@@ -162,10 +162,10 @@ T23
 
 **Done when**:
 
-- [ ] All occurrences of `as any` in `setDoc`, `updateDoc`, `addDoc`, and `runBatch` are replaced with strict Firestore SDK types
-- [ ] Unit tests pass: `src/app/core/services/firestore.gateway.spec.ts`
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 20 tests pass
+- [x] All occurrences of `as any` in `setDoc`, `updateDoc`, `addDoc`, and `runBatch` are replaced with strict Firestore SDK types
+- [x] Unit tests pass: `src/app/core/services/firestore.gateway.spec.ts`
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 20 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

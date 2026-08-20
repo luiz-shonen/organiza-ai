@@ -23,6 +23,10 @@ import {
   WhereFilterOp,
   OrderByDirection,
   Timestamp,
+  WithFieldValue,
+  UpdateData,
+  DocumentData,
+  SetOptions,
 } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
 import { FirestoreBatchOperations } from '../models';
@@ -102,18 +106,18 @@ export class FirestoreGateway {
     }));
   }
 
-  async setDoc<T>(path: string, data: Partial<T>, options?: { merge?: boolean }): Promise<void> {
+  async setDoc<T extends DocumentData = DocumentData>(path: string, data: Partial<T> | WithFieldValue<T>, options?: SetOptions): Promise<void> {
     const docRef = doc(this.firestore, path);
     if (options) {
-      await setDoc(docRef, data as any, options);
+      await setDoc(docRef, data as WithFieldValue<DocumentData>, options);
     } else {
-      await setDoc(docRef, data as any);
+      await setDoc(docRef, data as WithFieldValue<DocumentData>);
     }
   }
 
-  async updateDoc<T>(path: string, data: Partial<T>): Promise<void> {
+  async updateDoc<T extends DocumentData = DocumentData>(path: string, data: Partial<T> | UpdateData<T>): Promise<void> {
     const docRef = doc(this.firestore, path);
-    await updateDoc(docRef, data as any);
+    await updateDoc(docRef, data as UpdateData<DocumentData>);
   }
 
   async deleteDoc(path: string): Promise<void> {
@@ -121,9 +125,9 @@ export class FirestoreGateway {
     await deleteDoc(docRef);
   }
 
-  async addDoc<T>(path: string, data: T): Promise<string> {
+  async addDoc<T extends DocumentData = DocumentData>(path: string, data: T | WithFieldValue<T>): Promise<string> {
     const colRef = collection(this.firestore, path);
-    const docRef = await addDoc(colRef, data as any);
+    const docRef = await addDoc(colRef, data as WithFieldValue<DocumentData>);
     return docRef.id;
   }
 
@@ -177,14 +181,14 @@ export class FirestoreGateway {
       set: (path, data, options) => {
         const docRef = doc(this.firestore, path);
         if (options) {
-          batch.set(docRef, data as any, options);
+          batch.set(docRef, data as WithFieldValue<DocumentData>, options);
         } else {
-          batch.set(docRef, data as any);
+          batch.set(docRef, data as WithFieldValue<DocumentData>);
         }
       },
       update: (path, data) => {
         const docRef = doc(this.firestore, path);
-        batch.update(docRef, data as any);
+        batch.update(docRef, data as UpdateData<DocumentData>);
       },
       delete: (path) => {
         const docRef = doc(this.firestore, path);

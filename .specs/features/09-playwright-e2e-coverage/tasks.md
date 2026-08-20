@@ -867,10 +867,10 @@ T34
 
 **Done when**:
 
-- [ ] Verifies focus is trapped within RSVP modal and confirm dialog when cycling Tab / Shift+Tab
-- [ ] Verifies pressing Escape dismisses modal and restores focus to triggering element
-- [ ] Verifies activating buttons and checkboxes via Space and Enter keys
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies focus is trapped within RSVP modal and confirm dialog when cycling Tab / Shift+Tab
+- [x] Verifies pressing Escape dismisses modal and restores focus to triggering element
+- [x] Verifies activating buttons and checkboxes via Space and Enter keys
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

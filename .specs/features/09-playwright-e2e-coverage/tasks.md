@@ -249,9 +249,9 @@ T34
 
 **Done when**:
 
-- [ ] `HomePage` extends `BasePage` and defines locators: `pageRoot`, `eventCards`, `emptyState`, `themeToggleBtn`, `seasonalOverlay`
-- [ ] Implements methods: `toggleTheme()`, `clickEventCard(index)`
-- [ ] Build gate passes: `npm run build`
+- [x] `HomePage` extends `BasePage` and defines locators: `pageRoot`, `eventCards`, `emptyState`, `themeToggleBtn`, `seasonalOverlay`
+- [x] Implements methods: `toggleTheme()`, `clickEventCard(index)`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

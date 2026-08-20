@@ -192,9 +192,9 @@ T5
 
 **Done when**:
 
-- [ ] Playwright config file and `e2e/smoke.spec.ts` created
-- [ ] E2E test verifies home page renders, navigates to login, and renders public event page
-- [ ] Build gate passes: `npm run build`
+- [x] Playwright config file and `e2e/smoke.spec.ts` created
+- [x] E2E test verifies home page renders, navigates to login, and renders public event page
+- [x] Build gate passes: `npm run build`
 
 **Tests**: e2e  
 **Gate**: full  

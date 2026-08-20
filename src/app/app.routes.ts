@@ -13,6 +13,12 @@ export const routes: Routes = [
       import('./features/event-detail/event-detail.container').then((m) => m.EventDetailContainer),
   },
   {
+    path: 'perfil',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profile/profile.container').then((m) => m.ProfileContainer),
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/admin/login/login.container').then((m) => m.LoginContainer),

@@ -85,9 +85,9 @@ T4
 
 **Done when**:
 
-- [ ] `UserProfile` interface exported with `uid`, `email`, `displayName`, `photoURL`, `phone`, `createdAt`, and `updatedAt`
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `UserProfile` interface exported with `uid`, `email`, `displayName`, `photoURL`, `phone`, `createdAt`, and `updatedAt`
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -110,11 +110,11 @@ T4
 
 **Done when**:
 
-- [ ] `updateProfile` updates `users/{uid}` with new displayName and phone
-- [ ] `getAttendedEvents` returns list of events where user confirmed attendance
-- [ ] Unit tests cover: profile update, attended events querying, error handling
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `updateProfile` updates `users/{uid}` with new displayName and phone
+- [x] `getAttendedEvents` returns list of events where user confirmed attendance
+- [x] Unit tests cover: profile update, attended events querying, error handling
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -139,13 +139,13 @@ T4
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `user` required input and `updateName` output
-- [ ] Accessible form with validation on empty name
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: user info display, edit toggle, name update emission
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `user` required input and `updateName` output
+- [x] Accessible form with validation on empty name
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Unit tests cover: user info display, edit toggle, name update emission
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -170,11 +170,11 @@ T4
 
 **Done when**:
 
-- [ ] `ProfileContainer` fetches user profile and attended events via Signals
-- [ ] `/perfil` route added to `app.routes.ts` with `canActivate: [authGuard]`
-- [ ] Unit tests cover: profile loading, route activation, update invocation
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `ProfileContainer` fetches user profile and attended events via Signals
+- [x] `/perfil` route added to `app.routes.ts` with `canActivate: [authGuard]`
+- [x] Unit tests cover: profile loading, route activation, update invocation
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

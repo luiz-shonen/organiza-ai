@@ -6,6 +6,7 @@ import { HomeContainer } from './features/home/home.container';
 import { EventDetailContainer } from './features/event-detail/event-detail.container';
 import { LoginContainer } from './features/admin/login/login.container';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
+import { ProfileContainer } from './features/profile/profile.container';
 
 describe('App Routes', () => {
   it('should define the root route with HomeContainer lazy loading', async () => {
@@ -22,6 +23,16 @@ describe('App Routes', () => {
     expect(route?.loadComponent).toBeDefined();
     const component = await (route?.loadComponent as () => Promise<unknown>)();
     expect(component).toBe(EventDetailContainer);
+  });
+
+  it('should define the /perfil route protected by authGuard and lazy-loading ProfileContainer', async () => {
+    const route = routes.find((r: Route) => r.path === 'perfil');
+    expect(route).toBeDefined();
+    expect(route?.canActivate).toBeDefined();
+    expect(route?.canActivate).toContain(authGuard);
+    expect(route?.loadComponent).toBeDefined();
+    const component = await (route?.loadComponent as () => Promise<unknown>)();
+    expect(component).toBe(ProfileContainer);
   });
 
   it('should define the login route and lazy-load LoginContainer', async () => {

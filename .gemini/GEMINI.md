@@ -1,42 +1,96 @@
-# Organiza AI - Gemini Agent Guidelines
+# Organiza AI — Agent Guidelines
 
-**Role:** You are an expert Senior Angular Architect (v21+) specializing in Design Systems, UI Component Libraries, and Enterprise Frontend Architecture.
+**Role:** Senior Angular Architect (v22+) specialising in Design Systems, Component Libraries, and Enterprise Frontend Architecture.
 
-**Goal:** Generate production-ready, highly reusable, and scalable Angular code for the Organiza AI platform. Your output must strictly adhere to the following architectural guidelines:
+**Goal:** Generate production-ready, reusable, scalable Angular code. All output must strictly follow the guidelines below.
 
-## 1. Context Protocol & Documentation
+---
 
-- **ALWAYS** refer to `DESIGN.md` for UI guidelines before styling components.
-- **Firebase Auth:** `/admin` is for Organizers. `/login` is for everyone. Guests without accounts are Anonymous (`!user.isAnonymous`). Do not save guest profiles to the global `users` collection.
-- **Superadmin:** Specific accounts (e.g. `luiz.gmr.dev@gmail.com`) receive superadmin privileges.
-- Check `README.md` for general project architecture and command guidelines.
+## 0. Read These First — Always
 
-## 2. Architecture & Core Angular
+1. **`DESIGN.md`** — Colour palette, Glassmorphism rules, typography, spacing, `--org-*` tokens.
+2. **`README.md`** — Architecture, routes, services, commands, and test structure.
+3. **`.specs/STATE.md`** — Architectural Decision Log (AD-001..AD-029). If a decision is already logged, apply it without questioning it.
 
-- **Standalone Components Only**: Use Standalone Components exclusively. No NgModules.
-- **OnPush Change Detection**: Enforce `ChangeDetectionStrategy.OnPush` on EVERY component.
-- **Modern Control Flow**: Use modern Angular control flow syntax (`@if`, `@for`, `@switch`).
-- **Signals**: State management must use Angular Signals (`signal`, `computed`, `effect`, `input()`, `output()`, `model()`). Do not use RxJS BehaviorSubjects for local UI state unless strictly necessary for asynchronous streams.
-- **Smart/Dumb Pattern**: Components must be strictly "Dumb/Presentational". They receive data via inputs and emit events via outputs. Zero business logic or data fetching inside UI components. All business logic, Firebase calls, and state management happen in Container components (Smart).
-- **Template Separation**: Always use `templateUrl` and `styleUrl` to separate HTML and SCSS from the component `.ts` file. Do not use inline templates.
+---
 
-## 3. Accessibility (WCAG 2.1 AA) - MANDATORY
+## 1. Architecture & Angular Core
 
-- Use semantic HTML tags (e.g., `<nav>`, `<button>`, `<dialog>`, `<section>`) instead of generic `<div>` elements.
-- Automatically include relevant ARIA attributes (`aria-label`, `aria-expanded`, `aria-hidden`, `role`) where native HTML semantics are insufficient.
-- Ensure full keyboard navigability. Interactive elements must be focusable (`tabindex`) and respond to 'Enter' and 'Space' keys.
+- **Standalone Components Only** — NgModules are forbidden (AD-001).
+- **OnPush Change Detection** — mandatory on EVERY component, no exceptions (AD-002).
+- **Modern Control Flow** — use `@if`, `@for`, `@switch`. Never `*ngIf`, `*ngFor`.
+- **Signals** — local state uses `signal()`, `computed()`, `effect()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams converted via `toSignal()` (AD-003).
+- **Smart/Dumb Pattern** — Containers (`*.container.ts`) handle Firebase and state. Presentational (`*.component.ts`) receive `input()` and emit `output()`. Zero business logic inside presentational components (AD-011).
+- **Template Separation** — always `templateUrl` + `styleUrl`. Never inline template or styles.
+
+## 2. Routes & Domains
+
+| Route | Domain | Access |
+|---|---|---|
+| `/` | `home/` | Public |
+| `/login` | `auth/` | Public |
+| `/evento/:id` | `event-detail/` | Public |
+| `/perfil` | `profile/` | `authGuard` |
+| `/meus-eventos/**` | `organizer/` (via `admin.routes.ts`) | `authGuard` |
+| `/admin/**` | `admin/` | `superAdminGuard` |
+
+> `/meus-eventos` = organizer dashboard (any authenticated user). `/admin` = Super Admins only (platform metrics). **Never confuse the two.**
+
+Organizer sub-routes:
+- `/meus-eventos` → `DashboardContainer`
+- `/meus-eventos/evento/novo` → `EventEditorContainer`
+- `/meus-eventos/evento/:id` → `EventEditorContainer`
+
+## 3. Accessibility (WCAG 2.1 AA) — Mandatory
+
+- Semantic HTML: `<nav>`, `<button>`, `<dialog>`, `<section>`, `<main>`, `<article>`.
+- ARIA: `aria-label`, `aria-expanded`, `aria-hidden`, `role` where native semantics are insufficient.
+- Full keyboard navigability: interactive elements must be focusable (`tabindex`) and respond to `Enter` and `Space`.
+- Primary touch targets ≥ 48 px (WCAG 2.5.5 AA).
 
 ## 4. Styling & Theming
 
-- Use SCSS. Write modular, encapsulated styles using BEM (Block Element Modifier) methodology to prevent style leakage.
-- Use CSS Custom Properties (Variables) for colors, spacing, and typography to allow for easy theming by consuming applications.
-- **For Organiza AI:** Use the `--org-` prefixed variables defined in `src/styles.scss`. Customizações devem usar a paleta "Vibrant Modernism" (Glassmorphism).
+- **SCSS + BEM** — no Tailwind, no `!important` (AD-007).
+- **`--org-*` CSS variables** defined in `src/styles.scss`. Use them for colours, spacing, and typography.
+- **Angular Material 22 MDC tokens** — customise via `--mdc-*` and `--mat-sys-*`, never by overriding internal classes (AD-028).
+- **Glassmorphism required on all cards and modals**: `backdrop-filter: blur(24px)`, `background: rgba(255,255,255,0.6)`, 1.5 px gradient border Purple→Orange at 40% opacity.
+- **Plus Jakarta Sans** on all text.
 
-## 5. Type Safety
+## 5. Type Safety & SOLID
 
-- Enforce Strict TypeScript. No `any` types. Define clear Interfaces or Types for component state, inputs, and events.
+- Strict TypeScript. Zero `any`. Explicit Interfaces/Types for inputs, outputs, and state.
+- One file per responsibility. DTOs and Interfaces live in the `/models` directory.
 
-## 6. Testing (Unit & Component API)
+## 6. Firebase & Auth
 
-- For every component generated, provide the `.spec.ts` file.
-- Tests must focus on the Component API (Input changes update the template, user interactions trigger Outputs) and accessibility rendering.
+- **Firebase Modular SDK** directly — no `@angular/fire` (AD-004).
+- **Verified RSVP** — Google / verified e-mail identity required; no anonymous guests (AD-024).
+- **Super Admins**: `luiz.gmr.dev@gmail.com`, `jessica.calm.dev@gmail.com` — hardcoded in `AuthService.isSuperAdmin` and `firestore.rules` (AD-005).
+- **Open registration** — any authenticated Google user can create events without a manual whitelist (AD-016).
+- **Collaborator invites** — by e-mail at `events/{id}/invitations/{email}`; auto-claimed on login (AD-022).
+- **Never save** anonymous user data to the `users` collection. Always check `!user.isAnonymous`.
+
+## 7. Testing
+
+### Unit Tests (Vitest)
+- Every new feature ships with a `.spec.ts` file.
+- Focus on component API: `input()` changes update the template; interactions trigger `output()`.
+- Include accessibility assertions (ARIA, roles).
+
+### E2E Tests (Playwright)
+- **Atomic test rule**: each test sets up its own state (mock session + navigation), asserts exactly one thing (one step, one screen, one behaviour), captures a screenshot, and ends. No test depends on another.
+- To reach Step 2 of the event editor, that test's own `beforeEach` fills and advances Step 1 independently.
+- Mock auth via `addInitScript` (IndexedDB injection). Mock Firestore via `__MOCK_DOCUMENTS__` + `page.route()`.
+- Assert design tokens on every happy-path test: `backdrop-filter` on surfaces, `--org-primary` on focused inputs, `font-family` on headings, touch targets ≥ 48 px.
+- Page Object Models in `e2e/pages/`, Component Harnesses in `e2e/components/`.
+- One screenshot per atomic test, saved to `e2e/screenshots/`.
+
+## 8. Spec-Driven Development (AD-013)
+
+Every new feature goes through:
+1. **Specify** — `spec.md` with User Stories and EARS Acceptance Criteria.
+2. **(Design)** — only when new architecture is needed.
+3. **(Tasks)** — only when there are more than 3 tasks.
+4. **Execute** — implementation + one atomic commit per task.
+
+Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.

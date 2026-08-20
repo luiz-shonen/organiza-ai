@@ -170,11 +170,11 @@ T4
 
 **Done when**:
 
-- [ ] `ProfileContainer` fetches user profile and attended events via Signals
-- [ ] `/perfil` route added to `app.routes.ts` with `canActivate: [authGuard]`
-- [ ] Unit tests cover: profile loading, route activation, update invocation
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `ProfileContainer` fetches user profile and attended events via Signals
+- [x] `/perfil` route added to `app.routes.ts` with `canActivate: [authGuard]`
+- [x] Unit tests cover: profile loading, route activation, update invocation
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

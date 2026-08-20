@@ -241,8 +241,8 @@ T23
 
 **Done when**:
 
-- [ ] `initializeFirestore` utilizes official `FirestoreSettings` type without `as any`
-- [ ] Build gate passes: `npm run build`
+- [x] `initializeFirestore` utilizes official `FirestoreSettings` type without `as any`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

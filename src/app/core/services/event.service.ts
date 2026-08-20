@@ -6,17 +6,20 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
   Timestamp,
 } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
+import { EventNotificationService } from './event-notification.service';
 import { PartyEvent, PartyEventCreate, PartyEventUpdate } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
   private readonly firestore = inject(FirebaseService).firestore;
+  private readonly notificationService = inject(EventNotificationService);
   private readonly collectionName = 'events';
 
   listEvents(): Observable<PartyEvent[]> {
@@ -69,18 +72,87 @@ export class EventService {
 
   async updateEvent(eventId: string, data: PartyEventUpdate): Promise<void> {
     const docRef = doc(this.firestore, this.collectionName, eventId);
+    let previousEvent: PartyEvent | null = null;
+
+    try {
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        previousEvent = this.mapDoc(docSnap);
+      }
+    } catch {
+      // Gracefully continue with update if snapshot fetch fails
+    }
+
     await updateDoc(docRef, {
       ...data,
       updatedAt: new Date().toISOString(),
     });
+
+    if (previousEvent) {
+      const dateChanged = !!data.date && data.date !== previousEvent.date;
+      const locationChanged = !!data.location && data.location !== previousEvent.location;
+      const addressChanged =
+        !!data.addressDetails &&
+        JSON.stringify(data.addressDetails) !== JSON.stringify(previousEvent.addressDetails);
+
+      if (dateChanged || locationChanged || addressChanged) {
+        const changes: string[] = [];
+        if (dateChanged) changes.push(`Data: ${data.date}`);
+        if (locationChanged) changes.push(`Local: ${data.location}`);
+        const changeSummary = changes.join(', ') || 'Informações atualizadas';
+
+        try {
+          await this.notificationService.notifyGuestsOfEventChange(
+            {
+              ...previousEvent,
+              ...data,
+            },
+            changeSummary
+          );
+        } catch (error) {
+          console.warn('Error sending event change notification', error);
+        }
+      }
+    }
+  }
+
+  async saveEvent(eventId: string, data: PartyEventUpdate): Promise<void> {
+    return this.updateEvent(eventId, data);
   }
 
   async cancelEvent(eventId: string): Promise<void> {
     const docRef = doc(this.firestore, this.collectionName, eventId);
+    let eventToCancel: PartyEvent | null = null;
+
+    try {
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        eventToCancel = this.mapDoc(docSnap);
+      }
+    } catch {
+      // Gracefully continue
+    }
+
     await updateDoc(docRef, {
       status: 'cancelled',
       updatedAt: new Date().toISOString(),
     });
+
+    if (eventToCancel) {
+      try {
+        await this.notificationService.notifyGuestsOfCancellation({
+          ...eventToCancel,
+          status: 'cancelled',
+        });
+      } catch (error) {
+        console.warn('Error sending cancellation notification', error);
+      }
+    }
+  }
+
+  async deleteEvent(eventId: string): Promise<void> {
+    const docRef = doc(this.firestore, this.collectionName, eventId);
+    await deleteDoc(docRef);
   }
 
   private mapDoc(

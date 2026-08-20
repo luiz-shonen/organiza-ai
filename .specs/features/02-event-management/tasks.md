@@ -173,11 +173,11 @@ T4 → T5
 
 **Done when**:
 
-- [ ] `saveEvent` detects changes to date, time, or address and invokes `notifyGuestsOfEventChange`
-- [ ] `cancelEvent` invokes `notifyGuestsOfCancellation`
-- [ ] Unit tests cover: change detection trigger, cancellation notification trigger, error handling
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `saveEvent` detects changes to date, time, or address and invokes `notifyGuestsOfEventChange`
+- [x] `cancelEvent` invokes `notifyGuestsOfCancellation`
+- [x] Unit tests cover: change detection trigger, cancellation notification trigger, error handling
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

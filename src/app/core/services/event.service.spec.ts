@@ -6,6 +6,7 @@ import { EventNotificationService } from './event-notification.service';
 import { PartyEvent } from '../models';
 
 const mockBatch = {
+  set: vi.fn(),
   update: vi.fn(),
   delete: vi.fn(),
   commit: vi.fn().mockResolvedValue(undefined),

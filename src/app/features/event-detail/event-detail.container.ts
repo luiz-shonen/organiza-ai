@@ -18,11 +18,16 @@ import {
   GuestService,
   AuthService,
   UserService,
+  FamilyService,
   ConfettiService,
   SeasonalThemeService,
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  GuestFormDialogComponent,
+  GuestFormDialogResult,
+} from './components/guest-form-dialog/guest-form-dialog.component';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
@@ -53,6 +58,7 @@ export class EventDetailContainer implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly familyService = inject(FamilyService);
   private readonly confetti = inject(ConfettiService);
   private readonly seasonalThemeService = inject(SeasonalThemeService);
   private readonly dialog = inject(MatDialog);
@@ -146,6 +152,55 @@ export class EventDetailContainer implements OnInit {
         const email = user.email ?? '';
         const photoUrl = user.photoURL ?? '';
         const phone = user.phoneNumber ?? '';
+
+        const familyMembers = await this.familyService.getFamilyMembers(user.uid);
+
+        if (familyMembers.length > 0) {
+          const dialogRef = this.dialog.open(GuestFormDialogComponent, {
+            width: '500px',
+            data: {
+              session: { name, phone },
+              familyMembers,
+              userId: user.uid,
+            },
+          });
+
+          dialogRef.afterClosed().subscribe(async (result: GuestFormDialogResult | undefined) => {
+            if (result) {
+              this.rsvpLoading.set(true);
+              try {
+                await this.guestService.batchConfirmRsvp(
+                  this.id(),
+                  {
+                    uid: user.uid,
+                    name: result.name || name,
+                    email,
+                    phone: result.phone || phone,
+                    photoUrl,
+                    companionsCount: result.companionsCount,
+                  },
+                  result.selectedFamilyMembers ?? [],
+                );
+
+                this.guestSession.saveSession({ name: result.name || name, phone: result.phone || phone });
+                this.userService
+                  .upsertProfile(user.uid, { name: result.name || name, phone: result.phone || phone })
+                  .catch(console.error);
+
+                this.confetti.fireSuccessConfetti();
+                this.snackBar.open('Presença confirmada!', '🎉', { duration: 3000 });
+              } catch (err) {
+                console.error(err);
+                this.snackBar.open('Erro ao confirmar presença.', 'OK', { duration: 4000 });
+              } finally {
+                this.rsvpLoading.set(false);
+              }
+            } else {
+              this.rsvpLoading.set(false);
+            }
+          });
+          return;
+        }
 
         await this.guestService.saveVerifiedRsvp(this.id(), {
           uid: user.uid,

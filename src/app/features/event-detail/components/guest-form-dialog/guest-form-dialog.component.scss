@@ -1,15 +1,38 @@
 .guest-dialog {
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--org-text-primary, #1e293b);
+  }
+
   &__icon {
-    vertical-align: middle;
-    margin-right: 8px;
-    color: var(--mat-sys-primary);
+    color: var(--org-primary, #6366f1);
+  }
+
+  &__content {
+    padding: 8px 24px;
+    max-height: 75vh;
+    overflow-y: auto;
   }
 
   &__form {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-width: 280px;
-    padding-top: 8px;
+    gap: 8px;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__family-section {
+    margin-top: 4px;
+  }
+
+  &__actions {
+    padding: 16px 24px;
   }
 }

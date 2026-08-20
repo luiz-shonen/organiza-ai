@@ -1,10 +1,11 @@
-<h2 mat-dialog-title>
-  <mat-icon class="guest-dialog__icon">person_add</mat-icon>
+<h2 mat-dialog-title class="guest-dialog__title">
+  <mat-icon class="guest-dialog__icon" aria-hidden="true">person_add</mat-icon>
   Confirme seus dados
 </h2>
-<mat-dialog-content>
+
+<mat-dialog-content class="guest-dialog__content">
   <form [formGroup]="form" class="guest-dialog__form" id="guest-form">
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="guest-dialog__field">
       <mat-label>Seu nome</mat-label>
       <input
         matInput
@@ -18,7 +19,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="guest-dialog__field">
       <mat-label>WhatsApp / Telefone</mat-label>
       <input
         matInput
@@ -36,17 +37,30 @@
       }
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Acompanhantes</mat-label>
+    <mat-form-field appearance="outline" class="guest-dialog__field">
+      <mat-label>Outros Acompanhantes</mat-label>
       <input matInput formControlName="companionsCount" type="number" min="0" placeholder="0" />
-      <mat-hint>Quantas pessoas além de você</mat-hint>
+      <mat-hint>Amigos ou acompanhantes fora da família</mat-hint>
     </mat-form-field>
+
+    <div class="guest-dialog__family-section">
+      <app-family-selector
+        [members]="familyMembers()"
+        [selectedIds]="selectedFamilyMemberIds()"
+        [isAddingInline]="isAddingInline()"
+        (toggleMember)="onToggleFamilyMember($event)"
+        (selectAll)="onSelectAllFamily($event)"
+        (addInlineMember)="onAddInlineFamilyMember($event)"
+      />
+    </div>
   </form>
 </mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close aria-label="Cancelar">Cancelar</button>
+
+<mat-dialog-actions align="end" class="guest-dialog__actions">
+  <button mat-button mat-dialog-close aria-label="Cancelar confirmação">Cancelar</button>
   <button
     mat-flat-button
+    color="primary"
     [disabled]="form.invalid"
     (click)="submit()"
     aria-label="Confirmar presença"

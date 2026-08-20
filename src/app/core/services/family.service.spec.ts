@@ -11,23 +11,35 @@ const mocks = vi.hoisted(() => ({
   mockGetDocs: vi.fn(),
   mockOrderBy: vi.fn(),
   mockQuery: vi.fn(),
-}));
-
-vi.mock('firebase/firestore', () => ({
-  collection: mocks.mockCollection,
-  doc: mocks.mockDoc,
-  addDoc: mocks.mockAddDoc,
-  deleteDoc: mocks.mockDeleteDoc,
-  getDocs: mocks.mockGetDocs,
-  orderBy: mocks.mockOrderBy,
-  query: mocks.mockQuery,
-  serverTimestamp: vi.fn(),
-  Timestamp: class Timestamp {
+  MockTimestamp: class Timestamp {
     constructor(public seconds: number, public nanoseconds: number) {}
     toDate() {
       return new Date(this.seconds * 1000);
     }
   },
+}));
+
+vi.mock('firebase/firestore', () => ({
+  initializeFirestore: vi.fn(),
+  collection: mocks.mockCollection,
+  collectionGroup: vi.fn(),
+  doc: mocks.mockDoc,
+  addDoc: mocks.mockAddDoc,
+  setDoc: vi.fn(),
+  updateDoc: vi.fn(),
+  deleteDoc: mocks.mockDeleteDoc,
+  getDoc: vi.fn(),
+  getDocs: mocks.mockGetDocs,
+  onSnapshot: vi.fn(),
+  orderBy: mocks.mockOrderBy,
+  query: mocks.mockQuery,
+  where: vi.fn(),
+  limit: vi.fn(),
+  writeBatch: vi.fn(),
+  arrayUnion: vi.fn(),
+  arrayRemove: vi.fn(),
+  serverTimestamp: vi.fn(),
+  Timestamp: mocks.MockTimestamp,
 }));
 
 describe('FamilyService', () => {
@@ -96,7 +108,7 @@ describe('FamilyService', () => {
 
       const result = await service.getFamilyMembers('user-123');
 
-      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123', 'family');
+      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users/user-123/family');
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
         id: 'fam-1',
@@ -150,7 +162,7 @@ describe('FamilyService', () => {
         phone: '11999991111',
       });
 
-      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123', 'family');
+      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users/user-123/family');
       expect(mocks.mockAddDoc).toHaveBeenCalledWith(
         'family-col-ref',
         expect.objectContaining({
@@ -178,7 +190,7 @@ describe('FamilyService', () => {
 
       await service.deleteFamilyMember('user-123', 'fam-1');
 
-      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123', 'family', 'fam-1');
+      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/user-123/family/fam-1');
       expect(mocks.mockDeleteDoc).toHaveBeenCalledWith('family-doc-ref');
     });
   });

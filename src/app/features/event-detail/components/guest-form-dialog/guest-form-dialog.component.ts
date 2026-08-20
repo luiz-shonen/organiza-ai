@@ -1,20 +1,40 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { GuestSession } from '../../../../core/models';
+import {
+  GuestSession,
+  FamilyMember,
+} from '../../../../core/models';
+import { FamilyService } from '../../../../core/services/family.service';
+import {
+  FamilySelectorComponent,
+  type InlineFamilyMemberPayload,
+} from '../family-selector/family-selector.component';
 
 export interface GuestFormDialogData {
   session: GuestSession | null;
+  familyMembers?: FamilyMember[];
+  userId?: string;
 }
 
 export interface GuestFormDialogResult {
   name: string;
   phone: string;
   companionsCount: number;
+  selectedFamilyMembers?: FamilyMember[];
 }
 
 @Component({
@@ -27,14 +47,20 @@ export interface GuestFormDialogResult {
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    FamilySelectorComponent,
   ],
   templateUrl: './guest-form-dialog.component.html',
   styleUrl: './guest-form-dialog.component.scss',
 })
 export class GuestFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<GuestFormDialogComponent>);
-  private readonly data: GuestFormDialogData = inject(MAT_DIALOG_DATA);
+  private readonly data: GuestFormDialogData = inject(MAT_DIALOG_DATA, { optional: true }) ?? { session: null };
   private readonly fb = inject(FormBuilder);
+  private readonly familyService = inject(FamilyService);
+
+  readonly familyMembers = signal<FamilyMember[]>(this.data.familyMembers ?? []);
+  readonly selectedFamilyMemberIds = signal<string[]>([]);
+  readonly isAddingInline = signal<boolean>(false);
 
   protected readonly form = this.fb.nonNullable.group({
     name: [this.data.session?.name ?? '', [Validators.required]],
@@ -42,9 +68,58 @@ export class GuestFormDialogComponent {
     companionsCount: [0, [Validators.min(0)]],
   });
 
+  protected onToggleFamilyMember(memberId: string): void {
+    this.selectedFamilyMemberIds.update((current) => {
+      if (current.includes(memberId)) {
+        return current.filter((id) => id !== memberId);
+      }
+      return [...current, memberId];
+    });
+  }
+
+  protected onSelectAllFamily(selectAll: boolean): void {
+    if (selectAll) {
+      this.selectedFamilyMemberIds.set(this.familyMembers().map((m) => m.id));
+    } else {
+      this.selectedFamilyMemberIds.set([]);
+    }
+  }
+
+  protected async onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): Promise<void> {
+    const userId = this.data.userId;
+    try {
+      this.isAddingInline.set(true);
+      let newMember: FamilyMember;
+      if (userId) {
+        newMember = await this.familyService.addFamilyMember(userId, payload);
+      } else {
+        newMember = {
+          id: `temp_${Date.now()}`,
+          name: payload.name,
+          relationship: payload.relationship,
+          phone: payload.phone,
+          createdAt: new Date().toISOString(),
+        };
+      }
+      this.familyMembers.update((list) => [...list, newMember]);
+      this.selectedFamilyMemberIds.update((ids) => [...ids, newMember.id]);
+    } catch (err) {
+      console.error('Error adding inline family member:', err);
+    } finally {
+      this.isAddingInline.set(false);
+    }
+  }
+
   protected submit(): void {
     if (this.form.valid) {
-      this.dialogRef.close(this.form.getRawValue());
+      const raw = this.form.getRawValue();
+      const selected = this.familyMembers().filter((m) =>
+        this.selectedFamilyMemberIds().includes(m.id),
+      );
+      this.dialogRef.close({
+        ...raw,
+        selectedFamilyMembers: selected,
+      });
     }
   }
 }

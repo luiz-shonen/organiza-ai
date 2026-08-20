@@ -203,12 +203,12 @@ T5
 
 **Done when**:
 
-- [ ] Loads user's family roster when authenticated
-- [ ] Displays collapsible family selector panel
-- [ ] Emits combined confirmation payload with primary guest and selected family members
-- [ ] Unit tests cover: dialog initialization with family members, batch submission payload
+- [x] Loads user's family roster when authenticated
+- [x] Displays collapsible family selector panel
+- [x] Emits combined confirmation payload with primary guest and selected family members
+- [x] Unit tests cover: dialog initialization with family members, batch submission payload
 - [x] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

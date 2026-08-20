@@ -12,10 +12,11 @@ import {
   GuestSessionService,
   AuthService,
   UserService,
+  FamilyService,
   ConfettiService,
   SeasonalThemeService,
 } from '../../core/services';
-import { PartyEvent, PartyItem, Guest } from '../../core/models';
+import { PartyEvent, PartyItem, Guest, FamilyMember } from '../../core/models';
 
 describe('EventDetailContainer', () => {
   let component: EventDetailContainer;
@@ -33,8 +34,12 @@ describe('EventDetailContainer', () => {
   let mockGuestService: {
     listGuests: ReturnType<typeof vi.fn>;
     saveVerifiedRsvp: ReturnType<typeof vi.fn>;
+    batchConfirmRsvp: ReturnType<typeof vi.fn>;
     cancelRsvp: ReturnType<typeof vi.fn>;
     getGuestByPhone: ReturnType<typeof vi.fn>;
+  };
+  let mockFamilyService: {
+    getFamilyMembers: ReturnType<typeof vi.fn>;
   };
   let currentUserSignal: ReturnType<typeof signal<any>>;
   let mockAuthService: {
@@ -113,8 +118,12 @@ describe('EventDetailContainer', () => {
     mockGuestService = {
       listGuests: vi.fn().mockReturnValue(of(mockGuests)),
       saveVerifiedRsvp: vi.fn().mockResolvedValue(undefined),
+      batchConfirmRsvp: vi.fn().mockResolvedValue(undefined),
       cancelRsvp: vi.fn().mockResolvedValue(undefined),
       getGuestByPhone: vi.fn().mockResolvedValue(null),
+    };
+    mockFamilyService = {
+      getFamilyMembers: vi.fn().mockResolvedValue([]),
     };
     mockAuthService = {
       currentUser: currentUserSignal,
@@ -159,6 +168,7 @@ describe('EventDetailContainer', () => {
         { provide: EventService, useValue: mockEventService },
         { provide: ItemService, useValue: mockItemService },
         { provide: GuestService, useValue: mockGuestService },
+        { provide: FamilyService, useValue: mockFamilyService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: GuestSessionService, useValue: mockGuestSessionService },
         { provide: UserService, useValue: mockUserService },
@@ -229,6 +239,45 @@ describe('EventDetailContainer', () => {
           name: 'Mariana',
           email: 'mariana@gmail.com',
         }),
+      );
+      expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
+    });
+
+    it('opens GuestFormDialogComponent and performs batchConfirmRsvp when family members are present', async () => {
+      const mockFamily: FamilyMember[] = [
+        { id: 'f-1', name: 'Carla', relationship: 'spouse', createdAt: '' },
+      ];
+      mockFamilyService.getFamilyMembers.mockResolvedValue(mockFamily);
+
+      mockDialog.open.mockReturnValue({
+        afterClosed: () =>
+          of({
+            name: 'Lucas Dev',
+            phone: '11999998888',
+            companionsCount: 0,
+            selectedFamilyMembers: mockFamily,
+          }),
+      });
+
+      currentUserSignal.set({
+        uid: 'usr-1',
+        displayName: 'Lucas Dev',
+        email: 'lucas@gmail.com',
+        photoURL: '',
+        isAnonymous: false,
+      });
+      fixture.detectChanges();
+
+      await (component as any).onConfirmRsvp();
+
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
+        'evt-123',
+        expect.objectContaining({
+          uid: 'usr-1',
+          name: 'Lucas Dev',
+        }),
+        mockFamily,
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
     });

@@ -9,19 +9,19 @@ const mocks = vi.hoisted(() => ({
   mockAddDoc: vi.fn(),
   mockDeleteDoc: vi.fn(),
   mockGetDocs: vi.fn(),
-  mockQuery: vi.fn(),
   mockOrderBy: vi.fn(),
+  mockQuery: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
   collection: mocks.mockCollection,
   doc: mocks.mockDoc,
   addDoc: mocks.mockAddDoc,
   deleteDoc: mocks.mockDeleteDoc,
   getDocs: mocks.mockGetDocs,
-  query: mocks.mockQuery,
   orderBy: mocks.mockOrderBy,
+  query: mocks.mockQuery,
+  serverTimestamp: vi.fn(),
   Timestamp: class Timestamp {
     constructor(public seconds: number, public nanoseconds: number) {}
     toDate() {
@@ -36,6 +36,14 @@ describe('FamilyService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    mocks.mockCollection.mockReturnValue('family-col-ref' as any);
+    mocks.mockDoc.mockReturnValue('family-doc-ref' as any);
+    mocks.mockOrderBy.mockReturnValue('order-ref' as any);
+    mocks.mockQuery.mockReturnValue('family-query-ref' as any);
+    mocks.mockGetDocs.mockResolvedValue({ docs: [] });
+    mocks.mockAddDoc.mockResolvedValue({ id: 'new-fam-id' });
+    mocks.mockDeleteDoc.mockResolvedValue(undefined);
 
     TestBed.configureTestingModule({
       providers: [
@@ -84,14 +92,11 @@ describe('FamilyService', () => {
         },
       ];
 
-      mocks.mockCollection.mockReturnValue('family-col-ref' as any);
-      mocks.mockOrderBy.mockReturnValue('order-ref' as any);
-      mocks.mockQuery.mockReturnValue('family-query-ref' as any);
       mocks.mockGetDocs.mockResolvedValue({ docs: mockDocs });
 
       const result = await service.getFamilyMembers('user-123');
 
-      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users/user-123/family');
+      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123', 'family');
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
         id: 'fam-1',
@@ -115,8 +120,6 @@ describe('FamilyService', () => {
         }),
       };
 
-      mocks.mockCollection.mockReturnValue('family-col-ref' as any);
-      mocks.mockQuery.mockReturnValue('family-query-ref' as any);
       mocks.mockGetDocs.mockResolvedValue({ docs: [mockDoc] });
 
       const result = await service.getFamilyMembers('user-123');
@@ -125,8 +128,6 @@ describe('FamilyService', () => {
     });
 
     it('returns empty array when getDocs throws error', async () => {
-      mocks.mockCollection.mockReturnValue('family-col-ref' as any);
-      mocks.mockQuery.mockReturnValue('family-query-ref' as any);
       mocks.mockGetDocs.mockRejectedValue(new Error('Firestore error'));
       const result = await service.getFamilyMembers('user-123');
       expect(result).toEqual([]);
@@ -141,7 +142,6 @@ describe('FamilyService', () => {
     });
 
     it('saves family member to Firestore subcollection and returns member', async () => {
-      mocks.mockCollection.mockReturnValue('family-col-ref' as any);
       mocks.mockAddDoc.mockResolvedValue({ id: 'new-fam-id' });
 
       const newMember = await service.addFamilyMember('user-123', {
@@ -150,7 +150,7 @@ describe('FamilyService', () => {
         phone: '11999991111',
       });
 
-      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users/user-123/family');
+      expect(mocks.mockCollection).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123', 'family');
       expect(mocks.mockAddDoc).toHaveBeenCalledWith(
         'family-col-ref',
         expect.objectContaining({
@@ -174,13 +174,12 @@ describe('FamilyService', () => {
     });
 
     it('deletes document at users/{uid}/family/{memberId}', async () => {
-      mocks.mockDoc.mockReturnValue('doc-to-delete' as any);
       mocks.mockDeleteDoc.mockResolvedValue(undefined);
 
       await service.deleteFamilyMember('user-123', 'fam-1');
 
-      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/user-123/family/fam-1');
-      expect(mocks.mockDeleteDoc).toHaveBeenCalledWith('doc-to-delete');
+      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123', 'family', 'fam-1');
+      expect(mocks.mockDeleteDoc).toHaveBeenCalledWith('family-doc-ref');
     });
   });
 });

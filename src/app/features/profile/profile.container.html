@@ -2,7 +2,7 @@
   <header class="profile-container__header">
     <h1 class="profile-container__title">Meu Perfil</h1>
     <p class="profile-container__subtitle">
-      Gerencie suas informações e veja os eventos que você confirmou presença.
+      Gerencie suas informações, seus familiares e veja os eventos que você confirmou presença.
     </p>
   </header>
 
@@ -18,6 +18,15 @@
           <app-profile-info-card
             [user]="profile"
             (updateName)="onUpdateName($event)"
+          />
+        </section>
+
+        <section class="profile-container__section" aria-labelledby="family-roster-heading">
+          <app-family-roster-manager
+            [members]="familyMembers()"
+            [isAdding]="addingFamilyMember()"
+            (addMember)="onAddFamilyMember($event)"
+            (removeMember)="onRemoveFamilyMember($event)"
           />
         </section>
 

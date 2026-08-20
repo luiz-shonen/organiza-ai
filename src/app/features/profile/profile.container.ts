@@ -12,9 +12,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService, UserService } from '../../core/services';
-import type { UserProfile, PartyEvent } from '../../core/models';
+import { AuthService, UserService, FamilyService } from '../../core/services';
+import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
+import {
+  FamilyRosterManagerComponent,
+  type AddFamilyMemberPayload,
+} from './components/family-roster-manager/family-roster-manager.component';
 
 @Component({
   selector: 'app-profile-container',
@@ -28,6 +32,7 @@ import { ProfileInfoCardComponent } from './components/profile-info-card/profile
     MatIconModule,
     MatCardModule,
     ProfileInfoCardComponent,
+    FamilyRosterManagerComponent,
   ],
   templateUrl: './profile.container.html',
   styleUrl: './profile.container.scss',
@@ -35,13 +40,16 @@ import { ProfileInfoCardComponent } from './components/profile-info-card/profile
 export class ProfileContainer implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly familyService = inject(FamilyService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
 
   readonly loading = signal<boolean>(true);
   readonly userProfile = signal<UserProfile | null>(null);
   readonly attendedEvents = signal<PartyEvent[]>([]);
+  readonly familyMembers = signal<FamilyMember[]>([]);
   readonly updating = signal<boolean>(false);
+  readonly addingFamilyMember = signal<boolean>(false);
 
   private isLoaded = false;
 
@@ -61,9 +69,10 @@ export class ProfileContainer implements OnInit {
 
     try {
       this.loading.set(true);
-      const [profile, events] = await Promise.all([
+      const [profile, events, family] = await Promise.all([
         this.userService.getProfile(user.uid),
         this.userService.getAttendedEvents(user.uid),
+        this.familyService.getFamilyMembers(user.uid),
       ]);
 
       if (profile) {
@@ -81,6 +90,7 @@ export class ProfileContainer implements OnInit {
       }
 
       this.attendedEvents.set(events ?? []);
+      this.familyMembers.set(family ?? []);
     } catch (err) {
       console.error('Error loading profile container data:', err);
     } finally {
@@ -107,6 +117,39 @@ export class ProfileContainer implements OnInit {
       });
     } finally {
       this.updating.set(false);
+    }
+  }
+
+  async onAddFamilyMember(data: AddFamilyMemberPayload): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    try {
+      this.addingFamilyMember.set(true);
+      const newMember = await this.familyService.addFamilyMember(user.uid, data);
+      this.familyMembers.update((list) => [...list, newMember]);
+      this.snackBar.open('Familiar adicionado com sucesso!', 'Fechar', { duration: 3000 });
+    } catch {
+      this.snackBar.open('Não foi possível adicionar o familiar. Tente novamente.', 'Fechar', {
+        duration: 3000,
+      });
+    } finally {
+      this.addingFamilyMember.set(false);
+    }
+  }
+
+  async onRemoveFamilyMember(memberId: string): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    try {
+      await this.familyService.deleteFamilyMember(user.uid, memberId);
+      this.familyMembers.update((list) => list.filter((m) => m.id !== memberId));
+      this.snackBar.open('Familiar removido com sucesso!', 'Fechar', { duration: 3000 });
+    } catch {
+      this.snackBar.open('Não foi possível remover o familiar. Tente novamente.', 'Fechar', {
+        duration: 3000,
+      });
     }
   }
 }

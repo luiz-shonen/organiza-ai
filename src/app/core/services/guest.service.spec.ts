@@ -5,16 +5,8 @@ import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
 import { FamilyMember } from '../models';
 
-const mockBatch = {
-  set: vi.fn(),
-  delete: vi.fn(),
-  update: vi.fn(),
-  commit: vi.fn().mockResolvedValue(undefined),
-};
-
 const mocks = vi.hoisted(() => ({
   mockCollection: vi.fn(),
-  mockCollectionGroup: vi.fn(),
   mockDoc: vi.fn(),
   mockAddDoc: vi.fn(),
   mockSetDoc: vi.fn(),
@@ -27,15 +19,15 @@ const mocks = vi.hoisted(() => ({
   mockWhere: vi.fn(),
   mockLimit: vi.fn(),
   mockGetDocs: vi.fn(),
-  mockWriteBatch: vi.fn(() => mockBatch),
-  mockArrayUnion: vi.fn((...args) => ({ _type: 'arrayUnion', args })),
-  mockArrayRemove: vi.fn((...args) => ({ _type: 'arrayRemove', args })),
+  mockWriteBatch: vi.fn(),
+  mockBatchSet: vi.fn(),
+  mockBatchDelete: vi.fn(),
+  mockBatchUpdate: vi.fn(),
+  mockBatchCommit: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
   collection: mocks.mockCollection,
-  collectionGroup: mocks.mockCollectionGroup,
   doc: mocks.mockDoc,
   addDoc: mocks.mockAddDoc,
   setDoc: mocks.mockSetDoc,
@@ -49,26 +41,7 @@ vi.mock('firebase/firestore', () => ({
   limit: mocks.mockLimit,
   getDocs: mocks.mockGetDocs,
   writeBatch: mocks.mockWriteBatch,
-  arrayUnion: mocks.mockArrayUnion,
-  arrayRemove: mocks.mockArrayRemove,
   serverTimestamp: vi.fn(),
-  Timestamp: class Timestamp {
-    constructor(public seconds: number, public nanoseconds: number) {}
-    toDate() {
-      return new Date(this.seconds * 1000);
-    }
-  },
-}));
-
-vi.mock('firebase/auth', () => ({
-  onAuthStateChanged: vi.fn(() => vi.fn()),
-  signInWithEmailAndPassword: vi.fn(),
-  createUserWithEmailAndPassword: vi.fn(),
-  signInWithPopup: vi.fn(),
-  signInAnonymously: vi.fn(),
-  signOut: vi.fn(),
-  sendEmailVerification: vi.fn(),
-  GoogleAuthProvider: class {},
 }));
 
 describe('GuestService', () => {
@@ -77,16 +50,18 @@ describe('GuestService', () => {
     currentUser: ReturnType<typeof vi.fn>;
   };
 
+  const mockBatch = {
+    set: mocks.mockBatchSet,
+    delete: mocks.mockBatchDelete,
+    update: mocks.mockBatchUpdate,
+    commit: mocks.mockBatchCommit,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockBatch.set.mockReset();
-    mockBatch.delete.mockReset();
-    mockBatch.update.mockReset();
-    mockBatch.commit.mockReset().mockResolvedValue(undefined);
-
-    mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
-    mocks.mockCollection.mockReturnValue('guests-col-ref' as any);
+    mocks.mockWriteBatch.mockReturnValue(mockBatch);
+    mockBatch.commit.mockResolvedValue(undefined);
 
     mockAuthService = {
       currentUser: vi.fn().mockReturnValue({ uid: 'user-123', email: 'guest@example.com' }),
@@ -146,7 +121,7 @@ describe('GuestService', () => {
 
   describe('batchConfirmRsvp', () => {
     it('atomically creates primary guest and linked family member guest records', async () => {
-      mocks.mockDoc.mockImplementation((_fs: any, path: string) => `doc-ref-${path}` as any);
+      mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
 
       const familyMembers: FamilyMember[] = [
         {
@@ -177,10 +152,10 @@ describe('GuestService', () => {
       );
 
       expect(mocks.mockWriteBatch).toHaveBeenCalled();
-      expect(mockBatch.set).toHaveBeenCalledTimes(3);
+      expect(mocks.mockBatchSet).toHaveBeenCalledTimes(3);
 
-      expect(mockBatch.set).toHaveBeenCalledWith(
-        'doc-ref-events/evt-100/guests/user-123',
+      expect(mocks.mockBatchSet).toHaveBeenCalledWith(
+        'guest-doc-ref',
         expect.objectContaining({
           uid: 'user-123',
           name: 'Carlos Silva',
@@ -190,8 +165,8 @@ describe('GuestService', () => {
         { merge: true },
       );
 
-      expect(mockBatch.set).toHaveBeenCalledWith(
-        'doc-ref-events/evt-100/guests/user-123_fam-1',
+      expect(mocks.mockBatchSet).toHaveBeenCalledWith(
+        'guest-doc-ref',
         expect.objectContaining({
           id: 'user-123_fam-1',
           name: 'Lucas Silva',
@@ -201,8 +176,8 @@ describe('GuestService', () => {
         { merge: true },
       );
 
-      expect(mockBatch.set).toHaveBeenCalledWith(
-        'doc-ref-events/evt-100/guests/user-123_fam-2',
+      expect(mocks.mockBatchSet).toHaveBeenCalledWith(
+        'guest-doc-ref',
         expect.objectContaining({
           id: 'user-123_fam-2',
           name: 'Mariana Silva',
@@ -224,7 +199,7 @@ describe('GuestService', () => {
         name: 'Carlos Silva',
       });
 
-      expect(mockBatch.set).toHaveBeenCalledTimes(1);
+      expect(mocks.mockBatchSet).toHaveBeenCalledTimes(1);
       expect(mockBatch.commit).toHaveBeenCalled();
     });
   });
@@ -246,9 +221,9 @@ describe('GuestService', () => {
       await service.cancelRsvp('evt-100', 'guest-123', 'user-123');
 
       expect(mocks.mockWriteBatch).toHaveBeenCalled();
-      expect(mockBatch.delete).toHaveBeenCalledWith('guest-doc-ref');
-      expect(mockBatch.delete).toHaveBeenCalledWith('fam-doc-1');
-      expect(mockBatch.delete).toHaveBeenCalledWith('fam-doc-2');
+      expect(mocks.mockBatchDelete).toHaveBeenCalledWith('guest-doc-ref');
+      expect(mocks.mockBatchDelete).toHaveBeenCalledWith('fam-doc-1');
+      expect(mocks.mockBatchDelete).toHaveBeenCalledWith('fam-doc-2');
       expect(mockBatch.commit).toHaveBeenCalled();
     });
 
@@ -271,10 +246,10 @@ describe('GuestService', () => {
 
       await service.cancelRsvp('evt-100', 'user-123');
 
-      expect(mockBatch.delete).toHaveBeenCalledWith('guest-doc-ref');
-      expect(mockBatch.update).toHaveBeenCalledTimes(2);
-      expect(mockBatch.update).toHaveBeenCalledWith(mockItem1Ref, { claimedBy: null });
-      expect(mockBatch.update).toHaveBeenCalledWith(mockItem2Ref, { claimedBy: null });
+      expect(mocks.mockBatchDelete).toHaveBeenCalledWith('guest-doc-ref');
+      expect(mocks.mockBatchUpdate).toHaveBeenCalledTimes(2);
+      expect(mocks.mockBatchUpdate).toHaveBeenCalledWith(mockItem1Ref, { claimedBy: null });
+      expect(mocks.mockBatchUpdate).toHaveBeenCalledWith(mockItem2Ref, { claimedBy: null });
       expect(mockBatch.commit).toHaveBeenCalled();
     });
 

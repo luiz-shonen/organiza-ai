@@ -17,7 +17,7 @@ export class FamilyService {
   private readonly firestore = inject(FirebaseService).firestore;
 
   private familyCollection(uid: string) {
-    return collection(this.firestore, `users/${uid}/family`);
+    return collection(this.firestore, 'users', uid, 'family');
   }
 
   async getFamilyMembers(uid: string): Promise<FamilyMember[]> {
@@ -62,7 +62,7 @@ export class FamilyService {
 
   async deleteFamilyMember(uid: string, memberId: string): Promise<void> {
     if (!uid || !memberId) return;
-    const docRef = doc(this.firestore, `users/${uid}/family/${memberId}`);
+    const docRef = doc(this.firestore, 'users', uid, 'family', memberId);
     await deleteDoc(docRef);
   }
 }

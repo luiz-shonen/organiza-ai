@@ -140,12 +140,12 @@ T5
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `members` required input, `addMember` output, and `removeMember` output
-- [ ] Relationship dropdown with pre-defined categories
-- [ ] WCAG 2.1 AA accessible with labels and keyboard interactions
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: member list display, add member submission, remove member trigger
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `members` required input, `addMember` output, and `removeMember` output
+- [x] Relationship dropdown with pre-defined categories
+- [x] WCAG 2.1 AA accessible with labels and keyboard interactions
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Unit tests cover: member list display, add member submission, remove member trigger
 - [x] Quick gate passes: `npx ng test --watch=false`
 - [x] Test count: at least 4 tests pass
 
@@ -170,12 +170,12 @@ T5
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
 - [ ] `members` input, `selectedIds` input, `toggleMember` output, `selectAll` output, `addInlineMember` output
 - [ ] "Selecionar Todos" checkbox toggles all members
 - [ ] Inline text input to quickly add a member on the fly
 - [ ] WCAG 2.1 AA accessible with ARIA expansion and checkbox controls
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
 - [ ] Unit tests cover: expansion toggle, select all emission, itemized checkbox toggle, inline add
 - [x] Quick gate passes: `npx ng test --watch=false`
 - [x] Test count: at least 4 tests pass

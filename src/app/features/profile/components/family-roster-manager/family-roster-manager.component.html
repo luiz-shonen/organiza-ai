@@ -1,0 +1,114 @@
+<mat-card class="family-roster" appearance="outlined">
+  <mat-card-header class="family-roster__header">
+    <div class="family-roster__header-title-wrap">
+      <mat-icon class="family-roster__header-icon" aria-hidden="true">group</mat-icon>
+      <h2 id="family-roster-heading" class="family-roster__title">Minha Família</h2>
+    </div>
+    <p class="family-roster__subtitle">
+      Cadastre os membros da sua família para confirmar presença em grupo com apenas 1 clique nos eventos.
+    </p>
+  </mat-card-header>
+
+  <mat-card-content class="family-roster__content">
+    <form class="family-roster__form" (ngSubmit)="onAddSubmit()" aria-label="Formulário para adicionar familiar">
+      <div class="family-roster__form-grid">
+        <mat-form-field appearance="outline" class="family-roster__field">
+          <mat-label>Nome do familiar</mat-label>
+          <input
+            matInput
+            [ngModel]="newName()"
+            (ngModelChange)="newName.set($event)"
+            name="familyName"
+            placeholder="Ex: Lucas"
+            required
+            aria-required="true"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="family-roster__field">
+          <mat-label>Parentesco</mat-label>
+          <mat-select
+            [ngModel]="newRelationship()"
+            (ngModelChange)="newRelationship.set($event)"
+            name="familyRelationship"
+            aria-label="Parentesco"
+          >
+            @for (opt of relationshipOptions; track opt.value) {
+              <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="family-roster__field">
+          <mat-label>Telefone / WhatsApp (opcional)</mat-label>
+          <input
+            matInput
+            [ngModel]="newPhone()"
+            (ngModelChange)="newPhone.set($event)"
+            name="familyPhone"
+            type="tel"
+            placeholder="(11) 99999-9999"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="family-roster__form-actions">
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="family-roster__add-btn"
+          [disabled]="!newName().trim() || isAdding()"
+          aria-label="Adicionar familiar à lista"
+        >
+          <mat-icon aria-hidden="true">person_add</mat-icon>
+          Adicionar Familiar
+        </button>
+      </div>
+    </form>
+
+    <div class="family-roster__list-container" aria-live="polite">
+      @if (members().length === 0) {
+        <div class="family-roster__empty" role="status">
+          <mat-icon class="family-roster__empty-icon" aria-hidden="true">family_restroom</mat-icon>
+          <p class="family-roster__empty-text">Nenhum membro da família cadastrado ainda.</p>
+          <span class="family-roster__empty-hint">Use o formulário acima para cadastrar cônjuge, filhos ou parentes.</span>
+        </div>
+      } @else {
+        <ul class="family-roster__list" role="list" aria-label="Lista de familiares cadastrados">
+          @for (member of members(); track member.id) {
+            <li class="family-roster__item" role="listitem">
+              <div class="family-roster__item-avatar" aria-hidden="true">
+                <mat-icon>person</mat-icon>
+              </div>
+
+              <div class="family-roster__item-info">
+                <div class="family-roster__item-name-wrap">
+                  <span class="family-roster__item-name">{{ member.name }}</span>
+                  <span class="family-roster__item-badge">{{ getRelationshipLabel(member.relationship) }}</span>
+                </div>
+                @if (member.phone) {
+                  <span class="family-roster__item-phone">
+                    <mat-icon class="family-roster__item-phone-icon" aria-hidden="true">phone</mat-icon>
+                    {{ member.phone }}
+                  </span>
+                }
+              </div>
+
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                class="family-roster__remove-btn"
+                [attr.aria-label]="'Remover ' + member.name + ' da lista de família'"
+                (click)="onRemove(member.id)"
+              >
+                <mat-icon aria-hidden="true">delete_outline</mat-icon>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </mat-card-content>
+</mat-card>

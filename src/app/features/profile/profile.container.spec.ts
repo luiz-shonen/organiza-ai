@@ -5,8 +5,8 @@ import { signal, WritableSignal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProfileContainer } from './profile.container';
-import { AuthService, UserService } from '../../core/services';
-import type { UserProfile, PartyEvent } from '../../core/models';
+import { AuthService, UserService, FamilyService } from '../../core/services';
+import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import type { User } from 'firebase/auth';
 
 describe('ProfileContainer', () => {
@@ -48,10 +48,25 @@ describe('ProfileContainer', () => {
     },
   ];
 
+  const mockFamily: FamilyMember[] = [
+    {
+      id: 'fam-1',
+      name: 'Lucas Silva',
+      relationship: 'child',
+      createdAt: '2026-08-10T10:00:00.000Z',
+    },
+  ];
+
   let mockUserService: {
     getProfile: ReturnType<typeof vi.fn>;
     getAttendedEvents: ReturnType<typeof vi.fn>;
     updateProfile: ReturnType<typeof vi.fn>;
+  };
+
+  let mockFamilyService: {
+    getFamilyMembers: ReturnType<typeof vi.fn>;
+    addFamilyMember: ReturnType<typeof vi.fn>;
+    deleteFamilyMember: ReturnType<typeof vi.fn>;
   };
 
   let mockSnackBar: {
@@ -65,6 +80,17 @@ describe('ProfileContainer', () => {
       getProfile: vi.fn().mockResolvedValue(mockUserProfile),
       getAttendedEvents: vi.fn().mockResolvedValue(mockEvents),
       updateProfile: vi.fn().mockResolvedValue(undefined),
+    };
+
+    mockFamilyService = {
+      getFamilyMembers: vi.fn().mockResolvedValue(mockFamily),
+      addFamilyMember: vi.fn().mockResolvedValue({
+        id: 'fam-2',
+        name: 'Mariana Silva',
+        relationship: 'spouse',
+        createdAt: '2026-08-11T10:00:00.000Z',
+      }),
+      deleteFamilyMember: vi.fn().mockResolvedValue(undefined),
     };
 
     mockSnackBar = {
@@ -85,6 +111,10 @@ describe('ProfileContainer', () => {
           useValue: mockUserService,
         },
         {
+          provide: FamilyService,
+          useValue: mockFamilyService,
+        },
+        {
           provide: MatSnackBar,
           useValue: mockSnackBar,
         },
@@ -99,18 +129,22 @@ describe('ProfileContainer', () => {
     component = fixture.componentInstance;
   });
 
-  it('should initialize and load user profile and attended events', async () => {
+  it('should initialize and load user profile, attended events, and family roster', async () => {
     await component.loadProfileData();
     fixture.detectChanges();
 
     expect(mockUserService.getProfile).toHaveBeenCalledWith('user-789');
     expect(mockUserService.getAttendedEvents).toHaveBeenCalledWith('user-789');
+    expect(mockFamilyService.getFamilyMembers).toHaveBeenCalledWith('user-789');
     expect(component.userProfile()).toEqual(mockUserProfile);
     expect(component.attendedEvents()).toEqual(mockEvents);
+    expect(component.familyMembers()).toEqual(mockFamily);
     expect(component.loading()).toBe(false);
 
     const el: HTMLElement = fixture.nativeElement;
     expect(el.textContent).toContain('Meu Perfil');
+    expect(el.textContent).toContain('Minha Família');
+    expect(el.textContent).toContain('Lucas Silva');
     expect(el.textContent).toContain('Festa Julina dos Amigos');
   });
 
@@ -124,6 +158,7 @@ describe('ProfileContainer', () => {
   it('should fallback to auth user data if firestore profile is null', async () => {
     mockUserService.getProfile.mockResolvedValue(null);
     mockUserService.getAttendedEvents.mockResolvedValue([]);
+    mockFamilyService.getFamilyMembers.mockResolvedValue([]);
 
     await component.loadProfileData();
     fixture.detectChanges();
@@ -138,6 +173,7 @@ describe('ProfileContainer', () => {
       updatedAt: '',
     });
     expect(component.attendedEvents()).toEqual([]);
+    expect(component.familyMembers()).toEqual([]);
   });
 
   it('should update name, update signal, and show success snackbar on onUpdateName', async () => {
@@ -167,6 +203,43 @@ describe('ProfileContainer', () => {
 
     expect(snackBar.open).toHaveBeenCalledWith(
       'Não foi possível atualizar o nome. Tente novamente.',
+      'Fechar',
+      { duration: 3000 },
+    );
+  });
+
+  it('should add a family member and update list with success snackbar', async () => {
+    await component.loadProfileData();
+    fixture.detectChanges();
+
+    await component.onAddFamilyMember({
+      name: 'Mariana Silva',
+      relationship: 'spouse',
+    });
+
+    expect(mockFamilyService.addFamilyMember).toHaveBeenCalledWith('user-789', {
+      name: 'Mariana Silva',
+      relationship: 'spouse',
+    });
+    expect(component.familyMembers()).toHaveLength(2);
+    expect(component.familyMembers()[1].name).toBe('Mariana Silva');
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Familiar adicionado com sucesso!',
+      'Fechar',
+      { duration: 3000 },
+    );
+  });
+
+  it('should remove a family member and update list with success snackbar', async () => {
+    await component.loadProfileData();
+    fixture.detectChanges();
+
+    await component.onRemoveFamilyMember('fam-1');
+
+    expect(mockFamilyService.deleteFamilyMember).toHaveBeenCalledWith('user-789', 'fam-1');
+    expect(component.familyMembers()).toHaveLength(0);
+    expect(snackBar.open).toHaveBeenCalledWith(
+      'Familiar removido com sucesso!',
       'Fechar',
       { duration: 3000 },
     );

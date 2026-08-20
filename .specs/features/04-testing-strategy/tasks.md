@@ -139,9 +139,9 @@ T5
 
 **Done when**:
 
-- [ ] Unit tests verify valid CEP auto-fill, invalid CEP error handling, and timeout fallback
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 new tests pass
+- [x] Unit tests verify valid CEP auto-fill, invalid CEP error handling, and timeout fallback
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 new tests pass
 
 **Tests**: unit  
 **Gate**: quick  

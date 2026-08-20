@@ -1,13 +1,21 @@
 export interface Guest {
   id: string;
   name: string;
-  phone: string;
-  companionsCount: number;
-  createdAt: string;
-  uid: string;
+  email?: string;
+  phone?: string;
+  photoUrl?: string;
+  isConfirmed: boolean;
+  confirmedAt: string;
+  primaryGuestId?: string;
+  uid?: string;
+  companionsCount?: number;
+  createdAt?: string;
 }
 
-export type GuestCreate = Omit<Guest, 'id' | 'createdAt' | 'uid'>;
+export type GuestCreate = Omit<Guest, 'id' | 'createdAt' | 'uid' | 'isConfirmed' | 'confirmedAt'> & {
+  isConfirmed?: boolean;
+  confirmedAt?: string;
+};
 
 export interface GuestSession {
   name: string;

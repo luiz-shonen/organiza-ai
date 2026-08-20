@@ -86,9 +86,9 @@ T5
 
 **Done when**:
 
-- [ ] `Guest` interface updated with `primaryGuestId?: string`, `photoUrl?: string`, and `confirmedAt: string`
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `Guest` interface updated with `primaryGuestId?: string`, `photoUrl?: string`, and `confirmedAt: string`
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

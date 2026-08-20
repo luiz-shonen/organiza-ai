@@ -63,7 +63,7 @@ export class EventDetailContainer implements OnInit {
   protected readonly isIdentified = this.guestSession.isIdentified;
 
   protected readonly guestCount = computed(() => {
-    return this.guests().reduce((sum, g) => sum + 1 + g.companionsCount, 0);
+    return this.guests().reduce((sum, g) => sum + 1 + (g.companionsCount ?? 0), 0);
   });
 
   ngOnInit(): void {

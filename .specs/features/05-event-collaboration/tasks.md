@@ -86,9 +86,9 @@ T5
 
 **Done when**:
 
-- [ ] `EventInvitation` interface exported with `id`, `eventId`, `eventTitle`, `invitedEmail`, `invitedBy`, and `createdAt`
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `EventInvitation` interface exported with `id`, `eventId`, `eventTitle`, `invitedEmail`, `invitedBy`, and `createdAt`
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -111,12 +111,12 @@ T5
 
 **Done when**:
 
-- [ ] `getUserEvents` returns combined stream of created and collaborated events
-- [ ] `inviteCollaborator` creates subcollection document in `events/{id}/invitations/{email}`
-- [ ] `claimPendingInvitations` queries pending invitations by email and adds user UID to `collaborators`
-- [ ] Unit tests cover: scoped query merging, invitation creation, and auto-claim batch commit
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `getUserEvents` returns combined stream of created and collaborated events
+- [x] `inviteCollaborator` creates subcollection document in `events/{id}/invitations/{email}`
+- [x] `claimPendingInvitations` queries pending invitations by email and adds user UID to `collaborators`
+- [x] Unit tests cover: scoped query merging, invitation creation, and auto-claim batch commit
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -141,14 +141,14 @@ T5
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `collaborators` input, `pendingInvites` input, `invite` output, and `removeCollaborator` output
-- [ ] Validates email format before emitting invite
-- [ ] WCAG 2.1 AA accessible with focus trap and keyboard navigation
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: email validation, chip list rendering, output emissions
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `collaborators` input, `pendingInvites` input, `invite` output, and `removeCollaborator` output
+- [x] Validates email format before emitting invite
+- [x] WCAG 2.1 AA accessible with focus trap and keyboard navigation
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Unit tests cover: email validation, chip list rendering, output emissions
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -171,11 +171,11 @@ T5
 
 **Done when**:
 
-- [ ] `isOwner = input<boolean>(true)` added to `EventCardComponent`
-- [ ] Displays "Organizador" badge when `isOwner` is true and "Colaborador" badge when false
-- [ ] Unit tests cover: correct badge rendering based on `isOwner` input
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `isOwner = input<boolean>(true)` added to `EventCardComponent`
+- [x] Displays "Organizador" badge when `isOwner` is true and "Colaborador" badge when false
+- [x] Unit tests cover: correct badge rendering based on `isOwner` input
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -200,12 +200,12 @@ T5
 
 **Done when**:
 
-- [ ] `isOwner` computed signal compares `event().createdBy` to `authService.currentUser().uid`
-- [ ] Disables core form inputs and hides delete button when `isOwner` is false
-- [ ] Allows collaborators to manage items and view guest lists
-- [ ] Unit tests cover: disabled inputs for collaborators, full access for owner
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `isOwner` computed signal compares `event().createdBy` to `authService.currentUser().uid`
+- [x] Disables core form inputs and hides delete button when `isOwner` is false
+- [x] Allows collaborators to manage items and view guest lists
+- [x] Unit tests cover: disabled inputs for collaborators, full access for owner
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

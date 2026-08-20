@@ -32,19 +32,46 @@
     </div>
   } @else {
     <header class="editor__header" [class.editor__header--single]="!isEditing()">
-      <button
-        mat-icon-button
-        routerLink="/admin"
-        matTooltip="Voltar"
-        aria-label="Voltar"
-        class="editor__back-btn"
-      >
-        <mat-icon>west</mat-icon>
-      </button>
-      <h1 class="editor__title">
-        {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
-      </h1>
+      <div class="editor__header-main">
+        <button
+          mat-icon-button
+          routerLink="/admin"
+          matTooltip="Voltar"
+          aria-label="Voltar"
+          class="editor__back-btn"
+        >
+          <mat-icon>west</mat-icon>
+        </button>
+        <h1 class="editor__title">
+          {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
+        </h1>
+      </div>
+
+      @if (isEditing() && isOwner()) {
+        <div class="editor__header-actions">
+          <button
+            mat-stroked-button
+            type="button"
+            (click)="openCollaboratorsDialog()"
+            aria-label="Gerenciar colaboradores"
+            class="editor__collab-btn"
+          >
+            <mat-icon>group_add</mat-icon>
+            Colaboradores
+          </button>
+        </div>
+      }
     </header>
+
+    @if (isEditing() && !isOwner()) {
+      <div class="editor__collab-banner glass-card" role="status" aria-label="Permissões de colaborador">
+        <mat-icon class="editor__collab-banner-icon">info</mat-icon>
+        <div class="editor__collab-banner-text">
+          <strong>Modo Colaborador:</strong> Você tem permissão para gerenciar a lista de itens e visualizar os convidados. As informações principais do evento só podem ser alteradas pelo organizador.
+        </div>
+      </div>
+    }
+
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
         <!-- Event Form -->
@@ -276,25 +303,32 @@
                       <mat-icon>arrow_back</mat-icon>
                       Voltar
                     </button>
-                    <button
-                      mat-flat-button
-                      class="editor__save-btn btn-primary-org"
-                      [disabled]="
-                        basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
-                      "
-                      (click)="saveEvent()"
-                      aria-label="Salvar evento"
-                    >
-                      @if (saving()) {
-                        <mat-spinner diameter="20"></mat-spinner>
-                      }
-                      @if (!saving()) {
-                        <mat-icon>save</mat-icon>
-                      }
-                      @if (!saving()) {
-                        <span>{{ isEditing() ? 'Salvar' : 'Criar Evento' }}</span>
-                      }
-                    </button>
+                    @if (isOwner()) {
+                      <button
+                        mat-flat-button
+                        class="editor__save-btn btn-primary-org"
+                        [disabled]="
+                          basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
+                        "
+                        (click)="saveEvent()"
+                        aria-label="Salvar evento"
+                      >
+                        @if (saving()) {
+                          <mat-spinner diameter="20"></mat-spinner>
+                        }
+                        @if (!saving()) {
+                          <mat-icon>save</mat-icon>
+                        }
+                        @if (!saving()) {
+                          <span>{{ isEditing() ? 'Salvar' : 'Criar Evento' }}</span>
+                        }
+                      </button>
+                    } @else {
+                      <p class="editor__collab-save-disabled">
+                        <mat-icon>lock</mat-icon>
+                        Apenas o organizador principal pode salvar alterações principais.
+                      </p>
+                    }
                   </div>
                 </form>
               </mat-step>

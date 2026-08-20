@@ -1,0 +1,119 @@
+.org-event-card {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: var(--org-radius-lg, 16px);
+  padding: var(--org-spacing-md, 16px);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--org-surface, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--org-border-color, rgba(255, 255, 255, 0.12));
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--org-shadow-color, rgba(0, 0, 0, 0.3));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--org-primary-color, #a855f7);
+    outline-offset: 2px;
+  }
+
+  &--cancelled {
+    opacity: 0.6;
+    filter: grayscale(0.4);
+  }
+
+  &__header {
+    padding: 0;
+    margin-bottom: var(--org-spacing-sm, 8px);
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--org-spacing-sm, 8px);
+    width: 100%;
+  }
+
+  &__title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--org-text-primary, #ffffff);
+    margin: 0;
+  }
+
+  &__badge-container {
+    flex-shrink: 0;
+  }
+
+  &__role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--org-radius-full, 9999px);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &--owner {
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--org-primary-color, #c084fc);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    &--collaborator {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--org-accent-color, #38bdf8);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+  }
+
+  &__badge-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &__subtitle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--org-spacing-sm, 8px);
+    font-size: 0.85rem;
+    color: var(--org-text-secondary, rgba(255, 255, 255, 0.7));
+    margin-top: 4px;
+  }
+
+  &__meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__meta-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--org-text-muted, rgba(255, 255, 255, 0.5));
+  }
+
+  &__content {
+    padding: 0;
+    margin: var(--org-spacing-xs, 4px) 0;
+  }
+
+  &__desc {
+    font-size: 0.875rem;
+    color: var(--org-text-secondary, rgba(255, 255, 255, 0.75));
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  &__actions {
+    padding: 0;
+    margin-top: var(--org-spacing-sm, 8px);
+  }
+}

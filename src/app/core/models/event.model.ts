@@ -15,9 +15,12 @@ export interface PartyEvent {
   location: string;
   addressDetails?: AddressDetails;
   pixKey: string | null;
-  pixType?: string;
+  pixType?: 'cpf' | 'cnpj' | 'email' | 'phone' | 'random' | string;
   estimatedBudget?: number | null;
   status?: 'active' | 'cancelled';
+  createdBy?: string;
+  creatorEmail?: string;
+  collaborators?: string[];
   createdAt: string;
   updatedAt: string;
 }

@@ -14,6 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class EventCardComponent {
   public event = input.required<PartyEvent>();
   public guestCount = input<number>(0);
+  public isOwner = input<boolean>(true);
 
   public googleCalendarUrl = computed(() => {
     const ev = this.event();

@@ -110,13 +110,13 @@ T4 → T5
 
 **Done when**:
 
-- [ ] `notifyGuestsOfEventChange` method dispatches alerts to confirmed attendees
-- [ ] `notifyGuestsOfCancellation` method dispatches cancellation alerts
-- [ ] `evaluateCountdownReminders` evaluates 7-day and 1-day (24h) countdowns
-- [ ] Implements localStorage deduplication keys (`reminder_sent_{eventId}_{type}`)
-- [ ] Unit tests cover: 7-day reminder calculation, 1-day reminder calculation, deduplication prevention, and change alert dispatch
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 5 tests pass
+- [x] `notifyGuestsOfEventChange` method dispatches alerts to confirmed attendees
+- [x] `notifyGuestsOfCancellation` method dispatches cancellation alerts
+- [x] `evaluateCountdownReminders` evaluates 7-day and 1-day (24h) countdowns
+- [x] Implements localStorage deduplication keys (`reminder_sent_{eventId}_{type}`)
+- [x] Unit tests cover: 7-day reminder calculation, 1-day reminder calculation, deduplication prevention, and change alert dispatch
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 5 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

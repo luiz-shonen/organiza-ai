@@ -14,3 +14,4 @@ export { DrawerService } from './drawer.service';
 
 export * from './header.service';
 export { NotificationService } from './notification.service';
+export { EventNotificationService } from './event-notification.service';

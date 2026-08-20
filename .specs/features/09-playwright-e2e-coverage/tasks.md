@@ -999,11 +999,11 @@ T34
 
 **Done when**:
 
-- [ ] Workflow triggers on `pull_request` to `main` and `push` to `main`
-- [ ] Caches `~/.cache/ms-playwright` and `node_modules` for fast execution (<5 min)
-- [ ] Executes `npm run test:e2e:ci` headless
-- [ ] Uploads `playwright-report/` and test failure traces as workflow artifacts on failure
-- [ ] Build gate passes: `npm run build`
+- [x] Workflow triggers on `pull_request` to `main` and `push` to `main`
+- [x] Caches `~/.cache/ms-playwright` and `node_modules` for fast execution (<5 min)
+- [x] Executes `npm run test:e2e:ci` headless
+- [x] Uploads `playwright-report/` and test failure traces as workflow artifacts on failure
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

@@ -299,9 +299,9 @@ T34
 
 **Done when**:
 
-- [ ] `OrganizerDashboardPage` extends `BasePage` and defines locators: `filterChips`, `createEventBtn`, `eventCards`
-- [ ] Implements methods: `filterByStatus(status)`, `openEventEditor(eventId)`
-- [ ] Build gate passes: `npm run build`
+- [x] `OrganizerDashboardPage` extends `BasePage` and defines locators: `filterChips`, `createEventBtn`, `eventCards`
+- [x] Implements methods: `filterByStatus(status)`, `openEventEditor(eventId)`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

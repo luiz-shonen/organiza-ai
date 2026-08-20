@@ -188,10 +188,10 @@ T23
 
 **Done when**:
 
-- [ ] Data mappings use explicit `AddressDetails`, `PixType`, and `number` types without `as any`
-- [ ] Unit tests pass: `src/app/core/services/event.service.spec.ts`
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 17 tests pass
+- [x] Data mappings use explicit `AddressDetails`, `PixType`, and `number` types without `as any`
+- [x] Unit tests pass: `src/app/core/services/event.service.spec.ts`
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 17 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

@@ -2,7 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, combineLatest, map, of } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
-import { PartyEvent, PartyEventCreate, PartyEventUpdate, EventInvitation } from '../models';
+import {
+  PartyEvent,
+  PartyEventCreate,
+  PartyEventUpdate,
+  EventInvitation,
+  AddressDetails,
+  PixType,
+} from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
@@ -216,10 +223,15 @@ export class EventService {
       description: (data['description'] as string) ?? '',
       date: dateVal ? dateVal.toISOString() : ((data['date'] as string) ?? ''),
       location: (data['location'] as string) ?? '',
-      addressDetails: data['addressDetails'] as any,
+      addressDetails: (data['addressDetails'] as AddressDetails | undefined) ?? undefined,
       pixKey: (data['pixKey'] as string | null) ?? null,
-      pixType: data['pixType'] as any,
-      estimatedBudget: data['estimatedBudget'] as any,
+      pixType: (data['pixType'] as PixType | undefined) ?? undefined,
+      estimatedBudget:
+        typeof data['estimatedBudget'] === 'number'
+          ? (data['estimatedBudget'] as number)
+          : data['estimatedBudget'] === null
+            ? null
+            : undefined,
       status: (data['status'] as 'active' | 'cancelled') ?? 'active',
       createdBy: (data['createdBy'] as string) ?? '',
       creatorEmail: (data['creatorEmail'] as string) ?? '',

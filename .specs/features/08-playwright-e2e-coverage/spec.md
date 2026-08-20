@@ -160,8 +160,8 @@ The Organiza AI application currently contains only a minimal smoke test (`e2e/s
 **Acceptance Criteria**:
 
 1. WHEN an E2E test completes a major journey milestone (Home, Login, Dashboard, Event Editor Form, Event Detail with RSVP Dialog, Profile, and Mobile Viewport) THEN the system SHALL capture a full-page visual screenshot to `e2e/screenshots/{journey}-{state}.png`.
-2. WHEN screenshots are generated during the initial test execution run THEN the agent SHALL inspect each captured image to verify form field alignment, button paddings, typography scale, and Glassmorphism backdrop-blur rendering per `DESIGN.md`.
-3. IF any visual defect (misaligned inputs, broken contrast, unreadable text, or overflowing containers) is identified during visual inspection THEN the system SHALL log the defect with remediation steps.
+2. WHEN screenshots are generated during the initial test execution run THEN the agent SHALL inspect each captured image as a critical UI/UX specialist to verify form field alignment, button paddings, typography scale, Glassmorphism backdrop-blur rendering per `DESIGN.md`, and compliance with Nielsen's 10 Usability Heuristics.
+3. IF any visual or usability defect (misaligned inputs, broken contrast, unreadable text, missing status feedback, or overflowing containers) is identified during visual inspection THEN the system SHALL log the defect with remediation steps.
 4. The system SHALL structure the `e2e/screenshots/` directory with organized baseline images categorized by flow.
 
 **Independent Test**: Run the full E2E test suite; verify that `e2e/screenshots/` contains high-resolution snapshots for all key views and conduct visual inspection against `DESIGN.md`.

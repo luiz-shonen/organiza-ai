@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 08 (`08-playwright-e2e-coverage`) Specification Completed & Verified — 31 traceable EARS requirements across 15 user stories covering all project journeys, CI workflow, visual layout inspection, and real-time concurrency.  
+**State:** Feature 08 (`08-playwright-e2e-coverage`) Technical Design Completed & Validated — Page Object Models, component harnesses, custom fixtures, strict data-testid taxonomy, axe-core a11y, dual-context concurrency, visual layout baselines, and CI pipeline designed.  
 **Test Suite:** 29 test files passed, 199 unit tests passed (0 failures), production build green (`npm run build`).  
 **Validation Gate:** `validate_spec.py 08-playwright-e2e-coverage` reports 0 errors, 0 warnings.  
-**Next step:** Execute `/tlc-spec-driven design` or `/tlc-spec-driven tasks` for Feature 08.  
+**Next step:** Execute `/tlc-spec-driven tasks` to break Feature 08 into atomic tasks and execution phases.  
 
 **Active branches:** `main` (production)  
 **What exists:**

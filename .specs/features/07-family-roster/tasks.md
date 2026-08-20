@@ -171,12 +171,12 @@ T5
 **Done when**:
 
 - [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `members` input, `selectedIds` input, `toggleMember` output, `selectAll` output, `addInlineMember` output
-- [ ] "Selecionar Todos" checkbox toggles all members
-- [ ] Inline text input to quickly add a member on the fly
-- [ ] WCAG 2.1 AA accessible with ARIA expansion and checkbox controls
+- [x] `members` input, `selectedIds` input, `toggleMember` output, `selectAll` output, `addInlineMember` output
+- [x] "Selecionar Todos" checkbox toggles all members
+- [x] Inline text input to quickly add a member on the fly
+- [x] WCAG 2.1 AA accessible with ARIA expansion and checkbox controls
 - [x] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: expansion toggle, select all emission, itemized checkbox toggle, inline add
+- [x] Unit tests cover: expansion toggle, select all emission, itemized checkbox toggle, inline add
 - [x] Quick gate passes: `npx ng test --watch=false`
 - [x] Test count: at least 4 tests pass
 

@@ -1,0 +1,134 @@
+<div class="family-selector">
+  <mat-expansion-panel
+    class="family-selector__panel"
+    [expanded]="isExpanded()"
+    (opened)="isExpanded.set(true)"
+    (closed)="isExpanded.set(false)"
+    aria-label="Opções para adicionar familiares ao evento"
+  >
+    <mat-expansion-panel-header class="family-selector__header">
+      <mat-panel-title class="family-selector__title">
+        <mat-icon class="family-selector__icon" aria-hidden="true">diversity_3</mat-icon>
+        <span>Adicionar Família?</span>
+      </mat-panel-title>
+      <mat-panel-description class="family-selector__description">
+        @if (selectedCount() > 0) {
+          <span class="family-selector__badge">{{ selectedCount() }} selecionado(s)</span>
+        } @else {
+          <span>Nenhum selecionado</span>
+        }
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="family-selector__content">
+      @if (members().length > 0) {
+        <div class="family-selector__select-all-wrap">
+          <mat-checkbox
+            class="family-selector__select-all"
+            [checked]="allSelected()"
+            [indeterminate]="indeterminate()"
+            (change)="onSelectAllChange($event.checked)"
+            aria-label="Selecionar todos os familiares"
+          >
+            <span class="family-selector__select-all-label">Selecionar Todos</span>
+          </mat-checkbox>
+        </div>
+
+        <ul class="family-selector__list" role="list" aria-label="Lista de familiares para seleção">
+          @for (member of members(); track member.id) {
+            <li class="family-selector__item" role="listitem">
+              <mat-checkbox
+                class="family-selector__checkbox"
+                [checked]="isMemberSelected(member.id)"
+                (change)="onToggleMember(member.id)"
+                [attr.aria-label]="'Confirmar presença para ' + member.name"
+              >
+                <div class="family-selector__member-info">
+                  <span class="family-selector__member-name">{{ member.name }}</span>
+                  <span class="family-selector__member-badge">{{ getRelationshipLabel(member.relationship) }}</span>
+                </div>
+              </mat-checkbox>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="family-selector__empty" role="status">
+          <p class="family-selector__empty-text">Nenhum familiar cadastrado no seu perfil.</p>
+        </div>
+      }
+
+      @if (!showInlineForm()) {
+        <div class="family-selector__inline-toggle-wrap">
+          <button
+            type="button"
+            mat-button
+            color="primary"
+            class="family-selector__inline-toggle-btn"
+            (click)="onToggleInlineForm()"
+            aria-label="Adicionar novo familiar rapidamente"
+          >
+            <mat-icon aria-hidden="true">person_add</mat-icon>
+            + Novo Membro
+          </button>
+        </div>
+      } @else {
+        <form
+          class="family-selector__inline-form"
+          (ngSubmit)="onSubmitInline()"
+          aria-label="Formulário rápido para adicionar novo familiar"
+        >
+          <h4 class="family-selector__inline-title">Novo Familiar</h4>
+
+          <div class="family-selector__inline-grid">
+            <mat-form-field appearance="outline" class="family-selector__inline-field">
+              <mat-label>Nome</mat-label>
+              <input
+                matInput
+                [ngModel]="inlineName()"
+                (ngModelChange)="inlineName.set($event)"
+                name="inlineMemberName"
+                placeholder="Ex: Pedro"
+                required
+                aria-required="true"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="family-selector__inline-field">
+              <mat-label>Parentesco</mat-label>
+              <mat-select
+                [ngModel]="inlineRelationship()"
+                (ngModelChange)="inlineRelationship.set($event)"
+                name="inlineMemberRelationship"
+                aria-label="Parentesco do novo familiar"
+              >
+                @for (opt of relationshipOptions; track opt.value) {
+                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="family-selector__inline-actions">
+            <button
+              type="button"
+              mat-button
+              (click)="onCancelInlineForm()"
+              aria-label="Cancelar adição de familiar"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              mat-flat-button
+              color="primary"
+              [disabled]="!inlineName().trim() || isAddingInline()"
+              aria-label="Salvar e selecionar familiar"
+            >
+              Adicionar e Selecionar
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </mat-expansion-panel>
+</div>

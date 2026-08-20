@@ -118,15 +118,15 @@ Organiza AI needs a clear event-centric ownership and collaboration model. The h
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| EVCO-01 | P1: Scoped Event Feed | Design | Pending |
-| EVCO-02 | P1: Empty State CTA | Design | Pending |
-| EVCO-03 | P2: Event Ownership Assignment | Design | Pending |
-| EVCO-04 | P2: Invite Collaborators | Design | Pending |
-| EVCO-05 | P2: Pending Email Invites | Design | Pending |
-| EVCO-06 | P2: Collaborator Item Management | Design | Pending |
-| EVCO-07 | P2: Core Field Protection | Design | Pending |
+| EVCO-01 | P1: Scoped Event Feed | Phase 1/2 | Verified |
+| EVCO-02 | P1: Empty State CTA | Phase 2 | Verified |
+| EVCO-03 | P2: Event Ownership Assignment | Phase 1/3 | Verified |
+| EVCO-04 | P2: Invite Collaborators | Phase 1/2 | Verified |
+| EVCO-05 | P2: Pending Email Invites | Phase 1 | Verified |
+| EVCO-06 | P2: Collaborator Item Management | Phase 3 | Verified |
+| EVCO-07 | P2: Core Field Protection | Phase 3 | Verified |
 
-**Coverage:** 7 total, 7 mapped to tasks in future phases, 0 unmapped.
+**Coverage:** 7 total, 7 verified.
 
 ---
 

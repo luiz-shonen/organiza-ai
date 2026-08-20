@@ -4,58 +4,17 @@ import { EventService } from './event.service';
 import { FirebaseService } from './firebase.service';
 import { EventNotificationService } from './event-notification.service';
 import { PartyEvent } from '../models';
+import { firestoreMocks } from '../../testing/mocks';
 
-const mockBatch = {
-  set: vi.fn(),
-  update: vi.fn(),
-  delete: vi.fn(),
-  commit: vi.fn().mockResolvedValue(undefined),
-};
+vi.mock('firebase/firestore', async () => {
+  const { createFirestoreModuleMock } = await import('../../testing/mocks');
+  return createFirestoreModuleMock();
+});
 
-const mocks = vi.hoisted(() => ({
-  mockCollection: vi.fn(),
-  mockCollectionGroup: vi.fn(),
-  mockDoc: vi.fn(),
-  mockAddDoc: vi.fn(),
-  mockSetDoc: vi.fn(),
-  mockUpdateDoc: vi.fn(),
-  mockDeleteDoc: vi.fn(),
-  mockGetDoc: vi.fn(),
-  mockGetDocs: vi.fn(),
-  mockOnSnapshot: vi.fn(),
-  mockOrderBy: vi.fn(),
-  mockQuery: vi.fn(),
-  mockWhere: vi.fn(),
-  mockArrayUnion: vi.fn((...args) => ({ _type: 'arrayUnion', args })),
-  mockArrayRemove: vi.fn((...args) => ({ _type: 'arrayRemove', args })),
-  mockWriteBatch: vi.fn(() => mockBatch),
-}));
-
-vi.mock('firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
-  collection: mocks.mockCollection,
-  collectionGroup: mocks.mockCollectionGroup,
-  doc: mocks.mockDoc,
-  addDoc: mocks.mockAddDoc,
-  setDoc: mocks.mockSetDoc,
-  updateDoc: mocks.mockUpdateDoc,
-  deleteDoc: mocks.mockDeleteDoc,
-  getDoc: mocks.mockGetDoc,
-  getDocs: mocks.mockGetDocs,
-  onSnapshot: mocks.mockOnSnapshot,
-  orderBy: mocks.mockOrderBy,
-  query: mocks.mockQuery,
-  where: mocks.mockWhere,
-  arrayUnion: mocks.mockArrayUnion,
-  arrayRemove: mocks.mockArrayRemove,
-  writeBatch: mocks.mockWriteBatch,
-  Timestamp: class Timestamp {
-    constructor(public seconds: number, public nanoseconds: number) {}
-    toDate() {
-      return new Date(this.seconds * 1000);
-    }
-  },
-}));
+vi.mock('@firebase/firestore', async () => {
+  const { createFirestoreModuleMock } = await import('../../testing/mocks');
+  return createFirestoreModuleMock();
+});
 
 describe('EventService', () => {
   let service: EventService;
@@ -82,19 +41,24 @@ describe('EventService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mocks.mockDoc.mockReturnValue({ id: 'evt-100' } as any);
-    mocks.mockCollection.mockReturnValue('col-ref' as any);
-    mocks.mockCollectionGroup.mockReturnValue('col-group-ref' as any);
-    mocks.mockQuery.mockReturnValue('query-ref' as any);
-    mocks.mockWhere.mockReturnValue('where-ref' as any);
-    mocks.mockOrderBy.mockReturnValue('order-ref' as any);
-    mocks.mockWriteBatch.mockReturnValue(mockBatch);
-    mocks.mockGetDoc.mockResolvedValue({ exists: () => true, data: () => existingEvent, id: 'evt-100' } as any);
-    mocks.mockGetDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
-    mocks.mockAddDoc.mockResolvedValue({ id: 'new-evt-id' } as any);
-    mocks.mockSetDoc.mockResolvedValue(undefined);
-    mocks.mockUpdateDoc.mockResolvedValue(undefined);
-    mocks.mockDeleteDoc.mockResolvedValue(undefined);
+    firestoreMocks.batch.set.mockReset();
+    firestoreMocks.batch.delete.mockReset();
+    firestoreMocks.batch.update.mockReset();
+    firestoreMocks.batch.commit.mockReset().mockResolvedValue(undefined);
+
+    firestoreMocks.doc.mockReturnValue({ id: 'evt-100' } as any);
+    firestoreMocks.collection.mockReturnValue('col-ref' as any);
+    firestoreMocks.collectionGroup.mockReturnValue('col-group-ref' as any);
+    firestoreMocks.query.mockReturnValue('query-ref' as any);
+    firestoreMocks.where.mockReturnValue('where-ref' as any);
+    firestoreMocks.orderBy.mockReturnValue('order-ref' as any);
+    firestoreMocks.writeBatch.mockReturnValue(firestoreMocks.batch);
+    firestoreMocks.getDoc.mockResolvedValue({ exists: () => true, data: () => existingEvent, id: 'evt-100' } as any);
+    firestoreMocks.getDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
+    firestoreMocks.addDoc.mockResolvedValue({ id: 'new-evt-id' } as any);
+    firestoreMocks.setDoc.mockResolvedValue(undefined as any);
+    firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
+    firestoreMocks.deleteDoc.mockResolvedValue(undefined as any);
 
     mockNotificationService = {
       notifyGuestsOfEventChange: vi.fn().mockResolvedValue({}),
@@ -163,13 +127,11 @@ describe('EventService', () => {
       };
 
       let snapshotCallbackCount = 0;
-      mocks.mockOnSnapshot.mockImplementation((_q, callback) => {
+      firestoreMocks.onSnapshot.mockImplementation((_q: any, callback: any) => {
         snapshotCallbackCount++;
         if (snapshotCallbackCount === 1) {
-          // owned query
           callback({ docs: [ownedDoc] });
         } else {
-          // collaborated query
           callback({ docs: [duplicateDoc, collaboratedDoc] });
         }
         return vi.fn();
@@ -188,19 +150,19 @@ describe('EventService', () => {
 
   describe('inviteCollaborator', () => {
     it('creates subcollection document in events/{id}/invitations/{email} with lowercase email', async () => {
-      mocks.mockDoc.mockReturnValue({ path: 'events/evt-100/invitations/friend@test.com' });
-      mocks.mockSetDoc.mockResolvedValue(undefined);
+      firestoreMocks.doc.mockReturnValue({ path: 'events/evt-100/invitations/friend@test.com' } as any);
+      firestoreMocks.setDoc.mockResolvedValue(undefined as any);
 
       await service.inviteCollaborator('evt-100', 'Friend@Test.COM ', 'Aniversário', 'user-1');
 
-      expect(mocks.mockDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.doc).toHaveBeenCalledWith(
         expect.anything(),
         'events',
         'evt-100',
         'invitations',
         'friend@test.com'
       );
-      expect(mocks.mockSetDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           id: 'friend@test.com',
@@ -216,12 +178,12 @@ describe('EventService', () => {
 
   describe('removeCollaborator', () => {
     it('removes collaborator uid from event collaborators array', async () => {
-      mocks.mockDoc.mockReturnValue({ path: 'events/evt-100' });
-      mocks.mockUpdateDoc.mockResolvedValue(undefined);
+      firestoreMocks.doc.mockReturnValue({ path: 'events/evt-100' } as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
 
       await service.removeCollaborator('evt-100', 'user-2');
 
-      expect(mocks.mockUpdateDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.updateDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           collaborators: expect.objectContaining({
@@ -237,7 +199,7 @@ describe('EventService', () => {
     it('does nothing when email or uid is empty', async () => {
       await service.claimPendingInvitations('', 'uid-1');
       await service.claimPendingInvitations('user@test.com', '');
-      expect(mocks.mockGetDocs).not.toHaveBeenCalled();
+      expect(firestoreMocks.getDocs).not.toHaveBeenCalled();
     });
 
     it('processes batch updates when pending invitations match email', async () => {
@@ -252,25 +214,25 @@ describe('EventService', () => {
         data: () => ({ eventId: 'evt-2', invitedEmail: 'user@test.com' }),
       };
 
-      mocks.mockGetDocs.mockResolvedValue({
+      firestoreMocks.getDocs.mockResolvedValue({
         empty: false,
         docs: [mockDoc1, mockDoc2],
-      });
+      } as any);
 
       await service.claimPendingInvitations('User@Test.COM ', 'user-123');
 
-      expect(mocks.mockQuery).toHaveBeenCalled();
-      expect(mocks.mockWhere).toHaveBeenCalledWith('invitedEmail', '==', 'user@test.com');
-      expect(mocks.mockWriteBatch).toHaveBeenCalled();
-      expect(mockBatch.update).toHaveBeenCalledTimes(2);
-      expect(mockBatch.delete).toHaveBeenCalledTimes(2);
-      expect(mockBatch.commit).toHaveBeenCalledTimes(1);
+      expect(firestoreMocks.query).toHaveBeenCalled();
+      expect(firestoreMocks.where).toHaveBeenCalledWith('invitedEmail', '==', 'user@test.com');
+      expect(firestoreMocks.writeBatch).toHaveBeenCalled();
+      expect(firestoreMocks.batch.update).toHaveBeenCalledTimes(2);
+      expect(firestoreMocks.batch.delete).toHaveBeenCalledTimes(2);
+      expect(firestoreMocks.batch.commit).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('createEvent', () => {
     it('creates event document in Firestore with active status and timestamps', async () => {
-      mocks.mockAddDoc.mockResolvedValue({ id: 'new-evt-123' });
+      firestoreMocks.addDoc.mockResolvedValue({ id: 'new-evt-123' } as any);
 
       const newId = await service.createEvent({
         title: 'Churrasco',
@@ -281,7 +243,7 @@ describe('EventService', () => {
       });
 
       expect(newId).toBe('new-evt-123');
-      expect(mocks.mockAddDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.addDoc).toHaveBeenCalledWith(
         'col-ref',
         expect.objectContaining({
           title: 'Churrasco',
@@ -294,18 +256,18 @@ describe('EventService', () => {
 
   describe('updateEvent', () => {
     it('detects date change and invokes notifyGuestsOfEventChange', async () => {
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         id: 'evt-100',
         data: () => ({ ...existingEvent }),
-      });
-      mocks.mockUpdateDoc.mockResolvedValue(undefined);
+      } as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
 
       await service.updateEvent('evt-100', {
         date: '2026-09-12T20:00:00.000Z',
       });
 
-      expect(mocks.mockUpdateDoc).toHaveBeenCalled();
+      expect(firestoreMocks.updateDoc).toHaveBeenCalled();
       expect(mockNotificationService.notifyGuestsOfEventChange).toHaveBeenCalledWith(
         expect.objectContaining({
           id: 'evt-100',
@@ -316,18 +278,18 @@ describe('EventService', () => {
     });
 
     it('detects location change and invokes notifyGuestsOfEventChange', async () => {
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         id: 'evt-100',
         data: () => ({ ...existingEvent }),
-      });
-      mocks.mockUpdateDoc.mockResolvedValue(undefined);
+      } as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
 
       await service.updateEvent('evt-100', {
         location: 'Rua Augusta, 500',
       });
 
-      expect(mocks.mockUpdateDoc).toHaveBeenCalled();
+      expect(firestoreMocks.updateDoc).toHaveBeenCalled();
       expect(mockNotificationService.notifyGuestsOfEventChange).toHaveBeenCalledWith(
         expect.objectContaining({
           id: 'evt-100',
@@ -338,28 +300,28 @@ describe('EventService', () => {
     });
 
     it('does not trigger notifications if only description or title changes without date/location change', async () => {
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         id: 'evt-100',
         data: () => ({ ...existingEvent }),
-      });
-      mocks.mockUpdateDoc.mockResolvedValue(undefined);
+      } as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
 
       await service.updateEvent('evt-100', {
         description: 'Nova descrição da festa',
       });
 
-      expect(mocks.mockUpdateDoc).toHaveBeenCalled();
+      expect(firestoreMocks.updateDoc).toHaveBeenCalled();
       expect(mockNotificationService.notifyGuestsOfEventChange).not.toHaveBeenCalled();
     });
 
     it('handles notification dispatch error gracefully without failing update', async () => {
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         id: 'evt-100',
         data: () => ({ ...existingEvent }),
-      });
-      mocks.mockUpdateDoc.mockResolvedValue(undefined);
+      } as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
       mockNotificationService.notifyGuestsOfEventChange.mockRejectedValue(
         new Error('Push service failed')
       );
@@ -374,16 +336,16 @@ describe('EventService', () => {
 
   describe('cancelEvent', () => {
     it('updates status to cancelled and triggers cancellation notification', async () => {
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         id: 'evt-100',
         data: () => ({ ...existingEvent }),
-      });
-      mocks.mockUpdateDoc.mockResolvedValue(undefined);
+      } as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
 
       await service.cancelEvent('evt-100');
 
-      expect(mocks.mockUpdateDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.updateDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           status: 'cancelled',
@@ -400,11 +362,11 @@ describe('EventService', () => {
 
   describe('deleteEvent', () => {
     it('calls deleteDoc in Firestore', async () => {
-      mocks.mockDeleteDoc.mockResolvedValue(undefined);
+      firestoreMocks.deleteDoc.mockResolvedValue(undefined as any);
 
       await service.deleteEvent('evt-100');
 
-      expect(mocks.mockDeleteDoc).toHaveBeenCalled();
+      expect(firestoreMocks.deleteDoc).toHaveBeenCalled();
     });
   });
 });

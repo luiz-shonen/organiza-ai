@@ -115,16 +115,16 @@ Currently, anonymous guest sessions reside solely in localStorage. If a guest us
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| GPROF-01 | P1: Local Session Storage | - | Verified (built) |
-| GPROF-02 | P1: Session Clear on Cancel | - | Verified (built) |
-| GPROF-03 | P2: Auto Pre-Registration | Design | Pending |
-| GPROF-04 | P2: Event History Union | Design | Pending |
-| GPROF-05 | P2: Non-blocking Pre-reg | Design | Pending |
-| GPROF-06 | P2: Google Account Upgrade | Design | Pending |
-| GPROF-07 | P2: Phone Verification Claim | Design | Pending |
-| GPROF-08 | P3: Profile Page Dashboard | Design | Pending |
+| GPROF-01 | P1: Local Session Storage | - | Verified |
+| GPROF-02 | P1: Session Clear on Cancel | - | Verified |
+| GPROF-03 | P2: Auto Pre-Registration | Phase 1 | Verified |
+| GPROF-04 | P2: Event History Union | Phase 1 | Verified |
+| GPROF-05 | P2: Non-blocking Pre-reg | Phase 1 | Verified |
+| GPROF-06 | P2: Google Account Upgrade | Phase 1 | Verified |
+| GPROF-07 | P2: Phone Verification Claim | Phase 1 | Verified |
+| GPROF-08 | P3: Profile Page Dashboard | Phase 2/3 | Verified |
 
-**Coverage:** 8 total, 2 verified built, 6 pending future phases.
+**Coverage:** 8 total, 8 verified.
 
 ---
 

@@ -190,18 +190,18 @@ Guests need zero-friction access to confirm their attendance (RSVP) and coordina
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| GEXP-01 | P1: View event details | - | Verified (built) |
-| GEXP-02 | P1: Cancelled event banner | - | Verified (built) |
-| GEXP-03 | P1: Skeleton loaders | - | Verified (built) |
-| GEXP-04 | P1: Verified 1-Touch RSVP | Design | Pending |
-| GEXP-05 | P1: Claim item | - | Verified (built) |
-| GEXP-06 | P1: Unclaim item | - | Verified (built) |
-| GEXP-07 | P1: Cancel RSVP + auto-unclaim | - | Verified (built) |
-| GEXP-08 | P1: Pix Card + Split Calculation | Design | Pending |
-| GEXP-09 | P2: Seasonal theme | - | Verified (built) |
-| GEXP-10 | P2: Real-time Guest count | - | Verified (built) |
+| GEXP-01 | P1: View event details | - | Verified |
+| GEXP-02 | P1: Cancelled event banner | - | Verified |
+| GEXP-03 | P1: Skeleton loaders | - | Verified |
+| GEXP-04 | P1: Verified 1-Touch RSVP | Phase 2/3 | Verified |
+| GEXP-05 | P1: Claim item | - | Verified |
+| GEXP-06 | P1: Unclaim item | - | Verified |
+| GEXP-07 | P1: Cancel RSVP + auto-unclaim | Phase 1/3 | Verified |
+| GEXP-08 | P1: Pix Card + Split Calculation | Phase 2/3 | Verified |
+| GEXP-09 | P2: Seasonal theme | - | Verified |
+| GEXP-10 | P2: Real-time Guest count | - | Verified |
 
-**Coverage:** 10 total, 8 verified built, 2 pending design/task.
+**Coverage:** 10 total, 10 verified.
 
 ---
 

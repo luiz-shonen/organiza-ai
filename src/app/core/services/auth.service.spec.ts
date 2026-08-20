@@ -37,6 +37,16 @@ vi.mock('firebase/auth', () => ({
   GoogleAuthProvider: mocks.MockGoogleAuthProvider,
 }));
 
+vi.mock('firebase/firestore', async () => {
+  const { createFirestoreModuleMock } = await import('../../testing/mocks');
+  return createFirestoreModuleMock();
+});
+
+vi.mock('@firebase/firestore', async () => {
+  const { createFirestoreModuleMock } = await import('../../testing/mocks');
+  return createFirestoreModuleMock();
+});
+
 describe('AuthService', () => {
   let service: AuthService;
 

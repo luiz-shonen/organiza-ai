@@ -3,12 +3,19 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-19  
-**State:** Feature 02 (`02-event-management`) Completed and Verified — All 5 tasks implemented, 71 unit tests passing (+24 tests), discrimination sensor passed (5/5 killed), validation report PASS.  
-**Next step:** Execute Feature 03 (`03-guest-experience`) tasks via `/tlc-spec-driven implement`.
+**State:** Wave 1 & Wave 2 Feature Execution Completed & Fully Verified — Features 01, 02, 03, 04, 05, 06, and 07 are implemented, integrated on `main`, and 100% verified.  
+**Test Suite:** 29 test files passed, 199 unit tests passed (0 failures), production build green (`npm run build`).  
+**Validation Gate:** `validate_state.py` reports 0 errors across all 7 features (`[01-core-auth, 02-event-management, 03-guest-experience, 04-testing-strategy, 05-event-collaboration, 06-guest-profile, 07-family-roster]`).  
 
-**Active branches:** main (production; PWA deployed to Firebase Hosting)  
-**What exists:** Feature 01 (`01-core-auth`) and Feature 02 (`02-event-management`) with multi-stage reminders (7d & 1d countdowns), critical change & cancellation notifications, status filter chips on dashboard, open registration, email verification banner with cooldown, `authGuard`, and `superAdminGuard`. All 7 feature specs, technical designs, and atomic tasks breakdowns are fully generated and validated.  
-**Open gaps:** Execute implementation of remaining features (03 to 07): 1-touch verified RSVP & smart split, test harness setup, collaborator auto-claim, profile page, and family roster batch RSVP.
+**Active branches:** `main` (production)  
+**What exists:**
+- **Feature 01 (`01-core-auth`)**: Open Google & Email/Password registration, verification banner with 60s cooldown, `authGuard`, `superAdminGuard`.
+- **Feature 02 (`02-event-management`)**: Full event CRUD, multi-stage reminders (7d & 1d countdowns), critical change & cancellation notifications, status filter chips on dashboard.
+- **Feature 03 (`03-guest-experience`)**: 1-touch verified Google RSVP, atomic RSVP cancellation with item release, dynamic split estimation on `PixCardComponent` with 1-click copy, celebratory confetti.
+- **Feature 04 (`04-testing-strategy`)**: Mock fixtures in `src/app/testing/mocks/`, LocationService CEP resolution tests, ThemeService tests, Playwright configuration & smoke tests.
+- **Feature 05 (`05-event-collaboration`)**: Scoped feeds (owned + collaborated events), email invitation auto-claim via Firestore `writeBatch`, collaborator invite dialog with MatChips, role badges on event cards, field protection for non-owners.
+- **Feature 06 (`06-guest-profile`)**: `UserProfile` model, `/perfil` route protected by `authGuard`, profile editing with `ProfileInfoCardComponent`, attended events history.
+- **Feature 07 (`07-family-roster`)**: `FamilyMember` model, `FamilyService` for `users/{uid}/family` subcollection, `FamilyRosterManagerComponent` on Profile page, `FamilySelectorComponent` for batch RSVP, `GuestService.batchConfirmRsvp` atomically creating primary + linked guest records, cascading cancellation.
 
 ---
 
@@ -42,7 +49,7 @@
 **Date:** Project inception  
 **Decision:** Firebase is initialized manually in FirebaseService. @angular/fire is NOT used.  
 **Rationale:** Dependency conflicts with Angular 21+. Direct SDK injection gives full control.  
-**Status:** In force. All Firebase calls go through EventService, GuestService, ItemService, AuthService, UserService.
+**Status:** In force. All Firebase calls go through EventService, GuestService, ItemService, AuthService, UserService, FamilyService.
 
 ---
 
@@ -120,10 +127,10 @@
 
 ---
 
-### AD-015 — No Automated Tests (Critical Gap)
-**Date:** 2026-08-17 (documented)  
-**Decision:** The project currently has zero automated tests. This is a critical gap. Testing strategy (unit + Playwright e2e) specified in 04-testing-strategy.  
-**Status:** Gap — execution pending.
+### AD-015 — No Automated Tests (Resolved)
+**Date:** 2026-08-17 (Resolved in 04-testing-strategy)  
+**Decision:** Automated test suite established with Vitest for unit & component API testing (199 tests) and Playwright for E2E smoke journeys.  
+**Status:** Resolved.
 
 ---
 
@@ -139,7 +146,7 @@
 **Date:** 2026-08-17  
 **Decision:** Each event has exactly one owner (creator) and zero or more collaborators (invited by owner). The owner has full control (edit core details, cancel, delete). Collaborators can manage items and guest lists, but cannot edit core details (title, date, location, description, pixKey) or delete the event.  
 **Rationale:** Simple, robust permission model that eliminates artificial organizational hierarchies.  
-**Status:** In force. Specified in 05-event-collaboration.
+**Status:** In force. Specified and verified in 05-event-collaboration.
 
 ---
 
@@ -155,7 +162,7 @@
 **Date:** 2026-08-17  
 **Decision:** Users can manage a private list of family members in their personal account profile. In RSVP flows, a collapsible 'Adicionar Família' toggle allows one-click or selective batch confirmation for family members.  
 **Rationale:** Drastically speeds up multi-person RSVPs without exposing family member data globally.  
-**Status:** Specified in 07-family-roster.
+**Status:** In force. Specified and verified in 07-family-roster.
 
 ---
 

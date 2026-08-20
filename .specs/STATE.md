@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 08 (`08-playwright-e2e-coverage`) Technical Design Completed & Validated — Page Object Models, component harnesses, custom fixtures, strict data-testid taxonomy, axe-core a11y, dual-context concurrency, visual layout baselines, and CI pipeline designed.  
-**Test Suite:** 29 test files passed, 199 unit tests passed (0 failures), production build green (`npm run build`).  
-**Validation Gate:** `validate_spec.py 08-playwright-e2e-coverage` reports 0 errors, 0 warnings.  
-**Next step:** Execute `/tlc-spec-driven tasks` to break Feature 08 into atomic tasks and execution phases.  
+**State:** Feature 08 (`08-playwright-e2e-coverage`) Tasks Breakdown Completed & Validated (34 tasks across 7 phases) — Playwright Infrastructure, Page Objects, Component Harnesses, Template data-testid Instrumentation, Core Journey Specs, Visual Layout & A11y Specs, Advanced Scenarios (Concurrency, Share, PWA, Throttling), and GitHub Actions CI Workflow.  
+**Test Suite:** 29 test files, 199 unit tests defined, production build green (`npm run build`).  
+**Validation Gate:** `validate_spec.py` (0 errors, 0 warnings) and `validate_tasks.py` (0 errors) passed.  
+**Next step:** Execute `/tlc-spec-driven implement` to begin sequential task implementation (or batch sub-agent execution).  
 
 **Active branches:** `main` (production)  
 **What exists:**

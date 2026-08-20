@@ -401,9 +401,9 @@ T34
 
 **Done when**:
 
-- [ ] `RsvpDialogHarness` defines locators: `dialogRoot`, `confirmBtn`, `cancelBtn`, `phoneInput`, `familySelector`
-- [ ] Implements methods: `confirmRsvp()`, `cancel()`, `assertFocusTrapped()`, `dismissViaEscape()`
-- [ ] Build gate passes: `npm run build`
+- [x] `RsvpDialogHarness` defines locators: `dialogRoot`, `confirmBtn`, `cancelBtn`, `phoneInput`, `familySelector`
+- [x] Implements methods: `confirmRsvp()`, `cancel()`, `assertFocusTrapped()`, `dismissViaEscape()`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -426,9 +426,9 @@ T34
 
 **Done when**:
 
-- [ ] `ItemListHarness` defines locators: `itemCards`, `claimBtns`, `unclaimBtns`, `remainingCount`
-- [ ] Implements methods: `claimItem(index)`, `unclaimItem(index)`, `assertRemaining(count)`
-- [ ] Build gate passes: `npm run build`
+- [x] `ItemListHarness` defines locators: `itemCards`, `claimBtns`, `unclaimBtns`, `remainingCount`
+- [x] Implements methods: `claimItem(index)`, `unclaimItem(index)`, `assertRemaining(count)`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -451,9 +451,9 @@ T34
 
 **Done when**:
 
-- [ ] `SharePanelHarness` defines locators: `qrCanvas`, `whatsappBtn`, `copyLinkBtn`, `inviteEmailInput`, `sendInviteBtn`
-- [ ] Implements methods: `getWhatsAppHref()`, `copyLink()`, `inviteCollaborator(email)`
-- [ ] Build gate passes: `npm run build`
+- [x] `SharePanelHarness` defines locators: `qrCanvas`, `whatsappBtn`, `copyLinkBtn`, `inviteEmailInput`, `sendInviteBtn`
+- [x] Implements methods: `getWhatsAppHref()`, `copyLink()`, `inviteCollaborator(email)`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -476,9 +476,9 @@ T34
 
 **Done when**:
 
-- [ ] `FamilyRosterHarness` defines locators: `memberCards`, `nameInput`, `relationshipSelect`, `addMemberBtn`, `deleteMemberBtns`, `selectAllCheckbox`
-- [ ] Implements methods: `addMember(name, relationship)`, `deleteMember(index)`, `toggleSelectAll()`
-- [ ] Build gate passes: `npm run build`
+- [x] `FamilyRosterHarness` defines locators: `memberCards`, `nameInput`, `relationshipSelect`, `addMemberBtn`, `deleteMemberBtns`, `selectAllCheckbox`
+- [x] Implements methods: `addMember(name, relationship)`, `deleteMember(index)`, `toggleSelectAll()`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -501,9 +501,9 @@ T34
 
 **Done when**:
 
-- [ ] `ConfirmDialogHarness` defines locators: `dialogRoot`, `confirmBtn`, `cancelBtn`, `messageText`
-- [ ] Implements methods: `confirm()`, `cancel()`, `assertVisible()`
-- [ ] Build gate passes: `npm run build`
+- [x] `ConfirmDialogHarness` defines locators: `dialogRoot`, `confirmBtn`, `cancelBtn`, `messageText`
+- [x] Implements methods: `confirm()`, `cancel()`, `assertVisible()`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

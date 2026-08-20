@@ -3,17 +3,89 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { UserService } from './user.service';
 import { FirebaseService } from './firebase.service';
 import { FamilyService } from './family.service';
-import { firestoreMocks } from '../../testing/mocks';
 
-vi.mock('firebase/firestore', async () => {
-  const { createFirestoreModuleMock } = await import('../../testing/mocks');
-  return createFirestoreModuleMock();
+const mocks = vi.hoisted(() => {
+  const mockBatch = {
+    set: vi.fn(),
+    delete: vi.fn(),
+    update: vi.fn(),
+    commit: vi.fn().mockResolvedValue(undefined),
+  };
+
+  return {
+    mockBatch,
+    mockCollection: vi.fn(),
+    mockCollectionGroup: vi.fn(),
+    mockDoc: vi.fn(),
+    mockAddDoc: vi.fn(),
+    mockSetDoc: vi.fn(),
+    mockGetDoc: vi.fn(),
+    mockUpdateDoc: vi.fn(),
+    mockDeleteDoc: vi.fn(),
+    mockOnSnapshot: vi.fn(),
+    mockOrderBy: vi.fn(),
+    mockQuery: vi.fn(),
+    mockWhere: vi.fn(),
+    mockLimit: vi.fn(),
+    mockGetDocs: vi.fn(),
+    mockWriteBatch: vi.fn(() => mockBatch),
+    mockArrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
+    mockArrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
+    serverTimestamp: vi.fn(),
+    Timestamp: class Timestamp {
+      constructor(public seconds: number, public nanoseconds: number) {}
+      toDate() {
+        return new Date(this.seconds * 1000);
+      }
+    },
+  };
 });
 
-vi.mock('@firebase/firestore', async () => {
-  const { createFirestoreModuleMock } = await import('../../testing/mocks');
-  return createFirestoreModuleMock();
-});
+vi.mock('firebase/firestore', () => ({
+  initializeFirestore: vi.fn(),
+  collection: mocks.mockCollection,
+  collectionGroup: mocks.mockCollectionGroup,
+  doc: mocks.mockDoc,
+  addDoc: mocks.mockAddDoc,
+  setDoc: mocks.mockSetDoc,
+  getDoc: mocks.mockGetDoc,
+  updateDoc: mocks.mockUpdateDoc,
+  deleteDoc: mocks.mockDeleteDoc,
+  onSnapshot: mocks.mockOnSnapshot,
+  orderBy: mocks.mockOrderBy,
+  query: mocks.mockQuery,
+  where: mocks.mockWhere,
+  limit: mocks.mockLimit,
+  getDocs: mocks.mockGetDocs,
+  writeBatch: mocks.mockWriteBatch,
+  arrayUnion: mocks.mockArrayUnion,
+  arrayRemove: mocks.mockArrayRemove,
+  serverTimestamp: vi.fn(),
+  Timestamp: mocks.Timestamp,
+}));
+
+vi.mock('@firebase/firestore', () => ({
+  initializeFirestore: vi.fn(),
+  collection: mocks.mockCollection,
+  collectionGroup: mocks.mockCollectionGroup,
+  doc: mocks.mockDoc,
+  addDoc: mocks.mockAddDoc,
+  setDoc: mocks.mockSetDoc,
+  getDoc: mocks.mockGetDoc,
+  updateDoc: mocks.mockUpdateDoc,
+  deleteDoc: mocks.mockDeleteDoc,
+  onSnapshot: mocks.mockOnSnapshot,
+  orderBy: mocks.mockOrderBy,
+  query: mocks.mockQuery,
+  where: mocks.mockWhere,
+  limit: mocks.mockLimit,
+  getDocs: mocks.mockGetDocs,
+  writeBatch: mocks.mockWriteBatch,
+  arrayUnion: mocks.mockArrayUnion,
+  arrayRemove: mocks.mockArrayRemove,
+  serverTimestamp: vi.fn(),
+  Timestamp: mocks.Timestamp,
+}));
 
 describe('UserService', () => {
   let service: UserService;
@@ -27,17 +99,17 @@ describe('UserService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-    firestoreMocks.collection.mockReturnValue('col-ref' as any);
-    firestoreMocks.collectionGroup.mockReturnValue('col-group-ref' as any);
-    firestoreMocks.getDoc.mockResolvedValue({ exists: () => false } as any);
-    firestoreMocks.getDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
-    firestoreMocks.setDoc.mockResolvedValue(undefined as any);
-    firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
-    firestoreMocks.deleteDoc.mockResolvedValue(undefined as any);
-    firestoreMocks.query.mockReturnValue('query-ref' as any);
-    firestoreMocks.where.mockReturnValue('where-ref' as any);
-    firestoreMocks.orderBy.mockReturnValue('order-ref' as any);
+    mocks.mockDoc.mockReturnValue('doc-ref' as any);
+    mocks.mockCollection.mockReturnValue('col-ref' as any);
+    mocks.mockCollectionGroup.mockReturnValue('col-group-ref' as any);
+    mocks.mockGetDoc.mockResolvedValue({ exists: () => false } as any);
+    mocks.mockGetDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
+    mocks.mockSetDoc.mockResolvedValue(undefined as any);
+    mocks.mockUpdateDoc.mockResolvedValue(undefined as any);
+    mocks.mockDeleteDoc.mockResolvedValue(undefined as any);
+    mocks.mockQuery.mockReturnValue('query-ref' as any);
+    mocks.mockWhere.mockReturnValue('where-ref' as any);
+    mocks.mockOrderBy.mockReturnValue('order-ref' as any);
 
     mockFamilyService = {
       getFamilyMembers: vi.fn().mockResolvedValue([]),
@@ -66,12 +138,12 @@ describe('UserService', () => {
     it('returns null if uid is empty', async () => {
       const result = await service.getProfile('');
       expect(result).toBeNull();
-      expect(firestoreMocks.getDoc).not.toHaveBeenCalled();
+      expect(mocks.mockGetDoc).not.toHaveBeenCalled();
     });
 
     it('returns UserProfile when user document exists', async () => {
-      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-      firestoreMocks.getDoc.mockResolvedValue({
+      mocks.mockDoc.mockReturnValue('doc-ref' as any);
+      mocks.mockGetDoc.mockResolvedValue({
         exists: () => true,
         data: () => ({
           email: 'test@example.com',
@@ -84,7 +156,7 @@ describe('UserService', () => {
 
       const profile = await service.getProfile('user-123');
 
-      expect(firestoreMocks.doc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
+      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
       expect(profile).toEqual({
         uid: 'user-123',
         email: 'test@example.com',
@@ -99,8 +171,8 @@ describe('UserService', () => {
     });
 
     it('returns null when document does not exist', async () => {
-      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-      firestoreMocks.getDoc.mockResolvedValue({
+      mocks.mockDoc.mockReturnValue('doc-ref' as any);
+      mocks.mockGetDoc.mockResolvedValue({
         exists: () => false,
       } as any);
 
@@ -109,8 +181,8 @@ describe('UserService', () => {
     });
 
     it('handles exceptions gracefully and returns null', async () => {
-      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-      firestoreMocks.getDoc.mockRejectedValue(new Error('Firestore error'));
+      mocks.mockDoc.mockReturnValue('doc-ref' as any);
+      mocks.mockGetDoc.mockRejectedValue(new Error('Firestore error'));
 
       const profile = await service.getProfile('err-uid');
       expect(profile).toBeNull();
@@ -120,23 +192,23 @@ describe('UserService', () => {
   describe('updateProfile', () => {
     it('does nothing if uid is empty', async () => {
       await service.updateProfile('', { displayName: 'New Name' });
-      expect(firestoreMocks.doc).not.toHaveBeenCalled();
+      expect(mocks.mockDoc).not.toHaveBeenCalled();
     });
 
     it('updates existing user document in Firestore', async () => {
-      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-      firestoreMocks.getDoc.mockResolvedValue({
+      mocks.mockDoc.mockReturnValue('doc-ref' as any);
+      mocks.mockGetDoc.mockResolvedValue({
         exists: () => true,
       } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
+      mocks.mockUpdateDoc.mockResolvedValue(undefined as any);
 
       await service.updateProfile('user-123', {
         displayName: 'Updated Name',
         phone: '11988888888',
       });
 
-      expect(firestoreMocks.doc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
-      expect(firestoreMocks.updateDoc).toHaveBeenCalledWith(
+      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
+      expect(mocks.mockUpdateDoc).toHaveBeenCalledWith(
         'doc-ref',
         expect.objectContaining({
           displayName: 'Updated Name',
@@ -148,17 +220,17 @@ describe('UserService', () => {
     });
 
     it('creates a new user document when document does not exist yet', async () => {
-      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-      firestoreMocks.getDoc.mockResolvedValue({
+      mocks.mockDoc.mockReturnValue('doc-ref' as any);
+      mocks.mockGetDoc.mockResolvedValue({
         exists: () => false,
       } as any);
-      firestoreMocks.setDoc.mockResolvedValue(undefined as any);
+      mocks.mockSetDoc.mockResolvedValue(undefined as any);
 
       await service.updateProfile('user-new', {
         displayName: 'Brand New',
       });
 
-      expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect(mocks.mockSetDoc).toHaveBeenCalledWith(
         'doc-ref',
         expect.objectContaining({
           uid: 'user-new',
@@ -171,9 +243,9 @@ describe('UserService', () => {
     });
 
     it('throws error when updateDoc fails', async () => {
-      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
-      firestoreMocks.getDoc.mockResolvedValue({ exists: () => true } as any);
-      firestoreMocks.updateDoc.mockRejectedValue(new Error('Update failed'));
+      mocks.mockDoc.mockReturnValue('doc-ref' as any);
+      mocks.mockGetDoc.mockResolvedValue({ exists: () => true } as any);
+      mocks.mockUpdateDoc.mockRejectedValue(new Error('Update failed'));
 
       await expect(
         service.updateProfile('user-123', { displayName: 'Fail' }),
@@ -188,11 +260,11 @@ describe('UserService', () => {
     });
 
     it('retrieves events from rsvpEvents and collectionGroup queries', async () => {
-      firestoreMocks.doc.mockImplementation((_fs: any, col: string, id: string) => {
+      mocks.mockDoc.mockImplementation((_fs: any, col: string, id: string) => {
         return { col, id } as any;
       });
 
-      firestoreMocks.getDoc.mockImplementation(async (ref: any) => {
+      mocks.mockGetDoc.mockImplementation(async (ref: any) => {
         if (ref.col === 'users') {
           return {
             exists: () => true,
@@ -236,10 +308,10 @@ describe('UserService', () => {
         return { exists: () => false } as any;
       });
 
-      firestoreMocks.collectionGroup.mockReturnValue('collection-group-guests' as any);
-      firestoreMocks.where.mockReturnValue('where-clause' as any);
-      firestoreMocks.query.mockReturnValue('query-ref' as any);
-      firestoreMocks.getDocs.mockResolvedValue({
+      mocks.mockCollectionGroup.mockReturnValue('collection-group-guests' as any);
+      mocks.mockWhere.mockReturnValue('where-clause' as any);
+      mocks.mockQuery.mockReturnValue('query-ref' as any);
+      mocks.mockGetDocs.mockResolvedValue({
         forEach: (cb: any) => {
           cb({
             id: 'guest-doc-1',
@@ -262,7 +334,7 @@ describe('UserService', () => {
     });
 
     it('returns empty array when error occurs during fetch', async () => {
-      firestoreMocks.doc.mockImplementation(() => {
+      mocks.mockDoc.mockImplementation(() => {
         throw new Error('Firestore read error');
       });
 

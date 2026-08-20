@@ -27,6 +27,8 @@ const mocks = vi.hoisted(() => {
 });
 
 vi.mock('firebase/auth', () => ({
+  initializeAuth: vi.fn(),
+  getAuth: vi.fn(),
   onAuthStateChanged: mocks.mockOnAuthStateChanged,
   signInWithEmailAndPassword: mocks.mockSignInWithEmailAndPassword,
   createUserWithEmailAndPassword: mocks.mockCreateUserWithEmailAndPassword,
@@ -37,15 +39,36 @@ vi.mock('firebase/auth', () => ({
   GoogleAuthProvider: mocks.MockGoogleAuthProvider,
 }));
 
-vi.mock('firebase/firestore', async () => {
-  const { createFirestoreModuleMock } = await import('../../testing/mocks');
-  return createFirestoreModuleMock();
-});
+vi.mock('@firebase/auth', () => ({
+  initializeAuth: vi.fn(),
+  getAuth: vi.fn(),
+  onAuthStateChanged: mocks.mockOnAuthStateChanged,
+  signInWithEmailAndPassword: mocks.mockSignInWithEmailAndPassword,
+  createUserWithEmailAndPassword: mocks.mockCreateUserWithEmailAndPassword,
+  signInWithPopup: mocks.mockSignInWithPopup,
+  signInAnonymously: mocks.mockSignInAnonymously,
+  signOut: mocks.mockSignOut,
+  sendEmailVerification: mocks.mockSendEmailVerification,
+  GoogleAuthProvider: mocks.MockGoogleAuthProvider,
+}));
 
-vi.mock('@firebase/firestore', async () => {
-  const { createFirestoreModuleMock } = await import('../../testing/mocks');
-  return createFirestoreModuleMock();
-});
+vi.mock('firebase/firestore', () => ({
+  initializeFirestore: vi.fn(),
+  getFirestore: vi.fn(),
+  doc: vi.fn(),
+  setDoc: vi.fn(),
+  getDoc: vi.fn(),
+  serverTimestamp: vi.fn(),
+}));
+
+vi.mock('@firebase/firestore', () => ({
+  initializeFirestore: vi.fn(),
+  getFirestore: vi.fn(),
+  doc: vi.fn(),
+  setDoc: vi.fn(),
+  getDoc: vi.fn(),
+  serverTimestamp: vi.fn(),
+}));
 
 describe('AuthService', () => {
   let service: AuthService;

@@ -1,23 +1,41 @@
 <mat-card class="pix-card glass-card" appearance="outlined">
   <mat-card-header>
-    <mat-icon matCardAvatar class="pix-card__icon">pix</mat-icon>
+    <mat-icon matCardAvatar class="pix-card__icon" aria-hidden="true">pix</mat-icon>
     <mat-card-title>Rachadinha via Pix</mat-card-title>
-    <mat-card-subtitle>Contribua com o evento!</mat-card-subtitle>
+    <mat-card-subtitle>
+      @if (pixType()) {
+        Tipo: {{ pixType() }}
+      } @else {
+        Contribua com o evento!
+      }
+    </mat-card-subtitle>
   </mat-card-header>
+
   <mat-card-content>
-    <div class="pix-card__key-container">
-      <code class="pix-card__key" aria-label="Chave Pix">{{ pixKey() }}</code>
-    </div>
+    @if (formattedSuggestedSplit(); as split) {
+      <div class="pix-card__split-container" role="status" aria-label="Sugestão de contribuição por pessoa">
+        <span class="pix-card__split-label">Sugestão de contribuição:</span>
+        <span class="pix-card__split-amount">{{ split }} por pessoa</span>
+      </div>
+    }
+
+    @if (pixKey()) {
+      <div class="pix-card__key-container">
+        <code class="pix-card__key" aria-label="Chave Pix">{{ pixKey() }}</code>
+      </div>
+    }
   </mat-card-content>
+
   <mat-card-actions>
     <button
       mat-flat-button
       class="pix-card__copy-btn"
       (click)="copyToClipboard()"
+      [disabled]="!pixKey()"
       aria-label="Copiar chave Pix"
     >
-      <mat-icon>content_copy</mat-icon>
-      Copiar Chave
+      <mat-icon aria-hidden="true">content_copy</mat-icon>
+      Copiar Chave Pix
     </button>
   </mat-card-actions>
 </mat-card>

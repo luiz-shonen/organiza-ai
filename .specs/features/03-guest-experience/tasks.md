@@ -140,13 +140,13 @@ T5
 
 **Done when**:
 
-- [ ] `estimatedBudget` input and `guestCount` input added as Signal inputs
-- [ ] `suggestedSplit` computed signal correctly calculates `budget / count` (or null if budget is empty or count is 0)
-- [ ] Renders formatted currency "R$ XX,XX por pessoa" when suggested split is present
-- [ ] Emits `copyPix` output when copy button is clicked
-- [ ] Unit tests cover: split calculation with valid budget, null split when budget missing, and copy event emission
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `estimatedBudget` input and `guestCount` input added as Signal inputs
+- [x] `suggestedSplit` computed signal correctly calculates `budget / count` (or null if budget is empty or count is 0)
+- [x] Renders formatted currency "R$ XX,XX por pessoa" when suggested split is present
+- [x] Emits `copyPix` output when copy button is clicked
+- [x] Unit tests cover: split calculation with valid budget, null split when budget missing, and copy event emission
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

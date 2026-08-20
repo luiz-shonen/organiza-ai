@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  input,
+  output,
+  computed,
+  inject,
+} from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,13 +19,39 @@ import { Clipboard } from '@angular/cdk/clipboard';
   styleUrl: './pix-card.component.scss',
 })
 export class PixCardComponent {
-  readonly pixKey = input.required<string>();
+  readonly pixKey = input<string | null>(null);
+  readonly pixType = input<string | undefined>(undefined);
+  readonly estimatedBudget = input<number | null>(null);
+  readonly guestCount = input<number>(0);
+
+  readonly copyPix = output<string>();
   readonly copied = output<void>();
 
   private readonly clipboard = inject(Clipboard);
 
+  readonly suggestedSplit = computed<number | null>(() => {
+    const budget = this.estimatedBudget();
+    const count = this.guestCount();
+    return budget && count > 0 ? budget / count : null;
+  });
+
+  readonly formattedSuggestedSplit = computed<string | null>(() => {
+    const split = this.suggestedSplit();
+    if (split === null || split === undefined) {
+      return null;
+    }
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(split);
+  });
+
   protected copyToClipboard(): void {
-    this.clipboard.copy(this.pixKey());
-    this.copied.emit();
+    const key = this.pixKey();
+    if (key) {
+      this.clipboard.copy(key);
+      this.copyPix.emit(key);
+      this.copied.emit();
+    }
   }
 }

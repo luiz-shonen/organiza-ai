@@ -1,7 +1,7 @@
 .pix-card {
   &__icon {
-    background-color: #00bfa5;
-    color: #fff;
+    background-color: var(--org-primary, #00bfa5);
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11,10 +11,34 @@
     font-size: 24px;
   }
 
+  &__split-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(var(--org-primary-rgb, 0, 191, 165), 0.12), rgba(var(--org-secondary-rgb, 124, 77, 255), 0.08));
+    border: 1px solid rgba(var(--org-primary-rgb, 0, 191, 165), 0.25);
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  &__split-label {
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant, #666);
+    font-weight: 500;
+  }
+
+  &__split-amount {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--org-primary-color, var(--org-primary, #00bfa5));
+  }
+
   &__key-container {
     margin-top: 12px;
     padding: 12px 16px;
-    background-color: var(--mat-sys-surface-container);
+    background-color: var(--mat-sys-surface-container, rgba(0, 0, 0, 0.04));
     border-radius: 8px;
     text-align: center;
   }
@@ -28,5 +52,9 @@
 
   &__copy-btn {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 }

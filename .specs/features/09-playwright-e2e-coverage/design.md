@@ -278,19 +278,20 @@ When evaluating captured screenshots in `e2e/screenshots/`, the agent inspects t
 5. **Mobile Touch Target Ergonomics**: All interactive elements (buttons, chips, inputs, toggles) have a minimum clickable area of 48px x 48px on mobile viewports (375px / 412px).
 6. **Sticky Action Bar Positioning**: On mobile viewports, the floating RSVP / CTA footer remains anchored above bottom navigation without obscuring card content.
 
-### 3. Baseline Screenshot Milestone Matrix
+### 3. Baseline Screenshot Milestone Matrix (Desktop & Mobile Isolation)
 
-| Journey / Milestone | Screenshot Output Path | Primary Heuristics & Design Checks |
-| ------------------- | ---------------------- | ---------------------------------- |
-| Home (Light Mode) | `e2e/screenshots/01-home-light.png` | Heuristics 4, 8, 10: Glassmorphism borders, empty state / card grid, light theme tokens. |
-| Home (Dark Mode) | `e2e/screenshots/01-home-dark.png` | Heuristics 4, 8: Dark mode contrast, purple surface tint, theme toggle icon. |
-| Login / Register (Desktop) | `e2e/screenshots/02-login-desktop.png` | Heuristics 1, 5, 9: Input alignment, floating orbs depth, inline mat-error states. |
-| Login (Mobile 375px) | `e2e/screenshots/02-login-mobile.png` | Heuristics 7, 8: Responsive scaling, Google OAuth button 48px touch target. |
-| Organizer Dashboard | `e2e/screenshots/03-dashboard-filters.png` | Heuristics 1, 4, 7: Status filter chips spacing, event card status badges. |
-| Event Creation & ViaCEP | `e2e/screenshots/04-event-editor-cep.png` | Heuristics 1, 5, 6: ViaCEP auto-populated address layout, datepicker trigger. |
-| Event Detail & RSVP Modal | `e2e/screenshots/05-event-detail-rsvp.png` | Heuristics 3, 6, 7: Modal backdrop blur, focus trap ring, 1-click Pix copy styling. |
-| Profile & Family Roster | `e2e/screenshots/06-profile-family.png` | Heuristics 2, 7: Family member card list, add member chip, delete action alignment. |
-| Mobile Viewport (375px) | `e2e/screenshots/07-mobile-viewport.png` | Heuristics 4, 7, 8: Sticky RSVP footer bar, drawer touch boundaries, 48px tap targets. |
+To eliminate race conditions and prevent screenshot overwriting during concurrent multi-worker test runs, `BasePage.captureScreenshot(name)` automatically detects viewport width (`viewport.width < 768`) and saves to dedicated device paths:
+
+| Journey / Milestone | Screenshot Output Paths (Desktop & Mobile) | Primary Heuristics & Design Checks |
+| ------------------- | ------------------------------------------ | ---------------------------------- |
+| Home (Light Mode) | `e2e/screenshots/01-home-light-desktop.png`<br>`e2e/screenshots/01-home-light-mobile.png` | Heuristics 4, 8, 10: Glassmorphism borders, empty state / card grid, light theme tokens. |
+| Home (Dark Mode) | `e2e/screenshots/02-home-dark-desktop.png`<br>`e2e/screenshots/02-home-dark-mobile.png` | Heuristics 4, 8: Dark mode contrast, purple surface tint, theme toggle icon. |
+| Login / Register | `e2e/screenshots/03-login-view-desktop.png`<br>`e2e/screenshots/03-login-view-mobile.png` | Heuristics 1, 5, 9: Input alignment, floating orbs depth, responsive scaling, 48px touch target. |
+| Organizer Dashboard | `e2e/screenshots/04-organizer-dashboard-desktop.png`<br>`e2e/screenshots/04-organizer-dashboard-mobile.png` | Heuristics 1, 4, 7: Status filter chips spacing, event card status badges. |
+| Event Creation & ViaCEP | `e2e/screenshots/05-event-editor-viacep-desktop.png`<br>`e2e/screenshots/05-event-editor-viacep-mobile.png` | Heuristics 1, 5, 6: ViaCEP auto-populated address layout, datepicker trigger. |
+| Event Detail View | `e2e/screenshots/06-event-detail-desktop.png`<br>`e2e/screenshots/06-event-detail-mobile.png` | Heuristics 3, 6, 7: Banner layout, countdown timer, 1-click Pix copy styling. |
+| Profile & Family Roster | `e2e/screenshots/08-profile-family-roster-desktop.png`<br>`e2e/screenshots/08-profile-family-roster-mobile.png` | Heuristics 2, 7: Family member card list, add member chip, delete action alignment. |
+
 
 
 ---

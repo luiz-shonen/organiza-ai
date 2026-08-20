@@ -841,7 +841,7 @@ T34
 
 **Done when**:
 
-- [x] Captures full-page screenshots to `e2e/screenshots/` across all 7 milestone views
+- [x] Captures full-page screenshots to `e2e/screenshots/` across all 7 milestone views with isolated desktop and mobile paths (`*-desktop.png` and `*-mobile.png`)
 - [x] Audits captured screenshots against Nielsen Heuristics (form alignment, Glassmorphism, 48px touch targets)
 - [x] Logs inspection report in test logs
 - [x] Full gate passes: `npm run test:e2e`

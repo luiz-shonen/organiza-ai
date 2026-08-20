@@ -35,3 +35,29 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`.
 ### Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+### Automated Testing
+
+- **Unit & Component Tests (Vitest)**:
+  ```bash
+  npm test -- --watch=false
+  ```
+- **End-to-End Tests (Playwright - Desktop Chromium & Mobile Chrome)**:
+  ```bash
+  npm run test:e2e
+  ```
+- **E2E CI Headless Execution**:
+  ```bash
+  npm run test:e2e:ci
+  ```
+- **E2E Mobile Viewport Only**:
+  ```bash
+  npm run test:e2e:mobile
+  ```
+
+### Visual Layout Baselines
+
+The E2E suite automatically captures high-resolution visual layout baselines for key milestones across both **Desktop** and **Mobile** viewports into `e2e/screenshots/`:
+- `e2e/screenshots/{milestone}-desktop.png` (Desktop Chromium - 1280x720)
+- `e2e/screenshots/{milestone}-mobile.png` (Mobile Chrome - Pixel 5 / 393x851)
+

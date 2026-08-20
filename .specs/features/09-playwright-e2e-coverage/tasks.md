@@ -919,10 +919,10 @@ T34
 
 **Done when**:
 
-- [ ] Verifies QR code canvas renders with valid data URI on share panel
-- [ ] Verifies WhatsApp share link constructs URI schema (`https://api.whatsapp.com/send?text=...`) containing title, date, location, and deep link
-- [ ] Verifies 1-click copy copies link to clipboard with confirmation toast
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies QR code canvas renders with valid data URI on share panel
+- [x] Verifies WhatsApp share link constructs URI schema (`https://api.whatsapp.com/send?text=...`) containing title, date, location, and deep link
+- [x] Verifies 1-click copy copies link to clipboard with confirmation toast
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

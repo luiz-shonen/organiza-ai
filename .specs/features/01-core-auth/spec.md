@@ -135,14 +135,14 @@ Organiza AI needs to provide self-serve access for event organizers and zero-fri
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| AUTH-01 | P1: Google Login (Open) | - | Verified (built) |
-| AUTH-02 | P1: User Profile Record | - | Verified (built) |
-| AUTH-03 | P1: Email/Password + Banner | Design | Pending |
-| AUTH-04 | P1: authGuard Protection | - | Verified (built) |
-| AUTH-05 | P1: Super Admin Analytics Role | - | Verified (built) |
-| AUTH-06 | P2: User Logout | - | Verified (built) |
+| AUTH-01 | P1: Google Login (Open) | Phase 2 | Verified (built) |
+| AUTH-02 | P1: User Profile Record | Phase 1 | Verified (built) |
+| AUTH-03 | P1: Email/Password + Banner | Phase 2, 3 | Verified (built) |
+| AUTH-04 | P1: authGuard Protection | Phase 1, 3 | Verified (built) |
+| AUTH-05 | P1: Super Admin Analytics Role | Phase 1, 3 | Verified (built) |
+| AUTH-06 | P2: User Logout | Phase 2 | Verified (built) |
 
-**Coverage:** 6 total, 5 verified built, 1 pending design/task.
+**Coverage:** 6 total, 6 verified built, 0 pending.
 
 ---
 

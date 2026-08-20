@@ -229,12 +229,12 @@ T5 → T6
 
 **Done when**:
 
-- [ ] `/meus-eventos` route protected by `authGuard`
-- [ ] `/admin` route protected by `superAdminGuard`
-- [ ] `/login` route configured for authentication entry
-- [ ] Unit tests verify route configuration, path mappings, and guard assignments
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `/meus-eventos` route protected by `authGuard`
+- [x] `/admin` route protected by `superAdminGuard`
+- [x] `/login` route configured for authentication entry
+- [x] Unit tests verify route configuration, path mappings, and guard assignments
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

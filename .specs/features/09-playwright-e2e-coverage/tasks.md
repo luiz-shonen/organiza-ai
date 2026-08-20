@@ -274,9 +274,9 @@ T34
 
 **Done when**:
 
-- [ ] `LoginPage` extends `BasePage` and defines locators: `emailInput`, `passwordInput`, `submitBtn`, `googleBtn`, `errorAlert`, `verificationBanner`
-- [ ] Implements methods: `login(email, password)`, `loginWithGoogle()`
-- [ ] Build gate passes: `npm run build`
+- [x] `LoginPage` extends `BasePage` and defines locators: `emailInput`, `passwordInput`, `submitBtn`, `googleBtn`, `errorAlert`, `verificationBanner`
+- [x] Implements methods: `login(email, password)`, `loginWithGoogle()`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

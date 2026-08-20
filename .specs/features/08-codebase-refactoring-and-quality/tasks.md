@@ -481,10 +481,10 @@ T23
 
 **Done when**:
 
-- [ ] `share-panel.component.spec.ts` created
-- [ ] Tests verify: QR canvas generation, copy link to clipboard with snackbar feedback, WhatsApp share link format
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `share-panel.component.spec.ts` created
+- [x] Tests verify: QR canvas generation, copy link to clipboard with snackbar feedback, WhatsApp share link format
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass (5 passed)
 
 **Tests**: unit  
 **Gate**: quick  

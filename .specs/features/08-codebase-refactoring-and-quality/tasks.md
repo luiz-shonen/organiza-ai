@@ -687,9 +687,9 @@ T23
 
 **Done when**:
 
-- [ ] `firebase.service.spec.ts` verifies: singleton initialization, instance exposures (`app`, `auth`, `firestore`)
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `firebase.service.spec.ts` verifies: singleton initialization, instance exposures (`app`, `auth`, `firestore`)
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass (3 passed)
 
 **Tests**: unit  
 **Gate**: quick  

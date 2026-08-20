@@ -401,11 +401,11 @@ T23
 
 **Done when**:
 
-- [ ] `confirm-dialog.component.html` and `confirm-dialog.component.scss` created and referenced via `templateUrl` & `styleUrl`
-- [ ] `ConfirmDialogData` imported from `src/app/core/models`
-- [ ] `confirm-dialog.component.spec.ts` verifies: data injection rendering, confirm button action, cancel button action
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `confirm-dialog.component.html` and `confirm-dialog.component.scss` created and referenced via `templateUrl` & `styleUrl`
+- [x] `ConfirmDialogData` imported from `src/app/core/models`
+- [x] `confirm-dialog.component.spec.ts` verifies: data injection rendering, confirm button action, cancel button action
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass (3 passed)
 
 **Tests**: unit  
 **Gate**: quick  

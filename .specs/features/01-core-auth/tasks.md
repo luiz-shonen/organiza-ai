@@ -199,14 +199,14 @@ T5 → T6
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `email` required input, `resendCooldown` input, and `resend` output event emitter
-- [ ] Disables resend button while `resendCooldown > 0` and displays remaining seconds
-- [ ] WCAG 2.1 AA accessible with appropriate `role="alert"` and ARIA labels
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: banner rendering, button disabled during cooldown, emit on click
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `email` required input, `resendCooldown` input, and `resend` output event emitter
+- [x] Disables resend button while `resendCooldown > 0` and displays remaining seconds
+- [x] WCAG 2.1 AA accessible with appropriate `role="alert"` and ARIA labels
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Unit tests cover: banner rendering, button disabled during cooldown, emit on click
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

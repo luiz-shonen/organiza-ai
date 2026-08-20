@@ -561,10 +561,10 @@ T23
 
 **Done when**:
 
-- [ ] `GuestSessionService` guards against missing `window` / `localStorage`
-- [ ] `guest-session.service.spec.ts` verifies: saving session, retrieving session, clearing session, safe fallback
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `GuestSessionService` guards against missing `window` / `localStorage`
+- [x] `guest-session.service.spec.ts` verifies: saving session, retrieving session, clearing session, safe fallback
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass (6 passed)
 
 **Tests**: unit  
 **Gate**: quick  

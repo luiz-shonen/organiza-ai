@@ -9,7 +9,7 @@
 
   @if (events() === undefined) {
     <div class="home__loading" role="status" aria-live="polite" aria-label="Carregando eventos">
-      <mat-spinner diameter="48"></mat-spinner>
+      <mat-spinner diameter="48" aria-label="Carregando eventos"></mat-spinner>
       <p>Carregando eventos...</p>
     </div>
   } @else if (events()!.length === 0) {

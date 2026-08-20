@@ -14,7 +14,7 @@ export class HomePage extends BasePage {
     this.eventCards = page.getByTestId('event-card').or(page.locator('mat-card.home__card'));
     this.emptyState = page.getByTestId('home-empty-state').or(page.locator('.home__empty'));
     this.themeToggleBtn = page.getByTestId('theme-toggle-btn').or(page.locator('.theme-toggle, [aria-label*="tema" i], [aria-label*="theme" i]'));
-    this.seasonalOverlay = page.getByTestId('seasonal-overlay').or(page.locator('app-seasonal-overlay, .seasonal-overlay'));
+    this.seasonalOverlay = page.getByTestId('seasonal-overlay').or(page.locator('.seasonal-overlay')).first();
   }
 
   async assertLoaded(): Promise<void> {

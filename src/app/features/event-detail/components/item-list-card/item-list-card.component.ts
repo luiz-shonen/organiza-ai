@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { PartyItem } from '../../../../core/models/item.model';
+import { PartyItem } from '../../../../core/models';
 
 @Component({
   selector: 'app-item-list-card',
@@ -11,9 +11,9 @@ import { PartyItem } from '../../../../core/models/item.model';
   styleUrl: './item-list-card.component.scss',
 })
 export class ItemListCardComponent {
-  public items = input.required<PartyItem[]>();
-  public currentUserId = input<string | null>(null);
+  public readonly items = input.required<PartyItem[]>();
+  public readonly currentUserId = input<string | null>(null);
 
-  @Output() onClaim = new EventEmitter<string>();
-  @Output() onUnclaim = new EventEmitter<string>();
+  public readonly onClaim = output<string>();
+  public readonly onUnclaim = output<string>();
 }

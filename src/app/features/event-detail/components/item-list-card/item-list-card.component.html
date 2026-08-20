@@ -1,4 +1,4 @@
-<section class="item-list-card">
+<section class="item-list-card" aria-label="Lista de itens do evento">
   <div class="item-list-card__header">
     <h2 class="item-list-card__title org-gradient-text">O que trazer</h2>
     <span class="item-list-card__tag"> Lista Colaborativa </span>
@@ -15,11 +15,11 @@
           <!-- Status Avatar -->
           @if (item.claimedBy) {
             <div class="item-list-card__avatar item-list-card__avatar--claimed">
-              <mat-icon>person</mat-icon>
+              <mat-icon aria-hidden="true">person</mat-icon>
             </div>
           } @else {
             <div class="item-list-card__avatar item-list-card__avatar--available">
-              <mat-icon>shopping_cart</mat-icon>
+              <mat-icon aria-hidden="true">shopping_cart</mat-icon>
             </div>
           }
 
@@ -40,21 +40,28 @@
         <div class="item-list-card__actions">
           @if (!item.claimedBy) {
             <button
+              type="button"
               (click)="onClaim.emit(item.id!)"
               [disabled]="!currentUserId()"
               class="item-list-card__claim-btn"
+              [attr.aria-label]="'Levar item ' + item.name"
             >
               Eu Levo
             </button>
           } @else if (
             item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()
           ) {
-            <button (click)="onUnclaim.emit(item.id!)" class="item-list-card__unclaim-btn">
+            <button
+              type="button"
+              (click)="onUnclaim.emit(item.id!)"
+              class="item-list-card__unclaim-btn"
+              [attr.aria-label]="'Desistir de levar ' + item.name"
+            >
               Desistir
             </button>
           } @else {
-            <div class="item-list-card__check-icon">
-              <mat-icon>check_circle</mat-icon>
+            <div class="item-list-card__check-icon" aria-label="Item já atribuído">
+              <mat-icon aria-hidden="true">check_circle</mat-icon>
             </div>
           }
         </div>

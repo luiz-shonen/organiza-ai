@@ -345,11 +345,11 @@ T23
 
 **Done when**:
 
-- [ ] `onClaim` and `onUnclaim` are defined as `output<string>()`
-- [ ] `ChangeDetectionStrategy.OnPush` is strictly enforced
-- [ ] `item-list-card.component.spec.ts` verifies: rendering items, claim output emission, unclaim output emission
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `onClaim` and `onUnclaim` are defined as `output<string>()`
+- [x] `ChangeDetectionStrategy.OnPush` is strictly enforced
+- [x] `item-list-card.component.spec.ts` verifies: rendering items, claim output emission, unclaim output emission
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass (6 passed)
 
 **Tests**: unit  
 **Gate**: quick  

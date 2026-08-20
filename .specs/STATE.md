@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) - Phase 1 (T1-T4), Phase 2 (T5-T10), Phase 3 (T11-T15), and Phase 4 (T16-T21) fully implemented, tested, and atomically committed (21/34 tasks = 61.8%).  
-**Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 6 Playwright E2E smoke tests green on Chromium & Mobile (`npx playwright test e2e/smoke.spec.ts`), production build green (`npm run build`).  
-**Validation Gate:** 21 atomic tasks across Phase 1, 2, 3, & 4 committed and verified. `tasks.md` updated.  
-**Next step:** Await user OK to proceed to Phase 5 (Core User Journey E2E Spec Suites, T22-T27).  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) - Phase 1 (T1-T4), Phase 2 (T5-T10), Phase 3 (T11-T15), Phase 4 (T16-T21), and Phase 5 (T22-T27) fully implemented, tested, and atomically committed (27/34 tasks = 79.4%).  
+**Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 50 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
+**Validation Gate:** 27 atomic tasks across Phase 1, 2, 3, 4, & 5 committed and verified. `tasks.md` updated.  
+**Next step:** Await user OK to proceed to Phase 6 (Visual Layout, A11y & Advanced Scenarios, T28-T31) and Phase 7 (CI/CD Pipeline & Final Validation, T32-T34).  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -22,6 +22,7 @@
   - **Infrastructure & POM Layer**: `playwright.config.ts`, `BasePage` (`e2e/pages/base.page.ts`), custom `test.fixture.ts` with Page Object dependency injection and `@axe-core/playwright` accessibility integration, Page Object Models (`HomePage`, `LoginPage`, `OrganizerDashboardPage`, `EventEditorPage`, `EventDetailPage`, `ProfilePage`), and migrated smoke test suite (`e2e/smoke.spec.ts`).
   - **Component Harnesses**: `RsvpDialogHarness` (`e2e/components/rsvp-dialog.harness.ts`), `ItemListHarness` (`e2e/components/item-list.harness.ts`), `SharePanelHarness` (`e2e/components/share-panel.harness.ts`), `FamilyRosterHarness` (`e2e/components/family-roster.harness.ts`), `ConfirmDialogHarness` (`e2e/components/confirm-dialog.harness.ts`).
   - **Template data-testid Instrumentation**: Standardized semantic `data-testid` attributes added across Home, Auth Login, Organizer Dashboard, Event Editor Stepper, Event Detail & RSVP Dialogs, and Profile & Family Roster views.
+  - **Core Journey E2E Spec Suites (50 tests passing)**: `01-home-theming.spec.ts`, `02-auth-guards.spec.ts`, `03-event-lifecycle.spec.ts`, `04-guest-rsvp.spec.ts`, `05-profile-family.spec.ts`, `06-collaborator-rbac.spec.ts`.
 
 ---
 

@@ -945,10 +945,10 @@ T34
 
 **Done when**:
 
-- [ ] Simulates offline mode via Playwright network disconnection
-- [ ] Asserts previously loaded event page continues to render from Service Worker cache
-- [ ] Asserts non-intrusive offline banner display and graceful write guard
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Simulates offline mode via Playwright network disconnection
+- [x] Asserts previously loaded event page continues to render from Service Worker cache
+- [x] Asserts non-intrusive offline banner display and graceful write guard
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

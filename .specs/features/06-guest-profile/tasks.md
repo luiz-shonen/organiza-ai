@@ -85,9 +85,9 @@ T4
 
 **Done when**:
 
-- [ ] `UserProfile` interface exported with `uid`, `email`, `displayName`, `photoURL`, `phone`, `createdAt`, and `updatedAt`
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `UserProfile` interface exported with `uid`, `email`, `displayName`, `photoURL`, `phone`, `createdAt`, and `updatedAt`
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

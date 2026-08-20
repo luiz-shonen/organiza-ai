@@ -1,4 +1,4 @@
-<main class="login">
+<main class="login" data-testid="login-page">
   <div class="login__orb login__orb--1" aria-hidden="true"></div>
   <div class="login__orb login__orb--2" aria-hidden="true"></div>
   <div class="login__orb login__orb--3" aria-hidden="true"></div>
@@ -10,7 +10,7 @@
 
   <div class="glass-card login__card">
     @if (errorMessage(); as error) {
-      <div class="login__error">
+      <div class="login__error" data-testid="login-error-alert">
         <mat-icon>error</mat-icon>
         {{ error }}
       </div>
@@ -26,6 +26,7 @@
           type="email"
           autocomplete="username"
           placeholder="seu@email.com"
+          data-testid="login-email-input"
         />
         @if (form.controls.email.hasError('required')) {
           <mat-error>E-mail é obrigatório</mat-error>
@@ -43,6 +44,7 @@
           [type]="hidePassword() ? 'password' : 'text'"
           autocomplete="current-password"
           placeholder="Sua senha"
+          data-testid="login-password-input"
         />
         <button
           mat-icon-button
@@ -66,6 +68,7 @@
         type="submit"
         [disabled]="form.invalid || loading()"
         class="btn-primary-org login__submit-btn"
+        data-testid="login-submit-btn"
       >
         @if (loading()) {
           <mat-spinner diameter="20"></mat-spinner>
@@ -85,6 +88,7 @@
       [disabled]="loading()"
       (click)="loginWithGoogle()"
       class="login__google-btn"
+      data-testid="google-login-btn"
     >
       <img
         src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"

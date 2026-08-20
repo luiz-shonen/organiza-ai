@@ -971,10 +971,10 @@ T34
 
 **Done when**:
 
-- [ ] Throttles network connection to Slow 3G profile
-- [ ] Asserts skeleton loading shimmer components are visible before data arrives
-- [ ] Asserts smooth content transition without layout shifting
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Throttles network connection to Slow 3G profile
+- [x] Asserts skeleton loading shimmer components are visible before data arrives
+- [x] Asserts smooth content transition without layout shifting
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

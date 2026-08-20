@@ -841,10 +841,10 @@ T34
 
 **Done when**:
 
-- [ ] Captures full-page screenshots to `e2e/screenshots/` across all 7 milestone views
-- [ ] Audits captured screenshots against Nielsen Heuristics (form alignment, Glassmorphism, 48px touch targets)
-- [ ] Logs inspection report in test logs
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Captures full-page screenshots to `e2e/screenshots/` across all 7 milestone views
+- [x] Audits captured screenshots against Nielsen Heuristics (form alignment, Glassmorphism, 48px touch targets)
+- [x] Logs inspection report in test logs
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

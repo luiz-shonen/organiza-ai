@@ -221,10 +221,10 @@ T34
 
 **Done when**:
 
-- [ ] `e2e/smoke.spec.ts` uses `test` from `e2e/fixtures/test.fixture.ts`
-- [ ] Replaces CSS class queries (`.home__title`, `.login__google-btn`) with `getByTestId` / `getByRole`
-- [ ] Smoke test passes: `npx playwright test e2e/smoke.spec.ts`
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] `e2e/smoke.spec.ts` uses `test` from `e2e/fixtures/test.fixture.ts`
+- [x] Replaces CSS class queries (`.home__title`, `.login__google-btn`) with `getByTestId` / `getByRole`
+- [x] Smoke test passes: `npx playwright test e2e/smoke.spec.ts`
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

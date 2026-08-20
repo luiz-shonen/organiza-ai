@@ -6,7 +6,6 @@ export abstract class BasePage {
 
   async goto(path: string = '/'): Promise<void> {
     await this.page.goto(path);
-    await this.page.waitForLoadState('networkidle').catch(() => {});
   }
 
   abstract assertLoaded(): Promise<void>;

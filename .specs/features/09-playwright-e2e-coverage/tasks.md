@@ -8,7 +8,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 ---
 
-**Design**: `.specs/features/08-playwright-e2e-coverage/design.md`  
+**Design**: `.specs/features/09-playwright-e2e-coverage/design.md`  
 **Status**: Draft  
 
 ---
@@ -515,8 +515,8 @@ T34
 
 #### T16: Instrument Home Template with data-testid
 
-**What**: Add standardized `data-testid` attributes to `src/app/features/home/home.component.html` for home container, event cards, empty state, theme toggle, and seasonal overlay.  
-**Where**: `src/app/features/home/home.component.html`  
+**What**: Add standardized `data-testid` attributes to `src/app/features/home/home.container.html` for home container, event cards, empty state, theme toggle, and seasonal overlay.  
+**Where**: `src/app/features/home/home.container.html`  
 **Depends on**: None  
 **Reuses**: Kebab-case `data-testid` taxonomy from design  
 **Requirement**: PW-04, PW-05  
@@ -540,8 +540,8 @@ T34
 
 #### T17: Instrument Auth Login Template with data-testid
 
-**What**: Add standardized `data-testid` attributes to `src/app/features/auth/pages/login/login.component.html` for login container, inputs, buttons, error alerts, and verification banner.  
-**Where**: `src/app/features/auth/pages/login/login.component.html`  
+**What**: Add standardized `data-testid` attributes to `src/app/features/auth/login/login.container.html` for login container, inputs, buttons, error alerts, and verification banner.  
+**Where**: `src/app/features/auth/login/login.container.html`  
 **Depends on**: None  
 **Reuses**: Kebab-case `data-testid` taxonomy from design  
 **Requirement**: PW-06, PW-07  
@@ -565,8 +565,8 @@ T34
 
 #### T18: Instrument Organizer Dashboard Template with data-testid
 
-**What**: Add standardized `data-testid` attributes to `src/app/features/my-events/pages/event-list/event-list.component.html` for dashboard container, status filter chips, create event CTA, and event cards.  
-**Where**: `src/app/features/my-events/pages/event-list/event-list.component.html`  
+**What**: Add standardized `data-testid` attributes to `src/app/features/admin/dashboard/dashboard.container.html` for dashboard container, status filter chips, create event CTA, and event cards.  
+**Where**: `src/app/features/admin/dashboard/dashboard.container.html`  
 **Depends on**: None  
 **Reuses**: Kebab-case `data-testid` taxonomy from design  
 **Requirement**: PW-08, PW-09  
@@ -589,8 +589,8 @@ T34
 
 #### T19: Instrument Event Editor Form Template with data-testid
 
-**What**: Add standardized `data-testid` attributes to `src/app/features/my-events/pages/event-form/event-form.component.html` for event editor form, CEP input, address fields, save button, and cancellation controls.  
-**Where**: `src/app/features/my-events/pages/event-form/event-form.component.html`  
+**What**: Add standardized `data-testid` attributes to `src/app/features/admin/event-editor/event-editor.container.html` for event editor form, CEP input, address fields, save button, and cancellation controls.  
+**Where**: `src/app/features/admin/event-editor/event-editor.container.html`  
 **Depends on**: None  
 **Reuses**: Kebab-case `data-testid` taxonomy from design  
 **Requirement**: PW-08, PW-09  
@@ -613,8 +613,8 @@ T34
 
 #### T20: Instrument Event Detail and RSVP Templates with data-testid
 
-**What**: Add standardized `data-testid` attributes to `src/app/features/event-detail/pages/event-detail/event-detail.component.html` for event detail container, countdown timer, RSVP action, Pix card, copy button, and confetti canvas.  
-**Where**: `src/app/features/event-detail/pages/event-detail/event-detail.component.html`  
+**What**: Add standardized `data-testid` attributes to `src/app/features/event-detail/event-detail.container.html` and `src/app/features/event-detail/components/rsvp-dialog/rsvp-dialog.component.html` for event detail container, countdown timer, RSVP action, Pix card, copy button, and confetti canvas.  
+**Where**: `src/app/features/event-detail/event-detail.container.html`  
 **Depends on**: None  
 **Reuses**: Kebab-case `data-testid` taxonomy from design  
 **Requirement**: PW-10, PW-11, PW-12, PW-13  
@@ -637,8 +637,8 @@ T34
 
 #### T21: Instrument Profile and Family Templates with data-testid
 
-**What**: Add standardized `data-testid` attributes to `src/app/features/profile/pages/profile/profile.component.html` for profile page container, family roster list, add member form, and delete buttons.  
-**Where**: `src/app/features/profile/pages/profile/profile.component.html`  
+**What**: Add standardized `data-testid` attributes to `src/app/features/profile/profile.container.html` and `src/app/features/profile/components/family-roster-manager/family-roster-manager.component.html` for profile page container, family roster list, add member form, and delete buttons.  
+**Where**: `src/app/features/profile/profile.container.html`  
 **Depends on**: None  
 **Reuses**: Kebab-case `data-testid` taxonomy from design  
 **Requirement**: PW-14  

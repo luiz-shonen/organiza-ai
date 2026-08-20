@@ -1,6 +1,6 @@
-# Feature 08: Playwright E2E Full Coverage & CI Pipeline — Technical Design
+# Feature 09: Playwright E2E Full Coverage & CI Pipeline — Technical Design
 
-**Spec**: `.specs/features/08-playwright-e2e-coverage/spec.md`  
+**Spec**: `.specs/features/09-playwright-e2e-coverage/spec.md`  
 **Status**: Draft
 
 ---

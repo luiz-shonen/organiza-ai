@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) - 100% complete across all 7 Phases (T1-T34). All 34 tasks implemented, verified, and committed.  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) spec written and gate-validated — ready for Tasks phase.  
 **Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 88 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
-**Validation Gate:** Independent Verifier ran with PASS verdict (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. 0 errors on `validate_state.py`.  
-**Next step:** Project is fully verified, production-ready, and CI-enabled. Ready for deployment and next feature milestone.  
+**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed.  
+**Next step:** Feature 10 — proceed to Tasks phase (`/tlc-spec-driven tasks`) to break down the 29 EARS ACs into atomic implementation tasks for `e2e/specs/13-organizer-happy-path.spec.ts`.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -36,6 +36,7 @@
     11. `11-pwa-offline.spec.ts`: PWA offline caching resilience, form interactivity retention, seamless online recovery.
     12. `12-network-loading.spec.ts`: Throttled network latency handling, layout shift prevention, skeleton shimmer stability.
   - **CI/CD Automation**: `.github/workflows/e2e.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
+- **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys: organizer dashboard, create event (Steps 1–3 + submit), edit event, guest RSVP (event detail + dialog open + submit), profile update, family roster CRUD, and collaborator invite. Each test is independent, asserts one state, and captures a screenshot. Visual design-token assertions included per AD-030. Pending: Tasks phase → `e2e/specs/13-organizer-happy-path.spec.ts`.
 
 ---
 
@@ -263,4 +264,12 @@
 **Decision:** Automated regression testing leverages Playwright with Page Object Models (`e2e/pages/`), Component Test Harnesses (`e2e/components/`), deterministic mock authentication/Firestore injection (`e2e/helpers/`), `@axe-core/playwright` accessibility audits, and GitHub Actions CI (`.github/workflows/e2e.yml`) across Desktop Chromium and Mobile Chrome viewports.  
 **Rationale:** Eliminates external Firebase rate-limiting flakes, guarantees 100% core flow coverage across devices, verifies WCAG 2.1 AA accessibility, and protects production releases automatically on pull requests.  
 **Status:** In force. Specified and verified in 09-playwright-e2e-coverage.
+
+---
+
+### AD-030 — Atomic E2E Test Philosophy (One Test = One State = One Screenshot)
+**Date:** 2026-08-20  
+**Decision:** Every Playwright E2E test is atomic: it sets up its own state independently (mock session + navigation), asserts exactly one flow step or screen state, captures a full-page screenshot, and ends. No test chains multiple steps. To reach step N, that test's own `beforeEach` fills and advances all preceding steps independently, without relying on any prior test having run. Visual design-token assertions (`backdrop-filter`, `--org-primary`, `font-family`, ≥ 48 px touch targets) are included in each happy-path test.  
+**Rationale:** Atomic tests are independently runnable, failures pinpoint the exact broken step, screenshots are granular enough to detect visual regressions per state (not just per page), and test suites remain maintainable as the app grows.  
+**Status:** In force. Specified in 10-e2e-organizer-create-event.
 

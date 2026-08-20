@@ -1,8 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { FirestoreGateway } from './firestore.gateway';
 import { FamilyService } from './family.service';
-import type { UserProfile, PartyEvent, FamilyMember, FamilyMemberCreate } from '../models';
-import type { ThemeMode } from './theme.service';
+import type {
+  UserProfile,
+  PartyEvent,
+  FamilyMember,
+  FamilyMemberCreate,
+  AddressDetails,
+  ThemeMode,
+} from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -152,7 +158,7 @@ export class UserService {
       description: (data['description'] as string) ?? '',
       date: dateVal ? dateVal.toISOString() : ((data['date'] as string) ?? ''),
       location: (data['location'] as string) ?? '',
-      addressDetails: data['addressDetails'] as any,
+      addressDetails: (data['addressDetails'] as AddressDetails | undefined) ?? undefined,
       pixKey: (data['pixKey'] as string | null) ?? null,
       status: (data['status'] as 'active' | 'cancelled') ?? 'active',
       createdAt: (data['createdAt'] as string) ?? '',

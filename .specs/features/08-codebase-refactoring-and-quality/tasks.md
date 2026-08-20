@@ -214,11 +214,11 @@ T23
 
 **Done when**:
 
-- [ ] `UserService` imports `ThemeMode` from `src/app/core/models` instead of inline/inverted imports
-- [ ] Profile data mappings avoid `as any`
-- [ ] Unit tests pass: `src/app/core/services/user.service.spec.ts`
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 18 tests pass
+- [x] `UserService` imports `ThemeMode` from `src/app/core/models` instead of inline/inverted imports
+- [x] Profile data mappings avoid `as any`
+- [x] Unit tests pass: `src/app/core/services/user.service.spec.ts`
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 18 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

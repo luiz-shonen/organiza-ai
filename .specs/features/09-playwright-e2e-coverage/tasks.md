@@ -374,9 +374,9 @@ T34
 
 **Done when**:
 
-- [ ] `ProfilePage` extends `BasePage` and defines locators: `nameInput`, `phoneInput`, `saveProfileBtn`
-- [ ] Implements methods: `updateProfile(name, phone)`
-- [ ] Build gate passes: `npm run build`
+- [x] `ProfilePage` extends `BasePage` and defines locators: `nameInput`, `phoneInput`, `saveProfileBtn`
+- [x] Implements methods: `updateProfile(name, phone)`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

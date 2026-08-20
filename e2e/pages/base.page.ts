@@ -31,8 +31,11 @@ export abstract class BasePage {
   }
 
   async captureScreenshot(name: string): Promise<void> {
+    const viewport = this.page.viewportSize();
+    const isMobile = viewport ? viewport.width < 768 : false;
+    const deviceSuffix = isMobile ? 'mobile' : 'desktop';
     await this.page.screenshot({
-      path: `e2e/screenshots/${name}.png`,
+      path: `e2e/screenshots/${name}-${deviceSuffix}.png`,
       fullPage: true,
     });
   }

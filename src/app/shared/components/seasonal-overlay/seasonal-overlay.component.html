@@ -1,7 +1,7 @@
 @let theme = config().activeTheme;
 
 @if (theme !== 'default') {
-  <aside class="seasonal-overlay" [attr.data-theme]="theme" aria-hidden="true">
+  <aside class="seasonal-overlay" data-testid="seasonal-overlay" [attr.data-theme]="theme" aria-hidden="true">
     @switch (theme) {
       @case ('junina') {
         <div class="seasonal-overlay__junina"></div>

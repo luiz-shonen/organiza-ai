@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) spec written and gate-validated — ready for Tasks phase.  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) spec written and gate-validated — ready for Tasks phase. Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec written and gate-validated.  
 **Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 88 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
 **Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed.  
-**Next step:** Feature 10 — proceed to Tasks phase (`/tlc-spec-driven tasks`) to break down the 29 EARS ACs into atomic implementation tasks for `e2e/specs/13-organizer-happy-path.spec.ts`.  
+**Next step:** Feature 10 — proceed to Tasks phase (`/tlc-spec-driven tasks`) to break down the 29 EARS ACs into atomic implementation tasks for `e2e/specs/13-organizer-happy-path.spec.ts`. (Feature 11 layout fixes will be refined and executed after Feature 10).  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -36,7 +36,8 @@
     11. `11-pwa-offline.spec.ts`: PWA offline caching resilience, form interactivity retention, seamless online recovery.
     12. `12-network-loading.spec.ts`: Throttled network latency handling, layout shift prevention, skeleton shimmer stability.
   - **CI/CD Automation**: `.github/workflows/e2e.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
-- **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys: organizer dashboard, create event (Steps 1–3 + submit), edit event, guest RSVP (event detail + dialog open + submit), profile update, family roster CRUD, and collaborator invite. Each test is independent, asserts one state, and captures a screenshot. Visual design-token assertions included per AD-030. Pending: Tasks phase → `e2e/specs/13-organizer-happy-path.spec.ts`.
+- **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys.
+- **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Covers visual screenshot inspection of existing Playwright baseline artifacts, mobile-first responsive layout fixes across Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, and visual baseline refresh.
 
 ---
 

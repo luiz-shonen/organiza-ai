@@ -637,9 +637,9 @@ T23
 
 **Done when**:
 
-- [ ] `header.service.spec.ts` verifies: updating title, setting back button visibility, configuring custom back URL
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `header.service.spec.ts` verifies: updating title, setting back button visibility, configuring custom back URL
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass (3 passed)
 
 **Tests**: unit  
 **Gate**: quick  

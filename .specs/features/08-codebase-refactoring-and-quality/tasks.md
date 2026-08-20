@@ -455,10 +455,10 @@ T23
 
 **Done when**:
 
-- [ ] Catch blocks use `error: unknown` and `error instanceof Error ? error.message : String(error)`
-- [ ] `admin-form-drawer.component.spec.ts` verifies: admin list loading, add admin flow, remove admin flow with confirmation, error handling
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Catch blocks use `error: unknown` and `error instanceof Error ? error.message : String(error)`
+- [x] `admin-form-drawer.component.spec.ts` verifies: admin list loading, add admin flow, remove admin flow with confirmation, error handling
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass (9 passed)
 
 **Tests**: unit  
 **Gate**: quick  

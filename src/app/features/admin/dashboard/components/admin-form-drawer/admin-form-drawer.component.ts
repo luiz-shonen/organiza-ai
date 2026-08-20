@@ -65,7 +65,7 @@ export class AdminFormDrawerComponent implements OnInit {
         return a.localeCompare(b);
       });
       this.admins.set(sorted);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
       this.snackBar.open('Erro ao carregar administradores.', 'OK', { duration: 3000 });
     } finally {
@@ -89,8 +89,9 @@ export class AdminFormDrawerComponent implements OnInit {
           await this.authService.removeAdmin(email);
           this.snackBar.open('Administrador removido com sucesso!', 'OK', { duration: 3000 });
           await this.loadAdmins();
-        } catch (err: any) {
-          this.snackBar.open(err.message || 'Erro ao remover.', 'OK', { duration: 3000 });
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'Erro ao remover.';
+          this.snackBar.open(message, 'OK', { duration: 3000 });
         }
       }
     });
@@ -108,11 +109,8 @@ export class AdminFormDrawerComponent implements OnInit {
       });
       this.form.reset();
       await this.loadAdmins();
-    } catch (error: any) {
-      let message = 'Erro ao cadastrar administrador.';
-      if (error instanceof Error) {
-        message = error.message;
-      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Erro ao cadastrar administrador.';
       this.snackBar.open(message, 'OK', { duration: 4000 });
     } finally {
       this.loading.set(false);

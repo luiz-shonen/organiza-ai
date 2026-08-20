@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 08 (`08-playwright-e2e-coverage`) Tasks Breakdown Completed & Validated (34 tasks across 7 phases) — Playwright Infrastructure, Page Objects, Component Harnesses, Template data-testid Instrumentation, Core Journey Specs, Visual Layout & A11y Specs, Advanced Scenarios (Concurrency, Share, PWA, Throttling), and GitHub Actions CI Workflow.  
-**Test Suite:** 29 test files, 199 unit tests defined, production build green (`npm run build`).  
-**Validation Gate:** `validate_spec.py` (0 errors, 0 warnings) and `validate_tasks.py` (0 errors) passed.  
-**Next step:** Execute `/tlc-spec-driven implement` to begin sequential task implementation (or batch sub-agent execution).  
+**State:** Feature 08 (`08-codebase-refactoring-and-quality`) Specification Completed & Validated (0 errors, 0 warnings). Feature 09 (`09-playwright-e2e-coverage`) queued for execution after codebase refactor.  
+**Test Suite:** 31 test files, 241 unit tests passing (`npm test -- --watch=false`), production build green (`npm run build`).  
+**Validation Gate:** `validate_spec.py` passed for Feature 08.  
+**Next step:** Proceed to Design / Tasks breakdown for Feature 08.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -17,7 +17,8 @@
 - **Feature 05 (`05-event-collaboration`)**: Scoped feeds (owned + collaborated events), email invitation auto-claim via Firestore `writeBatch`, collaborator invite dialog with MatChips, role badges on event cards, field protection for non-owners.
 - **Feature 06 (`06-guest-profile`)**: `UserProfile` model, `/perfil` route protected by `authGuard`, profile editing with `ProfileInfoCardComponent`, attended events history.
 - **Feature 07 (`07-family-roster`)**: `FamilyMember` model, `FamilyService` for `users/{uid}/family` subcollection, `FamilyRosterManagerComponent` on Profile page, `FamilySelectorComponent` for batch RSVP, `GuestService.batchConfirmRsvp` atomically creating primary + linked guest records, cascading cancellation.
-- **Feature 08 (`08-playwright-e2e-coverage`)**: Spec complete for full Playwright E2E coverage across all flows, GitHub Actions CI pipeline, visual layout inspection against `DESIGN.md`, real-time multi-user concurrency, and PWA offline resilience.
+- **Feature 08 (`08-codebase-refactoring-and-quality`)**: Specification complete for removing legacy decorators, pruning dead code, decoupling models/DTOs, strict typing without `any`, WCAG 2.1 AA a11y, and 100% component/service unit test coverage.
+- **Feature 09 (`09-playwright-e2e-coverage`)**: Spec and tasks defined for full Playwright E2E coverage across all flows, GitHub Actions CI pipeline, visual layout inspection against `DESIGN.md`, real-time multi-user concurrency, and PWA offline resilience.
 
 ---
 

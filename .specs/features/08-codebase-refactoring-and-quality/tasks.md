@@ -587,9 +587,9 @@ T23
 
 **Done when**:
 
-- [ ] `confetti.service.spec.ts` verifies: `fireSuccessConfetti` executes without throwing errors under browser and test environments
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 2 tests pass
+- [x] `confetti.service.spec.ts` verifies: `fireSuccessConfetti` executes without throwing errors under browser and test environments
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 2 tests pass (3 passed)
 
 **Tests**: unit  
 **Gate**: quick  

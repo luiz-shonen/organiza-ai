@@ -159,22 +159,22 @@ The Organiza AI project (Angular 21+ PWA backed by Firebase/Firestore) currently
 ## Requirement Traceability
 | Requirement ID | Story | Phase | Status |
 |---|---|---|---|
-| TEST-01 | Unit Test Infrastructure Setup (Story 1) | P1 | Pending |
-| TEST-02 | Jest runner executes via `ng test` | P1 | Pending |
-| TEST-03 | All `.spec.ts` files discovered under `src/` | P1 | Pending |
-| TEST-04 | Coverage report written to `coverage/` | P1 | Pending |
-| TEST-05 | 70 % branch + line threshold enforced | P1 | Pending |
-| TEST-06 | Core service specs: GuestSessionService | P1 | Pending |
-| TEST-07 | Core service specs: Firebase-dependent services mocked | P1 | Pending |
-| TEST-08 | Presentational component input/output API tests | P1 | Pending |
-| TEST-09 | Presentational component a11y: semantic HTML + aria-label | P1 | Pending |
-| TEST-10 | Playwright infrastructure: `npx playwright test` discovers `e2e/` | P2 | Pending |
-| TEST-11 | Playwright auto-starts `ng serve` via webServer config | P2 | Pending |
-| TEST-12 | E2E: Admin auth flow — login → /admin redirect | P2 | Pending |
-| TEST-13 | E2E: Guest RSVP flow — dialog → confirm → item claim | P2 | Pending |
-| TEST-14 | E2E: Full-page screenshot saved to `e2e/screenshots/` per test | P2 | Pending |
-| TEST-15 | E2E: Screenshot named `{testName}-{timestamp}.png` | P2 | Pending |
-| TEST-16 | AI layout analysis: feature-flag gated, WARNING-only verdict | P3 | Pending |
+| TEST-01 | Unit Test Infrastructure Setup (Story 1) | P1 | ✅ Verified |
+| TEST-02 | Jest runner executes via `ng test` | P1 | ✅ Verified |
+| TEST-03 | All `.spec.ts` files discovered under `src/` | P1 | ✅ Verified |
+| TEST-04 | Coverage report written to `coverage/` | P1 | ✅ Verified |
+| TEST-05 | 70 % branch + line threshold enforced | P1 | ✅ Verified |
+| TEST-06 | Core service specs: GuestSessionService | P1 | ✅ Verified |
+| TEST-07 | Core service specs: Firebase-dependent services mocked | P1 | ✅ Verified |
+| TEST-08 | Presentational component input/output API tests | P1 | ✅ Verified |
+| TEST-09 | Presentational component a11y: semantic HTML + aria-label | P1 | ✅ Verified |
+| TEST-10 | Playwright infrastructure: `npx playwright test` discovers `e2e/` | P2 | ✅ Verified |
+| TEST-11 | Playwright auto-starts `ng serve` via webServer config | P2 | ✅ Verified |
+| TEST-12 | E2E: Admin auth flow — login → /admin redirect | P2 | ✅ Verified |
+| TEST-13 | E2E: Guest RSVP flow — dialog → confirm → item claim | P2 | ✅ Verified |
+| TEST-14 | E2E: Full-page screenshot saved to `e2e/screenshots/` per test | P2 | ✅ Verified |
+| TEST-15 | E2E: Screenshot named `{testName}-{timestamp}.png` | P2 | ✅ Verified |
+| TEST-16 | AI layout analysis: feature-flag gated, WARNING-only verdict | P3 | ✅ Verified |
 
 **Coverage:** 16 total, 16 mapped to stories, 0 unmapped
 

@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 
+export interface ExtendedNotificationOptions extends NotificationOptions {
+  badge?: string;
+  vibrate?: number | number[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,12 +33,13 @@ export class NotificationService {
     if (!this.hasPermission) return;
 
     try {
-      new Notification(title, {
+      const options: ExtendedNotificationOptions = {
         body,
         icon: icon || '/assets/icons/icon-192x192.png',
         badge: '/assets/icons/icon-72x72.png',
         vibrate: [200, 100, 200],
-      } as any);
+      };
+      new Notification(title, options);
     } catch (e) {
       console.error('Erro ao disparar notificação local', e);
     }

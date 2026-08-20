@@ -265,8 +265,8 @@ T23
 
 **Done when**:
 
-- [ ] Interface `ExtendedNotificationOptions` created and used without `as any`
-- [ ] Build gate passes: `npm run build`
+- [x] Interface `ExtendedNotificationOptions` created and used without `as any`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

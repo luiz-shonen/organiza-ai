@@ -110,11 +110,11 @@ T4
 
 **Done when**:
 
-- [ ] `updateProfile` updates `users/{uid}` with new displayName and phone
-- [ ] `getAttendedEvents` returns list of events where user confirmed attendance
-- [ ] Unit tests cover: profile update, attended events querying, error handling
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `updateProfile` updates `users/{uid}` with new displayName and phone
+- [x] `getAttendedEvents` returns list of events where user confirmed attendance
+- [x] Unit tests cover: profile update, attended events querying, error handling
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

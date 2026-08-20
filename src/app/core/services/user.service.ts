@@ -13,12 +13,14 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
-import type { UserProfile, PartyEvent } from '../models';
+import { FamilyService } from './family.service';
+import type { UserProfile, PartyEvent, FamilyMember, FamilyMemberCreate } from '../models';
 import type { ThemeMode } from './theme.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly firestore = inject(FirebaseService).firestore;
+  private readonly familyService = inject(FamilyService);
 
   async getProfile(uid: string): Promise<UserProfile | null> {
     if (!uid) return null;
@@ -148,6 +150,18 @@ export class UserService {
       console.error('Error fetching attended events:', err);
       return [];
     }
+  }
+
+  async getFamilyMembers(uid: string): Promise<FamilyMember[]> {
+    return this.familyService.getFamilyMembers(uid);
+  }
+
+  async addFamilyMember(uid: string, member: FamilyMemberCreate): Promise<FamilyMember> {
+    return this.familyService.addFamilyMember(uid, member);
+  }
+
+  async deleteFamilyMember(uid: string, memberId: string): Promise<void> {
+    return this.familyService.deleteFamilyMember(uid, memberId);
   }
 
   private mapEventDoc(snapshot: DocumentSnapshot | QueryDocumentSnapshot): PartyEvent {

@@ -111,11 +111,11 @@ T5
 
 **Done when**:
 
-- [ ] `getFamilyMembers`, `addFamilyMember`, and `deleteFamilyMember` operate on `users/{uid}/family`
-- [ ] `batchConfirmRsvp` creates 1 primary guest document and N linked family guest documents atomically
-- [ ] Unit tests cover: family CRUD, atomic batch write, cascade cancellation
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `getFamilyMembers`, `addFamilyMember`, and `deleteFamilyMember` operate on `users/{uid}/family`
+- [x] `batchConfirmRsvp` creates 1 primary guest document and N linked family guest documents atomically
+- [x] Unit tests cover: family CRUD, atomic batch write, cascade cancellation
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -146,8 +146,8 @@ T5
 - [ ] WCAG 2.1 AA accessible with labels and keyboard interactions
 - [ ] Separate `.html`, `.scss`, and `.spec.ts` files
 - [ ] Unit tests cover: member list display, add member submission, remove member trigger
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -177,8 +177,8 @@ T5
 - [ ] WCAG 2.1 AA accessible with ARIA expansion and checkbox controls
 - [ ] Separate `.html`, `.scss`, and `.spec.ts` files
 - [ ] Unit tests cover: expansion toggle, select all emission, itemized checkbox toggle, inline add
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -207,7 +207,7 @@ T5
 - [ ] Displays collapsible family selector panel
 - [ ] Emits combined confirmation payload with primary guest and selected family members
 - [ ] Unit tests cover: dialog initialization with family members, batch submission payload
-- [ ] Quick gate passes: `npx ng test --watch=false`
+- [x] Quick gate passes: `npx ng test --watch=false`
 - [ ] Test count: at least 3 tests pass
 
 **Tests**: unit  

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { UserService } from './user.service';
 import { FirebaseService } from './firebase.service';
+import { FamilyService } from './family.service';
 import type { UserProfile } from '../models';
 
 const mocks = vi.hoisted(() => ({
@@ -35,10 +36,21 @@ vi.mock('firebase/firestore', () => ({
 
 describe('UserService', () => {
   let service: UserService;
+  let mockFamilyService: {
+    getFamilyMembers: ReturnType<typeof vi.fn>;
+    addFamilyMember: ReturnType<typeof vi.fn>;
+    deleteFamilyMember: ReturnType<typeof vi.fn>;
+  };
   const mockFirestore = {} as any;
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    mockFamilyService = {
+      getFamilyMembers: vi.fn().mockResolvedValue([]),
+      addFamilyMember: vi.fn().mockResolvedValue({ id: 'f1', name: 'Test', relationship: 'other', createdAt: '' }),
+      deleteFamilyMember: vi.fn().mockResolvedValue(undefined),
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -46,6 +58,10 @@ describe('UserService', () => {
         {
           provide: FirebaseService,
           useValue: { firestore: mockFirestore },
+        },
+        {
+          provide: FamilyService,
+          useValue: mockFamilyService,
         },
       ],
     });
@@ -247,7 +263,6 @@ describe('UserService', () => {
       const events = await service.getAttendedEvents('user-123');
 
       expect(events.length).toBe(2);
-      // Sorted descending by date: event-2 (October) before event-1 (September)
       expect(events[0].id).toBe('event-2');
       expect(events[0].title).toBe('Casamento dos Sonhos');
       expect(events[1].id).toBe('event-1');
@@ -261,6 +276,28 @@ describe('UserService', () => {
 
       const events = await service.getAttendedEvents('user-err');
       expect(events).toEqual([]);
+    });
+  });
+
+  describe('Family operations', () => {
+    it('delegates getFamilyMembers to FamilyService', async () => {
+      const mockMembers = [{ id: 'fam-1', name: 'Lucas', relationship: 'child' as const, createdAt: '' }];
+      mockFamilyService.getFamilyMembers.mockResolvedValue(mockMembers);
+
+      const result = await service.getFamilyMembers('user-123');
+      expect(mockFamilyService.getFamilyMembers).toHaveBeenCalledWith('user-123');
+      expect(result).toEqual(mockMembers);
+    });
+
+    it('delegates addFamilyMember to FamilyService', async () => {
+      const newMember = { name: 'Lucas', relationship: 'child' as const };
+      await service.addFamilyMember('user-123', newMember);
+      expect(mockFamilyService.addFamilyMember).toHaveBeenCalledWith('user-123', newMember);
+    });
+
+    it('delegates deleteFamilyMember to FamilyService', async () => {
+      await service.deleteFamilyMember('user-123', 'fam-1');
+      expect(mockFamilyService.deleteFamilyMember).toHaveBeenCalledWith('user-123', 'fam-1');
     });
   });
 

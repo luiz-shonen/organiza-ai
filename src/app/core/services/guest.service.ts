@@ -18,7 +18,16 @@ import {
 } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
 import { AuthService } from './auth.service';
-import { Guest, GuestCreate } from '../models';
+import { Guest, GuestCreate, FamilyMember } from '../models';
+
+export interface BatchPrimaryGuestInput {
+  uid: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  photoUrl?: string;
+  companionsCount?: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class GuestService {
@@ -87,6 +96,57 @@ export class GuestService {
     );
   }
 
+  async batchConfirmRsvp(
+    eventId: string,
+    primaryGuest: BatchPrimaryGuestInput,
+    familyMembers: FamilyMember[] = [],
+  ): Promise<void> {
+    const batch = writeBatch(this.firestore);
+    const now = new Date().toISOString();
+
+    // 1. Primary guest record
+    const primaryDocRef = doc(this.firestore, `events/${eventId}/guests/${primaryGuest.uid}`);
+    batch.set(
+      primaryDocRef,
+      {
+        uid: primaryGuest.uid,
+        name: primaryGuest.name,
+        email: primaryGuest.email ?? '',
+        phone: primaryGuest.phone ?? '',
+        photoUrl: primaryGuest.photoUrl ?? '',
+        isConfirmed: true,
+        confirmedAt: now,
+        companionsCount: primaryGuest.companionsCount ?? 0,
+        createdAt: now,
+      },
+      { merge: true },
+    );
+
+    // 2. Linked family member guest records
+    for (const member of familyMembers) {
+      const memberGuestDocRef = doc(
+        this.firestore,
+        `events/${eventId}/guests/${primaryGuest.uid}_${member.id}`,
+      );
+      batch.set(
+        memberGuestDocRef,
+        {
+          id: `${primaryGuest.uid}_${member.id}`,
+          name: member.name,
+          primaryGuestId: primaryGuest.uid,
+          phone: member.phone ?? '',
+          isConfirmed: true,
+          confirmedAt: now,
+          createdAt: now,
+        },
+        { merge: true },
+      );
+    }
+
+    // 3. Commit atomically
+    await batch.commit();
+  }
+
   async updateGuest(eventId: string, guestId: string, data: Partial<Guest>): Promise<void> {
     const docRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
     await updateDoc(docRef, data);
@@ -100,22 +160,40 @@ export class GuestService {
   async cancelRsvp(eventId: string, guestId: string, uid?: string): Promise<void> {
     const batch = writeBatch(this.firestore);
 
-    // 1. Delete guest document
+    // 1. Delete primary guest document
     const guestDocRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
     batch.delete(guestDocRef);
 
-    // 2. Query and reset items claimed by this guest UID
     const targetUid = uid || guestId;
     if (targetUid) {
-      const itemsCol = collection(this.firestore, 'events', eventId, 'items');
-      const itemsQuery = query(itemsCol, where('claimedBy.uid', '==', targetUid));
-      const itemsSnap = await getDocs(itemsQuery);
-      itemsSnap.forEach((itemDoc) => {
-        batch.update(itemDoc.ref, { claimedBy: null });
-      });
+      // 2. Cascade delete linked family member guest records
+      try {
+        const familyGuestsQuery = query(
+          this.guestsCollection(eventId),
+          where('primaryGuestId', '==', targetUid),
+        );
+        const familyGuestsSnap = await getDocs(familyGuestsQuery);
+        familyGuestsSnap.forEach((docSnap) => {
+          batch.delete(docSnap.ref);
+        });
+      } catch (err) {
+        console.error('Error finding linked family guests to cancel:', err);
+      }
+
+      // 3. Query and reset items claimed by this guest UID
+      try {
+        const itemsCol = collection(this.firestore, 'events', eventId, 'items');
+        const itemsQuery = query(itemsCol, where('claimedBy.uid', '==', targetUid));
+        const itemsSnap = await getDocs(itemsQuery);
+        itemsSnap.forEach((itemDoc) => {
+          batch.update(itemDoc.ref, { claimedBy: null });
+        });
+      } catch (err) {
+        console.error('Error finding claimed items to reset:', err);
+      }
     }
 
-    // 3. Atomically commit the batch
+    // 4. Atomically commit the batch
     await batch.commit();
   }
 

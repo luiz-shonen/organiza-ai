@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () =>
-      import('./features/admin/login/login.container').then((m) => m.LoginContainer),
+      import('./features/auth/login/login.container').then((m) => m.LoginContainer),
   },
   {
     path: 'meus-eventos',

@@ -4,7 +4,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { superAdminGuard } from './core/guards/super-admin.guard';
 import { HomeContainer } from './features/home/home.container';
 import { EventDetailContainer } from './features/event-detail/event-detail.container';
-import { LoginContainer } from './features/admin/login/login.container';
+import { LoginContainer } from './features/auth/login/login.container';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
 import { ProfileContainer } from './features/profile/profile.container';
 

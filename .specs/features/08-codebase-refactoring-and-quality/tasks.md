@@ -316,11 +316,11 @@ T23
 
 **Done when**:
 
-- [ ] `LoginContainer` resides in `src/app/features/auth/login/`
-- [ ] `src/app/app.routes.ts` routes `/login` to `src/app/features/auth/login/login.container`
-- [ ] Unit tests pass: `src/app/app.routes.spec.ts`
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 7 tests pass
+- [x] `LoginContainer` resides in `src/app/features/auth/login/`
+- [x] `src/app/app.routes.ts` routes `/login` to `src/app/features/auth/login/login.container`
+- [x] Unit tests pass: `src/app/app.routes.spec.ts`
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 7 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

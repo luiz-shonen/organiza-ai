@@ -291,9 +291,9 @@ T23
 
 **Done when**:
 
-- [ ] Legacy component folders in `event-detail/components/` and `organizer/components/` deleted
-- [ ] No broken references or dangling imports in the project
-- [ ] Build gate passes: `npm run build && npx ng test --watch=false`
+- [x] Legacy component folders in `event-detail/components/` and `organizer/components/` deleted
+- [x] No broken references or dangling imports in the project
+- [x] Build gate passes: `npm run build && npx ng test --watch=false`
 
 **Tests**: none  
 **Gate**: build  

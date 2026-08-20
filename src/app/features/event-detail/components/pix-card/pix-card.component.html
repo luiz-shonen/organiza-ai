@@ -5,6 +5,12 @@
     <mat-card-subtitle>Contribua com o evento!</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    @if (splitAmount(); as split) {
+      <div class="pix-card__split-container" aria-label="Divisão sugerida de despesas">
+        <span class="pix-card__split-label">Sugerido por pessoa:</span>
+        <strong class="pix-card__split-value">R$ {{ split.toFixed(2) }}</strong>
+      </div>
+    }
     <div class="pix-card__key-container">
       <code class="pix-card__key" aria-label="Chave Pix">{{ pixKey() }}</code>
     </div>

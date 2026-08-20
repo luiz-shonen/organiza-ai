@@ -164,10 +164,10 @@ T5
 
 **Done when**:
 
-- [ ] Verifies dynamic per-person split updates when `estimatedBudget` or `guestCount` change
-- [ ] Verifies `copyPix` emission when copy button is activated via click and keyboard
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Verifies dynamic per-person split updates when `estimatedBudget` or `guestCount` change
+- [x] Verifies `copyPix` emission when copy button is activated via click and keyboard
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

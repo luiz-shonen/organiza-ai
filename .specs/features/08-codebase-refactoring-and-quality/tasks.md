@@ -507,11 +507,11 @@ T23
 
 **Done when**:
 
-- [ ] Inline `style="height: 76px"` moved to `.login__logo` in `login.container.scss`
-- [ ] Catch blocks narrow `error: unknown`
-- [ ] `login.container.spec.ts` verifies: email/password login, registration fallback, Google OAuth sign-in, error snackbars
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 5 tests pass
+- [x] Inline `style="height: 76px"` moved to `.login__logo` in `login.container.scss`
+- [x] Catch blocks narrow `error: unknown`
+- [x] `login.container.spec.ts` verifies: email/password login, registration fallback, Google OAuth sign-in, error snackbars
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 5 tests pass (10 passed)
 
 **Tests**: unit  
 **Gate**: quick  

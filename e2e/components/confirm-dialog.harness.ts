@@ -9,22 +9,26 @@ export class ConfirmDialogHarness {
   constructor(protected readonly page: Page) {
     this.dialogRoot = page
       .getByTestId('confirm-dialog')
+      .or(page.locator('mat-dialog-container:has(app-confirm-dialog)'))
       .or(page.getByRole('dialog'))
-      .or(page.locator('mat-dialog-container:has(app-confirm-dialog), app-confirm-dialog'));
+      .first();
 
     this.confirmBtn = this.dialogRoot
       .getByTestId('confirm-dialog-confirm-btn')
       .or(this.dialogRoot.locator('.confirm-dialog__confirm-btn'))
-      .or(this.dialogRoot.getByRole('button', { name: /confirmar|sim|excluir|cancelar evento|apagar/i }));
+      .or(this.dialogRoot.getByRole('button', { name: /confirmar|sim|excluir|cancelar evento|apagar/i }))
+      .first();
 
     this.cancelBtn = this.dialogRoot
       .getByTestId('confirm-dialog-cancel-btn')
       .or(this.dialogRoot.locator('.confirm-dialog__cancel-btn'))
-      .or(this.dialogRoot.getByRole('button', { name: /cancelar|voltar|não/i }));
+      .or(this.dialogRoot.getByRole('button', { name: /^cancelar$|^voltar$|^não$/i }))
+      .first();
 
     this.messageText = this.dialogRoot
       .getByTestId('confirm-dialog-message')
-      .or(this.dialogRoot.locator('.confirm-dialog__message, mat-dialog-content p'));
+      .or(this.dialogRoot.locator('.confirm-dialog__message, mat-dialog-content p'))
+      .first();
   }
 
   async assertVisible(): Promise<void> {

@@ -405,7 +405,7 @@ export class EventEditorContainer implements OnInit {
     if (value.length > 5) {
       value = value.substring(0, 5) + '-' + value.substring(5, 8);
     }
-    this.addressForm.controls.cep.setValue(value, { emitEvent: false });
+    this.addressForm.controls.cep.setValue(value);
   }
 
   protected formatDate(event: Event): void {

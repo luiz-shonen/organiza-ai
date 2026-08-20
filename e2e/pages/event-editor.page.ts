@@ -19,20 +19,20 @@ export class EventEditorPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.pageRoot = page.getByTestId('event-editor-page').or(page.locator('section.editor'));
-    this.titleInput = page.getByTestId('event-title-input').or(page.getByLabel('Título do Evento')).or(page.locator('input[formcontrolname="title"]'));
-    this.dateInput = page.getByTestId('event-date-input').or(page.getByLabel('Data do Evento')).or(page.locator('input[formcontrolname="date"]'));
-    this.timeInput = page.getByTestId('event-time-input').or(page.getByLabel('Hora')).or(page.locator('input[formcontrolname="time"]'));
-    this.descriptionInput = page.getByTestId('event-description-input').or(page.getByLabel('Descrição')).or(page.locator('textarea[formcontrolname="description"]'));
-    this.cepInput = page.getByTestId('event-cep-input').or(page.getByLabel('CEP')).or(page.locator('input[formcontrolname="cep"]'));
-    this.streetInput = page.getByTestId('event-street-input').or(page.getByLabel('Endereço')).or(page.locator('input[formcontrolname="address"]'));
-    this.numberInput = page.getByTestId('event-number-input').or(page.getByLabel('Número')).or(page.locator('input[formcontrolname="number"]'));
-    this.saveBtn = page.getByTestId('event-save-btn').or(page.locator('.editor__save-btn, button[aria-label="Salvar evento"]'));
-    this.cancelEventBtn = page.getByTestId('event-cancel-btn').or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]'));
+    this.pageRoot = page.getByTestId('event-editor-page').or(page.locator('section.editor')).first();
+    this.titleInput = page.getByTestId('event-title-input').or(page.locator('input[formcontrolname="title"]')).first();
+    this.dateInput = page.getByTestId('event-date-input').or(page.locator('input[formcontrolname="date"]')).first();
+    this.timeInput = page.getByTestId('event-time-input').or(page.locator('input[formcontrolname="time"]')).first();
+    this.descriptionInput = page.getByTestId('event-description-input').or(page.locator('textarea[formcontrolname="description"]')).first();
+    this.cepInput = page.getByTestId('event-cep-input').or(page.locator('input[formcontrolname="cep"]')).first();
+    this.streetInput = page.getByTestId('event-street-input').or(page.locator('input[formcontrolname="address"]')).first();
+    this.numberInput = page.getByTestId('event-number-input').or(page.locator('input[formcontrolname="number"]')).first();
+    this.saveBtn = page.getByTestId('event-save-btn').or(page.locator('.editor__save-btn, button[aria-label="Salvar evento"]')).first();
+    this.cancelEventBtn = page.getByTestId('event-cancel-btn').or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]')).first();
     this.nextStepBtns = page.locator('button[matsteppernext]');
-    this.itemNameInput = page.getByTestId('item-name-input').or(page.getByLabel('Nome do item')).or(page.locator('.editor__item-name-field input'));
-    this.itemQtyInput = page.getByTestId('item-qty-input').or(page.getByLabel('Quantidade')).or(page.locator('.editor__item-qty-field input'));
-    this.addItemBtn = page.getByTestId('add-item-btn').or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]'));
+    this.itemNameInput = page.getByTestId('item-name-input').or(page.locator('.editor__item-name-field input')).first();
+    this.itemQtyInput = page.getByTestId('item-qty-input').or(page.locator('.editor__item-qty-field input')).first();
+    this.addItemBtn = page.getByTestId('add-item-btn').or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]')).first();
   }
 
   async assertLoaded(): Promise<void> {
@@ -49,6 +49,7 @@ export class EventEditorPage extends BasePage {
     await this.dateInput.fill(date);
     await this.timeInput.fill(time);
     if (await this.nextStepBtns.first().isVisible()) {
+      await expect(this.nextStepBtns.first()).toBeEnabled();
       await this.nextStepBtns.first().click();
     }
   }

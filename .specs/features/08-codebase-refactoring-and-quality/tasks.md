@@ -662,9 +662,9 @@ T23
 
 **Done when**:
 
-- [ ] `notification.service.spec.ts` verifies: local snackbar dispatch, permission checking, safe fallback when Notification API is unsupported
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `notification.service.spec.ts` verifies: local snackbar dispatch, permission checking, safe fallback when Notification API is unsupported
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass (4 passed)
 
 **Tests**: unit  
 **Gate**: quick  

@@ -136,19 +136,19 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| REFACTOR-01 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Ready |
-| REFACTOR-02 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Ready |
-| REFACTOR-03 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Ready |
-| REFACTOR-04 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Ready |
-| REFACTOR-05 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Ready |
-| REFACTOR-06 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Ready |
-| REFACTOR-07 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Ready |
-| REFACTOR-08 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Ready |
-| REFACTOR-09 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Ready |
-| REFACTOR-10 | P2: Accessibility & Glassmorphism Design System Compliance | Tasks | Ready |
-| REFACTOR-11 | P2: Accessibility & Glassmorphism Design System Compliance | Tasks | Ready |
-| REFACTOR-12 | P3: Complete Spec & Unit Test Suite Coverage | Tasks | Ready |
-| REFACTOR-13 | P3: Complete Spec & Unit Test Suite Coverage | Tasks | Ready |
+| REFACTOR-01 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Verified |
+| REFACTOR-02 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Verified |
+| REFACTOR-03 | P1: Eliminate Legacy Decorators & Align State with Angular Signals | Tasks | Verified |
+| REFACTOR-04 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Verified |
+| REFACTOR-05 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Verified |
+| REFACTOR-06 | P1: Prune Dead Code & Unify Orphaned/Duplicated Components | Tasks | Verified |
+| REFACTOR-07 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Verified |
+| REFACTOR-08 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Verified |
+| REFACTOR-09 | P2: Enforce Strict TypeScript & SOLID Clean Architecture | Tasks | Verified |
+| REFACTOR-10 | P2: Accessibility & Glassmorphism Design System Compliance | Tasks | Verified |
+| REFACTOR-11 | P2: Accessibility & Glassmorphism Design System Compliance | Tasks | Verified |
+| REFACTOR-12 | P3: Complete Spec & Unit Test Suite Coverage | Tasks | Verified |
+| REFACTOR-13 | P3: Complete Spec & Unit Test Suite Coverage | Tasks | Verified |
 
 **ID format:** `REFACTOR-[NUMBER]`
 
@@ -158,9 +158,9 @@ Each requirement gets a unique ID for tracking across design, tasks, and validat
 
 ## Success Criteria
 
-- [ ] Zero legacy `@Output()` or `@Input()` decorators in the codebase.
-- [ ] Zero orphaned/dead component directories in `src/app/features/`.
-- [ ] Zero `as any` casts in production application code.
-- [ ] 100% of components adhere to template separation (`templateUrl` & `styleUrl`) and `ChangeDetectionStrategy.OnPush`.
-- [ ] 100% of interactive elements meet WCAG 2.1 AA keyboard accessibility criteria.
-- [ ] 100% of active components and core services possess dedicated `.spec.ts` unit tests with all tests passing.
+- [x] Zero legacy `@Output()` or `@Input()` decorators in the codebase.
+- [x] Zero orphaned/dead component directories in `src/app/features/`.
+- [x] Zero `as any` casts in production application code.
+- [x] 100% of components adhere to template separation (`templateUrl` & `styleUrl`) and `ChangeDetectionStrategy.OnPush`.
+- [x] 100% of interactive elements meet WCAG 2.1 AA keyboard accessibility criteria.
+- [x] 100% of active components and core services possess dedicated `.spec.ts` unit tests with all tests passing.

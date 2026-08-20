@@ -170,10 +170,10 @@ T34
 
 **Done when**:
 
-- [ ] `BasePage` abstract class exported with `page: Page` constructor
-- [ ] Methods implemented: `goto(path)`, `assertLoaded()`, `assertUrl(pattern)`, `assertNoA11yViolations(options)`, `captureScreenshot(name)`
-- [ ] Full-page screenshots saved to `e2e/screenshots/{name}.png`
-- [ ] Build gate passes: `npm run build`
+- [x] `BasePage` abstract class exported with `page: Page` constructor
+- [x] Methods implemented: `goto(path)`, `assertLoaded()`, `assertUrl(pattern)`, `assertNoA11yViolations(options)`, `captureScreenshot(name)`
+- [x] Full-page screenshots saved to `e2e/screenshots/{name}.png`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

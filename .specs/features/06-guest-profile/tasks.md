@@ -139,13 +139,13 @@ T4
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `user` required input and `updateName` output
-- [ ] Accessible form with validation on empty name
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: user info display, edit toggle, name update emission
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `user` required input and `updateName` output
+- [x] Accessible form with validation on empty name
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Unit tests cover: user info display, edit toggle, name update emission
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

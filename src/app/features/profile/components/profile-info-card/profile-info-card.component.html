@@ -1,0 +1,113 @@
+<section class="profile-info-card" aria-labelledby="profile-heading">
+  <div class="profile-info-card__header">
+    <div class="profile-info-card__avatar-wrapper">
+      @if (user().photoURL) {
+        <img
+          class="profile-info-card__avatar"
+          [src]="user().photoURL"
+          [alt]="'Foto de perfil de ' + (user().displayName || user().name || 'usuário')"
+        />
+      } @else {
+        <div
+          class="profile-info-card__avatar profile-info-card__avatar--placeholder"
+          role="img"
+          [attr.aria-label]="'Avatar de ' + (user().displayName || user().name || 'usuário')"
+        >
+          <span class="profile-info-card__avatar-letter">{{ userInitial }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="profile-info-card__identity">
+      <h2 id="profile-heading" class="profile-info-card__title">Informações Pessoais</h2>
+      
+      @if (isEditing()) {
+        <form
+          class="profile-info-card__edit-form"
+          (ngSubmit)="saveName()"
+          role="form"
+          aria-label="Editar nome"
+        >
+          <mat-form-field appearance="outline" class="profile-info-card__form-field">
+            <mat-label>Nome Completo</mat-label>
+            <input
+              matInput
+              type="text"
+              name="displayName"
+              [ngModel]="editName()"
+              (ngModelChange)="editName.set($event)"
+              placeholder="Seu nome"
+              required
+              aria-required="true"
+              aria-label="Nome completo"
+            />
+            @if (editName().trim().length === 0) {
+              <mat-error>O nome não pode ficar em branco</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="profile-info-card__actions">
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              class="profile-info-card__save-btn"
+              [disabled]="editName().trim().length === 0"
+              aria-label="Salvar nome de exibição"
+            >
+              <mat-icon aria-hidden="true">check</mat-icon>
+              Salvar
+            </button>
+            <button
+              mat-stroked-button
+              type="button"
+              class="profile-info-card__cancel-btn"
+              (click)="cancelEditing()"
+              aria-label="Cancelar edição"
+            >
+              <mat-icon aria-hidden="true">close</mat-icon>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="profile-info-card__name-row">
+          <span class="profile-info-card__name">
+            {{ user().displayName || user().name || 'Sem nome cadastrado' }}
+          </span>
+          <button
+            mat-icon-button
+            class="profile-info-card__edit-btn"
+            (click)="startEditing()"
+            aria-label="Editar nome de exibição"
+            [attr.aria-expanded]="isEditing()"
+          >
+            <mat-icon aria-hidden="true">edit</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="profile-info-card__details">
+    <div class="profile-info-card__field">
+      <span class="profile-info-card__field-icon">
+        <mat-icon aria-hidden="true">mail</mat-icon>
+      </span>
+      <div class="profile-info-card__field-content">
+        <span class="profile-info-card__field-label">E-mail</span>
+        <span class="profile-info-card__field-value">{{ user().email || 'Não informado' }}</span>
+      </div>
+    </div>
+
+    <div class="profile-info-card__field">
+      <span class="profile-info-card__field-icon">
+        <mat-icon aria-hidden="true">phone</mat-icon>
+      </span>
+      <div class="profile-info-card__field-content">
+        <span class="profile-info-card__field-label">Telefone</span>
+        <span class="profile-info-card__field-value">{{ user().phone || 'Não informado' }}</span>
+      </div>
+    </div>
+  </div>
+</section>

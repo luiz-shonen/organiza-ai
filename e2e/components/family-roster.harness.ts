@@ -98,9 +98,8 @@ export class FamilyRosterHarness {
       await this.relationshipSelect.click();
       const optionLocator = this.page
         .locator('mat-option')
-        .filter({ hasText: new RegExp(`^\\s*${label}\\s*$|${relationship}`, 'i') })
+        .filter({ hasText: label })
         .first()
-        .or(this.page.getByRole('option', { name: new RegExp(label, 'i') }))
         .or(this.page.locator(`mat-option[value="${relationship}"]`));
 
       await optionLocator.click();

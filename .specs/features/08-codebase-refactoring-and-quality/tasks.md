@@ -536,9 +536,9 @@ T23
 
 **Done when**:
 
-- [ ] Form field borders, focus states, and typography leverage MDC tokens
-- [ ] Unnecessary `!important` declarations on form inputs eliminated
-- [ ] Build gate passes: `npm run build && npx ng test --watch=false`
+- [x] Form field borders, focus states, and typography leverage MDC tokens
+- [x] Unnecessary `!important` declarations on form inputs eliminated
+- [x] Build gate passes: `npm run build && npx ng test --watch=false`
 
 **Tests**: none  
 **Gate**: build  

@@ -536,7 +536,7 @@ button[disabled],
   }
 }
 
-/* CosturaAI Master mat-drawer & mat-sidenav Container System */
+/* Organiza AI Master mat-drawer & mat-sidenav Container System */
 .app-sidenav-container {
   min-height: 100dvh;
   background: transparent !important;
@@ -636,7 +636,7 @@ button:not(mat-icon),
   font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 
-/* Angular Material Form Fields (.mat-mdc-form-field) - CosturaAI Glassmorphism System */
+/* Angular Material Form Fields (.mat-mdc-form-field) - Organiza AI Glassmorphism System */
 .mat-mdc-form-field {
   --mdc-outlined-text-field-container-color: transparent !important;
   --mdc-filled-text-field-container-color: transparent !important;
@@ -749,17 +749,64 @@ button:not(mat-icon),
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    -webkit-background-clip: text !important;
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
     -webkit-text-fill-color: var(--mat-sys-on-surface) !important;
-    transition: background-color 50000s ease-in-out 0s !important;
-    box-shadow: inset 0 0 20px 20px transparent !important;
+    box-shadow: 0 0 0px 1000px transparent inset !important;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    transition: background-color 5000s ease-in-out 0s !important;
   }
 
   &.mat-focused .mat-mdc-text-field-wrapper {
     box-shadow:
       0 4px 20px color-mix(in srgb, var(--org-primary) 25%, transparent),
       0 0 12px color-mix(in srgb, var(--org-secondary) 20%, transparent) !important;
+  }
+}
+
+.dark .mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+}
+
+.mat-mdc-form-field:not(.mat-form-field-invalid) {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--mat-sys-outline-variant) !important;
+  }
+
+  &:hover {
+    .mdc-notched-outline__leading {
+      border-color: color-mix(in srgb, var(--org-primary) 70%, transparent) !important;
+    }
+
+    .mdc-notched-outline__notch {
+      border-color: color-mix(in srgb, var(--org-secondary) 75%, transparent) !important;
+    }
+
+    .mdc-notched-outline__trailing {
+      border-color: color-mix(in srgb, var(--org-tertiary) 80%, transparent) !important;
+    }
+  }
+
+  &.mat-mdc-form-field-focused {
+    .mdc-notched-outline__leading {
+      border-color: var(--org-primary) !important;
+    }
+
+    .mdc-notched-outline__notch {
+      border-color: var(--org-secondary) !important;
+    }
+
+    .mdc-notched-outline__trailing {
+      border-color: var(--org-tertiary) !important;
+    }
   }
 }
 
@@ -821,7 +868,7 @@ button:not(mat-icon),
   }
 }
 
-/* Standalone .glass-input Custom Styling (Pill Card Glass Input like CosturaAI) */
+/* Standalone .glass-input Custom Styling (Pill Card Glass Input) */
 .glass-input {
   width: 100%;
   box-sizing: border-box;
@@ -884,7 +931,7 @@ input[type='time'] {
   }
 }
 
-// Global Category Chips (Costura AI style)
+// Global Category Chips (Organiza AI Vibrant Modernism style)
 .org-chip {
   &.cat-aniversario {
     --chip-bg: #ffe499;

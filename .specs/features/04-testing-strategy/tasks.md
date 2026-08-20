@@ -111,10 +111,10 @@ T5
 
 **Done when**:
 
-- [ ] `ThemeService` safely handles SSR / jsdom environments where `window.matchMedia` is undefined
-- [ ] `app.spec.ts` and `seasonal-overlay.component.spec.ts` pass cleanly
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: 11 tests pass with 0 failures
+- [x] `ThemeService` safely handles SSR / jsdom environments where `window.matchMedia` is undefined
+- [x] `app.spec.ts` and `seasonal-overlay.component.spec.ts` pass cleanly
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: 11 tests pass with 0 failures
 
 **Tests**: unit  
 **Gate**: quick  

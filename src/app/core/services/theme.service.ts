@@ -60,11 +60,16 @@ export class ThemeService {
 
   private setupListeners(): void {
     if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (this.mode() === 'system') {
-          this.updateIsDark('system');
-        }
-      });
+      try {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery?.addEventListener?.('change', () => {
+          if (this.mode() === 'system') {
+            this.updateIsDark('system');
+          }
+        });
+      } catch {
+        // Fallback for jsdom / SSR
+      }
     }
   }
 
@@ -74,10 +79,14 @@ export class ThemeService {
     } else if (currentMode === 'light') {
       this.isDark.set(false);
     } else {
-      const prefersDark =
-        typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches
-          : false;
+      let prefersDark = false;
+      if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+        try {
+          prefersDark = window.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false;
+        } catch {
+          prefersDark = false;
+        }
+      }
       this.isDark.set(prefersDark);
     }
   }

@@ -349,9 +349,9 @@ T34
 
 **Done when**:
 
-- [ ] `EventDetailPage` extends `BasePage` and defines locators: `countdownTimer`, `rsvpBtn`, `pixCard`, `copyPixBtn`, `confettiCanvas`
-- [ ] Implements methods: `openRsvpDialog()`, `copyPixKey()`
-- [ ] Build gate passes: `npm run build`
+- [x] `EventDetailPage` extends `BasePage` and defines locators: `countdownTimer`, `rsvpBtn`, `pixCard`, `copyPixBtn`, `confettiCanvas`
+- [x] Implements methods: `openRsvpDialog()`, `copyPixKey()`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

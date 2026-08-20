@@ -4,87 +4,93 @@ import { UserService } from './user.service';
 import { FirebaseService } from './firebase.service';
 import { FamilyService } from './family.service';
 
-const mocks = vi.hoisted(() => {
-  const mockBatch = {
+const { firestoreMocks } = vi.hoisted(() => {
+  const batch = {
     set: vi.fn(),
     delete: vi.fn(),
     update: vi.fn(),
     commit: vi.fn().mockResolvedValue(undefined),
   };
 
-  return {
-    mockBatch,
-    mockCollection: vi.fn(),
-    mockCollectionGroup: vi.fn(),
-    mockDoc: vi.fn(),
-    mockAddDoc: vi.fn(),
-    mockSetDoc: vi.fn(),
-    mockGetDoc: vi.fn(),
-    mockUpdateDoc: vi.fn(),
-    mockDeleteDoc: vi.fn(),
-    mockOnSnapshot: vi.fn(),
-    mockOrderBy: vi.fn(),
-    mockQuery: vi.fn(),
-    mockWhere: vi.fn(),
-    mockLimit: vi.fn(),
-    mockGetDocs: vi.fn(),
-    mockWriteBatch: vi.fn(() => mockBatch),
-    mockArrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
-    mockArrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
+  class MockTimestamp {
+    constructor(public seconds: number, public nanoseconds: number) {}
+    toDate() {
+      return new Date(this.seconds * 1000);
+    }
+  }
+
+  const mocks = {
+    batch,
+    collection: vi.fn(),
+    collectionGroup: vi.fn(),
+    doc: vi.fn(),
+    addDoc: vi.fn(),
+    setDoc: vi.fn(),
+    updateDoc: vi.fn(),
+    deleteDoc: vi.fn(),
+    getDoc: vi.fn(),
+    getDocs: vi.fn(),
+    onSnapshot: vi.fn(),
+    orderBy: vi.fn(),
+    query: vi.fn(),
+    where: vi.fn(),
+    limit: vi.fn(),
+    writeBatch: vi.fn(() => batch),
+    arrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
+    arrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
     serverTimestamp: vi.fn(),
-    Timestamp: class Timestamp {
-      constructor(public seconds: number, public nanoseconds: number) {}
-      toDate() {
-        return new Date(this.seconds * 1000);
-      }
-    },
+    Timestamp: MockTimestamp,
   };
+
+  return { firestoreMocks: mocks };
 });
 
 vi.mock('firebase/firestore', () => ({
   initializeFirestore: vi.fn(),
-  collection: mocks.mockCollection,
-  collectionGroup: mocks.mockCollectionGroup,
-  doc: mocks.mockDoc,
-  addDoc: mocks.mockAddDoc,
-  setDoc: mocks.mockSetDoc,
-  getDoc: mocks.mockGetDoc,
-  updateDoc: mocks.mockUpdateDoc,
-  deleteDoc: mocks.mockDeleteDoc,
-  onSnapshot: mocks.mockOnSnapshot,
-  orderBy: mocks.mockOrderBy,
-  query: mocks.mockQuery,
-  where: mocks.mockWhere,
-  limit: mocks.mockLimit,
-  getDocs: mocks.mockGetDocs,
-  writeBatch: mocks.mockWriteBatch,
-  arrayUnion: mocks.mockArrayUnion,
-  arrayRemove: mocks.mockArrayRemove,
-  serverTimestamp: vi.fn(),
-  Timestamp: mocks.Timestamp,
+  getFirestore: vi.fn(),
+  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
+  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
+  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
+  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
+  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
+  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
+  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
+  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
+  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
+  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
+  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
+  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
+  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
+  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
+  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
+  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
+  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
+  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
+  Timestamp: firestoreMocks.Timestamp,
 }));
 
 vi.mock('@firebase/firestore', () => ({
   initializeFirestore: vi.fn(),
-  collection: mocks.mockCollection,
-  collectionGroup: mocks.mockCollectionGroup,
-  doc: mocks.mockDoc,
-  addDoc: mocks.mockAddDoc,
-  setDoc: mocks.mockSetDoc,
-  getDoc: mocks.mockGetDoc,
-  updateDoc: mocks.mockUpdateDoc,
-  deleteDoc: mocks.mockDeleteDoc,
-  onSnapshot: mocks.mockOnSnapshot,
-  orderBy: mocks.mockOrderBy,
-  query: mocks.mockQuery,
-  where: mocks.mockWhere,
-  limit: mocks.mockLimit,
-  getDocs: mocks.mockGetDocs,
-  writeBatch: mocks.mockWriteBatch,
-  arrayUnion: mocks.mockArrayUnion,
-  arrayRemove: mocks.mockArrayRemove,
-  serverTimestamp: vi.fn(),
-  Timestamp: mocks.Timestamp,
+  getFirestore: vi.fn(),
+  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
+  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
+  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
+  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
+  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
+  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
+  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
+  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
+  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
+  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
+  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
+  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
+  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
+  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
+  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
+  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
+  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
+  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
+  Timestamp: firestoreMocks.Timestamp,
 }));
 
 describe('UserService', () => {
@@ -99,17 +105,17 @@ describe('UserService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mocks.mockDoc.mockReturnValue('doc-ref' as any);
-    mocks.mockCollection.mockReturnValue('col-ref' as any);
-    mocks.mockCollectionGroup.mockReturnValue('col-group-ref' as any);
-    mocks.mockGetDoc.mockResolvedValue({ exists: () => false } as any);
-    mocks.mockGetDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
-    mocks.mockSetDoc.mockResolvedValue(undefined as any);
-    mocks.mockUpdateDoc.mockResolvedValue(undefined as any);
-    mocks.mockDeleteDoc.mockResolvedValue(undefined as any);
-    mocks.mockQuery.mockReturnValue('query-ref' as any);
-    mocks.mockWhere.mockReturnValue('where-ref' as any);
-    mocks.mockOrderBy.mockReturnValue('order-ref' as any);
+    firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+    firestoreMocks.collection.mockReturnValue('col-ref' as any);
+    firestoreMocks.collectionGroup.mockReturnValue('col-group-ref' as any);
+    firestoreMocks.getDoc.mockResolvedValue({ exists: () => false } as any);
+    firestoreMocks.getDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
+    firestoreMocks.setDoc.mockResolvedValue(undefined as any);
+    firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
+    firestoreMocks.deleteDoc.mockResolvedValue(undefined as any);
+    firestoreMocks.query.mockReturnValue('query-ref' as any);
+    firestoreMocks.where.mockReturnValue('where-ref' as any);
+    firestoreMocks.orderBy.mockReturnValue('order-ref' as any);
 
     mockFamilyService = {
       getFamilyMembers: vi.fn().mockResolvedValue([]),
@@ -138,12 +144,12 @@ describe('UserService', () => {
     it('returns null if uid is empty', async () => {
       const result = await service.getProfile('');
       expect(result).toBeNull();
-      expect(mocks.mockGetDoc).not.toHaveBeenCalled();
+      expect(firestoreMocks.getDoc).not.toHaveBeenCalled();
     });
 
     it('returns UserProfile when user document exists', async () => {
-      mocks.mockDoc.mockReturnValue('doc-ref' as any);
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         data: () => ({
           email: 'test@example.com',
@@ -156,7 +162,7 @@ describe('UserService', () => {
 
       const profile = await service.getProfile('user-123');
 
-      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
+      expect(firestoreMocks.doc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
       expect(profile).toEqual({
         uid: 'user-123',
         email: 'test@example.com',
@@ -171,8 +177,8 @@ describe('UserService', () => {
     });
 
     it('returns null when document does not exist', async () => {
-      mocks.mockDoc.mockReturnValue('doc-ref' as any);
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => false,
       } as any);
 
@@ -181,8 +187,8 @@ describe('UserService', () => {
     });
 
     it('handles exceptions gracefully and returns null', async () => {
-      mocks.mockDoc.mockReturnValue('doc-ref' as any);
-      mocks.mockGetDoc.mockRejectedValue(new Error('Firestore error'));
+      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+      firestoreMocks.getDoc.mockRejectedValue(new Error('Firestore error'));
 
       const profile = await service.getProfile('err-uid');
       expect(profile).toBeNull();
@@ -192,23 +198,23 @@ describe('UserService', () => {
   describe('updateProfile', () => {
     it('does nothing if uid is empty', async () => {
       await service.updateProfile('', { displayName: 'New Name' });
-      expect(mocks.mockDoc).not.toHaveBeenCalled();
+      expect(firestoreMocks.doc).not.toHaveBeenCalled();
     });
 
     it('updates existing user document in Firestore', async () => {
-      mocks.mockDoc.mockReturnValue('doc-ref' as any);
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
       } as any);
-      mocks.mockUpdateDoc.mockResolvedValue(undefined as any);
+      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
 
       await service.updateProfile('user-123', {
         displayName: 'Updated Name',
         phone: '11988888888',
       });
 
-      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
-      expect(mocks.mockUpdateDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.doc).toHaveBeenCalledWith(mockFirestore, 'users', 'user-123');
+      expect(firestoreMocks.updateDoc).toHaveBeenCalledWith(
         'doc-ref',
         expect.objectContaining({
           displayName: 'Updated Name',
@@ -220,17 +226,17 @@ describe('UserService', () => {
     });
 
     it('creates a new user document when document does not exist yet', async () => {
-      mocks.mockDoc.mockReturnValue('doc-ref' as any);
-      mocks.mockGetDoc.mockResolvedValue({
+      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+      firestoreMocks.getDoc.mockResolvedValue({
         exists: () => false,
       } as any);
-      mocks.mockSetDoc.mockResolvedValue(undefined as any);
+      firestoreMocks.setDoc.mockResolvedValue(undefined as any);
 
       await service.updateProfile('user-new', {
         displayName: 'Brand New',
       });
 
-      expect(mocks.mockSetDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
         'doc-ref',
         expect.objectContaining({
           uid: 'user-new',
@@ -243,9 +249,9 @@ describe('UserService', () => {
     });
 
     it('throws error when updateDoc fails', async () => {
-      mocks.mockDoc.mockReturnValue('doc-ref' as any);
-      mocks.mockGetDoc.mockResolvedValue({ exists: () => true } as any);
-      mocks.mockUpdateDoc.mockRejectedValue(new Error('Update failed'));
+      firestoreMocks.doc.mockReturnValue('doc-ref' as any);
+      firestoreMocks.getDoc.mockResolvedValue({ exists: () => true } as any);
+      firestoreMocks.updateDoc.mockRejectedValue(new Error('Update failed'));
 
       await expect(
         service.updateProfile('user-123', { displayName: 'Fail' }),
@@ -260,11 +266,11 @@ describe('UserService', () => {
     });
 
     it('retrieves events from rsvpEvents and collectionGroup queries', async () => {
-      mocks.mockDoc.mockImplementation((_fs: any, col: string, id: string) => {
+      firestoreMocks.doc.mockImplementation((_fs: any, col: string, id: string) => {
         return { col, id } as any;
       });
 
-      mocks.mockGetDoc.mockImplementation(async (ref: any) => {
+      firestoreMocks.getDoc.mockImplementation(async (ref: any) => {
         if (ref.col === 'users') {
           return {
             exists: () => true,
@@ -308,10 +314,10 @@ describe('UserService', () => {
         return { exists: () => false } as any;
       });
 
-      mocks.mockCollectionGroup.mockReturnValue('collection-group-guests' as any);
-      mocks.mockWhere.mockReturnValue('where-clause' as any);
-      mocks.mockQuery.mockReturnValue('query-ref' as any);
-      mocks.mockGetDocs.mockResolvedValue({
+      firestoreMocks.collectionGroup.mockReturnValue('collection-group-guests' as any);
+      firestoreMocks.where.mockReturnValue('where-clause' as any);
+      firestoreMocks.query.mockReturnValue('query-ref' as any);
+      firestoreMocks.getDocs.mockResolvedValue({
         forEach: (cb: any) => {
           cb({
             id: 'guest-doc-1',
@@ -334,7 +340,7 @@ describe('UserService', () => {
     });
 
     it('returns empty array when error occurs during fetch', async () => {
-      mocks.mockDoc.mockImplementation(() => {
+      firestoreMocks.doc.mockImplementation(() => {
         throw new Error('Firestore read error');
       });
 

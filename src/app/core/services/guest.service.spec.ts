@@ -3,64 +3,93 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { GuestService } from './guest.service';
 import { FirebaseService } from './firebase.service';
 import { FamilyMember } from '../models';
-const mocks = vi.hoisted(() => {
-  const mockBatch = {
+const { firestoreMocks } = vi.hoisted(() => {
+  const batch = {
     set: vi.fn(),
     delete: vi.fn(),
     update: vi.fn(),
     commit: vi.fn().mockResolvedValue(undefined),
   };
 
-  return {
-    mockBatch,
-    mockCollection: vi.fn(),
-    mockCollectionGroup: vi.fn(),
-    mockDoc: vi.fn(),
-    mockAddDoc: vi.fn(),
-    mockSetDoc: vi.fn(),
-    mockGetDoc: vi.fn(),
-    mockUpdateDoc: vi.fn(),
-    mockDeleteDoc: vi.fn(),
-    mockOnSnapshot: vi.fn(),
-    mockOrderBy: vi.fn(),
-    mockQuery: vi.fn(),
-    mockWhere: vi.fn(),
-    mockLimit: vi.fn(),
-    mockGetDocs: vi.fn(),
-    mockWriteBatch: vi.fn(() => mockBatch),
-    mockArrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
-    mockArrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
+  class MockTimestamp {
+    constructor(public seconds: number, public nanoseconds: number) {}
+    toDate() {
+      return new Date(this.seconds * 1000);
+    }
+  }
+
+  const mocks = {
+    batch,
+    collection: vi.fn(),
+    collectionGroup: vi.fn(),
+    doc: vi.fn(),
+    addDoc: vi.fn(),
+    setDoc: vi.fn(),
+    updateDoc: vi.fn(),
+    deleteDoc: vi.fn(),
+    getDoc: vi.fn(),
+    getDocs: vi.fn(),
+    onSnapshot: vi.fn(),
+    orderBy: vi.fn(),
+    query: vi.fn(),
+    where: vi.fn(),
+    limit: vi.fn(),
+    writeBatch: vi.fn(() => batch),
+    arrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
+    arrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
     serverTimestamp: vi.fn(),
-    Timestamp: class Timestamp {
-      constructor(public seconds: number, public nanoseconds: number) {}
-      toDate() {
-        return new Date(this.seconds * 1000);
-      }
-    },
+    Timestamp: MockTimestamp,
   };
+
+  return { firestoreMocks: mocks };
 });
 
 vi.mock('firebase/firestore', () => ({
   initializeFirestore: vi.fn(),
-  collection: mocks.mockCollection,
-  collectionGroup: mocks.mockCollectionGroup,
-  doc: mocks.mockDoc,
-  addDoc: mocks.mockAddDoc,
-  setDoc: mocks.mockSetDoc,
-  getDoc: mocks.mockGetDoc,
-  updateDoc: mocks.mockUpdateDoc,
-  deleteDoc: mocks.mockDeleteDoc,
-  onSnapshot: mocks.mockOnSnapshot,
-  orderBy: mocks.mockOrderBy,
-  query: mocks.mockQuery,
-  where: mocks.mockWhere,
-  limit: mocks.mockLimit,
-  getDocs: mocks.mockGetDocs,
-  writeBatch: mocks.mockWriteBatch,
-  arrayUnion: mocks.mockArrayUnion,
-  arrayRemove: mocks.mockArrayRemove,
-  serverTimestamp: vi.fn(),
-  Timestamp: mocks.Timestamp,
+  getFirestore: vi.fn(),
+  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
+  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
+  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
+  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
+  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
+  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
+  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
+  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
+  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
+  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
+  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
+  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
+  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
+  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
+  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
+  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
+  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
+  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
+  Timestamp: firestoreMocks.Timestamp,
+}));
+
+vi.mock('@firebase/firestore', () => ({
+  initializeFirestore: vi.fn(),
+  getFirestore: vi.fn(),
+  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
+  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
+  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
+  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
+  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
+  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
+  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
+  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
+  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
+  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
+  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
+  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
+  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
+  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
+  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
+  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
+  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
+  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
+  Timestamp: firestoreMocks.Timestamp,
 }));
 
 describe('GuestService', () => {
@@ -70,15 +99,15 @@ describe('GuestService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mocks.mockBatch.set.mockReset();
-    mocks.mockBatch.delete.mockReset();
-    mocks.mockBatch.update.mockReset();
-    mocks.mockBatch.commit.mockReset().mockResolvedValue(undefined);
+    firestoreMocks.batch.set.mockReset();
+    firestoreMocks.batch.delete.mockReset();
+    firestoreMocks.batch.update.mockReset();
+    firestoreMocks.batch.commit.mockReset().mockResolvedValue(undefined);
 
-    mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
-    mocks.mockCollection.mockReturnValue('guests-col-ref' as any);
-    mocks.mockWriteBatch.mockReturnValue(mocks.mockBatch);
-    mocks.mockGetDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
+    firestoreMocks.doc.mockReturnValue('guest-doc-ref' as any);
+    firestoreMocks.collection.mockReturnValue('guests-col-ref' as any);
+    firestoreMocks.writeBatch.mockReturnValue(firestoreMocks.batch as any);
+    firestoreMocks.getDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
 
     TestBed.configureTestingModule({
       providers: [
@@ -101,8 +130,8 @@ describe('GuestService', () => {
 
   describe('saveVerifiedRsvp', () => {
     it('sets guest document in Firestore with verified fields and merge true', async () => {
-      mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
-      mocks.mockSetDoc.mockResolvedValue(undefined as any);
+      firestoreMocks.doc.mockReturnValue('guest-doc-ref' as any);
+      firestoreMocks.setDoc.mockResolvedValue(undefined as any);
 
       await service.saveVerifiedRsvp('evt-100', {
         uid: 'user-123',
@@ -112,8 +141,8 @@ describe('GuestService', () => {
         photoUrl: 'https://example.com/photo.jpg',
       });
 
-      expect(mocks.mockDoc).toHaveBeenCalledWith(mockFirestore, 'events', 'evt-100', 'guests', 'user-123');
-      expect(mocks.mockSetDoc).toHaveBeenCalledWith(
+      expect(firestoreMocks.doc).toHaveBeenCalledWith(mockFirestore, 'events', 'evt-100', 'guests', 'user-123');
+      expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
         'guest-doc-ref',
         expect.objectContaining({
           uid: 'user-123',
@@ -130,7 +159,7 @@ describe('GuestService', () => {
 
   describe('batchConfirmRsvp', () => {
     it('atomically creates primary guest and linked family member guest records', async () => {
-      mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
+      firestoreMocks.doc.mockReturnValue('guest-doc-ref' as any);
 
       const familyMembers: FamilyMember[] = [
         {
@@ -160,10 +189,10 @@ describe('GuestService', () => {
         familyMembers,
       );
 
-      expect(mocks.mockWriteBatch).toHaveBeenCalledWith(mockFirestore);
-      expect(mocks.mockBatch.set).toHaveBeenCalledTimes(3);
+      expect(firestoreMocks.writeBatch).toHaveBeenCalledWith(mockFirestore);
+      expect(firestoreMocks.batch.set).toHaveBeenCalledTimes(3);
 
-      expect(mocks.mockBatch.set).toHaveBeenCalledWith(
+      expect(firestoreMocks.batch.set).toHaveBeenCalledWith(
         'guest-doc-ref',
         expect.objectContaining({
           uid: 'user-123',
@@ -174,7 +203,7 @@ describe('GuestService', () => {
         { merge: true },
       );
 
-      expect(mocks.mockBatch.set).toHaveBeenCalledWith(
+      expect(firestoreMocks.batch.set).toHaveBeenCalledWith(
         'guest-doc-ref',
         expect.objectContaining({
           id: 'user-123_fam-1',
@@ -185,7 +214,7 @@ describe('GuestService', () => {
         { merge: true },
       );
 
-      expect(mocks.mockBatch.set).toHaveBeenCalledWith(
+      expect(firestoreMocks.batch.set).toHaveBeenCalledWith(
         'guest-doc-ref',
         expect.objectContaining({
           id: 'user-123_fam-2',
@@ -197,31 +226,31 @@ describe('GuestService', () => {
         { merge: true },
       );
 
-      expect(mocks.mockBatch.commit).toHaveBeenCalled();
+      expect(firestoreMocks.batch.commit).toHaveBeenCalled();
     });
 
     it('works when family members list is empty', async () => {
-      mocks.mockDoc.mockReturnValue('primary-doc-ref' as any);
+      firestoreMocks.doc.mockReturnValue('primary-doc-ref' as any);
 
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
         name: 'Carlos Silva',
       });
 
-      expect(mocks.mockBatch.set).toHaveBeenCalledTimes(1);
-      expect(mocks.mockBatch.commit).toHaveBeenCalled();
+      expect(firestoreMocks.batch.set).toHaveBeenCalledTimes(1);
+      expect(firestoreMocks.batch.commit).toHaveBeenCalled();
     });
   });
 
   describe('cancelRsvp', () => {
     it('atomically deletes guest document and cascades delete to linked family members', async () => {
-      mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
-      mocks.mockCollection.mockReturnValue('collection-ref' as any);
+      firestoreMocks.doc.mockReturnValue('guest-doc-ref' as any);
+      firestoreMocks.collection.mockReturnValue('collection-ref' as any);
 
       const mockFamDoc1 = { ref: 'fam-doc-1' };
       const mockFamDoc2 = { ref: 'fam-doc-2' };
 
-      mocks.mockGetDocs.mockResolvedValueOnce({
+      firestoreMocks.getDocs.mockResolvedValueOnce({
         forEach: (cb: any) => [mockFamDoc1, mockFamDoc2].forEach(cb),
       } as any).mockResolvedValueOnce({
         forEach: vi.fn(),
@@ -229,16 +258,16 @@ describe('GuestService', () => {
 
       await service.cancelRsvp('evt-100', 'guest-123', 'user-123');
 
-      expect(mocks.mockWriteBatch).toHaveBeenCalledWith(mockFirestore);
-      expect(mocks.mockBatch.delete).toHaveBeenCalledWith('guest-doc-ref');
-      expect(mocks.mockBatch.delete).toHaveBeenCalledWith('fam-doc-1');
-      expect(mocks.mockBatch.delete).toHaveBeenCalledWith('fam-doc-2');
-      expect(mocks.mockBatch.commit).toHaveBeenCalled();
+      expect(firestoreMocks.writeBatch).toHaveBeenCalledWith(mockFirestore);
+      expect(firestoreMocks.batch.delete).toHaveBeenCalledWith('guest-doc-ref');
+      expect(firestoreMocks.batch.delete).toHaveBeenCalledWith('fam-doc-1');
+      expect(firestoreMocks.batch.delete).toHaveBeenCalledWith('fam-doc-2');
+      expect(firestoreMocks.batch.commit).toHaveBeenCalled();
     });
 
     it('atomically deletes guest document and resets all claimed items for UID', async () => {
-      mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
-      mocks.mockCollection.mockReturnValue('items-collection-ref' as any);
+      firestoreMocks.doc.mockReturnValue('guest-doc-ref' as any);
+      firestoreMocks.collection.mockReturnValue('items-collection-ref' as any);
 
       const mockItem1Ref = { id: 'item-1' };
       const mockItem2Ref = { id: 'item-2' };
@@ -247,7 +276,7 @@ describe('GuestService', () => {
         { ref: mockItem2Ref, data: () => ({ name: 'Gelo' }) },
       ];
 
-      mocks.mockGetDocs.mockResolvedValueOnce({
+      firestoreMocks.getDocs.mockResolvedValueOnce({
         forEach: vi.fn(),
       } as any).mockResolvedValueOnce({
         forEach: (callback: any) => itemDocs.forEach(callback),
@@ -255,20 +284,20 @@ describe('GuestService', () => {
 
       await service.cancelRsvp('evt-100', 'user-123');
 
-      expect(mocks.mockBatch.delete).toHaveBeenCalledWith('guest-doc-ref');
-      expect(mocks.mockBatch.update).toHaveBeenCalledTimes(2);
-      expect(mocks.mockBatch.update).toHaveBeenCalledWith(mockItem1Ref, { claimedBy: null });
-      expect(mocks.mockBatch.update).toHaveBeenCalledWith(mockItem2Ref, { claimedBy: null });
-      expect(mocks.mockBatch.commit).toHaveBeenCalled();
+      expect(firestoreMocks.batch.delete).toHaveBeenCalledWith('guest-doc-ref');
+      expect(firestoreMocks.batch.update).toHaveBeenCalledTimes(2);
+      expect(firestoreMocks.batch.update).toHaveBeenCalledWith(mockItem1Ref, { claimedBy: null });
+      expect(firestoreMocks.batch.update).toHaveBeenCalledWith(mockItem2Ref, { claimedBy: null });
+      expect(firestoreMocks.batch.commit).toHaveBeenCalled();
     });
 
     it('rejects and rolls back if batch commit fails', async () => {
-      mocks.mockDoc.mockReturnValue('guest-doc-ref' as any);
-      mocks.mockCollection.mockReturnValue('items-collection-ref' as any);
-      mocks.mockGetDocs.mockResolvedValue({
+      firestoreMocks.doc.mockReturnValue('guest-doc-ref' as any);
+      firestoreMocks.collection.mockReturnValue('items-collection-ref' as any);
+      firestoreMocks.getDocs.mockResolvedValue({
         forEach: vi.fn(),
       } as any);
-      mocks.mockBatch.commit.mockRejectedValue(new Error('Firestore batch error'));
+      firestoreMocks.batch.commit.mockRejectedValue(new Error('Firestore batch error'));
 
       await expect(service.cancelRsvp('evt-100', 'guest-123')).rejects.toThrow(
         'Firestore batch error',
@@ -278,18 +307,18 @@ describe('GuestService', () => {
 
   describe('addGuest and listGuests', () => {
     it('creates guest document and returns id', async () => {
-      mocks.mockAddDoc.mockResolvedValue({ id: 'guest-new-id' } as any);
+      firestoreMocks.addDoc.mockResolvedValue({ id: 'guest-new-id' } as any);
 
       const id = await service.addGuest('evt-100', {
         name: 'João',
       });
 
       expect(id).toBe('guest-new-id');
-      expect(mocks.mockAddDoc).toHaveBeenCalled();
+      expect(firestoreMocks.addDoc).toHaveBeenCalled();
     });
 
     it('lists guests subscribing to onSnapshot', () => {
-      mocks.mockOnSnapshot.mockImplementation((_query: any, next: any) => {
+      firestoreMocks.onSnapshot.mockImplementation((_query: any, next: any) => {
         next({
           docs: [
             {

@@ -1,19 +1,17 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EventService } from '../../core/services';
-import { PartyEvent } from '../../core/models';
 
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
-    AsyncPipe,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
@@ -24,7 +22,9 @@ import { PartyEvent } from '../../core/models';
 })
 export class HomeContainer {
   private readonly eventService = inject(EventService);
-  protected readonly events$ = this.eventService.listEvents();
+  private readonly router = inject(Router);
+
+  protected readonly events = toSignal(this.eventService.listEvents());
 
   protected formatDate(dateStr: string): string {
     if (!dateStr) return '';
@@ -37,7 +37,10 @@ export class HomeContainer {
     });
   }
 
-  protected trackByEventId(_index: number, event: PartyEvent): string {
-    return event.id;
+  protected navigateToEvent(eventId: string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+    this.router.navigate(['/evento', eventId]);
   }
 }

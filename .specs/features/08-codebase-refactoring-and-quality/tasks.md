@@ -372,13 +372,13 @@ T23
 
 **Done when**:
 
-- [ ] `events` is a Signal initialized via `toSignal(this.eventService.listEvents())`
-- [ ] `AsyncPipe` removed from imports and template
-- [ ] Inline `style="cursor: pointer..."` removed and encapsulated in `home.container.scss`
-- [ ] Event cards support keyboard interaction (`role="link"`, `tabindex="0"`, `Enter` and `Space` key navigation)
-- [ ] `home.container.spec.ts` verifies: signal data rendering, loading state, empty state, keyboard navigation
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 5 tests pass
+- [x] `events` is a Signal initialized via `toSignal(this.eventService.listEvents())`
+- [x] `AsyncPipe` removed from imports and template
+- [x] Inline `style="cursor: pointer..."` removed and encapsulated in `home.container.scss`
+- [x] Event cards support keyboard interaction (`role="link"`, `tabindex="0"`, `Enter` and `Space` key navigation)
+- [x] `home.container.spec.ts` verifies: signal data rendering, loading state, empty state, keyboard navigation
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 5 tests pass (7 passed)
 
 **Tests**: unit  
 **Gate**: quick  

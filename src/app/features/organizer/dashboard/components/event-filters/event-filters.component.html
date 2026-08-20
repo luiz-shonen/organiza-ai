@@ -1,0 +1,22 @@
+<nav class="event-filters" role="tablist" aria-label="Filtros de status dos eventos">
+  @for (tab of filterTabs; track tab.id) {
+    <button
+      type="button"
+      role="tab"
+      class="event-filters__item"
+      [class.event-filters__item--active]="activeFilter() === tab.id"
+      [attr.aria-selected]="activeFilter() === tab.id"
+      [attr.id]="'filter-tab-' + tab.id"
+      (click)="selectFilter(tab.id)"
+    >
+      <span class="event-filters__label">{{ tab.label }}</span>
+      <span
+        class="event-filters__badge"
+        [class.event-filters__badge--active]="activeFilter() === tab.id"
+        [attr.aria-label]="tab.label + ': ' + getCount(tab.id) + ' eventos'"
+      >
+        {{ getCount(tab.id) }}
+      </span>
+    </button>
+  }
+</nav>

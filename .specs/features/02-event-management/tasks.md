@@ -141,14 +141,14 @@ T4 → T5
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `activeFilter` required input, `filterCounts` input, and `filterChange` output
-- [ ] Renders all 4 filter states (`all`, `upcoming`, `past`, `cancelled`) with count badges
-- [ ] WCAG 2.1 AA accessible with keyboard navigation and ARIA selected states
-- [ ] Separate `.html`, `.scss`, and `.spec.ts` files
-- [ ] Unit tests cover: active filter highlight, count badge rendering, output emission on click
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `activeFilter` required input, `filterCounts` input, and `filterChange` output
+- [x] Renders all 4 filter states (`all`, `upcoming`, `past`, `cancelled`) with count badges
+- [x] WCAG 2.1 AA accessible with keyboard navigation and ARIA selected states
+- [x] Separate `.html`, `.scss`, and `.spec.ts` files
+- [x] Unit tests cover: active filter highlight, count badge rendering, output emission on click
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

@@ -198,21 +198,21 @@ Organizers need to create, edit, and manage collaborative events intuitively. Th
 | EVMG-01 | P1: Create Event — form | - | Verified (built) |
 | EVMG-02 | P1: Create Event — ViaCep | - | Verified (built) |
 | EVMG-03 | P1: Create Event — validation | - | Verified (built) |
-| EVMG-04 | P1: Edit Event & Notify | Design | Pending |
+| EVMG-04 | P1: Edit Event & Notify | Phase 3 | Complete (built) |
 | EVMG-05 | P1: Manage Items — add | - | Verified (built) |
 | EVMG-06 | P1: Manage Items — remove | - | Verified (built) |
 | EVMG-07 | P1: Share via WhatsApp | - | Verified (built) |
 | EVMG-08 | P1: QR Code | - | Verified (built) |
 | EVMG-09 | P1: Copy link | - | Verified (built) |
-| EVMG-10 | P1: Cancel Event & Notify | Design | Pending |
-| EVMG-11 | P1: Dashboard with filters | - | Verified (built) |
-| EVMG-12 | P1: 7-day local notification | - | Verified (built) |
+| EVMG-10 | P1: Cancel Event & Notify | Phase 3 | Complete (built) |
+| EVMG-11 | P1: Dashboard with filters | Phase 2, 3 | Complete (built) |
+| EVMG-12 | P1: 7-day local notification | Phase 1, 3 | Complete (built) |
 | EVMG-13 | P2: Export CSV | - | Verified (built) |
 | EVMG-14 | P2: Print | - | Verified (built) |
 | EVMG-15 | P2: Delete Event | - | Verified (built) |
-| EVMG-16 | P1: 1-day countdown notification | Design | Pending |
+| EVMG-16 | P1: 1-day countdown notification | Phase 1, 3 | Complete (built) |
 
-**Coverage:** 16 total, 13 verified built, 3 pending design/task.
+**Coverage:** 16 total, 16 complete / verified built.
 
 ---
 

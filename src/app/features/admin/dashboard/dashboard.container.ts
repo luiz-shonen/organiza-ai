@@ -5,7 +5,6 @@ import {
   signal,
   computed,
   OnInit,
-  DestroyRef,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +16,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatChipsModule } from '@angular/material/chips';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { effect } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -26,9 +24,15 @@ import {
   AuthService,
   DrawerService,
   NotificationService,
+  EventNotificationService,
 } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  EventDashboardFiltersComponent,
+  EventStatusFilter,
+  EventFilterCounts,
+} from '../../organizer/dashboard/components/event-filters/event-filters.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,7 +46,7 @@ import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialo
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatMenuModule,
-    MatChipsModule,
+    EventDashboardFiltersComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
@@ -56,6 +60,7 @@ export class DashboardContainer implements OnInit {
   private readonly clipboard = inject(Clipboard);
   private readonly dialog = inject(MatDialog);
   private readonly notificationService = inject(NotificationService);
+  private readonly eventNotificationService = inject(EventNotificationService);
 
   protected readonly events$ = this.eventService.listEvents();
   protected readonly events = toSignal(this.events$);
@@ -63,14 +68,44 @@ export class DashboardContainer implements OnInit {
   protected readonly user = this.authService.currentUser;
   protected readonly displayedColumns = ['title', 'date', 'location', 'actions'];
 
-  protected readonly activeFilter = signal<'all' | 'upcoming' | 'history' | 'cancelled'>('all');
+  readonly activeFilter = signal<EventStatusFilter>('all');
 
-  protected readonly filteredEvents = computed(() => {
+  readonly filterCounts = computed<EventFilterCounts>(() => {
+    const all = this.events() ?? [];
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    let upcoming = 0;
+    let past = 0;
+    let cancelled = 0;
+
+    for (const e of all) {
+      if (e.status === 'cancelled') {
+        cancelled++;
+      } else {
+        const eventDate = new Date(e.date);
+        if (eventDate >= now) {
+          upcoming++;
+        } else {
+          past++;
+        }
+      }
+    }
+
+    return {
+      all: all.length,
+      upcoming,
+      past,
+      cancelled,
+    };
+  });
+
+  readonly filteredEvents = computed(() => {
     const all = this.events();
     if (!all) return [];
     const filter = this.activeFilter();
     const now = new Date();
-    now.setHours(0, 0, 0, 0); // Start of today
+    now.setHours(0, 0, 0, 0);
 
     return all.filter((e) => {
       const isCancelled = e.status === 'cancelled';
@@ -79,7 +114,7 @@ export class DashboardContainer implements OnInit {
       switch (filter) {
         case 'upcoming':
           return !isCancelled && eventDate >= now;
-        case 'history':
+        case 'past':
           return !isCancelled && eventDate < now;
         case 'cancelled':
           return isCancelled;
@@ -115,6 +150,13 @@ export class DashboardContainer implements OnInit {
   });
 
   constructor() {
+    effect(() => {
+      const all = this.events();
+      if (all && all.length > 0) {
+        this.eventNotificationService.evaluateCountdownReminders(all);
+      }
+    });
+
     effect(() => {
       const event = this.nextEvent();
       const days = this.nextEventDays();

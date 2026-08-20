@@ -200,12 +200,12 @@ T4 → T5
 
 **Done when**:
 
-- [ ] Dashboard container provides filtered events computed signal based on `activeFilter`
-- [ ] Computes counts for all, upcoming, past, and cancelled categories
-- [ ] Invokes `evaluateCountdownReminders` on event list load
-- [ ] Unit tests cover: filter switching updates visible events, reminder check triggered on load
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] Dashboard container provides filtered events computed signal based on `activeFilter`
+- [x] Computes counts for all, upcoming, past, and cancelled categories
+- [x] Invokes `evaluateCountdownReminders` on event list load
+- [x] Unit tests cover: filter switching updates visible events, reminder check triggered on load
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

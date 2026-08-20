@@ -7,3 +7,7 @@ export type {
   SeasonalThemeRule,
   SeasonalThemeConfig,
 } from './seasonal-theme.model';
+export type {
+  EventNotificationRecord,
+  EventNotificationType,
+} from './notification.model';

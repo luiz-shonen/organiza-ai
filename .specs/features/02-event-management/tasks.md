@@ -85,9 +85,9 @@ T4 → T5
 
 **Done when**:
 
-- [ ] `EventNotificationRecord` interface exported with `id`, `eventId`, `type`, `title`, `body`, `sentAt`, and `recipientCount` fields
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `EventNotificationRecord` interface exported with `id`, `eventId`, `type`, `title`, `body`, `sentAt`, and `recipientCount` fields
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

@@ -612,9 +612,9 @@ T23
 
 **Done when**:
 
-- [ ] `drawer.service.spec.ts` verifies: opening admin drawer, opening event drawer with data, closing drawer, signals reactivity
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `drawer.service.spec.ts` verifies: opening admin drawer, opening event drawer with data, closing drawer, signals reactivity
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass (4 passed)
 
 **Tests**: unit  
 **Gate**: quick  

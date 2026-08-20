@@ -86,9 +86,9 @@ T5
 
 **Done when**:
 
-- [ ] `FamilyMember` interface exported with `id`, `name`, `relationship`, and `createdAt`
-- [ ] Strictly typed with no `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `FamilyMember` interface exported with `id`, `name`, `relationship`, and `createdAt`
+- [x] Strictly typed with no `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

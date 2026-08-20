@@ -13,3 +13,8 @@ export type {
   EventNotificationRecord,
   EventNotificationType,
 } from './notification.model';
+export type {
+  FamilyMember,
+  FamilyRelationship,
+  FamilyMemberCreate,
+} from './family.model';

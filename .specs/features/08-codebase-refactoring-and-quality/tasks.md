@@ -137,9 +137,9 @@ T23
 
 **Done when**:
 
-- [ ] `ConfirmDialogData`, `GuestFormDialogData`, `GuestFormDialogResult`, and `BatchPrimaryGuestInput` interfaces are defined in `src/app/core/models/dialog.model.ts`
-- [ ] Exported cleanly via `src/app/core/models/index.ts`
-- [ ] Build gate passes: `npm run build`
+- [x] `ConfirmDialogData`, `GuestFormDialogData`, `GuestFormDialogResult`, and `BatchPrimaryGuestInput` interfaces are defined in `src/app/core/models/dialog.model.ts`
+- [x] Exported cleanly via `src/app/core/models/index.ts`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

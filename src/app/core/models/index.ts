@@ -20,4 +20,10 @@ export type {
   FamilyMemberCreate,
 } from './family.model';
 export type { FirestoreBatchOperations } from './firestore-gateway.models';
+export type {
+  ConfirmDialogData,
+  GuestFormDialogData,
+  GuestFormDialogResult,
+  BatchPrimaryGuestInput,
+} from './dialog.model';
 

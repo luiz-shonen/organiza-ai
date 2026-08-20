@@ -428,11 +428,11 @@ T23
 
 **Done when**:
 
-- [ ] `theme-toggle.component.scss` created and linked via `styleUrl`
-- [ ] `ThemeMode` imported from `src/app/core/models`
-- [ ] `theme-toggle.component.spec.ts` verifies: menu opening, theme mode selection triggering `ThemeService.setMode`
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 3 tests pass
+- [x] `theme-toggle.component.scss` created and linked via `styleUrl`
+- [x] `ThemeMode` imported from `src/app/core/models`
+- [x] `theme-toggle.component.spec.ts` verifies: menu opening, theme mode selection triggering `ThemeService.setMode`
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 3 tests pass (4 passed)
 
 **Tests**: unit  
 **Gate**: quick  

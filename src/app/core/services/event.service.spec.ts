@@ -82,6 +82,20 @@ describe('EventService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    mocks.mockDoc.mockReturnValue({ id: 'evt-100' } as any);
+    mocks.mockCollection.mockReturnValue('col-ref' as any);
+    mocks.mockCollectionGroup.mockReturnValue('col-group-ref' as any);
+    mocks.mockQuery.mockReturnValue('query-ref' as any);
+    mocks.mockWhere.mockReturnValue('where-ref' as any);
+    mocks.mockOrderBy.mockReturnValue('order-ref' as any);
+    mocks.mockWriteBatch.mockReturnValue(mockBatch);
+    mocks.mockGetDoc.mockResolvedValue({ exists: () => true, data: () => existingEvent, id: 'evt-100' } as any);
+    mocks.mockGetDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
+    mocks.mockAddDoc.mockResolvedValue({ id: 'new-evt-id' } as any);
+    mocks.mockSetDoc.mockResolvedValue(undefined);
+    mocks.mockUpdateDoc.mockResolvedValue(undefined);
+    mocks.mockDeleteDoc.mockResolvedValue(undefined);
+
     mockNotificationService = {
       notifyGuestsOfEventChange: vi.fn().mockResolvedValue({}),
       notifyGuestsOfCancellation: vi.fn().mockResolvedValue({}),
@@ -268,7 +282,7 @@ describe('EventService', () => {
 
       expect(newId).toBe('new-evt-123');
       expect(mocks.mockAddDoc).toHaveBeenCalledWith(
-        undefined,
+        'col-ref',
         expect.objectContaining({
           title: 'Churrasco',
           status: 'active',

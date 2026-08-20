@@ -3,41 +3,61 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { FamilyService } from './family.service';
 import { FirebaseService } from './firebase.service';
 
-const mocks = vi.hoisted(() => ({
-  mockCollection: vi.fn(),
-  mockDoc: vi.fn(),
-  mockAddDoc: vi.fn(),
-  mockDeleteDoc: vi.fn(),
-  mockGetDocs: vi.fn(),
-  mockOrderBy: vi.fn(),
-  mockQuery: vi.fn(),
-  MockTimestamp: class Timestamp {
-    constructor(public seconds: number, public nanoseconds: number) {}
-    toDate() {
-      return new Date(this.seconds * 1000);
-    }
-  },
-}));
+const mocks = vi.hoisted(() => {
+  const mockBatch = {
+    set: vi.fn(),
+    delete: vi.fn(),
+    update: vi.fn(),
+    commit: vi.fn().mockResolvedValue(undefined),
+  };
+
+  return {
+    mockBatch,
+    mockCollection: vi.fn(),
+    mockCollectionGroup: vi.fn(),
+    mockDoc: vi.fn(),
+    mockAddDoc: vi.fn(),
+    mockSetDoc: vi.fn(),
+    mockGetDoc: vi.fn(),
+    mockUpdateDoc: vi.fn(),
+    mockDeleteDoc: vi.fn(),
+    mockOnSnapshot: vi.fn(),
+    mockOrderBy: vi.fn(),
+    mockQuery: vi.fn(),
+    mockWhere: vi.fn(),
+    mockLimit: vi.fn(),
+    mockGetDocs: vi.fn(),
+    mockWriteBatch: vi.fn(() => mockBatch),
+    mockArrayUnion: vi.fn((...args) => ({ _type: 'arrayUnion', args })),
+    mockArrayRemove: vi.fn((...args) => ({ _type: 'arrayRemove', args })),
+    MockTimestamp: class Timestamp {
+      constructor(public seconds: number, public nanoseconds: number) {}
+      toDate() {
+        return new Date(this.seconds * 1000);
+      }
+    },
+  };
+});
 
 vi.mock('firebase/firestore', () => ({
   initializeFirestore: vi.fn(),
   collection: mocks.mockCollection,
-  collectionGroup: vi.fn(),
+  collectionGroup: mocks.mockCollectionGroup,
   doc: mocks.mockDoc,
   addDoc: mocks.mockAddDoc,
-  setDoc: vi.fn(),
-  updateDoc: vi.fn(),
+  setDoc: mocks.mockSetDoc,
+  getDoc: mocks.mockGetDoc,
+  updateDoc: mocks.mockUpdateDoc,
   deleteDoc: mocks.mockDeleteDoc,
-  getDoc: vi.fn(),
-  getDocs: mocks.mockGetDocs,
-  onSnapshot: vi.fn(),
+  onSnapshot: mocks.mockOnSnapshot,
   orderBy: mocks.mockOrderBy,
   query: mocks.mockQuery,
-  where: vi.fn(),
-  limit: vi.fn(),
-  writeBatch: vi.fn(),
-  arrayUnion: vi.fn(),
-  arrayRemove: vi.fn(),
+  where: mocks.mockWhere,
+  limit: mocks.mockLimit,
+  getDocs: mocks.mockGetDocs,
+  writeBatch: mocks.mockWriteBatch,
+  arrayUnion: mocks.mockArrayUnion,
+  arrayRemove: mocks.mockArrayRemove,
   serverTimestamp: vi.fn(),
   Timestamp: mocks.MockTimestamp,
 }));

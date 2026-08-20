@@ -5,33 +5,42 @@ import { UserService } from './user.service';
 import { FirebaseService } from './firebase.service';
 import { FamilyService } from './family.service';
 
-vi.mock('firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
-  collection: vi.fn(),
-  collectionGroup: vi.fn(),
-  doc: vi.fn(),
-  addDoc: vi.fn(),
-  setDoc: vi.fn(),
-  updateDoc: vi.fn(),
-  deleteDoc: vi.fn(),
-  getDoc: vi.fn(),
-  getDocs: vi.fn(),
-  onSnapshot: vi.fn(),
-  orderBy: vi.fn(),
-  query: vi.fn(),
-  where: vi.fn(),
-  limit: vi.fn(),
-  writeBatch: vi.fn(),
-  arrayUnion: vi.fn(),
-  arrayRemove: vi.fn(),
-  serverTimestamp: vi.fn(),
-  Timestamp: class Timestamp {
-    constructor(public seconds: number, public nanoseconds: number) {}
-    toDate() {
-      return new Date(this.seconds * 1000);
-    }
-  },
-}));
+vi.mock('firebase/firestore', () => {
+  const mockBatch = {
+    set: vi.fn(),
+    delete: vi.fn(),
+    update: vi.fn(),
+    commit: vi.fn().mockResolvedValue(undefined),
+  };
+
+  return {
+    initializeFirestore: vi.fn(),
+    collection: vi.fn(),
+    collectionGroup: vi.fn(),
+    doc: vi.fn(),
+    addDoc: vi.fn(),
+    setDoc: vi.fn(),
+    updateDoc: vi.fn(),
+    deleteDoc: vi.fn(),
+    getDoc: vi.fn(),
+    getDocs: vi.fn(),
+    onSnapshot: vi.fn(),
+    orderBy: vi.fn(),
+    query: vi.fn(),
+    where: vi.fn(),
+    limit: vi.fn(),
+    writeBatch: vi.fn(() => mockBatch),
+    arrayUnion: vi.fn((...args) => ({ _type: 'arrayUnion', args })),
+    arrayRemove: vi.fn((...args) => ({ _type: 'arrayRemove', args })),
+    serverTimestamp: vi.fn(),
+    Timestamp: class Timestamp {
+      constructor(public seconds: number, public nanoseconds: number) {}
+      toDate() {
+        return new Date(this.seconds * 1000);
+      }
+    },
+  };
+});
 
 describe('UserService', () => {
   let service: UserService;
@@ -79,6 +88,7 @@ describe('UserService', () => {
 
     service = TestBed.inject(UserService);
   });
+
 
   describe('getProfile', () => {
     it('returns null if uid is empty', async () => {
@@ -319,3 +329,4 @@ describe('UserService', () => {
     });
   });
 });
+

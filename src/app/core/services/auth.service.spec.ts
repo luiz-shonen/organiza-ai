@@ -37,17 +37,6 @@ vi.mock('firebase/auth', () => ({
   GoogleAuthProvider: mocks.MockGoogleAuthProvider,
 }));
 
-vi.mock('@firebase/auth', () => ({
-  onAuthStateChanged: mocks.mockOnAuthStateChanged,
-  signInWithEmailAndPassword: mocks.mockSignInWithEmailAndPassword,
-  createUserWithEmailAndPassword: mocks.mockCreateUserWithEmailAndPassword,
-  signInWithPopup: mocks.mockSignInWithPopup,
-  signInAnonymously: mocks.mockSignInAnonymously,
-  signOut: mocks.mockSignOut,
-  sendEmailVerification: mocks.mockSendEmailVerification,
-  GoogleAuthProvider: mocks.MockGoogleAuthProvider,
-}));
-
 describe('AuthService', () => {
   let service: AuthService;
 

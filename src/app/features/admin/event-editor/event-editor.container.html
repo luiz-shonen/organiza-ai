@@ -1,4 +1,4 @@
-<section class="editor" aria-label="Editor de evento">
+<section class="editor" aria-label="Editor de evento" data-testid="event-editor-page">
   @if (loading()) {
     <header class="editor__header editor__header--single">
       <button mat-icon-button disabled class="editor__back-btn">
@@ -93,6 +93,7 @@
                       formControlName="title"
                       placeholder="Ex: Festa Junina 2026"
                       required
+                      data-testid="event-title-input"
                     />
                     @if (basicInfoForm.controls.title.hasError('required')) {
                       <mat-error>Título é obrigatório</mat-error>
@@ -124,6 +125,7 @@
                       rows="4"
                       placeholder="Descreva o evento..."
                       required
+                      data-testid="event-description-input"
                     ></textarea>
                     @if (basicInfoForm.controls.description.hasError('required')) {
                       <mat-error>Descrição é obrigatória</mat-error>
@@ -142,6 +144,7 @@
                         (input)="formatDate($event)"
                         placeholder="DD/MM/AAAA"
                         maxlength="10"
+                        data-testid="event-date-input"
                       />
                       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                       <mat-datepicker #picker></mat-datepicker>
@@ -158,7 +161,13 @@
 
                     <mat-form-field appearance="outline" class="editor__time-field org-input">
                       <mat-label>Hora</mat-label>
-                      <input matInput type="time" formControlName="time" required />
+                      <input
+                        matInput
+                        type="time"
+                        formControlName="time"
+                        required
+                        data-testid="event-time-input"
+                      />
                       @if (basicInfoForm.controls.time.hasError('required')) {
                         <mat-error>Hora é obrigatória</mat-error>
                       }
@@ -195,6 +204,7 @@
                         maxlength="9"
                         required
                         (input)="formatCep($event)"
+                        data-testid="event-cep-input"
                       />
                       @if (addressForm.controls.cep.hasError('required')) {
                         <mat-error>CEP é obrigatório</mat-error>
@@ -203,7 +213,13 @@
 
                     <mat-form-field appearance="outline" class="editor__number-field org-input">
                       <mat-label>Número</mat-label>
-                      <input matInput formControlName="number" placeholder="Ex: 123" required />
+                      <input
+                        matInput
+                        formControlName="number"
+                        placeholder="Ex: 123"
+                        required
+                        data-testid="event-number-input"
+                      />
                       @if (addressForm.controls.number.hasError('required')) {
                         <mat-error>Número é obrigatório</mat-error>
                       }
@@ -223,6 +239,7 @@
                         required
                         readonly
                         tabindex="-1"
+                        data-testid="event-street-input"
                       />
                       <mat-icon matPrefix>location_on</mat-icon>
                       @if (addressForm.controls.address.hasError('required')) {
@@ -312,6 +329,7 @@
                         "
                         (click)="saveEvent()"
                         aria-label="Salvar evento"
+                        data-testid="event-save-btn"
                       >
                         @if (saving()) {
                           <mat-spinner diameter="20"></mat-spinner>

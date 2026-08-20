@@ -60,6 +60,7 @@
           class="family-roster__add-btn"
           [disabled]="!newName().trim() || isAdding()"
           aria-label="Adicionar familiar à lista"
+          data-testid="add-family-member-btn"
         >
           <mat-icon aria-hidden="true">person_add</mat-icon>
           Adicionar Familiar
@@ -77,7 +78,7 @@
       } @else {
         <ul class="family-roster__list" role="list" aria-label="Lista de familiares cadastrados">
           @for (member of members(); track member.id) {
-            <li class="family-roster__item" role="listitem">
+            <li class="family-roster__item" role="listitem" data-testid="family-member-card">
               <div class="family-roster__item-avatar" aria-hidden="true">
                 <mat-icon>person</mat-icon>
               </div>
@@ -102,6 +103,7 @@
                 class="family-roster__remove-btn"
                 [attr.aria-label]="'Remover ' + member.name + ' da lista de família'"
                 (click)="onRemove(member.id)"
+                data-testid="delete-family-member-btn"
               >
                 <mat-icon aria-hidden="true">delete_outline</mat-icon>
               </button>

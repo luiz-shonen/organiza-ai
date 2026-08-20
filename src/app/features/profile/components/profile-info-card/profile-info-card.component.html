@@ -40,6 +40,7 @@
               required
               aria-required="true"
               aria-label="Nome completo"
+              data-testid="profile-name-input"
             />
             @if (editName().trim().length === 0) {
               <mat-error>O nome não pode ficar em branco</mat-error>
@@ -54,6 +55,7 @@
               class="profile-info-card__save-btn"
               [disabled]="editName().trim().length === 0"
               aria-label="Salvar nome de exibição"
+              data-testid="save-profile-btn"
             >
               <mat-icon aria-hidden="true">check</mat-icon>
               Salvar

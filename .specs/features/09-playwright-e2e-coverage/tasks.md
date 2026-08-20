@@ -528,9 +528,9 @@ T34
 
 **Done when**:
 
-- [ ] Attributes added: `data-testid="home-page"`, `data-testid="event-card"`, `data-testid="home-empty-state"`, `data-testid="theme-toggle-btn"`, `data-testid="seasonal-overlay"`
-- [ ] Preserves all existing SCSS BEM classes and Angular Signal bindings
-- [ ] Build gate passes: `npm run build`
+- [x] Attributes added: `data-testid="home-page"`, `data-testid="event-card"`, `data-testid="home-empty-state"`, `data-testid="theme-toggle-btn"`, `data-testid="seasonal-overlay"`
+- [x] Preserves all existing SCSS BEM classes and Angular Signal bindings
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -553,9 +553,9 @@ T34
 
 **Done when**:
 
-- [ ] Attributes added: `data-testid="login-page"`, `data-testid="login-email-input"`, `data-testid="login-password-input"`, `data-testid="login-submit-btn"`, `data-testid="google-login-btn"`, `data-testid="login-error-alert"`, `data-testid="email-verification-banner"`
-- [ ] Preserves existing Angular Material form field bindings
-- [ ] Build gate passes: `npm run build`
+- [x] Attributes added: `data-testid="login-page"`, `data-testid="login-email-input"`, `data-testid="login-password-input"`, `data-testid="login-submit-btn"`, `data-testid="google-login-btn"`, `data-testid="login-error-alert"`, `data-testid="email-verification-banner"`
+- [x] Preserves existing Angular Material form field bindings
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -578,8 +578,8 @@ T34
 
 **Done when**:
 
-- [ ] Attributes added: `data-testid="dashboard-page"`, `data-testid="create-event-btn"`, `data-testid="status-filter-all-chip"`, `data-testid="status-filter-active-chip"`, `data-testid="organizer-event-card"`
-- [ ] Build gate passes: `npm run build`
+- [x] Attributes added: `data-testid="dashboard-page"`, `data-testid="create-event-btn"`, `data-testid="status-filter-all-chip"`, `data-testid="status-filter-active-chip"`, `data-testid="organizer-event-card"`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -602,8 +602,8 @@ T34
 
 **Done when**:
 
-- [ ] Attributes added: `data-testid="event-editor-page"`, `data-testid="event-title-input"`, `data-testid="event-cep-input"`, `data-testid="event-save-btn"`, `data-testid="event-cancel-btn"`
-- [ ] Build gate passes: `npm run build`
+- [x] Attributes added: `data-testid="event-editor-page"`, `data-testid="event-title-input"`, `data-testid="event-cep-input"`, `data-testid="event-save-btn"`, `data-testid="event-cancel-btn"`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -626,8 +626,8 @@ T34
 
 **Done when**:
 
-- [ ] Attributes added: `data-testid="event-detail-page"`, `data-testid="countdown-timer"`, `data-testid="rsvp-action-btn"`, `data-testid="pix-card"`, `data-testid="copy-pix-btn"`, `data-testid="confetti-canvas"`
-- [ ] Build gate passes: `npm run build`
+- [x] Attributes added: `data-testid="event-detail-page"`, `data-testid="countdown-timer"`, `data-testid="rsvp-action-btn"`, `data-testid="pix-card"`, `data-testid="copy-pix-btn"`, `data-testid="confetti-canvas"`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -650,8 +650,8 @@ T34
 
 **Done when**:
 
-- [ ] Attributes added: `data-testid="profile-page"`, `data-testid="family-member-card"`, `data-testid="add-family-member-btn"`
-- [ ] Build gate passes: `npm run build`
+- [x] Attributes added: `data-testid="profile-page"`, `data-testid="family-member-card"`, `data-testid="add-family-member-btn"`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

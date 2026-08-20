@@ -7,6 +7,7 @@
       [class.event-filters__item--active]="activeFilter() === tab.id"
       [attr.aria-selected]="activeFilter() === tab.id"
       [attr.id]="'filter-tab-' + tab.id"
+      [attr.data-testid]="'status-filter-' + (tab.id === 'upcoming' ? 'active' : tab.id) + '-chip'"
       (click)="selectFilter(tab.id)"
     >
       <span class="event-filters__label">{{ tab.label }}</span>

@@ -1,4 +1,4 @@
-<section class="dashboard" aria-label="Painel administrativo">
+<section class="dashboard" aria-label="Painel administrativo" data-testid="dashboard-page">
   <header class="dashboard__header">
     <h1 class="dashboard__title">
       <mat-icon>dashboard</mat-icon>
@@ -21,6 +21,7 @@
         routerLink="/admin/evento/novo"
         matTooltip="Criar um novo evento"
         aria-label="Criar novo evento"
+        data-testid="create-event-btn"
       >
         <mat-icon>add</mat-icon>
         Novo Evento
@@ -148,6 +149,7 @@
             class="dashboard__row dashboard__clickable-row"
             [class.cancelled]="row.status === 'cancelled'"
             [class.history]="isHistoryEvent(row.date) && row.status !== 'cancelled'"
+            data-testid="organizer-event-card"
           ></tr>
         </table>
       </div>
@@ -161,6 +163,7 @@
             [class.history]="isHistoryEvent(event.date) && event.status !== 'cancelled'"
             appearance="outlined"
             (click)="openPublicEvent(event)"
+            data-testid="organizer-event-card"
           >
             <mat-card-header>
               <mat-card-title>{{ event.title }}</mat-card-title>

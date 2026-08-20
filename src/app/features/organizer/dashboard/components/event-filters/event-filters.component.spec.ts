@@ -100,4 +100,16 @@ describe('EventDashboardFiltersComponent', () => {
     expect(nav?.getAttribute('role')).toBe('tablist');
     expect(nav?.getAttribute('aria-label')).toBe('Filtros de status dos eventos');
   });
+
+  it('should have standardized data-testid attributes on filter chips', () => {
+    const allButton = element.querySelector('#filter-tab-all');
+    const upcomingButton = element.querySelector('#filter-tab-upcoming');
+    const pastButton = element.querySelector('#filter-tab-past');
+    const cancelledButton = element.querySelector('#filter-tab-cancelled');
+
+    expect(allButton?.getAttribute('data-testid')).toBe('status-filter-all-chip');
+    expect(upcomingButton?.getAttribute('data-testid')).toBe('status-filter-active-chip');
+    expect(pastButton?.getAttribute('data-testid')).toBe('status-filter-past-chip');
+    expect(cancelledButton?.getAttribute('data-testid')).toBe('status-filter-cancelled-chip');
+  });
 });

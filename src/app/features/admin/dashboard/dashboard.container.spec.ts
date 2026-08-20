@@ -159,4 +159,14 @@ describe('DashboardContainer', () => {
       ])
     );
   });
+
+  it('should render elements with standardized data-testid attributes', () => {
+    const dashboardSection = fixture.nativeElement.querySelector('[data-testid="dashboard-page"]');
+    const createBtn = fixture.nativeElement.querySelector('[data-testid="create-event-btn"]');
+    const eventCards = fixture.nativeElement.querySelectorAll('[data-testid="organizer-event-card"]');
+
+    expect(dashboardSection).toBeTruthy();
+    expect(createBtn).toBeTruthy();
+    expect(eventCards.length).toBeGreaterThan(0);
+  });
 });

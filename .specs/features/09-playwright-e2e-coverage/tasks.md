@@ -676,12 +676,12 @@ T34
 
 **Done when**:
 
-- [ ] Verifies landmark `aria-label="Eventos disponíveis"` and feed cards rendering
-- [ ] Verifies dark/light theme toggle, `document.documentElement` class update, and `localStorage` persistence
-- [ ] Verifies seasonal overlay rendering when active
-- [ ] Verifies card click navigates to `/evento/:id`
-- [ ] Verifies zero axe-core WCAG 2.1 AA violations on home view
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies landmark `aria-label="Eventos disponíveis"` and feed cards rendering
+- [x] Verifies dark/light theme toggle, `document.documentElement` class update, and `localStorage` persistence
+- [x] Verifies seasonal overlay rendering when active
+- [x] Verifies card click navigates to `/evento/:id`
+- [x] Verifies zero axe-core WCAG 2.1 AA violations on home view
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  
@@ -704,11 +704,11 @@ T34
 
 **Done when**:
 
-- [ ] Asserts unauthenticated access to `/meus-eventos` and `/perfil` redirects to `/login` with returnUrl
-- [ ] Asserts non-superadmin access to `/admin` is blocked and redirected
-- [ ] Asserts inline validation errors for invalid email/password inputs
-- [ ] Asserts email verification banner display and resend 60s cooldown timer
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Asserts unauthenticated access to `/meus-eventos` and `/perfil` redirects to `/login` with returnUrl
+- [x] Asserts non-superadmin access to `/admin` is blocked and redirected
+- [x] Asserts inline validation errors for invalid email/password inputs
+- [x] Asserts email verification banner display and resend 60s cooldown timer
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  
@@ -731,12 +731,12 @@ T34
 
 **Done when**:
 
-- [ ] Verifies status filter chips ("Todos", "Ativos", "Encerrados", "Cancelados")
-- [ ] Verifies ViaCEP auto-population of street/neighborhood/city/state upon 8-digit CEP entry
-- [ ] Verifies event creation submission and redirect to editor/dashboard
-- [ ] Verifies event update and item wishlist persistence
-- [ ] Verifies cancellation confirmation modal dialog before status transition
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies status filter chips ("Todos", "Ativos", "Encerrados", "Cancelados")
+- [x] Verifies ViaCEP auto-population of street/neighborhood/city/state upon 8-digit CEP entry
+- [x] Verifies event creation submission and redirect to editor/dashboard
+- [x] Verifies event update and item wishlist persistence
+- [x] Verifies cancellation confirmation modal dialog before status transition
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  
@@ -759,11 +759,11 @@ T34
 
 **Done when**:
 
-- [ ] Verifies countdown timer (7d/1d) rendering and location details
-- [ ] Verifies 1-touch verified RSVP modal confirmation and confetti trigger
-- [ ] Verifies dynamic split calculation (`estimatedBudget / guestCount`) and Pix copy button
-- [ ] Verifies wishlist item claim toggle and unclaim action updating remaining counter
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies countdown timer (7d/1d) rendering and location details
+- [x] Verifies 1-touch verified RSVP modal confirmation and confetti trigger
+- [x] Verifies dynamic split calculation (`estimatedBudget / guestCount`) and Pix copy button
+- [x] Verifies wishlist item claim toggle and unclaim action updating remaining counter
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  
@@ -786,10 +786,10 @@ T34
 
 **Done when**:
 
-- [ ] Verifies profile name and phone number editing and persistence
-- [ ] Verifies adding, updating, and deleting family members in profile view
-- [ ] Verifies collapsible family roster batch selection in event RSVP modal
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies profile name and phone number editing and persistence
+- [x] Verifies adding, updating, and deleting family members in profile view
+- [x] Verifies collapsible family roster batch selection in event RSVP modal
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  
@@ -812,11 +812,11 @@ T34
 
 **Done when**:
 
-- [ ] Verifies inviting collaborator email creates pending invitation
-- [ ] Verifies signing in with matching email auto-claims collaborator role
-- [ ] Verifies collaborator can manage items and view guest confirmations
-- [ ] Verifies collaborator is prevented from editing core fields or cancelling/deleting event
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Verifies inviting collaborator email creates pending invitation
+- [x] Verifies signing in with matching email auto-claims collaborator role
+- [x] Verifies collaborator can manage items and view guest confirmations
+- [x] Verifies collaborator is prevented from editing core fields or cancelling/deleting event
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

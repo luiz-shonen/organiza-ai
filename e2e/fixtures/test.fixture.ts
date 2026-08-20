@@ -5,6 +5,11 @@ import { OrganizerDashboardPage } from '../pages/organizer-dashboard.page';
 import { EventEditorPage } from '../pages/event-editor.page';
 import { EventDetailPage } from '../pages/event-detail.page';
 import { ProfilePage } from '../pages/profile.page';
+import { RsvpDialogHarness } from '../components/rsvp-dialog.harness';
+import { ItemListHarness } from '../components/item-list.harness';
+import { SharePanelHarness } from '../components/share-panel.harness';
+import { FamilyRosterHarness } from '../components/family-roster.harness';
+import { ConfirmDialogHarness } from '../components/confirm-dialog.harness';
 import AxeBuilder from '@axe-core/playwright';
 
 export type AppFixtures = {
@@ -14,6 +19,11 @@ export type AppFixtures = {
   eventEditorPage: EventEditorPage;
   eventDetailPage: EventDetailPage;
   profilePage: ProfilePage;
+  rsvpDialog: RsvpDialogHarness;
+  itemList: ItemListHarness;
+  sharePanel: SharePanelHarness;
+  familyRoster: FamilyRosterHarness;
+  confirmDialog: ConfirmDialogHarness;
   makeAxeBuilder: () => AxeBuilder;
 };
 
@@ -35,6 +45,21 @@ export const test = base.extend<AppFixtures>({
   },
   profilePage: async ({ page }, use) => {
     await use(new ProfilePage(page));
+  },
+  rsvpDialog: async ({ page }, use) => {
+    await use(new RsvpDialogHarness(page));
+  },
+  itemList: async ({ page }, use) => {
+    await use(new ItemListHarness(page));
+  },
+  sharePanel: async ({ page }, use) => {
+    await use(new SharePanelHarness(page));
+  },
+  familyRoster: async ({ page }, use) => {
+    await use(new FamilyRosterHarness(page));
+  },
+  confirmDialog: async ({ page }, use) => {
+    await use(new ConfirmDialogHarness(page));
   },
   makeAxeBuilder: async ({ page }, use) => {
     const makeBuilder = () =>

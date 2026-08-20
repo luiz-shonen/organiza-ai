@@ -86,9 +86,9 @@ T5
 
 **Done when**:
 
-- [ ] `MockAuthService` exports Signals (`currentUser`, `isAdmin`, `isSuperAdmin`, `loading`) and spy methods
-- [ ] No `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `MockAuthService` exports Signals (`currentUser`, `isAdmin`, `isSuperAdmin`, `loading`) and spy methods
+- [x] No `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

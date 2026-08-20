@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   inject,
   signal,
+  computed,
   input,
   OnInit,
   DestroyRef,
@@ -21,14 +22,22 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { HeaderService } from '../../../core/services';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
-import { EventService, ItemService, GuestService, ConfettiService } from '../../../core/services';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import {
+  EventService,
+  ItemService,
+  GuestService,
+  ConfettiService,
+  HeaderService,
+  AuthService,
+} from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { PartyItem, Guest } from '../../../core/models';
+import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
+import { CollaboratorInviteDialogComponent } from '../../organizer/event-editor/components/collaborator-invite-dialog/collaborator-invite-dialog.component';
 
 @Component({
   selector: 'app-event-editor',
@@ -48,9 +57,8 @@ import { SharePanelComponent } from './components/share-panel/share-panel.compon
     MatTooltipModule,
     MatAutocompleteModule,
     MatChipsModule,
-    MatNativeDateModule,
-    MatCardModule,
     MatStepperModule,
+    MatDialogModule,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
@@ -67,6 +75,8 @@ export class EventEditorContainer implements OnInit {
   protected readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly headerService = inject(HeaderService);
+  protected readonly authService = inject(AuthService);
+  private readonly dialog = inject(MatDialog);
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -75,6 +85,7 @@ export class EventEditorContainer implements OnInit {
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly minDate = new Date();
+  protected readonly currentEvent = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
   protected readonly guests = signal<Guest[]>([]);
   protected readonly newItemName = signal('');
@@ -89,6 +100,14 @@ export class EventEditorContainer implements OnInit {
     { name: 'Formatura', class: 'cat-formatura' },
     { name: 'Outros', class: 'cat-outros' },
   ];
+
+  public readonly isOwner = computed(() => {
+    if (!this.isEditing()) return true;
+    const ev = this.currentEvent();
+    if (!ev || !ev.createdBy) return true;
+    const currentUid = this.authService.currentUser()?.uid;
+    return ev.createdBy === currentUid;
+  });
 
   protected readonly basicInfoForm = this.fb.nonNullable.group({
     title: ['', [Validators.required]],
@@ -137,6 +156,7 @@ export class EventEditorContainer implements OnInit {
       const eventSub = this.eventService.getEvent(eventId).subscribe({
         next: (event) => {
           if (event) {
+            this.currentEvent.set(event);
             let d = new Date(event.date);
             if (isNaN(d.getTime())) d = new Date();
             const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
@@ -160,6 +180,18 @@ export class EventEditorContainer implements OnInit {
             this.pixForm.patchValue({
               pixKey: event.pixKey ?? '',
             });
+
+            const isEventOwner =
+              !event.createdBy || event.createdBy === this.authService.currentUser()?.uid;
+            if (!isEventOwner) {
+              this.basicInfoForm.disable();
+              this.addressForm.disable();
+              this.pixForm.disable();
+            } else {
+              this.basicInfoForm.enable();
+              this.addressForm.enable();
+              this.pixForm.enable();
+            }
           }
           this.loading.set(false);
         },
@@ -187,6 +219,13 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected async saveEvent(): Promise<void> {
+    if (!this.isOwner()) {
+      this.snackBar.open('Apenas o organizador principal pode salvar alterações no evento.', 'OK', {
+        duration: 3000,
+      });
+      return;
+    }
+
     if (this.basicInfoForm.invalid || this.addressForm.invalid || this.pixForm.invalid) {
       this.basicInfoForm.markAllAsTouched();
       this.addressForm.markAllAsTouched();
@@ -234,6 +273,7 @@ export class EventEditorContainer implements OnInit {
     };
 
     const location = fullAddress || '';
+    const user = this.authService.currentUser();
     const eventData = {
       title,
       category,
@@ -242,6 +282,9 @@ export class EventEditorContainer implements OnInit {
       location,
       addressDetails,
       pixKey: pixKey || null,
+      createdBy: user?.uid ?? '',
+      creatorEmail: user?.email ?? '',
+      collaborators: this.currentEvent()?.collaborators ?? [],
     };
 
     try {
@@ -260,6 +303,43 @@ export class EventEditorContainer implements OnInit {
     } finally {
       this.saving.set(false);
     }
+  }
+
+  protected openCollaboratorsDialog(): void {
+    const eventId = this.id();
+    const ev = this.currentEvent();
+    if (!eventId || !ev) return;
+
+    const dialogRef = this.dialog.open(CollaboratorInviteDialogComponent, {
+      width: '520px',
+      data: {
+        collaborators: ev.collaborators ?? [],
+        pendingInvites: [],
+      },
+    });
+
+    dialogRef.componentInstance.invite.subscribe(async (email) => {
+      try {
+        await this.eventService.inviteCollaborator(
+          eventId,
+          email,
+          ev.title,
+          this.authService.currentUser()?.email || '',
+        );
+        this.snackBar.open(`Convite enviado para ${email}`, 'OK', { duration: 3000 });
+      } catch {
+        this.snackBar.open('Erro ao enviar convite.', 'OK', { duration: 3000 });
+      }
+    });
+
+    dialogRef.componentInstance.removeCollaborator.subscribe(async (collabUid) => {
+      try {
+        await this.eventService.removeCollaborator(eventId, collabUid);
+        this.snackBar.open('Colaborador removido', 'OK', { duration: 3000 });
+      } catch {
+        this.snackBar.open('Erro ao remover colaborador.', 'OK', { duration: 3000 });
+      }
+    });
   }
 
   protected async addItem(): Promise<void> {
@@ -334,7 +414,6 @@ export class EventEditorContainer implements OnInit {
     if (value.length > 2) value = value.substring(0, 2) + '/' + value.substring(2);
     if (value.length > 5) value = value.substring(0, 5) + '/' + value.substring(5, 9);
 
-    // update value only in the raw input visually to not mess with matDatepicker internals prematurely
     input.value = value;
   }
 }

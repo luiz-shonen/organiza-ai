@@ -169,12 +169,12 @@ T5 → T6
 
 **Done when**:
 
-- [ ] `verifyAdminStatus` whitelist check removed from login/register flows
-- [ ] `sendVerificationEmail()` method implemented using Firebase `sendEmailVerification`
-- [ ] `isSuperAdmin` signal correctly evaluates hardcoded superadmin emails
-- [ ] Unit tests cover: Google sign-in state update, email registration with verification dispatch, logout session clearing, and superadmin identification
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 6 tests pass
+- [x] `verifyAdminStatus` whitelist check removed from login/register flows
+- [x] `sendVerificationEmail()` method implemented using Firebase `sendEmailVerification`
+- [x] `isSuperAdmin` signal correctly evaluates hardcoded superadmin emails
+- [x] Unit tests cover: Google sign-in state update, email registration with verification dispatch, logout session clearing, and superadmin identification
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 6 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) - 25% Milestone Completed: Phase 1 (T1-T4) & Phase 2 (T5-T10) fully implemented, tested, and atomically committed (10/34 tasks = 29.4%).  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) - Phase 1 (T1-T4), Phase 2 (T5-T10), and Phase 3 (T11-T15) fully implemented, tested, and atomically committed (15/34 tasks = 44.1%).  
 **Test Suite:** 42 unit test files (296 tests) green (`npm test -- --watch=false`), 6 Playwright E2E smoke tests green on Chromium & Mobile (`npx playwright test e2e/smoke.spec.ts`), production build green (`npm run build`).  
-**Validation Gate:** 10 atomic tasks across Phase 1 & 2 committed and verified. `tasks.md` updated.  
-**Next step:** Await user OK to proceed to Phase 3 (Component Harnesses & Dialog Handlers, T11-T15) and Phase 4 (Template data-testid Instrumentation, T16-T21).  
+**Validation Gate:** 15 atomic tasks across Phase 1, 2, & 3 committed and verified. `tasks.md` updated.  
+**Next step:** Await user OK to proceed to Phase 4 (Template data-testid Instrumentation, T16-T21).  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -18,7 +18,9 @@
 - **Feature 06 (`06-guest-profile`)**: `UserProfile` model, `/perfil` route protected by `authGuard`, profile editing with `ProfileInfoCardComponent`, attended events history.
 - **Feature 07 (`07-family-roster`)**: `FamilyMember` model, `FamilyService` for `users/{uid}/family` subcollection, `FamilyRosterManagerComponent` on Profile page, `FamilySelectorComponent` for batch RSVP, `GuestService.batchConfirmRsvp` atomically creating primary + linked guest records, cascading cancellation.
 - **Feature 08 (`08-codebase-refactoring-and-quality`)**: Domain separation (`auth`, `admin`, `organizer`), Angular Signals alignment (`output<T>()`, `toSignal()`), dead code pruning, SOLID model extraction, zero untyped `any`, MDC tokens, WCAG 2.1 AA keyboard a11y, 42 test suites / 296 unit tests passing with full validation report.
-- **Feature 09 (`09-playwright-e2e-coverage`)**: Infrastructure & POM layer completed: `playwright.config.ts`, `BasePage` (`e2e/pages/base.page.ts`), custom `test.fixture.ts` with Page Object dependency injection and `@axe-core/playwright` accessibility integration, Page Object Models (`HomePage`, `LoginPage`, `OrganizerDashboardPage`, `EventEditorPage`, `EventDetailPage`, `ProfilePage`), and migrated smoke test suite (`e2e/smoke.spec.ts`).
+- **Feature 09 (`09-playwright-e2e-coverage`)**: 
+  - **Infrastructure & POM Layer**: `playwright.config.ts`, `BasePage` (`e2e/pages/base.page.ts`), custom `test.fixture.ts` with Page Object dependency injection and `@axe-core/playwright` accessibility integration, Page Object Models (`HomePage`, `LoginPage`, `OrganizerDashboardPage`, `EventEditorPage`, `EventDetailPage`, `ProfilePage`), and migrated smoke test suite (`e2e/smoke.spec.ts`).
+  - **Component Harnesses**: `RsvpDialogHarness` (`e2e/components/rsvp-dialog.harness.ts`), `ItemListHarness` (`e2e/components/item-list.harness.ts`), `SharePanelHarness` (`e2e/components/share-panel.harness.ts`), `FamilyRosterHarness` (`e2e/components/family-roster.harness.ts`), `ConfirmDialogHarness` (`e2e/components/confirm-dialog.harness.ts`).
 
 ---
 

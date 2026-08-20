@@ -1,43 +1,81 @@
 <mat-card class="rsvp-card glass-card" appearance="outlined">
   <mat-card-header>
-    <mat-icon matCardAvatar class="rsvp-card__icon">how_to_reg</mat-icon>
-    <mat-card-title>Confirme sua Presença</mat-card-title>
+    <mat-icon
+      matCardAvatar
+      class="rsvp-card__icon"
+      [class.rsvp-card__icon--confirmed]="isConfirmed()"
+      aria-hidden="true"
+    >
+      {{ isConfirmed() ? 'verified' : 'how_to_reg' }}
+    </mat-icon>
+    <mat-card-title>
+      {{ isConfirmed() ? 'Você está na lista! 🎉' : 'Confirme sua Presença' }}
+    </mat-card-title>
     <mat-card-subtitle>{{ guestCount() }} pessoa(s) confirmada(s)</mat-card-subtitle>
   </mat-card-header>
+
   <mat-card-content>
-    @if (session(); as s) {
-      <p class="rsvp-card__status">
-        <mat-icon class="rsvp-card__check">check_circle</mat-icon>
-        Olá, <strong>{{ s.name }}</strong
-        >! Presença confirmada.
-      </p>
+    @if (isConfirmed()) {
+      <div class="rsvp-card__confirmed-content">
+        <p class="rsvp-card__status">
+          <mat-icon class="rsvp-card__check" aria-hidden="true">check_circle</mat-icon>
+          <span>
+            @if (guestName()) {
+              Olá, <strong>{{ guestName() }}</strong>! Sua presença está confirmada.
+            } @else {
+              Sua presença está confirmada.
+            }
+          </span>
+        </p>
+        <p class="rsvp-card__hint">
+          Estamos te esperando! Você pode assumir itens na lista colaborativa abaixo.
+        </p>
+      </div>
     } @else {
       <p class="rsvp-card__prompt">
-        Informe seus dados para confirmar presença e participar da lista de itens.
+        Confirme sua presença em 1 toque para participar do evento e assumir itens da lista colaborativa.
       </p>
     }
   </mat-card-content>
-  <mat-card-actions>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; width: 100%">
+
+  <mat-card-actions class="rsvp-card__actions">
+    @if (isConfirmed()) {
+      <button
+        mat-stroked-button
+        color="warn"
+        class="rsvp-card__cancel-btn"
+        (click)="onCancel()"
+        [disabled]="isLoading()"
+        aria-label="Não poderei mais ir"
+      >
+        @if (isLoading()) {
+          <mat-spinner diameter="18" class="rsvp-card__spinner"></mat-spinner>
+          <span>Cancelando...</span>
+        } @else {
+          <ng-container>
+            <mat-icon aria-hidden="true">cancel</mat-icon>
+          </ng-container>
+          <span>Não poderei ir</span>
+        }
+      </button>
+    } @else {
       <button
         mat-flat-button
-        (click)="rsvpClicked.emit()"
-        [attr.aria-label]="session() ? 'Editar dados de presença' : 'Confirmar presença'"
+        class="rsvp-card__confirm-btn org-btn-primary"
+        (click)="onConfirm()"
+        [disabled]="isLoading()"
+        aria-label="Confirmar presença com 1 toque"
       >
-        <mat-icon>{{ session() ? 'edit' : 'person_add' }}</mat-icon>
-        {{ session() ? 'Editar Dados' : 'Confirmar Presença' }}
+        @if (isLoading()) {
+          <mat-spinner diameter="18" class="rsvp-card__spinner"></mat-spinner>
+          <span>Confirmando...</span>
+        } @else {
+          <ng-container>
+            <mat-icon aria-hidden="true">how_to_reg</mat-icon>
+          </ng-container>
+          <span>Confirmar Presença (1-Touch)</span>
+        }
       </button>
-
-      @if (session()) {
-        <button
-          mat-button
-          color="warn"
-          (click)="cancelRsvpClicked.emit()"
-          aria-label="Não poderei mais ir"
-        >
-          Não poderei mais ir
-        </button>
-      }
-    </div>
+    }
   </mat-card-actions>
 </mat-card>

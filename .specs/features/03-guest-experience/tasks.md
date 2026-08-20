@@ -169,13 +169,13 @@ T5
 
 **Done when**:
 
-- [ ] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
-- [ ] `isConfirmed`, `guestCount`, and `isLoading` inputs
-- [ ] `confirmRsvp` and `cancelRsvp` outputs
-- [ ] WCAG 2.1 AA accessible with appropriate button focus and aria attributes
-- [ ] Unit tests cover: unconfirmed CTA rendering, confirmed badge rendering, output emissions on click
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Standalone presentational component with `ChangeDetectionStrategy.OnPush`
+- [x] `isConfirmed`, `guestCount`, and `isLoading` inputs
+- [x] `confirmRsvp` and `cancelRsvp` outputs
+- [x] WCAG 2.1 AA accessible with appropriate button focus and aria attributes
+- [x] Unit tests cover: unconfirmed CTA rendering, confirmed badge rendering, output emissions on click
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

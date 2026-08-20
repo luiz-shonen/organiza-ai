@@ -1,7 +1,7 @@
 .rsvp-card {
   &__icon {
-    background-color: var(--mat-sys-tertiary-container);
-    color: var(--mat-sys-on-tertiary-container);
+    background-color: var(--mat-sys-tertiary-container, #e8def8);
+    color: var(--mat-sys-on-tertiary-container, #49454f);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -9,25 +9,67 @@
     width: 40px;
     height: 40px;
     font-size: 24px;
+
+    &--confirmed {
+      background-color: rgba(76, 175, 80, 0.15);
+      color: #4caf50;
+    }
   }
 
   &__status {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 8px 0 0;
+    margin: 8px 0 4px;
+    font-size: 1rem;
     color: var(--mat-sys-on-surface);
   }
 
   &__check {
     color: #4caf50;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  &__hint {
+    font-size: 0.875rem;
+    color: var(--mat-sys-on-surface-variant, #666);
+    margin: 4px 0 0 30px;
   }
 
   &__prompt {
     margin: 8px 0 0;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--mat-sys-on-surface-variant, #666);
+    line-height: 1.5;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px 16px;
+  }
+
+  &__confirm-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+  }
+
+  &__cancel-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  &__spinner {
+    display: inline-block;
   }
 }

@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 08 (`08-codebase-refactoring-and-quality`) Specification Completed & Validated (0 errors, 0 warnings). Feature 09 (`09-playwright-e2e-coverage`) queued for execution after codebase refactor.  
+**State:** Feature 08 (`08-codebase-refactoring-and-quality`) Specification & Technical Design Approved and Committed. Feature 09 (`09-playwright-e2e-coverage`) queued for execution after codebase refactor.  
 **Test Suite:** 31 test files, 241 unit tests passing (`npm test -- --watch=false`), production build green (`npm run build`).  
-**Validation Gate:** `validate_spec.py` passed for Feature 08.  
-**Next step:** Proceed to Design / Tasks breakdown for Feature 08.  
+**Validation Gate:** Technical Design completed with clean 3-domain architecture (`organizer`, `admin`, `auth`), MDC tokens standard, and 100% test coverage plan.  
+**Next step:** Proceed to Tasks breakdown (`/tlc-spec-driven tasks`) for Feature 08.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -17,7 +17,7 @@
 - **Feature 05 (`05-event-collaboration`)**: Scoped feeds (owned + collaborated events), email invitation auto-claim via Firestore `writeBatch`, collaborator invite dialog with MatChips, role badges on event cards, field protection for non-owners.
 - **Feature 06 (`06-guest-profile`)**: `UserProfile` model, `/perfil` route protected by `authGuard`, profile editing with `ProfileInfoCardComponent`, attended events history.
 - **Feature 07 (`07-family-roster`)**: `FamilyMember` model, `FamilyService` for `users/{uid}/family` subcollection, `FamilyRosterManagerComponent` on Profile page, `FamilySelectorComponent` for batch RSVP, `GuestService.batchConfirmRsvp` atomically creating primary + linked guest records, cascading cancellation.
-- **Feature 08 (`08-codebase-refactoring-and-quality`)**: Specification complete for removing legacy decorators, pruning dead code, decoupling models/DTOs, strict typing without `any`, WCAG 2.1 AA a11y, and 100% component/service unit test coverage.
+- **Feature 08 (`08-codebase-refactoring-and-quality`)**: Specification & Design complete for domain separation (`organizer` vs `admin` vs `auth`), Angular Signals alignment, dead code pruning, SOLID model extraction, zero `any`, MDC tokens, WCAG 2.1 AA a11y, and 13 new unit test suites.
 - **Feature 09 (`09-playwright-e2e-coverage`)**: Spec and tasks defined for full Playwright E2E coverage across all flows, GitHub Actions CI pipeline, visual layout inspection against `DESIGN.md`, real-time multi-user concurrency, and PWA offline resilience.
 
 ---
@@ -221,4 +221,20 @@
 **Date:** 2026-08-17 (Updated 2026-08-19)  
 **Decision:** The notification system triggers automated notifications (Web Push via PWA / In-App) for: (1) Event cancellation or critical updates (date, time, address) to all confirmed guests; (2) 7-day reminder before the event; (3) 1-day (24 hours) countdown reminder before the event for both organizers and confirmed attendees.  
 **Rationale:** Keeps attendees informed in real time and drastically minimizes event no-shows without requiring manual organizer messaging.  
+**Status:** In force.
+
+---
+
+### AD-027 — Clean 3-Domain Separation (Organizer, Super Admin, Auth)
+**Date:** 2026-08-20  
+**Decision:** The frontend folder structure strictly separates three distinct domains: (1) `src/app/features/organizer/` for all event organizing and collaboration features (`/meus-eventos`) available to any authenticated user; (2) `src/app/features/admin/` exclusively for Super Admin platform metrics and governance (`/admin`); and (3) `src/app/features/auth/` for universal login/registration (`/login`).  
+**Rationale:** Eliminates domain confusion between regular event planning and global platform administration, keeping components modular and cohesive.  
+**Status:** In force.
+
+---
+
+### AD-028 — Angular Material 3 MDC Design Tokens (Eliminate !important Form Overrides)
+**Date:** 2026-08-20  
+**Decision:** Styling of form fields, inputs, dialogs, and surfaces must leverage official Material 3 / MDC design tokens (`--mdc-outlined-text-field-*`, `--mdc-dialog-*`, `--mat-menu-*`) and `--org-*` variables instead of manual CSS overrides using `!important`.  
+**Rationale:** Conforms to official Angular Material 3 / MDC architecture standards, prevents style leakage, and ensures seamless theming.  
 **Status:** In force.

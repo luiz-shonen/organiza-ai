@@ -196,9 +196,9 @@ T34
 
 **Done when**:
 
-- [ ] Extended `test` object provides `homePage`, `loginPage`, `dashboardPage`, `eventEditorPage`, `eventDetailPage`, `profilePage`, and `makeAxeBuilder` fixtures
-- [ ] Session injection helpers exported for authenticated host and guest contexts
-- [ ] Build gate passes: `npm run build`
+- [x] Extended `test` object provides `homePage`, `loginPage`, `dashboardPage`, `eventEditorPage`, `eventDetailPage`, `profilePage`, and `makeAxeBuilder` fixtures
+- [x] Session injection helpers exported for authenticated host and guest contexts
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

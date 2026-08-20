@@ -1,4 +1,4 @@
-<mat-card class="pix-card glass-card" appearance="outlined">
+<mat-card class="pix-card glass-card" appearance="outlined" data-testid="pix-card">
   <mat-card-header>
     <mat-icon matCardAvatar class="pix-card__icon" aria-hidden="true">pix</mat-icon>
     <mat-card-title>Rachadinha via Pix</mat-card-title>
@@ -33,6 +33,7 @@
       (click)="copyToClipboard()"
       [disabled]="!pixKey()"
       aria-label="Copiar chave Pix"
+      data-testid="copy-pix-btn"
     >
       <mat-icon aria-hidden="true">content_copy</mat-icon>
       Copiar Chave Pix

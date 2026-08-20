@@ -65,6 +65,7 @@
         (click)="onConfirm()"
         [disabled]="isLoading()"
         aria-label="Confirmar presença com 1 toque"
+        data-testid="rsvp-action-btn"
       >
         @if (isLoading()) {
           <mat-spinner diameter="18" class="rsvp-card__spinner"></mat-spinner>

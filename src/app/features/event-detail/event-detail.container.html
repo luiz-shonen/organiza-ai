@@ -5,7 +5,7 @@
     <div class="skeleton-box event-detail__skeleton-card"></div>
   </div>
 } @else if (event(); as event) {
-  <main class="event-detail">
+  <main class="event-detail" data-testid="event-detail-page">
     <app-event-card [event]="event" [guestCount]="guestCount()" />
 
     <section class="event-detail__section" aria-label="Confirmação de presença">

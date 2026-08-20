@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-20  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) - Phase 1 (T1-T4), Phase 2 (T5-T10), Phase 3 (T11-T15), Phase 4 (T16-T21), and Phase 5 (T22-T27) fully implemented, tested, and atomically committed (27/34 tasks = 79.4%).  
-**Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 50 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
-**Validation Gate:** 27 atomic tasks across Phase 1, 2, 3, 4, & 5 committed and verified. `tasks.md` updated.  
-**Next step:** Await user OK to proceed to Phase 6 (Visual Layout, A11y & Advanced Scenarios, T28-T31) and Phase 7 (CI/CD Pipeline & Final Validation, T32-T34).  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) - 100% complete across all 7 Phases (T1-T34). All 34 tasks implemented, verified, and committed.  
+**Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 88 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
+**Validation Gate:** Independent Verifier ran with PASS verdict (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. 0 errors on `validate_state.py`.  
+**Next step:** Project is fully verified, production-ready, and CI-enabled. Ready for deployment and next feature milestone.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -22,7 +22,20 @@
   - **Infrastructure & POM Layer**: `playwright.config.ts`, `BasePage` (`e2e/pages/base.page.ts`), custom `test.fixture.ts` with Page Object dependency injection and `@axe-core/playwright` accessibility integration, Page Object Models (`HomePage`, `LoginPage`, `OrganizerDashboardPage`, `EventEditorPage`, `EventDetailPage`, `ProfilePage`), and migrated smoke test suite (`e2e/smoke.spec.ts`).
   - **Component Harnesses**: `RsvpDialogHarness` (`e2e/components/rsvp-dialog.harness.ts`), `ItemListHarness` (`e2e/components/item-list.harness.ts`), `SharePanelHarness` (`e2e/components/share-panel.harness.ts`), `FamilyRosterHarness` (`e2e/components/family-roster.harness.ts`), `ConfirmDialogHarness` (`e2e/components/confirm-dialog.harness.ts`).
   - **Template data-testid Instrumentation**: Standardized semantic `data-testid` attributes added across Home, Auth Login, Organizer Dashboard, Event Editor Stepper, Event Detail & RSVP Dialogs, and Profile & Family Roster views.
-  - **Core Journey E2E Spec Suites (50 tests passing)**: `01-home-theming.spec.ts`, `02-auth-guards.spec.ts`, `03-event-lifecycle.spec.ts`, `04-guest-rsvp.spec.ts`, `05-profile-family.spec.ts`, `06-collaborator-rbac.spec.ts`.
+  - **E2E Spec Suites (88 tests passing on Chromium + Mobile Chrome)**:
+    1. `01-home-theming.spec.ts`: Feed landmarks, light/dark theme persistence, seasonal overlay, WCAG 2.1 AA zero-violation audit.
+    2. `02-auth-guards.spec.ts`: Unauthenticated route guards, form validations, Google sign-in, superadmin guard.
+    3. `03-event-lifecycle.spec.ts`: Dashboard filter chips, ViaCEP auto-population, stepper validation, cancellation dialogs.
+    4. `04-guest-rsvp.spec.ts`: Event header/countdown, 1-touch verified RSVP modal, Pix split estimation, wishlist item claim/unclaim toggles.
+    5. `05-profile-family.spec.ts`: Profile management, family roster manager CRUD, batch family RSVP modal selection.
+    6. `06-collaborator-rbac.spec.ts`: Share panel, collaborator email invitations, clipboard invite link copy.
+    7. `07-visual-layout.spec.ts`: 7 milestone visual screenshot baselines, 48px touch targets, Nielsen Heuristics audit against `DESIGN.md`.
+    8. `08-keyboard-a11y.spec.ts`: Keyboard focus cycling, modal focus trapping, Escape key dismissal with focus restoration.
+    9. `09-multi-user-sync.spec.ts`: Dual-context Host and Guest simultaneous real-time sync without session crosstalk.
+    10. `10-share-qr.spec.ts`: QR code canvas rendering dimensions, WhatsApp URI schema construction, clipboard copy feedback toast.
+    11. `11-pwa-offline.spec.ts`: PWA offline caching resilience, form interactivity retention, seamless online recovery.
+    12. `12-network-loading.spec.ts`: Throttled network latency handling, layout shift prevention, skeleton shimmer stability.
+  - **CI/CD Automation**: `.github/workflows/e2e.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
 
 ---
 
@@ -242,3 +255,12 @@
 **Decision:** Styling of form fields, inputs, dialogs, and surfaces must leverage official Material 3 / MDC design tokens (`--mdc-outlined-text-field-*`, `--mdc-dialog-*`, `--mat-menu-*`) and `--org-*` variables instead of manual CSS overrides using `!important`.  
 **Rationale:** Conforms to official Angular Material 3 / MDC architecture standards, prevents style leakage, and ensures seamless theming.  
 **Status:** In force.
+
+---
+
+### AD-029 — Comprehensive Playwright E2E Architecture & CI Automation
+**Date:** 2026-08-20  
+**Decision:** Automated regression testing leverages Playwright with Page Object Models (`e2e/pages/`), Component Test Harnesses (`e2e/components/`), deterministic mock authentication/Firestore injection (`e2e/helpers/`), `@axe-core/playwright` accessibility audits, and GitHub Actions CI (`.github/workflows/e2e.yml`) across Desktop Chromium and Mobile Chrome viewports.  
+**Rationale:** Eliminates external Firebase rate-limiting flakes, guarantees 100% core flow coverage across devices, verifies WCAG 2.1 AA accessibility, and protects production releases automatically on pull requests.  
+**Status:** In force. Specified and verified in 09-playwright-e2e-coverage.
+

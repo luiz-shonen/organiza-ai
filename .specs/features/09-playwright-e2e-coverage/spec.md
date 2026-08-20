@@ -329,37 +329,37 @@ The Organiza AI application currently contains only a minimal smoke test (`e2e/s
 
 | Requirement ID | Story | Phase | Status |
 |---|---|---|---|
-| PW-01 | Story 1: Playwright Infrastructure & Test Fixture Harness | P1 | Pending |
-| PW-02 | Story 1: DevServer Auto-Start & Timeout Resilience | P1 | Pending |
-| PW-03 | Story 1: Trace, Screenshot & Video Failure Capture | P1 | Pending |
-| PW-04 | Story 2: Home Page Landmark & Feed Rendering | P1 | Pending |
-| PW-05 | Story 2: Theme Switching & Seasonal Overlay | P1 | Pending |
-| PW-06 | Story 3: Unauthenticated Route Guard Redirects | P1 | Pending |
-| PW-07 | Story 3: SuperAdmin Route Guard Security | P1 | Pending |
-| PW-08 | Story 4: Event Creation & ViaCEP Auto-fill | P1 | Pending |
-| PW-09 | Story 4: Organizer Dashboard Filters & Status Changes | P1 | Pending |
-| PW-10 | Story 5: Public Event Page & Countdown Timer | P1 | Pending |
-| PW-11 | Story 5: 1-Touch Verified RSVP & Confetti Flow | P1 | Pending |
-| PW-12 | Story 5: Smart Split Calculation & Pix Copy | P1 | Pending |
-| PW-13 | Story 5: Wishlist Item Claiming & Unclaiming | P1 | Pending |
-| PW-14 | Story 12: Profile Info & Family Roster CRUD | P2 | Pending |
-| PW-15 | Story 13: Collaborator Invite & Auto-Claim on Login | P2 | Pending |
-| PW-16 | Story 13: Collaborator RBAC UI Restrictions | P2 | Pending |
-| PW-17 | Story 8: GitHub Actions CI Workflow Setup | P1 | Pending |
-| PW-18 | Story 8: CI Artifact Upload & PR Failure Annotations | P1 | Pending |
-| PW-19 | Story 15: Mobile Viewport Emulation (Pixel / iPhone) | P3 | Pending |
-| PW-20 | Story 2: WCAG 2.1 AA Accessibility Gate with axe-core | P1 | Pending |
-| PW-21 | Story 6: Visual Layout Screenshot Baseline Capture | P1 | Pending |
-| PW-22 | Story 6: Agent/Developer Visual Inspection Against DESIGN.md | P1 | Pending |
-| PW-23 | Story 9: Dual-Context Real-Time RSVP Attendee Sync | P2 | Pending |
-| PW-24 | Story 9: Dual-Context Real-Time Wishlist Update Sync | P2 | Pending |
-| PW-25 | Story 11: PWA Service Worker Offline Caching | P2 | Pending |
-| PW-26 | Story 11: Offline Mode Status Banner & Graceful Action Guard | P2 | Pending |
-| PW-27 | Story 10: QR Code Canvas / SVG Rendering | P2 | Pending |
-| PW-28 | Story 10: WhatsApp Share Link Schema & Clipboard Action | P2 | Pending |
-| PW-29 | Story 7: Modal Dialog Keyboard Focus Trap | P1 | Pending |
-| PW-30 | Story 7: Modal Escape Key Dismissal & Focus Restoration | P1 | Pending |
-| PW-31 | Story 14: Slow 3G Skeleton Shimmer State & CLS Prevention | P3 | Pending |
+| PW-01 | Story 1: Playwright Infrastructure & Test Fixture Harness | P1 | Complete |
+| PW-02 | Story 1: DevServer Auto-Start & Timeout Resilience | P1 | Complete |
+| PW-03 | Story 1: Trace, Screenshot & Video Failure Capture | P1 | Complete |
+| PW-04 | Story 2: Home Page Landmark & Feed Rendering | P1 | Complete |
+| PW-05 | Story 2: Theme Switching & Seasonal Overlay | P1 | Complete |
+| PW-06 | Story 3: Unauthenticated Route Guard Redirects | P1 | Complete |
+| PW-07 | Story 3: SuperAdmin Route Guard Security | P1 | Complete |
+| PW-08 | Story 4: Event Creation & ViaCEP Auto-fill | P1 | Complete |
+| PW-09 | Story 4: Organizer Dashboard Filters & Status Changes | P1 | Complete |
+| PW-10 | Story 5: Public Event Page & Countdown Timer | P1 | Complete |
+| PW-11 | Story 5: 1-Touch Verified RSVP & Confetti Flow | P1 | Complete |
+| PW-12 | Story 5: Smart Split Calculation & Pix Copy | P1 | Complete |
+| PW-13 | Story 5: Wishlist Item Claiming & Unclaiming | P1 | Complete |
+| PW-14 | Story 12: Profile Info & Family Roster CRUD | P2 | Complete |
+| PW-15 | Story 13: Collaborator Invite & Auto-Claim on Login | P2 | Complete |
+| PW-16 | Story 13: Collaborator RBAC UI Restrictions | P2 | Complete |
+| PW-17 | Story 8: GitHub Actions CI Workflow Setup | P1 | Complete |
+| PW-18 | Story 8: CI Artifact Upload & PR Failure Annotations | P1 | Complete |
+| PW-19 | Story 15: Mobile Viewport Emulation (Pixel / iPhone) | P3 | Complete |
+| PW-20 | Story 2: WCAG 2.1 AA Accessibility Gate with axe-core | P1 | Complete |
+| PW-21 | Story 6: Visual Layout Screenshot Baseline Capture | P1 | Complete |
+| PW-22 | Story 6: Agent/Developer Visual Inspection Against DESIGN.md | P1 | Complete |
+| PW-23 | Story 9: Dual-Context Real-Time RSVP Attendee Sync | P2 | Complete |
+| PW-24 | Story 9: Dual-Context Real-Time Wishlist Update Sync | P2 | Complete |
+| PW-25 | Story 11: PWA Service Worker Offline Caching | P2 | Complete |
+| PW-26 | Story 11: Offline Mode Status Banner & Graceful Action Guard | P2 | Complete |
+| PW-27 | Story 10: QR Code Canvas / SVG Rendering | P2 | Complete |
+| PW-28 | Story 10: WhatsApp Share Link Schema & Clipboard Action | P2 | Complete |
+| PW-29 | Story 7: Modal Dialog Keyboard Focus Trap | P1 | Complete |
+| PW-30 | Story 7: Modal Escape Key Dismissal & Focus Restoration | P1 | Complete |
+| PW-31 | Story 14: Slow 3G Skeleton Shimmer State & CLS Prevention | P3 | Complete |
 
 **Coverage:** 31 total, 31 mapped to stories, 0 unmapped
 
@@ -367,12 +367,12 @@ The Organiza AI application currently contains only a minimal smoke test (`e2e/s
 
 ## Success Criteria
 
-- [ ] `npm run test:e2e` executes all core and advanced E2E spec suites locally and in CI with 100% pass rate.
-- [ ] Visual baseline screenshots for all key views are captured in `e2e/screenshots/` and verified against `DESIGN.md`.
-- [ ] Dual-context multi-user test verifies real-time Firestore stream synchronization without page reloads.
-- [ ] Keyboard navigation tests verify focus trapping in modals and `Escape` key dismissal across all dialogs.
-- [ ] PWA offline resilience is verified using Playwright offline network simulation.
-- [ ] CI workflow `.github/workflows/e2e.yml` runs automatically on PRs to `main` in under 5 minutes.
-- [ ] Authenticated fixtures provide isolated, repeatable sessions without external OAuth dependencies.
-- [ ] Failure captures (traces, screenshots, videos) are automatically uploaded as CI artifacts on test failure.
-- [ ] Key public and authenticated pages pass automated axe-core accessibility audits with zero violations.
+- [x] `npm run test:e2e` executes all core and advanced E2E spec suites locally and in CI with 100% pass rate.
+- [x] Visual baseline screenshots for all key views are captured in `e2e/screenshots/` and verified against `DESIGN.md`.
+- [x] Dual-context multi-user test verifies real-time Firestore stream synchronization without page reloads.
+- [x] Keyboard navigation tests verify focus trapping in modals and `Escape` key dismissal across all dialogs.
+- [x] PWA offline resilience is verified using Playwright offline network simulation.
+- [x] CI workflow `.github/workflows/e2e.yml` runs automatically on PRs to `main` in under 5 minutes.
+- [x] Authenticated fixtures provide isolated, repeatable sessions without external OAuth dependencies.
+- [x] Failure captures (traces, screenshots, videos) are automatically uploaded as CI artifacts on test failure.
+- [x] Key public and authenticated pages pass automated axe-core accessibility audits with zero violations.

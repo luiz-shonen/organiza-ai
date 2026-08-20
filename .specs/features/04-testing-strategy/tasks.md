@@ -86,9 +86,9 @@ T5
 
 **Done when**:
 
-- [ ] `MockAuthService` exports Signals (`currentUser`, `isAdmin`, `isSuperAdmin`, `loading`) and spy methods
-- [ ] No `any` types
-- [ ] Build gate passes: `npm run build`
+- [x] `MockAuthService` exports Signals (`currentUser`, `isAdmin`, `isSuperAdmin`, `loading`) and spy methods
+- [x] No `any` types
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  
@@ -111,10 +111,10 @@ T5
 
 **Done when**:
 
-- [ ] `ThemeService` safely handles SSR / jsdom environments where `window.matchMedia` is undefined
-- [ ] `app.spec.ts` and `seasonal-overlay.component.spec.ts` pass cleanly
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: 11 tests pass with 0 failures
+- [x] `ThemeService` safely handles SSR / jsdom environments where `window.matchMedia` is undefined
+- [x] `app.spec.ts` and `seasonal-overlay.component.spec.ts` pass cleanly
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: 11 tests pass with 0 failures
 
 **Tests**: unit  
 **Gate**: quick  
@@ -139,9 +139,9 @@ T5
 
 **Done when**:
 
-- [ ] Unit tests verify valid CEP auto-fill, invalid CEP error handling, and timeout fallback
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 new tests pass
+- [x] Unit tests verify valid CEP auto-fill, invalid CEP error handling, and timeout fallback
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 new tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -164,10 +164,10 @@ T5
 
 **Done when**:
 
-- [ ] Verifies dynamic per-person split updates when `estimatedBudget` or `guestCount` change
-- [ ] Verifies `copyPix` emission when copy button is activated via click and keyboard
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] Verifies dynamic per-person split updates when `estimatedBudget` or `guestCount` change
+- [x] Verifies `copyPix` emission when copy button is activated via click and keyboard
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  
@@ -192,9 +192,9 @@ T5
 
 **Done when**:
 
-- [ ] Playwright config file and `e2e/smoke.spec.ts` created
-- [ ] E2E test verifies home page renders, navigates to login, and renders public event page
-- [ ] Build gate passes: `npm run build`
+- [x] Playwright config file and `e2e/smoke.spec.ts` created
+- [x] E2E test verifies home page renders, navigates to login, and renders public event page
+- [x] Build gate passes: `npm run build`
 
 **Tests**: e2e  
 **Gate**: full  

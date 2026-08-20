@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { App } from './app';
@@ -16,6 +17,7 @@ describe('App', () => {
       imports: [App],
       providers: [
         provideRouter([]),
+        provideNoopAnimations(),
         {
           provide: FirebaseService,
           useValue: { firestore: {}, auth: {} },
@@ -50,3 +52,4 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 });
+

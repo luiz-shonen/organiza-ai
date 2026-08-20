@@ -1,4 +1,5 @@
 export { FirebaseService } from './firebase.service';
+export { FirestoreGateway } from './firestore.gateway';
 export { AuthService } from './auth.service';
 export { GuestSessionService } from './guest-session.service';
 export { EventService } from './event.service';

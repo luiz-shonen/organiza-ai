@@ -18,3 +18,5 @@ export type {
   FamilyRelationship,
   FamilyMemberCreate,
 } from './family.model';
+export type { FirestoreBatchOperations } from './firestore-gateway.models';
+

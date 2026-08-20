@@ -11,13 +11,13 @@ import {
   signInAnonymously,
   sendEmailVerification,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly auth: Auth = inject(FirebaseService).auth;
-  private readonly firestore = inject(FirebaseService).firestore;
+  private readonly gateway = inject(FirestoreGateway);
   private readonly _currentUser = signal<User | null>(null);
   private readonly _loading = signal(true);
   private readonly _isSuperAdmin = signal(false);
@@ -86,9 +86,8 @@ export class AuthService {
     if (!this._isSuperAdmin()) {
       throw new Error('Apenas super administradores podem cadastrar novos admins.');
     }
-    // Register in admins collection
-    await setDoc(doc(this.firestore, 'admins', email), {
-      createdAt: serverTimestamp(),
+    await this.gateway.setDoc(`admins/${email}`, {
+      createdAt: this.gateway.serverTimestamp(),
     });
   }
 
@@ -96,9 +95,8 @@ export class AuthService {
     if (!this._isSuperAdmin()) {
       throw new Error('Apenas super administradores podem listar admins.');
     }
-    const { collection, getDocs } = await import('firebase/firestore');
-    const snap = await getDocs(collection(this.firestore, 'admins'));
-    return snap.docs.map((d) => d.id);
+    const docs = await this.gateway.getDocs<{ id: string }>('admins');
+    return docs.map((d) => d.id);
   }
 
   async removeAdmin(email: string): Promise<void> {
@@ -108,7 +106,6 @@ export class AuthService {
     if (this.isSuperAdminEmail(email)) {
       throw new Error('Super administradores não podem ser removidos.');
     }
-    const { deleteDoc } = await import('firebase/firestore');
-    await deleteDoc(doc(this.firestore, 'admins', email));
+    await this.gateway.deleteDoc(`admins/${email}`);
   }
 }

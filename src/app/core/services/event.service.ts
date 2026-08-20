@@ -1,49 +1,20 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, combineLatest, map, of } from 'rxjs';
-import {
-  collection,
-  collectionGroup,
-  doc,
-  addDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  getDoc,
-  getDocs,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-  arrayUnion,
-  arrayRemove,
-  writeBatch,
-  Timestamp,
-} from 'firebase/firestore';
-import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
 import { PartyEvent, PartyEventCreate, PartyEventUpdate, EventInvitation } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class EventService {
-  private readonly firestore = inject(FirebaseService).firestore;
+  private readonly gateway = inject(FirestoreGateway);
   private readonly notificationService = inject(EventNotificationService);
   private readonly collectionName = 'events';
 
   listEvents(): Observable<PartyEvent[]> {
-    return new Observable<PartyEvent[]>((subscriber) => {
-      const q = query(collection(this.firestore, this.collectionName), orderBy('date', 'asc'));
-
-      const unsubscribe = onSnapshot(
-        q,
-        (snapshot) => {
-          const events = snapshot.docs.map((d) => this.mapDoc(d));
-          subscriber.next(events);
-        },
-        (error) => subscriber.error(error),
-      );
-
-      return () => unsubscribe();
-    });
+    return this.gateway.collectionSnapshot<Record<string, unknown>>(
+      this.collectionName,
+      this.gateway.orderBy('date', 'asc'),
+    ).pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
   }
 
   getUserEvents(uid: string): Observable<PartyEvent[]> {
@@ -51,29 +22,15 @@ export class EventService {
       return of([]);
     }
 
-    const owned$ = new Observable<PartyEvent[]>((subscriber) => {
-      const q = query(
-        collection(this.firestore, this.collectionName),
-        where('createdBy', '==', uid),
-      );
-      return onSnapshot(
-        q,
-        (snapshot) => subscriber.next(snapshot.docs.map((d) => this.mapDoc(d))),
-        (error) => subscriber.error(error),
-      );
-    });
+    const owned$ = this.gateway.collectionSnapshot<Record<string, unknown>>(
+      this.collectionName,
+      this.gateway.where('createdBy', '==', uid),
+    ).pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
 
-    const collaborated$ = new Observable<PartyEvent[]>((subscriber) => {
-      const q = query(
-        collection(this.firestore, this.collectionName),
-        where('collaborators', 'array-contains', uid),
-      );
-      return onSnapshot(
-        q,
-        (snapshot) => subscriber.next(snapshot.docs.map((d) => this.mapDoc(d))),
-        (error) => subscriber.error(error),
-      );
-    });
+    const collaborated$ = this.gateway.collectionSnapshot<Record<string, unknown>>(
+      this.collectionName,
+      this.gateway.where('collaborators', 'array-contains', uid),
+    ).pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
 
     return combineLatest([owned$, collaborated$]).pipe(
       map(([owned, collaborated]) => {
@@ -88,51 +45,35 @@ export class EventService {
   }
 
   getEvent(eventId: string): Observable<PartyEvent | null> {
-    return new Observable<PartyEvent | null>((subscriber) => {
-      const docRef = doc(this.firestore, this.collectionName, eventId);
-
-      const unsubscribe = onSnapshot(
-        docRef,
-        (snapshot) => {
-          if (snapshot.exists()) {
-            subscriber.next(this.mapDoc(snapshot));
-          } else {
-            subscriber.next(null);
-          }
-        },
-        (error) => subscriber.error(error),
-      );
-
-      return () => unsubscribe();
-    });
+    return this.gateway.docSnapshot<Record<string, unknown>>(
+      `${this.collectionName}/${eventId}`,
+    ).pipe(map((doc) => (doc ? this.mapEventData(doc) : null)));
   }
 
   async createEvent(data: PartyEventCreate): Promise<string> {
     const now = new Date().toISOString();
-    const docRef = await addDoc(collection(this.firestore, this.collectionName), {
+    return this.gateway.addDoc(this.collectionName, {
       ...data,
       collaborators: data.collaborators ?? [],
       status: 'active',
       createdAt: now,
       updatedAt: now,
     });
-    return docRef.id;
   }
 
   async updateEvent(eventId: string, data: PartyEventUpdate): Promise<void> {
-    const docRef = doc(this.firestore, this.collectionName, eventId);
     let previousEvent: PartyEvent | null = null;
 
     try {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        previousEvent = this.mapDoc(docSnap);
+      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(`${this.collectionName}/${eventId}`);
+      if (docData) {
+        previousEvent = this.mapEventData(docData);
       }
     } catch {
       // Gracefully continue with update if snapshot fetch fails
     }
 
-    await updateDoc(docRef, {
+    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
       ...data,
       updatedAt: new Date().toISOString(),
     });
@@ -156,7 +97,7 @@ export class EventService {
               ...previousEvent,
               ...data,
             },
-            changeSummary
+            changeSummary,
           );
         } catch (error) {
           console.warn('Error sending event change notification', error);
@@ -170,19 +111,18 @@ export class EventService {
   }
 
   async cancelEvent(eventId: string): Promise<void> {
-    const docRef = doc(this.firestore, this.collectionName, eventId);
     let eventToCancel: PartyEvent | null = null;
 
     try {
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        eventToCancel = this.mapDoc(docSnap);
+      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(`${this.collectionName}/${eventId}`);
+      if (docData) {
+        eventToCancel = this.mapEventData(docData);
       }
     } catch {
       // Gracefully continue
     }
 
-    await updateDoc(docRef, {
+    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
       status: 'cancelled',
       updatedAt: new Date().toISOString(),
     });
@@ -200,8 +140,7 @@ export class EventService {
   }
 
   async deleteEvent(eventId: string): Promise<void> {
-    const docRef = doc(this.firestore, this.collectionName, eventId);
-    await deleteDoc(docRef);
+    await this.gateway.deleteDoc(`${this.collectionName}/${eventId}`);
   }
 
   async inviteCollaborator(
@@ -211,14 +150,7 @@ export class EventService {
     invitedBy?: string,
   ): Promise<void> {
     const normalizedEmail = email.toLowerCase().trim();
-    const docRef = doc(
-      this.firestore,
-      this.collectionName,
-      eventId,
-      'invitations',
-      normalizedEmail,
-    );
-    await setDoc(docRef, {
+    await this.gateway.setDoc(`${this.collectionName}/${eventId}/invitations/${normalizedEmail}`, {
       id: normalizedEmail,
       eventId,
       eventTitle: eventTitle ?? '',
@@ -229,90 +161,71 @@ export class EventService {
   }
 
   async removeCollaborator(eventId: string, collaboratorUid: string): Promise<void> {
-    const docRef = doc(this.firestore, this.collectionName, eventId);
-    await updateDoc(docRef, {
-      collaborators: arrayRemove(collaboratorUid),
+    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
+      collaborators: this.gateway.arrayRemove(collaboratorUid),
       updatedAt: new Date().toISOString(),
     });
   }
 
   listPendingInvitations(eventId: string): Observable<EventInvitation[]> {
-    return new Observable<EventInvitation[]>((subscriber) => {
-      const colRef = collection(this.firestore, this.collectionName, eventId, 'invitations');
-      const unsubscribe = onSnapshot(
-        colRef,
-        (snapshot) => {
-          const invites = snapshot.docs.map((d) => {
-            const data = d.data();
-            return {
-              id: d.id,
-              eventId: (data?.['eventId'] as string) ?? eventId,
-              eventTitle: (data?.['eventTitle'] as string) ?? '',
-              invitedEmail: (data?.['invitedEmail'] as string) ?? d.id,
-              invitedBy: (data?.['invitedBy'] as string) ?? '',
-              createdAt: (data?.['createdAt'] as string) ?? '',
-            };
-          });
-          subscriber.next(invites);
-        },
-        (err) => subscriber.error(err),
-      );
-      return () => unsubscribe();
-    });
+    return this.gateway.collectionSnapshot<Record<string, unknown>>(
+      `${this.collectionName}/${eventId}/invitations`,
+    ).pipe(
+      map((docs) =>
+        docs.map((d) => ({
+          id: d.id,
+          eventId: (d['eventId'] as string) ?? eventId,
+          eventTitle: (d['eventTitle'] as string) ?? '',
+          invitedEmail: (d['invitedEmail'] as string) ?? d.id,
+          invitedBy: (d['invitedBy'] as string) ?? '',
+          createdAt: (d['createdAt'] as string) ?? '',
+        })),
+      ),
+    );
   }
 
   async claimPendingInvitations(email: string, uid: string): Promise<void> {
     if (!email || !uid) return;
     const normalizedEmail = email.toLowerCase().trim();
-    const q = query(
-      collectionGroup(this.firestore, 'invitations'),
-      where('invitedEmail', '==', normalizedEmail),
-    );
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) return;
 
-    const batch = writeBatch(this.firestore);
-    for (const invDoc of snapshot.docs) {
-      const invData = invDoc.data();
-      const eventId = (invData?.['eventId'] as string) || invDoc.ref.parent.parent?.id;
-      if (eventId) {
-        const eventRef = doc(this.firestore, this.collectionName, eventId);
-        batch.update(eventRef, {
-          collaborators: arrayUnion(uid),
-          updatedAt: new Date().toISOString(),
-        });
+    const snapshotDocs = await this.gateway.getCollectionGroupDocs<{ eventId?: string }>(
+      'invitations',
+      this.gateway.where('invitedEmail', '==', normalizedEmail),
+    );
+    if (snapshotDocs.length === 0) return;
+
+    await this.gateway.runBatch((batch) => {
+      for (const invDoc of snapshotDocs) {
+        if (invDoc.eventId) {
+          batch.update(`${this.collectionName}/${invDoc.eventId}`, {
+            collaborators: this.gateway.arrayUnion(uid),
+            updatedAt: new Date().toISOString(),
+          });
+          batch.delete(`${this.collectionName}/${invDoc.eventId}/invitations/${invDoc.id}`);
+        }
       }
-      batch.delete(invDoc.ref);
-    }
-    await batch.commit();
+    });
   }
 
-  private mapDoc(
-    snapshot:
-      | import('firebase/firestore').DocumentSnapshot
-      | import('firebase/firestore').QueryDocumentSnapshot,
-  ): PartyEvent {
-    const data = snapshot.data();
+  private mapEventData(data: Record<string, unknown> & { id: string }): PartyEvent {
+    const dateVal = this.gateway.timestampToDate(data['date']);
     return {
-      id: snapshot.id,
-      title: (data?.['title'] as string) ?? '',
-      category: (data?.['category'] as string) ?? '',
-      description: (data?.['description'] as string) ?? '',
-      date:
-        data?.['date'] instanceof Timestamp
-          ? (data['date'] as Timestamp).toDate().toISOString()
-          : ((data?.['date'] as string) ?? ''),
-      location: (data?.['location'] as string) ?? '',
-      addressDetails: data?.['addressDetails'],
-      pixKey: (data?.['pixKey'] as string | null) ?? null,
-      pixType: data?.['pixType'],
-      estimatedBudget: data?.['estimatedBudget'],
-      status: (data?.['status'] as 'active' | 'cancelled') ?? 'active',
-      createdBy: (data?.['createdBy'] as string) ?? '',
-      creatorEmail: (data?.['creatorEmail'] as string) ?? '',
-      collaborators: (data?.['collaborators'] as string[]) ?? [],
-      createdAt: (data?.['createdAt'] as string) ?? '',
-      updatedAt: (data?.['updatedAt'] as string) ?? '',
+      id: data.id,
+      title: (data['title'] as string) ?? '',
+      category: (data['category'] as string) ?? '',
+      description: (data['description'] as string) ?? '',
+      date: dateVal ? dateVal.toISOString() : ((data['date'] as string) ?? ''),
+      location: (data['location'] as string) ?? '',
+      addressDetails: data['addressDetails'] as any,
+      pixKey: (data['pixKey'] as string | null) ?? null,
+      pixType: data['pixType'] as any,
+      estimatedBudget: data['estimatedBudget'] as any,
+      status: (data['status'] as 'active' | 'cancelled') ?? 'active',
+      createdBy: (data['createdBy'] as string) ?? '',
+      creatorEmail: (data['creatorEmail'] as string) ?? '',
+      collaborators: (data['collaborators'] as string[]) ?? [],
+      createdAt: (data['createdAt'] as string) ?? '',
+      updatedAt: (data['updatedAt'] as string) ?? '',
     };
   }
 }

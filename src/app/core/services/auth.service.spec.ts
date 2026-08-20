@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AuthService } from './auth.service';
 import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
+import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
 import type { User, Auth, UserCredential } from 'firebase/auth';
 
 const mocks = vi.hoisted(() => {
@@ -52,33 +54,14 @@ vi.mock('@firebase/auth', () => ({
   GoogleAuthProvider: mocks.MockGoogleAuthProvider,
 }));
 
-vi.mock('firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
-  getFirestore: vi.fn(),
-  doc: vi.fn(),
-  setDoc: vi.fn(),
-  getDoc: vi.fn(),
-  serverTimestamp: vi.fn(),
-}));
-
-vi.mock('@firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
-  getFirestore: vi.fn(),
-  doc: vi.fn(),
-  setDoc: vi.fn(),
-  getDoc: vi.fn(),
-  serverTimestamp: vi.fn(),
-}));
-
 describe('AuthService', () => {
   let service: AuthService;
+  let mockGateway: MockFirestoreGateway;
 
   const mockAuth = {
     currentUser: null as User | null,
     authStateReady: vi.fn().mockResolvedValue(undefined),
   } as unknown as Auth;
-
-  const mockFirestore = {} as any;
 
   const superAdminUser = {
     uid: 'super-admin-uid',
@@ -98,6 +81,7 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGateway = createMockFirestoreGateway();
     (mockAuth as any).currentUser = null;
     (mockAuth.authStateReady as any).mockResolvedValue(undefined);
     mocks.setAuthCallback(null);
@@ -109,8 +93,11 @@ describe('AuthService', () => {
           provide: FirebaseService,
           useValue: {
             auth: mockAuth,
-            firestore: mockFirestore,
           },
+        },
+        {
+          provide: FirestoreGateway,
+          useValue: mockGateway,
         },
       ],
     });
@@ -332,4 +319,56 @@ describe('AuthService', () => {
       expect(mocks.mockSignInAnonymously).not.toHaveBeenCalled();
     });
   });
+
+  describe('admin management', () => {
+    it('registerAdmin saves email in admins collection if user is superadmin', async () => {
+      const cb = mocks.getAuthCallback();
+      cb!(superAdminUser);
+
+      await service.registerAdmin('newadmin@test.com');
+      expect(mockGateway.setDoc).toHaveBeenCalledWith('admins/newadmin@test.com', {
+        createdAt: expect.anything(),
+      });
+    });
+
+    it('registerAdmin throws if user is not superadmin', async () => {
+      const cb = mocks.getAuthCallback();
+      cb!(regularUser);
+
+      await expect(service.registerAdmin('newadmin@test.com')).rejects.toThrow(
+        'Apenas super administradores podem cadastrar novos admins.',
+      );
+    });
+
+    it('listAdmins returns list of admin emails if user is superadmin', async () => {
+      const cb = mocks.getAuthCallback();
+      cb!(superAdminUser);
+
+      mockGateway.getDocs.mockResolvedValue([
+        { id: 'admin1@test.com' },
+        { id: 'admin2@test.com' },
+      ]);
+
+      const list = await service.listAdmins();
+      expect(list).toEqual(['admin1@test.com', 'admin2@test.com']);
+    });
+
+    it('removeAdmin deletes doc from admins collection', async () => {
+      const cb = mocks.getAuthCallback();
+      cb!(superAdminUser);
+
+      await service.removeAdmin('admin1@test.com');
+      expect(mockGateway.deleteDoc).toHaveBeenCalledWith('admins/admin1@test.com');
+    });
+
+    it('removeAdmin throws if trying to remove superadmin', async () => {
+      const cb = mocks.getAuthCallback();
+      cb!(superAdminUser);
+
+      await expect(service.removeAdmin('luiz.gmr.dev@gmail.com')).rejects.toThrow(
+        'Super administradores não podem ser removidos.',
+      );
+    });
+  });
 });
+

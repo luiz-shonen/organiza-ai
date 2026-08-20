@@ -1,41 +1,30 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  collection,
-  doc,
-  getDocs,
-  addDoc,
-  deleteDoc,
-  orderBy,
-  query,
-  Timestamp,
-} from 'firebase/firestore';
-import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
 import { FamilyMember, FamilyMemberCreate } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class FamilyService {
-  private readonly firestore = inject(FirebaseService).firestore;
+  private readonly gateway = inject(FirestoreGateway);
 
-  private familyCollection(uid: string) {
-    return collection(this.firestore, `users/${uid}/family`);
+  private familyPath(uid: string) {
+    return `users/${uid}/family`;
   }
 
   async getFamilyMembers(uid: string): Promise<FamilyMember[]> {
     if (!uid) return [];
     try {
-      const q = query(this.familyCollection(uid), orderBy('createdAt', 'asc'));
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
+      const docs = await this.gateway.getDocs<Omit<FamilyMember, 'id'>>(
+        this.familyPath(uid),
+        this.gateway.orderBy('createdAt', 'asc'),
+      );
+      return docs.map((data) => {
+        const createdAtDate = this.gateway.timestampToDate(data.createdAt);
         return {
-          id: docSnap.id,
-          name: (data?.['name'] as string) ?? '',
-          relationship: data?.['relationship'] ?? 'other',
-          phone: (data?.['phone'] as string | undefined) ?? undefined,
-          createdAt:
-            data?.['createdAt'] instanceof Timestamp
-              ? data['createdAt'].toDate().toISOString()
-              : ((data?.['createdAt'] as string) ?? ''),
+          id: data.id,
+          name: data.name ?? '',
+          relationship: data.relationship ?? 'other',
+          phone: data.phone ?? undefined,
+          createdAt: createdAtDate ? createdAtDate.toISOString() : ((data.createdAt as unknown as string) ?? ''),
         };
       });
     } catch (err) {
@@ -53,16 +42,15 @@ export class FamilyService {
       phone: member.phone || '',
       createdAt: member.createdAt || now,
     };
-    const docRef = await addDoc(this.familyCollection(uid), docData);
+    const id = await this.gateway.addDoc(this.familyPath(uid), docData);
     return {
-      id: docRef.id,
+      id,
       ...docData,
     };
   }
 
   async deleteFamilyMember(uid: string, memberId: string): Promise<void> {
     if (!uid || !memberId) return;
-    const docRef = doc(this.firestore, `users/${uid}/family/${memberId}`);
-    await deleteDoc(docRef);
+    await this.gateway.deleteDoc(`${this.familyPath(uid)}/${memberId}`);
   }
 }

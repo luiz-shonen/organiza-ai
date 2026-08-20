@@ -1,23 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  collection,
-  doc,
-  addDoc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-  limit,
-  getDocs,
-  writeBatch,
-  serverTimestamp,
-} from 'firebase/firestore';
 import { Observable } from 'rxjs';
-import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
 import { Guest, FamilyMember } from '../models';
 
 export interface BatchPrimaryGuestInput {
@@ -31,46 +14,30 @@ export interface BatchPrimaryGuestInput {
 
 @Injectable({ providedIn: 'root' })
 export class GuestService {
-  private readonly firestore = inject(FirebaseService).firestore;
+  private readonly gateway = inject(FirestoreGateway);
+
+  private guestsPath(eventId: string) {
+    return `events/${eventId}/guests`;
+  }
+
+  private guestDocPath(eventId: string, guestId: string) {
+    return `events/${eventId}/guests/${guestId}`;
+  }
 
   listGuests(eventId: string): Observable<Guest[]> {
-    const guestsCol = this.guestsCollection(eventId);
-    const q = query(guestsCol, orderBy('confirmedAt', 'desc'));
-
-    return new Observable<Guest[]>((subscriber) => {
-      const unsubscribe = onSnapshot(
-        q,
-        (snapshot) => {
-          const guests = snapshot.docs.map((docSnap) => {
-            const data = docSnap.data();
-            return {
-              id: docSnap.id,
-              name: data['name'],
-              phone: data['phone'],
-              photoUrl: data['photoUrl'],
-              isConfirmed: data['isConfirmed'],
-              confirmedAt: data['confirmedAt'],
-              companionsCount: data['companionsCount'] ?? 0,
-            } as Guest;
-          });
-          subscriber.next(guests);
-        },
-        (error) => subscriber.error(error),
-      );
-
-      return () => unsubscribe();
-    });
+    return this.gateway.collectionSnapshot<Omit<Guest, 'id'>>(
+      this.guestsPath(eventId),
+      this.gateway.orderBy('confirmedAt', 'desc'),
+    ) as Observable<Guest[]>;
   }
 
   async addGuest(eventId: string, guest: Partial<Guest>): Promise<string> {
-    const guestsCol = this.guestsCollection(eventId);
-    const docRef = await addDoc(guestsCol, {
+    return this.gateway.addDoc(this.guestsPath(eventId), {
       ...guest,
       isConfirmed: true,
       confirmedAt: new Date().toISOString(),
-      createdAt: serverTimestamp(),
+      createdAt: this.gateway.serverTimestamp(),
     });
-    return docRef.id;
   }
 
   async saveVerifiedRsvp(
@@ -83,9 +50,8 @@ export class GuestService {
       photoUrl?: string;
     },
   ): Promise<void> {
-    const guestDocRef = this.guestDoc(eventId, guestData.uid);
-    await setDoc(
-      guestDocRef,
+    await this.gateway.setDoc(
+      this.guestDocPath(eventId, guestData.uid),
       {
         uid: guestData.uid,
         name: guestData.name,
@@ -104,137 +70,120 @@ export class GuestService {
     primaryGuest: BatchPrimaryGuestInput,
     familyMembers: FamilyMember[] = [],
   ): Promise<void> {
-    const batch = writeBatch(this.firestore);
     const now = new Date().toISOString();
 
-    const primaryDocRef = this.guestDoc(eventId, primaryGuest.uid);
-    batch.set(
-      primaryDocRef,
-      {
-        uid: primaryGuest.uid,
-        name: primaryGuest.name,
-        email: primaryGuest.email ?? '',
-        phone: primaryGuest.phone ?? '',
-        photoUrl: primaryGuest.photoUrl ?? '',
-        isConfirmed: true,
-        confirmedAt: now,
-        companionsCount: primaryGuest.companionsCount ?? 0,
-        createdAt: now,
-      },
-      { merge: true },
-    );
-
-    for (const member of familyMembers) {
-      const memberGuestDocRef = this.guestDoc(eventId, `${primaryGuest.uid}_${member.id}`);
+    await this.gateway.runBatch((batch) => {
       batch.set(
-        memberGuestDocRef,
+        this.guestDocPath(eventId, primaryGuest.uid),
         {
-          id: `${primaryGuest.uid}_${member.id}`,
-          name: member.name,
-          primaryGuestId: primaryGuest.uid,
-          phone: member.phone ?? '',
+          uid: primaryGuest.uid,
+          name: primaryGuest.name,
+          email: primaryGuest.email ?? '',
+          phone: primaryGuest.phone ?? '',
+          photoUrl: primaryGuest.photoUrl ?? '',
           isConfirmed: true,
           confirmedAt: now,
+          companionsCount: primaryGuest.companionsCount ?? 0,
           createdAt: now,
         },
         { merge: true },
       );
-    }
 
-    await batch.commit();
+      for (const member of familyMembers) {
+        const memberId = `${primaryGuest.uid}_${member.id}`;
+        batch.set(
+          this.guestDocPath(eventId, memberId),
+          {
+            id: memberId,
+            name: member.name,
+            primaryGuestId: primaryGuest.uid,
+            phone: member.phone ?? '',
+            isConfirmed: true,
+            confirmedAt: now,
+            createdAt: now,
+          },
+          { merge: true },
+        );
+      }
+    });
   }
 
   async updateGuest(eventId: string, guestId: string, data: Partial<Guest>): Promise<void> {
-    const docRef = this.guestDoc(eventId, guestId);
-    await updateDoc(docRef, data);
+    await this.gateway.updateDoc(this.guestDocPath(eventId, guestId), data);
   }
 
   async deleteGuest(eventId: string, guestId: string): Promise<void> {
-    const docRef = this.guestDoc(eventId, guestId);
-    await deleteDoc(docRef);
+    await this.gateway.deleteDoc(this.guestDocPath(eventId, guestId));
   }
 
   async cancelRsvp(eventId: string, guestId: string, primaryUid?: string): Promise<void> {
-    const batch = writeBatch(this.firestore);
-    const primaryDocRef = this.guestDoc(eventId, guestId);
-    batch.delete(primaryDocRef);
-
     const targetUid = primaryUid || guestId;
 
+    let familyDocs: { id: string }[] = [];
     try {
-      const guestsCol = this.guestsCollection(eventId);
-      const familyQuery = query(guestsCol, where('primaryGuestId', '==', targetUid));
-      const familySnap = await getDocs(familyQuery);
-      familySnap.forEach((docSnap) => {
-        batch.delete(docSnap.ref);
-      });
+      familyDocs = await this.gateway.getDocs<{ id: string }>(
+        this.guestsPath(eventId),
+        this.gateway.where('primaryGuestId', '==', targetUid),
+      );
     } catch {
       // ignore
     }
 
+    let itemDocs: { id: string }[] = [];
     try {
-      const itemsCol = collection(this.firestore, 'events', eventId, 'items');
-      const itemsQuery = query(itemsCol, where('claimedBy.phone', '==', targetUid));
-      const querySnap = await getDocs(itemsQuery);
-
-      querySnap.forEach((itemDoc) => {
-        batch.update(itemDoc.ref, { claimedBy: null });
-      });
+      itemDocs = await this.gateway.getDocs<{ id: string }>(
+        `events/${eventId}/items`,
+        this.gateway.where('claimedBy.phone', '==', targetUid),
+      );
     } catch {
       // ignore
     }
 
-    await batch.commit();
+    await this.gateway.runBatch((batch) => {
+      batch.delete(this.guestDocPath(eventId, guestId));
+
+      for (const memberDoc of familyDocs) {
+        batch.delete(this.guestDocPath(eventId, memberDoc.id));
+      }
+
+      for (const itemDoc of itemDocs) {
+        batch.update(`events/${eventId}/items/${itemDoc.id}`, { claimedBy: null });
+      }
+    });
   }
 
   async getGuestByPhone(eventId: string, phone: string): Promise<Guest | null> {
-    const guestsCol = this.guestsCollection(eventId);
-    const q = query(guestsCol, where('phone', '==', phone), limit(1));
-    const snapshot = await getDocs(q);
+    const docs = await this.gateway.getDocs<Omit<Guest, 'id'>>(
+      this.guestsPath(eventId),
+      this.gateway.where('phone', '==', phone),
+      this.gateway.limit(1),
+    );
 
-    if (snapshot.empty) {
-      return null;
-    }
-
-    const docSnap = snapshot.docs[0];
-    const data = docSnap.data();
-
+    if (docs.length === 0) return null;
+    const docData = docs[0];
     return {
-      id: docSnap.id,
-      name: data['name'],
-      phone: data['phone'],
-      photoUrl: data['photoUrl'],
-      isConfirmed: data['isConfirmed'],
-      confirmedAt: data['confirmedAt'],
-      companionsCount: data['companionsCount'] ?? 0,
+      id: docData.id,
+      name: docData.name,
+      phone: docData.phone,
+      photoUrl: docData.photoUrl,
+      isConfirmed: docData.isConfirmed,
+      confirmedAt: docData.confirmedAt,
+      companionsCount: docData.companionsCount ?? 0,
     };
   }
 
   async getGuest(eventId: string, guestId: string): Promise<Guest | null> {
-    const docRef = this.guestDoc(eventId, guestId);
-    const docSnap = await getDoc(docRef);
+    const docData = await this.gateway.getDocWithId<Omit<Guest, 'id'>>(this.guestDocPath(eventId, guestId));
+    if (!docData) return null;
 
-    if (!docSnap.exists()) {
-      return null;
-    }
-
-    const data = docSnap.data();
     return {
-      id: docSnap.id,
-      name: data['name'],
-      phone: data['phone'],
-      photoUrl: data['photoUrl'],
-      isConfirmed: data['isConfirmed'],
-      confirmedAt: data['confirmedAt'],
-      companionsCount: data['companionsCount'] ?? 0,
+      id: docData.id,
+      name: docData.name,
+      phone: docData.phone,
+      photoUrl: docData.photoUrl,
+      isConfirmed: docData.isConfirmed,
+      confirmedAt: docData.confirmedAt,
+      companionsCount: docData.companionsCount ?? 0,
     };
-  }
-
-  private guestsCollection(eventId: string) {
-    return collection(this.firestore, 'events', eventId, 'guests');
-  }
-
-  private guestDoc(eventId: string, guestId: string) {
-    return doc(this.firestore, 'events', eventId, 'guests', guestId);
   }
 }

@@ -1,155 +1,32 @@
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { of } from 'rxjs';
 import { EventService } from './event.service';
-import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
-import { PartyEvent } from '../models';
-const { firestoreMocks } = vi.hoisted(() => {
-  const batch = {
-    set: vi.fn(),
-    delete: vi.fn(),
-    update: vi.fn(),
-    commit: vi.fn().mockResolvedValue(undefined),
-  };
-
-  class MockTimestamp {
-    constructor(public seconds: number, public nanoseconds: number) {}
-    toDate() {
-      return new Date(this.seconds * 1000);
-    }
-  }
-
-  const mocks = {
-    batch,
-    collection: vi.fn(),
-    collectionGroup: vi.fn(),
-    doc: vi.fn(),
-    addDoc: vi.fn(),
-    setDoc: vi.fn(),
-    updateDoc: vi.fn(),
-    deleteDoc: vi.fn(),
-    getDoc: vi.fn(),
-    getDocs: vi.fn(),
-    onSnapshot: vi.fn(),
-    orderBy: vi.fn(),
-    query: vi.fn(),
-    where: vi.fn(),
-    limit: vi.fn(),
-    writeBatch: vi.fn(() => batch),
-    arrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
-    arrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
-    serverTimestamp: vi.fn(),
-    Timestamp: MockTimestamp,
-  };
-
-  return { firestoreMocks: mocks };
-});
-
-vi.mock('firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
-  getFirestore: vi.fn(),
-  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
-  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
-  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
-  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
-  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
-  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
-  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
-  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
-  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
-  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
-  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
-  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
-  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
-  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
-  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
-  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
-  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
-  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
-  Timestamp: firestoreMocks.Timestamp,
-}));
-
-vi.mock('@firebase/firestore', () => ({
-  initializeFirestore: vi.fn(),
-  getFirestore: vi.fn(),
-  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
-  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
-  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
-  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
-  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
-  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
-  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
-  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
-  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
-  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
-  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
-  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
-  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
-  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
-  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
-  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
-  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
-  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
-  Timestamp: firestoreMocks.Timestamp,
-}));
+import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
 
 describe('EventService', () => {
   let service: EventService;
+  let mockGateway: MockFirestoreGateway;
   let mockNotificationService: {
     notifyGuestsOfEventChange: ReturnType<typeof vi.fn>;
     notifyGuestsOfCancellation: ReturnType<typeof vi.fn>;
   };
 
-  const existingEvent: PartyEvent = {
-    id: 'evt-100',
-    title: 'Aniversário do Lucas',
-    category: 'Aniversário',
-    description: 'Festa de 30 anos',
-    date: '2026-09-10T18:00:00.000Z',
-    location: 'Av. Paulista, 1000',
-    pixKey: '11999998888',
-    status: 'active',
-    createdBy: 'user-1',
-    collaborators: [],
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  };
-
   beforeEach(() => {
-    vi.clearAllMocks();
-
-    firestoreMocks.batch.set.mockReset();
-    firestoreMocks.batch.delete.mockReset();
-    firestoreMocks.batch.update.mockReset();
-    firestoreMocks.batch.commit.mockReset().mockResolvedValue(undefined);
-
-    firestoreMocks.doc.mockReturnValue({ id: 'evt-100' } as any);
-    firestoreMocks.collection.mockReturnValue('col-ref' as any);
-    firestoreMocks.collectionGroup.mockReturnValue('col-group-ref' as any);
-    firestoreMocks.query.mockReturnValue('query-ref' as any);
-    firestoreMocks.where.mockReturnValue('where-ref' as any);
-    firestoreMocks.orderBy.mockReturnValue('order-ref' as any);
-    firestoreMocks.writeBatch.mockReturnValue(firestoreMocks.batch);
-    firestoreMocks.getDoc.mockResolvedValue({ exists: () => true, data: () => existingEvent, id: 'evt-100' } as any);
-    firestoreMocks.getDocs.mockResolvedValue({ docs: [], forEach: vi.fn() } as any);
-    firestoreMocks.addDoc.mockResolvedValue({ id: 'new-evt-id' } as any);
-    firestoreMocks.setDoc.mockResolvedValue(undefined as any);
-    firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
-    firestoreMocks.deleteDoc.mockResolvedValue(undefined as any);
-
+    mockGateway = createMockFirestoreGateway();
     mockNotificationService = {
-      notifyGuestsOfEventChange: vi.fn().mockResolvedValue({}),
-      notifyGuestsOfCancellation: vi.fn().mockResolvedValue({}),
+      notifyGuestsOfEventChange: vi.fn().mockResolvedValue(undefined),
+      notifyGuestsOfCancellation: vi.fn().mockResolvedValue(undefined),
     };
 
     TestBed.configureTestingModule({
       providers: [
         EventService,
         {
-          provide: FirebaseService,
-          useValue: {
-            firestore: {} as any,
-          },
+          provide: FirestoreGateway,
+          useValue: mockGateway,
         },
         {
           provide: EventNotificationService,
@@ -165,285 +42,284 @@ describe('EventService', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('listEvents', () => {
+    it('returns observable of party events sorted by date', () => {
+      const mockDocs = [
+        {
+          id: 'event-1',
+          title: 'Festa 1',
+          date: '2026-10-01T00:00:00.000Z',
+          category: 'Party',
+        },
+      ];
+      mockGateway.collectionSnapshot.mockReturnValue(of(mockDocs));
+
+      let result: any = null;
+      service.listEvents().subscribe((events) => {
+        result = events;
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].title).toBe('Festa 1');
+      expect(mockGateway.collectionSnapshot).toHaveBeenCalledWith('events', expect.anything());
+    });
+  });
+
   describe('getUserEvents', () => {
-    it('returns empty array observable if uid is empty', () => {
-      let result: PartyEvent[] | undefined;
+    it('returns empty array when uid is not provided', () => {
+      let result: any = null;
       service.getUserEvents('').subscribe((events) => {
         result = events;
       });
       expect(result).toEqual([]);
     });
 
-    it('merges owned and collaborated events, deduplicating and sorting by date', () => {
-      const ownedDoc = {
-        id: 'evt-1',
-        data: () => ({
-          title: 'Owned Event',
-          date: '2026-10-05T18:00:00.000Z',
-          createdBy: 'user-123',
-          collaborators: [],
-        }),
-      };
-      const duplicateDoc = {
-        id: 'evt-1',
-        data: () => ({
-          title: 'Owned Event (Dupe)',
-          date: '2026-10-05T18:00:00.000Z',
-          createdBy: 'user-123',
-          collaborators: ['user-123'],
-        }),
-      };
-      const collaboratedDoc = {
-        id: 'evt-2',
-        data: () => ({
-          title: 'Collaborated Event Earlier',
-          date: '2026-09-01T12:00:00.000Z',
-          createdBy: 'other-user',
-          collaborators: ['user-123'],
-        }),
-      };
+    it('combines owned and collaborated events without duplicates', () => {
+      const owned = [
+        { id: 'e1', title: 'Owned Event', date: '2026-06-01T00:00:00.000Z' },
+        { id: 'shared', title: 'Shared Event', date: '2026-08-01T00:00:00.000Z' },
+      ];
+      const collaborated = [
+        { id: 'shared', title: 'Shared Event', date: '2026-08-01T00:00:00.000Z' },
+        { id: 'e2', title: 'Collab Event', date: '2026-07-01T00:00:00.000Z' },
+      ];
 
-      let snapshotCallbackCount = 0;
-      firestoreMocks.onSnapshot.mockImplementation((_q: any, callback: any) => {
-        snapshotCallbackCount++;
-        if (snapshotCallbackCount === 1) {
-          callback({ docs: [ownedDoc] });
-        } else {
-          callback({ docs: [duplicateDoc, collaboratedDoc] });
-        }
-        return vi.fn();
-      });
+      mockGateway.collectionSnapshot.mockReturnValueOnce(of(owned));
+      mockGateway.collectionSnapshot.mockReturnValueOnce(of(collaborated));
 
-      let emittedEvents: PartyEvent[] = [];
+      let result: any[] = [];
       service.getUserEvents('user-123').subscribe((events) => {
-        emittedEvents = events;
+        result = events;
       });
 
-      expect(emittedEvents.length).toBe(2);
-      expect(emittedEvents[0].id).toBe('evt-2');
-      expect(emittedEvents[1].id).toBe('evt-1');
+      expect(result).toHaveLength(3);
+      expect(result[0].id).toBe('e1');
+      expect(result[1].id).toBe('e2');
+      expect(result[2].id).toBe('shared');
     });
   });
 
-  describe('inviteCollaborator', () => {
-    it('creates subcollection document in events/{id}/invitations/{email} with lowercase email', async () => {
-      firestoreMocks.doc.mockReturnValue({ path: 'events/evt-100/invitations/friend@test.com' } as any);
-      firestoreMocks.setDoc.mockResolvedValue(undefined as any);
-
-      await service.inviteCollaborator('evt-100', 'Friend@Test.COM ', 'Aniversário', 'user-1');
-
-      expect(firestoreMocks.doc).toHaveBeenCalledWith(
-        expect.anything(),
-        'events',
-        'evt-100',
-        'invitations',
-        'friend@test.com'
+  describe('getEvent', () => {
+    it('returns observable of single event', () => {
+      mockGateway.docSnapshot.mockReturnValue(
+        of({ id: 'evt-1', title: 'Single Event', date: '2026-10-01T00:00:00.000Z' }),
       );
-      expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          id: 'friend@test.com',
-          eventId: 'evt-100',
-          eventTitle: 'Aniversário',
-          invitedEmail: 'friend@test.com',
-          invitedBy: 'user-1',
-          createdAt: expect.any(String),
-        })
-      );
-    });
-  });
 
-  describe('removeCollaborator', () => {
-    it('removes collaborator uid from event collaborators array', async () => {
-      firestoreMocks.doc.mockReturnValue({ path: 'events/evt-100' } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
+      let result: any = null;
+      service.getEvent('evt-1').subscribe((event) => {
+        result = event;
+      });
 
-      await service.removeCollaborator('evt-100', 'user-2');
-
-      expect(firestoreMocks.updateDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          collaborators: expect.objectContaining({
-            _type: 'arrayRemove',
-            args: ['user-2'],
-          }),
-        })
-      );
-    });
-  });
-
-  describe('claimPendingInvitations', () => {
-    it('does nothing when email or uid is empty', async () => {
-      await service.claimPendingInvitations('', 'uid-1');
-      await service.claimPendingInvitations('user@test.com', '');
-      expect(firestoreMocks.getDocs).not.toHaveBeenCalled();
+      expect(result.id).toBe('evt-1');
+      expect(result.title).toBe('Single Event');
     });
 
-    it('processes batch updates when pending invitations match email', async () => {
-      const mockDoc1 = {
-        id: 'user@test.com',
-        ref: { id: 'user@test.com', parent: { parent: { id: 'evt-1' } } },
-        data: () => ({ eventId: 'evt-1', invitedEmail: 'user@test.com' }),
-      };
-      const mockDoc2 = {
-        id: 'user@test.com',
-        ref: { id: 'user@test.com', parent: { parent: { id: 'evt-2' } } },
-        data: () => ({ eventId: 'evt-2', invitedEmail: 'user@test.com' }),
-      };
+    it('returns null when document does not exist', () => {
+      mockGateway.docSnapshot.mockReturnValue(of(null));
 
-      firestoreMocks.getDocs.mockResolvedValue({
-        empty: false,
-        docs: [mockDoc1, mockDoc2],
-      } as any);
+      let result: any = undefined;
+      service.getEvent('evt-none').subscribe((event) => {
+        result = event;
+      });
 
-      await service.claimPendingInvitations('User@Test.COM ', 'user-123');
-
-      expect(firestoreMocks.query).toHaveBeenCalled();
-      expect(firestoreMocks.where).toHaveBeenCalledWith('invitedEmail', '==', 'user@test.com');
-      expect(firestoreMocks.writeBatch).toHaveBeenCalled();
-      expect(firestoreMocks.batch.update).toHaveBeenCalledTimes(2);
-      expect(firestoreMocks.batch.delete).toHaveBeenCalledTimes(2);
-      expect(firestoreMocks.batch.commit).toHaveBeenCalledTimes(1);
+      expect(result).toBeNull();
     });
   });
 
   describe('createEvent', () => {
-    it('creates event document in Firestore with active status and timestamps', async () => {
-      firestoreMocks.addDoc.mockResolvedValue({ id: 'new-evt-123' } as any);
+    it('adds new document to events collection with timestamps and active status', async () => {
+      mockGateway.addDoc.mockResolvedValue('new-evt-id');
 
-      const newId = await service.createEvent({
-        title: 'Churrasco',
-        description: 'Churrasco no sítio',
-        date: '2026-09-15T12:00:00.000Z',
-        location: 'Sítio Recanto',
-        pixKey: 'pix@test.com',
+      const id = await service.createEvent({
+        title: 'New Birthday',
+        category: 'Birthday',
+        description: 'Fun party',
+        date: '2026-12-01T20:00:00.000Z',
+        location: 'Club',
+        pixKey: null,
+        createdBy: 'user-123',
+        creatorEmail: 'user@example.com',
       });
 
-      expect(newId).toBe('new-evt-123');
-      expect(firestoreMocks.addDoc).toHaveBeenCalledWith(
-        'col-ref',
-        expect.objectContaining({
-          title: 'Churrasco',
-          status: 'active',
-          collaborators: [],
-        })
-      );
+      expect(mockGateway.addDoc).toHaveBeenCalledWith('events', expect.objectContaining({
+        title: 'New Birthday',
+        status: 'active',
+        collaborators: [],
+        createdAt: expect.any(String),
+      }));
+      expect(id).toBe('new-evt-id');
     });
   });
 
   describe('updateEvent', () => {
-    it('detects date change and invokes notifyGuestsOfEventChange', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({
-        exists: () => true,
-        id: 'evt-100',
-        data: () => ({ ...existingEvent }),
-      } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
-
-      await service.updateEvent('evt-100', {
-        date: '2026-09-12T20:00:00.000Z',
+    it('updates event and notifies guests when date or location changes', async () => {
+      mockGateway.getDocWithId.mockResolvedValue({
+        id: 'evt-1',
+        title: 'Old Title',
+        date: '2026-05-01T00:00:00.000Z',
+        location: 'Old Location',
       });
 
-      expect(firestoreMocks.updateDoc).toHaveBeenCalled();
+      await service.updateEvent('evt-1', {
+        date: '2026-06-01T00:00:00.000Z',
+        location: 'New Location',
+      });
+
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith(
+        'events/evt-1',
+        expect.objectContaining({
+          date: '2026-06-01T00:00:00.000Z',
+          location: 'New Location',
+          updatedAt: expect.any(String),
+        }),
+      );
+
       expect(mockNotificationService.notifyGuestsOfEventChange).toHaveBeenCalledWith(
         expect.objectContaining({
-          id: 'evt-100',
-          date: '2026-09-12T20:00:00.000Z',
+          id: 'evt-1',
+          date: '2026-06-01T00:00:00.000Z',
+          location: 'New Location',
         }),
-        expect.stringContaining('Data: 2026-09-12T20:00:00.000Z')
+        'Data: 2026-06-01T00:00:00.000Z, Local: New Location',
       );
     });
 
-    it('detects location change and invokes notifyGuestsOfEventChange', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({
-        exists: () => true,
-        id: 'evt-100',
-        data: () => ({ ...existingEvent }),
-      } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
-
-      await service.updateEvent('evt-100', {
-        location: 'Rua Augusta, 500',
+    it('does not send notification when date and location remain unchanged', async () => {
+      mockGateway.getDocWithId.mockResolvedValue({
+        id: 'evt-1',
+        title: 'Old Title',
+        date: '2026-05-01T00:00:00.000Z',
+        location: 'Same Location',
       });
 
-      expect(firestoreMocks.updateDoc).toHaveBeenCalled();
-      expect(mockNotificationService.notifyGuestsOfEventChange).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: 'evt-100',
-          location: 'Rua Augusta, 500',
-        }),
-        expect.stringContaining('Local: Rua Augusta, 500')
-      );
-    });
-
-    it('does not trigger notifications if only description or title changes without date/location change', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({
-        exists: () => true,
-        id: 'evt-100',
-        data: () => ({ ...existingEvent }),
-      } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
-
-      await service.updateEvent('evt-100', {
-        description: 'Nova descrição da festa',
+      await service.updateEvent('evt-1', {
+        description: 'New Description',
       });
 
-      expect(firestoreMocks.updateDoc).toHaveBeenCalled();
       expect(mockNotificationService.notifyGuestsOfEventChange).not.toHaveBeenCalled();
     });
 
     it('handles notification dispatch error gracefully without failing update', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({
-        exists: () => true,
-        id: 'evt-100',
-        data: () => ({ ...existingEvent }),
-      } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
-      mockNotificationService.notifyGuestsOfEventChange.mockRejectedValue(
-        new Error('Push service failed')
-      );
+      mockGateway.getDocWithId.mockResolvedValue({
+        id: 'evt-1',
+        date: '2026-05-01T00:00:00.000Z',
+      });
+      mockNotificationService.notifyGuestsOfEventChange.mockRejectedValue(new Error('Push service failed'));
 
       await expect(
-        service.updateEvent('evt-100', {
-          date: '2026-09-20T18:00:00.000Z',
-        })
+        service.updateEvent('evt-1', { date: '2026-07-01T00:00:00.000Z' }),
       ).resolves.not.toThrow();
     });
   });
 
   describe('cancelEvent', () => {
-    it('updates status to cancelled and triggers cancellation notification', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({
-        exists: () => true,
-        id: 'evt-100',
-        data: () => ({ ...existingEvent }),
-      } as any);
-      firestoreMocks.updateDoc.mockResolvedValue(undefined as any);
+    it('sets status to cancelled and sends cancellation notification', async () => {
+      mockGateway.getDocWithId.mockResolvedValue({
+        id: 'evt-1',
+        title: 'Cancelled Party',
+        status: 'active',
+      });
 
-      await service.cancelEvent('evt-100');
+      await service.cancelEvent('evt-1');
 
-      expect(firestoreMocks.updateDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          status: 'cancelled',
-        })
-      );
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-1', {
+        status: 'cancelled',
+        updatedAt: expect.any(String),
+      });
+
       expect(mockNotificationService.notifyGuestsOfCancellation).toHaveBeenCalledWith(
         expect.objectContaining({
-          id: 'evt-100',
+          id: 'evt-1',
+          title: 'Cancelled Party',
           status: 'cancelled',
-        })
+        }),
       );
     });
   });
 
   describe('deleteEvent', () => {
-    it('calls deleteDoc in Firestore', async () => {
-      firestoreMocks.deleteDoc.mockResolvedValue(undefined as any);
+    it('deletes event document', async () => {
+      await service.deleteEvent('evt-1');
+      expect(mockGateway.deleteDoc).toHaveBeenCalledWith('events/evt-1');
+    });
+  });
 
-      await service.deleteEvent('evt-100');
+  describe('collaborator management', () => {
+    it('inviteCollaborator creates invitation document', async () => {
+      await service.inviteCollaborator('evt-1', 'Collab@Test.com', 'My Party', 'Host');
 
-      expect(firestoreMocks.deleteDoc).toHaveBeenCalled();
+      expect(mockGateway.setDoc).toHaveBeenCalledWith(
+        'events/evt-1/invitations/collab@test.com',
+        {
+          id: 'collab@test.com',
+          eventId: 'evt-1',
+          eventTitle: 'My Party',
+          invitedEmail: 'collab@test.com',
+          invitedBy: 'Host',
+          createdAt: expect.any(String),
+        },
+      );
+    });
+
+    it('removeCollaborator removes UID using arrayRemove', async () => {
+      await service.removeCollaborator('evt-1', 'user-collab-1');
+
+      expect(mockGateway.arrayRemove).toHaveBeenCalledWith('user-collab-1');
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-1', {
+        collaborators: expect.anything(),
+        updatedAt: expect.any(String),
+      });
+    });
+
+    it('listPendingInvitations returns mapped invitations observable', () => {
+      mockGateway.collectionSnapshot.mockReturnValue(
+        of([
+          {
+            id: 'invited@test.com',
+            eventId: 'evt-1',
+            eventTitle: 'Party',
+            invitedEmail: 'invited@test.com',
+            invitedBy: 'Host',
+            createdAt: '2026-01-01T00:00:00.000Z',
+          },
+        ]),
+      );
+
+      let result: any = null;
+      service.listPendingInvitations('evt-1').subscribe((invites) => {
+        result = invites;
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].invitedEmail).toBe('invited@test.com');
+    });
+
+    it('claimPendingInvitations finds invitations and claims them via batch', async () => {
+      mockGateway.getCollectionGroupDocs.mockResolvedValue([
+        { id: 'user@test.com', eventId: 'evt-100' },
+      ]);
+
+      await service.claimPendingInvitations('User@Test.com', 'uid-999');
+
+      expect(mockGateway.getCollectionGroupDocs).toHaveBeenCalledWith(
+        'invitations',
+        expect.anything(),
+      );
+      expect(mockGateway.runBatch).toHaveBeenCalled();
+      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100', {
+        collaborators: expect.anything(),
+        updatedAt: expect.any(String),
+      });
+      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/invitations/user@test.com');
+    });
+
+    it('claimPendingInvitations returns early if email or uid is empty or no invites found', async () => {
+      await service.claimPendingInvitations('', 'uid-1');
+      expect(mockGateway.getCollectionGroupDocs).not.toHaveBeenCalled();
+
+      mockGateway.getCollectionGroupDocs.mockResolvedValue([]);
+      await service.claimPendingInvitations('test@test.com', 'uid-1');
+      expect(mockGateway.runBatch).not.toHaveBeenCalled();
     });
   });
 });

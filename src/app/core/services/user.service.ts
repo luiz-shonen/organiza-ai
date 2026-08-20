@@ -1,56 +1,41 @@
 import { Injectable, inject } from '@angular/core';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  collectionGroup,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  type DocumentSnapshot,
-  type QueryDocumentSnapshot,
-} from 'firebase/firestore';
-import { FirebaseService } from './firebase.service';
+import { FirestoreGateway } from './firestore.gateway';
 import { FamilyService } from './family.service';
 import type { UserProfile, PartyEvent, FamilyMember, FamilyMemberCreate } from '../models';
 import type { ThemeMode } from './theme.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly firestore = inject(FirebaseService).firestore;
+  private readonly gateway = inject(FirestoreGateway);
   private readonly familyService = inject(FamilyService);
+
+  private userPath(uid: string) {
+    return `users/${uid}`;
+  }
 
   async getProfile(uid: string): Promise<UserProfile | null> {
     if (!uid) return null;
     try {
-      const docRef = doc(this.firestore, 'users', uid);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        return {
-          uid,
-          email: (data?.['email'] as string | null) ?? null,
-          displayName:
-            (data?.['displayName'] as string | null) ??
-            (data?.['name'] as string | null) ??
-            null,
-          photoURL: (data?.['photoURL'] as string | null) ?? null,
-          name: (data?.['name'] as string | undefined) ?? (data?.['displayName'] as string | undefined),
-          phone: data?.['phone'] as string | undefined,
-          themePref: data?.['themePref'] as ThemeMode | undefined,
-          createdAt:
-            data?.['createdAt'] instanceof Timestamp
-              ? data['createdAt'].toDate().toISOString()
-              : ((data?.['createdAt'] as string) ?? ''),
-          updatedAt:
-            data?.['updatedAt'] instanceof Timestamp
-              ? data['updatedAt'].toDate().toISOString()
-              : ((data?.['updatedAt'] as string) ?? ''),
-        };
-      }
-      return null;
+      const data = await this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid));
+      if (!data) return null;
+
+      const createdAtDate = this.gateway.timestampToDate(data['createdAt']);
+      const updatedAtDate = this.gateway.timestampToDate(data['updatedAt']);
+
+      return {
+        uid,
+        email: (data['email'] as string | null) ?? null,
+        displayName:
+          (data['displayName'] as string | null) ??
+          (data['name'] as string | null) ??
+          null,
+        photoURL: (data['photoURL'] as string | null) ?? null,
+        name: (data['name'] as string | undefined) ?? (data['displayName'] as string | undefined),
+        phone: data['phone'] as string | undefined,
+        themePref: data['themePref'] as ThemeMode | undefined,
+        createdAt: createdAtDate ? createdAtDate.toISOString() : ((data['createdAt'] as string) ?? ''),
+        updatedAt: updatedAtDate ? updatedAtDate.toISOString() : ((data['updatedAt'] as string) ?? ''),
+      };
     } catch {
       return null;
     }
@@ -59,8 +44,7 @@ export class UserService {
   async updateProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
     if (!uid) return;
     try {
-      const docRef = doc(this.firestore, 'users', uid);
-      const snap = await getDoc(docRef);
+      const existing = await this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid));
       const now = new Date().toISOString();
       const updateData: Record<string, unknown> = {
         ...data,
@@ -69,10 +53,10 @@ export class UserService {
       if (data.displayName !== undefined) {
         updateData['name'] = data.displayName;
       }
-      if (snap.exists()) {
-        await updateDoc(docRef, updateData);
+      if (existing) {
+        await this.gateway.updateDoc(this.userPath(uid), updateData);
       } else {
-        await setDoc(docRef, {
+        await this.gateway.setDoc(this.userPath(uid), {
           uid,
           ...updateData,
           createdAt: now,
@@ -99,25 +83,21 @@ export class UserService {
       const eventIds = new Set<string>();
 
       // 1. Check if user document has rsvpEvents array
-      const userDocRef = doc(this.firestore, 'users', uid);
-      const userSnap = await getDoc(userDocRef);
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        const rsvpEvents = (data?.['rsvpEvents'] as string[]) ?? [];
+      const user = await this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid));
+      if (user) {
+        const rsvpEvents = (user['rsvpEvents'] as string[]) ?? [];
         rsvpEvents.forEach((id) => eventIds.add(id));
       }
 
       // 2. Query guests collectionGroup where uid == uid
       try {
-        const guestQuery = query(
-          collectionGroup(this.firestore, 'guests'),
-          where('uid', '==', uid),
+        const guestDocs = await this.gateway.getCollectionGroupDocs<{ eventId?: string }>(
+          'guests',
+          this.gateway.where('uid', '==', uid),
         );
-        const guestSnaps = await getDocs(guestQuery);
-        guestSnaps.forEach((guestDoc) => {
-          const eventRef = guestDoc.ref?.parent?.parent;
-          if (eventRef) {
-            eventIds.add(eventRef.id);
+        guestDocs.forEach((guestDoc) => {
+          if (guestDoc.eventId) {
+            eventIds.add(guestDoc.eventId);
           }
         });
       } catch {
@@ -127,10 +107,9 @@ export class UserService {
       // Fetch details for each event
       const fetchPromises = Array.from(eventIds).map(async (eventId) => {
         try {
-          const eventDocRef = doc(this.firestore, 'events', eventId);
-          const eventSnap = await getDoc(eventDocRef);
-          if (eventSnap.exists()) {
-            return this.mapEventDoc(eventSnap);
+          const eventData = await this.gateway.getDocWithId<Record<string, unknown>>(`events/${eventId}`);
+          if (eventData) {
+            return this.mapEventData(eventData);
           }
         } catch {
           return null;
@@ -164,23 +143,20 @@ export class UserService {
     return this.familyService.deleteFamilyMember(uid, memberId);
   }
 
-  private mapEventDoc(snapshot: DocumentSnapshot | QueryDocumentSnapshot): PartyEvent {
-    const data = snapshot.data();
+  private mapEventData(data: Record<string, unknown> & { id: string }): PartyEvent {
+    const dateVal = this.gateway.timestampToDate(data['date']);
     return {
-      id: snapshot.id,
-      title: (data?.['title'] as string) ?? '',
-      category: (data?.['category'] as string) ?? '',
-      description: (data?.['description'] as string) ?? '',
-      date:
-        data?.['date'] instanceof Timestamp
-          ? data['date'].toDate().toISOString()
-          : ((data?.['date'] as string) ?? ''),
-      location: (data?.['location'] as string) ?? '',
-      addressDetails: data?.['addressDetails'],
-      pixKey: (data?.['pixKey'] as string | null) ?? null,
-      status: (data?.['status'] as 'active' | 'cancelled') ?? 'active',
-      createdAt: (data?.['createdAt'] as string) ?? '',
-      updatedAt: (data?.['updatedAt'] as string) ?? '',
+      id: data.id,
+      title: (data['title'] as string) ?? '',
+      category: (data['category'] as string) ?? '',
+      description: (data['description'] as string) ?? '',
+      date: dateVal ? dateVal.toISOString() : ((data['date'] as string) ?? ''),
+      location: (data['location'] as string) ?? '',
+      addressDetails: data['addressDetails'] as any,
+      pixKey: (data['pixKey'] as string | null) ?? null,
+      status: (data['status'] as 'active' | 'cancelled') ?? 'active',
+      createdAt: (data['createdAt'] as string) ?? '',
+      updatedAt: (data['updatedAt'] as string) ?? '',
     };
   }
 }

@@ -140,11 +140,11 @@ T5 → T6
 
 **Done when**:
 
-- [ ] `authGuard` checks `currentUser() !== null` instead of `isAdmin()`
-- [ ] Redirects unauthenticated visitors to `/login`
-- [ ] Unit tests cover: authenticated user permitted, unauthenticated visitor redirected to `/login`
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 2 tests pass
+- [x] `authGuard` checks `currentUser() !== null` instead of `isAdmin()`
+- [x] Redirects unauthenticated visitors to `/login`
+- [x] Unit tests cover: authenticated user permitted, unauthenticated visitor redirected to `/login`
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 2 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

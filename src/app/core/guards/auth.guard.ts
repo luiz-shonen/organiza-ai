@@ -22,9 +22,9 @@ export const authGuard: CanActivateFn = async () => {
     });
   }
 
-  if (authService.isAdmin()) {
+  if (authService.currentUser() !== null) {
     return true;
   }
 
-  return router.createUrlTree(['/']);
+  return router.createUrlTree(['/login']);
 };

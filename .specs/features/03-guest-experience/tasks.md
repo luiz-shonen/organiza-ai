@@ -111,11 +111,11 @@ T5
 
 **Done when**:
 
-- [ ] `cancelRsvp` creates a `writeBatch` deleting the guest document and updating claimed items
-- [ ] Atomically commits the batch to prevent orphaned claimed items
-- [ ] Unit tests cover: single guest deletion, multi-item claim reset, and batch failure rollback handling
-- [ ] Quick gate passes: `npx ng test --watch=false`
-- [ ] Test count: at least 4 tests pass
+- [x] `cancelRsvp` creates a `writeBatch` deleting the guest document and updating claimed items
+- [x] Atomically commits the batch to prevent orphaned claimed items
+- [x] Unit tests cover: single guest deletion, multi-item claim reset, and batch failure rollback handling
+- [x] Quick gate passes: `npx ng test --watch=false`
+- [x] Test count: at least 4 tests pass
 
 **Tests**: unit  
 **Gate**: quick  

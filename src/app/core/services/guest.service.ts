@@ -4,8 +4,11 @@ import {
   collection,
   doc,
   addDoc,
+  setDoc,
+  getDoc,
   updateDoc,
   deleteDoc,
+  writeBatch,
   onSnapshot,
   query,
   where,
@@ -28,7 +31,7 @@ export class GuestService {
 
   listGuests(eventId: string): Observable<Guest[]> {
     return new Observable<Guest[]>((subscriber) => {
-      const q = query(this.guestsCollection(eventId), orderBy('createdAt', 'desc'));
+      const q = query(this.guestsCollection(eventId), orderBy('confirmedAt', 'desc'));
 
       const unsubscribe = onSnapshot(
         q,
@@ -51,9 +54,37 @@ export class GuestService {
     const docRef = await addDoc(this.guestsCollection(eventId), {
       ...data,
       uid: user ? user.uid : '',
+      isConfirmed: data.isConfirmed ?? true,
+      confirmedAt: data.confirmedAt ?? new Date().toISOString(),
       createdAt: new Date().toISOString(),
     });
     return docRef.id;
+  }
+
+  async saveVerifiedRsvp(
+    eventId: string,
+    guestData: {
+      uid: string;
+      name: string;
+      email?: string;
+      phone?: string;
+      photoUrl?: string;
+    },
+  ): Promise<void> {
+    const guestDocRef = doc(this.firestore, `events/${eventId}/guests/${guestData.uid}`);
+    await setDoc(
+      guestDocRef,
+      {
+        uid: guestData.uid,
+        name: guestData.name,
+        email: guestData.email ?? '',
+        phone: guestData.phone ?? '',
+        photoUrl: guestData.photoUrl ?? '',
+        isConfirmed: true,
+        confirmedAt: new Date().toISOString(),
+      },
+      { merge: true },
+    );
   }
 
   async updateGuest(eventId: string, guestId: string, data: Partial<Guest>): Promise<void> {
@@ -64,6 +95,37 @@ export class GuestService {
   async deleteGuest(eventId: string, guestId: string): Promise<void> {
     const docRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
     await deleteDoc(docRef);
+  }
+
+  async cancelRsvp(eventId: string, guestId: string, uid?: string): Promise<void> {
+    const batch = writeBatch(this.firestore);
+
+    // 1. Delete guest document
+    const guestDocRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
+    batch.delete(guestDocRef);
+
+    // 2. Query and reset items claimed by this guest UID
+    const targetUid = uid || guestId;
+    if (targetUid) {
+      const itemsCol = collection(this.firestore, 'events', eventId, 'items');
+      const itemsQuery = query(itemsCol, where('claimedBy.uid', '==', targetUid));
+      const itemsSnap = await getDocs(itemsQuery);
+      itemsSnap.forEach((itemDoc) => {
+        batch.update(itemDoc.ref, { claimedBy: null });
+      });
+    }
+
+    // 3. Atomically commit the batch
+    await batch.commit();
+  }
+
+  async getGuestById(eventId: string, guestId: string): Promise<Guest | null> {
+    const docRef = doc(this.firestore, `events/${eventId}/guests/${guestId}`);
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return { id: snap.id, ...(snap.data() as Omit<Guest, 'id'>) };
+    }
+    return null;
   }
 
   async getGuestByPhone(eventId: string, phone: string): Promise<Guest | null> {

@@ -893,10 +893,10 @@ T34
 
 **Done when**:
 
-- [ ] Launches Host in Context A and Attendee in Context B simultaneously
-- [ ] Asserts Attendee RSVP in Context B dynamically updates Host guest count in Context A without page reload
-- [ ] Asserts Host adding wishlist item in Context A dynamically renders on Attendee view in Context B
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] Launches Host in Context A and Attendee in Context B simultaneously
+- [x] Asserts Attendee RSVP in Context B dynamically updates Host guest count in Context A without page reload
+- [x] Asserts Host adding wishlist item in Context A dynamically renders on Attendee view in Context B
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

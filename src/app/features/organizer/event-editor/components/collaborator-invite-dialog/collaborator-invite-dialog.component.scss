@@ -3,17 +3,26 @@
   flex-direction: column;
   min-width: 300px;
   max-width: 540px;
-  padding: 8px 4px;
+  box-sizing: border-box;
+  padding: 16px;
   color: var(--mat-sys-on-surface);
+
+  @media (min-width: 600px) {
+    padding: 24px;
+  }
 
   &__title {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
-    margin: 0 0 6px 0;
+    margin: 0;
     color: var(--mat-sys-on-surface);
+
+    @media (min-width: 600px) {
+      font-size: 1.25rem;
+    }
   }
 
   &__icon {
@@ -23,7 +32,7 @@
   &__subtitle {
     font-size: 0.875rem;
     color: var(--mat-sys-on-surface-variant);
-    margin-bottom: 16px;
+    margin: 0;
     line-height: 1.5;
   }
 
@@ -109,5 +118,10 @@
   &__actions {
     margin-top: 16px;
     padding: 0;
+
+    button {
+      min-width: 48px;
+      min-height: 52px;
+    }
   }
 }

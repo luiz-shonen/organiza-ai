@@ -874,6 +874,28 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(emailInput).toBeVisible();
       await expect(submitBtn).toBeVisible();
 
+      const dialogBox = await dialog.boundingBox();
+      expect(dialogBox).not.toBeNull();
+      const requiredInset = (page.viewportSize()?.width ?? 0) < 600 ? 16 : 24;
+      const regions = [
+        dialog.locator('.collaborator-dialog__title'),
+        dialog.locator('.collaborator-dialog__content'),
+        dialog.locator('.collaborator-dialog__actions'),
+      ];
+      for (const region of regions) {
+        const regionBox = await region.boundingBox();
+        expect(regionBox).not.toBeNull();
+        if (dialogBox && regionBox) {
+          expect(regionBox.x - dialogBox.x).toBeGreaterThanOrEqual(requiredInset);
+          expect(dialogBox.x + dialogBox.width - (regionBox.x + regionBox.width)).toBeGreaterThanOrEqual(
+            requiredInset,
+          );
+        }
+      }
+
+      await assertMinTouchTarget(submitBtn, 48);
+      await assertMinTouchTarget(dialog.getByRole('button', { name: 'Fechar' }), 48);
+
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-17-collaborator-dialog');
     });

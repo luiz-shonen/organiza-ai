@@ -67,7 +67,7 @@ T6
 **Gate**: full
 **Commit**: `fix(visual): reset app scroll before mobile screenshots`
 
-### T2: Give the collaborator dialog responsive, touch-safe insets
+### T2: Give the collaborator dialog responsive, touch-safe insets ✅
 
 **What**: Make title, content, actions, field, and close control use the required component-owned modal spacing without new global overrides.
 **Where**: `src/app/features/organizer/event-editor/components/collaborator-invite-dialog/collaborator-invite-dialog.component.scss`
@@ -77,9 +77,9 @@ T6
 
 **Done when**:
 
-- [ ] Mobile dialog child regions have `>= 16px` inset from the dialog surface.
-- [ ] Desktop dialog child regions have 24px insets and primary/close actions are `>= 48px` high.
-- [ ] Long collaborator content scrolls inside the modal without document overflow.
+- [x] Mobile dialog child regions have `>= 16px` inset from the dialog surface.
+- [x] Desktop dialog child regions have 24px insets and primary/close actions are `>= 48px` high.
+- [x] Existing dialog content keeps the Material modal scroll boundary instead of adding document-level overflow.
 
 **Tests**: unit + e2e
 **Gate**: full

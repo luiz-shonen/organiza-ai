@@ -91,12 +91,12 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] Helpers exported: `assertGlassmorphism(locator)`, `assertMinTouchTarget(locator, minSize?)`, `assertFontFamily(locator, expectedFont?)`, `assertFocusPrimaryColor(locator)`
-- [ ] `assertGlassmorphism` reads `backdropFilter` / `webkitBackdropFilter` via `locator.evaluate` and checks for `blur`
-- [ ] `assertMinTouchTarget` reads `locator.boundingBox()` and asserts `height >= 48`
-- [ ] `assertFontFamily` reads `getComputedStyle(el).fontFamily` and asserts inclusion of `Plus Jakarta Sans`
-- [ ] `assertFocusPrimaryColor` focuses element and inspects computed border/outline/boxShadow
-- [ ] Gate check passes: `npm run build`
+- [x] Helpers exported: `assertGlassmorphism(locator)`, `assertMinTouchTarget(locator, minSize?)`, `assertFontFamily(locator, expectedFont?)`, `assertFocusPrimaryColor(locator)`
+- [x] `assertGlassmorphism` reads `backdropFilter` / `webkitBackdropFilter` via `locator.evaluate` and checks for `blur`
+- [x] `assertMinTouchTarget` reads `locator.boundingBox()` and asserts `height >= 48`
+- [x] `assertFontFamily` reads `getComputedStyle(el).fontFamily` and asserts inclusion of `Plus Jakarta Sans`
+- [x] `assertFocusPrimaryColor` focuses element and inspects computed border/outline/boxShadow
+- [x] Gate check passes: `npm run build`
 
 **Tests**: none  
 **Gate**: quick  

@@ -26,7 +26,6 @@
     padding: 6px 16px;
     border-radius: 9999px;
     background: rgba(99, 14, 212, 0.08);
-    border: 1px solid rgba(99, 14, 212, 0.2);
     color: var(--mat-sys-on-surface);
     font-size: 0.875rem;
     font-weight: 700;
@@ -37,13 +36,8 @@
 
     .dark & {
       background: rgba(210, 187, 255, 0.12);
-      border-color: rgba(210, 187, 255, 0.25);
       color: var(--mat-sys-on-surface);
     }
-  }
-
-  &__hero-badge-icon {
-    font-size: 1rem;
   }
 
   &__hero-title {
@@ -95,9 +89,6 @@
     color: var(--mat-sys-on-surface);
     margin: 0;
 
-    mat-icon {
-      color: var(--mat-sys-primary);
-    }
   }
 
   &__count-badge {
@@ -124,27 +115,32 @@
     }
   }
 
-  &__card {
+  &__card-link {
     cursor: pointer;
-    border-radius: 20px !important;
-    padding: 20px;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--org-primary);
+      outline-offset: 4px;
+    }
+  }
+
+  &__card-surface {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    .home__card-link:hover &,
+    .home__card-link:focus-visible & {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(255, 77, 148, 0.15);
+    }
+  }
+
+  &__card {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-
-    &:hover,
-    &:focus-visible {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(255, 77, 148, 0.15) !important;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--mat-sys-primary);
-      outline-offset: 2px;
-    }
   }
 
   &__card-top {
@@ -166,12 +162,6 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-  }
-
-  &__card-badge-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
   }
 
   &__date-badge {
@@ -204,15 +194,15 @@
   }
 
   &__card-header {
-    padding: 0 !important;
+    padding: 0;
   }
 
   &__card-title {
-    font-size: 1.25rem !important;
-    font-weight: 700 !important;
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--mat-sys-on-surface);
     line-height: 1.3;
-    margin: 0 !important;
+    margin: 0;
   }
 
   &__card-subtitle {
@@ -221,11 +211,11 @@
     gap: 4px;
     color: var(--mat-sys-on-surface-variant);
     font-size: 0.875rem;
-    margin-top: 4px !important;
+    margin: 4px 0 0;
   }
 
   &__card-content {
-    padding: 0 !important;
+    padding: 0;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -251,21 +241,9 @@
     font-size: 0.875rem;
     margin: 4px 0 0;
 
-    mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: var(--mat-sys-primary);
+    org-icon {
       flex-shrink: 0;
     }
-  }
-
-  &__card-inline-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    color: var(--mat-sys-primary);
-    vertical-align: middle;
   }
 
   &__card-footer {
@@ -293,22 +271,21 @@
     }
   }
 
-  &__card-arrow {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
-
   &__empty {
     text-align: center;
-    padding: 48px 24px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  &__empty-surface {
+    display: block;
+  }
+
+  &__empty-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    border-radius: 24px;
-    max-width: 500px;
-    margin: 0 auto;
   }
 
   &__empty-icon-wrap {
@@ -321,12 +298,6 @@
     justify-content: center;
     color: var(--mat-sys-primary);
     margin-bottom: 4px;
-  }
-
-  &__empty-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
   }
 
   &__empty-title {
@@ -345,8 +316,7 @@
 
   &__empty-btn {
     margin-top: 12px;
-    min-height: 48px;
-    border-radius: 12px !important;
+    border-radius: 12px;
   }
 
   &__loading {

@@ -1,7 +1,7 @@
 <section class="home" aria-label="Eventos disponíveis" data-testid="home-page">
   <header class="home__hero">
     <div class="home__hero-badge">
-      <span class="home__hero-badge-icon" aria-hidden="true">✨</span>
+      <org-icon name="event" size="sm" color="var(--org-primary)" />
       <span>Simplifique seus Momentos</span>
     </div>
     <h1 class="home__hero-title">
@@ -18,21 +18,25 @@
       <p>Carregando eventos...</p>
     </div>
   } @else if (events()!.length === 0) {
-    <article class="home__empty glass-card" aria-label="Nenhum evento encontrado" data-testid="home-empty-state">
-      <div class="home__empty-icon-wrap">
-        <mat-icon class="home__empty-icon" aria-hidden="true">celebration</mat-icon>
-      </div>
-      <h2 class="home__empty-title">Nenhum evento disponível no momento.</h2>
-      <p class="home__empty-desc">Que tal criar o primeiro evento e reunir as pessoas especiais?</p>
-      <a mat-flat-button color="primary" routerLink="/meus-eventos/evento/novo" class="home__empty-btn">
-        <mat-icon>add</mat-icon>
-        Criar Primeiro Evento
-      </a>
+    <article class="home__empty" aria-label="Nenhum evento encontrado" data-testid="home-empty-state">
+      <org-surface variant="card" class="home__empty-surface">
+        <div class="home__empty-content">
+          <div class="home__empty-icon-wrap">
+            <org-icon name="event" size="lg" color="var(--org-primary)" />
+          </div>
+          <h2 class="home__empty-title">Nenhum evento disponível no momento.</h2>
+          <p class="home__empty-desc">Que tal criar o primeiro evento e reunir as pessoas especiais?</p>
+          <a orgButton="primary" routerLink="/meus-eventos/evento/novo" class="home__empty-btn">
+            <org-icon name="add" size="sm" color="var(--org-on-primary)" />
+            Criar Primeiro Evento
+          </a>
+        </div>
+      </org-surface>
     </article>
   } @else {
     <div class="home__section-header">
       <h2 class="home__section-title">
-        <mat-icon>event</mat-icon>
+        <org-icon name="event" color="var(--org-primary)" />
         Próximos Eventos
       </h2>
       <span class="home__count-badge">{{ events()!.length }} {{ events()!.length === 1 ? 'evento' : 'eventos' }}</span>
@@ -40,10 +44,9 @@
 
     <nav class="home__grid" aria-label="Lista de eventos">
       @for (event of events()!; track event.id) {
-        <mat-card
-          class="home__card glass-card"
+        <a
+          class="home__card-link"
           data-testid="event-card"
-          appearance="outlined"
           [routerLink]="['/evento', event.id]"
           role="link"
           tabindex="0"
@@ -51,46 +54,50 @@
           (keydown.space)="navigateToEvent(event.id, $event)"
           [attr.aria-label]="'Ver detalhes do evento ' + event.title"
         >
-          <div class="home__card-top">
-            <div class="home__card-badge">
-              <mat-icon class="home__card-badge-icon" aria-hidden="true">festival</mat-icon>
-              <span>Evento</span>
-            </div>
-            @if (event.date) {
-              <div class="home__date-badge" aria-label="Data do evento">
-                <span class="home__date-month">{{ getMonth(event.date) }}</span>
-                <span class="home__date-day">{{ getDay(event.date) }}</span>
+          <org-surface variant="card" class="home__card-surface">
+            <article class="home__card">
+              <div class="home__card-top">
+                <div class="home__card-badge">
+                  <org-icon name="event" size="sm" color="var(--org-primary)" />
+                  <span>Evento</span>
+                </div>
+                @if (event.date) {
+                  <div class="home__date-badge" aria-label="Data do evento">
+                    <span class="home__date-month">{{ getMonth(event.date) }}</span>
+                    <span class="home__date-day">{{ getDay(event.date) }}</span>
+                  </div>
+                }
               </div>
-            }
-          </div>
 
-          <mat-card-header class="home__card-header">
-            <mat-card-title class="home__card-title">{{ event.title }}</mat-card-title>
-            <mat-card-subtitle class="home__card-subtitle">
-              <mat-icon class="home__card-inline-icon" aria-hidden="true">schedule</mat-icon>
-              {{ formatDate(event.date) }}
-            </mat-card-subtitle>
-          </mat-card-header>
+              <div class="home__card-header">
+                <h3 class="home__card-title">{{ event.title }}</h3>
+                <p class="home__card-subtitle">
+                  <org-icon name="schedule" size="sm" color="var(--org-primary)" />
+                  {{ formatDate(event.date) }}
+                </p>
+              </div>
 
-          <mat-card-content class="home__card-content">
-            @if (event.description) {
-              <p class="home__card-description">{{ event.description }}</p>
-            }
-            @if (event.location) {
-              <p class="home__card-location">
-                <mat-icon class="home__card-inline-icon" aria-hidden="true">location_on</mat-icon>
-                <span>{{ event.location }}</span>
-              </p>
-            }
-          </mat-card-content>
+              <div class="home__card-content">
+                @if (event.description) {
+                  <p class="home__card-description">{{ event.description }}</p>
+                }
+                @if (event.location) {
+                  <p class="home__card-location">
+                    <org-icon name="place" size="sm" color="var(--org-primary)" />
+                    <span>{{ event.location }}</span>
+                  </p>
+                }
+              </div>
 
-          <div class="home__card-footer">
-            <span class="home__card-cta">
-              Ver Detalhes
-              <mat-icon class="home__card-arrow">arrow_forward</mat-icon>
-            </span>
-          </div>
-        </mat-card>
+              <div class="home__card-footer">
+                <span class="home__card-cta">
+                  Ver Detalhes
+                  <org-icon name="event" size="sm" color="var(--org-primary)" />
+                </span>
+              </div>
+            </article>
+          </org-surface>
+        </a>
       }
     </nav>
   }

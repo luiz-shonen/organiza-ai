@@ -93,7 +93,7 @@ describe('HomeContainer', () => {
     expect(cards.length).toBe(2);
 
     const titles = Array.from(cards).map(
-      (c) => (c as HTMLElement).querySelector('mat-card-title')?.textContent?.trim(),
+      (c) => (c as HTMLElement).querySelector('.home__card-title')?.textContent?.trim(),
     );
     expect(titles).toEqual(['Aniversário de 30 Anos', 'Churrasco da Firma']);
 
@@ -103,12 +103,31 @@ describe('HomeContainer', () => {
     expect(descriptions).toEqual(['Venha comemorar comigo!', 'Churrasco de confraternização anual.']);
   });
 
+  it('should compose event cards with shared surfaces, semantic icons, and an accessible action', () => {
+    fixture.detectChanges();
+    eventsSubject.next(mockEvents);
+    fixture.detectChanges();
+
+    const surfaces = fixture.nativeElement.querySelectorAll('org-surface');
+    expect(surfaces).toHaveLength(2);
+    expect(fixture.nativeElement.querySelectorAll('mat-card')).toHaveLength(0);
+    expect(fixture.nativeElement.querySelectorAll('org-icon')).not.toHaveLength(0);
+
+    eventsSubject.next([]);
+    fixture.detectChanges();
+
+    const emptyStateAction = fixture.nativeElement.querySelector('.home__empty-btn') as HTMLElement;
+    expect(emptyStateAction).toBeTruthy();
+    expect(emptyStateAction.classList).toContain('org-button');
+    expect(emptyStateAction.style.minHeight).toBe('48px');
+  });
+
   it('should navigate to event detail on Enter key press', () => {
     fixture.detectChanges();
     eventsSubject.next(mockEvents);
     fixture.detectChanges();
 
-    const card = fixture.nativeElement.querySelector('.home__card') as HTMLElement;
+    const card = fixture.nativeElement.querySelector('.home__card-link') as HTMLElement;
     const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
     card.dispatchEvent(enterEvent);
 
@@ -120,7 +139,7 @@ describe('HomeContainer', () => {
     eventsSubject.next(mockEvents);
     fixture.detectChanges();
 
-    const card = fixture.nativeElement.querySelector('.home__card') as HTMLElement;
+    const card = fixture.nativeElement.querySelector('.home__card-link') as HTMLElement;
     const spaceEvent = new KeyboardEvent('keydown', { key: ' ', cancelable: true });
     const preventDefaultSpy = vi.spyOn(spaceEvent, 'preventDefault');
     card.dispatchEvent(spaceEvent);

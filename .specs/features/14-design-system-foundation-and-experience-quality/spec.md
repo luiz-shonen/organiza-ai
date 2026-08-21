@@ -151,10 +151,10 @@ The visual baselines also do not cover every supported page state in dark mode o
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel complete |
-| DS-02 | Shared surfaces and form controls | Execute | In progress — T3 geometry assertion complete |
+| DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home single-surface migration complete |
 | DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe complete |
-| DS-05 | Shared surfaces and form controls | Execute | In progress — T9 action and chip 48px contract complete |
+| DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home action contract migration complete |
 | DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map complete |
 | NAV-01 | Calm navigation and workflows | Design | In Design |
 | NAV-02 | Calm navigation and workflows | Design | In Design |
@@ -173,7 +173,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | RSVP-05 | Complete RSVP companion information | Design | In Design |
 | VIS-01 | Full visual regression matrix | Execute | In progress — T2 anchor capture complete |
 | VIS-02 | Full visual regression matrix | Execute | In progress — T2 settling and T4 tracked comparison configuration complete |
-| VIS-03 | Full visual regression matrix | Execute | In progress — T1 registry complete; T29 will add migrated scenarios |
+| VIS-03 | Full visual regression matrix | Execute | In progress — T11 Home visual consumer migration complete; T29 will add matrix scenarios |
 | VIS-04 | Full visual regression matrix | Execute | In progress — T3 numerical assertions complete |
 | VIS-05 | Full visual regression matrix | Execute | In progress — T2 resets scroll origins and waits for fonts |
 

@@ -23,6 +23,14 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T9 — Create shared action and chip directives
 - [x] T10 — Create the semantic icon map
 
+### Phase 3
+
+- [x] T11 — Migrate the Home badge and event cards to shared surfaces
+- [ ] T12 — Simplify profile information into one surface
+- [ ] T13 — Rebuild the family roster composition
+- [ ] T14 — Standardize seasonal event card surface
+- [ ] T15 — Replace the undersized mobile stepper presentation
+
 ## Test Coverage Matrix
 
 > Generated from `AGENTS.md`, `DESIGN.md`, `README.md`, `package.json`, `playwright.config.ts`, existing Vitest component specs, and existing Playwright POM/spec patterns. Existing project quality rules require a spec for every feature, OnPush components, WCAG assertions, atomic E2E tests, a screenshot per state, both desktop and mobile coverage, and no horizontal overflow.

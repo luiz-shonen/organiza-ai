@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/test.fixture';
+import { assertNoHorizontalOverflow, assertSingleSurfaceRing } from '../helpers/design-tokens.helper';
 
 test.describe('Home Theming, Feed and Accessibility', () => {
   test('should render home landmark region and available event cards or empty state', async ({
@@ -24,6 +25,7 @@ test.describe('Home Theming, Feed and Accessibility', () => {
       await expect(firstCard).toBeVisible();
       await expect(firstCard).toHaveAttribute('role', 'link');
       await expect(firstCard).toHaveAttribute('tabindex', '0');
+      await assertSingleSurfaceRing(firstCard.locator('section.org-surface'));
 
       // Verify card click navigation
       await homePage.clickEventCard(0);
@@ -32,7 +34,9 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     } else {
       await expect(homePage.emptyState).toBeVisible();
       await expect(homePage.emptyState).toHaveAttribute('aria-label', 'Nenhum evento encontrado');
+      await assertSingleSurfaceRing(homePage.emptyState.locator('section.org-surface'));
     }
+    await assertNoHorizontalOverflow(page);
   });
 
   test('should toggle dark and light themes and persist in localStorage', async ({

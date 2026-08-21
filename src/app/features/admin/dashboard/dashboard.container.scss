@@ -16,6 +16,14 @@
     display: flex;
     gap: 8px;
     align-items: center;
+
+    a[mat-flat-button],
+    button[mat-flat-button],
+    button[mat-stroked-button] {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+    }
   }
 
   &__skeleton-actions {

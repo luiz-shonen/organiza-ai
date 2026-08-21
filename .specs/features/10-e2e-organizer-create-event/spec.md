@@ -273,8 +273,8 @@ invite.
 
 | Requirement ID | Story | Task | Status |
 | --- | --- | --- | --- |
-| E2E-01 | Dashboard – renders + CTA size | T2 | Pending |
-| E2E-02 | Dashboard – card backdrop-filter | T1, T2 | Pending |
+| E2E-01 | Dashboard – renders + CTA size | T2 | Complete |
+| E2E-02 | Dashboard – card backdrop-filter | T1, T2 | Complete |
 | E2E-03 | Step 1 – empty state renders | T3 | Pending |
 | E2E-04 | Step 1 – filled → Próximo enabled | T3 | Pending |
 | E2E-05 | Step 2 – renders before CEP | T4 | Pending |

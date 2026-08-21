@@ -121,13 +121,13 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-01]` asserts dashboard renders with filter chips, event card, enabled "Novo Evento" button with height >= 48px, and saves screenshot `13-01-dashboard-desktop.png`
-- [ ] `[E2E-02]` asserts event cards have computed `backdrop-filter` containing `blur`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[12]\]"`
+- [x] `[E2E-01]` asserts dashboard renders with filter chips, event card, enabled "Novo Evento" button with height >= 48px, and saves screenshot `13-01-dashboard-desktop.png`
+- [x] `[E2E-02]` asserts event cards have computed `backdrop-filter` containing `blur`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[12]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement organizer dashboard atomic tests and visual baseline`  
+**Commit**: `test(e2e): implement organizer dashboard atomic tests and baseline`  
 
 ---
 

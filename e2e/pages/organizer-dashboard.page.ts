@@ -12,7 +12,7 @@ export class OrganizerDashboardPage extends BasePage {
     this.pageRoot = page.getByTestId('dashboard-page').or(page.locator('section.dashboard'));
     this.createEventBtn = page.getByTestId('create-event-btn').or(page.getByRole('link', { name: /novo evento/i })).or(page.locator('a[href*="evento/novo"], a[routerlink*="evento/novo"]'));
     this.filterChips = page.getByTestId(/status-filter-.*-chip/).or(page.locator('app-event-filters button, mat-chip-option, .filters__chip'));
-    this.eventCards = page.getByTestId('organizer-event-card').or(page.locator('.dashboard__row, .dashboard__mobile-card'));
+    this.eventCards = page.locator('[data-testid="organizer-event-card"]:visible, .dashboard__row:visible, .dashboard__mobile-card:visible');
   }
 
   async assertLoaded(): Promise<void> {

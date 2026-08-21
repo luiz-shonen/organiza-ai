@@ -1,5 +1,12 @@
+export { OrgSurfaceDirective } from './surface/org-surface.directive';
+export type { OrgSurfaceVariant } from './surface/org-surface.directive';
 export { OrgSurfaceComponent } from './surface/org-surface.component';
-export type { OrgSurfaceVariant } from './surface/org-surface.component';
+
+export { OrgPageLayoutComponent } from './layout/org-page-layout.component';
+export type { OrgPageLayoutMaxWidth } from './layout/org-page-layout.component';
+export { OrgPageHeaderComponent } from './layout/org-page-header.component';
+export { OrgSectionComponent } from './layout/org-section.component';
+export { OrgFormGridDirective } from './layout/org-form-grid.directive';
 
 export { OrgFormFieldDirective } from './forms/org-form-field.directive';
 export { OrgFieldLabelDirective } from './forms/org-field-label.directive';
@@ -13,6 +20,7 @@ export type { OrgChipVariant } from './actions/org-chip.directive';
 export { ORG_ICON_MAP, OrgIconComponent } from './actions/org-icon.component';
 export type { OrgIconName, OrgIconSize } from './actions/org-icon.component';
 
+export { OrgEmptyStateComponent } from './feedback/org-empty-state.component';
 export { FeedbackSnackbarComponent } from './feedback/feedback-snackbar.component';
 export type { FeedbackSnackbarData, FeedbackVariant } from './feedback/feedback-snackbar.component';
 export { FeedbackService } from './feedback/feedback.service';

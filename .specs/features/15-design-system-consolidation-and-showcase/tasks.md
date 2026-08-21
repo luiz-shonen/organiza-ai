@@ -227,10 +227,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgSurfaceDirective`, `OrgPageLayoutComponent`, `OrgPageHeaderComponent`, `OrgSectionComponent`, `OrgFormGridDirective`, `OrgEmptyStateComponent`, and types are exported
-- [ ] Unit tests in `src/app/shared/ui/index.spec.ts` verify all exports are defined
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 372 tests pass (no silent deletions)
+- [x] `OrgSurfaceDirective`, `OrgPageLayoutComponent`, `OrgPageHeaderComponent`, `OrgSectionComponent`, `OrgFormGridDirective`, `OrgEmptyStateComponent`, and types are exported
+- [x] Unit tests in `src/app/shared/ui/index.spec.ts` verify all exports are defined
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `chore(ui): export consolidated primitives from shared ui barrel`

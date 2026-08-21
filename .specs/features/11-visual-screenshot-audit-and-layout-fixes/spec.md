@@ -161,34 +161,34 @@ Applying a strict **mobile-first** approach (base CSS for mobile, progressively 
 
 ## Requirement Traceability
 
-| Requirement ID | Story | Phase | Status |
+| Requirement ID | Story | Task | Status |
 | --- | --- | --- | --- |
-| LAYOUT-01 | Toolbar – mobile layout & no overflow | Specify | Pending |
-| LAYOUT-02 | Toolbar – mobile login CTA touch target | Specify | Pending |
-| LAYOUT-03 | Toolbar – dark mode glassmorphism | Specify | Pending |
-| LAYOUT-04 | Toolbar – viewport margin spacing | Specify | Pending |
-| LAYOUT-05 | Event Editor – mobile no overflow | Specify | Pending |
-| LAYOUT-06 | Event Editor – Step 1 date/time stacking | Specify | Pending |
-| LAYOUT-07 | Event Editor – Step 2 address stacking | Specify | Pending |
-| LAYOUT-08 | Event Editor – desktop multi-column grid | Specify | Pending |
-| LAYOUT-09 | Dashboard – filter chips mobile scroll | Specify | Pending |
-| LAYOUT-10 | Dashboard – mobile cards layout | Specify | Pending |
-| LAYOUT-11 | Dashboard – desktop table layout | Specify | Pending |
-| LAYOUT-12 | Dashboard – CTA touch target ≥ 48px | Specify | Pending |
-| LAYOUT-13 | Profile – mobile single-column layout | Specify | Pending |
-| LAYOUT-14 | Family Roster – mobile stacked form | Specify | Pending |
-| LAYOUT-15 | Family Roster – desktop 3-column form | Specify | Pending |
-| LAYOUT-16 | Family Roster – button touch targets | Specify | Pending |
-| LAYOUT-17 | Home – balanced grid layout | Specify | Pending |
-| LAYOUT-18 | Event Detail – mobile hero & cards | Specify | Pending |
-| LAYOUT-19 | RSVP Modal – mobile glassmorphism | Specify | Pending |
-| LAYOUT-20 | Typography – Plus Jakarta Sans hierarchy | Specify | Pending |
-| LAYOUT-21 | Screenshots – desktop & mobile baseline refresh | Specify | Pending |
-| LAYOUT-22 | Screenshots – mobile zero overflow assertion | Specify | Pending |
-| LAYOUT-23 | Visual Invariants – touch target & token checks | Specify | Pending |
-| LAYOUT-24 | Suite Integrity – 100% green test run | Specify | Pending |
+| LAYOUT-01 | Toolbar – mobile layout & no overflow | T2, T3 | Mapped |
+| LAYOUT-02 | Toolbar – mobile login CTA touch target | T2, T3 | Mapped |
+| LAYOUT-03 | Toolbar – dark mode glassmorphism | T3 | Mapped |
+| LAYOUT-04 | Toolbar – viewport margin spacing | T2, T3 | Mapped |
+| LAYOUT-05 | Event Editor – mobile no overflow | T4 | Mapped |
+| LAYOUT-06 | Event Editor – Step 1 date/time stacking | T5 | Mapped |
+| LAYOUT-07 | Event Editor – Step 2 address stacking | T6 | Mapped |
+| LAYOUT-08 | Event Editor – desktop multi-column grid | T5, T6 | Mapped |
+| LAYOUT-09 | Dashboard – filter chips mobile scroll | T7 | Mapped |
+| LAYOUT-10 | Dashboard – mobile cards layout | T8 | Mapped |
+| LAYOUT-11 | Dashboard – desktop table layout | T8 | Mapped |
+| LAYOUT-12 | Dashboard – CTA touch target ≥ 48px | T7, T8 | Mapped |
+| LAYOUT-13 | Profile – mobile single-column layout | T9 | Mapped |
+| LAYOUT-14 | Family Roster – mobile stacked form | T10 | Mapped |
+| LAYOUT-15 | Family Roster – desktop 3-column form | T10 | Mapped |
+| LAYOUT-16 | Family Roster – button touch targets | T10 | Mapped |
+| LAYOUT-17 | Home – balanced grid layout | T11 | Mapped |
+| LAYOUT-18 | Event Detail – mobile hero & cards | T12 | Mapped |
+| LAYOUT-19 | RSVP Modal – mobile glassmorphism | T13 | Mapped |
+| LAYOUT-20 | Typography – Plus Jakarta Sans hierarchy | T11, T12 | Mapped |
+| LAYOUT-21 | Screenshots – desktop & mobile baseline refresh | T14, T15 | Mapped |
+| LAYOUT-22 | Screenshots – mobile zero overflow assertion | T1, T14, T15 | Mapped |
+| LAYOUT-23 | Visual Invariants – touch target & token checks | T1, T14, T15 | Mapped |
+| LAYOUT-24 | Suite Integrity – 100% green test run | T15 | Mapped |
 
-**Coverage:** 24 total, 0 mapped to tasks yet, 24 unmapped ⚠️
+**Coverage:** 24 total, 24 mapped to tasks (100%), 0 unmapped ✅
 
 ---
 

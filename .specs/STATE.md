@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-21  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) tasks drafted and gate-validated (15 atomic tasks across 4 phases). Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec and design written and gate-validated.  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) tasks drafted and gate-validated (15 atomic tasks across 4 phases). Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec, design, and tasks written and gate-validated (15 atomic tasks across 7 phases).  
 **Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 88 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
-**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. Feature 10 — `validate_tasks.py` PASS (0 errors). Feature 11 — `validate_spec.py` PASS (0 errors).  
-**Next step:** Feature 11 — break down into tasks (`/tlc-spec-driven tasks`) and validate tasks before execution.  
+**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. Feature 10 — `validate_tasks.py` PASS (0 errors). Feature 11 — `validate_spec.py` PASS (0 errors), `validate_tasks.py` PASS (0 errors).  
+**Next step:** Feature 11 — execute mapped tasks (`/tlc-spec-driven implement` or dispatch batches).  
 
 **Active branches:** `main` (production)  
 **What exists:**

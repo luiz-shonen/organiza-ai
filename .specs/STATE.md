@@ -274,3 +274,12 @@
 **Rationale:** Atomic tests are independently runnable, failures pinpoint the exact broken step, screenshots are granular enough to detect visual regressions per state (not just per page), and test suites remain maintainable as the app grows.  
 **Status:** In force. Specified in 10-e2e-organizer-create-event.
 
+---
+
+### AD-031 — Mobile-First Responsive Layouts & Zero-Overflow Invariant
+**Date:** 2026-08-21  
+**Decision:** All UI layouts across Organiza AI (Home, Login, Dashboard, Event Editor Stepper, Event Detail, RSVP Modal, Profile, Family Roster) enforce a mobile-first responsive architecture: (1) single-column fluid stacking on mobile (`<600px`), expanding to balanced multi-column CSS grids on desktop (`>=600px`/`>=640px`); (2) horizontal scrolling containers (stepper headers, filter chipsets) explicitly declare `max-width: 100%`, `overflow-x: auto`, and `-webkit-overflow-scrolling: touch`; (3) touch targets for all primary buttons, chips, and toggles strictly maintain `>=48px` dimensions (WCAG 2.5.5 AA); (4) every page view is guarded by automated `assertNoHorizontalOverflow` Playwright assertions and visual screenshot baselines across both desktop and mobile viewports.  
+**Rationale:** Eliminates accidental horizontal page blowout on narrow mobile devices, guarantees touch accessibility, and provides deterministic visual regression protection across form steps and glassmorphic surfaces.  
+**Status:** In force. Specified and verified in 11-visual-screenshot-audit-and-layout-fixes.
+
+

@@ -249,10 +249,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `.editor__address-row-top` base style set to `grid-template-columns: 1fr`, expanding to `1fr 1fr` on `min-width: 600px`
-- [ ] `.editor__address-row` base style set to `grid-template-columns: 1fr`, expanding to `2fr 1fr` on `min-width: 600px`
-- [ ] Address fields fit within 100% width on 320px–480px viewports with zero clipping
-- [ ] Build gate passes: `npm run build`
+- [x] `.editor__address-row-top` base style set to `grid-template-columns: 1fr`, expanding to `1fr 1fr` on `min-width: 600px`
+- [x] `.editor__address-row` base style set to `grid-template-columns: 1fr`, expanding to `2fr 1fr` on `min-width: 600px`
+- [x] Address fields fit within 100% width on 320px–480px viewports with zero clipping
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

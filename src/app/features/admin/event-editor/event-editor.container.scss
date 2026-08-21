@@ -191,8 +191,12 @@
 
   &__address-row-top {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
+
+    @media (min-width: 600px) {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   &__address-row-single {
@@ -202,8 +206,12 @@
 
   &__address-row {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
+
+    @media (min-width: 600px) {
+      grid-template-columns: 2fr 1fr;
+    }
   }
 
   &__disabled-field {

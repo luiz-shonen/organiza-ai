@@ -116,11 +116,11 @@
   }
 
   &__card-content-stepper {
-    padding: 0 !important;
+    padding: 0;
   }
 
   &__stepper {
-    background: transparent !important;
+    background: transparent;
     border-radius: 20px;
     max-width: 100%;
     min-width: 0;
@@ -141,7 +141,7 @@
     }
 
     ::ng-deep .mat-horizontal-content-container {
-      padding: 0 !important;
+      padding: 0;
     }
   }
 
@@ -229,11 +229,6 @@
       padding: 32px 28px;
     }
 
-    // Improve input legibility over the gradient/glass card background
-    mat-form-field:not(.org-form-field) .mat-mdc-text-field-wrapper {
-      background: var(--mat-sys-surface) !important;
-      opacity: 0.9;
-    }
   }
 
   &__category-field {

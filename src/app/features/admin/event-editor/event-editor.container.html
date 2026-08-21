@@ -120,7 +120,7 @@
               <mat-step [stepControl]="basicInfoForm">
                 <ng-template matStepLabel>Informações do evento</ng-template>
                 <form [formGroup]="basicInfoForm" class="editor__form" id="basic-info-form">
-                  <mat-form-field appearance="outline" class="org-input">
+                  <mat-form-field orgFormField appearance="outline" class="org-input">
                     <mat-label>Título do Evento</mat-label>
                     <input
                       matInput
@@ -151,7 +151,7 @@
                     }
                   </div>
 
-                  <mat-form-field appearance="outline" class="org-input">
+                  <mat-form-field orgFormField appearance="outline" class="org-input">
                     <mat-label>Descrição</mat-label>
                     <textarea
                       matInput
@@ -167,7 +167,7 @@
                   </mat-form-field>
 
                   <div class="editor__date-time-row">
-                    <mat-form-field appearance="outline" class="editor__date-field org-input">
+                    <mat-form-field orgFormField appearance="outline" class="editor__date-field org-input">
                       <mat-label>Data do Evento</mat-label>
                       <input
                         matInput
@@ -193,7 +193,7 @@
                       }
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline" class="editor__time-field org-input">
+                    <mat-form-field orgFormField appearance="outline" class="editor__time-field org-input">
                       <mat-label>Hora</mat-label>
                       <input
                         matInput
@@ -228,7 +228,7 @@
                 <form [formGroup]="addressForm" class="editor__form" id="address-form">
                   <h3 class="editor__section-title">Endereço</h3>
                   <div class="editor__address-row-top">
-                    <mat-form-field appearance="outline" class="org-input editor__cep-field">
+                    <mat-form-field orgFormField appearance="outline" class="org-input editor__cep-field">
                       <mat-label>CEP</mat-label>
                       <input
                         matInput
@@ -244,7 +244,7 @@
                       }
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline" class="editor__number-field org-input">
+                    <mat-form-field orgFormField appearance="outline" class="editor__number-field org-input">
                       <mat-label>Número</mat-label>
                       <input
                         matInput
@@ -261,6 +261,7 @@
 
                   <div class="editor__address-row-single">
                     <mat-form-field
+                      orgFormField
                       appearance="outline"
                       class="editor__address-field org-input editor__disabled-field"
                     >
@@ -283,7 +284,7 @@
                   </div>
 
                   <div class="editor__address-row">
-                    <mat-form-field appearance="outline" class="org-input editor__disabled-field">
+                    <mat-form-field orgFormField appearance="outline" class="org-input editor__disabled-field">
                       <mat-label>Bairro</mat-label>
                       <input
                         matInput
@@ -299,7 +300,7 @@
                       }
                     </mat-form-field>
 
-                    <mat-form-field appearance="outline" class="org-input editor__disabled-field">
+                    <mat-form-field orgFormField appearance="outline" class="org-input editor__disabled-field">
                       <mat-label>Cidade/UF</mat-label>
                       <input
                         matInput
@@ -399,7 +400,7 @@
             </mat-card-header>
             <mat-card-content>
               <div class="editor__add-item">
-                <mat-form-field appearance="outline" class="editor__item-name-field org-input">
+                <mat-form-field orgFormField appearance="outline" class="editor__item-name-field org-input">
                   <mat-label>Nome do item</mat-label>
                   <input
                     matInput
@@ -409,7 +410,7 @@
                     (keyup.enter)="addItem()"
                   />
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="editor__item-qty-field org-input">
+                <mat-form-field orgFormField appearance="outline" class="editor__item-qty-field org-input">
                   <mat-label>Quantidade</mat-label>
                   <input
                     matInput

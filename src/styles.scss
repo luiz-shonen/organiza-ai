@@ -663,7 +663,7 @@ button:not(mat-icon),
 }
 
 /* Angular Material Form Fields (.mat-mdc-form-field) - Organiza AI Glassmorphism System */
-.mat-mdc-form-field:not(.org-form-field) {
+.org-legacy-form-field {
   --mdc-outlined-text-field-container-color: transparent !important;
   --mdc-filled-text-field-container-color: transparent !important;
   --mdc-outlined-text-field-input-text-color: var(--mat-sys-on-surface) !important;
@@ -794,13 +794,13 @@ button:not(mat-icon),
   }
 }
 
-.dark .mat-mdc-form-field:not(.org-form-field) {
+.dark .org-legacy-form-field {
   .mat-mdc-text-field-wrapper {
     background: rgba(255, 255, 255, 0.06) !important;
   }
 }
 
-.mat-mdc-form-field:not(.org-form-field):not(.mat-form-field-invalid) {
+.org-legacy-form-field:not(.mat-form-field-invalid) {
   .mdc-notched-outline__leading,
   .mdc-notched-outline__notch,
   .mdc-notched-outline__trailing {
@@ -837,7 +837,7 @@ button:not(mat-icon),
 }
 
 /* Native Outlined Notch with Organiza AI Gradient Colors (Pink -> Orange -> Yellow) */
-.mat-mdc-form-field:not(.org-form-field) .mdc-text-field--outlined {
+.org-legacy-form-field .mdc-text-field--outlined {
   .mdc-notched-outline__leading {
     border-top-left-radius: 16px !important;
     border-bottom-left-radius: 16px !important;
@@ -849,7 +849,7 @@ button:not(mat-icon),
   }
 }
 
-.mat-mdc-form-field:not(.org-form-field) .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+.org-legacy-form-field .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
   .mdc-notched-outline__leading {
     border-color: color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
     transition: border-color 200ms ease !important;

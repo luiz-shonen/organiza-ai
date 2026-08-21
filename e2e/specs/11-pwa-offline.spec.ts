@@ -20,14 +20,12 @@ test.describe('PWA Offline Caching Resilience and Offline Mode Suite', () => {
     // 3. Verify page remains responsive and does not crash or blank out
     await expect(homePage.pageRoot).toBeVisible();
 
-    // Verify theme toggle or static interactions remain functional offline
-    await homePage.themeToggleBtn.click();
-    const themeMenu = page.getByRole('menuitem', { name: /escuro|claro/i });
-    const isMenuVisible = await themeMenu.first().isVisible({ timeout: 2000 }).catch(() => false);
-    if (isMenuVisible) {
-      await expect(themeMenu.first()).toBeVisible();
-      await page.keyboard.press('Escape');
-    }
+    // Verify navigation drawer and its theme controls remain interactive offline.
+    await page.getByTestId('navigation-menu-trigger').click();
+    await expect(page.getByTestId('navigation-drawer')).toBeVisible();
+    await page.getByTestId('drawer-theme-dark').click();
+    await expect(page.locator('html')).toHaveClass(/dark/);
+    await expect(page.getByTestId('drawer-theme-dark')).toHaveAttribute('aria-pressed', 'true');
 
     // 4. Restore online connection
     await context.setOffline(false);
@@ -35,6 +33,7 @@ test.describe('PWA Offline Caching Resilience and Offline Mode Suite', () => {
 
     // Verify app recovers seamlessly
     await expect(homePage.pageRoot).toBeVisible();
+    await expect(page.getByRole('alert')).toBeHidden();
   });
 
   test('should handle offline navigation and display graceful feedback on login form', async ({

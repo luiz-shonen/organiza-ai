@@ -303,10 +303,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Mobile view (`< 768px`) displays stacked event cards with full-width touch actions
-- [ ] Desktop view (`>= 768px`) renders glassmorphic table with aligned columns
-- [ ] "Novo Evento" button maintains `min-height: 48px`
-- [ ] Build gate passes: `npm run build`
+- [x] Mobile view (`< 768px`) displays stacked event cards with full-width touch actions
+- [x] Desktop view (`>= 768px`) renders glassmorphic table with aligned columns
+- [x] "Novo Evento" button maintains `min-height: 48px`
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

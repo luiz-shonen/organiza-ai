@@ -470,7 +470,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.saveEvent();
 
       // Assert snackbar confirmation appears
-      const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+      const snackBar = page.locator('[data-testid="feedback-snackbar"]');
       await expect(snackBar).toBeVisible();
       await expect(snackBar).toContainText(/Evento criado com sucesso/i);
 
@@ -526,7 +526,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.saveEvent();
 
       // Assert snackbar confirmation appears
-      const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+      const snackBar = page.locator('[data-testid="feedback-snackbar"]');
       await expect(snackBar).toBeVisible();
       await expect(snackBar).toContainText(/Evento atualizado/i);
     });
@@ -1011,7 +1011,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await submitBtn.click();
 
       // Assert snackbar confirmation
-      const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+      const snackBar = page.locator('[data-testid="feedback-snackbar"]');
       await expect(snackBar).toBeVisible();
       await expect(snackBar).toContainText(/Convite enviado para amigo@exemplo\.com/i);
     });

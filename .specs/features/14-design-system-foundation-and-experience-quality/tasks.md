@@ -39,6 +39,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T17 — Create the typed feedback service
 - [x] T18 — Migrate profile feedback callers
 - [x] T19 — Migrate event-detail feedback callers
+- [x] T20 — Migrate event-editor feedback callers
 
 ## Test Coverage Matrix
 

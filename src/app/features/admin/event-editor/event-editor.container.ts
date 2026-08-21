@@ -18,7 +18,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -38,7 +37,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import { CollaboratorInviteDialogComponent } from '../../organizer/event-editor/components/collaborator-invite-dialog/collaborator-invite-dialog.component';
-import { OrgButtonDirective, OrgFormFieldDirective } from '../../../shared/ui';
+import { FeedbackService, OrgButtonDirective, OrgFormFieldDirective } from '../../../shared/ui';
 
 @Component({
   selector: 'app-event-editor',
@@ -76,7 +75,7 @@ export class EventEditorContainer implements OnInit {
   private readonly guestService = inject(GuestService);
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly feedback = inject(FeedbackService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
@@ -201,7 +200,7 @@ export class EventEditorContainer implements OnInit {
         error: (err) => {
           console.error(err);
           this.loading.set(false);
-          this.snackBar.open('Erro ao carregar evento', 'OK', { duration: 3000 });
+          this.feedback.error('Erro ao carregar evento');
         },
       });
 
@@ -223,9 +222,7 @@ export class EventEditorContainer implements OnInit {
 
   protected async saveEvent(): Promise<void> {
     if (!this.isOwner()) {
-      this.snackBar.open('Apenas o organizador principal pode salvar alterações no evento.', 'OK', {
-        duration: 3000,
-      });
+      this.feedback.info('Apenas o organizador principal pode salvar alterações no evento.');
       return;
     }
 
@@ -249,9 +246,7 @@ export class EventEditorContainer implements OnInit {
       finalDate.setHours(Number(h) || 0, Number(m) || 0, 0, 0);
 
       if (finalDate < new Date()) {
-        this.snackBar.open('A data e hora do evento não podem ser no passado.', 'OK', {
-          duration: 3000,
-        });
+        this.feedback.info('A data e hora do evento não podem ser no passado.');
         this.saving.set(false);
         return;
       }
@@ -294,15 +289,15 @@ export class EventEditorContainer implements OnInit {
       const eventId = this.id();
       if (this.isEditing() && eventId) {
         await this.eventService.updateEvent(eventId, eventData);
-        this.snackBar.open('Evento atualizado!', 'OK', { duration: 3000 });
+        this.feedback.success('Evento atualizado!');
       } else {
         const newId = await this.eventService.createEvent(eventData);
         this.confetti.fireSuccessConfetti();
-        this.snackBar.open('Evento criado com sucesso!', '🎉', { duration: 3000 });
+        this.feedback.success('Evento criado com sucesso!');
         await this.router.navigate(['/meus-eventos/evento', newId]);
       }
     } catch {
-      this.snackBar.open('Erro ao salvar evento.', 'OK', { duration: 3000 });
+      this.feedback.error('Erro ao salvar evento.');
     } finally {
       this.saving.set(false);
     }
@@ -329,18 +324,18 @@ export class EventEditorContainer implements OnInit {
           ev.title,
           this.authService.currentUser()?.email || '',
         );
-        this.snackBar.open(`Convite enviado para ${email}`, 'OK', { duration: 3000 });
+        this.feedback.success(`Convite enviado para ${email}`);
       } catch {
-        this.snackBar.open('Erro ao enviar convite.', 'OK', { duration: 3000 });
+        this.feedback.error('Erro ao enviar convite.');
       }
     });
 
     dialogRef.componentInstance.removeCollaborator.subscribe(async (collabUid) => {
       try {
         await this.eventService.removeCollaborator(eventId, collabUid);
-        this.snackBar.open('Colaborador removido', 'OK', { duration: 3000 });
+        this.feedback.success('Colaborador removido');
       } catch {
-        this.snackBar.open('Erro ao remover colaborador.', 'OK', { duration: 3000 });
+        this.feedback.error('Erro ao remover colaborador.');
       }
     });
   }
@@ -357,7 +352,7 @@ export class EventEditorContainer implements OnInit {
       this.newItemName.set('');
       this.newItemQuantity.set(1);
     } catch {
-      this.snackBar.open('Erro ao adicionar item.', 'OK', { duration: 3000 });
+      this.feedback.error('Erro ao adicionar item.');
     }
   }
 
@@ -368,14 +363,14 @@ export class EventEditorContainer implements OnInit {
     try {
       await this.itemService.deleteItem(eventId, item.id);
     } catch {
-      this.snackBar.open('Erro ao remover item.', 'OK', { duration: 3000 });
+      this.feedback.error('Erro ao remover item.');
     }
   }
 
   protected exportToCsv(): void {
     const guestsList = this.guests();
     if (!guestsList.length) {
-      this.snackBar.open('Nenhum convidado para exportar.', 'OK', { duration: 3000 });
+      this.feedback.info('Nenhum convidado para exportar.');
       return;
     }
 

@@ -14,11 +14,11 @@ import {
   AuthService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
 import { By } from '@angular/platform-browser';
 import { PartyEvent } from '../../../core/models';
+import { FeedbackService } from '../../../shared/ui';
 
 vi.mock('qrcode', () => ({
   default: {
@@ -76,8 +76,10 @@ describe('EventEditorContainer', () => {
     listGuests: ReturnType<typeof vi.fn>;
   };
 
-  let mockSnackBar: {
-    open: ReturnType<typeof vi.fn>;
+  let mockFeedback: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
   };
 
   let mockDialog: {
@@ -105,8 +107,10 @@ describe('EventEditorContainer', () => {
       listGuests: vi.fn().mockReturnValue(of([])),
     };
 
-    mockSnackBar = {
-      open: vi.fn(),
+    mockFeedback = {
+      success: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
     };
 
     mockDialog = {
@@ -138,7 +142,7 @@ describe('EventEditorContainer', () => {
           provide: LocationService,
           useValue: { getViaCep: vi.fn().mockReturnValue(of(null)) },
         },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: FeedbackService, useValue: mockFeedback },
       ],
     }).compileComponents();
   });
@@ -168,9 +172,7 @@ describe('EventEditorContainer', () => {
           createdBy: 'owner-uid',
         })
       );
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Evento atualizado!', 'OK', {
-        duration: 3000,
-      });
+      expect(mockFeedback.success).toHaveBeenCalledWith('Evento atualizado!');
     });
 
     it('should open collaborator dialog for owner', () => {
@@ -205,10 +207,8 @@ describe('EventEditorContainer', () => {
     it('should prevent collaborator from saving main event details and display warning', async () => {
       await component['saveEvent']();
       expect(mockEventService.updateEvent).not.toHaveBeenCalled();
-      expect(mockSnackBar.open).toHaveBeenCalledWith(
+      expect(mockFeedback.info).toHaveBeenCalledWith(
         expect.stringContaining('Apenas o organizador principal pode salvar alterações'),
-        'OK',
-        expect.anything()
       );
     });
 

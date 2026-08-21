@@ -117,9 +117,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `assertNoHorizontalOverflow(page)` exported and evaluates `scrollWidth` vs `clientWidth`/`innerWidth`
-- [ ] Provides descriptive error output if horizontal overflow is detected
-- [ ] Build gate passes: `npm run build`
+- [x] `assertNoHorizontalOverflow(page)` exported and evaluates `scrollWidth` vs `clientWidth`/`innerWidth`
+- [x] Provides descriptive error output if horizontal overflow is detected
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

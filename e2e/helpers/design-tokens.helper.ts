@@ -1,4 +1,25 @@
-import { expect, Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
+
+/**
+ * Asserts that the document does not have horizontal overflow (scrollWidth <= innerWidth).
+ */
+export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
+  const overflow = await page.evaluate(() => {
+    const scrollWidth = document.documentElement.scrollWidth;
+    const clientWidth = document.documentElement.clientWidth;
+    const innerWidth = window.innerWidth;
+    return {
+      scrollWidth,
+      clientWidth,
+      innerWidth,
+      hasOverflow: scrollWidth > innerWidth + 1,
+    };
+  });
+  expect(
+    overflow.hasOverflow,
+    `Document has horizontal overflow: scrollWidth (${overflow.scrollWidth}px) exceeds innerWidth (${overflow.innerWidth}px)`
+  ).toBe(false);
+}
 
 /**
  * Asserts that the element (or its surface) has a glassmorphic backdrop-filter with blur.

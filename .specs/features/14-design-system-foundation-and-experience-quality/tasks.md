@@ -47,6 +47,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 
 - [x] T22 — Establish Firestore rules emulator coverage
 - [x] T23 — Persist named companion metadata compatibly
+- [x] T24 — Create the RSVP drawer with companion form array
 
 ## Test Coverage Matrix
 

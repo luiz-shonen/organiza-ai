@@ -158,16 +158,16 @@ The visual baselines also do not cover every supported page state in dark mode o
 | DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map and T13 Family roster icon adoption complete |
 | NAV-01 | Calm navigation and workflows | Design | In Design |
 | NAV-02 | Calm navigation and workflows | Design | In Design |
-| NAV-03 | Calm navigation and workflows | Design | In Design |
-| NAV-04 | Calm navigation and workflows | Design | In Design |
+| NAV-03 | Calm navigation and workflows | Execute | In progress — T24 presents RSVP as an end-positioned, internally scrolling workflow sheet; T25 moves it to the typed root drawer host |
+| NAV-04 | Calm navigation and workflows | Execute | In progress — T24 retains Material backdrop, Escape, close control, and trigger focus restoration; T25 governs root drawer close state |
 | NAV-05 | Calm navigation and workflows | Design | In Design |
 | FEED-01 | Uniform feedback and accents | Execute | Complete — T16-T21 shared feedback presentation, publishing, and caller migrations complete |
 | FEED-02 | Uniform feedback and accents | Execute | Complete — T16-T21 shared semantic error presentation and caller migrations complete |
 | FEED-03 | Uniform feedback and accents | Execute | Complete — T16-T17 live-region and configured auto-dismissal contracts complete |
 | THEME-01 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal hero adoption complete |
 | THEME-02 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal surface adoption complete |
-| RSVP-01 | Complete RSVP companion information | Design | In Design |
-| RSVP-02 | Complete RSVP companion information | Design | In Design |
+| RSVP-01 | Complete RSVP companion information | Execute | Complete — T24 RSVP drawer reveals ordered labelled companion controls from the requested count |
+| RSVP-02 | Complete RSVP companion information | Execute | Complete — T24 bounds companion count to 0–10 and blocks blank revealed names |
 | RSVP-03 | Complete RSVP companion information | Execute | In progress — T22-T23 Emulator-backed primary/family batch authorization and ordered companion persistence complete; T24 supplies named form inputs |
 | RSVP-04 | Complete RSVP companion information | Execute | In progress — T23 preserves legacy count-only aggregate reads without manufacturing companion names |
 | RSVP-05 | Complete RSVP companion information | Execute | In progress — T22-T23 Emulator-backed primary and linked-family cancellation contract complete; T24 preserves the confirmation workflow |

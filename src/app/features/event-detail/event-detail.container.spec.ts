@@ -162,7 +162,12 @@ describe('EventDetailContainer', () => {
     };
     mockDialog = {
       open: vi.fn().mockReturnValue({
-        afterClosed: () => of(true),
+        afterClosed: () => of({
+          name: 'Lucas Dev',
+          phone: '11999998888',
+          companions: [],
+          selectedFamilyMembers: [],
+        }),
       }),
     };
 
@@ -232,19 +237,20 @@ describe('EventDetailContainer', () => {
       await (component as any).onConfirmRsvp();
 
       expect(mockAuthService.loginWithGoogle).toHaveBeenCalledTimes(1);
-      expect(mockGuestService.saveVerifiedRsvp).toHaveBeenCalledWith(
+      expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
         'evt-123',
         expect.objectContaining({
           uid: 'usr-1',
-          name: 'Lucas Dev',
           email: 'lucas@gmail.com',
+          companions: [],
         }),
+        [],
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
       expect(mockFeedback.success).toHaveBeenCalledWith('Presença confirmada!');
     });
 
-    it('saves verified RSVP directly when user is already logged in with Google', async () => {
+    it('opens the RSVP drawer and persists the verified attendee through the batch contract', async () => {
       currentUserSignal.set({
         uid: 'usr-google-99',
         displayName: 'Mariana',
@@ -257,13 +263,16 @@ describe('EventDetailContainer', () => {
       await (component as any).onConfirmRsvp();
 
       expect(mockAuthService.loginWithGoogle).not.toHaveBeenCalled();
-      expect(mockGuestService.saveVerifiedRsvp).toHaveBeenCalledWith(
+      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
         'evt-123',
         expect.objectContaining({
           uid: 'usr-google-99',
-          name: 'Mariana',
+          name: 'Lucas Dev',
           email: 'mariana@gmail.com',
+          companions: [],
         }),
+        [],
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
     });
@@ -279,7 +288,7 @@ describe('EventDetailContainer', () => {
           of({
             name: 'Lucas Dev',
             phone: '11999998888',
-            companionsCount: 0,
+            companions: [],
             selectedFamilyMembers: mockFamily,
           }),
       });

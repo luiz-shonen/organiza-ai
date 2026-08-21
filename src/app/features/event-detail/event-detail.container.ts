@@ -25,9 +25,9 @@ import { PartyEvent, PartyItem, Guest } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { FeedbackService } from '../../shared/ui';
 import {
-  GuestFormDialogComponent,
-  GuestFormDialogResult,
-} from './components/guest-form-dialog/guest-form-dialog.component';
+  RsvpDrawerComponent,
+  RsvpDrawerResult,
+} from './components/rsvp-drawer/rsvp-drawer.component';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
@@ -158,66 +158,56 @@ export class EventDetailContainer implements OnInit {
 
         const familyMembers = await this.familyService.getFamilyMembers(user.uid);
 
-        if (familyMembers.length > 0) {
-          const dialogRef = this.dialog.open(GuestFormDialogComponent, {
-            width: '500px',
-            data: {
-              session: { name, phone },
-              familyMembers,
-              userId: user.uid,
-            },
-          });
-
-          dialogRef.afterClosed().subscribe(async (result: GuestFormDialogResult | undefined) => {
-            if (result) {
-              this.rsvpLoading.set(true);
-              try {
-                await this.guestService.batchConfirmRsvp(
-                  this.id(),
-                  {
-                    uid: user.uid,
-                    name: result.name || name,
-                    email,
-                    phone: result.phone || phone,
-                    photoUrl,
-                    companionsCount: result.companionsCount,
-                  },
-                  result.selectedFamilyMembers ?? [],
-                );
-
-                this.guestSession.saveSession({ name: result.name || name, phone: result.phone || phone });
-                this.userService
-                  .upsertProfile(user.uid, { name: result.name || name, phone: result.phone || phone })
-                  .catch(console.error);
-
-                this.confetti.fireSuccessConfetti();
-                this.feedback.success('Presença confirmada!');
-              } catch (err) {
-                console.error(err);
-                this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
-              } finally {
-                this.rsvpLoading.set(false);
-              }
-            } else {
-              this.rsvpLoading.set(false);
-            }
-          });
-          return;
-        }
-
-        await this.guestService.saveVerifiedRsvp(this.id(), {
-          uid: user.uid,
-          name,
-          email,
-          photoUrl,
-          phone,
+        const dialogRef = this.dialog.open(RsvpDrawerComponent, {
+          width: 'min(100vw, 480px)',
+          maxWidth: '100vw',
+          height: '100dvh',
+          maxHeight: '100dvh',
+          position: { right: '0' },
+          panelClass: 'rsvp-drawer-panel',
+          data: {
+            session: { name, phone },
+            familyMembers,
+            userId: user.uid,
+          },
         });
 
-        this.guestSession.saveSession({ name, phone });
-        this.userService.upsertProfile(user.uid, { name, phone }).catch(console.error);
+        dialogRef.afterClosed().subscribe(async (result: RsvpDrawerResult | undefined) => {
+          if (!result) {
+            this.rsvpLoading.set(false);
+            return;
+          }
 
-        this.confetti.fireSuccessConfetti();
-        this.feedback.success('Presença confirmada!');
+          this.rsvpLoading.set(true);
+          try {
+            await this.guestService.batchConfirmRsvp(
+              this.id(),
+              {
+                uid: user.uid,
+                name: result.name || name,
+                email,
+                phone: result.phone || phone,
+                photoUrl,
+                companions: result.companions,
+              },
+              result.selectedFamilyMembers ?? [],
+            );
+
+            this.guestSession.saveSession({ name: result.name || name, phone: result.phone || phone });
+            this.userService
+              .upsertProfile(user.uid, { name: result.name || name, phone: result.phone || phone })
+              .catch(console.error);
+
+            this.confetti.fireSuccessConfetti();
+            this.feedback.success('Presença confirmada!');
+          } catch (err) {
+            console.error(err);
+            this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
+          } finally {
+            this.rsvpLoading.set(false);
+          }
+        });
+        return;
       }
     } catch (err: unknown) {
       console.error(err);

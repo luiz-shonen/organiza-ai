@@ -1,0 +1,21 @@
+<section class="org-section">
+  <header class="org-section__header">
+    <div class="org-section__title-wrap">
+      @if (icon()) {
+        <org-icon [name]="icon()!" size="md" color="var(--org-primary)" />
+      }
+      <h2 class="org-section__title">{{ title() }}</h2>
+      @if (count() !== undefined && count() !== null) {
+        <span class="org-section__count-badge">{{ count() }}</span>
+      }
+    </div>
+
+    <div class="org-section__actions">
+      <ng-content select="[orgSectionActions]" />
+    </div>
+  </header>
+
+  <div class="org-section__content">
+    <ng-content />
+  </div>
+</section>

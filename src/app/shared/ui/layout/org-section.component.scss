@@ -1,0 +1,64 @@
+:host {
+  display: block;
+
+  + :host {
+    margin-top: 48px;
+  }
+}
+
+.org-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (min-width: 600px) {
+    gap: 24px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 4px;
+  }
+
+  &__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+    letter-spacing: -0.01em;
+
+    @media (min-width: 600px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__count-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--mat-sys-primary);
+    background: rgba(255, 77, 148, 0.12);
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}

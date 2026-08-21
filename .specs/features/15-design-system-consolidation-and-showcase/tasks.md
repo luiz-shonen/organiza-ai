@@ -164,10 +164,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgSectionComponent` renders `<h2>` title, optional count badge, optional icon, and projects `[orgSectionActions]` and default body content
-- [ ] Unit tests verify title, badge, icon, and actions slot in `src/app/shared/ui/layout/org-section.component.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 57 test suites, 360 tests pass (no silent deletions)
+- [x] `OrgSectionComponent` renders `<h2>` title, optional count badge, optional icon, and projects `[orgSectionActions]` and default body content
+- [x] Unit tests verify title, badge, icon, and actions slot in `src/app/shared/ui/layout/org-section.component.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 57 test suites, 357 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(ui): add section layout component primitive`

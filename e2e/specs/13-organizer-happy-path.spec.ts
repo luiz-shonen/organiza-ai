@@ -607,4 +607,48 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertGlassmorphism(dialogSurface);
     });
   });
+
+  // Phase 3 - Task T10: Guest RSVP — Submission & Confirmation [E2E-20]
+  test.describe('Guest RSVP — Submission & Confirmation', () => {
+    test('[E2E-20] should submit RSVP form, close dialog, and render confirmed status card', async ({
+      page,
+      eventDetailPage,
+      rsvpDialog,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-guest-uid',
+        email: 'maria.guest@example.com',
+        displayName: 'Maria Convidada',
+        familyMembers: [
+          { id: 'fam-1', name: 'Joãozinho', relationship: 'Filho' },
+        ],
+        events: [mockHappyPathEvent],
+      });
+
+      await page.goto('/evento/happy-event-1');
+      await eventDetailPage.assertLoaded();
+
+      // Open RSVP dialog
+      await eventDetailPage.openRsvpDialog();
+      await rsvpDialog.assertVisible();
+
+      // Fill name and phone and submit
+      await rsvpDialog.confirmRsvp({
+        name: 'Maria Convidada',
+        phone: '(11) 98765-4321',
+      });
+
+      // Dialog closes
+      await rsvpDialog.assertHidden();
+
+      // Assert confirmed state is visible
+      const confirmedTitle = page.locator('.rsvp-card mat-card-title, h2, mat-card-title').filter({
+        hasText: /Você está na lista/i,
+      });
+      await expect(confirmedTitle).toBeVisible();
+
+      // Screenshot baseline
+      await eventDetailPage.captureScreenshot('13-12-rsvp-confirmed');
+    });
+  });
 });

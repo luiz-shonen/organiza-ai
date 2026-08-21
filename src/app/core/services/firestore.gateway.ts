@@ -243,9 +243,9 @@ export class FirestoreGateway {
   docSnapshot<T>(path: string): Observable<(T & { id: string }) | null> {
     if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
       return new Observable<(T & { id: string }) | null>((subscriber) => {
-        const parts = path.split('/');
-        const col = parts[0];
-        const id = parts[1];
+        const lastSlash = path.lastIndexOf('/');
+        const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
+        const id = lastSlash !== -1 ? path.substring(lastSlash + 1) : '';
         const store = (window as any).__MOCK_DOCUMENTS__;
         const emit = () => {
           const list = (store[col] || []) as (T & { id: string })[];
@@ -286,6 +286,21 @@ export class FirestoreGateway {
   }
 
   async runBatch(fn: (batch: FirestoreBatchOperations) => void | Promise<void>): Promise<void> {
+    if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
+      const ops: FirestoreBatchOperations = {
+        set: (path, data, options) => {
+          this.setDoc(path, data as any, options);
+        },
+        update: (path, data) => {
+          this.updateDoc(path, data as any);
+        },
+        delete: (path) => {
+          this.deleteDoc(path);
+        },
+      };
+      await fn(ops);
+      return;
+    }
     const batch = writeBatch(this.firestore);
     const ops: FirestoreBatchOperations = {
       set: (path, data, options) => {

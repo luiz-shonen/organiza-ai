@@ -326,8 +326,8 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-20]` opens RSVP dialog, fills name and phone, clicks "Confirmar", asserts success snackbar or confirmation feedback, and saves screenshot `13-12-rsvp-confirmed-desktop.png`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-20\]"`
+- [x] `[E2E-20]` opens RSVP dialog, fills name and phone, clicks "Confirmar", asserts success snackbar or confirmation feedback, and saves screenshot `13-12-rsvp-confirmed-desktop.png`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-20\]"`
 
 **Tests**: e2e  
 **Gate**: full  

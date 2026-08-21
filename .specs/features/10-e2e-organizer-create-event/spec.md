@@ -292,7 +292,7 @@ invite.
 | E2E-17 | RSVP – button ≥ 48 px | T1, T8 | Complete |
 | E2E-18 | RSVP – dialog opens | T9 | Complete |
 | E2E-19 | RSVP – dialog backdrop-filter | T1, T9 | Complete |
-| E2E-20 | RSVP – submit → confirmation | T10 | Pending |
+| E2E-20 | RSVP – submit → confirmation | T10 | Complete |
 | E2E-21 | Profile – page renders | T11 | Pending |
 | E2E-22 | Profile – card backdrop-filter | T1, T11 | Pending |
 | E2E-23 | Profile – heading font-family | T1, T11 | Pending |

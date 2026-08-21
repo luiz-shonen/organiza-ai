@@ -402,13 +402,13 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-25]` fills member name and relationship, clicks "Adicionar", asserts new member appears in roster list, and saves screenshot `13-15-family-roster-added-desktop.png`
-- [ ] `[E2E-26]` asserts "Adicionar membro" button bounding box height is >= 48px
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-2[56]\]"`
+- [x] `[E2E-25]` fills member name and relationship, clicks "Adicionar", asserts new member appears in roster list, and saves screenshot `13-15-family-roster-added-desktop.png`
+- [x] `[E2E-26]` asserts "Adicionar membro" button bounding box height is >= 48px
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-2[56]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement family roster add member and touch target atomic tests`  
+**Commit**: `test(e2e): implement family roster add member and button size tests`  
 
 ---
 

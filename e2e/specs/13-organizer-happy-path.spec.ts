@@ -751,4 +751,47 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.captureScreenshot('13-14-profile-name-updated');
     });
   });
+
+  // Phase 4 - Task T13: Family Roster — Add Member & Button Size [E2E-25, E2E-26]
+  test.describe('Family Roster — Add Member & Button Size', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        familyMembers: [],
+      });
+    });
+
+    test('[E2E-25] should add a family member and render member card in the roster', async ({
+      page,
+      profilePage,
+    }) => {
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Add family member
+      await profilePage.familyRoster.addMember('Mariana Silva', 'spouse', '(11) 98888-7777');
+
+      // Assert member card is listed
+      const memberCard = profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first();
+      await expect(memberCard).toBeVisible();
+
+      // Screenshot baseline
+      await profilePage.captureScreenshot('13-15-family-member-added');
+    });
+
+    test('[E2E-26] should verify Add Family Member button bounding box height is >= 48px', async ({
+      page,
+      profilePage,
+    }) => {
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Assert Add Member button touch target >= 48px
+      const addBtn = profilePage.familyRoster.addMemberBtn.first();
+      await expect(addBtn).toBeVisible();
+      await assertMinTouchTarget(addBtn, 48);
+    });
+  });
 });

@@ -276,9 +276,9 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-16]` navigates to `/evento/:id`, asserts event title in `<h1>`, countdown timer, location, and saves screenshot `13-10-event-detail-desktop.png`
-- [ ] `[E2E-17]` asserts RSVP button bounding box height is >= 48px
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-1[67]\]"`
+- [x] `[E2E-16]` navigates to `/evento/:id`, asserts event title in `<h1>`, countdown timer, location, and saves screenshot `13-10-event-detail-desktop.png`
+- [x] `[E2E-17]` asserts RSVP button bounding box height is >= 48px
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-1[67]\]"`
 
 **Tests**: e2e  
 **Gate**: full  

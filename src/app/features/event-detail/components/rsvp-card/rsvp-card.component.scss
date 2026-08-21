@@ -53,6 +53,7 @@
 
   &__confirm-btn {
     width: 100%;
+    min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -63,6 +64,7 @@
 
   &__cancel-btn {
     width: 100%;
+    min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -508,4 +508,49 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertFocusPrimaryColor(eventEditorPage.titleInput);
     });
   });
+
+  // Phase 3 - Task T8: Guest RSVP — Event Detail Page [E2E-16, E2E-17]
+  test.describe('Guest RSVP — Event Detail Page', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        events: [mockHappyPathEvent],
+      });
+    });
+
+    test('[E2E-16] should render public event details with h1 title, countdown, and location', async ({
+      page,
+      eventDetailPage,
+    }) => {
+      await page.goto('/evento/happy-event-1');
+      await eventDetailPage.assertLoaded();
+
+      // Assert event title in h1
+      const titleHeading = page.locator('h1').first();
+      await expect(titleHeading).toBeVisible();
+      await expect(titleHeading).toContainText('Aniversário dos Sonhos 2026');
+
+      // Assert countdown timer is visible
+      await expect(eventDetailPage.countdownTimer.first()).toBeVisible();
+
+      // Assert location text is visible
+      const locationEl = page.locator('.event-card__location-text, .event-detail__location, [data-testid="event-location"]').first();
+      await expect(locationEl).toBeVisible();
+      await expect(locationEl).toContainText(/Paulista/i);
+
+      // Screenshot baseline
+      await eventDetailPage.captureScreenshot('13-10-event-detail');
+    });
+
+    test('[E2E-17] should verify RSVP button bounding box height is >= 48px', async ({
+      page,
+      eventDetailPage,
+    }) => {
+      await page.goto('/evento/happy-event-1');
+      await eventDetailPage.assertLoaded();
+
+      // Assert RSVP button touch target >= 48px
+      await expect(eventDetailPage.rsvpBtn.first()).toBeVisible();
+      await assertMinTouchTarget(eventDetailPage.rsvpBtn.first(), 48);
+    });
+  });
 });

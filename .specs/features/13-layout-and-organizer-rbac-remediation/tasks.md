@@ -103,7 +103,7 @@ T6
 **Gate**: full
 **Commit**: `fix(profile): align name editor with form tokens`
 
-### T4: Normalize event-detail mobile gutter ownership
+### T4: Normalize event-detail mobile gutter ownership ✅
 
 **What**: Remove duplicated outer horizontal spacing inside EventCard while retaining the EventDetail page gutter and card-internal padding.
 **Where**: `src/app/features/event-detail/components/event-card/event-card.component.scss`
@@ -113,9 +113,9 @@ T6
 
 **Done when**:
 
-- [ ] Hero, details, host, and RSVP content share one visible 12px mobile page gutter.
-- [ ] Long title and address stay inside the viewport with zero document overflow.
-- [ ] Date/location controls remain 48px touch targets.
+- [x] Hero, details, host, and RSVP content share one visible 12px mobile page gutter.
+- [x] Long title and address stay inside the viewport with zero document overflow.
+- [x] Date/location controls remain 48px touch targets.
 
 **Tests**: unit + e2e
 **Gate**: full

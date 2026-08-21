@@ -81,14 +81,9 @@
   }
 
   &__details-wrapper {
-    padding: 0 12px;
     margin-top: -24px;
     position: relative;
     z-index: 20;
-
-    @media (min-width: 600px) {
-      padding: 0 24px;
-    }
   }
 
   &__details-card {
@@ -194,12 +189,7 @@
   }
 
   &__host-section {
-    padding: 0 12px;
     margin-top: 32px;
-
-    @media (min-width: 600px) {
-      padding: 0 24px;
-    }
   }
 
   &__host-label {

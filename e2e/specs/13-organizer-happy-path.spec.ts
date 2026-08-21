@@ -5,6 +5,7 @@ import {
   assertMinTouchTarget,
   assertFontFamily,
   assertFocusPrimaryColor,
+  assertNoHorizontalOverflow,
 } from '../helpers/design-tokens.helper';
 
 const mockHappyPathEvent = {
@@ -550,6 +551,29 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const locationEl = page.locator('.event-card__location-text, .event-detail__location, [data-testid="event-location"]').first();
       await expect(locationEl).toBeVisible();
       await expect(locationEl).toContainText(/Paulista/i);
+
+      const mobileSurfaceRegions = [
+        page.locator('.event-card__hero').first(),
+        page.locator('.event-card__details-card').first(),
+        page.locator('.event-card__host-section').first(),
+        page.locator('.event-detail__section').first(),
+      ];
+      const heroBox = await mobileSurfaceRegions[0].boundingBox();
+      expect(heroBox).not.toBeNull();
+      const expectedSurfaceInset = heroBox?.x ?? 0;
+      if ((page.viewportSize()?.width ?? 0) < 600) {
+        expect(expectedSurfaceInset).toBeGreaterThanOrEqual(11);
+        expect(expectedSurfaceInset).toBeLessThanOrEqual(13);
+      }
+      for (const region of mobileSurfaceRegions) {
+        const regionBox = await region.boundingBox();
+        expect(regionBox).not.toBeNull();
+        if (regionBox) {
+          expect(regionBox.x).toBeGreaterThanOrEqual(expectedSurfaceInset - 1);
+          expect(regionBox.x).toBeLessThanOrEqual(expectedSurfaceInset + 1);
+        }
+      }
+      await assertNoHorizontalOverflow(page);
 
       // Screenshot baseline
       await eventDetailPage.captureScreenshot('13-10-event-detail');

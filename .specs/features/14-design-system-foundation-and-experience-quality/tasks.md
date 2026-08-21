@@ -11,7 +11,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 
 - [x] T1 — Register the visual scenarios and semantic anchors
 - [x] T2 — Capture scroll-owner anchors deterministically
-- [ ] T3 — Add numerical visual failure assertions
+- [x] T3 — Add numerical visual failure assertions
 - [ ] T4 — Configure tracked visual snapshot output
 
 ## Test Coverage Matrix

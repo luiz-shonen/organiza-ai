@@ -151,10 +151,10 @@ The visual baselines also do not cover every supported page state in dark mode o
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Design | In Design |
-| DS-02 | Shared surfaces and form controls | Design | In Design |
+| DS-02 | Shared surfaces and form controls | Execute | In progress — T3 geometry assertion complete |
 | DS-03 | Shared surfaces and form controls | Design | In Design |
-| DS-04 | Shared surfaces and form controls | Design | In Design |
-| DS-05 | Shared surfaces and form controls | Design | In Design |
+| DS-04 | Shared surfaces and form controls | Execute | In progress — T3 field coherence assertion complete |
+| DS-05 | Shared surfaces and form controls | Execute | In progress — T3 touch/drawer assertions complete |
 | DS-06 | Shared surfaces and form controls | Design | In Design |
 | NAV-01 | Calm navigation and workflows | Design | In Design |
 | NAV-02 | Calm navigation and workflows | Design | In Design |
@@ -174,7 +174,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | VIS-01 | Full visual regression matrix | Execute | In progress — T2 anchor capture complete |
 | VIS-02 | Full visual regression matrix | Execute | In progress — T2 deterministic settling complete; T4 tracks comparisons |
 | VIS-03 | Full visual regression matrix | Execute | In progress — T1 registry complete; T29 will add migrated scenarios |
-| VIS-04 | Full visual regression matrix | Design | In Design |
+| VIS-04 | Full visual regression matrix | Execute | In progress — T3 numerical assertions complete |
 | VIS-05 | Full visual regression matrix | Execute | In progress — T2 resets scroll origins and waits for fonts |
 
 **Coverage:** 26 total, 0 mapped to tasks, 26 unmapped while Design is in progress.

@@ -282,4 +282,10 @@
 **Rationale:** Eliminates accidental horizontal page blowout on narrow mobile devices, guarantees touch accessibility, and provides deterministic visual regression protection across form steps and glassmorphic surfaces.  
 **Status:** In force. Specified and verified in 11-visual-screenshot-audit-and-layout-fixes.
 
+---
 
+### AD-032 — Internal UI Foundation, Scoped Event Accents, and Visual Matrix
+**Date:** 2026-08-21
+**Decision:** Organiza AI will maintain a product-owned UI foundation at `src/app/shared/ui/` with a public API for semantic tokens, surfaces, native Material form-field directives, actions/icons, drawers, and feedback. It will not be extracted into a distributable package until a second application proves the API. Shared form and surface styling must use component-owned custom properties and official Angular Material MDC tokens; global internal-selector overrides and competing borders are forbidden. Event/seasonal styling is scoped to named event-accent tokens and cannot override global brand, semantic, surface, field, success, or error tokens. Every registered visual scenario runs as a deterministic desktop/mobile × light/dark matrix across semantic anchors in the actual application scroll owner.
+**Rationale:** The previous global style approach creates segmented outlines, double borders, theme leakage, and incomplete screenshot coverage. A small internal boundary creates reuse immediately while preserving a future extraction path.
+**Status:** In force. Specified in 14-design-system-foundation-and-experience-quality.

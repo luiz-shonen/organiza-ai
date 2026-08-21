@@ -31,17 +31,34 @@ export abstract class BasePage {
   }
 
   async captureScreenshot(name: string): Promise<void> {
+    await this.captureAnchorScreenshot(name, 'main.app-content', false);
+  }
+
+  async captureAnchorScreenshot(name: string, anchorSelector: string, includeAnchorInFilename = true): Promise<void> {
+    const main = this.page.locator('main.app-content');
+    const anchor = this.page.locator(anchorSelector).first();
+
+    await expect(main).toBeVisible();
     await this.page.evaluate(() => {
       window.scrollTo(0, 0);
       document.querySelector<HTMLElement>('main.app-content')?.scrollTo(0, 0);
     });
-    await this.page.waitForTimeout(250);
+    await this.page.evaluate(async () => {
+      await document.fonts?.ready;
+      await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    });
+    await anchor.scrollIntoViewIfNeeded();
+    await expect(anchor).toBeInViewport();
+
     const viewport = this.page.viewportSize();
     const isMobile = viewport ? viewport.width < 768 : false;
     const deviceSuffix = isMobile ? 'mobile' : 'desktop';
-    await this.page.screenshot({
-      path: `e2e/screenshots/${name}-${deviceSuffix}.png`,
-      fullPage: true,
+    const anchorSuffix = includeAnchorInFilename ? `-${anchorSelector.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '')}` : '';
+    await anchor.screenshot({ path: `e2e/screenshots/${name}${anchorSuffix}-${deviceSuffix}.png` });
+
+    await this.page.evaluate(() => {
+      window.scrollTo(0, 0);
+      document.querySelector<HTMLElement>('main.app-content')?.scrollTo(0, 0);
     });
   }
 }

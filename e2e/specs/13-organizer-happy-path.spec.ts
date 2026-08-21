@@ -225,12 +225,34 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const step2NextBtn = eventEditorPage.nextStepBtns.nth(1);
       await expect(step2NextBtn).toBeEnabled();
 
+      const viewportWidth = page.viewportSize()?.width ?? 0;
+      const editorRegions = [
+        page.locator('.editor__card').first(),
+        page.locator('.editor__title').first(),
+        eventEditorPage.cepInput.locator('xpath=ancestor::mat-form-field'),
+        eventEditorPage.numberInput.locator('xpath=ancestor::mat-form-field'),
+        eventEditorPage.streetInput.locator('xpath=ancestor::mat-form-field'),
+        step2NextBtn,
+      ];
+      for (const region of editorRegions) {
+        const regionBox = await region.boundingBox();
+        expect(regionBox).not.toBeNull();
+        if (regionBox) {
+          expect(regionBox.x).toBeGreaterThanOrEqual(12);
+          expect(regionBox.x + regionBox.width).toBeLessThanOrEqual(viewportWidth - 12);
+        }
+      }
+      const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
+      await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
+      await expect(stepperHeader).toHaveCSS('flex-wrap', 'nowrap');
+      await assertNoHorizontalOverflow(page);
+
       const appContent = page.locator('main.app-content');
       await expect(appContent).toBeVisible();
       await appContent.evaluate((element) => element.scrollTo({ left: 48, top: 72 }));
       await expect
         .poll(() => appContent.evaluate((element) => element.scrollLeft))
-        .toBeGreaterThan(0);
+        .toEqual(0);
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-05-step2-viacep');

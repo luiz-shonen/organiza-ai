@@ -121,7 +121,7 @@ T6
 **Gate**: full
 **Commit**: `fix(event-detail): normalize mobile content gutters`
 
-### T5: Protect the event-editor mobile canvas and stepper insets
+### T5: Protect the event-editor mobile canvas and stepper insets ✅
 
 **What**: Constrain the editor surface and active-step fields to the required viewport insets without suppressing intended horizontal stepper-header scrolling.
 **Where**: `src/app/features/admin/event-editor/event-editor.container.scss`
@@ -131,9 +131,9 @@ T6
 
 **Done when**:
 
-- [ ] Editor card, title, active form fields, and actions maintain `>= 12px` inset on Pixel 5 before and after ViaCEP interaction.
-- [ ] The stepper header keeps `max-width: 100%`, `overflow-x: auto`, `flex-wrap: nowrap`, and touch scrolling.
-- [ ] No page or app-shell horizontal offset remains after a focused field is captured.
+- [x] Editor card, title, active form fields, and actions maintain `>= 12px` inset on Pixel 5 before and after ViaCEP interaction.
+- [x] The stepper header keeps `max-width: 100%`, `overflow-x: auto`, `flex-wrap: nowrap`, and touch scrolling.
+- [x] No page or app-shell horizontal offset remains after a focused field is captured.
 
 **Tests**: unit + e2e
 **Gate**: full

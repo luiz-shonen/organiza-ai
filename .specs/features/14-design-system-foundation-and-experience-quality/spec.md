@@ -158,8 +158,8 @@ The visual baselines also do not cover every supported page state in dark mode o
 | DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map and T13 Family roster icon adoption complete |
 | NAV-01 | Calm navigation and workflows | Execute | In progress — T26 provides the quiet, authorized navigation presentation; T27 will reduce the root toolbar to its menu and profile triggers |
 | NAV-02 | Calm navigation and workflows | Execute | In progress — T25 establishes discriminated navigation, RSVP, and collaborator requests; T26 emits authorized route actions and T27 will host them in the root sheet |
-| NAV-03 | Calm navigation and workflows | Execute | In progress — T24 presents RSVP as an end-positioned, internally scrolling workflow sheet; T25 establishes its typed root-host request/result contract |
-| NAV-04 | Calm navigation and workflows | Execute | In progress — T25 restores focus to the request trigger after every close; T27 will wire all root close paths |
+| NAV-03 | Calm navigation and workflows | Execute | In progress — T27 renders RSVP through the typed root end drawer; T28 will migrate collaborator management to the same host |
+| NAV-04 | Calm navigation and workflows | Execute | In progress — T25 restores focus to the request trigger and T27 wires the root close control, backdrop, and Escape paths |
 | NAV-05 | Calm navigation and workflows | Design | In Design |
 | FEED-01 | Uniform feedback and accents | Execute | Complete — T16-T21 shared feedback presentation, publishing, and caller migrations complete |
 | FEED-02 | Uniform feedback and accents | Execute | Complete — T16-T21 shared semantic error presentation and caller migrations complete |

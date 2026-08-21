@@ -7,6 +7,32 @@
     (closed)="drawerService.close()"
     class="app-sidenav-drawer glass-drawer"
   >
+    @if (drawerService.request(); as request) {
+      @switch (request.kind) {
+        @case ('navigation') {
+          <app-navigation-drawer
+            [isAuthenticated]="isAuthenticated()"
+            [isSuperAdmin]="isSuperAdmin()"
+            [displayName]="user()?.displayName ?? ''"
+            [email]="user()?.email ?? ''"
+            [photoUrl]="user()?.photoURL ?? null"
+            [activeRoute]="currentUrl()"
+            [themeMode]="themeService.mode()"
+            (navigate)="navigateFromDrawer($event)"
+            (themeChange)="themeService.setMode($event)"
+            (logout)="logout()"
+            (close)="drawerService.close()"
+          />
+        }
+        @case ('rsvp') {
+          <app-rsvp-drawer
+            [drawerData]="request.data"
+            (submitted)="completeRsvp($event)"
+            (closed)="drawerService.close()"
+          />
+        }
+      }
+    }
   </mat-sidenav>
 
   <mat-sidenav-content>
@@ -24,42 +50,16 @@
 
         <span class="app-toolbar__spacer"></span>
 
-        @if (isAuthenticated()) {
-          <a
-            mat-button
-            routerLink="/meus-eventos"
-            aria-label="Meus eventos"
-            matTooltip="Meus Eventos"
-            class="app-toolbar__events-btn"
-            data-testid="nav-my-events-btn"
-          >
-            <mat-icon>calendar_month</mat-icon>
-            <span class="app-toolbar__label">Meus Eventos</span>
-          </a>
-        }
-
-        @if (isSuperAdmin()) {
-          <a
-            mat-button
-            routerLink="/admin"
-            aria-label="Painel administrativo"
-            matTooltip="Painel Administrativo"
-            class="app-toolbar__admin-btn"
-            data-testid="nav-admin-panel-btn"
-          >
-            <mat-icon>admin_panel_settings</mat-icon>
-            <span class="app-toolbar__label">Painel Admin</span>
-          </a>
-        }
-
-        <app-theme-toggle />
+        <button mat-icon-button type="button" class="app-toolbar__menu-btn" aria-label="Abrir menu de navegação" data-testid="navigation-menu-trigger" (click)="openNavigation($event)">
+          <mat-icon aria-hidden="true">menu</mat-icon>
+        </button>
 
         @if (user() && (!user()!.isAnonymous || session())) {
           <button
             mat-icon-button
-            [matMenuTriggerFor]="userMenu"
-            aria-label="Menu do usuário"
-            matTooltip="Menu do Usuário"
+            type="button"
+            (click)="navigateFromDrawer('/perfil')"
+            aria-label="Abrir meu perfil"
             class="app-toolbar__user-btn"
           >
             @if (user()!.photoURL) {
@@ -68,37 +68,6 @@
               <mat-icon>account_circle</mat-icon>
             }
           </button>
-          <mat-menu #userMenu="matMenu">
-            <div class="app-toolbar__user-email">
-              {{
-                session()?.name ||
-                  user()?.displayName ||
-                  user()?.email ||
-                  session()?.phone ||
-                  'Convidado'
-              }}
-            </div>
-            @if (isAuthenticated()) {
-              <a mat-menu-item routerLink="/meus-eventos" data-testid="menu-my-events-btn">
-                <mat-icon>calendar_month</mat-icon>
-                <span>Meus Eventos</span>
-              </a>
-            }
-            <a mat-menu-item routerLink="/perfil" data-testid="menu-profile-btn">
-              <mat-icon>person</mat-icon>
-              <span>Meu Perfil</span>
-            </a>
-            @if (isSuperAdmin()) {
-              <a mat-menu-item routerLink="/admin" data-testid="menu-admin-btn">
-                <mat-icon>admin_panel_settings</mat-icon>
-                <span>Painel Admin</span>
-              </a>
-            }
-            <button mat-menu-item (click)="logout()" data-testid="menu-logout-btn">
-              <mat-icon>logout</mat-icon>
-              <span>Sair</span>
-            </button>
-          </mat-menu>
         } @else {
           <a
             mat-flat-button

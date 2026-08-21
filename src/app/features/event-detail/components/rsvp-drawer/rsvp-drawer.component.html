@@ -4,7 +4,7 @@
       <h2 id="rsvp-drawer-title" class="rsvp-drawer__title">Confirme seus dados</h2>
       <p class="rsvp-drawer__description">Sua presença principal permanece vinculada à sua conta verificada.</p>
     </div>
-    <button mat-icon-button mat-dialog-close type="button" aria-label="Fechar confirmação" data-testid="rsvp-close-btn">
+    <button mat-icon-button type="button" aria-label="Fechar confirmação" data-testid="rsvp-close-btn" (click)="closeDrawer()">
       <mat-icon aria-hidden="true">close</mat-icon>
     </button>
   </header>
@@ -64,7 +64,7 @@
     </div>
 
     <footer class="rsvp-drawer__actions" mat-dialog-actions align="end">
-      <button mat-button mat-dialog-close type="button" aria-label="Cancelar confirmação" data-testid="rsvp-cancel-btn">Cancelar</button>
+      <button mat-button type="button" aria-label="Cancelar confirmação" data-testid="rsvp-cancel-btn" (click)="closeDrawer()">Cancelar</button>
       <button mat-flat-button color="primary" type="button" (click)="submit()" aria-label="Confirmar presença" data-testid="rsvp-confirm-btn">
         Confirmar
       </button>

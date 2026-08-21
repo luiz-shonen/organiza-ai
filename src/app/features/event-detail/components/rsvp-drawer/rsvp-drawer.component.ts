@@ -1,7 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
+  input,
+  output,
   signal,
 } from '@angular/core';
 import {
@@ -26,19 +29,9 @@ import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
+import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
 
-export interface RsvpDrawerData {
-  session: GuestSession | null;
-  familyMembers?: FamilyMember[];
-  userId?: string;
-}
-
-export interface RsvpDrawerResult {
-  name: string;
-  phone: string;
-  companions: GuestCompanion[];
-  selectedFamilyMembers?: FamilyMember[];
-}
+export type RsvpDrawerData = RsvpDrawerRequestData;
 
 const trimmedRequired: ValidatorFn = (control) =>
   typeof control.value === 'string' && control.value.trim().length > 0 ? null : { required: true };
@@ -59,24 +52,36 @@ const trimmedRequired: ValidatorFn = (control) =>
   styleUrl: './rsvp-drawer.component.scss',
 })
 export class RsvpDrawerComponent {
-  private readonly dialogRef = inject(MatDialogRef<RsvpDrawerComponent>);
-  private readonly data: RsvpDrawerData = inject(MAT_DIALOG_DATA, { optional: true }) ?? { session: null };
+  private readonly dialogRef = inject(MatDialogRef<RsvpDrawerComponent>, { optional: true });
+  private readonly legacyData: RsvpDrawerData | null = inject(MAT_DIALOG_DATA, { optional: true });
   private readonly fb = inject(FormBuilder);
   private readonly familyService = inject(FamilyService);
 
-  readonly familyMembers = signal<FamilyMember[]>(this.data.familyMembers ?? []);
+  readonly drawerData = input<RsvpDrawerData>(this.legacyData ?? { session: null, familyMembers: [], userId: '' });
+  readonly submitted = output<RsvpDrawerResult>();
+  readonly closed = output<void>();
+
+  readonly familyMembers = signal<FamilyMember[]>(this.legacyData?.familyMembers ?? []);
   readonly selectedFamilyMemberIds = signal<string[]>([]);
   readonly isAddingInline = signal<boolean>(false);
 
   protected readonly form = this.fb.nonNullable.group({
-    name: [this.data.session?.name ?? '', [Validators.required]],
-    phone: [this.data.session?.phone ?? '', [Validators.required, Validators.minLength(10)]],
+    name: [this.legacyData?.session?.name ?? '', [Validators.required]],
+    phone: [this.legacyData?.session?.phone ?? '', [Validators.required, Validators.minLength(10)]],
     companionsCount: [0, [Validators.min(0), Validators.max(10)]],
     companions: this.fb.nonNullable.array<string>([]),
   });
 
   protected get companions(): FormArray {
     return this.form.controls.companions;
+  }
+
+  constructor() {
+    effect(() => {
+      const data = this.drawerData();
+      this.familyMembers.set(data.familyMembers ?? []);
+      this.form.patchValue({ name: data.session?.name ?? '', phone: data.session?.phone ?? '' });
+    });
   }
 
   protected onCompanionsCountInput(event: Event): void {
@@ -107,8 +112,8 @@ export class RsvpDrawerComponent {
   protected async onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): Promise<void> {
     try {
       this.isAddingInline.set(true);
-      const member = this.data.userId
-        ? await this.familyService.addFamilyMember(this.data.userId, payload)
+      const member = this.drawerData().userId
+        ? await this.familyService.addFamilyMember(this.drawerData().userId, payload)
         : {
             id: `temp_${Date.now()}`,
             name: payload.name,
@@ -130,13 +135,26 @@ export class RsvpDrawerComponent {
     }
 
     const raw = this.form.getRawValue();
-    this.dialogRef.close({
+    const result: RsvpDrawerResult = {
       name: raw.name,
       phone: raw.phone,
       companions: raw.companions.map((name) => ({ name: name.trim() })),
       selectedFamilyMembers: this.familyMembers().filter((member) =>
         this.selectedFamilyMemberIds().includes(member.id),
       ),
-    });
+    };
+    if (this.dialogRef) {
+      this.dialogRef.close(result);
+    } else {
+      this.submitted.emit(result);
+    }
+  }
+
+  protected closeDrawer(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    } else {
+      this.closed.emit();
+    }
   }
 }

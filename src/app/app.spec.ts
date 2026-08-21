@@ -52,7 +52,7 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render Meus Eventos button when user is authenticated', () => {
+  it('renders the accessible navigation trigger when a user is authenticated', () => {
     const authService = TestBed.inject(AuthService) as any;
     authService.currentUser = signal({ uid: 'user-1', email: 'user@test.com', isAnonymous: false });
     authService.isSuperAdmin = signal(false);
@@ -61,15 +61,12 @@ describe('App', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const eventsBtn = compiled.querySelector('[data-testid="nav-my-events-btn"]');
-    expect(eventsBtn).toBeTruthy();
-    expect(eventsBtn?.textContent).toContain('Meus Eventos');
-
-    const adminBtn = compiled.querySelector('[data-testid="nav-admin-panel-btn"]');
-    expect(adminBtn).toBeNull();
+    const menuTrigger = compiled.querySelector('[data-testid="navigation-menu-trigger"]');
+    expect(menuTrigger).toBeTruthy();
+    expect(menuTrigger?.getAttribute('aria-label')).toBe('Abrir menu de navegação');
   });
 
-  it('should render Painel Admin button only when user is Super Admin', () => {
+  it('keeps the toolbar limited to navigation and profile controls for super admins', () => {
     const authService = TestBed.inject(AuthService) as any;
     authService.currentUser = signal({ uid: 'admin-1', email: 'luiz.gmr.dev@gmail.com', isAnonymous: false });
     authService.isSuperAdmin = signal(true);
@@ -78,9 +75,7 @@ describe('App', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const adminBtn = compiled.querySelector('[data-testid="nav-admin-panel-btn"]');
-    expect(adminBtn).toBeTruthy();
-    expect(adminBtn?.textContent).toContain('Painel Admin');
+    expect(compiled.querySelector('[data-testid="navigation-menu-trigger"]')).toBeTruthy();
+    expect(compiled.querySelector('[data-testid="nav-admin-panel-btn"]')).toBeNull();
   });
 });
-

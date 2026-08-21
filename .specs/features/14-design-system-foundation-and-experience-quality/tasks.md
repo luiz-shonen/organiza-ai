@@ -418,7 +418,7 @@ T29 → T30
 **Gate**: full
 **Commit**: `feat(drawer): add accessible navigation sheet`
 
-### T27: Compose the root drawer host and calm toolbar
+### T27: [x] Compose the root drawer host and calm toolbar
 
 **What**: Populate the root side sheet through typed `@switch` branches, reduce the toolbar to brand/menu/profile, and retain focus restoration for all close paths.
 **Where**: `src/app/app.html`

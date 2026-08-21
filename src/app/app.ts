@@ -11,9 +11,7 @@ import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import {
@@ -24,8 +22,10 @@ import {
   SeasonalThemeService,
   HeaderService,
 } from './core/services';
-import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
+import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
+import { RsvpDrawerComponent } from './features/event-detail/components/rsvp-drawer/rsvp-drawer.component';
+import type { RsvpDrawerResult } from './core/models';
 
 @Component({
   selector: 'app-root',
@@ -36,11 +36,10 @@ import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/s
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
     MatSidenavModule,
-    MatTooltipModule,
-    ThemeToggleComponent,
     SeasonalOverlayComponent,
+    NavigationDrawerComponent,
+    RsvpDrawerComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -51,7 +50,7 @@ import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/s
 })
 export class App {
   private readonly authService = inject(AuthService);
-  private readonly themeService = inject(ThemeService);
+  protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly guestSession = inject(GuestSessionService);
   protected readonly drawerService = inject(DrawerService);
@@ -86,7 +85,7 @@ export class App {
   protected readonly isOffline = signal(!navigator.onLine);
   protected readonly session = this.guestSession.session;
 
-  private readonly currentUrl = toSignal(
+  protected readonly currentUrl = toSignal(
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
       map((event) => (event as NavigationEnd).urlAfterRedirects),
@@ -99,6 +98,18 @@ export class App {
   protected async logout(): Promise<void> {
     await this.authService.logout();
     await this.router.navigate(['/login']);
+  }
+
+  protected openNavigation(event: Event): void {
+    this.drawerService.open({ kind: 'navigation', trigger: event.currentTarget as HTMLElement });
+  }
+
+  protected navigateFromDrawer(route: string): void {
+    this.router.navigateByUrl(route).catch(console.error);
+  }
+
+  protected completeRsvp(result: RsvpDrawerResult): void {
+    this.drawerService.completeRsvp(result);
   }
 
   protected setOffline(): void {

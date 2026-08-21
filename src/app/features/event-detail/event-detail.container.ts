@@ -20,14 +20,11 @@ import {
   FamilyService,
   ConfettiService,
   SeasonalThemeService,
+  DrawerService,
 } from '../../core/services';
-import { PartyEvent, PartyItem, Guest } from '../../core/models';
+import { PartyEvent, PartyItem, Guest, type RsvpDrawerResult } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { FeedbackService } from '../../shared/ui';
-import {
-  RsvpDrawerComponent,
-  RsvpDrawerResult,
-} from './components/rsvp-drawer/rsvp-drawer.component';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
@@ -62,6 +59,7 @@ export class EventDetailContainer implements OnInit {
   private readonly confetti = inject(ConfettiService);
   private readonly seasonalThemeService = inject(SeasonalThemeService);
   private readonly dialog = inject(MatDialog);
+  private readonly drawerService = inject(DrawerService);
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -141,7 +139,7 @@ export class EventDetailContainer implements OnInit {
     });
   }
 
-  protected async onConfirmRsvp(): Promise<void> {
+  protected async onConfirmRsvp(event?: Event): Promise<void> {
     this.rsvpLoading.set(true);
     try {
       let user = this.authService.currentUser();
@@ -158,26 +156,11 @@ export class EventDetailContainer implements OnInit {
 
         const familyMembers = await this.familyService.getFamilyMembers(user.uid);
 
-        const dialogRef = this.dialog.open(RsvpDrawerComponent, {
-          width: 'min(100vw, 480px)',
-          maxWidth: '100vw',
-          height: '100dvh',
-          maxHeight: '100dvh',
-          position: { right: '0' },
-          panelClass: 'rsvp-drawer-panel',
-          data: {
-            session: { name, phone },
-            familyMembers,
-            userId: user.uid,
-          },
-        });
-
-        dialogRef.afterClosed().subscribe(async (result: RsvpDrawerResult | undefined) => {
-          if (!result) {
-            this.rsvpLoading.set(false);
-            return;
-          }
-
+        this.drawerService.open({
+          kind: 'rsvp',
+          trigger: event?.currentTarget as HTMLElement | undefined,
+          data: { session: { name, phone }, familyMembers, userId: user.uid },
+          onComplete: async (result: RsvpDrawerResult) => {
           this.rsvpLoading.set(true);
           try {
             await this.guestService.batchConfirmRsvp(
@@ -206,6 +189,7 @@ export class EventDetailContainer implements OnInit {
           } finally {
             this.rsvpLoading.set(false);
           }
+          },
         });
         return;
       }

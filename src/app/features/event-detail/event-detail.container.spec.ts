@@ -15,6 +15,7 @@ import {
   FamilyService,
   ConfettiService,
   SeasonalThemeService,
+  DrawerService,
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest, FamilyMember } from '../../core/models';
 
@@ -70,6 +71,8 @@ describe('EventDetailContainer', () => {
   let mockDialog: {
     open: ReturnType<typeof vi.fn>;
   };
+  let mockDrawerService: { open: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
+  let rsvpResult: { name: string; phone: string; companions: never[]; selectedFamilyMembers: FamilyMember[] };
 
   const mockEvent: PartyEvent = {
     id: 'evt-123',
@@ -160,6 +163,12 @@ describe('EventDetailContainer', () => {
       error: vi.fn(),
       info: vi.fn(),
     };
+    rsvpResult = {
+      name: 'Lucas Dev',
+      phone: '11999998888',
+      companions: [],
+      selectedFamilyMembers: [],
+    };
     mockDialog = {
       open: vi.fn().mockReturnValue({
         afterClosed: () => of({
@@ -169,6 +178,10 @@ describe('EventDetailContainer', () => {
           selectedFamilyMembers: [],
         }),
       }),
+    };
+    mockDrawerService = {
+      open: vi.fn((request: { onComplete?: (result: typeof rsvpResult) => void }) => request.onComplete?.(rsvpResult)),
+      close: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -185,6 +198,7 @@ describe('EventDetailContainer', () => {
         { provide: SeasonalThemeService, useValue: mockSeasonalThemeService },
         { provide: FeedbackService, useValue: mockFeedback },
         { provide: MatDialog, useValue: mockDialog },
+        { provide: DrawerService, useValue: mockDrawerService },
       ],
     }).compileComponents();
 
@@ -263,7 +277,7 @@ describe('EventDetailContainer', () => {
       await (component as any).onConfirmRsvp();
 
       expect(mockAuthService.loginWithGoogle).not.toHaveBeenCalled();
-      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockDrawerService.open).toHaveBeenCalled();
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
         'evt-123',
         expect.objectContaining({
@@ -283,15 +297,7 @@ describe('EventDetailContainer', () => {
       ];
       mockFamilyService.getFamilyMembers.mockResolvedValue(mockFamily);
 
-      mockDialog.open.mockReturnValue({
-        afterClosed: () =>
-          of({
-            name: 'Lucas Dev',
-            phone: '11999998888',
-            companions: [],
-            selectedFamilyMembers: mockFamily,
-          }),
-      });
+      rsvpResult = { name: 'Lucas Dev', phone: '11999998888', companions: [], selectedFamilyMembers: mockFamily };
 
       currentUserSignal.set({
         uid: 'usr-1',
@@ -304,7 +310,7 @@ describe('EventDetailContainer', () => {
 
       await (component as any).onConfirmRsvp();
 
-      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockDrawerService.open).toHaveBeenCalled();
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
         'evt-123',
         expect.objectContaining({

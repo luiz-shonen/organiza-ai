@@ -12,6 +12,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T1 — Register the visual scenarios and semantic anchors
 - [x] T2 — Capture scroll-owner anchors deterministically
 - [x] T3 — Add numerical visual failure assertions
+  - Corrective verification: inspect `OrgFormField` MDC focus tokens through the owning Material field host, ignoring transparent notch sides and rejecting visible multi-colour outlines.
 - [x] T4 — Configure tracked visual snapshot output
 
 ### Phase 2

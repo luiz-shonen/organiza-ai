@@ -94,9 +94,39 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
   const target = locator.first();
   await target.focus();
   const state = await target.evaluate((element) => {
+    const field = element.closest('mat-form-field');
+    if (field) {
+      const fieldStyle = window.getComputedStyle(field);
+      const outlineSegments = Array.from(field.querySelectorAll<HTMLElement>('.mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing'));
+      return {
+        field: true,
+        focusLabel: fieldStyle.getPropertyValue('--mdc-outlined-text-field-focus-label-text-color').trim(),
+        focusOutline: fieldStyle.getPropertyValue('--mdc-outlined-text-field-focus-outline-color').trim(),
+        primary: fieldStyle.getPropertyValue('--org-primary').trim(),
+        segments: outlineSegments.flatMap((segment) => {
+          const style = window.getComputedStyle(segment);
+          return [
+            [style.borderTopColor, style.borderTopWidth],
+            [style.borderRightColor, style.borderRightWidth],
+            [style.borderBottomColor, style.borderBottomWidth],
+            [style.borderLeftColor, style.borderLeftWidth],
+          ] as Array<[string, string]>;
+        }),
+      };
+    }
     const style = window.getComputedStyle(element);
-    return { backgroundColor: style.backgroundColor, borderColor: style.borderColor, color: style.color };
+    return { field: false, backgroundColor: style.backgroundColor, borderColor: style.borderColor, color: style.color };
   });
+  if (state.field) {
+    expect(state.primary).not.toBe('');
+    expect(state.focusLabel).toBe(state.primary);
+    expect(state.focusOutline).toBe(state.primary);
+    const segmentColors = state.segments
+      .filter(([color, width]) => color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent' && parseFloat(width) > 0)
+      .map(([color]) => color);
+    expect(new Set(segmentColors).size).toBe(1);
+    return;
+  }
   expect(state.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
   expect(state.borderColor).not.toBe('rgba(0, 0, 0, 0)');
   expect(state.color).not.toBe('rgba(0, 0, 0, 0)');

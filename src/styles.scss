@@ -2,6 +2,7 @@
 @use './app/shared/ui/tokens/semantic' as semantic;
 @use './app/shared/ui/forms/org-form-field';
 @use './app/shared/ui/forms/org-field-label';
+@use './app/shared/ui/actions/org-actions';
 
 :root {
   // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
@@ -229,11 +230,11 @@ mat-icon,
 }
 
 /* Clear Disabled Button State & Cursor Indication */
-button:disabled,
-button[disabled],
-.mat-mdc-button-disabled,
-.mat-mdc-button-base:disabled,
-.mat-mdc-button-base[disabled] {
+button:not(.org-button):not(.org-icon-button):disabled,
+button:not(.org-button):not(.org-icon-button)[disabled],
+.mat-mdc-button-disabled:not(.org-button):not(.org-icon-button),
+.mat-mdc-button-base:not(.org-button):not(.org-icon-button):disabled,
+.mat-mdc-button-base:not(.org-button):not(.org-icon-button)[disabled] {
   cursor: not-allowed !important;
   pointer-events: auto !important;
   opacity: 0.55 !important;
@@ -473,7 +474,7 @@ button[disabled],
 }
 
 /* Angular Material Button Theme Integration & Master Icon Alignment System */
-.mat-mdc-button-base {
+.mat-mdc-button-base:not(.org-button):not(.org-icon-button) {
   position: relative !important;
   overflow: hidden !important;
   border-radius: 28px !important;
@@ -513,7 +514,7 @@ button[disabled],
 }
 
 /* Icon margin exclusively for text buttons with leading icons */
-.mat-mdc-button-base:not(.mat-mdc-icon-button) {
+.mat-mdc-button-base:not(.org-button):not(.org-icon-button):not(.mat-mdc-icon-button) {
   mat-icon,
   .mat-icon,
   .material-icons,
@@ -529,7 +530,7 @@ button[disabled],
 }
 
 /* Icon-only buttons: 100% centered, zero margins */
-.mat-mdc-icon-button {
+.mat-mdc-icon-button:not(.org-icon-button) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -944,7 +945,7 @@ input[type='time'] {
 }
 
 // Global Category Chips (Organiza AI Vibrant Modernism style)
-.org-chip {
+.org-chip:not(.org-chip--primitive) {
   &.cat-aniversario {
     --chip-bg: #ffe499;
     --chip-color: #d35400;

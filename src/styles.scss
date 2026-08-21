@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use './app/shared/ui/tokens/semantic' as semantic;
 
 :root {
   // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
@@ -185,6 +186,8 @@ html.theme-ano-novo {
   --org-tertiary: #e0e0e0;
   --org-gradient-primary: linear-gradient(135deg, #fbc02d 0%, #fff59d 50%, #e0e0e0 100%);
 }
+
+@include semantic.apply;
 
 body {
   color-scheme: light;

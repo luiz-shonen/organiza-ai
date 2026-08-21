@@ -164,8 +164,8 @@ The visual baselines also do not cover every supported page state in dark mode o
 | FEED-01 | Uniform feedback and accents | Design | In Design |
 | FEED-02 | Uniform feedback and accents | Design | In Design |
 | FEED-03 | Uniform feedback and accents | Design | In Design |
-| THEME-01 | Uniform feedback and accents | Design | In Design |
-| THEME-02 | Uniform feedback and accents | Design | In Design |
+| THEME-01 | Uniform feedback and accents | Execute | In progress — T5 seasonal semantic token mapping complete |
+| THEME-02 | Uniform feedback and accents | Execute | In progress — T5 seasonal semantic token mapping complete |
 | RSVP-01 | Complete RSVP companion information | Design | In Design |
 | RSVP-02 | Complete RSVP companion information | Design | In Design |
 | RSVP-03 | Complete RSVP companion information | Design | In Design |

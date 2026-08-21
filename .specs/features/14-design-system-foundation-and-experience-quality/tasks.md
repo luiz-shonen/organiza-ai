@@ -14,6 +14,15 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T3 — Add numerical visual failure assertions
 - [x] T4 — Configure tracked visual snapshot output
 
+### Phase 2
+
+- [x] T5 — Define semantic and seasonal theme tokens
+- [ ] T6 — Create the single-owner glass surface primitive
+- [ ] T7 — Create the native Material field directive
+- [ ] T8 — Create the field-label contract
+- [ ] T9 — Create shared action and chip directives
+- [ ] T10 — Create the semantic icon map
+
 ## Test Coverage Matrix
 
 > Generated from `AGENTS.md`, `DESIGN.md`, `README.md`, `package.json`, `playwright.config.ts`, existing Vitest component specs, and existing Playwright POM/spec patterns. Existing project quality rules require a spec for every feature, OnPush components, WCAG assertions, atomic E2E tests, a screenshot per state, both desktop and mobile coverage, and no horizontal overflow.

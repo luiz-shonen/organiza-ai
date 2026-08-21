@@ -44,4 +44,14 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(component.googleCalendarUrl()).toContain('https://calendar.google.com');
     expect(component.googleCalendarUrl()).toContain('Churrasco%20de%20Domingo');
   });
+
+  it('should compose hero and details with shared seasonal surfaces and semantic icons', () => {
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelectorAll('org-surface')).toHaveLength(2);
+    expect(element.querySelector('org-surface[variant="hero"]')).toBeTruthy();
+    expect(element.querySelector('org-surface[variant="panel"]')).toBeTruthy();
+    expect(element.querySelectorAll('.glass-card')).toHaveLength(0);
+    expect(element.querySelectorAll('org-icon')).not.toHaveLength(0);
+  });
 });

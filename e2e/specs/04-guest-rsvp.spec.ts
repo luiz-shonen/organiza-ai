@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/test.fixture';
+import { assertNoHorizontalOverflow, assertSingleSurfaceRing } from '../helpers/design-tokens.helper';
 
 test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', () => {
   test('should render event detail route structure, banner, and countdown timer', async ({
@@ -27,6 +28,10 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
       // 1. Verify Event Banner & Hero info
       const bannerHero = page.locator('.event-card__hero');
       await expect(bannerHero).toBeVisible();
+      await assertSingleSurfaceRing(bannerHero.locator('section.org-surface'));
+
+      const detailsSurface = page.locator('.event-card__details-card');
+      await assertSingleSurfaceRing(detailsSurface.locator('section.org-surface'));
 
       const eventTitle = page.locator('h1.event-card__title');
       await expect(eventTitle).toBeVisible();
@@ -44,6 +49,7 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
       // 4. Verify location details
       const locationText = page.locator('.event-card__location-text');
       await expect(locationText).toBeVisible();
+      await assertNoHorizontalOverflow(page);
     } else {
       // Route structure loaded in not-found fallback
       const notFoundAlert = page.locator('.event-detail__not-found');

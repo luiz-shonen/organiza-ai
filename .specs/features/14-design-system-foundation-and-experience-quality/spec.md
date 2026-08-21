@@ -151,7 +151,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel complete |
-| DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home, T12 Profile, and T13 Family roster single-surface migrations complete |
+| DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home, T12 Profile, T13 Family roster, and T14 Event detail single-surface migrations complete |
 | DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, and T13 Family roster field adoptions complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe and T12 Profile focus contract adoption complete |
 | DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home and T13 Family roster action contract migrations complete |
@@ -164,8 +164,8 @@ The visual baselines also do not cover every supported page state in dark mode o
 | FEED-01 | Uniform feedback and accents | Design | In Design |
 | FEED-02 | Uniform feedback and accents | Design | In Design |
 | FEED-03 | Uniform feedback and accents | Design | In Design |
-| THEME-01 | Uniform feedback and accents | Execute | In progress — T5 seasonal semantic token mapping complete |
-| THEME-02 | Uniform feedback and accents | Execute | In progress — T5 seasonal semantic token mapping complete |
+| THEME-01 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal hero adoption complete |
+| THEME-02 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal surface adoption complete |
 | RSVP-01 | Complete RSVP companion information | Design | In Design |
 | RSVP-02 | Complete RSVP companion information | Design | In Design |
 | RSVP-03 | Complete RSVP companion information | Design | In Design |

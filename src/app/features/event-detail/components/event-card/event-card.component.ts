@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, computed } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { PartyEvent } from '../../../../core/models/event.model';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-event-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule, MatButtonModule, DatePipe],
+  imports: [DatePipe, TitleCasePipe, OrgIconComponent, OrgSurfaceComponent],
   templateUrl: './event-card.component.html',
   styleUrl: './event-card.component.scss',
 })

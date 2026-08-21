@@ -384,9 +384,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Home grid uses `repeat(auto-fill, minmax(min(100%, 300px), 1fr))` preventing stretched single-card layouts
-- [ ] Heading typography uses Plus Jakarta Sans font hierarchy (weight 800 display, 700 headlines)
-- [ ] Build gate passes: `npm run build`
+- [x] Home grid uses `repeat(auto-fill, minmax(min(100%, 300px), 1fr))` preventing stretched single-card layouts
+- [x] Heading typography uses Plus Jakarta Sans font hierarchy (weight 800 display, 700 headlines)
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

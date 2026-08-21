@@ -3,6 +3,25 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 1,
-  "lessons": []
+  "next_id": 2,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "spec_deviation::always style cdk overlay dark backdrop with blur scrim and avoid nesting horizontal paddings inside angular material stepper containers",
+      "text": "Always style cdk-overlay-dark-backdrop with blur/scrim and avoid nesting horizontal paddings inside Angular Material stepper containers",
+      "signal": "spec_deviation",
+      "scope": "",
+      "status": "candidate",
+      "features": [
+        "12-design-system-rbac-visual-polish"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "Task T6 & T9"
+      ],
+      "created": "2026-08-21T12:46:44Z",
+      "last_seen": "2026-08-21T12:46:44Z"
+    }
+  ]
 }

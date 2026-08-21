@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: `.specs/features/12-design-system-rbac-visual-polish/design.md`  
-**Status**: In Progress
+**Status**: Completed
 
 ---
 
@@ -91,9 +91,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `AdminFormDrawerComponent` is removed from `App` imports and `app.html`
-- [ ] Unused admin drawer code is cleanly removed without breaking `DrawerService`
-- [ ] Unit tests pass: `npm test -- --watch=false`
+- [x] `AdminFormDrawerComponent` is removed from `App` imports and `app.html`
+- [x] Unused admin drawer code is cleanly removed without breaking `DrawerService`
+- [x] Unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -113,10 +113,10 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] "Meus Eventos" button (`routerLink="/meus-eventos"`) rendered on desktop toolbar when user is authenticated
-- [ ] "Painel Admin" link is hidden unless `isSuperAdmin()` is true
-- [ ] User menu dropdown includes "Meus Eventos" and "Meu Perfil"
-- [ ] Unit tests pass: `npm test -- --watch=false`
+- [x] "Meus Eventos" button (`routerLink="/meus-eventos"`) rendered on desktop toolbar when user is authenticated
+- [x] "Painel Admin" link is hidden unless `isSuperAdmin()` is true
+- [x] User menu dropdown includes "Meus Eventos" and "Meu Perfil"
+- [x] Unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -136,10 +136,10 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] "Novo Admin" button is removed from `dashboard.container.html`
-- [ ] `openAdminDialog` method is removed or cleaned up from `dashboard.container.ts`
-- [ ] "Novo Evento" button remains fully accessible with >= 48px touch target
-- [ ] Unit tests pass: `npm test -- --watch=false`
+- [x] "Novo Admin" button is removed from `dashboard.container.html`
+- [x] `openAdminDialog` method is removed or cleaned up from `dashboard.container.ts`
+- [x] "Novo Evento" button remains fully accessible with >= 48px touch target
+- [x] Unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -159,9 +159,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Router links in dashboard point to `/meus-eventos/evento/novo`
-- [ ] `app.routes.ts` enforces `authGuard` on `/meus-eventos` and `superAdminGuard` on `/admin`
-- [ ] App routes unit tests pass: `npm test -- --watch=false`
+- [x] Router links in dashboard point to `/meus-eventos/evento/novo`
+- [x] `app.routes.ts` enforces `authGuard` on `/meus-eventos` and `superAdminGuard` on `/admin`
+- [x] App routes unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -183,9 +183,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Home header features an accent pill badge and bold headline ("Descubra, Participe e Celebre")
-- [ ] Event cards display calendar date pills with month and day, location icon, and glassmorphic elevation
-- [ ] Unit tests in `home.container.spec.ts` pass: `npm test -- --watch=false`
+- [x] Home header features an accent pill badge and bold headline ("Descubra, Participe e Celebre")
+- [x] Event cards display calendar date pills with month and day, location icon, and glassmorphic elevation
+- [x] Unit tests in `home.container.spec.ts` pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -205,9 +205,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `.cdk-overlay-dark-backdrop` has `background: rgba(15, 10, 20, 0.45)` and `backdrop-filter: blur(6px)`
-- [ ] `collaborator-invite-dialog.component.scss` uses `--mat-sys-on-surface` and `--mat-sys-on-surface-variant` with 100% readable contrast in Light and Dark modes
-- [ ] Dialog unit tests pass: `npm test -- --watch=false`
+- [x] `.cdk-overlay-dark-backdrop` has `background: rgba(15, 10, 20, 0.45)` and `backdrop-filter: blur(6px)`
+- [x] `collaborator-invite-dialog.component.scss` uses `--mat-sys-on-surface` and `--mat-sys-on-surface-variant` with 100% readable contrast in Light and Dark modes
+- [x] Dialog unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -227,9 +227,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Host section displays "Você (Organizador)"
-- [ ] Mobile hero height accommodates category badge and multiline title without clipping
-- [ ] EventCard unit tests pass: `npm test -- --watch=false`
+- [x] Host section displays "Você (Organizador)"
+- [x] Mobile hero height accommodates category badge and multiline title without clipping
+- [x] EventCard unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -249,9 +249,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Family roster form grid allocates adequate column widths on desktop
-- [ ] CSS fallback colors replaced with official `--mat-sys-*` tokens
-- [ ] Family roster unit tests pass: `npm test -- --watch=false`
+- [x] Family roster form grid allocates adequate column widths on desktop
+- [x] CSS fallback colors replaced with official `--mat-sys-*` tokens
+- [x] Family roster unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -273,9 +273,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] "NOVO EVENTO" and "EDITAR EVENTO" render without letter collision
-- [ ] Mobile viewports (< 600px) maintain uniform 12px-16px padding on left and right edges with zero clipping
-- [ ] Unit tests pass: `npm test -- --watch=false`
+- [x] "NOVO EVENTO" and "EDITAR EVENTO" render without letter collision
+- [x] Mobile viewports (< 600px) maintain uniform 12px-16px padding on left and right edges with zero clipping
+- [x] Unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -295,9 +295,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Readonly address fields have clean locked styling matching the design system
-- [ ] Address step validation works smoothly with ViaCEP auto-population
-- [ ] Unit tests pass: `npm test -- --watch=false`
+- [x] Readonly address fields have clean locked styling matching the design system
+- [x] Address step validation works smoothly with ViaCEP auto-population
+- [x] Unit tests pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  
@@ -319,8 +319,8 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `captureScreenshot` executes `window.scrollTo(0, 0)` before triggering `page.screenshot`
-- [ ] Full-page screenshots include headers and top banners without scroll clipping
+- [x] `captureScreenshot` executes `window.scrollTo(0, 0)` before triggering `page.screenshot`
+- [x] Full-page screenshots include headers and top banners without scroll clipping
 
 **Tests**: e2e  
 **Gate**: full  
@@ -340,9 +340,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `13-06-step3-pix-empty` waits for Step 3 container to be visible and stable
-- [ ] `13-07-step3-wishlist-items` captures the active wishlist card without scrolling away
-- [ ] E2E tests pass: `npm run test:e2e`
+- [x] `13-06-step3-pix-empty` waits for Step 3 container to be visible and stable
+- [x] `13-07-step3-wishlist-items` captures the active wishlist card without scrolling away
+- [x] E2E tests pass: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  
@@ -362,9 +362,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] All 47 screenshot files regenerated in `e2e/screenshots/`
-- [ ] Zero blank surfaces, zero white-text contrast bugs, zero left-side clipping on mobile
-- [ ] All 13 E2E test suites pass on Chromium and Mobile Chrome
+- [x] All 47 screenshot files regenerated in `e2e/screenshots/`
+- [x] Zero blank surfaces, zero white-text contrast bugs, zero left-side clipping on mobile
+- [x] All 13 E2E test suites pass on Chromium and Mobile Chrome
 
 **Tests**: e2e  
 **Gate**: full  

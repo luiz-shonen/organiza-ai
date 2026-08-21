@@ -14,7 +14,11 @@ _none_
 
 Seen once or not yet corroborated. Tracked, not trusted.
 
-_none_
+### L-001 - Always style cdk-overlay-dark-backdrop with blur/scrim and avoid nesting horizontal paddings inside Angular Material stepper containers
+- signal: `spec_deviation` · recurrence: 1 feature(s) · harmful: 0
+- features: 12-design-system-rbac-visual-polish
+- evidence: Task T6 & T9
+- last seen: 2026-08-21T12:46:44Z
 
 ## Quarantined (failed when applied - ignore)
 

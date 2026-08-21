@@ -67,6 +67,11 @@ export class CollaboratorInviteDialogComponent {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw);
   });
 
+  public onInputChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.email.set(target.value);
+  }
+
   public onInvite(): void {
     const raw = this.email().trim().toLowerCase();
     if (this.isEmailValid()) {

@@ -16,8 +16,8 @@
           matInput
           type="email"
           name="email"
-          [ngModel]="email()"
-          (ngModelChange)="email.set($event)"
+          [value]="email()"
+          (input)="onInputChange($event)"
           placeholder="amigo@exemplo.com"
           aria-label="Email do colaborador"
           autocomplete="email"

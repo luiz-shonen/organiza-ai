@@ -882,6 +882,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       // Fill email and submit
       const emailInput = dialog.locator('input[type="email"], input[formcontrolname="email"]');
       await emailInput.fill('amigo@exemplo.com');
+      await emailInput.dispatchEvent('input');
 
       const submitBtn = dialog.locator('button.collaborator-dialog__submit-btn, button[type="submit"]');
       await expect(submitBtn).toBeEnabled();

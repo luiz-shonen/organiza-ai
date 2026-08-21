@@ -487,9 +487,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] All 14+ baseline PNG screenshots in `e2e/screenshots/` regenerated with `-desktop` and `-mobile` suffixes
-- [ ] `npm run test:e2e` passes 100% on both Desktop Chromium and Mobile Chrome projects with 0 errors
-- [ ] Build gate passes: `npm run build && npm test -- --watch=false`
+- [x] All 14+ baseline PNG screenshots in `e2e/screenshots/` regenerated with `-desktop` and `-mobile` suffixes
+- [x] `npm run test:e2e` passes 100% on both Desktop Chromium and Mobile Chrome projects with 0 errors
+- [x] Build gate passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: e2e  
 **Gate**: build  

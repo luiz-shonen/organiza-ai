@@ -753,8 +753,27 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(editBtn).toBeVisible();
       await editBtn.click();
 
+      const profileCard = page.locator('.profile-info-card').first();
+      const editField = page.locator('.profile-info-card__form-field').first();
+      const cardBox = await profileCard.boundingBox();
+      const fieldBox = await editField.boundingBox();
+      expect(cardBox).not.toBeNull();
+      expect(fieldBox).not.toBeNull();
+      if (cardBox && fieldBox) {
+        const leftInset = fieldBox.x - cardBox.x;
+        const rightInset = cardBox.x + cardBox.width - (fieldBox.x + fieldBox.width);
+        expect(leftInset).toBeGreaterThanOrEqual(22);
+        expect(leftInset).toBeLessThanOrEqual(28);
+        expect(rightInset).toBeGreaterThanOrEqual(22);
+        expect(rightInset).toBeLessThanOrEqual(28);
+      }
+
       // Enter new name and submit
       await expect(profilePage.nameInput).toBeVisible();
+      await profilePage.nameInput.focus();
+      await assertFocusPrimaryColor(profilePage.nameInput);
+      await assertMinTouchTarget(profilePage.saveProfileBtn, 48);
+      await assertMinTouchTarget(page.getByRole('button', { name: 'Cancelar edição' }), 48);
       await profilePage.nameInput.fill('Luiz Atualizado');
       await profilePage.saveProfileBtn.click();
 

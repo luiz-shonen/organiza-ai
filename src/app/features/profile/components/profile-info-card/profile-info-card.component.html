@@ -1,5 +1,9 @@
-<section class="profile-info-card glass-card" aria-labelledby="profile-heading">
-  <div class="profile-info-card__header">
+<section
+  class="profile-info-card glass-card"
+  [class.profile-info-card--editing]="isEditing()"
+  aria-labelledby="profile-heading"
+>
+  <div class="profile-info-card__header" [class.profile-info-card__header--editing]="isEditing()">
     <div class="profile-info-card__avatar-wrapper">
       @if (user().photoURL) {
         <img
@@ -24,7 +28,7 @@
       @if (isEditing()) {
         <form
           class="profile-info-card__edit-form"
-          (ngSubmit)="saveName()"
+          (submit)="$event.preventDefault(); saveName()"
           role="form"
           aria-label="Editar nome"
         >
@@ -34,8 +38,8 @@
               matInput
               type="text"
               name="displayName"
-              [ngModel]="editName()"
-              (ngModelChange)="editName.set($event)"
+              [value]="editName()"
+              (input)="editName.set($any($event.target).value)"
               placeholder="Seu nome"
               required
               aria-required="true"

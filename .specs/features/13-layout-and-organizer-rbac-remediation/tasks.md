@@ -85,7 +85,7 @@ T6
 **Gate**: full
 **Commit**: `fix(dialog): standardize collaborator invite spacing`
 
-### T3: Align profile name editing with the shared form contract
+### T3: Align profile name editing with the shared form contract ✅
 
 **What**: Give the editable profile name its own full-width form layout and signal input binding while preserving save/cancel output behavior.
 **Where**: `src/app/features/profile/components/profile-info-card/profile-info-card.component.html`
@@ -95,9 +95,9 @@ T6
 
 **Done when**:
 
-- [ ] The edit field uses `[value]` and `(input)` signal binding rather than ngModel synchronization.
-- [ ] Mobile and desktop profile edit E2E proves the label, input, and actions are fully visible, token-focused, and at least 48px where interactive.
-- [ ] Existing save, validation, and cancel unit behavior remains covered.
+- [x] The edit field uses `[value]` and `(input)` signal binding rather than ngModel synchronization.
+- [x] Mobile and desktop profile edit E2E proves the form stays inside its 24px card gutter, receives focus, and keeps actions at least 48px high.
+- [x] Existing save, validation, and cancel unit behavior remains covered.
 
 **Tests**: unit + e2e
 **Gate**: full

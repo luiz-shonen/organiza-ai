@@ -279,10 +279,10 @@ invite.
 | E2E-04 | Step 1 – filled → Próximo enabled | T3 | Complete |
 | E2E-05 | Step 2 – renders before CEP | T4 | Complete |
 | E2E-06 | Step 2 – ViaCEP auto-fill | T4 | Complete |
-| E2E-07 | Step 3 – renders Pix + wishlist form | T5 | Pending |
-| E2E-08 | Step 3 – add first item | T5 | Pending |
-| E2E-09 | Step 3 – two items visible | T5 | Pending |
-| E2E-10 | Step 3 – remove one item | T5 | Pending |
+| E2E-07 | Step 3 – renders Pix + wishlist form | T5 | Complete |
+| E2E-08 | Step 3 – add first item | T5 | Complete |
+| E2E-09 | Step 3 – two items visible | T5 | Complete |
+| E2E-10 | Step 3 – remove one item | T5 | Complete |
 | E2E-11 | Submit → snackbar + redirect | T6 | Pending |
 | E2E-12 | Edit – pre-populated editor | T7 | Pending |
 | E2E-13 | Edit – submit → snackbar | T7 | Pending |

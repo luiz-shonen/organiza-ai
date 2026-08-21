@@ -71,9 +71,11 @@ export class FirestoreGateway {
 
   async getDoc<T>(path: string): Promise<T | null> {
     if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
-      const parts = path.split('/');
-      const list = ((window as any).__MOCK_DOCUMENTS__[parts[0]] || []) as (T & { id: string })[];
-      const found = list.find((item) => item.id === parts[1]);
+      const lastSlash = path.lastIndexOf('/');
+      const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
+      const id = lastSlash !== -1 ? path.substring(lastSlash + 1) : '';
+      const list = ((window as any).__MOCK_DOCUMENTS__[col] || []) as (T & { id: string })[];
+      const found = list.find((item) => item.id === id);
       return found ? (found as T) : null;
     }
     const docRef = doc(this.firestore, path);
@@ -84,9 +86,11 @@ export class FirestoreGateway {
 
   async getDocWithId<T>(path: string): Promise<(T & { id: string }) | null> {
     if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
-      const parts = path.split('/');
-      const list = ((window as any).__MOCK_DOCUMENTS__[parts[0]] || []) as (T & { id: string })[];
-      const found = list.find((item) => item.id === parts[1]);
+      const lastSlash = path.lastIndexOf('/');
+      const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
+      const id = lastSlash !== -1 ? path.substring(lastSlash + 1) : '';
+      const list = ((window as any).__MOCK_DOCUMENTS__[col] || []) as (T & { id: string })[];
+      const found = list.find((item) => item.id === id);
       return found ? { ...found } : null;
     }
     const docRef = doc(this.firestore, path);
@@ -126,9 +130,9 @@ export class FirestoreGateway {
 
   async setDoc<T extends DocumentData = DocumentData>(path: string, data: Partial<T> | WithFieldValue<T>, options?: SetOptions): Promise<void> {
     if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
-      const parts = path.split('/');
-      const col = parts[0];
-      const id = parts[1];
+      const lastSlash = path.lastIndexOf('/');
+      const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
+      const id = lastSlash !== -1 ? path.substring(lastSlash + 1) : '';
       const store = (window as any).__MOCK_DOCUMENTS__;
       if (!store[col]) store[col] = [];
       const idx = store[col].findIndex((item: any) => item.id === id);
@@ -150,9 +154,9 @@ export class FirestoreGateway {
 
   async updateDoc<T extends DocumentData = DocumentData>(path: string, data: Partial<T> | UpdateData<T>): Promise<void> {
     if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
-      const parts = path.split('/');
-      const col = parts[0];
-      const id = parts[1];
+      const lastSlash = path.lastIndexOf('/');
+      const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
+      const id = lastSlash !== -1 ? path.substring(lastSlash + 1) : '';
       const store = (window as any).__MOCK_DOCUMENTS__;
       if (store[col]) {
         const idx = store[col].findIndex((item: any) => item.id === id);
@@ -169,9 +173,9 @@ export class FirestoreGateway {
 
   async deleteDoc(path: string): Promise<void> {
     if (typeof window !== 'undefined' && (window as any).__MOCK_DOCUMENTS__) {
-      const parts = path.split('/');
-      const col = parts[0];
-      const id = parts[1];
+      const lastSlash = path.lastIndexOf('/');
+      const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
+      const id = lastSlash !== -1 ? path.substring(lastSlash + 1) : '';
       const store = (window as any).__MOCK_DOCUMENTS__;
       if (store[col]) {
         store[col] = store[col].filter((item: any) => item.id !== id);

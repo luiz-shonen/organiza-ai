@@ -221,4 +221,141 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-05-step2-viacep');
     });
   });
+
+  // Phase 2 - Task T5: Create Event - Step 3 (Pix & Wishlist) [E2E-07, E2E-08, E2E-09, E2E-10]
+  test.describe('Create Event - Step 3 (Pix & Wishlist)', () => {
+    test('[E2E-07] should display Pix key and wishlist item inputs', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [],
+      });
+
+      // Intercept ViaCEP endpoint
+      await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            cep: '01310-100',
+            logradouro: 'Avenida Paulista',
+            bairro: 'Bela Vista',
+            localidade: 'São Paulo',
+            uf: 'SP',
+          }),
+        });
+      });
+
+      // Advance through Step 1 and Step 2 to reach Step 3
+      await page.goto('/meus-eventos/evento/novo');
+      await eventEditorPage.assertLoaded();
+      await eventEditorPage.fillBasicInfo(
+        'Aniversário dos Sonhos 2026',
+        '11/20/2026',
+        'Uma comemoração inesquecível com amigos e família.',
+        '19:00'
+      );
+      await eventEditorPage.fillCep('01310100', '1000');
+
+      // Assert Pix key input is visible on Step 3
+      const pixKeyInput = page.locator('input[formcontrolname="pixKey"]');
+      await expect(pixKeyInput).toBeVisible();
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-06-step3-pix-empty');
+    });
+
+    test('[E2E-08] should add a wishlist item and render it in the wishlist list', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [mockHappyPathEvent],
+      });
+
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Add item
+      await eventEditorPage.addWishlistItem('Docinhos Gourmet', 'Comida', 20);
+
+      // Verify item rendered in list
+      const itemsList = page.locator('.editor__items, ul.editor__items');
+      await expect(itemsList).toBeVisible();
+      await expect(itemsList).toContainText('Docinhos Gourmet');
+    });
+
+    test('[E2E-09] should add a second wishlist item and display both simultaneously', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [mockHappyPathEvent],
+      });
+
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Existing item 'Bolo de Chocolate' is visible
+      const itemsList = page.locator('.editor__items, ul.editor__items');
+      await expect(itemsList).toContainText('Bolo de Chocolate');
+
+      // Add second item
+      await eventEditorPage.addWishlistItem('Refrigerante 2L', 'Bebida', 5);
+
+      // Verify both items are visible simultaneously
+      await expect(itemsList).toContainText('Bolo de Chocolate');
+      await expect(itemsList).toContainText('Refrigerante 2L');
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-07-step3-wishlist-items');
+    });
+
+    test('[E2E-10] should remove a wishlist item and keep remaining items visible', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      const eventWithTwoItems = {
+        ...mockHappyPathEvent,
+        items: [
+          { id: 'item-1', name: 'Bolo de Chocolate', category: 'Comida', quantity: 1, claimedBy: [] },
+          { id: 'item-2', name: 'Refrigerante 2L', category: 'Bebida', quantity: 5, claimedBy: [] },
+        ],
+      };
+
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [eventWithTwoItems],
+      });
+
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      const itemsList = page.locator('.editor__items, ul.editor__items');
+      await expect(itemsList).toContainText('Bolo de Chocolate');
+      await expect(itemsList).toContainText('Refrigerante 2L');
+
+      // Delete first item
+      const removeBtn = page.locator('button[aria-label="Remover Bolo de Chocolate"]').or(
+        page.locator('.editor__item button').first()
+      );
+      await removeBtn.click();
+
+      // Verify removed item is gone, remaining item still present
+      await expect(itemsList).not.toContainText('Bolo de Chocolate');
+      await expect(itemsList).toContainText('Refrigerante 2L');
+    });
+  });
 });

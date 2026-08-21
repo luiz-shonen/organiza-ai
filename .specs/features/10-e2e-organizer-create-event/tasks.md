@@ -196,15 +196,15 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-07]` advances to Step 3, asserts Pix key input, wishlist name and quantity inputs, and saves screenshot `13-06-step3-pix-empty-desktop.png`
-- [ ] `[E2E-08]` adds first wishlist item and asserts it is visible in the wishlist list
-- [ ] `[E2E-09]` adds a second wishlist item and asserts both items are simultaneously visible, saving screenshot `13-07-step3-wishlist-items-desktop.png`
-- [ ] `[E2E-10]` removes one wishlist item and asserts remaining item is still visible
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[789]|E2E-10\]"`
+- [x] `[E2E-07]` advances to Step 3, asserts Pix key input, wishlist name and quantity inputs, and saves screenshot `13-06-step3-pix-empty-desktop.png`
+- [x] `[E2E-08]` adds first wishlist item and asserts it is visible in the wishlist list
+- [x] `[E2E-09]` adds a second wishlist item and asserts both items are simultaneously visible, saving screenshot `13-07-step3-wishlist-items-desktop.png`
+- [x] `[E2E-10]` removes one wishlist item and asserts remaining item is still visible
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[789]|E2E-10\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement create event step 3 wishlist atomic tests and visual baseline`  
+**Commit**: `test(e2e): implement create event step 3 wishlist atomic tests`  
 
 ---
 

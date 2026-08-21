@@ -53,11 +53,23 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
 
   await page.addInitScript(
     ({ uid, email, displayName, emailVerified, apiKey, events, userProfile, familyMembers }) => {
-      (window as any).__MOCK_DOCUMENTS__ = {
+      const mockDocs: Record<string, any> = {
         events: events || [],
         users: userProfile ? [userProfile] : [{ id: uid, email, displayName, phone: '(11) 99999-9999' }],
         family: familyMembers || [],
+        [`users/${uid}`]: userProfile || { id: uid, email, displayName, phone: '(11) 99999-9999' },
+        [`users/${uid}/family`]: familyMembers || [],
       };
+
+      if (events && Array.isArray(events)) {
+        events.forEach((ev: any) => {
+          if (ev.id && ev.items && Array.isArray(ev.items)) {
+            mockDocs[`events/${ev.id}/items`] = [...ev.items];
+          }
+        });
+      }
+
+      (window as any).__MOCK_DOCUMENTS__ = mockDocs;
 
       const userValue = {
         uid,

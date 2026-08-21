@@ -15,16 +15,16 @@
         <input
           matInput
           type="email"
-          [formControl]="emailControl"
+          name="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
           placeholder="amigo@exemplo.com"
           aria-label="Email do colaborador"
           autocomplete="email"
+          required
         />
         <mat-icon matSuffix aria-hidden="true">mail</mat-icon>
-        @if (emailControl.hasError('required') && emailControl.touched) {
-          <mat-error>O email é obrigatório</mat-error>
-        }
-        @if (emailControl.hasError('email') && emailControl.touched) {
+        @if (email().length > 0 && !isEmailValid()) {
           <mat-error>Digite um email válido</mat-error>
         }
       </mat-form-field>
@@ -34,7 +34,7 @@
         color="primary"
         type="submit"
         class="collaborator-dialog__submit-btn"
-        [disabled]="emailControl.invalid"
+        [disabled]="!isEmailValid()"
         aria-label="Enviar convite para colaborador"
       >
         <mat-icon aria-hidden="true">send</mat-icon>

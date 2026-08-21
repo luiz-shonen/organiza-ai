@@ -1,12 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import {
   MAT_DIALOG_DATA,
   MatDialogModule,
@@ -28,7 +30,7 @@ export interface CollaboratorInviteDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -59,17 +61,17 @@ export class CollaboratorInviteDialogComponent {
   public readonly invite = output<string>();
   public readonly removeCollaborator = output<string>();
 
-  public readonly emailControl = new FormControl<string>('', {
-    nonNullable: true,
-    validators: [Validators.required, Validators.email],
+  public readonly email = signal('');
+  public readonly isEmailValid = computed(() => {
+    const raw = this.email().trim().toLowerCase();
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw);
   });
 
   public onInvite(): void {
-    const raw = this.emailControl.value.trim().toLowerCase();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (raw && (this.emailControl.valid || emailPattern.test(raw))) {
+    const raw = this.email().trim().toLowerCase();
+    if (this.isEmailValid()) {
       this.invite.emit(raw);
-      this.emailControl.reset();
+      this.email.set('');
     }
   }
 

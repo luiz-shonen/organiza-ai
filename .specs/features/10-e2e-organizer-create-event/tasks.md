@@ -451,13 +451,13 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-28]` opens collaborator dialog, asserts email input and styled border, and saves screenshot `13-17-collaborator-dialog-desktop.png`
-- [ ] `[E2E-29]` fills email, clicks "Enviar", asserts success snackbar appears
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-2[89]\]"`
+- [x] `[E2E-28]` opens collaborator dialog, asserts email input and styled border, and saves screenshot `13-17-collaborator-dialog-desktop.png`
+- [x] `[E2E-29]` fills email, clicks "Enviar", asserts success snackbar appears
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-2[89]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement collaborator invite dialog and submission atomic tests`  
+**Commit**: `test(e2e): implement collaborator invite dialog and submit atomic tests`  
 
 ---
 

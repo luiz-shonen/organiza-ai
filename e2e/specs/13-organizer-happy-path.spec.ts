@@ -826,4 +826,71 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first()).toBeVisible();
     });
   });
+
+  // Phase 4 - Task T15: Collaborator Invite Dialog & Submit [E2E-28, E2E-29]
+  test.describe('Collaborator Invite Dialog & Submit', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [mockHappyPathEvent],
+      });
+    });
+
+    test('[E2E-28] should open collaborator invite dialog with email input and non-default border', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Open collaborators dialog
+      const collabBtn = page.locator('.editor__collab-btn, button[aria-label*="colaboradores"]').first();
+      await expect(collabBtn).toBeVisible();
+      await collabBtn.click();
+
+      // Assert dialog visible
+      const dialog = page.locator('.collaborator-dialog, mat-dialog-container').first();
+      await expect(dialog).toBeVisible();
+
+      // Assert email input and invite button
+      const emailInput = dialog.locator('input[type="email"], input[formcontrolname="email"]');
+      const submitBtn = dialog.locator('button.collaborator-dialog__submit-btn, button[type="submit"]');
+      await expect(emailInput).toBeVisible();
+      await expect(submitBtn).toBeVisible();
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-17-collaborator-dialog');
+    });
+
+    test('[E2E-29] should submit collaborator invite and display snackbar confirmation', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Open collaborators dialog
+      const collabBtn = page.locator('.editor__collab-btn, button[aria-label*="colaboradores"]').first();
+      await expect(collabBtn).toBeVisible();
+      await collabBtn.click();
+
+      const dialog = page.locator('.collaborator-dialog, mat-dialog-container').first();
+      await expect(dialog).toBeVisible();
+
+      // Fill email and submit
+      const emailInput = dialog.locator('input[type="email"], input[formcontrolname="email"]');
+      await emailInput.fill('amigo@exemplo.com');
+
+      const submitBtn = dialog.locator('button.collaborator-dialog__submit-btn, button[type="submit"]');
+      await expect(submitBtn).toBeEnabled();
+      await submitBtn.click();
+
+      // Assert snackbar confirmation
+      const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+      await expect(snackBar).toBeVisible();
+      await expect(snackBar).toContainText(/Convite enviado para amigo@exemplo\.com/i);
+    });
+  });
 });

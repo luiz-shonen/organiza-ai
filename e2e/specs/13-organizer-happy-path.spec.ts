@@ -268,9 +268,12 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       );
       await eventEditorPage.fillCep('01310100', '1000');
 
-      // Assert Pix key input is visible on Step 3
+      // Assert Pix form and key input are visible on Step 3
+      const pixForm = page.locator('#pix-form');
+      await expect(pixForm).toBeVisible();
       const pixKeyInput = page.locator('input[formcontrolname="pixKey"]');
       await expect(pixKeyInput).toBeVisible();
+      await page.waitForTimeout(300);
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-06-step3-pix-empty');

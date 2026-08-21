@@ -172,7 +172,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | RSVP-04 | Complete RSVP companion information | Design | In Design |
 | RSVP-05 | Complete RSVP companion information | Design | In Design |
 | VIS-01 | Full visual regression matrix | Execute | In progress — T2 anchor capture complete |
-| VIS-02 | Full visual regression matrix | Execute | In progress — T2 deterministic settling complete; T4 tracks comparisons |
+| VIS-02 | Full visual regression matrix | Execute | In progress — T2 settling and T4 tracked comparison configuration complete |
 | VIS-03 | Full visual regression matrix | Execute | In progress — T1 registry complete; T29 will add migrated scenarios |
 | VIS-04 | Full visual regression matrix | Execute | In progress — T3 numerical assertions complete |
 | VIS-05 | Full visual regression matrix | Execute | In progress — T2 resets scroll origins and waits for fonts |

@@ -5,7 +5,13 @@ export default defineConfig({
   timeout: 45 * 1000,
   expect: {
     timeout: 10 * 1000,
+    toHaveScreenshot: {
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
+    },
   },
+  snapshotPathTemplate: '{testDir}/snapshots/{testFilePath}/{projectName}/{arg}{ext}',
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
   retries: process.env['CI'] ? 2 : 0,
@@ -34,4 +40,3 @@ export default defineConfig({
     timeout: 120 * 1000,
   },
 });
-

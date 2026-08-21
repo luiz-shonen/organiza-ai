@@ -21,7 +21,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T7 — Create the native Material field directive
 - [x] T8 — Create the field-label contract
 - [x] T9 — Create shared action and chip directives
-- [ ] T10 — Create the semantic icon map
+- [x] T10 — Create the semantic icon map
 
 ## Test Coverage Matrix
 

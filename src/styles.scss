@@ -208,11 +208,11 @@ a,
   touch-action: manipulation;
 }
 
-mat-icon,
-.mat-icon,
-.material-icons,
-.material-icons-outlined,
-.material-symbols-outlined {
+mat-icon:not(.org-icon),
+.mat-icon:not(.org-icon),
+.material-icons:not(.org-icon),
+.material-icons-outlined:not(.org-icon),
+.material-symbols-outlined:not(.org-icon) {
   font-family: 'Material Icons', 'Material Icons Outlined' !important;
   font-weight: normal !important;
   font-style: normal !important;

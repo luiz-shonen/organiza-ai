@@ -1,0 +1,11 @@
+:host {
+  display: inline-flex;
+}
+
+.org-icon {
+  color: var(--org-icon-color);
+  font-size: var(--org-icon-size);
+  height: var(--org-icon-size);
+  line-height: 1;
+  width: var(--org-icon-size);
+}

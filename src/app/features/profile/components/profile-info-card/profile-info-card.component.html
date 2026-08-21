@@ -1,9 +1,6 @@
-<section
-  class="profile-info-card glass-card"
-  [class.profile-info-card--editing]="isEditing()"
-  aria-labelledby="profile-heading"
->
-  <div class="profile-info-card__header" [class.profile-info-card__header--editing]="isEditing()">
+<org-surface variant="panel" class="profile-info-card">
+<section class="profile-info-card__content" [class.profile-info-card__content--editing]="isEditing()" aria-labelledby="profile-heading">
+    <div class="profile-info-card__header" [class.profile-info-card__header--editing]="isEditing()">
     <div class="profile-info-card__avatar-wrapper">
       @if (user().photoURL) {
         <img
@@ -32,7 +29,7 @@
           role="form"
           aria-label="Editar nome"
         >
-          <mat-form-field appearance="outline" class="profile-info-card__form-field">
+          <mat-form-field orgFormField appearance="outline" class="profile-info-card__form-field">
             <mat-label>Nome Completo</mat-label>
             <input
               matInput
@@ -53,25 +50,24 @@
 
           <div class="profile-info-card__actions">
             <button
-              mat-flat-button
-              color="primary"
+              orgButton="primary"
               type="submit"
               class="profile-info-card__save-btn"
               [disabled]="editName().trim().length === 0"
               aria-label="Salvar nome de exibição"
               data-testid="save-profile-btn"
             >
-              <mat-icon aria-hidden="true">check</mat-icon>
+              <org-icon name="check_circle" size="sm" color="var(--org-on-primary)" />
               Salvar
             </button>
             <button
-              mat-stroked-button
+              orgButton="secondary"
               type="button"
               class="profile-info-card__cancel-btn"
               (click)="cancelEditing()"
               aria-label="Cancelar edição"
             >
-              <mat-icon aria-hidden="true">close</mat-icon>
+              <org-icon name="close" size="sm" color="var(--org-primary)" />
               Cancelar
             </button>
           </div>
@@ -82,13 +78,13 @@
             {{ user().displayName || user().name || 'Sem nome cadastrado' }}
           </span>
           <button
-            mat-icon-button
+            orgIconButton="primary"
             class="profile-info-card__edit-btn"
             (click)="startEditing()"
             aria-label="Editar nome de exibição"
             [attr.aria-expanded]="isEditing()"
           >
-            <mat-icon aria-hidden="true">edit</mat-icon>
+            <org-icon name="edit" size="sm" color="var(--org-primary)" />
           </button>
         </div>
       }
@@ -98,7 +94,7 @@
   <div class="profile-info-card__details">
     <div class="profile-info-card__field">
       <span class="profile-info-card__field-icon">
-        <mat-icon aria-hidden="true">mail</mat-icon>
+        <org-icon name="mail" size="sm" color="var(--org-primary)" />
       </span>
       <div class="profile-info-card__field-content">
         <span class="profile-info-card__field-label">E-mail</span>
@@ -108,7 +104,7 @@
 
     <div class="profile-info-card__field">
       <span class="profile-info-card__field-icon">
-        <mat-icon aria-hidden="true">phone</mat-icon>
+        <org-icon name="phone" size="sm" color="var(--org-primary)" />
       </span>
       <div class="profile-info-card__field-content">
         <span class="profile-info-card__field-label">Telefone</span>
@@ -117,3 +113,4 @@
     </div>
   </div>
 </section>
+</org-surface>

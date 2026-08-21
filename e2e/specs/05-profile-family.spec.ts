@@ -1,5 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { assertFocusedFieldCoherence, assertNoHorizontalOverflow, assertSingleSurfaceRing } from '../helpers/design-tokens.helper';
 
 const mockFamilyEvent = {
   id: 'test-event-placeholder',
@@ -49,6 +50,7 @@ test.describe('User Profile and Family Roster Management', () => {
     const profileInfoCard = page.locator('app-profile-info-card');
     await expect(profileInfoCard).toBeVisible();
     await expect(page.locator('#profile-heading')).toContainText('Informações Pessoais');
+    await assertSingleSurfaceRing(profileInfoCard.locator('section.org-surface'));
 
     // Family roster and attended events sections
     await expect(page.locator('app-family-roster-manager')).toBeVisible();
@@ -62,6 +64,7 @@ test.describe('User Profile and Family Roster Management', () => {
     await expect(profilePage.nameInput).toBeVisible();
     await profilePage.nameInput.fill('Carlos Alberto Silva');
     await expect(profilePage.nameInput).toHaveValue('Carlos Alberto Silva');
+    await assertFocusedFieldCoherence(page.locator('mat-form-field .mat-mdc-text-field-wrapper'));
 
     await expect(profilePage.saveProfileBtn).toBeVisible();
     await expect(profilePage.saveProfileBtn).toBeEnabled();
@@ -70,6 +73,7 @@ test.describe('User Profile and Family Roster Management', () => {
     // Assert update feedback or updated name rendered in profile card
     const nameDisplay = page.locator('.profile-info-card__name, app-profile-info-card');
     await expect(nameDisplay.first()).toContainText('Carlos Alberto Silva');
+    await assertNoHorizontalOverflow(page);
   });
 
   test('should interact with family roster form and allow adding and removing family members', async ({

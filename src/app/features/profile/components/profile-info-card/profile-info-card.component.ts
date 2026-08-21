@@ -6,24 +6,22 @@ import {
   signal,
   effect,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import type { UserProfile } from '../../../../core/models';
+import { OrgButtonDirective, OrgFormFieldDirective, OrgIconButtonDirective, OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-profile-info-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    OrgButtonDirective,
+    OrgFormFieldDirective,
+    OrgIconButtonDirective,
+    OrgIconComponent,
+    OrgSurfaceComponent,
   ],
   templateUrl: './profile-info-card.component.html',
   styleUrl: './profile-info-card.component.scss',

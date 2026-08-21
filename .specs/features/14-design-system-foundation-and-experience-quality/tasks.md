@@ -27,7 +27,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 ### Phase 3
 
 - [x] T11 — Migrate the Home badge and event cards to shared surfaces
-- [ ] T12 — Simplify profile information into one surface
+- [x] T12 — Simplify profile information into one surface
 - [ ] T13 — Rebuild the family roster composition
 - [ ] T14 — Standardize seasonal event card surface
 - [ ] T15 — Replace the undersized mobile stepper presentation

@@ -42,6 +42,21 @@ describe('ProfileInfoCardComponent', () => {
     expect(el.textContent).toContain('M');
   });
 
+  it('should compose personal data in one shared surface with governed field and actions', () => {
+    const el: HTMLElement = fixture.nativeElement;
+
+    expect(el.querySelectorAll('org-surface')).toHaveLength(1);
+    expect(el.querySelectorAll('mat-card')).toHaveLength(0);
+    expect(el.querySelector('.profile-info-card')).toBeTruthy();
+
+    component.startEditing();
+    fixture.detectChanges();
+
+    expect(el.querySelector('mat-form-field')?.classList).toContain('org-form-field');
+    expect(el.querySelector('.profile-info-card__save-btn')?.classList).toContain('org-button');
+    expect(el.querySelector('.profile-info-card__cancel-btn')?.classList).toContain('org-button');
+  });
+
   it('should render photoURL image when provided', () => {
     const userWithPhoto: UserProfile = {
       ...mockUser,

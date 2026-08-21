@@ -331,9 +331,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Profile container has `padding: 16px 12px` on mobile, scaling to `32px 16px` on `min-width: 600px`
-- [ ] Cards inside `/perfil` fit within 100% viewport width without horizontal overflow
-- [ ] Build gate passes: `npm run build`
+- [x] Profile container has `padding: 16px 12px` on mobile, scaling to `32px 16px` on `min-width: 600px`
+- [x] Cards inside `/perfil` fit within 100% viewport width without horizontal overflow
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

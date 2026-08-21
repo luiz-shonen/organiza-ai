@@ -144,9 +144,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Login button in `src/app/app.html` uses structured span with responsive text class
-- [ ] Accessible `aria-label="Acessar ou cadastrar"` preserved
-- [ ] Build gate passes: `npm run build`
+- [x] Login button in `src/app/app.html` uses structured span with responsive text class
+- [x] Accessible `aria-label="Acessar ou cadastrar"` preserved
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

@@ -420,6 +420,12 @@ button[disabled],
   }
 }
 
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  background: rgba(15, 10, 20, 0.5) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+
 .org-glass,
 .glass-card,
 .mat-mdc-dialog-container .mdc-dialog__surface {

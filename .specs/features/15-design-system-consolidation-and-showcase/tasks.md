@@ -101,10 +101,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgSurfaceDirective` created with `'card'`, `'panel'`, `'hero'`, `'drawer'`, `'dialog'` variant host class bindings
-- [ ] Unit tests verify default `'card'` variant, fallback behavior, and CSS class bindings in `src/app/shared/ui/surface/org-surface.directive.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 54 test suites, 342 tests pass (no silent deletions)
+- [x] `OrgSurfaceDirective` created with `'card'`, `'panel'`, `'hero'`, `'drawer'`, `'dialog'` variant host class bindings
+- [x] Unit tests verify default `'card'` variant, fallback behavior, and CSS class bindings in `src/app/shared/ui/surface/org-surface.directive.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 54 test suites, 344 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(ui): add single-owner surface directive primitive`

@@ -11,7 +11,7 @@ const mockSampleEvents = [
     location: 'Rua Augusta, 500 - Consolação - São Paulo/SP',
     status: 'active',
     createdBy: 'test-a11y-uid',
-    creatorEmail: 'luiz.gmr.dev@gmail.com',
+  creatorEmail: 'organizer@organizaai.test',
     collaborators: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -43,7 +43,7 @@ async function setupA11yMockSession(page: Page) {
         users: [
           {
             localId: 'test-a11y-uid',
-            email: 'luiz.gmr.dev@gmail.com',
+            email: 'organizer@organizaai.test',
             emailVerified: true,
             displayName: 'Luiz A11y Tester',
           },
@@ -61,7 +61,7 @@ async function setupA11yMockSession(page: Page) {
       const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
       const userValue = {
         uid: 'test-a11y-uid',
-        email: 'luiz.gmr.dev@gmail.com',
+        email: 'organizer@organizaai.test',
         emailVerified: true,
         displayName: 'Luiz A11y Tester',
         isAnonymous: false,
@@ -128,7 +128,7 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
     page,
   }) => {
     await setupA11yMockSession(page);
-    await page.goto('/admin');
+    await page.goto('/meus-eventos');
     await dashboardPage.assertLoaded();
 
     // Find cancel button for active visible event card/row

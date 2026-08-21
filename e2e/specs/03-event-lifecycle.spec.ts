@@ -11,7 +11,7 @@ const mockSampleEvents = [
     location: 'Rua das Flores, 123 - Centro - São Paulo/SP - CEP: 01001-000',
     status: 'active',
     createdBy: 'test-organizer-uid',
-    creatorEmail: 'luiz.gmr.dev@gmail.com',
+    creatorEmail: 'organizer@organizaai.test',
     collaborators: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -25,7 +25,7 @@ const mockSampleEvents = [
     location: 'Av. Brasil, 500 - Jardins - São Paulo/SP',
     status: 'cancelled',
     createdBy: 'test-organizer-uid',
-    creatorEmail: 'luiz.gmr.dev@gmail.com',
+    creatorEmail: 'organizer@organizaai.test',
     collaborators: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -57,7 +57,7 @@ async function setupMockSession(page: Page, mockEvents: any[] = mockSampleEvents
         users: [
           {
             localId: 'test-organizer-uid',
-            email: 'luiz.gmr.dev@gmail.com',
+            email: 'organizer@organizaai.test',
             emailVerified: true,
             displayName: 'Luiz Organizer',
           },
@@ -75,7 +75,7 @@ async function setupMockSession(page: Page, mockEvents: any[] = mockSampleEvents
       const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
       const userValue = {
         uid: 'test-organizer-uid',
-        email: 'luiz.gmr.dev@gmail.com',
+        email: 'organizer@organizaai.test',
         emailVerified: true,
         displayName: 'Luiz Organizer',
         isAnonymous: false,
@@ -120,7 +120,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
   });
 
   test('should render dashboard filter chips and new event button', async ({ page, dashboardPage }) => {
-    await page.goto('/admin');
+    await page.goto('/meus-eventos');
     await dashboardPage.assertLoaded();
 
     // Verify new event button is visible and contains expected label
@@ -170,7 +170,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       });
     });
 
-    await page.goto('/admin/evento/novo');
+    await page.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
 
     // Fill Step 1 (Basic Info) with MM/DD/YYYY format for NativeDateAdapter to unlock Step 2 (Address)
@@ -197,7 +197,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     page,
     eventEditorPage,
   }) => {
-    await page.goto('/admin/evento/novo');
+    await page.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
 
     // Verify stepper step labels are rendered
@@ -236,7 +236,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     dashboardPage,
     confirmDialog,
   }) => {
-    await page.goto('/admin');
+    await page.goto('/meus-eventos');
     await dashboardPage.assertLoaded();
 
     // Locate the cancel button for the active event

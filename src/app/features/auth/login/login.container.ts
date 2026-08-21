@@ -75,11 +75,7 @@ export class LoginContainer {
   }
 
   private async redirectAfterAuth(): Promise<void> {
-    if (this.authService.isAdmin()) {
-      await this.router.navigate(['/admin']);
-    } else {
-      await this.router.navigate(['/']);
-    }
+    await this.router.navigate(['/meus-eventos']);
   }
 
   protected async loginWithGoogle(): Promise<void> {

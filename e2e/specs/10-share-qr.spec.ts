@@ -10,7 +10,7 @@ const mockShareEvent = {
   location: 'Rua das Palmeiras, 100 - Cerqueira César - São Paulo/SP',
   status: 'active',
   createdBy: 'test-user-uid',
-  creatorEmail: 'luiz.gmr.dev@gmail.com',
+  creatorEmail: 'organizer@organizaai.test',
   collaborators: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -21,7 +21,7 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await setupMockAuthSession(page, {
       uid: 'test-user-uid',
-      email: 'luiz.gmr.dev@gmail.com',
+      email: 'organizer@organizaai.test',
       displayName: 'Luiz Organizer',
       events: [mockShareEvent],
     });
@@ -32,7 +32,7 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     sharePanel,
     eventEditorPage,
   }) => {
-    await page.goto('/admin/evento/event-qr-share-123');
+    await page.goto('/meus-eventos/evento/event-qr-share-123');
     await eventEditorPage.assertLoaded();
 
     await sharePanel.assertLoaded();
@@ -57,7 +57,7 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     sharePanel,
     eventEditorPage,
   }) => {
-    await page.goto('/admin/evento/event-qr-share-123');
+    await page.goto('/meus-eventos/evento/event-qr-share-123');
     await eventEditorPage.assertLoaded();
 
     await sharePanel.assertLoaded();
@@ -78,7 +78,7 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     sharePanel,
     eventEditorPage,
   }) => {
-    await page.goto('/admin/evento/event-qr-share-123');
+    await page.goto('/meus-eventos/evento/event-qr-share-123');
     await eventEditorPage.assertLoaded();
 
     await sharePanel.assertLoaded();

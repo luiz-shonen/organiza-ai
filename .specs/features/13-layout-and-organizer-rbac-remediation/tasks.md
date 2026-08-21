@@ -139,7 +139,7 @@ T6
 **Gate**: full
 **Commit**: `fix(editor): preserve mobile canvas spacing`
 
-### T6: Make organizer E2E journeys independent of Super Admin URLs
+### T6: Make organizer E2E journeys independent of Super Admin URLs ✅
 
 **What**: Move stale organizer E2E navigation and fixtures to `/meus-eventos` with a non-whitelisted user, while retaining explicit `/admin` denial coverage.
 **Where**: `e2e/specs/06-collaborator-rbac.spec.ts`
@@ -149,9 +149,9 @@ T6
 
 **Done when**:
 
-- [ ] Collaborator and share organizer paths run with a non-Super-Admin fixture only under `/meus-eventos`.
-- [ ] Every remaining organizer E2E route in scope uses `/meus-eventos`; `/admin` remains only in authorization-denial tests.
-- [ ] Unit and browser tests assert `/meus-eventos` auth protection and `/admin` redirect for a non-Super-Admin.
+- [x] Collaborator and share organizer paths run with a non-Super-Admin fixture only under `/meus-eventos`.
+- [x] Every remaining organizer E2E route in scope uses `/meus-eventos`; `/admin` remains only in authorization-denial tests.
+- [x] Unit and browser tests assert `/meus-eventos` auth protection and `/admin` redirect for a non-Super-Admin.
 
 **Tests**: unit + e2e
 **Gate**: build

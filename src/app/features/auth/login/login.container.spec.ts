@@ -56,7 +56,7 @@ describe('LoginContainer', () => {
     expect((component as any).hidePassword()).toBe(false);
   });
 
-  it('should log in and navigate to "/" for regular user', async () => {
+  it('should log in and navigate to "/meus-eventos" for regular user', async () => {
     mockAuthService.isAdmin.set(false);
     (component as any).form.setValue({
       email: 'user@example.com',
@@ -66,11 +66,11 @@ describe('LoginContainer', () => {
     await (component as any).submit();
 
     expect(mockAuthService.login).toHaveBeenCalledWith('user@example.com', 'password123');
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
     expect((component as any).loading()).toBe(false);
   });
 
-  it('should log in and navigate to "/admin" for admin user', async () => {
+  it('should keep Super Admin password login on the organizer dashboard', async () => {
     mockAuthService.isAdmin.set(true);
     (component as any).form.setValue({
       email: 'admin@example.com',
@@ -80,7 +80,7 @@ describe('LoginContainer', () => {
     await (component as any).submit();
 
     expect(mockAuthService.login).toHaveBeenCalledWith('admin@example.com', 'password123');
-    expect(router.navigate).toHaveBeenCalledWith(['/admin']);
+    expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
   });
 
   it('should attempt automatic registration when login throws user-not-found', async () => {
@@ -94,7 +94,7 @@ describe('LoginContainer', () => {
     await (component as any).submit();
 
     expect(mockAuthService.register).toHaveBeenCalledWith('newuser@example.com', 'password123');
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
   });
 
   it('should handle registration errors when fallback registration fails', async () => {
@@ -127,7 +127,7 @@ describe('LoginContainer', () => {
     await (component as any).loginWithGoogle();
 
     expect(mockAuthService.loginWithGoogle).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
     expect((component as any).loading()).toBe(false);
   });
 

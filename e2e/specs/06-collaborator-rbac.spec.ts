@@ -10,7 +10,7 @@ const mockCollabEvent = {
   location: 'Rua das Flores, 123 - Centro - São Paulo/SP - CEP: 01001-000',
   status: 'active',
   createdBy: 'test-user-uid',
-  creatorEmail: 'luiz.gmr.dev@gmail.com',
+  creatorEmail: 'organizer@organizaai.test',
   collaborators: ['colaborador@organizaai.test'],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -21,8 +21,8 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await setupMockAuthSession(page, {
       uid: 'test-user-uid',
-      email: 'luiz.gmr.dev@gmail.com',
-      displayName: 'Super Admin Test',
+      email: 'organizer@organizaai.test',
+      displayName: 'Organizer Test',
       events: [mockCollabEvent],
     });
   });
@@ -34,7 +34,7 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
     eventDetailPage,
   }) => {
     // Navigate to event editor for an existing event
-    await page.goto('/admin/evento/mock-collab-event');
+    await page.goto('/meus-eventos/evento/mock-collab-event');
     await eventEditorPage.assertLoaded();
 
     // Verify share panel component is rendered
@@ -60,7 +60,7 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
     eventDetailPage,
   }) => {
     // Navigate to event editor
-    await page.goto('/admin/evento/mock-collab-event');
+    await page.goto('/meus-eventos/evento/mock-collab-event');
     await eventEditorPage.assertLoaded();
     expect(eventDetailPage).toBeDefined();
 
@@ -90,7 +90,7 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
     eventDetailPage,
   }) => {
     // Navigate to event editor
-    await page.goto('/admin/evento/mock-collab-event');
+    await page.goto('/meus-eventos/evento/mock-collab-event');
     await eventEditorPage.assertLoaded();
     expect(eventDetailPage).toBeDefined();
 

@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/test.fixture';
+import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 test.describe('Authentication Guards and Form Validation', () => {
   test('should redirect unauthenticated access from protected routes to login', async ({ page, loginPage }) => {
@@ -63,5 +64,24 @@ test.describe('Authentication Guards and Form Validation', () => {
     await expect(page).not.toHaveURL(/\/admin$/);
     await expect(page).toHaveURL(/\/login/);
     await loginPage.assertLoaded();
+  });
+
+  test('should allow an authenticated organizer at /meus-eventos and redirect it away from /admin', async ({
+    page,
+    dashboardPage,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'organizer-route-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Organizer Route Test',
+      events: [],
+    });
+
+    await page.goto('/meus-eventos');
+    await dashboardPage.assertLoaded();
+    await expect(page).toHaveURL(/\/meus-eventos$/);
+
+    await page.goto('/admin');
+    await expect(page).toHaveURL(/\/meus-eventos$/);
   });
 });

@@ -45,7 +45,7 @@ async function setupHostSession(page: Page) {
         users: [
           {
             localId: 'host-sync-uid',
-            email: 'luiz.gmr.dev@gmail.com',
+            email: 'host@organiza.ai',
             emailVerified: true,
             displayName: 'Host Organizer',
           },
@@ -63,7 +63,7 @@ async function setupHostSession(page: Page) {
       const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
       const userValue = {
         uid: 'host-sync-uid',
-        email: 'luiz.gmr.dev@gmail.com',
+        email: 'host@organiza.ai',
         emailVerified: true,
         displayName: 'Host Organizer',
         isAnonymous: false,
@@ -215,7 +215,7 @@ test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
     const guestDetail = new EventDetailPage(guestPage);
 
     // Host opens dashboard
-    await hostPage.goto('/admin');
+    await hostPage.goto('/meus-eventos');
     await hostDashboard.assertLoaded();
 
     // Guest opens public event page
@@ -223,7 +223,7 @@ test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
     await guestHome.assertLoaded();
 
     // Host navigates to event editor
-    await hostPage.goto('/admin/evento/novo');
+    await hostPage.goto('/meus-eventos/evento/novo');
     await hostEditor.assertLoaded();
 
     // Guest views event details
@@ -265,7 +265,7 @@ test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
       });
     });
 
-    expect(hostUser?.email).toBe('luiz.gmr.dev@gmail.com');
+    expect(hostUser?.email).toBe('host@organiza.ai');
     expect(guestUser?.email).toBe('guest@organiza.ai');
   });
 

@@ -8,7 +8,6 @@ import {
   OnInit,
   DestroyRef,
 } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
@@ -24,6 +23,7 @@ import {
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { FeedbackService } from '../../shared/ui';
 import {
   GuestFormDialogComponent,
   GuestFormDialogResult,
@@ -54,7 +54,7 @@ export class EventDetailContainer implements OnInit {
   private readonly itemService = inject(ItemService);
   private readonly guestService = inject(GuestService);
   private readonly guestSession = inject(GuestSessionService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly feedback = inject(FeedbackService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
@@ -188,10 +188,10 @@ export class EventDetailContainer implements OnInit {
                   .catch(console.error);
 
                 this.confetti.fireSuccessConfetti();
-                this.snackBar.open('Presença confirmada!', '🎉', { duration: 3000 });
+                this.feedback.success('Presença confirmada!');
               } catch (err) {
                 console.error(err);
-                this.snackBar.open('Erro ao confirmar presença.', 'OK', { duration: 4000 });
+                this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
               } finally {
                 this.rsvpLoading.set(false);
               }
@@ -214,11 +214,11 @@ export class EventDetailContainer implements OnInit {
         this.userService.upsertProfile(user.uid, { name, phone }).catch(console.error);
 
         this.confetti.fireSuccessConfetti();
-        this.snackBar.open('Presença confirmada!', '🎉', { duration: 3000 });
+        this.feedback.success('Presença confirmada!');
       }
     } catch (err: unknown) {
       console.error(err);
-      this.snackBar.open('Erro ao confirmar presença com o Google.', 'OK', { duration: 4000 });
+      this.feedback.error('Erro ao confirmar presença com o Google.', { duration: 4000 });
     } finally {
       this.rsvpLoading.set(false);
     }
@@ -253,10 +253,10 @@ export class EventDetailContainer implements OnInit {
           }
 
           this.guestSession.clearSession();
-          this.snackBar.open('Sua presença foi cancelada.', 'OK', { duration: 3000 });
+          this.feedback.success('Sua presença foi cancelada.');
         } catch (err: unknown) {
           console.error(err);
-          this.snackBar.open('Erro ao cancelar presença.', 'OK', { duration: 3000 });
+          this.feedback.error('Erro ao cancelar presença.');
         } finally {
           this.rsvpLoading.set(false);
         }
@@ -266,7 +266,7 @@ export class EventDetailContainer implements OnInit {
 
   protected async onClaimItemById(itemId: string): Promise<void> {
     if (!this.isUserConfirmed()) {
-      this.snackBar.open('Por favor, confirme sua presença primeiro.', 'OK', { duration: 3000 });
+      this.feedback.info('Por favor, confirme sua presença primeiro.');
       return;
     }
 
@@ -281,22 +281,22 @@ export class EventDetailContainer implements OnInit {
         phone,
       });
       this.confetti.fireSuccessConfetti();
-      this.snackBar.open('Item assumido com sucesso!', 'OK', { duration: 3000 });
+      this.feedback.success('Item assumido com sucesso!');
     } catch {
-      this.snackBar.open('Erro ao assumir item. Tente novamente.', 'OK', { duration: 3000 });
+      this.feedback.error('Erro ao assumir item. Tente novamente.');
     }
   }
 
   protected async onUnclaimItemById(itemId: string): Promise<void> {
     try {
       await this.itemService.unclaimItem(this.id(), itemId);
-      this.snackBar.open('Item liberado.', 'OK', { duration: 3000 });
+      this.feedback.success('Item liberado.');
     } catch {
-      this.snackBar.open('Erro ao liberar item. Tente novamente.', 'OK', { duration: 3000 });
+      this.feedback.error('Erro ao liberar item. Tente novamente.');
     }
   }
 
   protected onPixCopied(): void {
-    this.snackBar.open('Chave Pix copiada!', 'OK', { duration: 2000 });
+    this.feedback.success('Chave Pix copiada!', { duration: 2000 });
   }
 }

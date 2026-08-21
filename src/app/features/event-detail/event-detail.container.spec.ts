@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDetailContainer } from './event-detail.container';
+import { FeedbackService } from '../../shared/ui';
 import {
   EventService,
   ItemService,
@@ -62,8 +62,10 @@ describe('EventDetailContainer', () => {
     evaluateEventTheme: ReturnType<typeof vi.fn>;
     resetToAuto: ReturnType<typeof vi.fn>;
   };
-  let mockSnackBar: {
-    open: ReturnType<typeof vi.fn>;
+  let mockFeedback: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    info: ReturnType<typeof vi.fn>;
   };
   let mockDialog: {
     open: ReturnType<typeof vi.fn>;
@@ -153,8 +155,10 @@ describe('EventDetailContainer', () => {
       evaluateEventTheme: vi.fn(),
       resetToAuto: vi.fn(),
     };
-    mockSnackBar = {
-      open: vi.fn(),
+    mockFeedback = {
+      success: vi.fn(),
+      error: vi.fn(),
+      info: vi.fn(),
     };
     mockDialog = {
       open: vi.fn().mockReturnValue({
@@ -174,7 +178,7 @@ describe('EventDetailContainer', () => {
         { provide: UserService, useValue: mockUserService },
         { provide: ConfettiService, useValue: mockConfettiService },
         { provide: SeasonalThemeService, useValue: mockSeasonalThemeService },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: FeedbackService, useValue: mockFeedback },
         { provide: MatDialog, useValue: mockDialog },
       ],
     }).compileComponents();
@@ -214,9 +218,7 @@ describe('EventDetailContainer', () => {
         }),
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Presença confirmada!', '🎉', {
-        duration: 3000,
-      });
+      expect(mockFeedback.success).toHaveBeenCalledWith('Presença confirmada!');
     });
 
     it('saves verified RSVP directly when user is already logged in with Google', async () => {
@@ -296,9 +298,7 @@ describe('EventDetailContainer', () => {
       expect(mockDialog.open).toHaveBeenCalled();
       expect(mockGuestService.cancelRsvp).toHaveBeenCalledWith('evt-123', 'usr-1', 'usr-1');
       expect(mockGuestSessionService.clearSession).toHaveBeenCalled();
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Sua presença foi cancelada.', 'OK', {
-        duration: 3000,
-      });
+      expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.');
     });
   });
 
@@ -330,11 +330,7 @@ describe('EventDetailContainer', () => {
       await (component as any).onClaimItemById('item-1');
 
       expect(mockItemService.claimItem).not.toHaveBeenCalled();
-      expect(mockSnackBar.open).toHaveBeenCalledWith(
-        'Por favor, confirme sua presença primeiro.',
-        'OK',
-        { duration: 3000 },
-      );
+      expect(mockFeedback.info).toHaveBeenCalledWith('Por favor, confirme sua presença primeiro.');
     });
 
     it('unclaims item successfully', async () => {
@@ -343,7 +339,21 @@ describe('EventDetailContainer', () => {
       await (component as any).onUnclaimItemById('item-1');
 
       expect(mockItemService.unclaimItem).toHaveBeenCalledWith('evt-123', 'item-1');
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Item liberado.', 'OK', { duration: 3000 });
+      expect(mockFeedback.success).toHaveBeenCalledWith('Item liberado.');
+    });
+
+    it('publishes the shared error when claiming an item fails', async () => {
+      currentUserSignal.set({
+        uid: 'usr-1',
+        displayName: 'Lucas Dev',
+        isAnonymous: false,
+      });
+      mockItemService.claimItem.mockRejectedValue(new Error('Claim failed'));
+      fixture.detectChanges();
+
+      await (component as any).onClaimItemById('item-1');
+
+      expect(mockFeedback.error).toHaveBeenCalledWith('Erro ao assumir item. Tente novamente.');
     });
   });
 });

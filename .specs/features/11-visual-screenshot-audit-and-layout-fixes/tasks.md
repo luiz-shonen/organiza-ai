@@ -169,10 +169,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Toolbar padding set to `0 8px` on mobile, scaling to `0 16px` on `min-width: 600px`
-- [ ] Login CTA button has `min-height: 48px` and text does not overflow or clip on `< 480px`
-- [ ] Dark theme glassmorphic styling verified
-- [ ] Build gate passes: `npm run build`
+- [x] Toolbar padding set to `0 8px` on mobile, scaling to `0 16px` on `min-width: 600px`
+- [x] Login CTA button has `min-height: 48px` and text does not overflow or clip on `< 480px`
+- [x] Dark theme glassmorphic styling verified
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

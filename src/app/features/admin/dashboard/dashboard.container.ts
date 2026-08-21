@@ -13,7 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -27,6 +26,7 @@ import {
 } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { FeedbackService } from '../../../shared/ui';
 import {
   EventDashboardFiltersComponent,
   EventStatusFilter,
@@ -54,7 +54,7 @@ export class DashboardContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly feedback = inject(FeedbackService);
   private readonly clipboard = inject(Clipboard);
   private readonly dialog = inject(MatDialog);
   private readonly notificationService = inject(NotificationService);
@@ -207,9 +207,9 @@ export class DashboardContainer implements OnInit {
       if (result) {
         try {
           await this.eventService.cancelEvent(event.id);
-          this.snackBar.open('Evento cancelado com sucesso!', 'OK', { duration: 3000 });
+          this.feedback.success('Evento cancelado com sucesso!');
         } catch {
-          this.snackBar.open('Erro ao cancelar evento.', 'OK', { duration: 3000 });
+          this.feedback.error('Erro ao cancelar evento.');
         }
       }
     });
@@ -221,7 +221,7 @@ export class DashboardContainer implements OnInit {
       this.router.navigate(['/login']);
     } catch (err) {
       console.error(err);
-      this.snackBar.open('Erro ao sair da conta', 'OK', { duration: 3000 });
+      this.feedback.error('Erro ao sair da conta');
     }
   }
 
@@ -235,7 +235,7 @@ export class DashboardContainer implements OnInit {
   protected copyLink(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
     this.clipboard.copy(url);
-    this.snackBar.open('Link copiado!', 'OK', { duration: 2000 });
+    this.feedback.success('Link copiado!', { duration: 2000 });
   }
 
   protected formatDate(dateStr: string): string {

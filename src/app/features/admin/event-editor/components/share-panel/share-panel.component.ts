@@ -12,8 +12,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import QRCode from 'qrcode';
+import { FeedbackService } from '../../../../../shared/ui';
 
 @Component({
   selector: 'app-share-panel',
@@ -28,7 +28,7 @@ export class SharePanelComponent {
 
   private readonly qrCanvas = viewChild<ElementRef<HTMLCanvasElement>>('qrCanvas');
   private readonly clipboard = inject(Clipboard);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly feedback = inject(FeedbackService);
 
   constructor() {
     effect(() => {
@@ -46,7 +46,7 @@ export class SharePanelComponent {
 
   protected copyLink(): void {
     this.clipboard.copy(this.eventUrl());
-    this.snackBar.open('Link copiado!', 'OK', { duration: 2000 });
+    this.feedback.success('Link copiado!', { duration: 2000 });
   }
 
   protected shareWhatsApp(): void {

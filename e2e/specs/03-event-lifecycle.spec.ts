@@ -271,7 +271,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(confirmDialog.dialogRoot).toBeHidden();
 
     // Feedback snackbar confirmation
-    const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+    const snackBar = page.locator('[data-testid="feedback-snackbar"]');
     await expect(snackBar).toContainText(/Evento cancelado com sucesso/i);
   });
 });

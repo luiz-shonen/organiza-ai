@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import QRCode from 'qrcode';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { SharePanelComponent } from './share-panel.component';
+import { FeedbackService } from '../../../../../shared/ui';
 
 describe('SharePanelComponent', () => {
   let fixture: ComponentFixture<SharePanelComponent>;
@@ -14,8 +14,8 @@ describe('SharePanelComponent', () => {
   let mockClipboard: {
     copy: ReturnType<typeof vi.fn>;
   };
-  let mockSnackBar: {
-    open: ReturnType<typeof vi.fn>;
+  let mockFeedback: {
+    success: ReturnType<typeof vi.fn>;
   };
   let qrToCanvasSpy: ReturnType<typeof vi.spyOn>;
   let windowOpenSpy: ReturnType<typeof vi.spyOn>;
@@ -24,8 +24,8 @@ describe('SharePanelComponent', () => {
     mockClipboard = {
       copy: vi.fn(),
     };
-    mockSnackBar = {
-      open: vi.fn(),
+    mockFeedback = {
+      success: vi.fn(),
     };
 
     qrToCanvasSpy = vi
@@ -37,7 +37,7 @@ describe('SharePanelComponent', () => {
       imports: [SharePanelComponent],
       providers: [
         { provide: Clipboard, useValue: mockClipboard },
-        { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: FeedbackService, useValue: mockFeedback },
       ],
     }).compileComponents();
 
@@ -86,7 +86,7 @@ describe('SharePanelComponent', () => {
     (component as any).copyLink();
 
     expect(mockClipboard.copy).toHaveBeenCalledWith('https://organiza.ai/events/evt-123');
-    expect(mockSnackBar.open).toHaveBeenCalledWith('Link copiado!', 'OK', { duration: 2000 });
+    expect(mockFeedback.success).toHaveBeenCalledWith('Link copiado!', { duration: 2000 });
   });
 
   it('should open WhatsApp with formatted text containing event title and URL', () => {

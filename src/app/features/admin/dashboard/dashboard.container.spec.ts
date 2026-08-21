@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { BehaviorSubject } from 'rxjs';
@@ -14,6 +13,7 @@ import {
   EventNotificationService,
 } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
+import { FeedbackService } from '../../../shared/ui';
 
 describe('DashboardContainer', () => {
   let fixture: ComponentFixture<DashboardContainer>;
@@ -34,6 +34,10 @@ describe('DashboardContainer', () => {
   };
   let mockNotificationService: {
     sendLocalNotification: ReturnType<typeof vi.fn>;
+  };
+  let mockFeedback: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
   };
 
   const sampleEvents: PartyEvent[] = [
@@ -93,6 +97,10 @@ describe('DashboardContainer', () => {
     mockNotificationService = {
       sendLocalNotification: vi.fn(),
     };
+    mockFeedback = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
       imports: [DashboardContainer],
@@ -102,7 +110,7 @@ describe('DashboardContainer', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: EventNotificationService, useValue: mockEventNotificationService },
         { provide: NotificationService, useValue: mockNotificationService },
-        { provide: MatSnackBar, useValue: { open: vi.fn() } },
+        { provide: FeedbackService, useValue: mockFeedback },
         { provide: MatDialog, useValue: { open: vi.fn() } },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
       ],
@@ -173,5 +181,11 @@ describe('DashboardContainer', () => {
     expect(dashboardSection).toBeTruthy();
     expect(createBtn).toBeTruthy();
     expect(eventCards.length).toBeGreaterThan(0);
+  });
+
+  it('publishes the shared success feedback after copying a public event link', () => {
+    (component as any).copyLink(sampleEvents[0]);
+
+    expect(mockFeedback.success).toHaveBeenCalledWith('Link copiado!', { duration: 2000 });
   });
 });

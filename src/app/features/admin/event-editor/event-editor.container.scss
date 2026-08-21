@@ -171,9 +171,13 @@
 
   &__date-time-row {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 16px;
     align-items: start;
+
+    @media (min-width: 600px) {
+      grid-template-columns: 2fr 1fr;
+    }
   }
 
   &__section-title {

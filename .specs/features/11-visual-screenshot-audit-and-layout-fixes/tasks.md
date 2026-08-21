@@ -223,10 +223,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `.editor__date-time-row` has base style `grid-template-columns: 1fr`
-- [ ] `@media (min-width: 600px)` applies `grid-template-columns: 2fr 1fr`
-- [ ] Date and Time inputs stack cleanly without truncation on mobile viewports
-- [ ] Build gate passes: `npm run build`
+- [x] `.editor__date-time-row` has base style `grid-template-columns: 1fr`
+- [x] `@media (min-width: 600px)` applies `grid-template-columns: 2fr 1fr`
+- [x] Date and Time inputs stack cleanly without truncation on mobile viewports
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

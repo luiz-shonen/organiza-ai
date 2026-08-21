@@ -435,9 +435,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Dialog surface applies `border-radius: 28px` and glassmorphic backdrop blur
-- [ ] Dialog padding adapts to mobile screens (`16px`) without content clipping
-- [ ] Build gate passes: `npm run build`
+- [x] Dialog surface applies `border-radius: 28px` and glassmorphic backdrop blur
+- [x] Dialog padding adapts to mobile screens (`16px`) without content clipping
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

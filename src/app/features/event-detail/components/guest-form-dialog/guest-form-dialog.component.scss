@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .guest-dialog {
   &__title {
     display: flex;
@@ -6,6 +10,11 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--org-text-primary, #1e293b);
+    padding: 16px 16px 8px;
+
+    @media (min-width: 600px) {
+      padding: 16px 24px 8px;
+    }
   }
 
   &__icon {
@@ -13,9 +22,13 @@
   }
 
   &__content {
-    padding: 8px 24px;
+    padding: 8px 16px;
     max-height: 75vh;
     overflow-y: auto;
+
+    @media (min-width: 600px) {
+      padding: 8px 24px;
+    }
   }
 
   &__form {
@@ -33,6 +46,15 @@
   }
 
   &__actions {
-    padding: 16px 24px;
+    padding: 16px;
+
+    @media (min-width: 600px) {
+      padding: 16px 24px;
+    }
+
+    button[mat-flat-button],
+    button[mat-button] {
+      min-height: 48px;
+    }
   }
 }

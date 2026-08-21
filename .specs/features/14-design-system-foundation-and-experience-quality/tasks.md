@@ -5,7 +5,14 @@
 Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time with a red-green-refactor cycle, update this file and spec traceability before each atomic Conventional Commit, and run the listed gate before marking a task done. This feature has 30 tasks, so Execute must offer task-batched sub-agents before dispatching work and must finish with an independent Verifier and discrimination sensor.
 
 **Design**: `.specs/features/14-design-system-foundation-and-experience-quality/design.md`
-**Status**: Draft — specified, designed, and task-planned; implementation intentionally deferred.
+**Status**: In progress — Phase 1 started.
+
+## Completion Status
+
+- [x] T1 — Register the visual scenarios and semantic anchors
+- [ ] T2 — Capture scroll-owner anchors deterministically
+- [ ] T3 — Add numerical visual failure assertions
+- [ ] T4 — Configure tracked visual snapshot output
 
 ## Test Coverage Matrix
 

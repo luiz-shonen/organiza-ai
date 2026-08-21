@@ -173,7 +173,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | RSVP-05 | Complete RSVP companion information | Design | In Design |
 | VIS-01 | Full visual regression matrix | Design | In Design |
 | VIS-02 | Full visual regression matrix | Design | In Design |
-| VIS-03 | Full visual regression matrix | Design | In Design |
+| VIS-03 | Full visual regression matrix | Execute | In progress — T1 registry complete; T29 will add migrated scenarios |
 | VIS-04 | Full visual regression matrix | Design | In Design |
 | VIS-05 | Full visual regression matrix | Design | In Design |
 

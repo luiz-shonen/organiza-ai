@@ -277,10 +277,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `.event-filters` has `overflow-x: auto`, `max-width: 100%`, `-webkit-overflow-scrolling: touch`, `scrollbar-width: none`
-- [ ] `.event-filters__item` has `min-height: 48px` and comfortable touch padding
-- [ ] Chips scroll horizontally without clipping chip text or border-radius on mobile
-- [ ] Build gate passes: `npm run build`
+- [x] `.event-filters` has `overflow-x: auto`, `max-width: 100%`, `-webkit-overflow-scrolling: touch`, `scrollbar-width: none`
+- [x] `.event-filters__item` has `min-height: 48px` and comfortable touch padding
+- [x] Chips scroll horizontally without clipping chip text or border-radius on mobile
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

@@ -396,7 +396,7 @@ T29 → T30
 
 ### Phase 6: Navigation and workflow drawers
 
-### T25: Type the root drawer request and result contract
+### T25: [x] Type the root drawer request and result contract
 
 **What**: Replace the drawer service's untyped `unknown` data and retired drawer variants with discriminated navigation, RSVP, and collaborator request/result contracts.
 **Where**: `src/app/core/services/drawer.service.ts`

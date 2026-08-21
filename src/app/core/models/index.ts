@@ -32,3 +32,14 @@ export type {
   GuestFormDialogResult,
   BatchPrimaryGuestInput,
 } from './dialog.model';
+export type {
+  AppDrawerRequest,
+  AppDrawerType,
+  CollaboratorDrawerRequest,
+  CollaboratorDrawerRequestData,
+  CollaboratorDrawerResult,
+  NavigationDrawerRequest,
+  RsvpDrawerRequest,
+  RsvpDrawerRequestData,
+  RsvpDrawerResult,
+} from './drawer.model';

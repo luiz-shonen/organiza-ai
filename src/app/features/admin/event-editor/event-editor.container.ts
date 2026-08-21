@@ -36,8 +36,8 @@ import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
-import { CollaboratorInviteDialogComponent } from '../../organizer/event-editor/components/collaborator-invite-dialog/collaborator-invite-dialog.component';
 import { FeedbackService, OrgButtonDirective, OrgFormFieldDirective } from '../../../shared/ui';
+import { DrawerService } from '../../../core/services/drawer.service';
 
 @Component({
   selector: 'app-event-editor',
@@ -76,6 +76,7 @@ export class EventEditorContainer implements OnInit {
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
+  private readonly drawerService = inject(DrawerService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
@@ -308,35 +309,29 @@ export class EventEditorContainer implements OnInit {
     const ev = this.currentEvent();
     if (!eventId || !ev) return;
 
-    const dialogRef = this.dialog.open(CollaboratorInviteDialogComponent, {
-      width: '520px',
+    this.drawerService.open({
+      kind: 'collaborator',
       data: {
         collaborators: ev.collaborators ?? [],
         pendingInvites: [],
       },
-    });
-
-    dialogRef.componentInstance.invite.subscribe(async (email) => {
-      try {
-        await this.eventService.inviteCollaborator(
-          eventId,
-          email,
-          ev.title,
-          this.authService.currentUser()?.email || '',
-        );
-        this.feedback.success(`Convite enviado para ${email}`);
-      } catch {
-        this.feedback.error('Erro ao enviar convite.');
-      }
-    });
-
-    dialogRef.componentInstance.removeCollaborator.subscribe(async (collabUid) => {
-      try {
-        await this.eventService.removeCollaborator(eventId, collabUid);
-        this.feedback.success('Colaborador removido');
-      } catch {
-        this.feedback.error('Erro ao remover colaborador.');
-      }
+      onAction: async (action) => {
+        if (action.action === 'invite') {
+          try {
+            await this.eventService.inviteCollaborator(eventId, action.email, ev.title, this.authService.currentUser()?.email || '');
+            this.feedback.success(`Convite enviado para ${action.email}`);
+          } catch {
+            this.feedback.error('Erro ao enviar convite.');
+          }
+          return;
+        }
+        try {
+          await this.eventService.removeCollaborator(eventId, action.collaboratorId);
+          this.feedback.success('Colaborador removido');
+        } catch {
+          this.feedback.error('Erro ao remover colaborador.');
+        }
+      },
     });
   }
 

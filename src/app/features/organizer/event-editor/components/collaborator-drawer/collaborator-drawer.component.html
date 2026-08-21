@@ -1,0 +1,17 @@
+<section class="collaborator-drawer" data-testid="collaborator-drawer" aria-labelledby="collaborator-drawer-title">
+  <header class="collaborator-drawer__header">
+    <div><h2 id="collaborator-drawer-title">Convidar colaboradores</h2><p>Gerencie quem pode colaborar neste evento.</p></div>
+    <button mat-icon-button type="button" aria-label="Fechar colaboradores" data-testid="collaborator-drawer-close" (click)="closed.emit()"><mat-icon aria-hidden="true">close</mat-icon></button>
+  </header>
+  <form class="collaborator-drawer__form" (submit)="$event.preventDefault(); invite()">
+    <label for="collaborator-email">E-mail do colaborador</label>
+    <input id="collaborator-email" type="email" [value]="email()" (input)="onInput($event)" autocomplete="email" data-testid="collaborator-email-input" />
+    <button mat-flat-button type="submit" [disabled]="!isEmailValid()" data-testid="collaborator-invite-submit">Enviar convite</button>
+  </form>
+  <section aria-labelledby="active-collaborators"><h3 id="active-collaborators">Colaboradores ativos ({{ drawerData().collaborators.length }})</h3>
+    @for (collaborator of drawerData().collaborators; track collaborator) { <button mat-button type="button" class="collaborator-drawer__chip" (click)="action.emit({ action: 'remove', collaboratorId: collaborator })">{{ collaborator }} <mat-icon aria-hidden="true">close</mat-icon></button> }
+  </section>
+  <section aria-labelledby="pending-invites"><h3 id="pending-invites">Convites pendentes ({{ drawerData().pendingInvites.length }})</h3>
+    @for (invite of drawerData().pendingInvites; track invite) { <span class="collaborator-drawer__pending">{{ invite }}</span> }
+  </section>
+</section>

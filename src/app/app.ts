@@ -25,6 +25,8 @@ import {
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
 import { RsvpDrawerComponent } from './features/event-detail/components/rsvp-drawer/rsvp-drawer.component';
+import { CollaboratorDrawerComponent } from './features/organizer/event-editor/components/collaborator-drawer/collaborator-drawer.component';
+import type { CollaboratorDrawerResult } from './core/models';
 import type { RsvpDrawerResult } from './core/models';
 
 @Component({
@@ -40,6 +42,7 @@ import type { RsvpDrawerResult } from './core/models';
     SeasonalOverlayComponent,
     NavigationDrawerComponent,
     RsvpDrawerComponent,
+    CollaboratorDrawerComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -110,6 +113,10 @@ export class App {
 
   protected completeRsvp(result: RsvpDrawerResult): void {
     this.drawerService.completeRsvp(result);
+  }
+
+  protected dispatchCollaboratorAction(result: CollaboratorDrawerResult): void {
+    this.drawerService.dispatchCollaboratorAction(result);
   }
 
   protected setOffline(): void {

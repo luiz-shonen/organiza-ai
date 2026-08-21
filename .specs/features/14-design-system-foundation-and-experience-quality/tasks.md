@@ -429,7 +429,7 @@ T29 → T30
 **Gate**: full
 **Commit**: `feat(shell): move navigation into end drawer`
 
-### T28: Move collaborator management into a drawer
+### T28: [x] Move collaborator management into a drawer
 
 **What**: Replace the collaborator dialog with the typed presenter drawer and preserve email validation, invitation, removal, active/pending sections, and container-owned service calls.
 **Where**: `src/app/features/organizer/event-editor/components/collaborator-drawer/`

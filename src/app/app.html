@@ -31,6 +31,9 @@
             (closed)="drawerService.close()"
           />
         }
+        @case ('collaborator') {
+          <app-collaborator-drawer [drawerData]="request.data" (action)="dispatchCollaboratorAction($event)" (closed)="drawerService.close()" />
+        }
       }
     }
   </mat-sidenav>

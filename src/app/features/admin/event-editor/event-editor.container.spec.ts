@@ -12,6 +12,7 @@ import {
   ConfettiService,
   HeaderService,
   AuthService,
+  DrawerService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -175,16 +176,10 @@ describe('EventEditorContainer', () => {
       expect(mockFeedback.success).toHaveBeenCalledWith('Evento atualizado!');
     });
 
-    it('should open collaborator dialog for owner', () => {
-      const dialogSpy = vi.spyOn(component['dialog'], 'open').mockReturnValue({
-        componentInstance: {
-          invite: of('newcollab@test.com'),
-          removeCollaborator: of('collab-uid'),
-        },
-      } as any);
-
+    it('opens a typed collaborator drawer for the event owner', () => {
+      const drawer = TestBed.inject(DrawerService);
       component['openCollaboratorsDialog']();
-      expect(dialogSpy).toHaveBeenCalled();
+      expect(drawer.drawerType()).toBe('collaborator');
     });
   });
 

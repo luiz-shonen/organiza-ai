@@ -152,13 +152,13 @@ The visual baselines also do not cover every supported page state in dark mode o
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel and T16 feedback primitives complete |
 | DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home, T12 Profile, T13 Family roster, and T14 Event detail single-surface migrations complete |
-| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, T13 Family roster, and T15 Pix field adoptions complete |
+| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, T13 Family roster, T15 Pix field, and T28 collaborator drawer adoptions complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe and T12 Profile focus contract adoption complete |
 | DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home, T13 Family roster, and T15 Pix action contract migrations complete |
-| DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map and T13 Family roster icon adoption complete |
+| DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map, T13 Family roster icon, and T28 collaborator drawer icon adoptions complete |
 | NAV-01 | Calm navigation and workflows | Execute | In progress — T26 provides the quiet, authorized navigation presentation; T27 will reduce the root toolbar to its menu and profile triggers |
 | NAV-02 | Calm navigation and workflows | Execute | In progress — T25 establishes discriminated navigation, RSVP, and collaborator requests; T26 emits authorized route actions and T27 will host them in the root sheet |
-| NAV-03 | Calm navigation and workflows | Execute | In progress — T27 renders RSVP through the typed root end drawer; T28 will migrate collaborator management to the same host |
+| NAV-03 | Calm navigation and workflows | Execute | Complete — T27 renders RSVP and T28 renders collaborator management through the typed root end drawer |
 | NAV-04 | Calm navigation and workflows | Execute | In progress — T25 restores focus to the request trigger and T27 wires the root close control, backdrop, and Escape paths |
 | NAV-05 | Calm navigation and workflows | Design | In Design |
 | FEED-01 | Uniform feedback and accents | Execute | Complete — T16-T21 shared feedback presentation, publishing, and caller migrations complete |

@@ -1,11 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { BasePage } from '../pages/base.page';
+import { buildVisualScreenshotPath, resetVisualScrollOwners } from '../pages/base.page';
 
-class TestPage extends BasePage {
-  async assertLoaded(): Promise<void> {}
-}
-
-test('captures a visible semantic anchor after resetting every scroll owner', async ({ page }) => {
+test('resets every scroll owner without producing a public visual baseline', async ({ page }) => {
   await page.setContent(`
     <main class="app-content" style="height: 100px; overflow: auto">
       <div style="height: 300px"></div>
@@ -17,9 +13,20 @@ test('captures a visible semantic anchor after resetting every scroll owner', as
     document.querySelector<HTMLElement>('main.app-content')?.scrollTo(0, 180);
   });
 
-  await new TestPage(page).captureAnchorScreenshot('visual-contract', '[data-testid="visual-anchor"]');
+  await resetVisualScrollOwners(page);
 
   await expect
-    .poll(() => page.evaluate(() => document.querySelector<HTMLElement>('main.app-content')?.scrollTop))
+    .poll(() =>
+      page.evaluate(() => document.querySelector<HTMLElement>('main.app-content')?.scrollTop),
+    )
     .toBe(0);
+});
+
+test('names product screenshots by explicit theme and viewport', () => {
+  expect(buildVisualScreenshotPath('13-10-event-detail', 'light', 'mobile')).toBe(
+    'e2e/screenshots/13-10-event-detail-light-mobile.png',
+  );
+  expect(buildVisualScreenshotPath('01-home-dark', 'dark', 'desktop')).toBe(
+    'e2e/screenshots/01-home-dark-desktop.png',
+  );
 });

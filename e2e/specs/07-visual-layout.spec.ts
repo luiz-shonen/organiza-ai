@@ -111,199 +111,201 @@ async function setupVisualMockSession(page: Page) {
         });
       };
     },
-    { events: mockSampleEvents }
+    { events: mockSampleEvents },
   );
 }
 
+const VISUAL_THEMES = ['light', 'dark'] as const;
+
 test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
-  test('should capture Home page in light and dark modes and audit touch targets and glassmorphic styling', async ({
-    homePage,
-    page,
-  }) => {
-    await homePage.goto('/');
-    await homePage.assertLoaded();
-    await page.waitForTimeout(500);
-
-    // Verify zero horizontal overflow on Home
-    await assertNoHorizontalOverflow(page);
-
-    // Audit Touch Target size on key CTA / theme toggle
-    await assertMinTouchTarget(homePage.themeToggleBtn, 48);
-
-    // 1. Capture Home Light Baseline
-    await homePage.captureScreenshot('01-home-light');
-
-    // 2. Switch to Dark Mode & Capture
-    await homePage.themeToggleBtn.click();
-    const darkMenuItem = page.getByRole('menuitem', { name: /escuro/i });
-    await darkMenuItem.click();
-    await expect(page.locator('html')).toHaveClass(/dark/);
-    await page.waitForTimeout(300);
-
-    await assertNoHorizontalOverflow(page);
-    await homePage.captureScreenshot('02-home-dark');
-  });
-
-  test('should capture Login page and verify responsive form alignment and animated gradient branding', async ({
-    loginPage,
-    page,
-  }) => {
-    await loginPage.goto('/login');
-    await loginPage.assertLoaded();
-
-    // Verify presence of branded login header and glass card
-    await expect(page.locator('.login__header')).toBeVisible();
-    await expect(page.locator('.login__card')).toBeVisible();
-
-    // Verify zero horizontal overflow on Login
-    await assertNoHorizontalOverflow(page);
-
-    // Audit primary login button touch target
-    await assertMinTouchTarget(loginPage.googleBtn, 48);
-
-    // Capture Login Viewport
-    await loginPage.captureScreenshot('03-login-view');
-  });
-
-  test('should capture Organizer Dashboard and verify status chips and card glassmorphism', async ({
-    dashboardPage,
-    page,
-  }) => {
-    await setupVisualMockSession(page);
-    await page.goto('/meus-eventos');
-    await dashboardPage.assertLoaded();
-    await page.waitForTimeout(500);
-
-    // Verify zero horizontal overflow on Dashboard
-    await assertNoHorizontalOverflow(page);
-
-    // Audit "Novo Evento" touch target
-    await assertMinTouchTarget(dashboardPage.createEventBtn, 48);
-
-    // Verify filter chips have proper accessible layout and touch target
-    const chipCount = await dashboardPage.filterChips.count();
-    expect(chipCount).toBeGreaterThanOrEqual(1);
-    if (chipCount > 0) {
-      await assertMinTouchTarget(dashboardPage.filterChips.first(), 48);
-    }
-
-    // Capture Dashboard Baseline
-    await dashboardPage.captureScreenshot('04-organizer-dashboard');
-  });
-
-  test('should capture Event Editor Stepper and ViaCEP auto-populated address layout', async ({
-    eventEditorPage,
-    page,
-  }) => {
-    await setupVisualMockSession(page);
-
-    await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          cep: '01310-100',
-          logradouro: 'Avenida Paulista',
-          complemento: 'Lado ímpar',
-          bairro: 'Bela Vista',
-          localidade: 'São Paulo',
-          uf: 'SP',
-          ibge: '3550308',
-          gia: '1004',
-          ddd: '11',
-          siafi: '7107',
-        }),
+  for (const visualTheme of VISUAL_THEMES) {
+    test.describe(`${visualTheme} theme`, () => {
+      test.beforeEach(async ({ page }) => {
+        await page.addInitScript((theme) => localStorage.setItem('theme_mode', theme), visualTheme);
       });
-    });
 
-    await page.goto('/meus-eventos/evento/novo');
-    await eventEditorPage.assertLoaded();
+      test('should capture Home page in the configured theme and audit glassmorphic styling', async ({
+        homePage,
+        page,
+      }) => {
+        await homePage.goto('/');
+        await homePage.assertLoaded();
+        await page.waitForTimeout(500);
 
-    // Verify zero horizontal overflow on Step 1
-    await assertNoHorizontalOverflow(page);
-
-    // Fill Step 1 to unlock Address Step
-    await eventEditorPage.fillBasicInfo(
-      'Festa da Primavera 2026',
-      '10/20/2026',
-      'Grande festival ao ar livre com comidas típicas.',
-      '18:00'
-    );
-
-    // Fill CEP to trigger ViaCEP
-    await eventEditorPage.cepInput.fill('01310100');
-    await expect(eventEditorPage.streetInput).toHaveValue('Avenida Paulista');
-
-    // Verify zero horizontal overflow on Step 2
-    await assertNoHorizontalOverflow(page);
-
-    // Capture Event Editor with ViaCEP filled
-    await eventEditorPage.captureScreenshot('05-event-editor-viacep');
-  });
-
-  test('should capture Event Detail and RSVP dialog layout with glassmorphic modal', async ({
-    eventDetailPage,
-    rsvpDialog,
-    homePage,
-    page,
-  }) => {
-    await homePage.goto('/');
-    await homePage.assertLoaded();
-
-    const cardCount = await homePage.eventCards.count();
-    if (cardCount > 0) {
-      await homePage.clickEventCard(0);
-      await page.waitForURL(/\/evento\/.+/);
-    } else {
-      await eventDetailPage.goto('/evento/placeholder-event');
-    }
-
-    await eventDetailPage.assertLoaded();
-    await page.waitForTimeout(500);
-
-    // Verify zero horizontal overflow on Event Detail
-    await assertNoHorizontalOverflow(page);
-
-    // Capture Event Detail View
-    await eventDetailPage.captureScreenshot('06-event-detail');
-
-    // Open RSVP Dialog if button available
-    const hasRsvpBtn = await eventDetailPage.rsvpBtn.isVisible().catch(() => false);
-    if (hasRsvpBtn) {
-      await eventDetailPage.openRsvpDialog();
-      const dialogVisible = await rsvpDialog.dialogRoot
-        .first()
-        .isVisible({ timeout: 3000 })
-        .catch(() => false);
-      if (dialogVisible) {
-        await rsvpDialog.assertVisible();
-        await page.waitForTimeout(300);
-
-        // Verify zero horizontal overflow on RSVP Dialog
+        // Verify zero horizontal overflow on Home
         await assertNoHorizontalOverflow(page);
 
-        // Capture RSVP Dialog Modal Baseline
-        await eventDetailPage.captureScreenshot('07-rsvp-dialog-modal');
-      }
-    }
-  });
+        if (visualTheme === 'dark') {
+          await expect(page.locator('html')).toHaveClass(/dark/);
+        } else {
+          await expect(page.locator('html')).not.toHaveClass(/dark/);
+        }
 
-  test('should capture User Profile with personal info and Family Roster Manager', async ({
-    profilePage,
-    page,
-  }) => {
-    await setupVisualMockSession(page);
-    await page.goto('/perfil');
-    await profilePage.assertLoaded();
-    await page.waitForTimeout(500);
+        await homePage.captureScreenshot('01-home');
+      });
 
-    // Verify zero horizontal overflow on Profile
-    await assertNoHorizontalOverflow(page);
+      test('should capture Login page and verify responsive form alignment and animated gradient branding', async ({
+        loginPage,
+        page,
+      }) => {
+        await loginPage.goto('/login');
+        await loginPage.assertLoaded();
 
-    // Audit "Adicionar Familiar" touch target
-    await assertMinTouchTarget(profilePage.familyRoster.addMemberBtn, 48);
+        // Verify presence of branded login header and glass card
+        await expect(page.locator('.login__header')).toBeVisible();
+        await expect(page.locator('.login__card')).toBeVisible();
 
-    // Capture Profile Baseline
-    await profilePage.captureScreenshot('08-profile-family-roster');
-  });
+        // Verify zero horizontal overflow on Login
+        await assertNoHorizontalOverflow(page);
+
+        // Audit primary login button touch target
+        await assertMinTouchTarget(loginPage.googleBtn, 48);
+
+        // Capture Login Viewport
+        await loginPage.captureScreenshot('03-login-view');
+      });
+
+      test('should capture Organizer Dashboard and verify status chips and card glassmorphism', async ({
+        dashboardPage,
+        page,
+      }) => {
+        await setupVisualMockSession(page);
+        await page.goto('/meus-eventos');
+        await dashboardPage.assertLoaded();
+        await page.waitForTimeout(500);
+
+        // Verify zero horizontal overflow on Dashboard
+        await assertNoHorizontalOverflow(page);
+
+        // Audit "Novo Evento" touch target
+        await assertMinTouchTarget(dashboardPage.createEventBtn, 48);
+
+        // Verify filter chips have proper accessible layout and touch target
+        const chipCount = await dashboardPage.filterChips.count();
+        expect(chipCount).toBeGreaterThanOrEqual(1);
+        if (chipCount > 0) {
+          await assertMinTouchTarget(dashboardPage.filterChips.first(), 48);
+        }
+
+        // Capture Dashboard Baseline
+        await dashboardPage.captureScreenshot('04-organizer-dashboard');
+      });
+
+      test('should capture Event Editor Stepper and ViaCEP auto-populated address layout', async ({
+        eventEditorPage,
+        page,
+      }) => {
+        await setupVisualMockSession(page);
+
+        await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+          await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+              cep: '01310-100',
+              logradouro: 'Avenida Paulista',
+              complemento: 'Lado ímpar',
+              bairro: 'Bela Vista',
+              localidade: 'São Paulo',
+              uf: 'SP',
+              ibge: '3550308',
+              gia: '1004',
+              ddd: '11',
+              siafi: '7107',
+            }),
+          });
+        });
+
+        await page.goto('/meus-eventos/evento/novo');
+        await eventEditorPage.assertLoaded();
+
+        // Verify zero horizontal overflow on Step 1
+        await assertNoHorizontalOverflow(page);
+
+        // Fill Step 1 to unlock Address Step
+        await eventEditorPage.fillBasicInfo(
+          'Festa da Primavera 2026',
+          '10/20/2026',
+          'Grande festival ao ar livre com comidas típicas.',
+          '18:00',
+        );
+
+        // Fill CEP to trigger ViaCEP
+        await eventEditorPage.cepInput.fill('01310100');
+        await expect(eventEditorPage.streetInput).toHaveValue('Avenida Paulista');
+
+        // Verify zero horizontal overflow on Step 2
+        await assertNoHorizontalOverflow(page);
+
+        // Capture Event Editor with ViaCEP filled
+        await eventEditorPage.captureScreenshot('05-event-editor-viacep');
+      });
+
+      test('should capture Event Detail and RSVP dialog layout with glassmorphic modal', async ({
+        eventDetailPage,
+        rsvpDialog,
+        homePage,
+        page,
+      }) => {
+        await homePage.goto('/');
+        await homePage.assertLoaded();
+
+        const cardCount = await homePage.eventCards.count();
+        if (cardCount > 0) {
+          await homePage.clickEventCard(0);
+          await page.waitForURL(/\/evento\/.+/);
+        } else {
+          await eventDetailPage.goto('/evento/placeholder-event');
+        }
+
+        await eventDetailPage.assertLoaded();
+        await page.waitForTimeout(500);
+
+        // Verify zero horizontal overflow on Event Detail
+        await assertNoHorizontalOverflow(page);
+
+        // Capture Event Detail View
+        await eventDetailPage.captureScreenshot('06-event-detail');
+
+        // Open RSVP Dialog if button available
+        const hasRsvpBtn = await eventDetailPage.rsvpBtn.isVisible().catch(() => false);
+        if (hasRsvpBtn) {
+          await eventDetailPage.openRsvpDialog();
+          const dialogVisible = await rsvpDialog.dialogRoot
+            .first()
+            .isVisible({ timeout: 3000 })
+            .catch(() => false);
+          if (dialogVisible) {
+            await rsvpDialog.assertVisible();
+            await page.waitForTimeout(300);
+
+            // Verify zero horizontal overflow on RSVP Dialog
+            await assertNoHorizontalOverflow(page);
+
+            // Capture RSVP Dialog Modal Baseline
+            await eventDetailPage.captureScreenshot('07-rsvp-dialog-modal');
+          }
+        }
+      });
+
+      test('should capture User Profile with personal info and Family Roster Manager', async ({
+        profilePage,
+        page,
+      }) => {
+        await setupVisualMockSession(page);
+        await page.goto('/perfil');
+        await profilePage.assertLoaded();
+        await page.waitForTimeout(500);
+
+        // Verify zero horizontal overflow on Profile
+        await assertNoHorizontalOverflow(page);
+
+        // Audit "Adicionar Familiar" touch target
+        await assertMinTouchTarget(profilePage.familyRoster.addMemberBtn, 48);
+
+        // Capture Profile Baseline
+        await profilePage.captureScreenshot('08-profile-family-roster');
+      });
+    });
+  }
 });

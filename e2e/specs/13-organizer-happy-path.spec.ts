@@ -224,8 +224,19 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const step2NextBtn = eventEditorPage.nextStepBtns.nth(1);
       await expect(step2NextBtn).toBeEnabled();
 
+      const appContent = page.locator('main.app-content');
+      await expect(appContent).toBeVisible();
+      await appContent.evaluate((element) => element.scrollTo({ left: 48, top: 72 }));
+      await expect
+        .poll(() => appContent.evaluate((element) => element.scrollLeft))
+        .toBeGreaterThan(0);
+
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-05-step2-viacep');
+
+      await expect
+        .poll(() => appContent.evaluate((element) => ({ left: element.scrollLeft, top: element.scrollTop })))
+        .toEqual({ left: 0, top: 0 });
     });
   });
 

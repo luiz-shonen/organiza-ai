@@ -31,7 +31,10 @@ export abstract class BasePage {
   }
 
   async captureScreenshot(name: string): Promise<void> {
-    await this.page.evaluate(() => window.scrollTo(0, 0));
+    await this.page.evaluate(() => {
+      window.scrollTo(0, 0);
+      document.querySelector<HTMLElement>('main.app-content')?.scrollTo(0, 0);
+    });
     await this.page.waitForTimeout(250);
     const viewport = this.page.viewportSize();
     const isMobile = viewport ? viewport.width < 768 : false;

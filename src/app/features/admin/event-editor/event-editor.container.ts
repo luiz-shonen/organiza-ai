@@ -94,6 +94,12 @@ export class EventEditorContainer implements OnInit {
   protected readonly newItemName = signal('');
   protected readonly newItemQuantity = signal(1);
   protected readonly eventUrl = signal('');
+  protected readonly activeStepIndex = signal(0);
+  protected readonly stepLabels = [
+    'Informações do evento',
+    'Endereço do evento',
+    'Pagamento por Pix',
+  ] as const;
   protected readonly categories = [
     { name: 'Aniversário', class: 'cat-aniversario' },
     { name: 'Casamento', class: 'cat-casamento' },

@@ -81,7 +81,41 @@
             <mat-card-title>Dados do Evento</mat-card-title>
           </mat-card-header>
           <mat-card-content class="editor__card-content-stepper">
-            <mat-stepper linear #stepper class="editor__stepper editor__stepper--mobile" aria-label="Etapas de criação do evento">
+            <div
+              class="editor__step-progress"
+              data-testid="event-step-progress"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <span class="editor__step-progress-count">
+                Etapa {{ activeStepIndex() + 1 }} de {{ stepLabels.length }}
+              </span>
+              <strong class="editor__step-progress-title">{{ stepLabels[activeStepIndex()] }}</strong>
+              <div
+                class="editor__step-progress-track"
+                role="progressbar"
+                aria-label="Progresso do formulário"
+                aria-valuemin="1"
+                [attr.aria-valuemax]="stepLabels.length"
+                [attr.aria-valuenow]="activeStepIndex() + 1"
+                [attr.aria-valuetext]="'Etapa ' + (activeStepIndex() + 1) + ' de ' + stepLabels.length + ': ' + stepLabels[activeStepIndex()]"
+              >
+                @for (stepLabel of stepLabels; track stepLabel; let index = $index) {
+                  <span
+                    class="editor__step-progress-segment"
+                    [class.editor__step-progress-segment--complete]="index < activeStepIndex()"
+                    [class.editor__step-progress-segment--active]="index === activeStepIndex()"
+                  ></span>
+                }
+              </div>
+            </div>
+            <mat-stepper
+              linear
+              #stepper
+              class="editor__stepper editor__stepper--mobile"
+              aria-label="Etapas de criação do evento"
+              (selectionChange)="activeStepIndex.set($event.selectedIndex)"
+            >
               <!-- Step 1: Basic Info -->
               <mat-step [stepControl]="basicInfoForm">
                 <ng-template matStepLabel>Informações do evento</ng-template>

@@ -127,15 +127,16 @@
     overflow: hidden;
 
     ::ng-deep .mat-horizontal-stepper-header-container {
-      padding: 12px 8px;
+      display: none;
       border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      max-width: 100%;
-      -webkit-overflow-scrolling: touch;
 
       @media (min-width: 600px) {
+        display: flex;
         padding: 16px 24px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        max-width: 100%;
+        -webkit-overflow-scrolling: touch;
       }
     }
 
@@ -156,6 +157,49 @@
     }
   }
 
+  &__step-progress {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
+    color: var(--mat-sys-on-surface);
+
+    @media (min-width: 600px) {
+      display: none;
+    }
+  }
+
+  &__step-progress-count {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__step-progress-title {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  &__step-progress-track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    height: 6px;
+    margin-top: 4px;
+  }
+
+  &__step-progress-segment {
+    border-radius: 999px;
+    background: var(--mat-sys-surface-container-high);
+
+    &--complete,
+    &--active {
+      background: var(--org-primary);
+    }
+  }
+
   &__step-actions {
     display: flex;
     flex-direction: column-reverse;
@@ -168,6 +212,10 @@
     @media (min-width: 600px) {
       flex-direction: row;
       align-items: center;
+    }
+
+    button {
+      min-height: 48px;
     }
   }
 

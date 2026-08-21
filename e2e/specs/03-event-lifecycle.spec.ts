@@ -207,6 +207,14 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       'Pix',
     ]);
 
+    if ((page.viewportSize()?.width ?? 0) < 600) {
+      const stepProgress = page.getByTestId('event-step-progress');
+      await expect(stepProgress).toBeVisible();
+      await expect(stepProgress).toContainText('Etapa 1 de 3');
+      await expect(stepProgress).toContainText('Informações do evento');
+      await expect(stepProgress.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
+    }
+
     // Touch and blur title input without value to trigger validation
     await eventEditorPage.titleInput.focus();
     await eventEditorPage.titleInput.blur();

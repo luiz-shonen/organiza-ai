@@ -17,6 +17,7 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { By } from '@angular/platform-browser';
 import { PartyEvent } from '../../../core/models';
 import { FeedbackService } from '../../../shared/ui';
@@ -243,18 +244,22 @@ describe('EventEditorContainer', () => {
       expect(component['basicInfoForm'].enabled).toBe(true);
     });
 
-    it('should render descriptive mobile step labels and governed Pix controls', () => {
+    it('should announce the active step with a compact mobile progress summary', () => {
       const stepper = fixture.debugElement.query(By.directive(MatStepper)).componentInstance as MatStepper;
       const element = fixture.nativeElement as HTMLElement;
 
       expect(element.querySelector('.editor__stepper--mobile')).toBeTruthy();
-      expect(element.textContent).toContain('Informações do evento');
-      expect(element.textContent).toContain('Endereço do evento');
-      expect(element.textContent).toContain('Pagamento por Pix');
+      const progress = element.querySelector('[data-testid="event-step-progress"]');
+      expect(progress?.textContent).toContain('Etapa 1 de 3');
+      expect(progress?.textContent).toContain('Informações do evento');
+      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('1');
 
-      stepper.selectedIndex = 2;
+      stepper.selectionChange.emit({ selectedIndex: 2 } as StepperSelectionEvent);
       fixture.detectChanges();
 
+      expect(progress?.textContent).toContain('Etapa 3 de 3');
+      expect(progress?.textContent).toContain('Pagamento por Pix');
+      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('3');
       expect(element.querySelector('#pix-form mat-form-field')?.classList).toContain('org-form-field');
       expect(element.querySelector('#pix-form button[matstepperprevious]')?.classList).toContain('org-button');
       expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')?.classList).toContain('org-button');

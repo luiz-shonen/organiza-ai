@@ -243,8 +243,17 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         }
       }
       const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
-      await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
-      await expect(stepperHeader).toHaveCSS('flex-wrap', 'nowrap');
+      const stepProgress = page.getByTestId('event-step-progress');
+      if ((page.viewportSize()?.width ?? 0) < 600) {
+        await expect(stepProgress).toBeVisible();
+        await expect(stepProgress).toContainText('Etapa 2 de 3');
+        await expect(stepProgress).toContainText('Endereço do evento');
+        await expect(stepProgress.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '2');
+        await expect(stepperHeader).toHaveCSS('display', 'none');
+      } else {
+        await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
+        await expect(stepperHeader).toHaveCSS('flex-wrap', 'nowrap');
+      }
       await assertNoHorizontalOverflow(page);
 
       const appContent = page.locator('main.app-content');
@@ -311,14 +320,23 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(pixField).toHaveClass(/org-form-field/);
 
       const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
-      await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
-      const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');
-      await expect(activeHeader).toBeVisible();
-      const activeHeaderBox = await activeHeader.boundingBox();
-      expect(activeHeaderBox).not.toBeNull();
-      if (activeHeaderBox) {
-        expect(activeHeaderBox.x).toBeGreaterThanOrEqual(0);
-        expect(activeHeaderBox.x + activeHeaderBox.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
+      const stepProgress = page.getByTestId('event-step-progress');
+      if ((page.viewportSize()?.width ?? 0) < 600) {
+        await expect(stepProgress).toBeVisible();
+        await expect(stepProgress).toContainText('Etapa 3 de 3');
+        await expect(stepProgress).toContainText('Pagamento por Pix');
+        await expect(stepProgress.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '3');
+        await expect(stepperHeader).toHaveCSS('display', 'none');
+      } else {
+        await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
+        const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');
+        await expect(activeHeader).toBeVisible();
+        const activeHeaderBox = await activeHeader.boundingBox();
+        expect(activeHeaderBox).not.toBeNull();
+        if (activeHeaderBox) {
+          expect(activeHeaderBox.x).toBeGreaterThanOrEqual(0);
+          expect(activeHeaderBox.x + activeHeaderBox.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
+        }
       }
 
       await assertMinTouchTarget(pixForm.locator('button[matstepperprevious]'), 48);

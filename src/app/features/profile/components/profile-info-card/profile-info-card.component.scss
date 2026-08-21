@@ -1,14 +1,17 @@
+:host {
+  display: block;
+}
+
 .profile-info-card {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: var(--org-surface-container, #f4eaff);
-  border: 1px solid var(--org-outline-variant, rgba(204, 195, 216, 0.4));
+  background: var(--org-glass-bg) !important;
   border-radius: 1.25rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  backdrop-filter: var(--org-glass-blur, blur(24px)) !important;
+  -webkit-backdrop-filter: var(--org-glass-blur, blur(24px)) !important;
+  box-shadow: var(--org-glass-shadow);
 
   &__header {
     display: flex;

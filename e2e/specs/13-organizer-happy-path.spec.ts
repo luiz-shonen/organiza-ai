@@ -651,4 +651,65 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventDetailPage.captureScreenshot('13-12-rsvp-confirmed');
     });
   });
+
+  // Phase 4 - Task T11: Profile Page & Typography [E2E-21, E2E-22, E2E-23]
+  test.describe('Profile Page & Typography', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        userProfile: {
+          id: 'test-user-uid',
+          email: 'luiz.gmr.dev@gmail.com',
+          displayName: 'Luiz Organizer',
+          phone: '(11) 99999-9999',
+        },
+      });
+    });
+
+    test('[E2E-21] should render user profile page with profile card, name, and phone fields', async ({
+      page,
+      profilePage,
+    }) => {
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Assert profile card is rendered
+      const profileCard = page.locator('app-profile-info-card, .profile-info-card').first();
+      await expect(profileCard).toBeVisible();
+
+      // Assert name and phone
+      await expect(page.locator('text=Luiz Organizer').first()).toBeVisible();
+      await expect(page.locator('text=(11) 99999-9999').first()).toBeVisible();
+
+      // Screenshot baseline
+      await profilePage.captureScreenshot('13-13-profile-loaded');
+    });
+
+    test('[E2E-22] should verify profile card glassmorphism backdrop-filter blur', async ({
+      page,
+      profilePage,
+    }) => {
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Assert glassmorphism on profile card surface
+      const profileCard = page.locator('section.profile-info-card, .profile-info-card').first();
+      await assertGlassmorphism(profileCard);
+    });
+
+    test('[E2E-23] should verify profile heading typography uses Plus Jakarta Sans font family', async ({
+      page,
+      profilePage,
+    }) => {
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Assert heading font family
+      const heading = page.getByRole('heading', { level: 1 }).first();
+      await expect(heading).toBeVisible();
+      await assertFontFamily(heading, 'Plus Jakarta Sans');
+    });
+  });
 });

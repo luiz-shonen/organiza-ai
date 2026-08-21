@@ -352,14 +352,14 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-21]` navigates to `/perfil`, asserts "Meu Perfil" heading, profile card, family roster header, and saves screenshot `13-13-profile-page-desktop.png`
-- [ ] `[E2E-22]` asserts profile info card computed `backdrop-filter` contains `blur`
-- [ ] `[E2E-23]` asserts profile page heading computed `font-family` contains `Plus Jakarta Sans`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-2[123]\]"`
+- [x] `[E2E-21]` navigates to `/perfil`, asserts "Meu Perfil" heading, profile card, family roster header, and saves screenshot `13-13-profile-page-desktop.png`
+- [x] `[E2E-22]` asserts profile info card computed `backdrop-filter` contains `blur`
+- [x] `[E2E-23]` asserts profile page heading computed `font-family` contains `Plus Jakarta Sans`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-2[123]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement profile page, glassmorphism, and typography atomic tests`  
+**Commit**: `test(e2e): implement user profile page and typography atomic tests`  
 
 ---
 

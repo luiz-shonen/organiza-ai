@@ -293,9 +293,9 @@ invite.
 | E2E-18 | RSVP – dialog opens | T9 | Complete |
 | E2E-19 | RSVP – dialog backdrop-filter | T1, T9 | Complete |
 | E2E-20 | RSVP – submit → confirmation | T10 | Complete |
-| E2E-21 | Profile – page renders | T11 | Pending |
-| E2E-22 | Profile – card backdrop-filter | T1, T11 | Pending |
-| E2E-23 | Profile – heading font-family | T1, T11 | Pending |
+| E2E-21 | Profile – page renders | T11 | Complete |
+| E2E-22 | Profile – card backdrop-filter | T1, T11 | Complete |
+| E2E-23 | Profile – heading font-family | T1, T11 | Complete |
 | E2E-24 | Profile – update name | T12 | Pending |
 | E2E-25 | Family – add member | T13 | Pending |
 | E2E-26 | Family – add button ≥ 48 px | T1, T13 | Pending |

@@ -122,10 +122,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgPageLayoutComponent` implements `maxWidth` input with default `'default'` (960px) and sets `role="main"` on host
-- [ ] Unit tests verify container maxWidth classes, fallback on invalid maxWidth, and projected content in `src/app/shared/ui/layout/org-page-layout.component.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 55 test suites, 348 tests pass (no silent deletions)
+- [x] `OrgPageLayoutComponent` implements `maxWidth` input with default `'default'` (960px) and sets `role="main"` on host
+- [x] Unit tests verify container maxWidth classes, fallback on invalid maxWidth, and projected content in `src/app/shared/ui/layout/org-page-layout.component.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 55 test suites, 351 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(ui): add page layout structural primitive`

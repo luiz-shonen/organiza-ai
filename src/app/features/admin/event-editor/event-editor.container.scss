@@ -147,11 +147,9 @@
   &__stepper--mobile {
     --mat-stepper-header-height: 56px;
     --mat-stepper-header-selected-state-icon-background-color: var(--org-primary);
-    --mat-stepper-header-selected-state-icon-foreground-color: var(--org-on-primary);
     --mat-stepper-header-selected-state-label-text-color: var(--org-primary);
     --mat-stepper-header-selected-state-label-text-weight: 700;
     --mat-stepper-header-done-state-icon-background-color: var(--org-primary);
-    --mat-stepper-header-done-state-icon-foreground-color: var(--org-on-primary);
 
     @media (min-width: 600px) {
       --mat-stepper-header-height: 64px;
@@ -162,7 +160,6 @@
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
-    align-items: stretch;
     gap: 16px;
     margin-top: 24px;
     padding-top: 16px;

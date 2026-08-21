@@ -32,6 +32,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T13 — Rebuild the family roster composition
 - [x] T14 — Standardize seasonal event card surface
 - [x] T15 — Replace the undersized mobile stepper presentation
+  - Follow-up: removed redundant foreground overrides that already inherit the Material `on-primary` token and the default flex alignment, returning the editor stylesheet below its enforced budget without changing the mobile stepper contract.
 
 ### Phase 4
 

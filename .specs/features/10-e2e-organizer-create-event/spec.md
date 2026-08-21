@@ -277,8 +277,8 @@ invite.
 | E2E-02 | Dashboard – card backdrop-filter | T1, T2 | Complete |
 | E2E-03 | Step 1 – empty state renders | T3 | Complete |
 | E2E-04 | Step 1 – filled → Próximo enabled | T3 | Complete |
-| E2E-05 | Step 2 – renders before CEP | T4 | Pending |
-| E2E-06 | Step 2 – ViaCEP auto-fill | T4 | Pending |
+| E2E-05 | Step 2 – renders before CEP | T4 | Complete |
+| E2E-06 | Step 2 – ViaCEP auto-fill | T4 | Complete |
 | E2E-07 | Step 3 – renders Pix + wishlist form | T5 | Pending |
 | E2E-08 | Step 3 – add first item | T5 | Pending |
 | E2E-09 | Step 3 – two items visible | T5 | Pending |

@@ -132,4 +132,93 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-03-step1-filled');
     });
   });
+
+  // Phase 2 - Task T4: Create Event - Step 2 (Endereço / ViaCEP) [E2E-05, E2E-06]
+  test.describe('Create Event - Step 2 (Endereço)', () => {
+    test.beforeEach(async ({ page, eventEditorPage }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [],
+      });
+
+      // Intercept ViaCEP endpoint
+      await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            cep: '01310-100',
+            logradouro: 'Avenida Paulista',
+            complemento: 'Lado ímpar',
+            bairro: 'Bela Vista',
+            localidade: 'São Paulo',
+            uf: 'SP',
+            ibge: '3550308',
+            gia: '1004',
+            ddd: '11',
+            siafi: '7107',
+          }),
+        });
+      });
+
+      // Navigate and complete Step 1 to reach Step 2
+      await page.goto('/meus-eventos/evento/novo');
+      await eventEditorPage.assertLoaded();
+      await eventEditorPage.fillBasicInfo(
+        'Aniversário dos Sonhos 2026',
+        '11/20/2026',
+        'Uma comemoração inesquecível com amigos e família.',
+        '19:00'
+      );
+    });
+
+    test('[E2E-05] should render Step 2 fields with disabled Próximo button before CEP entry', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      // Assert address fields are rendered
+      await expect(eventEditorPage.cepInput).toBeVisible();
+      await expect(eventEditorPage.streetInput).toBeVisible();
+      await expect(eventEditorPage.numberInput).toBeVisible();
+      const neighborhoodInput = page.locator('input[formcontrolname="neighborhood"]');
+      const cityInput = page.locator('input[formcontrolname="city"]');
+      await expect(neighborhoodInput).toBeVisible();
+      await expect(cityInput).toBeVisible();
+
+      // Próximo button on Step 2 is disabled initially
+      const step2NextBtn = eventEditorPage.nextStepBtns.nth(1);
+      await expect(step2NextBtn).toBeVisible();
+      await expect(step2NextBtn).toBeDisabled();
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-04-step2-empty');
+    });
+
+    test('[E2E-06] should auto-populate address via ViaCEP mock when typing 8-digit CEP and enable Próximo', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      // Type 8-digit CEP
+      await eventEditorPage.cepInput.fill('01310100');
+
+      // Auto-populated fields check
+      await expect(eventEditorPage.streetInput).toHaveValue('Avenida Paulista');
+      const neighborhoodInput = page.locator('input[formcontrolname="neighborhood"]');
+      const cityInput = page.locator('input[formcontrolname="city"]');
+      await expect(neighborhoodInput).toHaveValue('Bela Vista');
+      await expect(cityInput).toHaveValue('São Paulo/SP');
+
+      // Fill number to complete address form
+      await eventEditorPage.numberInput.fill('1000');
+
+      // Próximo button on Step 2 becomes enabled
+      const step2NextBtn = eventEditorPage.nextStepBtns.nth(1);
+      await expect(step2NextBtn).toBeEnabled();
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-05-step2-viacep');
+    });
+  });
 });

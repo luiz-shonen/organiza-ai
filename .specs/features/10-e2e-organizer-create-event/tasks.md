@@ -171,13 +171,13 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-05]` fills Step 1 in beforeEach, advances to Step 2, asserts address fields render with disabled "Próximo" button before CEP, and saves screenshot `13-04-step2-empty-desktop.png`
-- [ ] `[E2E-06]` intercepts ViaCEP endpoint, types valid 8-digit CEP `01310-100`, asserts auto-populated street/neighborhood/city/state, asserts "Próximo" button enables, and saves screenshot `13-05-step2-viacep-desktop.png`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[56]\]"`
+- [x] `[E2E-05]` fills Step 1 in beforeEach, advances to Step 2, asserts address fields render with disabled "Próximo" button before CEP, and saves screenshot `13-04-step2-empty-desktop.png`
+- [x] `[E2E-06]` intercepts ViaCEP endpoint, types valid 8-digit CEP `01310-100`, asserts auto-populated street/neighborhood/city/state, asserts "Próximo" button enables, and saves screenshot `13-05-step2-viacep-desktop.png`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[56]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement create event step 2 viacep atomic tests and visual baseline`  
+**Commit**: `test(e2e): implement create event step 2 viacep atomic tests`  
 
 ---
 

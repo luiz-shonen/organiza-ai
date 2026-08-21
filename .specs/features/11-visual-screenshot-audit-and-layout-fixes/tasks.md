@@ -409,10 +409,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] Event detail container has `16px` padding on mobile, expanding to `24px` on desktop
-- [ ] Hero banner renders with `border-radius: 20px` and responsive height (`240px` mobile, `300px` desktop)
-- [ ] Date pill, location card, and RSVP button align cleanly without clipping
-- [ ] Build gate passes: `npm run build`
+- [x] Event detail container has `16px` padding on mobile, expanding to `24px` on desktop
+- [x] Hero banner renders with `border-radius: 20px` and responsive height (`240px` mobile, `300px` desktop)
+- [x] Date pill, location card, and RSVP button align cleanly without clipping
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

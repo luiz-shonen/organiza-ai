@@ -152,9 +152,9 @@ The visual baselines also do not cover every supported page state in dark mode o
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel complete |
 | DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home, T12 Profile, T13 Family roster, and T14 Event detail single-surface migrations complete |
-| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, and T13 Family roster field adoptions complete |
+| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, T13 Family roster, and T15 Pix field adoptions complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe and T12 Profile focus contract adoption complete |
-| DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home and T13 Family roster action contract migrations complete |
+| DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home, T13 Family roster, and T15 Pix action contract migrations complete |
 | DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map and T13 Family roster icon adoption complete |
 | NAV-01 | Calm navigation and workflows | Design | In Design |
 | NAV-02 | Calm navigation and workflows | Design | In Design |
@@ -174,7 +174,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | VIS-01 | Full visual regression matrix | Execute | In progress — T2 anchor capture complete |
 | VIS-02 | Full visual regression matrix | Execute | In progress — T2 settling and T4 tracked comparison configuration complete |
 | VIS-03 | Full visual regression matrix | Execute | In progress — T11 Home visual consumer migration complete; T29 will add matrix scenarios |
-| VIS-04 | Full visual regression matrix | Execute | In progress — T3 numerical assertions complete |
+| VIS-04 | Full visual regression matrix | Execute | In progress — T3 numerical assertions and T15 mobile stepper geometry adoption complete |
 | VIS-05 | Full visual regression matrix | Execute | In progress — T2 resets scroll origins and waits for fonts |
 
 **Coverage:** 26 total, 0 mapped to tasks, 26 unmapped while Design is in progress.

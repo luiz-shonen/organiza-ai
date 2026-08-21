@@ -81,10 +81,10 @@
             <mat-card-title>Dados do Evento</mat-card-title>
           </mat-card-header>
           <mat-card-content class="editor__card-content-stepper">
-            <mat-stepper linear #stepper class="editor__stepper">
+            <mat-stepper linear #stepper class="editor__stepper editor__stepper--mobile" aria-label="Etapas de criação do evento">
               <!-- Step 1: Basic Info -->
               <mat-step [stepControl]="basicInfoForm">
-                <ng-template matStepLabel>Informações</ng-template>
+                <ng-template matStepLabel>Informações do evento</ng-template>
                 <form [formGroup]="basicInfoForm" class="editor__form" id="basic-info-form">
                   <mat-form-field appearance="outline" class="org-input">
                     <mat-label>Título do Evento</mat-label>
@@ -191,7 +191,7 @@
 
               <!-- Step 2: Address -->
               <mat-step [stepControl]="addressForm">
-                <ng-template matStepLabel>Endereço</ng-template>
+                <ng-template matStepLabel>Endereço do evento</ng-template>
                 <form [formGroup]="addressForm" class="editor__form" id="address-form">
                   <h3 class="editor__section-title">Endereço</h3>
                   <div class="editor__address-row-top">
@@ -304,10 +304,10 @@
 
               <!-- Step 3: Pix -->
               <mat-step [stepControl]="pixForm">
-                <ng-template matStepLabel>Pix</ng-template>
+                <ng-template matStepLabel>Pagamento por Pix</ng-template>
                 <form [formGroup]="pixForm" class="editor__form" id="pix-form">
                   <h3 class="editor__section-title">Pagamento (Pix)</h3>
-                  <mat-form-field appearance="outline" class="org-input">
+                  <mat-form-field orgFormField appearance="outline" class="org-input">
                     <mat-label>Chave Pix (opcional)</mat-label>
                     <input
                       matInput
@@ -319,15 +319,15 @@
                   </mat-form-field>
 
                   <div class="editor__step-actions">
-                    <button mat-button matStepperPrevious type="button">
+                    <button orgButton="secondary" matStepperPrevious type="button">
                       <mat-icon>arrow_back</mat-icon>
                       Voltar
                     </button>
                     @if (isOwner()) {
                       <button
-                        mat-flat-button
+                        orgButton="primary"
                         class="editor__save-btn btn-primary-org"
-                        [disabled]="
+                        [orgButtonDisabled]="
                           basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
                         "
                         (click)="saveEvent()"

@@ -16,6 +16,8 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { MatStepper } from '@angular/material/stepper';
+import { By } from '@angular/platform-browser';
 import { PartyEvent } from '../../../core/models';
 
 vi.mock('qrcode', () => ({
@@ -244,6 +246,23 @@ describe('EventEditorContainer', () => {
     it('should compute isOwner as true for new event creation', () => {
       expect(component.isOwner()).toBe(true);
       expect(component['basicInfoForm'].enabled).toBe(true);
+    });
+
+    it('should render descriptive mobile step labels and governed Pix controls', () => {
+      const stepper = fixture.debugElement.query(By.directive(MatStepper)).componentInstance as MatStepper;
+      const element = fixture.nativeElement as HTMLElement;
+
+      expect(element.querySelector('.editor__stepper--mobile')).toBeTruthy();
+      expect(element.textContent).toContain('Informações do evento');
+      expect(element.textContent).toContain('Endereço do evento');
+      expect(element.textContent).toContain('Pagamento por Pix');
+
+      stepper.selectedIndex = 2;
+      fixture.detectChanges();
+
+      expect(element.querySelector('#pix-form mat-form-field')?.classList).toContain('org-form-field');
+      expect(element.querySelector('#pix-form button[matstepperprevious]')?.classList).toContain('org-button');
+      expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')?.classList).toContain('org-button');
     });
   });
 });

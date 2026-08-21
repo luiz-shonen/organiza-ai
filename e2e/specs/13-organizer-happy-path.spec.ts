@@ -307,6 +307,23 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(pixForm).toBeVisible();
       const pixKeyInput = page.locator('input[formcontrolname="pixKey"]');
       await expect(pixKeyInput).toBeVisible();
+      const pixField = pixKeyInput.locator('xpath=ancestor::mat-form-field');
+      await expect(pixField).toHaveClass(/org-form-field/);
+
+      const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
+      await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
+      const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');
+      await expect(activeHeader).toBeVisible();
+      const activeHeaderBox = await activeHeader.boundingBox();
+      expect(activeHeaderBox).not.toBeNull();
+      if (activeHeaderBox) {
+        expect(activeHeaderBox.x).toBeGreaterThanOrEqual(0);
+        expect(activeHeaderBox.x + activeHeaderBox.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
+      }
+
+      await assertMinTouchTarget(pixForm.locator('button[matstepperprevious]'), 48);
+      await assertMinTouchTarget(pixForm.getByTestId('event-save-btn'), 48);
+      await assertNoHorizontalOverflow(page);
       await page.waitForTimeout(300);
 
       // Screenshot baseline

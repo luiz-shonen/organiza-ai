@@ -38,6 +38,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import { CollaboratorInviteDialogComponent } from '../../organizer/event-editor/components/collaborator-invite-dialog/collaborator-invite-dialog.component';
+import { OrgButtonDirective, OrgFormFieldDirective } from '../../../shared/ui';
 
 @Component({
   selector: 'app-event-editor',
@@ -59,6 +60,8 @@ import { CollaboratorInviteDialogComponent } from '../../organizer/event-editor/
     MatChipsModule,
     MatStepperModule,
     MatDialogModule,
+    OrgButtonDirective,
+    OrgFormFieldDirective,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',

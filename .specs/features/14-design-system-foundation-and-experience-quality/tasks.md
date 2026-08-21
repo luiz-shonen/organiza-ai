@@ -30,7 +30,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T12 — Simplify profile information into one surface
 - [x] T13 — Rebuild the family roster composition
 - [x] T14 — Standardize seasonal event card surface
-- [ ] T15 — Replace the undersized mobile stepper presentation
+- [x] T15 — Replace the undersized mobile stepper presentation
 
 ## Test Coverage Matrix
 

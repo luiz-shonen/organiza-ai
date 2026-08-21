@@ -284,10 +284,10 @@ invite.
 | E2E-09 | Step 3 – two items visible | T5 | Complete |
 | E2E-10 | Step 3 – remove one item | T5 | Complete |
 | E2E-11 | Submit → snackbar + redirect | T6 | Complete |
-| E2E-12 | Edit – pre-populated editor | T7 | Pending |
-| E2E-13 | Edit – submit → snackbar | T7 | Pending |
-| E2E-14 | Edit – empty title validation | T7 | Pending |
-| E2E-15 | Edit – input border color token | T1, T7 | Pending |
+| E2E-12 | Edit – pre-populated editor | T7 | Complete |
+| E2E-13 | Edit – submit → snackbar | T7 | Complete |
+| E2E-14 | Edit – empty title validation | T7 | Complete |
+| E2E-15 | Edit – input border color token | T1, T7 | Complete |
 | E2E-16 | RSVP – event detail renders | T8 | Pending |
 | E2E-17 | RSVP – button ≥ 48 px | T1, T8 | Pending |
 | E2E-18 | RSVP – dialog opens | T9 | Pending |

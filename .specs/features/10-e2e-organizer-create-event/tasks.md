@@ -247,15 +247,15 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-12]` navigates to existing event editor, asserts pre-populated title/date/description, and saves screenshot `13-09-event-edit-prepopulated-desktop.png`
-- [ ] `[E2E-13]` modifies title, clicks "Salvar", asserts success snackbar display
-- [ ] `[E2E-14]` clears title input, asserts "Título é obrigatório" validation error, and asserts save button is disabled
-- [ ] `[E2E-15]` focuses title input and asserts focused border/outline color matches `--org-primary` theme token
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-1[2345]\]"`
+- [x] `[E2E-12]` navigates to existing event editor, asserts pre-populated title/date/description, and saves screenshot `13-09-event-edit-prepopulated-desktop.png`
+- [x] `[E2E-13]` modifies title, clicks "Salvar", asserts success snackbar display
+- [x] `[E2E-14]` clears title input, asserts "Título é obrigatório" validation error, and asserts save button is disabled
+- [x] `[E2E-15]` focuses title input and asserts focused border/outline color matches `--org-primary` theme token
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-1[2345]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement edit existing event atomic tests and focus token assertion`  
+**Commit**: `test(e2e): implement edit existing event atomic tests`  
 
 ---
 

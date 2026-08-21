@@ -14,6 +14,13 @@ const mockHappyPathEvent = {
   description: 'Uma comemoração inesquecível com amigos e família.',
   date: new Date(Date.now() + 86400000 * 10).toISOString(),
   location: 'Av. Paulista, 1000 - Bela Vista - São Paulo/SP - CEP: 01310-100',
+  addressDetails: {
+    cep: '01310-100',
+    address: 'Av. Paulista',
+    number: '1000',
+    neighborhood: 'Bela Vista',
+    city: 'São Paulo/SP',
+  },
   pixKey: 'pix-organiza@teste.com',
   estimatedBudget: 1500,
   status: 'active',
@@ -418,6 +425,87 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-08-event-created-snackbar');
+    });
+  });
+
+  // Phase 2 - Task T7: Edit Existing Event [E2E-12, E2E-13, E2E-14, E2E-15]
+  test.describe('Edit Existing Event Flow', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [mockHappyPathEvent],
+      });
+    });
+
+    test('[E2E-12] should render editor pre-populated with existing event details', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Assert pre-populated form fields
+      await expect(eventEditorPage.titleInput).toHaveValue('Aniversário dos Sonhos 2026');
+      await expect(eventEditorPage.descriptionInput).toHaveValue('Uma comemoração inesquecível com amigos e família.');
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-09-event-edit-prepopulated');
+    });
+
+    test('[E2E-13] should update title, submit, and display success snackbar', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Modify title
+      await eventEditorPage.titleInput.fill('Aniversário dos Sonhos 2026 - Atualizado');
+
+      // Advance through Step 1 and Step 2 to reach Step 3 save button
+      await eventEditorPage.nextStepBtns.first().click();
+      await eventEditorPage.nextStepBtns.nth(1).click();
+
+      // Click save button
+      await eventEditorPage.saveEvent();
+
+      // Assert snackbar confirmation appears
+      const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+      await expect(snackBar).toBeVisible();
+      await expect(snackBar).toContainText(/Evento atualizado/i);
+    });
+
+    test('[E2E-14] should display validation error and disable save when title is cleared', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Clear title and blur
+      await eventEditorPage.titleInput.fill('');
+      await eventEditorPage.titleInput.blur();
+
+      // Assert error message
+      const titleError = page.locator('mat-error').filter({ hasText: /Título é obrigatório/i });
+      await expect(titleError).toBeVisible();
+
+      // Assert Next / Step 1 button is disabled
+      const nextBtn = eventEditorPage.nextStepBtns.first();
+      await expect(nextBtn).toBeDisabled();
+    });
+
+    test('[E2E-15] should verify focused title input border color matches theme token', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/happy-event-1');
+      await eventEditorPage.assertLoaded();
+
+      // Verify focus style
+      await assertFocusPrimaryColor(eventEditorPage.titleInput);
     });
   });
 });

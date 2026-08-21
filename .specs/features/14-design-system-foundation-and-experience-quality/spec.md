@@ -150,7 +150,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| DS-01 | Shared surfaces and form controls | Design | In Design |
+| DS-01 | Shared surfaces and form controls | Execute | In progress — T6 surface primitive complete |
 | DS-02 | Shared surfaces and form controls | Execute | In progress — T3 geometry assertion complete |
 | DS-03 | Shared surfaces and form controls | Design | In Design |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T3 field coherence assertion complete |

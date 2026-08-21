@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+
+.org-surface {
+  backdrop-filter: var(--org-glass-blur, blur(24px));
+  background:
+    linear-gradient(var(--org-glass-bg, rgba(255, 255, 255, 0.6)), var(--org-glass-bg, rgba(255, 255, 255, 0.6))) padding-box,
+    var(--org-gradient-border) border-box;
+  border: var(--org-glass-ring-width, 1.5px) solid transparent;
+  border-radius: var(--org-radius-lg, 1rem);
+  box-sizing: border-box;
+  padding: 16px 12px;
+
+  &--hero {
+    border-radius: 1.5rem;
+  }
+
+  @media (min-width: 600px) {
+    padding: 24px 16px;
+  }
+}

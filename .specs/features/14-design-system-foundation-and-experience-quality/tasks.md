@@ -17,7 +17,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 ### Phase 2
 
 - [x] T5 — Define semantic and seasonal theme tokens
-- [ ] T6 — Create the single-owner glass surface primitive
+- [x] T6 — Create the single-owner glass surface primitive
 - [ ] T7 — Create the native Material field directive
 - [ ] T8 — Create the field-label contract
 - [ ] T9 — Create shared action and chip directives

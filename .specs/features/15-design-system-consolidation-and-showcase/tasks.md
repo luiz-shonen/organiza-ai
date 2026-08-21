@@ -206,10 +206,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgEmptyStateComponent` renders glassmorphic card surface with icon, title, description, and projected action slot
-- [ ] Unit tests verify default `'info'` icon fallback, title, description, and action projection in `src/app/shared/ui/feedback/org-empty-state.component.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 371 tests pass (no silent deletions)
+- [x] `OrgEmptyStateComponent` renders glassmorphic card surface with icon, title, description, and projected action slot
+- [x] Unit tests verify default `'info'` icon fallback, title, description, and action projection in `src/app/shared/ui/feedback/org-empty-state.component.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(ui): add empty state feedback component`

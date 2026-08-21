@@ -10,7 +10,6 @@ import { DashboardContainer } from './dashboard.container';
 import {
   EventService,
   AuthService,
-  DrawerService,
   NotificationService,
   EventNotificationService,
 } from '../../../core/services';
@@ -103,7 +102,6 @@ describe('DashboardContainer', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: EventNotificationService, useValue: mockEventNotificationService },
         { provide: NotificationService, useValue: mockNotificationService },
-        { provide: DrawerService, useValue: { openAdminDrawer: vi.fn() } },
         { provide: MatSnackBar, useValue: { open: vi.fn() } },
         { provide: MatDialog, useValue: { open: vi.fn() } },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
@@ -117,6 +115,13 @@ describe('DashboardContainer', () => {
 
   it('should create dashboard container', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should never render Novo Admin button even if user is superadmin', () => {
+    mockAuthService.isSuperAdmin.set(true);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).not.toContain('Novo Admin');
   });
 
   it('should compute accurate filter counts for all, upcoming, past, and cancelled', () => {

@@ -22,7 +22,6 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import {
   EventService,
   AuthService,
-  DrawerService,
   NotificationService,
   EventNotificationService,
 } from '../../../core/services';
@@ -54,7 +53,6 @@ import {
 export class DashboardContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly authService = inject(AuthService);
-  private readonly drawerService = inject(DrawerService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private readonly clipboard = inject(Clipboard);
@@ -248,9 +246,5 @@ export class DashboardContainer implements OnInit {
       month: 'short',
       year: 'numeric',
     });
-  }
-
-  protected openAdminDialog(): void {
-    this.drawerService.openAdminDrawer();
   }
 }

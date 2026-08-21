@@ -5,20 +5,9 @@
       Painel do Organizador
     </h1>
     <div class="dashboard__header-actions">
-      @if (isSuperAdmin()) {
-        <button
-          mat-stroked-button
-          (click)="openAdminDialog()"
-          matTooltip="Adicionar novo administrador"
-          aria-label="Adicionar novo admin"
-        >
-          <mat-icon>person_add</mat-icon>
-          Novo Admin
-        </button>
-      }
       <a
         mat-flat-button
-        routerLink="/admin/evento/novo"
+        routerLink="/meus-eventos/evento/novo"
         matTooltip="Criar um novo evento"
         aria-label="Criar novo evento"
         data-testid="create-event-btn"

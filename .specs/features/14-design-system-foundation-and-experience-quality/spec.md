@@ -161,8 +161,8 @@ The visual baselines also do not cover every supported page state in dark mode o
 | NAV-03 | Calm navigation and workflows | Design | In Design |
 | NAV-04 | Calm navigation and workflows | Design | In Design |
 | NAV-05 | Calm navigation and workflows | Design | In Design |
-| FEED-01 | Uniform feedback and accents | Execute | In progress — T16 typed presentation and T17 typed publishing contracts complete |
-| FEED-02 | Uniform feedback and accents | Execute | In progress — T16 semantic error presentation and T17 error publishing contracts complete |
+| FEED-01 | Uniform feedback and accents | Execute | In progress — T16-T17 feedback foundation and T18 Profile migration complete |
+| FEED-02 | Uniform feedback and accents | Execute | In progress — T16-T17 error foundation and T18 Profile error migration complete |
 | FEED-03 | Uniform feedback and accents | Execute | In progress — T16 live-region presentation and T17 configured auto-dismissal contracts complete |
 | THEME-01 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal hero adoption complete |
 | THEME-02 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal surface adoption complete |

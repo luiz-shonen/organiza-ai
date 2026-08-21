@@ -11,9 +11,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService, UserService, FamilyService } from '../../core/services';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
+import { FeedbackService } from '../../shared/ui';
 import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
 import {
   FamilyRosterManagerComponent,
@@ -42,7 +42,7 @@ export class ProfileContainer implements OnInit {
   private readonly userService = inject(UserService);
   private readonly familyService = inject(FamilyService);
   private readonly router = inject(Router);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly feedback = inject(FeedbackService);
 
   readonly loading = signal<boolean>(true);
   readonly userProfile = signal<UserProfile | null>(null);
@@ -110,11 +110,9 @@ export class ProfileContainer implements OnInit {
         displayName: newName,
         name: newName,
       });
-      this.snackBar.open('Nome atualizado com sucesso!', 'Fechar', { duration: 3000 });
+      this.feedback.success('Nome atualizado com sucesso!');
     } catch {
-      this.snackBar.open('Não foi possível atualizar o nome. Tente novamente.', 'Fechar', {
-        duration: 3000,
-      });
+      this.feedback.error('Não foi possível atualizar o nome. Tente novamente.');
     } finally {
       this.updating.set(false);
     }
@@ -128,11 +126,9 @@ export class ProfileContainer implements OnInit {
       this.addingFamilyMember.set(true);
       const newMember = await this.familyService.addFamilyMember(user.uid, data);
       this.familyMembers.update((list) => [...list, newMember]);
-      this.snackBar.open('Familiar adicionado com sucesso!', 'Fechar', { duration: 3000 });
+      this.feedback.success('Familiar adicionado com sucesso!');
     } catch {
-      this.snackBar.open('Não foi possível adicionar o familiar. Tente novamente.', 'Fechar', {
-        duration: 3000,
-      });
+      this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
     } finally {
       this.addingFamilyMember.set(false);
     }
@@ -145,11 +141,9 @@ export class ProfileContainer implements OnInit {
     try {
       await this.familyService.deleteFamilyMember(user.uid, memberId);
       this.familyMembers.update((list) => list.filter((m) => m.id !== memberId));
-      this.snackBar.open('Familiar removido com sucesso!', 'Fechar', { duration: 3000 });
+      this.feedback.success('Familiar removido com sucesso!');
     } catch {
-      this.snackBar.open('Não foi possível remover o familiar. Tente novamente.', 'Fechar', {
-        duration: 3000,
-      });
+      this.feedback.error('Não foi possível remover o familiar. Tente novamente.');
     }
   }
 }

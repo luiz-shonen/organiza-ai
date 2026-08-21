@@ -37,6 +37,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 
 - [x] T16 — Create the typed snackbar and banner presentation
 - [x] T17 — Create the typed feedback service
+- [x] T18 — Migrate profile feedback callers
 
 ## Test Coverage Matrix
 

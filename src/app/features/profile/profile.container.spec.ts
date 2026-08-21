@@ -2,10 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideRouter, Router } from '@angular/router';
 import { signal, WritableSignal } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProfileContainer } from './profile.container';
 import { AuthService, UserService, FamilyService } from '../../core/services';
+import { FeedbackService } from '../../shared/ui';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import type { User } from 'firebase/auth';
 
@@ -13,7 +13,6 @@ describe('ProfileContainer', () => {
   let component: ProfileContainer;
   let fixture: ComponentFixture<ProfileContainer>;
   let router: Router;
-  let snackBar: MatSnackBar;
   let mockCurrentUser: WritableSignal<User | null>;
 
   const defaultUser = {
@@ -69,8 +68,9 @@ describe('ProfileContainer', () => {
     deleteFamilyMember: ReturnType<typeof vi.fn>;
   };
 
-  let mockSnackBar: {
-    open: ReturnType<typeof vi.fn>;
+  let mockFeedback: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
@@ -93,8 +93,9 @@ describe('ProfileContainer', () => {
       deleteFamilyMember: vi.fn().mockResolvedValue(undefined),
     };
 
-    mockSnackBar = {
-      open: vi.fn(),
+    mockFeedback = {
+      success: vi.fn(),
+      error: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -114,15 +115,11 @@ describe('ProfileContainer', () => {
           provide: FamilyService,
           useValue: mockFamilyService,
         },
-        {
-          provide: MatSnackBar,
-          useValue: mockSnackBar,
-        },
+        { provide: FeedbackService, useValue: mockFeedback },
       ],
     }).compileComponents();
 
     router = TestBed.inject(Router);
-    snackBar = TestBed.inject(MatSnackBar);
     vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
     fixture = TestBed.createComponent(ProfileContainer);
@@ -186,11 +183,7 @@ describe('ProfileContainer', () => {
       displayName: 'Carlos Silva',
     });
     expect(component.userProfile()?.displayName).toBe('Carlos Silva');
-    expect(snackBar.open).toHaveBeenCalledWith(
-      'Nome atualizado com sucesso!',
-      'Fechar',
-      { duration: 3000 },
-    );
+    expect(mockFeedback.success).toHaveBeenCalledWith('Nome atualizado com sucesso!');
   });
 
   it('should show error snackbar when updateProfile fails', async () => {
@@ -201,11 +194,7 @@ describe('ProfileContainer', () => {
 
     await component.onUpdateName('Novo Nome');
 
-    expect(snackBar.open).toHaveBeenCalledWith(
-      'Não foi possível atualizar o nome. Tente novamente.',
-      'Fechar',
-      { duration: 3000 },
-    );
+    expect(mockFeedback.error).toHaveBeenCalledWith('Não foi possível atualizar o nome. Tente novamente.');
   });
 
   it('should add a family member and update list with success snackbar', async () => {
@@ -223,11 +212,7 @@ describe('ProfileContainer', () => {
     });
     expect(component.familyMembers()).toHaveLength(2);
     expect(component.familyMembers()[1].name).toBe('Mariana Silva');
-    expect(snackBar.open).toHaveBeenCalledWith(
-      'Familiar adicionado com sucesso!',
-      'Fechar',
-      { duration: 3000 },
-    );
+    expect(mockFeedback.success).toHaveBeenCalledWith('Familiar adicionado com sucesso!');
   });
 
   it('should remove a family member and update list with success snackbar', async () => {
@@ -238,10 +223,26 @@ describe('ProfileContainer', () => {
 
     expect(mockFamilyService.deleteFamilyMember).toHaveBeenCalledWith('user-789', 'fam-1');
     expect(component.familyMembers()).toHaveLength(0);
-    expect(snackBar.open).toHaveBeenCalledWith(
-      'Familiar removido com sucesso!',
-      'Fechar',
-      { duration: 3000 },
+    expect(mockFeedback.success).toHaveBeenCalledWith('Familiar removido com sucesso!');
+  });
+
+  it('should publish a shared error when adding a family member fails', async () => {
+    mockFamilyService.addFamilyMember.mockRejectedValue(new Error('Add failed'));
+
+    await component.onAddFamilyMember({ name: 'Mariana Silva', relationship: 'spouse' });
+
+    expect(mockFeedback.error).toHaveBeenCalledWith(
+      'Não foi possível adicionar o familiar. Tente novamente.',
+    );
+  });
+
+  it('should publish a shared error when removing a family member fails', async () => {
+    mockFamilyService.deleteFamilyMember.mockRejectedValue(new Error('Remove failed'));
+
+    await component.onRemoveFamilyMember('fam-1');
+
+    expect(mockFeedback.error).toHaveBeenCalledWith(
+      'Não foi possível remover o familiar. Tente novamente.',
     );
   });
 

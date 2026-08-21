@@ -301,13 +301,13 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-18]` clicks RSVP button, asserts dialog opens with name, phone, confirm and cancel buttons, and saves screenshot `13-11-rsvp-dialog-open-desktop.png`
-- [ ] `[E2E-19]` asserts RSVP dialog surface has computed `backdrop-filter` containing `blur`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-1[89]\]"`
+- [x] `[E2E-18]` clicks RSVP button, asserts dialog opens with name, phone, confirm and cancel buttons, and saves screenshot `13-11-rsvp-dialog-open-desktop.png`
+- [x] `[E2E-19]` asserts RSVP dialog surface has computed `backdrop-filter` containing `blur`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-1[89]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement guest rsvp dialog open and glassmorphism atomic tests`  
+**Commit**: `test(e2e): implement guest rsvp dialog open and glassmorphism tests`  
 
 ---
 

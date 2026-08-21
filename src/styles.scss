@@ -421,7 +421,8 @@ button[disabled],
 }
 
 .org-glass,
-.glass-card {
+.glass-card,
+.mat-mdc-dialog-container .mdc-dialog__surface {
   background: var(--org-glass-bg) !important;
   backdrop-filter: var(--org-glass-blur) !important;
   -webkit-backdrop-filter: var(--org-glass-blur) !important;

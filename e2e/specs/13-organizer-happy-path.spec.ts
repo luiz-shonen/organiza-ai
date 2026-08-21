@@ -553,4 +553,58 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertMinTouchTarget(eventDetailPage.rsvpBtn.first(), 48);
     });
   });
+
+  // Phase 3 - Task T9: Guest RSVP — Dialog Open & Glassmorphism [E2E-18, E2E-19]
+  test.describe('Guest RSVP — Dialog Open & Glassmorphism', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-guest-uid',
+        email: 'maria.guest@example.com',
+        displayName: 'Maria Convidada',
+        familyMembers: [
+          { id: 'fam-1', name: 'Joãozinho', relationship: 'Filho' },
+        ],
+        events: [mockHappyPathEvent],
+      });
+    });
+
+    test('[E2E-18] should open RSVP modal dialog with form controls and buttons', async ({
+      page,
+      eventDetailPage,
+      rsvpDialog,
+    }) => {
+      await page.goto('/evento/happy-event-1');
+      await eventDetailPage.assertLoaded();
+
+      // Open dialog
+      await eventDetailPage.openRsvpDialog();
+      await rsvpDialog.assertVisible();
+
+      // Assert controls
+      await expect(rsvpDialog.nameInput).toBeVisible();
+      await expect(rsvpDialog.phoneInput).toBeVisible();
+      await expect(rsvpDialog.confirmBtn).toBeVisible();
+      await expect(rsvpDialog.cancelBtn).toBeVisible();
+
+      // Screenshot baseline
+      await eventDetailPage.captureScreenshot('13-11-rsvp-dialog-open');
+    });
+
+    test('[E2E-19] should verify RSVP dialog surface glassmorphism backdrop-filter blur', async ({
+      page,
+      eventDetailPage,
+      rsvpDialog,
+    }) => {
+      await page.goto('/evento/happy-event-1');
+      await eventDetailPage.assertLoaded();
+
+      // Open dialog
+      await eventDetailPage.openRsvpDialog();
+      await rsvpDialog.assertVisible();
+
+      // Assert glassmorphism on dialog surface
+      const dialogSurface = page.locator('.mat-mdc-dialog-container .mdc-dialog__surface, mat-dialog-container .mdc-dialog__surface').first();
+      await assertGlassmorphism(dialogSurface);
+    });
+  });
 });

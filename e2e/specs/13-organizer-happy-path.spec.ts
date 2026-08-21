@@ -358,4 +358,66 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(itemsList).toContainText('Refrigerante 2L');
     });
   });
+
+  // Phase 2 - Task T6: Create Event - Submit & Confirmation [E2E-11]
+  test.describe('Create Event - Submit & Confirmation', () => {
+    test('[E2E-11] should submit completed event form, display success snackbar, and redirect', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [],
+      });
+
+      // Intercept ViaCEP endpoint
+      await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            cep: '01310-100',
+            logradouro: 'Avenida Paulista',
+            bairro: 'Bela Vista',
+            localidade: 'São Paulo',
+            uf: 'SP',
+          }),
+        });
+      });
+
+      // Navigate and fill Step 1
+      await page.goto('/meus-eventos/evento/novo');
+      await eventEditorPage.assertLoaded();
+      await eventEditorPage.fillBasicInfo(
+        'Aniversário dos Sonhos 2026',
+        '11/20/2026',
+        'Uma comemoração inesquecível com amigos e família.',
+        '19:00'
+      );
+
+      // Fill Step 2
+      await eventEditorPage.fillCep('01310100', '1000');
+
+      // Step 3: optionally fill Pix key and click Salvar
+      const pixKeyInput = page.locator('input[formcontrolname="pixKey"]');
+      await expect(pixKeyInput).toBeVisible();
+      await pixKeyInput.fill('pix-organiza@teste.com');
+
+      // Click save button
+      await eventEditorPage.saveEvent();
+
+      // Assert snackbar confirmation appears
+      const snackBar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar');
+      await expect(snackBar).toBeVisible();
+      await expect(snackBar).toContainText(/Evento criado com sucesso/i);
+
+      // Assert navigation occurs to newly created event
+      await expect(page).toHaveURL(/.*\/evento\/.+/);
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-08-event-created-snackbar');
+    });
+  });
 });

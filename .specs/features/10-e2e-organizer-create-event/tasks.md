@@ -223,8 +223,8 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-11]` advances through Steps 1, 2, and 3, clicks "Salvar", asserts success snackbar appears, asserts navigation occurs, and saves screenshot `13-08-event-created-snackbar-desktop.png`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-11\]"`
+- [x] `[E2E-11]` advances through Steps 1, 2, and 3, clicks "Salvar", asserts success snackbar appears, asserts navigation occurs, and saves screenshot `13-08-event-created-snackbar-desktop.png`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-11\]"`
 
 **Tests**: e2e  
 **Gate**: full  

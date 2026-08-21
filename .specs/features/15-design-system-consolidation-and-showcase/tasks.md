@@ -185,10 +185,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgFormGridDirective` binds `.org-form-grid` class and applies `--org-form-grid-cols` custom property from `columns` input
-- [ ] Unit tests verify default `'1fr 1fr'` grid, custom grid templates, and host bindings in `src/app/shared/ui/layout/org-form-grid.directive.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 58 test suites, 365 tests pass (no silent deletions)
+- [x] `OrgFormGridDirective` binds `.org-form-grid` class and applies `--org-form-grid-cols` custom property from `columns` input
+- [x] Unit tests verify default `'1fr 1fr'` grid, custom grid templates, and host bindings in `src/app/shared/ui/layout/org-form-grid.directive.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 58 test suites, 362 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(ui): add form grid layout directive`

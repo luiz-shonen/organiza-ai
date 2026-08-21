@@ -1,0 +1,12 @@
+.org-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (min-width: 600px) {
+    grid-template-columns: var(--org-form-grid-cols, 1fr 1fr);
+    gap: 24px;
+  }
+}

@@ -178,7 +178,7 @@ export class DashboardContainer implements OnInit {
   ngOnInit(): void {}
 
   protected editEvent(event: PartyEvent): void {
-    this.router.navigate(['/admin/evento', event.id]);
+    this.router.navigate(['/meus-eventos/evento', event.id]);
   }
 
   protected openPublicEvent(event: PartyEvent): void {

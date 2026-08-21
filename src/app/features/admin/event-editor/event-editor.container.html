@@ -33,15 +33,15 @@
   } @else {
     <header class="editor__header" [class.editor__header--single]="!isEditing()">
       <div class="editor__header-main">
-        <button
-          mat-icon-button
-          routerLink="/admin"
-          matTooltip="Voltar"
-          aria-label="Voltar"
+        <a
+          mat-button
+          routerLink="/meus-eventos"
+          aria-label="Voltar para a lista de eventos"
           class="editor__back-btn"
         >
-          <mat-icon>west</mat-icon>
-        </button>
+          <mat-icon>arrow_back</mat-icon>
+          Voltar
+        </a>
         <h1 class="editor__title">
           {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
         </h1>

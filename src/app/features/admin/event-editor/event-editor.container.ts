@@ -296,7 +296,7 @@ export class EventEditorContainer implements OnInit {
         const newId = await this.eventService.createEvent(eventData);
         this.confetti.fireSuccessConfetti();
         this.snackBar.open('Evento criado com sucesso!', '🎉', { duration: 3000 });
-        await this.router.navigate(['/admin/evento', newId]);
+        await this.router.navigate(['/meus-eventos/evento', newId]);
       }
     } catch {
       this.snackBar.open('Erro ao salvar evento.', 'OK', { duration: 3000 });

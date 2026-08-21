@@ -146,13 +146,13 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-03]` navigates to `/meus-eventos/evento/novo`, asserts Step 1 empty inputs and disabled "Próximo" button, and saves screenshot `13-02-step1-empty-desktop.png`
-- [ ] `[E2E-04]` fills title, category chip, description, date, time, asserts "Próximo" button becomes enabled, and saves screenshot `13-03-step1-filled-desktop.png`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[34]\]"`
+- [x] `[E2E-03]` navigates to `/meus-eventos/evento/novo`, asserts Step 1 empty inputs and disabled "Próximo" button, and saves screenshot `13-02-step1-empty-desktop.png`
+- [x] `[E2E-04]` fills title, category chip, description, date, time, asserts "Próximo" button becomes enabled, and saves screenshot `13-03-step1-filled-desktop.png`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-0[34]\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement create event step 1 atomic tests and visual baseline`  
+**Commit**: `test(e2e): implement create event step 1 atomic tests and baseline`  
 
 ---
 

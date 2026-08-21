@@ -74,4 +74,62 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertGlassmorphism(cardSurface);
     });
   });
+
+  // Phase 2 - Task T3: Create Event - Step 1 (Informações) [E2E-03, E2E-04]
+  test.describe('Create Event - Step 1 (Informações)', () => {
+    test.beforeEach(async ({ page }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        events: [],
+      });
+    });
+
+    test('[E2E-03] should render Step 1 with empty inputs and disabled Próximo button', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/novo');
+      await eventEditorPage.assertLoaded();
+
+      // Step 1 fields are visible
+      await expect(eventEditorPage.titleInput).toBeVisible();
+      await expect(eventEditorPage.descriptionInput).toBeVisible();
+      await expect(eventEditorPage.dateInput).toBeVisible();
+      await expect(eventEditorPage.timeInput).toBeVisible();
+
+      // Próximo button is disabled initially
+      const nextBtn = eventEditorPage.nextStepBtns.first();
+      await expect(nextBtn).toBeVisible();
+      await expect(nextBtn).toBeDisabled();
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-02-step1-empty');
+    });
+
+    test('[E2E-04] should fill Step 1 basic info, select category chip, and enable Próximo button', async ({
+      page,
+      eventEditorPage,
+    }) => {
+      await page.goto('/meus-eventos/evento/novo');
+      await eventEditorPage.assertLoaded();
+
+      // Fill basic info
+      await eventEditorPage.titleInput.fill('Aniversário dos Sonhos 2026');
+      const categoryChip = page.locator('mat-chip-option').first();
+      await expect(categoryChip).toBeVisible();
+      await categoryChip.click();
+      await eventEditorPage.descriptionInput.fill('Uma comemoração inesquecível com amigos e família.');
+      await eventEditorPage.dateInput.fill('11/20/2026');
+      await eventEditorPage.timeInput.fill('19:00');
+
+      // Próximo button becomes enabled
+      const nextBtn = eventEditorPage.nextStepBtns.first();
+      await expect(nextBtn).toBeEnabled();
+
+      // Screenshot baseline
+      await eventEditorPage.captureScreenshot('13-03-step1-filled');
+    });
+  });
 });

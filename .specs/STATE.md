@@ -2,11 +2,11 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-08-20  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) tasks drafted and gate-validated (15 atomic tasks across 4 phases). Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec written and gate-validated.  
+**Last updated:** 2026-08-21  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) tasks drafted and gate-validated (15 atomic tasks across 4 phases). Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec and design written and gate-validated.  
 **Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 88 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
-**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. Feature 10 — `validate_tasks.py` PASS (0 errors).  
-**Next step:** Feature 10 — confirm tasks with user, then proceed to Execute phase (`/tlc-spec-driven implement`) to implement `e2e/helpers/design-tokens.helper.ts` and `e2e/specs/13-organizer-happy-path.spec.ts`.  
+**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. Feature 10 — `validate_tasks.py` PASS (0 errors). Feature 11 — `validate_spec.py` PASS (0 errors).  
+**Next step:** Feature 11 — break down into tasks (`/tlc-spec-driven tasks`) and validate tasks before execution.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -37,7 +37,7 @@
     12. `12-network-loading.spec.ts`: Throttled network latency handling, layout shift prevention, skeleton shimmer stability.
   - **CI/CD Automation**: `.github/workflows/e2e.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
 - **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys.
-- **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Covers visual screenshot inspection of existing Playwright baseline artifacts, mobile-first responsive layout fixes across Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, and visual baseline refresh.
+- **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Design written and approved (`design.md`) establishing Mobile-First SCSS architecture, responsive component layouts (Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, Event Detail & Modals), WCAG 2.5.5 AA 48px touch targets, and `assertNoHorizontalOverflow` Playwright assertion helper.
 
 ---
 

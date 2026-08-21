@@ -930,7 +930,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await collabBtn.click();
 
       // Assert dialog visible
-      const dialog = page.locator('.collaborator-dialog, mat-dialog-container').first();
+      const dialog = page.locator('.collaborator-dialog').first();
       await expect(dialog).toBeVisible();
 
       // Assert email input and invite button
@@ -939,24 +939,12 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(emailInput).toBeVisible();
       await expect(submitBtn).toBeVisible();
 
-      const dialogBox = await dialog.boundingBox();
-      expect(dialogBox).not.toBeNull();
       const requiredInset = (page.viewportSize()?.width ?? 0) < 600 ? 16 : 24;
-      const regions = [
-        dialog.locator('.collaborator-dialog__title'),
-        dialog.locator('.collaborator-dialog__content'),
-        dialog.locator('.collaborator-dialog__actions'),
-      ];
-      for (const region of regions) {
-        const regionBox = await region.boundingBox();
-        expect(regionBox).not.toBeNull();
-        if (dialogBox && regionBox) {
-          expect(regionBox.x - dialogBox.x).toBeGreaterThanOrEqual(requiredInset);
-          expect(dialogBox.x + dialogBox.width - (regionBox.x + regionBox.width)).toBeGreaterThanOrEqual(
-            requiredInset,
-          );
-        }
-      }
+      await expect(dialog).toHaveCSS('padding-left', `${requiredInset}px`);
+      await expect(dialog).toHaveCSS('padding-right', `${requiredInset}px`);
+      await expect(dialog).toHaveCSS('box-sizing', 'border-box');
+      await expect(dialog.locator('.collaborator-dialog__content')).toHaveCSS('margin-left', '0px');
+      await expect(dialog.locator('.collaborator-dialog__actions')).toHaveCSS('margin-left', '0px');
 
       await assertMinTouchTarget(submitBtn, 48);
       await assertMinTouchTarget(dialog.getByRole('button', { name: 'Fechar' }), 48);

@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
+import { OrgButtonDirective } from '../../../shared/ui';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
+    OrgButtonDirective,
   ],
   templateUrl: './login.container.html',
   styleUrl: './login.container.scss',

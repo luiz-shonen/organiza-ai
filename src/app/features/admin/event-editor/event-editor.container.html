@@ -210,11 +210,10 @@
 
                   <div class="editor__step-actions">
                     <button
-                      mat-flat-button
+                      orgButton="primary"
                       matStepperNext
                       type="button"
-                      class="btn-primary-org"
-                      [disabled]="basicInfoForm.invalid"
+                      [orgButtonDisabled]="basicInfoForm.invalid"
                     >
                       Próximo
                       <mat-icon iconPositionEnd>arrow_forward</mat-icon>
@@ -323,11 +322,10 @@
                       Voltar
                     </button>
                     <button
-                      mat-flat-button
+                      orgButton="primary"
                       matStepperNext
                       type="button"
-                      class="btn-primary-org"
-                      [disabled]="addressForm.invalid"
+                      [orgButtonDisabled]="addressForm.invalid"
                     >
                       Próximo
                       <mat-icon iconPositionEnd>arrow_forward</mat-icon>
@@ -360,7 +358,7 @@
                     @if (isOwner()) {
                       <button
                         orgButton="primary"
-                        class="editor__save-btn btn-primary-org"
+                        class="editor__save-btn"
                         [orgButtonDisabled]="
                           basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
                         "

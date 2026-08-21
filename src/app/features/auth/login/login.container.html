@@ -63,11 +63,10 @@
       </mat-form-field>
 
       <button
-        mat-flat-button
-        color="primary"
+        orgButton="primary"
         type="submit"
-        [disabled]="form.invalid || loading()"
-        class="btn-primary-org login__submit-btn"
+        [orgButtonDisabled]="form.invalid || loading()"
+        class="login__submit-btn"
         data-testid="login-submit-btn"
       >
         @if (loading()) {

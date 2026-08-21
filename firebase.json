@@ -3,6 +3,20 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "emulators": {
+    "firestore": {
+      "port": 8088
+    },
+    "ui": {
+      "enabled": false
+    },
+    "hub": {
+      "port": 4408
+    },
+    "logging": {
+      "port": 4508
+    }
+  },
   "hosting": {
     "public": "dist/organizaai/browser",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

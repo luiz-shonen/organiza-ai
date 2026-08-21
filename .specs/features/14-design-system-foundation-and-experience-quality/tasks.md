@@ -43,6 +43,10 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T20 — Migrate event-editor feedback callers
 - [x] T21 — Migrate dashboard and share feedback callers
 
+### Phase 5
+
+- [x] T22 — Establish Firestore rules emulator coverage
+
 ## Test Coverage Matrix
 
 > Generated from `AGENTS.md`, `DESIGN.md`, `README.md`, `package.json`, `playwright.config.ts`, existing Vitest component specs, and existing Playwright POM/spec patterns. Existing project quality rules require a spec for every feature, OnPush components, WCAG assertions, atomic E2E tests, a screenshot per state, both desktop and mobile coverage, and no horizontal overflow.

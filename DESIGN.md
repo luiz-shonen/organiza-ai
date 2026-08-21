@@ -130,19 +130,40 @@ Headlines utilize the heaviest weights (Bold/ExtraBold) to achieve the "bubbly" 
 
 ## Layout & Spacing
 
-The layout follows a **Fluid Grid** philosophy with generous margins to allow the background organic shapes to breathe.
+The layout follows a **Fluid Grid & Mobile-First** philosophy with generous margins to allow the background organic shapes to breathe while guaranteeing zero horizontal overflow.
 
-- **Desktop:** 12-column grid, 64px outer margins, 24px gutters.
-- **Mobile:** 4-column grid, 20px outer margins, 16px gutters.
+- **Desktop (≥ 600px / ≥ 960px):** 12-column grid, 32px-64px outer margins, 24px gutters.
+- **Mobile (< 600px):** Single-column fluid stacking, 12px-16px outer margins, 12px-16px gutters.
 
-Spacing follows an 8px rhythmic scale. Components should prioritize internal padding (`md` or 24px) to emphasize the "glass" container's surface area. Negative space is used aggressively around headlines to maintain the "Modern Festive" clarity.
+### Mobile-First Responsive Rules (AD-031)
+
+1. **Form Grid Stacking**: Multi-column form layouts (e.g. Date/Time rows, Address rows, Family Roster forms) must default to a single column (`grid-template-columns: 1fr`) on mobile viewports ($< 600\text{ px}$ / $< 640\text{ px}$) and expand to multi-column grids (`2fr 1fr`, `1fr 1fr`, or 3 columns) only on `@media (min-width: 600px)` or `@media (min-width: 640px)`.
+2. **Container Padding Rhythm**: Component and page containers use fluid mobile-first padding:
+   - Mobile: `16px 12px` (or `12px` on compact cards).
+   - Desktop: `24px 16px` to `32px 16px`.
+3. **Horizontal Scroll Containers**: Any component featuring horizontally sequenced items (e.g., Stepper headers, Filter chipsets) must declare:
+   ```scss
+   max-width: 100%;
+   overflow-x: auto;
+   flex-wrap: nowrap;
+   -webkit-overflow-scrolling: touch;
+   ```
+4. **Zero Horizontal Overflow Invariant**: Every page view must maintain `document.documentElement.scrollWidth <= window.innerWidth + 1`. Unintended horizontal scrollbars on mobile viewports are strictly forbidden.
+
+### Touch Target Standard (WCAG 2.5.5 AA)
+
+All primary interactive controls must provide touch targets of $\ge 48\text{ px} \times 48\text{ px}$:
+- Action buttons (`mat-flat-button`, `mat-stroked-button`, `mat-button`)
+- Icon buttons (`mat-icon-button`, theme toggle, delete/remove buttons)
+- Filter and status chips (`mat-chip-option`, `.filters__chip`)
+- Modal trigger and close buttons
 
 ## Elevation & Depth
 
 Depth is achieved through **Glassmorphism** rather than traditional drop shadows.
 
 1.  **Base Layer:** Soft gradient background with blurred organic blobs.
-2.  **Surface Layer (Cards/Modals):** Translucent white (`rgba(255, 255, 255, 0.6)`) with a `backdrop-filter: blur(20px)`.
+2.  **Surface Layer (Cards/Modals):** Translucent white (`rgba(255, 255, 255, 0.6)`) with a `backdrop-filter: blur(24px)`.
 3.  **Borders:** A 1.5px solid border using a linear gradient (Purple to Orange) at 40% opacity.
 4.  **Interactive Layer:** Primary buttons use a high-saturation gradient and a soft, colored glow shadow (`0px 10px 20px rgba(124, 58, 237, 0.3)`).
 5.  **Micro-interações e Celebração:** Textos de destaque (como o título do Login) utilizam a classe `.animated-gradient` para transicionar as cores do gradiente dinamicamente. Ações de sucesso significativas (confirmação de RSVP, itens assumidos) disparam chuvas de confetes através do `ConfettiService` integrado com `canvas-confetti`.
@@ -151,24 +172,31 @@ Depth is achieved through **Glassmorphism** rather than traditional drop shadows
 
 Shapes are unapologetically rounded to reinforce the "bubbly" and "friendly" brand vibe.
 
-The standard radius for cards and major containers is `1rem` (Rounded). Smaller interactive elements like checkboxes or tags should use a fully pill-shaped (`rounded-xl`) radius. Avoid sharp corners entirely to maintain the organic, festive flow of the interface.
+The standard radius for cards and major containers is `1rem` (Rounded) to `1.5rem` (`24px`). Dialogs and hero banners use `20px` to `28px` border radius. Smaller interactive elements like checkboxes or tags should use a fully pill-shaped (`rounded-xl`) radius. Avoid sharp corners entirely to maintain the organic, festive flow of the interface.
 
 ## Components
 
 ### Buttons
 
-- **Primary:** Gradient fill (Deep Purple to Vibrant Orange), pill-shaped, white text, 1.5px inner glow border.
-- **Secondary:** Glass-morphic fill, gradient border, purple text.
+- **Primary:** Gradient fill (Deep Purple to Vibrant Orange), pill-shaped, white text, 1.5px inner glow border, min-height 48px.
+- **Secondary:** Glass-morphic fill, gradient border, purple text, min-height 48px.
+- **Icon Buttons:** Centered, minimum dimension $48\text{ px} \times 48\text{ px}$.
 - **Interaction:** On hover, buttons should scale slightly (1.05x) and increase backdrop blur intensity.
 
 ### Cards
 
-All cards must feature `backdrop-filter: blur(24px)` and a background color of `white` at 50-70% opacity. Borders must use the signature "Organiza" gradient (Purple/Pink/Orange).
+All cards must feature `backdrop-filter: blur(24px)` and a background color of `white` at 50-70% opacity. Borders must use the signature "Organiza" gradient (Purple/Pink/Orange). Padding adapts responsively from `12px-16px` on mobile to `24px` on desktop.
+
+### Hero Banners (Event Detail)
+
+- **Mobile:** Height $240\text{ px}$, `border-radius: 20px`.
+- **Desktop:** Height $300\text{ px}$, `border-radius: 24px`.
+- Linear gradient overlay ensures title contrast over custom imagery.
 
 ### Inputs & Selection
 
-- **Text Fields:** Soft peach background (10% opacity) with a 2px bottom border that animates into a full gradient border on focus.
-- **Chips/Tags:** Pill-shaped with vibrant, semi-transparent fills. Each category should have a unique gradient-tinted background.
+- **Text Fields:** Soft peach background (10% opacity) with Material 3 MDC outline tokens (`--mdc-outlined-text-field-*`) transitioning to `--org-primary` on focus.
+- **Chips/Tags:** Pill-shaped with vibrant, semi-transparent fills (`min-height: 48px` on touch targets), horizontal scroll with `flex-shrink: 0`.
 - **Checkboxes:** Circular (not square) to match the bubbly aesthetic, filling with the primary gradient when active.
 
 ### Lists
@@ -177,4 +205,6 @@ All cards must feature `backdrop-filter: blur(24px)` and a background color of `
 
 ### Modals & Dialogs
 
-- **ConfirmDialogComponent:** Diálogos genéricos de confirmação de exclusão/cancelamento devem usar o padrão `ConfirmDialogComponent` em vez de `alert()` ou `confirm()` nativos do navegador. Ele encapsula botões de ação e segue o design system de forma consistente.
+- **ConfirmDialogComponent:** Generic confirmation dialog for cancellations and deletions, encapsulating action buttons and glassmorphic styling.
+- **GuestFormDialogComponent:** RSVP submission dialog with fluid padding, responsive title, and $\ge 48\text{ px}$ touch target actions.
+- **CollaboratorInviteDialogComponent:** Signal-driven collaborator management dialog with inline validation, reactive invite emissions, and mobile-friendly chip set.

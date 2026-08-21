@@ -49,7 +49,9 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 - **SCSS + BEM + MDC tokens** — no Tailwind, no `!important` (AD-007, AD-028)
 - **Open registration** — any authenticated Google user can create events (AD-016)
 - **Verified RSVP** — no anonymous guests; verified identity (Google/verified e-mail) required (AD-024)
-- **Spec-Driven Development** — TLC Spec-Driven v3.3.0; every feature goes through Specify → (Design) → (Tasks) → Execute (AD-013)
+- **Atomic E2E Test Philosophy** — each test sets up its own state, asserts one step, captures a screenshot (AD-030)
+- **Mobile-First Responsive Layouts & Zero-Overflow Invariant** — fluid single-column stacking on mobile, $\ge 48\text{ px}$ touch targets, automated `assertNoHorizontalOverflow` (AD-031)
+- **Spec-Driven Development** — TLC Spec-Driven v3.3.0; every feature goes through Specify → (Design) → (Tasks) → Execute → Independent Verification (AD-013)
 
 For the full decision log, read `.specs/STATE.md`.
 
@@ -57,12 +59,13 @@ For the full decision log, read `.specs/STATE.md`.
 
 **Vibrant Celebration** palette (Glassmorphism + Vibrant Modernism). Full rules in `DESIGN.md`.
 
-Design-token invariants verified in E2E tests:
+Design-token & layout invariants verified in E2E tests:
 - `backdrop-filter: blur(24px)` on cards and modals
 - `--org-primary` (#630ed4 Deep Purple) as primary color
 - `--org-secondary` (#fd762b Vibrant Orange) as action color
 - `font-family: "Plus Jakarta Sans"` on all text
-- Touch targets ≥ 48 px on primary CTAs
+- Touch targets $\ge 48\text{ px}$ on all primary CTAs, icon buttons, chips, and dialog actions
+- Zero horizontal overflow (`document.documentElement.scrollWidth <= window.innerWidth + 1`) across all pages
 
 ## Commands
 
@@ -77,7 +80,7 @@ npm run build
 npm test -- --watch=false       # 298 tests, 42 suites
 
 # E2E tests (Playwright)
-npm run test:e2e                # Desktop Chromium + Mobile Chrome
+npm run test:e2e                # 146 tests across Desktop Chromium + Mobile Chrome
 npm run test:e2e:ci             # Headless mode for CI
 npm run test:e2e:mobile         # Mobile Chrome only (Pixel 5)
 ```
@@ -87,20 +90,20 @@ npm run test:e2e:mobile         # Mobile Chrome only (Pixel 5)
 ```
 e2e/
 ├── fixtures/        # test.fixture.ts — POM dependency injection
-├── helpers/         # auth-mock, firestore-mock, a11y, visual helpers
+├── helpers/         # auth-mock, firestore-mock, a11y, visual & overflow helpers
 ├── pages/           # Page Object Models (BasePage, HomePage, LoginPage, ...)
 ├── components/      # Component Harnesses (RsvpDialog, ItemList, SharePanel, ...)
 ├── specs/           # Test suites (01-home-theming ... 13-organizer-happy-path)
-└── screenshots/     # Automatic visual baselines ({milestone}-desktop/mobile.png)
+└── screenshots/     # 47 visual baselines ({milestone}-desktop/mobile.png)
 ```
 
-### E2E Test Philosophy — Atomic Tests
+### E2E Test Philosophy — Atomic Tests (AD-030)
 
 Each test is **atomic**: it sets up its own state via mock session + navigation, asserts exactly one thing (one step, one screen, one behaviour), captures a screenshot, and ends. No test depends on the result of another.
 
 To reach Step 2 of the event editor, that test's own `beforeEach` fills and advances Step 1 independently.
 
-### Test Suites (88 tests · Chromium + Mobile Chrome)
+### Test Suites (146 tests · Chromium + Mobile Chrome)
 
 | File | Coverage |
 |---|---|
@@ -110,7 +113,7 @@ To reach Step 2 of the event editor, that test's own `beforeEach` fills and adva
 | `04-guest-rsvp.spec.ts` | Event detail, RSVP modal, Pix split, item claim/unclaim |
 | `05-profile-family.spec.ts` | Profile page, family roster CRUD, batch RSVP |
 | `06-collaborator-rbac.spec.ts` | Share panel, collaborator invite, clipboard |
-| `07-visual-layout.spec.ts` | Screenshot baselines, touch targets, Nielsen Heuristics |
+| `07-visual-layout.spec.ts` | Zero horizontal overflow (`assertNoHorizontalOverflow`), touch targets $\ge 48\text{ px}$, Nielsen Heuristics, screenshot baselines |
 | `08-keyboard-a11y.spec.ts` | Focus cycling, modal focus trap, Escape key |
 | `09-multi-user-sync.spec.ts` | Dual-context real-time sync, no session crosstalk |
 | `10-share-qr.spec.ts` | QR code canvas, WhatsApp URI, clipboard |

@@ -24,15 +24,30 @@
 
         <span class="app-toolbar__spacer"></span>
 
-        @if (isAdmin()) {
+        @if (isAuthenticated()) {
+          <a
+            mat-button
+            routerLink="/meus-eventos"
+            aria-label="Meus eventos"
+            matTooltip="Meus Eventos"
+            class="app-toolbar__events-btn"
+            data-testid="nav-my-events-btn"
+          >
+            <mat-icon>calendar_month</mat-icon>
+            <span class="app-toolbar__label">Meus Eventos</span>
+          </a>
+        }
+
+        @if (isSuperAdmin()) {
           <a
             mat-button
             routerLink="/admin"
             aria-label="Painel administrativo"
             matTooltip="Painel Administrativo"
             class="app-toolbar__admin-btn"
+            data-testid="nav-admin-panel-btn"
           >
-            <mat-icon>dashboard</mat-icon>
+            <mat-icon>admin_panel_settings</mat-icon>
             <span class="app-toolbar__label">Painel Admin</span>
           </a>
         }
@@ -63,11 +78,23 @@
                   'Convidado'
               }}
             </div>
-            <a mat-menu-item routerLink="/perfil">
+            @if (isAuthenticated()) {
+              <a mat-menu-item routerLink="/meus-eventos" data-testid="menu-my-events-btn">
+                <mat-icon>calendar_month</mat-icon>
+                <span>Meus Eventos</span>
+              </a>
+            }
+            <a mat-menu-item routerLink="/perfil" data-testid="menu-profile-btn">
               <mat-icon>person</mat-icon>
               <span>Meu Perfil</span>
             </a>
-            <button mat-menu-item (click)="logout()">
+            @if (isSuperAdmin()) {
+              <a mat-menu-item routerLink="/admin" data-testid="menu-admin-btn">
+                <mat-icon>admin_panel_settings</mat-icon>
+                <span>Painel Admin</span>
+              </a>
+            }
+            <button mat-menu-item (click)="logout()" data-testid="menu-logout-btn">
               <mat-icon>logout</mat-icon>
               <span>Sair</span>
             </button>

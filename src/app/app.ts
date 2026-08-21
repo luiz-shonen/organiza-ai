@@ -77,8 +77,12 @@ export class App {
     });
   }
 
-  protected readonly isAdmin = this.authService.isAdmin;
+  protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly user = this.authService.currentUser;
+  protected readonly isAuthenticated = computed(() => {
+    const u = this.user();
+    return u !== null && !u.isAnonymous;
+  });
   protected readonly isOffline = signal(!navigator.onLine);
   protected readonly session = this.guestSession.session;
 

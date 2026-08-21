@@ -51,5 +51,36 @@ describe('App', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  it('should render Meus Eventos button when user is authenticated', () => {
+    const authService = TestBed.inject(AuthService) as any;
+    authService.currentUser = signal({ uid: 'user-1', email: 'user@test.com', isAnonymous: false });
+    authService.isSuperAdmin = signal(false);
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const eventsBtn = compiled.querySelector('[data-testid="nav-my-events-btn"]');
+    expect(eventsBtn).toBeTruthy();
+    expect(eventsBtn?.textContent).toContain('Meus Eventos');
+
+    const adminBtn = compiled.querySelector('[data-testid="nav-admin-panel-btn"]');
+    expect(adminBtn).toBeNull();
+  });
+
+  it('should render Painel Admin button only when user is Super Admin', () => {
+    const authService = TestBed.inject(AuthService) as any;
+    authService.currentUser = signal({ uid: 'admin-1', email: 'luiz.gmr.dev@gmail.com', isAnonymous: false });
+    authService.isSuperAdmin = signal(true);
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const adminBtn = compiled.querySelector('[data-testid="nav-admin-panel-btn"]');
+    expect(adminBtn).toBeTruthy();
+    expect(adminBtn?.textContent).toContain('Painel Admin');
+  });
 });
 

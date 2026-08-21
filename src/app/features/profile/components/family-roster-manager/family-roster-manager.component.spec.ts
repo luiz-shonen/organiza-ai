@@ -49,6 +49,19 @@ describe('FamilyRosterManagerComponent', () => {
     expect(compiled.textContent).toContain('Nenhum membro da família cadastrado ainda');
   });
 
+  it('should compose the roster in one shared surface with governed fields and actions', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelectorAll('org-surface')).toHaveLength(1);
+    expect(compiled.querySelectorAll('mat-card')).toHaveLength(0);
+    expect(compiled.querySelectorAll('mat-form-field.org-form-field')).toHaveLength(3);
+    expect(compiled.querySelector('.family-roster__add-btn')?.classList).toContain('org-button');
+    expect(compiled.querySelector('.family-roster__remove-btn')?.classList).toContain('org-icon-button');
+    expect(compiled.querySelectorAll('org-icon')).not.toHaveLength(0);
+  });
+
   it('should render the list of family members with badges and phone', () => {
     fixture.componentRef.setInput('members', mockMembers);
     fixture.detectChanges();

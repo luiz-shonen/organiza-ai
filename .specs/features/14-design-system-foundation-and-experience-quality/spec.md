@@ -151,11 +151,11 @@ The visual baselines also do not cover every supported page state in dark mode o
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel complete |
-| DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home and T12 Profile single-surface migrations complete |
-| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association and T12 Profile field adoption complete |
+| DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home, T12 Profile, and T13 Family roster single-surface migrations complete |
+| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, and T13 Family roster field adoptions complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe and T12 Profile focus contract adoption complete |
-| DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home action contract migration complete |
-| DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map complete |
+| DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home and T13 Family roster action contract migrations complete |
+| DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map and T13 Family roster icon adoption complete |
 | NAV-01 | Calm navigation and workflows | Design | In Design |
 | NAV-02 | Calm navigation and workflows | Design | In Design |
 | NAV-03 | Calm navigation and workflows | Design | In Design |

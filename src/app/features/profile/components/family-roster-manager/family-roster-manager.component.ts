@@ -5,15 +5,12 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
+import { OrgButtonDirective, OrgFormFieldDirective, OrgIconButtonDirective, OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 export interface AddFamilyMemberPayload {
   name: string;
@@ -30,14 +27,15 @@ export interface RelationshipOption {
   selector: 'app-family-roster-manager',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     FormsModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
+    OrgButtonDirective,
+    OrgFormFieldDirective,
+    OrgIconButtonDirective,
+    OrgIconComponent,
+    OrgSurfaceComponent,
   ],
   templateUrl: './family-roster-manager.component.html',
   styleUrl: './family-roster-manager.component.scss',

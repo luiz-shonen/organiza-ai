@@ -85,14 +85,17 @@ test.describe('User Profile and Family Roster Management', () => {
     await profilePage.assertLoaded();
 
     // Verify family roster section
-    await expect(familyRoster.rosterRoot.first()).toBeVisible();
+    const familyRosterRoot = page.locator('app-family-roster-manager');
+    await expect(familyRosterRoot).toBeVisible();
     await expect(page.locator('#family-roster-heading, .family-roster__title').first()).toContainText('Minha Família');
+    await assertSingleSurfaceRing(familyRosterRoot.locator('section.org-surface'));
 
     // Form inputs and add button presence
     await expect(familyRoster.nameInput).toBeVisible();
     await expect(familyRoster.relationshipSelect).toBeVisible();
     await expect(familyRoster.phoneInput).toBeVisible();
     await expect(familyRoster.addMemberBtn).toBeVisible();
+    await assertFocusedFieldCoherence(familyRoster.nameInput);
 
     // Add button disabled when name is empty
     await familyRoster.nameInput.fill('');
@@ -131,6 +134,7 @@ test.describe('User Profile and Family Roster Management', () => {
 
     // Assert member count decreased
     await expect(familyRoster.memberCards).toHaveCount(initialCount - 1);
+    await assertNoHorizontalOverflow(page);
   });
 
   test('should support batch family member selection inside RSVP dialog', async ({

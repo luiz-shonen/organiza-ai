@@ -38,32 +38,31 @@ describe('CollaboratorInviteDialogComponent', () => {
   });
 
   it('should validate email format properly', () => {
-    expect(component.emailControl.valid).toBe(false);
+    expect(component.isEmailValid()).toBe(false);
 
-    component.emailControl.setValue('not-an-email');
-    expect(component.emailControl.valid).toBe(false);
-    expect(component.emailControl.hasError('email')).toBe(true);
+    component.email.set('not-an-email');
+    expect(component.isEmailValid()).toBe(false);
 
-    component.emailControl.setValue('valid.email@test.com');
-    expect(component.emailControl.valid).toBe(true);
+    component.email.set('valid.email@test.com');
+    expect(component.isEmailValid()).toBe(true);
   });
 
   it('should emit invite output and reset control on valid submission', () => {
     const inviteSpy = vi.fn();
     component.invite.subscribe(inviteSpy);
 
-    component.emailControl.setValue('  New.Collab@Domain.Com ');
+    component.email.set('  New.Collab@Domain.Com ');
     component.onInvite();
 
     expect(inviteSpy).toHaveBeenCalledWith('new.collab@domain.com');
-    expect(component.emailControl.value).toBe('');
+    expect(component.email()).toBe('');
   });
 
   it('should not emit invite output when form is invalid', () => {
     const inviteSpy = vi.fn();
     component.invite.subscribe(inviteSpy);
 
-    component.emailControl.setValue('invalid-email');
+    component.email.set('invalid-email');
     component.onInvite();
 
     expect(inviteSpy).not.toHaveBeenCalled();

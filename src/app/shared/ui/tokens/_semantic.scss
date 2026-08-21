@@ -18,6 +18,11 @@
     --org-on-surface: #231043;
     --org-surface-variant: #ebddff;
     --org-on-surface-variant: #4a4455;
+    --org-field-fill: rgba(255, 247, 255, 0.88);
+    --org-field-text: #231043;
+    --org-field-label: #4a4455;
+    --org-field-outline: #7b7487;
+    --org-field-disabled-outline: rgba(123, 116, 135, 0.38);
     --org-glass-bg: rgba(255, 255, 255, 0.6);
     --org-glass-blur: blur(24px);
     --org-glass-ring-width: 1.5px;
@@ -31,6 +36,11 @@
     --org-surface-variant: #38265a;
     --org-on-surface-variant: #d2bbff;
     --org-glass-bg: rgba(35, 16, 67, 0.7);
+    --org-field-fill: rgba(56, 38, 90, 0.88);
+    --org-field-text: #f7edff;
+    --org-field-label: #d2bbff;
+    --org-field-outline: #d2bbff;
+    --org-field-disabled-outline: rgba(210, 187, 255, 0.38);
   }
 
   html.theme-junina {

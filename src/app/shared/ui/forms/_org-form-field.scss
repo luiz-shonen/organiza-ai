@@ -1,0 +1,20 @@
+.org-form-field {
+  --org-field-fill: color-mix(in srgb, var(--org-surface) 88%, transparent);
+  --org-field-text: var(--org-on-surface);
+  --org-field-label: var(--org-on-surface-variant);
+  --org-field-outline: var(--org-on-surface-variant);
+  --org-field-disabled-outline: color-mix(in srgb, var(--org-on-surface-variant) 38%, transparent);
+
+  width: 100%;
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--org-field-text);
+    -webkit-box-shadow: 0 0 0 1000px var(--org-field-fill) inset;
+    transition: background-color 5000s ease-in-out;
+  }
+}

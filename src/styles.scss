@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use './app/shared/ui/tokens/semantic' as semantic;
+@use './app/shared/ui/forms/org-form-field';
 
 :root {
   // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
@@ -647,7 +648,7 @@ button:not(mat-icon),
 }
 
 /* Angular Material Form Fields (.mat-mdc-form-field) - Organiza AI Glassmorphism System */
-.mat-mdc-form-field {
+.mat-mdc-form-field:not(.org-form-field) {
   --mdc-outlined-text-field-container-color: transparent !important;
   --mdc-filled-text-field-container-color: transparent !important;
   --mdc-outlined-text-field-input-text-color: var(--mat-sys-on-surface) !important;
@@ -778,13 +779,13 @@ button:not(mat-icon),
   }
 }
 
-.dark .mat-mdc-form-field {
+.dark .mat-mdc-form-field:not(.org-form-field) {
   .mat-mdc-text-field-wrapper {
     background: rgba(255, 255, 255, 0.06) !important;
   }
 }
 
-.mat-mdc-form-field:not(.mat-form-field-invalid) {
+.mat-mdc-form-field:not(.org-form-field):not(.mat-form-field-invalid) {
   .mdc-notched-outline__leading,
   .mdc-notched-outline__notch,
   .mdc-notched-outline__trailing {
@@ -821,7 +822,7 @@ button:not(mat-icon),
 }
 
 /* Native Outlined Notch with Organiza AI Gradient Colors (Pink -> Orange -> Yellow) */
-.mdc-text-field--outlined {
+.mat-mdc-form-field:not(.org-form-field) .mdc-text-field--outlined {
   .mdc-notched-outline__leading {
     border-top-left-radius: 16px !important;
     border-bottom-left-radius: 16px !important;
@@ -833,7 +834,7 @@ button:not(mat-icon),
   }
 }
 
-.mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+.mat-mdc-form-field:not(.org-form-field) .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
   .mdc-notched-outline__leading {
     border-color: color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
     transition: border-color 200ms ease !important;

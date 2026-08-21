@@ -143,10 +143,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `OrgPageHeaderComponent` renders title in `<h1>`, optional subtitle in `<p>`, optional icon, and projects `[orgPageHeaderActions]`
-- [ ] Unit tests verify title, subtitle, icon, gradient class, and projected actions in `src/app/shared/ui/layout/org-page-header.component.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 56 test suites, 354 tests pass (no silent deletions)
+- [x] `OrgPageHeaderComponent` renders title in `<h1>`, optional subtitle in `<p>`, optional icon, and projects `[orgPageHeaderActions]`
+- [x] Unit tests verify title, subtitle, icon, gradient class, and projected actions in `src/app/shared/ui/layout/org-page-header.component.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 56 test suites, 354 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(ui): add page header component primitive`

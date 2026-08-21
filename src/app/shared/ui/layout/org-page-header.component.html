@@ -1,0 +1,21 @@
+<header class="org-page-header">
+  <div class="org-page-header__content">
+    @if (icon()) {
+      <div class="org-page-header__icon-wrap">
+        <org-icon [name]="icon()!" size="lg" color="var(--org-primary)" />
+      </div>
+    }
+    <div class="org-page-header__titles">
+      <h1 class="org-page-header__title" [class.org-gradient-text]="gradient()">
+        {{ title() }}
+      </h1>
+      @if (subtitle()) {
+        <p class="org-page-header__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="org-page-header__actions">
+    <ng-content select="[orgPageHeaderActions]" />
+  </div>
+</header>

@@ -271,39 +271,39 @@ invite.
 
 ## Requirement Traceability
 
-| Requirement ID | Story | Phase | Status |
+| Requirement ID | Story | Task | Status |
 | --- | --- | --- | --- |
-| E2E-01 | Dashboard – renders + CTA size | Tasks | Pending |
-| E2E-02 | Dashboard – card backdrop-filter | Tasks | Pending |
-| E2E-03 | Step 1 – empty state renders | Tasks | Pending |
-| E2E-04 | Step 1 – filled → Próximo enabled | Tasks | Pending |
-| E2E-05 | Step 2 – renders before CEP | Tasks | Pending |
-| E2E-06 | Step 2 – ViaCEP auto-fill | Tasks | Pending |
-| E2E-07 | Step 3 – renders Pix + wishlist form | Tasks | Pending |
-| E2E-08 | Step 3 – add first item | Tasks | Pending |
-| E2E-09 | Step 3 – two items visible | Tasks | Pending |
-| E2E-10 | Step 3 – remove one item | Tasks | Pending |
-| E2E-11 | Submit → snackbar + redirect | Tasks | Pending |
-| E2E-12 | Edit – pre-populated editor | Tasks | Pending |
-| E2E-13 | Edit – submit → snackbar | Tasks | Pending |
-| E2E-14 | Edit – empty title validation | Tasks | Pending |
-| E2E-15 | Edit – input border color token | Tasks | Pending |
-| E2E-16 | RSVP – event detail renders | Tasks | Pending |
-| E2E-17 | RSVP – button ≥ 48 px | Tasks | Pending |
-| E2E-18 | RSVP – dialog opens | Tasks | Pending |
-| E2E-19 | RSVP – dialog backdrop-filter | Tasks | Pending |
-| E2E-20 | RSVP – submit → confirmation | Tasks | Pending |
-| E2E-21 | Profile – page renders | Tasks | Pending |
-| E2E-22 | Profile – card backdrop-filter | Tasks | Pending |
-| E2E-23 | Profile – heading font-family | Tasks | Pending |
-| E2E-24 | Profile – update name | Tasks | Pending |
-| E2E-25 | Family – add member | — | Pending |
-| E2E-26 | Family – add button ≥ 48 px | — | Pending |
-| E2E-27 | Family – remove member | — | Pending |
-| E2E-28 | Collab – dialog renders + border | — | Pending |
-| E2E-29 | Collab – submit → snackbar | — | Pending |
+| E2E-01 | Dashboard – renders + CTA size | T2 | Pending |
+| E2E-02 | Dashboard – card backdrop-filter | T1, T2 | Pending |
+| E2E-03 | Step 1 – empty state renders | T3 | Pending |
+| E2E-04 | Step 1 – filled → Próximo enabled | T3 | Pending |
+| E2E-05 | Step 2 – renders before CEP | T4 | Pending |
+| E2E-06 | Step 2 – ViaCEP auto-fill | T4 | Pending |
+| E2E-07 | Step 3 – renders Pix + wishlist form | T5 | Pending |
+| E2E-08 | Step 3 – add first item | T5 | Pending |
+| E2E-09 | Step 3 – two items visible | T5 | Pending |
+| E2E-10 | Step 3 – remove one item | T5 | Pending |
+| E2E-11 | Submit → snackbar + redirect | T6 | Pending |
+| E2E-12 | Edit – pre-populated editor | T7 | Pending |
+| E2E-13 | Edit – submit → snackbar | T7 | Pending |
+| E2E-14 | Edit – empty title validation | T7 | Pending |
+| E2E-15 | Edit – input border color token | T1, T7 | Pending |
+| E2E-16 | RSVP – event detail renders | T8 | Pending |
+| E2E-17 | RSVP – button ≥ 48 px | T1, T8 | Pending |
+| E2E-18 | RSVP – dialog opens | T9 | Pending |
+| E2E-19 | RSVP – dialog backdrop-filter | T1, T9 | Pending |
+| E2E-20 | RSVP – submit → confirmation | T10 | Pending |
+| E2E-21 | Profile – page renders | T11 | Pending |
+| E2E-22 | Profile – card backdrop-filter | T1, T11 | Pending |
+| E2E-23 | Profile – heading font-family | T1, T11 | Pending |
+| E2E-24 | Profile – update name | T12 | Pending |
+| E2E-25 | Family – add member | T13 | Pending |
+| E2E-26 | Family – add button ≥ 48 px | T1, T13 | Pending |
+| E2E-27 | Family – remove member | T14 | Pending |
+| E2E-28 | Collab – dialog renders + border | T15 | Pending |
+| E2E-29 | Collab – submit → snackbar | T15 | Pending |
 
-**Coverage:** 29 total, 0 mapped to tasks yet, 29 unmapped ⚠️
+**Coverage:** 29 total, 29 mapped to tasks, 0 unmapped ✅
 
 ---
 

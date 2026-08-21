@@ -17,7 +17,8 @@ export class RsvpDialogHarness {
 
   constructor(private readonly page: Page) {
     this.dialogRoot = page
-      .getByTestId('rsvp-dialog')
+      .getByTestId('rsvp-drawer')
+      .or(page.getByTestId('rsvp-dialog'))
       .or(page.getByTestId('guest-form-dialog'))
       .or(page.getByRole('dialog'))
       .or(page.locator('mat-dialog-container, app-guest-form-dialog'));
@@ -88,7 +89,7 @@ export class RsvpDialogHarness {
 
     const isInitialFocusInside = await this.page.evaluate(() => {
       const dialog = document.querySelector(
-        'mat-dialog-container, [role="dialog"], .guest-dialog__form, app-guest-form-dialog'
+        '[data-testid="rsvp-drawer"], mat-dialog-container, [role="dialog"], .guest-dialog__form, app-guest-form-dialog'
       );
       return dialog ? dialog.contains(document.activeElement) : false;
     });
@@ -98,7 +99,7 @@ export class RsvpDialogHarness {
       await this.page.keyboard.press('Tab');
       const isFocusInside = await this.page.evaluate(() => {
         const dialog = document.querySelector(
-          'mat-dialog-container, [role="dialog"], .guest-dialog__form, app-guest-form-dialog'
+          '[data-testid="rsvp-drawer"], mat-dialog-container, [role="dialog"], .guest-dialog__form, app-guest-form-dialog'
         );
         return dialog ? dialog.contains(document.activeElement) : false;
       });

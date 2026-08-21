@@ -4,7 +4,7 @@ import {
   assertGlassmorphism,
   assertMinTouchTarget,
   assertFontFamily,
-  assertFocusPrimaryColor,
+  assertFocusedFieldCoherence,
   assertNoHorizontalOverflow,
 } from '../helpers/design-tokens.helper';
 
@@ -576,8 +576,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await page.goto('/meus-eventos/evento/happy-event-1');
       await eventEditorPage.assertLoaded();
 
-      // Verify focus style
-      await assertFocusPrimaryColor(eventEditorPage.titleInput);
+      // Verify the visible MDC focus label and outline both resolve to the primary token.
+      await assertFocusedFieldCoherence(eventEditorPage.titleInput);
     });
   });
 
@@ -674,12 +674,22 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       // Open dialog
       await eventDetailPage.openRsvpDialog();
       await rsvpDialog.assertVisible();
+      await expect(rsvpDialog.dialogRoot.first()).toHaveAttribute('role', 'dialog');
+      await expect(rsvpDialog.dialogRoot.first()).toHaveAttribute('aria-modal', 'true');
 
       // Assert controls
       await expect(rsvpDialog.nameInput).toBeVisible();
       await expect(rsvpDialog.phoneInput).toBeVisible();
       await expect(rsvpDialog.confirmBtn).toBeVisible();
       await expect(rsvpDialog.cancelBtn).toBeVisible();
+      await expect(rsvpDialog.nameInput.locator('xpath=ancestor::mat-form-field')).toHaveClass(
+        /org-form-field/,
+      );
+      await expect(rsvpDialog.phoneInput.locator('xpath=ancestor::mat-form-field')).toHaveClass(
+        /org-form-field/,
+      );
+      await expect(rsvpDialog.confirmBtn).toHaveClass(/org-button--primary/);
+      await expect(rsvpDialog.cancelBtn).toHaveClass(/org-button--secondary/);
 
       // Screenshot baseline
       await eventDetailPage.captureScreenshot('13-11-rsvp-dialog-open');
@@ -697,9 +707,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventDetailPage.openRsvpDialog();
       await rsvpDialog.assertVisible();
 
-      // Assert glassmorphism on dialog surface
-      const dialogSurface = page.locator('.mat-mdc-dialog-container .mdc-dialog__surface, mat-dialog-container .mdc-dialog__surface').first();
-      await assertGlassmorphism(dialogSurface);
+      // Assert glassmorphism on the workflow drawer surface actually presented to guests.
+      await assertGlassmorphism(rsvpDialog.dialogRoot);
     });
   });
 
@@ -864,7 +873,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       // Enter new name and submit
       await expect(profilePage.nameInput).toBeVisible();
       await profilePage.nameInput.focus();
-      await assertFocusPrimaryColor(profilePage.nameInput);
+      await assertFocusedFieldCoherence(profilePage.nameInput);
       await assertMinTouchTarget(profilePage.saveProfileBtn, 48);
       await assertMinTouchTarget(page.getByRole('button', { name: 'Cancelar edição' }), 48);
       await profilePage.nameInput.fill('Luiz Atualizado');

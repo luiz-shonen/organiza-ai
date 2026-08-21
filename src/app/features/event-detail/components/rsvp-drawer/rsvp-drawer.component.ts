@@ -30,6 +30,8 @@ import {
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
+import { OrgButtonDirective } from '../../../../shared/ui/actions/org-button.directive';
+import { OrgFormFieldDirective } from '../../../../shared/ui/forms/org-form-field.directive';
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
@@ -47,6 +49,8 @@ const trimmedRequired: ValidatorFn = (control) =>
     MatButtonModule,
     MatIconModule,
     FamilySelectorComponent,
+    OrgButtonDirective,
+    OrgFormFieldDirective,
   ],
   templateUrl: './rsvp-drawer.component.html',
   styleUrl: './rsvp-drawer.component.scss',

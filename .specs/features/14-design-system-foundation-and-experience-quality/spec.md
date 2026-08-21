@@ -19,7 +19,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | Feature | Reason |
 | --- | --- |
 | A separately published npm package or a multi-repository component library | There is no second consumer yet. The first implementation must prove a stable internal API before extraction. |
-| A visual rebrand or a new design direction | The Vibrant Celebration identity, Plus Jakarta Sans, glassmorphism, and purple-to-orange brand gradient remain in force. |
+| A visual rebrand or a new design direction | The pre-foundation Vibrant Celebration identity remains in force: pink, orange, and yellow accents, Plus Jakarta Sans, and glassmorphism. The UI foundation must not replace it with a purple brand palette. |
 | Changing event permissions or verified RSVP identity | AD-017 and AD-024 remain unchanged. The primary guest remains the verified account holder. |
 | Identifying, authenticating, or messaging each non-family companion | Companion names are attendance metadata for the organizer. They do not become independent authenticated guest records. |
 | Replacing every existing component in one release | Migration is incremental and governed by the primitives and visual matrix. |
@@ -40,6 +40,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | Additional companions | A count above zero reveals one required name field per companion, up to 10. The persisted `companions` array is the source of truth; legacy `companionsCount` remains readable and is derived on new writes. | Names answer the organizer's attendance question while a bound prevents accidental unbounded form and document payloads. | Yes |
 | Companion visibility | Show named non-family companions only in organizer-facing guest management. | They are personal attendance data and have no public-profile purpose. | Yes |
 | Visual states | A typed visual-scenario registry enumerates routed pages and overlay states. Every registered state produces four baselines: desktop/light, desktop/dark, mobile/light, mobile/dark. | A registry makes coverage auditable and prevents future pages from silently missing dark-mode screenshots. | Yes |
+| Mobile stepper | On screens narrower than 600px, the event editor shows one compact, persistent active-step summary (`Etapa X de 3` plus the current step title) rather than a horizontally scrollable row of truncated Material step labels. Desktop retains the full step headers. | The full name of the current step must be immediately readable without horizontal scrolling. | Yes |
 
 **Open questions:** none - all resolved or logged above.
 
@@ -58,9 +59,10 @@ The visual baselines also do not cover every supported page state in dark mode o
 1. The system SHALL provide standalone, OnPush UI primitives for surfaces, form-fields, labels, buttons, icon buttons, chips, semantic icons, and banners through one documented `shared/ui` public API. <!-- ubiquitous -->
 2. WHEN a component renders an `OrgSurface` card, panel, drawer, or confirmation surface THEN the system SHALL render exactly one 1.5px gradient border and SHALL not render a second white companion border. <!-- event-driven -->
 3. WHEN an `OrgField` is idle, hovered, focused, invalid, disabled, or autofilled THEN the system SHALL use only its documented Material MDC token values, retain a readable semantic fill in light, dark, and seasonal modes, and keep the label fully visible. <!-- event-driven -->
-4. WHEN a user focuses an outlined field THEN the system SHALL show one coherent primary focus treatment rather than separately colored leading, notch, and trailing outline segments. <!-- event-driven -->
-5. The system SHALL give every primary button, icon button, expansion header, drawer action, filter chip, and field affordance a minimum 48px by 48px touch target. <!-- ubiquitous -->
-6. WHEN a semantic UI action renders an icon THEN the system SHALL use the documented icon mapping and a size/color token for that action via `OrgIconComponent` rather than a local hard-coded icon treatment. <!-- event-driven -->
+4. WHEN a shared action, feedback surface, or field resolves its semantic tokens THEN it SHALL use the original pink–orange–yellow brand palette in light and dark modes; no later stylesheet may replace that palette with a purple brand theme. <!-- event-driven -->
+5. WHEN a user focuses an outlined field THEN the system SHALL show one coherent primary focus treatment rather than separately colored leading, notch, and trailing outline segments. <!-- event-driven -->
+6. The system SHALL give every primary button, icon button, expansion header, drawer action, filter chip, and field affordance a minimum 48px by 48px touch target. <!-- ubiquitous -->
+7. WHEN a semantic UI action renders an icon THEN the system SHALL use the documented icon mapping and a size/color token for that action via `OrgIconComponent` rather than a local hard-coded icon treatment. <!-- event-driven -->
 
 **Independent Test**: Render each primitive in light/dark and mobile/desktop component tests, then exercise representative Profile, RSVP, collaborator, editor, and Home visual scenarios.
 
@@ -131,8 +133,10 @@ The visual baselines also do not cover every supported page state in dark mode o
 1. WHEN a registered visual scenario is captured THEN the system SHALL capture every registered semantic scroll anchor in the internal `main.app-content` surface, including content below its initial fold. <!-- event-driven -->
 2. WHEN a registered visual scenario is captured THEN the system SHALL reset all relevant scroll origins and wait for fonts, animations, and overlay layout to settle before capture. <!-- event-driven -->
 3. The system SHALL register and run every supported routed page and workflow drawer state in desktop/light, desktop/dark, mobile/light, and mobile/dark variants. <!-- ubiquitous -->
-4. IF a registered scenario lacks one required theme-viewport variant, has document or app-scroll horizontal overflow, clips a required control, or fails its token assertion THEN the visual suite SHALL fail. <!-- unwanted-behavior -->
-5. WHEN a page has vertically long content THEN the system SHALL additionally scroll each registered critical region into view before its localized assertion. <!-- event-driven -->
+4. WHEN a visual test uses synthetic geometry or an isolated fixture THEN it SHALL keep its artifact out of the product screenshot baseline directory. <!-- event-driven -->
+5. WHEN the event editor is rendered below 600px wide THEN it SHALL expose the active step number and full active step title without requiring horizontal scrolling. <!-- event-driven -->
+6. IF a registered scenario lacks one required theme-viewport variant, has document or app-scroll horizontal overflow, clips a required control, or fails its token assertion THEN the visual suite SHALL fail. <!-- unwanted-behavior -->
+7. WHEN a page has vertically long content THEN the system SHALL additionally scroll each registered critical region into view before its localized assertion. <!-- event-driven -->
 
 **Independent Test**: Run the visual matrix with deterministic mocks and verify each manifest entry produces four full-content artifacts plus its numerical layout assertions.
 

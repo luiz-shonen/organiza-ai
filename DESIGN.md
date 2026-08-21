@@ -1,32 +1,32 @@
 ---
 name: Vibrant Celebration
 colors:
-  surface: '#fef7ff'
-  surface-dim: '#e4d3ff'
-  surface-bright: '#fef7ff'
+  surface: '#fff8f8'
+  surface-dim: '#fce1ed'
+  surface-bright: '#fff8f8'
   surface-container-lowest: '#ffffff'
   surface-container-low: '#f9f1ff'
   surface-container: '#f4eaff'
   surface-container-high: '#f0e3ff'
   surface-container-highest: '#ebddff'
-  on-surface: '#231043'
+  on-surface: '#2a101f'
   on-surface-variant: '#4a4455'
   inverse-surface: '#38265a'
   inverse-on-surface: '#f7edff'
   outline: '#7b7487'
   outline-variant: '#ccc3d8'
   surface-tint: '#732ee4'
-  primary: '#630ed4'
+  primary: '#ff4d94'
   on-primary: '#ffffff'
-  primary-container: '#7c3aed'
-  on-primary-container: '#ede0ff'
-  inverse-primary: '#d2bbff'
-  secondary: '#a14000'
+  primary-container: '#ff80b3'
+  on-primary-container: '#3d001a'
+  inverse-primary: '#ffc2d9'
+  secondary: '#ff8c42'
   on-secondary: '#ffffff'
-  secondary-container: '#fd762b'
-  on-secondary-container: '#5e2300'
-  tertiary: '#733e53'
-  on-tertiary: '#ffffff'
+  secondary-container: '#ffb380'
+  on-secondary-container: '#3d1400'
+  tertiary: '#ffc837'
+  on-tertiary: '#2a1f00'
   tertiary-container: '#8e556b'
   on-tertiary-container: '#ffdde7'
   error: '#ba1a1a'
@@ -118,7 +118,7 @@ The aesthetic is a maximalist blend of **Glassmorphism** and **Vibrant Modernism
 
 ## Colors
 
-The palette is dominated by a royal **Deep Purple** for structure and authority, contrasted sharply by a **Vibrant Orange** for action and urgency. A **Soft Peach** serves as the bridge between these extremes, often used in gradients to create a festive "sunset" glow.
+The palette is led by the original vibrant **Pink**, **Orange**, and **Yellow** logo accents. A soft peach and blush surface palette lets these three hues create the festive gradient without turning the application into a purple product theme.
 
 Backgrounds are never flat; they utilize a soft peach-to-lavender base layered with blurred, floating organic shapes in primary and secondary hues (20% opacity) to create a sense of living space behind the UI.
 

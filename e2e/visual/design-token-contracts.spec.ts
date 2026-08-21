@@ -4,6 +4,7 @@ import {
   assertAppScrollOrigin,
   assertDrawerInset,
   assertFocusedFieldCoherence,
+  meetsMinimumTouchTarget,
   assertSingleSurfaceRing,
 } from '../helpers/design-tokens.helper';
 
@@ -29,6 +30,11 @@ test('proves the numerical visual contracts on representative geometry', async (
 test('rejects an undersized interactive target in either dimension', async ({ page }) => {
   await page.setContent('<button style="width: 40px; height: 48px">Too narrow</button>');
   await expect(import('../helpers/design-tokens.helper').then(({ assertMinTouchTarget }) => assertMinTouchTarget(page.getByRole('button')))).rejects.toThrow();
+});
+
+test('permits only sub-pixel rounding within the touch target tolerance', () => {
+  expect(meetsMinimumTouchTarget(47.996, 48)).toBe(true);
+  expect(meetsMinimumTouchTarget(47.9, 48)).toBe(false);
 });
 
 test('rejects separately coloured visible outline segments', async ({ page }) => {

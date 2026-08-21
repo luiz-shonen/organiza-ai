@@ -13,6 +13,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T2 — Capture scroll-owner anchors deterministically
 - [x] T3 — Add numerical visual failure assertions
   - Corrective verification: inspect `OrgFormField` MDC focus tokens through the owning Material field host, ignoring transparent notch sides and rejecting visible multi-colour outlines.
+  - Follow-up: touch-target checks allow at most 0.01px of browser rounding, reject material undersizing, and wait for overlay entry animation before measuring collaborator actions.
 - [x] T4 — Configure tracked visual snapshot output
 
 ### Phase 2
@@ -236,6 +237,8 @@ T29 → T30
 **Tests**: unit + e2e
 **Gate**: full
 **Commit**: `fix(profile): simplify personal information surface`
+
+**Follow-up**: Profile visual checks target the rendered `section.org-surface`, assert the 16px/24px responsive block inset, and retain the 12px/16px inline gutter geometry.
 
 ### T13: Rebuild the family roster composition
 

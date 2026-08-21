@@ -772,8 +772,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.assertLoaded();
 
       // Assert glassmorphism on profile card surface
-      const profileCard = page.locator('section.profile-info-card, .profile-info-card').first();
-      await assertGlassmorphism(profileCard);
+      const profileSurface = page.locator('app-profile-info-card section.org-surface').first();
+      await assertGlassmorphism(profileSurface);
     });
 
     test('[E2E-23] should verify profile heading typography uses Plus Jakarta Sans font family', async ({
@@ -816,19 +816,31 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(editBtn).toBeVisible();
       await editBtn.click();
 
-      const profileCard = page.locator('.profile-info-card').first();
+      const profileSurface = page.locator('app-profile-info-card section.org-surface').first();
       const editField = page.locator('.profile-info-card__form-field').first();
-      const cardBox = await profileCard.boundingBox();
+      const surfacePadding = await profileSurface.evaluate((surface) => {
+        const style = window.getComputedStyle(surface);
+        return {
+          bottom: style.paddingBottom,
+          top: style.paddingTop,
+        };
+      });
+      const expectedBlockInset = (page.viewportSize()?.width ?? 0) < 600 ? 16 : 24;
+      expect(surfacePadding.top).toBe(`${expectedBlockInset}px`);
+      expect(surfacePadding.bottom).toBe(`${expectedBlockInset}px`);
+
+      const surfaceBox = await profileSurface.boundingBox();
       const fieldBox = await editField.boundingBox();
-      expect(cardBox).not.toBeNull();
+      expect(surfaceBox).not.toBeNull();
       expect(fieldBox).not.toBeNull();
-      if (cardBox && fieldBox) {
-        const leftInset = fieldBox.x - cardBox.x;
-        const rightInset = cardBox.x + cardBox.width - (fieldBox.x + fieldBox.width);
-        expect(leftInset).toBeGreaterThanOrEqual(22);
-        expect(leftInset).toBeLessThanOrEqual(28);
-        expect(rightInset).toBeGreaterThanOrEqual(22);
-        expect(rightInset).toBeLessThanOrEqual(28);
+      if (surfaceBox && fieldBox) {
+        const expectedInlineInset = (page.viewportSize()?.width ?? 0) < 600 ? 12 : 16;
+        const leftInset = fieldBox.x - surfaceBox.x;
+        const rightInset = surfaceBox.x + surfaceBox.width - (fieldBox.x + fieldBox.width);
+        expect(leftInset).toBeGreaterThanOrEqual(expectedInlineInset);
+        expect(leftInset).toBeLessThanOrEqual(expectedInlineInset + 2);
+        expect(rightInset).toBeGreaterThanOrEqual(expectedInlineInset);
+        expect(rightInset).toBeLessThanOrEqual(expectedInlineInset + 2);
       }
 
       // Enter new name and submit
@@ -963,6 +975,10 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(dialog.locator('.collaborator-dialog__content')).toHaveCSS('margin-left', '0px');
       await expect(dialog.locator('.collaborator-dialog__actions')).toHaveCSS('margin-left', '0px');
 
+      await dialog.evaluate((element) => {
+        const overlay = element.closest('.cdk-overlay-pane');
+        return Promise.all(overlay?.getAnimations({ subtree: true }).map((animation) => animation.finished) ?? []);
+      });
       await assertMinTouchTarget(submitBtn, 48);
       await assertMinTouchTarget(dialog.getByRole('button', { name: 'Fechar' }), 48);
 

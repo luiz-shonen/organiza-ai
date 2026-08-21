@@ -1,5 +1,15 @@
 import { expect, Locator, Page } from '@playwright/test';
 
+const TOUCH_TARGET_MEASUREMENT_TOLERANCE = 0.01;
+
+/**
+ * Accepts only the sub-pixel loss introduced by browser layout rounding.
+ * A value more than 0.01px below the WCAG target remains a failure.
+ */
+export function meetsMinimumTouchTarget(size: number, minSize = 48): boolean {
+  return size >= minSize - TOUCH_TARGET_MEASUREMENT_TOLERANCE;
+}
+
 /**
  * Asserts that the document does not have horizontal overflow (scrollWidth <= innerWidth).
  */
@@ -43,8 +53,8 @@ export async function assertMinTouchTarget(locator: Locator, minSize = 48): Prom
   const box = await target.boundingBox();
   expect(box).not.toBeNull();
   if (box) {
-    expect(box.width).toBeGreaterThanOrEqual(minSize);
-    expect(box.height).toBeGreaterThanOrEqual(minSize);
+    expect(meetsMinimumTouchTarget(box.width, minSize)).toBe(true);
+    expect(meetsMinimumTouchTarget(box.height, minSize)).toBe(true);
   }
 }
 

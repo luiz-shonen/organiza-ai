@@ -2,6 +2,8 @@
 .org-icon-button,
 .org-chip--primitive {
   align-items: center;
+  box-sizing: border-box;
+  display: inline-flex;
   justify-content: center;
   min-height: 48px;
   min-width: 48px;
@@ -13,17 +15,44 @@
 }
 
 .org-button {
+  border: 1px solid transparent;
+  border-radius: var(--org-radius-full, 9999px);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  gap: 8px;
+  padding: 0 20px;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+
+  &:hover:not(:disabled):not([aria-disabled='true']) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
   &--primary {
+    --mdc-filled-button-container-color: var(--org-primary);
+    --mdc-filled-button-label-text-color: var(--org-on-primary);
     background: var(--org-gradient-primary);
     color: var(--org-on-primary);
   }
 
   &--secondary {
+    --mdc-outlined-button-label-text-color: var(--org-primary);
+    --mdc-outlined-button-outline-color: var(--org-primary);
     background: color-mix(in srgb, var(--org-surface) 80%, transparent);
+    border-color: color-mix(in srgb, var(--org-primary) 45%, transparent);
     color: var(--org-primary);
   }
 
   &--danger {
+    --mdc-filled-button-container-color: var(--org-error);
+    --mdc-filled-button-label-text-color: var(--org-on-error);
     background: var(--org-error);
     color: var(--org-on-error);
   }
@@ -35,13 +64,23 @@
 }
 
 .org-icon-button {
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+
+  &--default {
+    color: var(--org-on-surface-variant);
+  }
 
   &--primary {
+    background: color-mix(in srgb, var(--org-primary-container) 62%, transparent);
     color: var(--org-primary);
   }
 
   &--danger {
+    background: color-mix(in srgb, var(--org-error-container) 82%, transparent);
     color: var(--org-error);
   }
 }

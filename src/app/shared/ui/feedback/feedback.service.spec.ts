@@ -28,7 +28,7 @@ describe('FeedbackService', () => {
       expect.objectContaining({
         data: { variant: 'success', message: 'Perfil atualizado!' },
         duration: 4500,
-        panelClass: 'org-feedback-snackbar',
+        panelClass: ['org-feedback-snackbar', 'org-feedback-snackbar--success'],
       }),
     );
   });
@@ -40,12 +40,18 @@ describe('FeedbackService', () => {
     expect(snackBar.openFromComponent).toHaveBeenNthCalledWith(
       1,
       FeedbackSnackbarComponent,
-      expect.objectContaining({ data: { variant: 'error', message: 'Não foi possível salvar.' } }),
+      expect.objectContaining({
+        data: { variant: 'error', message: 'Não foi possível salvar.' },
+        panelClass: ['org-feedback-snackbar', 'org-feedback-snackbar--error'],
+      }),
     );
     expect(snackBar.openFromComponent).toHaveBeenNthCalledWith(
       2,
       FeedbackSnackbarComponent,
-      expect.objectContaining({ data: { variant: 'info', message: 'Sua sessão expira em breve.' } }),
+      expect.objectContaining({
+        data: { variant: 'info', message: 'Sua sessão expira em breve.' },
+        panelClass: ['org-feedback-snackbar', 'org-feedback-snackbar--info'],
+      }),
     );
   });
 

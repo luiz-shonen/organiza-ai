@@ -34,7 +34,7 @@ export class FeedbackService {
       announcementMessage: message,
       data,
       duration: options?.duration ?? DEFAULT_DURATION,
-      panelClass: 'org-feedback-snackbar',
+      panelClass: ['org-feedback-snackbar', `org-feedback-snackbar--${variant}`],
       politeness: 'polite',
     };
 

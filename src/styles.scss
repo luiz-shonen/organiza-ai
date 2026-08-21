@@ -273,9 +273,22 @@ button:not(.org-button):not(.org-icon-button)[disabled],
 // Snackbar custom styling
 // ──────────────────────────────────────────────
 
-.mat-mdc-snack-bar-container {
+.mat-mdc-snack-bar-container:not(.org-feedback-snackbar) {
   --mdc-snackbar-container-color: var(--mat-sys-inverse-surface);
   --mdc-snackbar-supporting-text-color: var(--mat-sys-inverse-on-surface);
+}
+
+.mat-mdc-snack-bar-container.org-feedback-snackbar,
+.org-feedback-snackbar .mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: transparent;
+  --mdc-snackbar-supporting-text-color: inherit;
+  --mat-snack-bar-button-color: currentColor;
+  --mat-snack-bar-container-color: transparent;
+  --mat-snack-bar-container-elevation-shadow: none;
+  --mat-snack-bar-supporting-text-color: inherit;
+  --mdc-snackbar-container-elevation-shadow: none;
+
+  box-shadow: none;
 }
 
 // ──────────────────────────────────────────────

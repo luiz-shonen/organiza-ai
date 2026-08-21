@@ -1,15 +1,17 @@
 @mixin apply() {
   :root {
-    --org-primary: #630ed4;
+    // The product brand is the original logo palette: pink, orange and yellow.
+    // Keep it here as the sole semantic source consumed by shared primitives.
+    --org-primary: #ff4d94;
     --org-on-primary: #ffffff;
-    --org-primary-container: #7c3aed;
-    --org-on-primary-container: #ede0ff;
-    --org-secondary: #fd762b;
+    --org-primary-container: #ff80b3;
+    --org-on-primary-container: #3d001a;
+    --org-secondary: #ff8c42;
     --org-on-secondary: #ffffff;
-    --org-secondary-container: #ffdbcc;
-    --org-on-secondary-container: #5e2300;
-    --org-tertiary: #733e53;
-    --org-on-tertiary: #ffffff;
+    --org-secondary-container: #ffb380;
+    --org-on-secondary-container: #3d1400;
+    --org-tertiary: #ffc837;
+    --org-on-tertiary: #2a1f00;
     --org-error: #ba1a1a;
     --org-on-error: #ffffff;
     --org-error-container: #ffdad6;
@@ -22,60 +24,64 @@
     --org-on-info: #ffffff;
     --org-info-container: #dbe8ff;
     --org-on-info-container: #002b75;
-    --org-surface: #fef7ff;
-    --org-on-surface: #231043;
-    --org-surface-variant: #ebddff;
-    --org-on-surface-variant: #4a4455;
-    --org-field-fill: rgba(255, 247, 255, 0.88);
-    --org-field-text: #231043;
-    --org-field-label: #4a4455;
-    --org-field-outline: #7b7487;
-    --org-field-disabled-outline: rgba(123, 116, 135, 0.38);
+    --org-surface: #fff8f8;
+    --org-on-surface: #2a101f;
+    --org-surface-variant: #fce1ed;
+    --org-on-surface-variant: #4f3d46;
+    --org-field-fill: rgba(255, 248, 248, 0.88);
+    --org-field-text: #2a101f;
+    --org-field-label: #4f3d46;
+    --org-field-outline: #85737b;
+    --org-field-disabled-outline: rgba(133, 115, 123, 0.38);
     --org-glass-bg: rgba(255, 255, 255, 0.6);
     --org-glass-blur: blur(24px);
     --org-glass-ring-width: 1.5px;
-    --org-gradient-primary: linear-gradient(135deg, #630ed4 0%, #fd762b 100%);
-    --org-gradient-border: linear-gradient(135deg, rgba(99, 14, 212, 0.4), rgba(253, 118, 43, 0.4));
+    --org-gradient-primary: linear-gradient(135deg, #ff4d94 0%, #ff8c42 50%, #ffc837 100%);
+    --org-gradient-border: linear-gradient(135deg, rgba(255, 77, 148, 0.4), rgba(255, 140, 66, 0.4));
   }
 
   html.dark {
-    --org-surface: #231043;
-    --org-on-surface: #f7edff;
-    --org-surface-variant: #38265a;
-    --org-on-surface-variant: #d2bbff;
-    --org-glass-bg: rgba(35, 16, 67, 0.7);
-    --org-field-fill: rgba(56, 38, 90, 0.88);
-    --org-field-text: #f7edff;
-    --org-field-label: #d2bbff;
-    --org-field-outline: #d2bbff;
-    --org-field-disabled-outline: rgba(210, 187, 255, 0.38);
+    --org-surface: #1f1a1d;
+    --org-on-surface: #fdecf2;
+    --org-surface-variant: #4f3d46;
+    --org-on-surface-variant: #d8c2cb;
+    --org-glass-bg: rgba(31, 26, 29, 0.7);
+    --org-field-fill: rgba(79, 61, 70, 0.88);
+    --org-field-text: #fdecf2;
+    --org-field-label: #d8c2cb;
+    --org-field-outline: #d8c2cb;
+    --org-field-disabled-outline: rgba(216, 194, 203, 0.38);
   }
 
   html.theme-junina {
-    --org-primary: #c62828;
-    --org-secondary: #f57c00;
-    --org-tertiary: #fbc02d;
-    --org-gradient-primary: linear-gradient(135deg, #c62828 0%, #f57c00 50%, #fbc02d 100%);
+    --org-primary: #ff5722;
+    --org-primary-container: #ff8a65;
+    --org-secondary: #ff8c42;
+    --org-tertiary: #ffb300;
+    --org-gradient-primary: linear-gradient(135deg, #ff5722 0%, #ff8c42 50%, #ffb300 100%);
   }
 
   html.theme-natal {
-    --org-primary: #b71c1c;
-    --org-secondary: #2e7d32;
-    --org-tertiary: #fbc02d;
-    --org-gradient-primary: linear-gradient(135deg, #b71c1c 0%, #2e7d32 100%);
+    --org-primary: #d32f2f;
+    --org-primary-container: #ef5350;
+    --org-secondary: #e53935;
+    --org-tertiary: #388e3c;
+    --org-gradient-primary: linear-gradient(135deg, #d32f2f 0%, #e53935 50%, #388e3c 100%);
   }
 
   html.theme-pascoa {
-    --org-primary: #7b1fa2;
-    --org-secondary: #f9a825;
-    --org-tertiary: #ba68c8;
-    --org-gradient-primary: linear-gradient(135deg, #7b1fa2 0%, #ba68c8 50%, #f9a825 100%);
+    --org-primary: #8e24aa;
+    --org-primary-container: #ba68c8;
+    --org-secondary: #ba68c8;
+    --org-tertiary: #fbc02d;
+    --org-gradient-primary: linear-gradient(135deg, #8e24aa 0%, #ba68c8 50%, #fbc02d 100%);
   }
 
   html.theme-ano-novo {
-    --org-primary: #9a6700;
-    --org-secondary: #fbc02d;
+    --org-primary: #fbc02d;
+    --org-primary-container: #fff176;
+    --org-secondary: #fff59d;
     --org-tertiary: #e0e0e0;
-    --org-gradient-primary: linear-gradient(135deg, #9a6700 0%, #fbc02d 50%, #e0e0e0 100%);
+    --org-gradient-primary: linear-gradient(135deg, #fbc02d 0%, #fff59d 50%, #e0e0e0 100%);
   }
 }

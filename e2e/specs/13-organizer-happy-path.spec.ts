@@ -78,7 +78,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await dashboardPage.assertLoaded();
 
       // Event card or glass surface has backdrop-filter blur
-      const cardSurface = page.locator('.glass-card, .dashboard__table-wrapper, .dashboard__mobile-card').first();
+      const cardSurface = page
+        .locator('.glass-card, .dashboard__table-wrapper, .dashboard__mobile-card')
+        .first();
       await assertGlassmorphism(cardSurface);
     });
   });
@@ -128,7 +130,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const categoryChip = page.locator('mat-chip-option').first();
       await expect(categoryChip).toBeVisible();
       await categoryChip.click();
-      await eventEditorPage.descriptionInput.fill('Uma comemoração inesquecível com amigos e família.');
+      await eventEditorPage.descriptionInput.fill(
+        'Uma comemoração inesquecível com amigos e família.',
+      );
       await eventEditorPage.dateInput.fill('11/20/2026');
       await eventEditorPage.timeInput.fill('19:00');
 
@@ -178,7 +182,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         'Aniversário dos Sonhos 2026',
         '11/20/2026',
         'Uma comemoração inesquecível com amigos e família.',
-        '19:00'
+        '19:00',
       );
     });
 
@@ -259,15 +263,15 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const appContent = page.locator('main.app-content');
       await expect(appContent).toBeVisible();
       await appContent.evaluate((element) => element.scrollTo({ left: 48, top: 72 }));
-      await expect
-        .poll(() => appContent.evaluate((element) => element.scrollLeft))
-        .toEqual(0);
+      await expect.poll(() => appContent.evaluate((element) => element.scrollLeft)).toEqual(0);
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-05-step2-viacep');
 
       await expect
-        .poll(() => appContent.evaluate((element) => ({ left: element.scrollLeft, top: element.scrollTop })))
+        .poll(() =>
+          appContent.evaluate((element) => ({ left: element.scrollLeft, top: element.scrollTop })),
+        )
         .toEqual({ left: 0, top: 0 });
     });
   });
@@ -307,7 +311,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         'Aniversário dos Sonhos 2026',
         '11/20/2026',
         'Uma comemoração inesquecível com amigos e família.',
-        '19:00'
+        '19:00',
       );
       await eventEditorPage.fillCep('01310100', '1000');
 
@@ -335,7 +339,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         expect(activeHeaderBox).not.toBeNull();
         if (activeHeaderBox) {
           expect(activeHeaderBox.x).toBeGreaterThanOrEqual(0);
-          expect(activeHeaderBox.x + activeHeaderBox.width).toBeLessThanOrEqual((page.viewportSize()?.width ?? 0) + 1);
+          expect(activeHeaderBox.x + activeHeaderBox.width).toBeLessThanOrEqual(
+            (page.viewportSize()?.width ?? 0) + 1,
+          );
         }
       }
 
@@ -407,7 +413,13 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const eventWithTwoItems = {
         ...mockHappyPathEvent,
         items: [
-          { id: 'item-1', name: 'Bolo de Chocolate', category: 'Comida', quantity: 1, claimedBy: [] },
+          {
+            id: 'item-1',
+            name: 'Bolo de Chocolate',
+            category: 'Comida',
+            quantity: 1,
+            claimedBy: [],
+          },
           { id: 'item-2', name: 'Refrigerante 2L', category: 'Bebida', quantity: 5, claimedBy: [] },
         ],
       };
@@ -427,9 +439,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(itemsList).toContainText('Refrigerante 2L');
 
       // Delete first item
-      const removeBtn = page.locator('button[aria-label="Remover Bolo de Chocolate"]').or(
-        page.locator('.editor__item button').first()
-      );
+      const removeBtn = page
+        .locator('button[aria-label="Remover Bolo de Chocolate"]')
+        .or(page.locator('.editor__item button').first());
       await removeBtn.click();
 
       // Verify removed item is gone, remaining item still present
@@ -473,7 +485,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         'Aniversário dos Sonhos 2026',
         '11/20/2026',
         'Uma comemoração inesquecível com amigos e família.',
-        '19:00'
+        '19:00',
       );
 
       // Fill Step 2
@@ -520,7 +532,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Assert pre-populated form fields
       await expect(eventEditorPage.titleInput).toHaveValue('Aniversário dos Sonhos 2026');
-      await expect(eventEditorPage.descriptionInput).toHaveValue('Uma comemoração inesquecível com amigos e família.');
+      await expect(eventEditorPage.descriptionInput).toHaveValue(
+        'Uma comemoração inesquecível com amigos e família.',
+      );
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-09-event-edit-prepopulated');
@@ -605,7 +619,11 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(eventDetailPage.countdownTimer.first()).toBeVisible();
 
       // Assert location text is visible
-      const locationEl = page.locator('.event-card__location-text, .event-detail__location, [data-testid="event-location"]').first();
+      const locationEl = page
+        .locator(
+          '.event-card__location-text, .event-detail__location, [data-testid="event-location"]',
+        )
+        .first();
       await expect(locationEl).toBeVisible();
       await expect(locationEl).toContainText(/Paulista/i);
 
@@ -656,9 +674,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         uid: 'test-guest-uid',
         email: 'maria.guest@example.com',
         displayName: 'Maria Convidada',
-        familyMembers: [
-          { id: 'fam-1', name: 'Joãozinho', relationship: 'Filho' },
-        ],
+        familyMembers: [{ id: 'fam-1', name: 'Joãozinho', relationship: 'Filho' }],
         events: [mockHappyPathEvent],
       });
     });
@@ -723,9 +739,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         uid: 'test-guest-uid',
         email: 'maria.guest@example.com',
         displayName: 'Maria Convidada',
-        familyMembers: [
-          { id: 'fam-1', name: 'Joãozinho', relationship: 'Filho' },
-        ],
+        familyMembers: [{ id: 'fam-1', name: 'Joãozinho', relationship: 'Filho' }],
         events: [mockHappyPathEvent],
       });
 
@@ -909,7 +923,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.familyRoster.addMember('Mariana Silva', 'spouse', '(11) 98888-7777');
 
       // Assert member card is listed
-      const memberCard = profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first();
+      const memberCard = profilePage.familyRoster.memberCards
+        .filter({ hasText: 'Mariana Silva' })
+        .first();
       await expect(memberCard).toBeVisible();
 
       // Screenshot baseline
@@ -950,15 +966,23 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.assertLoaded();
 
       // Assert both members are visible
-      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first()).toBeVisible();
-      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first()).toBeVisible();
+      await expect(
+        profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first(),
+      ).toBeVisible();
+      await expect(
+        profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first(),
+      ).toBeVisible();
 
       // Delete first member
       await profilePage.familyRoster.deleteMember(0);
 
       // Assert Mariana is gone and Lucas remains
-      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first()).toBeHidden();
-      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first()).toBeVisible();
+      await expect(
+        profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first(),
+      ).toBeHidden();
+      await expect(
+        profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first(),
+      ).toBeVisible();
     });
   });
 
@@ -981,7 +1005,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.assertLoaded();
 
       // Open collaborators dialog
-      const collabBtn = page.locator('.editor__collab-btn, button[aria-label*="colaboradores"]').first();
+      const collabBtn = page
+        .locator('.editor__collab-btn, button[aria-label*="colaboradores"]')
+        .first();
       await expect(collabBtn).toBeVisible();
       await collabBtn.click();
 
@@ -991,7 +1017,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Assert email input and invite button
       const emailInput = dialog.locator('input[type="email"], input[formcontrolname="email"]');
-      const submitBtn = dialog.locator('button.collaborator-dialog__submit-btn, button[type="submit"]');
+      const submitBtn = dialog.locator(
+        'button.collaborator-dialog__submit-btn, button[type="submit"]',
+      );
       await expect(emailInput).toBeVisible();
       await expect(submitBtn).toBeVisible();
 
@@ -1004,7 +1032,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       await dialog.evaluate((element) => {
         const overlay = element.closest('.cdk-overlay-pane');
-        return Promise.all(overlay?.getAnimations({ subtree: true }).map((animation) => animation.finished) ?? []);
+        return Promise.all(
+          overlay?.getAnimations({ subtree: true }).map((animation) => animation.finished) ?? [],
+        );
       });
       await assertMinTouchTarget(submitBtn, 48);
       await assertMinTouchTarget(dialog.getByRole('button', { name: 'Fechar' }), 48);
@@ -1021,7 +1051,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.assertLoaded();
 
       // Open collaborators dialog
-      const collabBtn = page.locator('.editor__collab-btn, button[aria-label*="colaboradores"]').first();
+      const collabBtn = page
+        .locator('.editor__collab-btn, button[aria-label*="colaboradores"]')
+        .first();
       await expect(collabBtn).toBeVisible();
       await collabBtn.click();
 
@@ -1033,7 +1065,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await emailInput.fill('amigo@exemplo.com');
       await emailInput.dispatchEvent('input');
 
-      const submitBtn = dialog.locator('button.collaborator-dialog__submit-btn, button[type="submit"]');
+      const submitBtn = dialog.locator(
+        'button.collaborator-dialog__submit-btn, button[type="submit"]',
+      );
       await expect(submitBtn).toBeEnabled();
       await submitBtn.click();
 

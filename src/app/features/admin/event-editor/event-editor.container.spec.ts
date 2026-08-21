@@ -172,7 +172,7 @@ describe('EventEditorContainer', () => {
         expect.objectContaining({
           title: 'Festa Junina',
           createdBy: 'owner-uid',
-        })
+        }),
       );
       expect(mockFeedback.success).toHaveBeenCalledWith('Evento atualizado!');
     });
@@ -245,24 +245,35 @@ describe('EventEditorContainer', () => {
     });
 
     it('should announce the active step with a compact mobile progress summary', () => {
-      const stepper = fixture.debugElement.query(By.directive(MatStepper)).componentInstance as MatStepper;
+      const stepper = fixture.debugElement.query(By.directive(MatStepper))
+        .componentInstance as MatStepper;
       const element = fixture.nativeElement as HTMLElement;
 
       expect(element.querySelector('.editor__stepper--mobile')).toBeTruthy();
       const progress = element.querySelector('[data-testid="event-step-progress"]');
       expect(progress?.textContent).toContain('Etapa 1 de 3');
       expect(progress?.textContent).toContain('Informações do evento');
-      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('1');
+      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
+        '1',
+      );
 
       stepper.selectionChange.emit({ selectedIndex: 2 } as StepperSelectionEvent);
       fixture.detectChanges();
 
       expect(progress?.textContent).toContain('Etapa 3 de 3');
       expect(progress?.textContent).toContain('Pagamento por Pix');
-      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('3');
-      expect(element.querySelector('#pix-form mat-form-field')?.classList).toContain('org-form-field');
-      expect(element.querySelector('#pix-form button[matstepperprevious]')?.classList).toContain('org-button');
-      expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')?.classList).toContain('org-button');
+      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
+        '3',
+      );
+      expect(element.querySelector('#pix-form mat-form-field')?.classList).toContain(
+        'org-form-field',
+      );
+      expect(element.querySelector('#pix-form button[matstepperprevious]')?.classList).toContain(
+        'org-button',
+      );
+      expect(
+        element.querySelector('#pix-form [data-testid="event-save-btn"]')?.classList,
+      ).toContain('org-button');
     });
   });
 });

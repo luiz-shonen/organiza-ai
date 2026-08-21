@@ -110,7 +110,7 @@ async function setupMockSession(page: Page, mockEvents: any[] = mockSampleEvents
         });
       };
     },
-    { events: mockEvents }
+    { events: mockEvents },
   );
 }
 
@@ -119,7 +119,10 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await setupMockSession(page);
   });
 
-  test('should render dashboard filter chips and new event button', async ({ page, dashboardPage }) => {
+  test('should render dashboard filter chips and new event button', async ({
+    page,
+    dashboardPage,
+  }) => {
     await page.goto('/meus-eventos');
     await dashboardPage.assertLoaded();
 
@@ -256,7 +259,11 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     const cancelActionBtn = activeRowOrCard
       .getByRole('button', { name: /cancelar/i })
-      .or(activeRowOrCard.locator('button[aria-label*="Cancelar"], button.mat-warn, button[mattooltip="Cancelar"]'))
+      .or(
+        activeRowOrCard.locator(
+          'button[aria-label*="Cancelar"], button.mat-warn, button[mattooltip="Cancelar"]',
+        ),
+      )
       .first();
 
     await cancelActionBtn.click();
@@ -264,7 +271,9 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Verify confirmation dialog appears
     await confirmDialog.assertVisible();
     await expect(confirmDialog.messageText).toBeVisible();
-    await expect(confirmDialog.messageText).toContainText(/Tem certeza que deseja cancelar o evento/i);
+    await expect(confirmDialog.messageText).toContainText(
+      /Tem certeza que deseja cancelar o evento/i,
+    );
     await expect(confirmDialog.confirmBtn).toBeVisible();
     await expect(confirmDialog.cancelBtn).toBeVisible();
 

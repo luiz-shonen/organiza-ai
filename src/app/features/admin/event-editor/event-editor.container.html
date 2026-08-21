@@ -64,10 +64,16 @@
     </header>
 
     @if (isEditing() && !isOwner()) {
-      <div class="editor__collab-banner glass-card" role="status" aria-label="Permissões de colaborador">
+      <div
+        class="editor__collab-banner glass-card"
+        role="status"
+        aria-label="Permissões de colaborador"
+      >
         <mat-icon class="editor__collab-banner-icon">info</mat-icon>
         <div class="editor__collab-banner-text">
-          <strong>Modo Colaborador:</strong> Você tem permissão para gerenciar a lista de itens e visualizar os convidados. As informações principais do evento só podem ser alteradas pelo organizador.
+          <strong>Modo Colaborador:</strong> Você tem permissão para gerenciar a lista de itens e
+          visualizar os convidados. As informações principais do evento só podem ser alteradas pelo
+          organizador.
         </div>
       </div>
     }
@@ -90,7 +96,9 @@
               <span class="editor__step-progress-count">
                 Etapa {{ activeStepIndex() + 1 }} de {{ stepLabels.length }}
               </span>
-              <strong class="editor__step-progress-title">{{ stepLabels[activeStepIndex()] }}</strong>
+              <strong class="editor__step-progress-title">{{
+                stepLabels[activeStepIndex()]
+              }}</strong>
               <div
                 class="editor__step-progress-track"
                 role="progressbar"
@@ -98,7 +106,14 @@
                 aria-valuemin="1"
                 [attr.aria-valuemax]="stepLabels.length"
                 [attr.aria-valuenow]="activeStepIndex() + 1"
-                [attr.aria-valuetext]="'Etapa ' + (activeStepIndex() + 1) + ' de ' + stepLabels.length + ': ' + stepLabels[activeStepIndex()]"
+                [attr.aria-valuetext]="
+                  'Etapa ' +
+                  (activeStepIndex() + 1) +
+                  ' de ' +
+                  stepLabels.length +
+                  ': ' +
+                  stepLabels[activeStepIndex()]
+                "
               >
                 @for (stepLabel of stepLabels; track stepLabel; let index = $index) {
                   <span
@@ -167,7 +182,11 @@
                   </mat-form-field>
 
                   <div class="editor__date-time-row">
-                    <mat-form-field orgFormField appearance="outline" class="editor__date-field org-input">
+                    <mat-form-field
+                      orgFormField
+                      appearance="outline"
+                      class="editor__date-field org-input"
+                    >
                       <mat-label>Data do Evento</mat-label>
                       <input
                         matInput
@@ -193,7 +212,11 @@
                       }
                     </mat-form-field>
 
-                    <mat-form-field orgFormField appearance="outline" class="editor__time-field org-input">
+                    <mat-form-field
+                      orgFormField
+                      appearance="outline"
+                      class="editor__time-field org-input"
+                    >
                       <mat-label>Hora</mat-label>
                       <input
                         matInput
@@ -228,7 +251,11 @@
                 <form [formGroup]="addressForm" class="editor__form" id="address-form">
                   <h3 class="editor__section-title">Endereço</h3>
                   <div class="editor__address-row-top">
-                    <mat-form-field orgFormField appearance="outline" class="org-input editor__cep-field">
+                    <mat-form-field
+                      orgFormField
+                      appearance="outline"
+                      class="org-input editor__cep-field"
+                    >
                       <mat-label>CEP</mat-label>
                       <input
                         matInput
@@ -244,7 +271,11 @@
                       }
                     </mat-form-field>
 
-                    <mat-form-field orgFormField appearance="outline" class="editor__number-field org-input">
+                    <mat-form-field
+                      orgFormField
+                      appearance="outline"
+                      class="editor__number-field org-input"
+                    >
                       <mat-label>Número</mat-label>
                       <input
                         matInput
@@ -284,7 +315,11 @@
                   </div>
 
                   <div class="editor__address-row">
-                    <mat-form-field orgFormField appearance="outline" class="org-input editor__disabled-field">
+                    <mat-form-field
+                      orgFormField
+                      appearance="outline"
+                      class="org-input editor__disabled-field"
+                    >
                       <mat-label>Bairro</mat-label>
                       <input
                         matInput
@@ -300,7 +335,11 @@
                       }
                     </mat-form-field>
 
-                    <mat-form-field orgFormField appearance="outline" class="org-input editor__disabled-field">
+                    <mat-form-field
+                      orgFormField
+                      appearance="outline"
+                      class="org-input editor__disabled-field"
+                    >
                       <mat-label>Cidade/UF</mat-label>
                       <input
                         matInput
@@ -361,7 +400,10 @@
                         orgButton="primary"
                         class="editor__save-btn"
                         [orgButtonDisabled]="
-                          basicInfoForm.invalid || addressForm.invalid || pixForm.invalid || saving()
+                          basicInfoForm.invalid ||
+                          addressForm.invalid ||
+                          pixForm.invalid ||
+                          saving()
                         "
                         (click)="saveEvent()"
                         aria-label="Salvar evento"
@@ -400,7 +442,11 @@
             </mat-card-header>
             <mat-card-content>
               <div class="editor__add-item">
-                <mat-form-field orgFormField appearance="outline" class="editor__item-name-field org-input">
+                <mat-form-field
+                  orgFormField
+                  appearance="outline"
+                  class="editor__item-name-field org-input"
+                >
                   <mat-label>Nome do item</mat-label>
                   <input
                     matInput
@@ -410,7 +456,11 @@
                     (keyup.enter)="addItem()"
                   />
                 </mat-form-field>
-                <mat-form-field orgFormField appearance="outline" class="editor__item-qty-field org-input">
+                <mat-form-field
+                  orgFormField
+                  appearance="outline"
+                  class="editor__item-qty-field org-input"
+                >
                   <mat-label>Quantidade</mat-label>
                   <input
                     matInput

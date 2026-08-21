@@ -324,7 +324,12 @@ export class EventEditorContainer implements OnInit {
       onAction: async (action) => {
         if (action.action === 'invite') {
           try {
-            await this.eventService.inviteCollaborator(eventId, action.email, ev.title, this.authService.currentUser()?.email || '');
+            await this.eventService.inviteCollaborator(
+              eventId,
+              action.email,
+              ev.title,
+              this.authService.currentUser()?.email || '',
+            );
             this.feedback.success(`Convite enviado para ${action.email}`);
           } catch {
             this.feedback.error('Erro ao enviar convite.');

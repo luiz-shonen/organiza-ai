@@ -356,10 +356,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `.family-roster__form-grid` uses `grid-template-columns: 1fr` on mobile, expanding to `2fr 1.5fr 1.5fr` on `min-width: 640px`
-- [ ] `.family-roster__add-btn` and `.family-roster__remove-btn` satisfy `min-height: 48px` / touch target size
-- [ ] Member card item text and badge wrap without clipping on 320px screens
-- [ ] Build gate passes: `npm run build`
+- [x] `.family-roster__form-grid` uses `grid-template-columns: 1fr` on mobile, expanding to `2fr 1.5fr 1.5fr` on `min-width: 640px`
+- [x] `.family-roster__add-btn` and `.family-roster__remove-btn` satisfy `min-height: 48px` / touch target size
+- [x] Member card item text and badge wrap without clipping on 320px screens
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

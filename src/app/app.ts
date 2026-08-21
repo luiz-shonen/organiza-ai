@@ -26,7 +26,6 @@ import {
 } from './core/services';
 import { ThemeToggleComponent } from './shared/components/theme-toggle/theme-toggle.component';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
-import { AdminFormDrawerComponent } from './features/admin/dashboard/components/admin-form-drawer/admin-form-drawer.component';
 
 @Component({
   selector: 'app-root',
@@ -42,7 +41,6 @@ import { AdminFormDrawerComponent } from './features/admin/dashboard/components/
     MatTooltipModule,
     ThemeToggleComponent,
     SeasonalOverlayComponent,
-    AdminFormDrawerComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

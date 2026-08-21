@@ -7,9 +7,6 @@
     (closed)="drawerService.close()"
     class="app-sidenav-drawer glass-drawer"
   >
-    @if (drawerService.drawerType() === 'admin') {
-      <app-admin-form-drawer (close)="drawerService.close()" />
-    }
   </mat-sidenav>
 
   <mat-sidenav-content>

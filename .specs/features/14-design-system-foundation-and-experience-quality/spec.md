@@ -152,7 +152,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 | --- | --- | --- | --- |
 | DS-01 | Shared surfaces and form controls | Execute | In progress — T7 native field directive complete |
 | DS-02 | Shared surfaces and form controls | Execute | In progress — T3 geometry assertion complete |
-| DS-03 | Shared surfaces and form controls | Execute | In progress — T7 native field token recipe complete |
+| DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe complete |
 | DS-05 | Shared surfaces and form controls | Execute | In progress — T3 touch/drawer assertions complete |
 | DS-06 | Shared surfaces and form controls | Design | In Design |

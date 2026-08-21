@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use './app/shared/ui/tokens/semantic' as semantic;
 @use './app/shared/ui/forms/org-form-field';
+@use './app/shared/ui/forms/org-field-label';
 
 :root {
   // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)

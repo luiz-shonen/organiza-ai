@@ -462,9 +462,9 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `07-visual-layout.spec.ts` asserts `assertNoHorizontalOverflow` on Home, Login, Dashboard, Event Editor, Event Detail, and Profile views
-- [ ] Asserts `assertMinTouchTarget` on primary CTA buttons and filter chips
-- [ ] Full gate passes: `npm run test:e2e`
+- [x] `07-visual-layout.spec.ts` asserts `assertNoHorizontalOverflow` on Home, Login, Dashboard, Event Editor, Event Detail, and Profile views
+- [x] Asserts `assertMinTouchTarget` on primary CTA buttons and filter chips
+- [x] Full gate passes: `npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

@@ -1,5 +1,11 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { Page } from '@playwright/test';
+import {
+  assertNoHorizontalOverflow,
+  assertMinTouchTarget,
+  assertGlassmorphism,
+  assertFontFamily,
+} from '../helpers/design-tokens.helper';
 
 const mockSampleEvents = [
   {
@@ -118,17 +124,14 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     await homePage.assertLoaded();
     await page.waitForTimeout(500);
 
-    // 1. Capture Home Light Baseline
-    await homePage.captureScreenshot('01-home-light');
+    // Verify zero horizontal overflow on Home
+    await assertNoHorizontalOverflow(page);
 
     // Audit Touch Target size on key CTA / theme toggle
-    const themeBtnBox = await homePage.themeToggleBtn.boundingBox();
-    expect(themeBtnBox).not.toBeNull();
-    if (themeBtnBox) {
-      // Touch target should be accessible (>= 36px minimum dimension)
-      expect(themeBtnBox.height).toBeGreaterThanOrEqual(36);
-      expect(themeBtnBox.width).toBeGreaterThanOrEqual(36);
-    }
+    await assertMinTouchTarget(homePage.themeToggleBtn, 48);
+
+    // 1. Capture Home Light Baseline
+    await homePage.captureScreenshot('01-home-light');
 
     // 2. Switch to Dark Mode & Capture
     await homePage.themeToggleBtn.click();
@@ -137,6 +140,7 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     await expect(page.locator('html')).toHaveClass(/dark/);
     await page.waitForTimeout(300);
 
+    await assertNoHorizontalOverflow(page);
     await homePage.captureScreenshot('02-home-dark');
   });
 
@@ -151,15 +155,14 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     await expect(page.locator('.login__header')).toBeVisible();
     await expect(page.locator('.login__card')).toBeVisible();
 
-    // Capture Login Viewport
-    await loginPage.captureScreenshot('03-login-view');
+    // Verify zero horizontal overflow on Login
+    await assertNoHorizontalOverflow(page);
 
     // Audit primary login button touch target
-    const googleBtnBox = await loginPage.googleBtn.boundingBox();
-    expect(googleBtnBox).not.toBeNull();
-    if (googleBtnBox) {
-      expect(googleBtnBox.height).toBeGreaterThanOrEqual(36);
-    }
+    await assertMinTouchTarget(loginPage.googleBtn, 48);
+
+    // Capture Login Viewport
+    await loginPage.captureScreenshot('03-login-view');
   });
 
   test('should capture Organizer Dashboard and verify status chips and card glassmorphism', async ({
@@ -167,16 +170,25 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     page,
   }) => {
     await setupVisualMockSession(page);
-    await page.goto('/admin');
+    await page.goto('/meus-eventos');
     await dashboardPage.assertLoaded();
     await page.waitForTimeout(500);
 
-    // Capture Dashboard Baseline
-    await dashboardPage.captureScreenshot('04-organizer-dashboard');
+    // Verify zero horizontal overflow on Dashboard
+    await assertNoHorizontalOverflow(page);
 
-    // Verify filter chips have proper accessible layout
+    // Audit "Novo Evento" touch target
+    await assertMinTouchTarget(dashboardPage.createEventBtn, 48);
+
+    // Verify filter chips have proper accessible layout and touch target
     const chipCount = await dashboardPage.filterChips.count();
     expect(chipCount).toBeGreaterThanOrEqual(1);
+    if (chipCount > 0) {
+      await assertMinTouchTarget(dashboardPage.filterChips.first(), 48);
+    }
+
+    // Capture Dashboard Baseline
+    await dashboardPage.captureScreenshot('04-organizer-dashboard');
   });
 
   test('should capture Event Editor Stepper and ViaCEP auto-populated address layout', async ({
@@ -204,8 +216,11 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
       });
     });
 
-    await page.goto('/admin/evento/novo');
+    await page.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
+
+    // Verify zero horizontal overflow on Step 1
+    await assertNoHorizontalOverflow(page);
 
     // Fill Step 1 to unlock Address Step
     await eventEditorPage.fillBasicInfo(
@@ -218,6 +233,9 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     // Fill CEP to trigger ViaCEP
     await eventEditorPage.cepInput.fill('01310100');
     await expect(eventEditorPage.streetInput).toHaveValue('Avenida Paulista');
+
+    // Verify zero horizontal overflow on Step 2
+    await assertNoHorizontalOverflow(page);
 
     // Capture Event Editor with ViaCEP filled
     await eventEditorPage.captureScreenshot('05-event-editor-viacep');
@@ -243,6 +261,9 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     await eventDetailPage.assertLoaded();
     await page.waitForTimeout(500);
 
+    // Verify zero horizontal overflow on Event Detail
+    await assertNoHorizontalOverflow(page);
+
     // Capture Event Detail View
     await eventDetailPage.captureScreenshot('06-event-detail');
 
@@ -258,6 +279,9 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         await rsvpDialog.assertVisible();
         await page.waitForTimeout(300);
 
+        // Verify zero horizontal overflow on RSVP Dialog
+        await assertNoHorizontalOverflow(page);
+
         // Capture RSVP Dialog Modal Baseline
         await eventDetailPage.captureScreenshot('07-rsvp-dialog-modal');
       }
@@ -272,6 +296,12 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
     await page.goto('/perfil');
     await profilePage.assertLoaded();
     await page.waitForTimeout(500);
+
+    // Verify zero horizontal overflow on Profile
+    await assertNoHorizontalOverflow(page);
+
+    // Audit "Adicionar Familiar" touch target
+    await assertMinTouchTarget(profilePage.familyRoster.addMemberBtn, 48);
 
     // Capture Profile Baseline
     await profilePage.captureScreenshot('08-profile-family-roster');

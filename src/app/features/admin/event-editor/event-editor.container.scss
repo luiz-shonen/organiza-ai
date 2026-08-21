@@ -244,6 +244,14 @@
     }
   }
 
+  &__lock-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    opacity: 0.6;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
   &__save-btn {
     margin-top: 0;
     height: 48px;

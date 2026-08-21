@@ -242,6 +242,7 @@
                         data-testid="event-street-input"
                       />
                       <mat-icon matPrefix>location_on</mat-icon>
+                      <mat-icon matSuffix class="editor__lock-icon">lock</mat-icon>
                       @if (addressForm.controls.address.hasError('required')) {
                         <mat-error>Endereço é obrigatório</mat-error>
                       }
@@ -259,6 +260,7 @@
                         readonly
                         tabindex="-1"
                       />
+                      <mat-icon matSuffix class="editor__lock-icon">lock</mat-icon>
                       @if (addressForm.controls.neighborhood.hasError('required')) {
                         <mat-error>Bairro é obrigatório</mat-error>
                       }
@@ -274,6 +276,7 @@
                         readonly
                         tabindex="-1"
                       />
+                      <mat-icon matSuffix class="editor__lock-icon">lock</mat-icon>
                       @if (addressForm.controls.city.hasError('required')) {
                         <mat-error>Cidade/UF é obrigatória</mat-error>
                       }

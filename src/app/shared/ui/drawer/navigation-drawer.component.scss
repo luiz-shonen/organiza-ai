@@ -1,0 +1,131 @@
+.navigation-drawer {
+  box-sizing: border-box;
+  display: flex;
+  min-height: 100%;
+  max-width: 100%;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 16px 12px;
+  color: var(--org-on-surface);
+
+  &__header,
+  &__identity,
+  &__route,
+  &__theme-option,
+  &__logout {
+    display: flex;
+    align-items: center;
+  }
+
+  &__header {
+    min-height: 48px;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__eyebrow,
+  &__email {
+    color: var(--org-on-surface-variant);
+    font-size: 0.75rem;
+  }
+
+  &__eyebrow {
+    display: block;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__title,
+  &__name,
+  &__email,
+  &__section-title {
+    margin: 0;
+  }
+
+  &__title {
+    font-size: 1.5rem;
+  }
+
+  &__close,
+  &__route,
+  &__theme-option,
+  &__logout {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  &__identity {
+    gap: 12px;
+    margin-top: 24px;
+    padding: 12px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--org-surface) 72%, transparent);
+  }
+
+  &__avatar,
+  &__avatar-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  &__avatar {
+    object-fit: cover;
+  }
+
+  &__avatar-icon {
+    color: var(--org-primary);
+    font-size: 40px;
+  }
+
+  &__name {
+    font-weight: 700;
+  }
+
+  &__navigation,
+  &__theme,
+  &__footer {
+    margin-top: 24px;
+  }
+
+  &__navigation,
+  &__theme-options {
+    display: grid;
+    gap: 4px;
+  }
+
+  &__route,
+  &__theme-option,
+  &__logout {
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 0 12px;
+    text-align: left;
+  }
+
+  &__route[aria-current='page'],
+  &__theme-option[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--org-primary-container) 78%, transparent);
+    color: var(--org-on-primary-container);
+  }
+
+  &__section-title {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+  }
+
+  &__footer {
+    margin-top: auto;
+    padding-top: 24px;
+  }
+
+  &__logout {
+    color: var(--org-error);
+  }
+
+  @media (min-width: 600px) {
+    padding: 24px 16px;
+  }
+}

@@ -156,8 +156,8 @@ The visual baselines also do not cover every supported page state in dark mode o
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe and T12 Profile focus contract adoption complete |
 | DS-05 | Shared surfaces and form controls | Execute | In progress — T11 Home, T13 Family roster, and T15 Pix action contract migrations complete |
 | DS-06 | Shared surfaces and form controls | Execute | In progress — T10 semantic icon map and T13 Family roster icon adoption complete |
-| NAV-01 | Calm navigation and workflows | Design | In Design |
-| NAV-02 | Calm navigation and workflows | Execute | In progress — T25 establishes discriminated navigation, RSVP, and collaborator requests; T26 will render the navigation actions |
+| NAV-01 | Calm navigation and workflows | Execute | In progress — T26 provides the quiet, authorized navigation presentation; T27 will reduce the root toolbar to its menu and profile triggers |
+| NAV-02 | Calm navigation and workflows | Execute | In progress — T25 establishes discriminated navigation, RSVP, and collaborator requests; T26 emits authorized route actions and T27 will host them in the root sheet |
 | NAV-03 | Calm navigation and workflows | Execute | In progress — T24 presents RSVP as an end-positioned, internally scrolling workflow sheet; T25 establishes its typed root-host request/result contract |
 | NAV-04 | Calm navigation and workflows | Execute | In progress — T25 restores focus to the request trigger after every close; T27 will wire all root close paths |
 | NAV-05 | Calm navigation and workflows | Design | In Design |

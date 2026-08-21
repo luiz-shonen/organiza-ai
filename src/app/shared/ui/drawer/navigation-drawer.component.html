@@ -1,0 +1,152 @@
+<section class="navigation-drawer" aria-labelledby="navigation-drawer-title" data-testid="navigation-drawer">
+  <header class="navigation-drawer__header">
+    <div class="navigation-drawer__title-group">
+      <span class="navigation-drawer__eyebrow">Organiza AI</span>
+      <h2 id="navigation-drawer-title" class="navigation-drawer__title">Menu</h2>
+    </div>
+    <button
+      mat-icon-button
+      type="button"
+      class="navigation-drawer__close"
+      aria-label="Fechar menu de navegação"
+      data-testid="navigation-drawer-close"
+      (click)="close.emit()"
+    >
+      <mat-icon aria-hidden="true">close</mat-icon>
+    </button>
+  </header>
+
+  @if (isAuthenticated()) {
+    <section class="navigation-drawer__identity" aria-label="Perfil conectado">
+      @if (photoUrl()) {
+        <img [src]="photoUrl()" [alt]="'Avatar de ' + displayName()" class="navigation-drawer__avatar" />
+      } @else {
+        <mat-icon class="navigation-drawer__avatar-icon" aria-hidden="true">account_circle</mat-icon>
+      }
+      <div>
+        <p class="navigation-drawer__name">{{ displayName() || 'Meu perfil' }}</p>
+        @if (email()) {
+          <p class="navigation-drawer__email">{{ email() }}</p>
+        }
+      </div>
+    </section>
+  }
+
+  <nav class="navigation-drawer__navigation" aria-label="Navegação principal">
+    <button
+      mat-button
+      type="button"
+      class="navigation-drawer__route"
+      [attr.aria-current]="activeRoute() === '/' ? 'page' : null"
+      data-testid="drawer-home"
+      (click)="onNavigate('/')"
+    >
+      <mat-icon aria-hidden="true">home</mat-icon>
+      <span>Início</span>
+    </button>
+
+    @if (isAuthenticated()) {
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__route"
+        [attr.aria-current]="activeRoute().startsWith('/meus-eventos') ? 'page' : null"
+        data-testid="drawer-my-events"
+        (click)="onNavigate('/meus-eventos')"
+      >
+        <mat-icon aria-hidden="true">calendar_month</mat-icon>
+        <span>Meus eventos</span>
+      </button>
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__route"
+        [attr.aria-current]="activeRoute() === '/perfil' ? 'page' : null"
+        data-testid="drawer-profile"
+        (click)="onNavigate('/perfil')"
+      >
+        <mat-icon aria-hidden="true">person</mat-icon>
+        <span>Meu perfil</span>
+      </button>
+      @if (isSuperAdmin()) {
+        <button
+          mat-button
+          type="button"
+          class="navigation-drawer__route"
+          [attr.aria-current]="activeRoute().startsWith('/admin') ? 'page' : null"
+          data-testid="drawer-admin"
+          (click)="onNavigate('/admin')"
+        >
+          <mat-icon aria-hidden="true">admin_panel_settings</mat-icon>
+          <span>Painel administrativo</span>
+        </button>
+      }
+    } @else {
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__route"
+        [attr.aria-current]="activeRoute() === '/login' ? 'page' : null"
+        data-testid="drawer-login"
+        (click)="onNavigate('/login')"
+      >
+        <mat-icon aria-hidden="true">login</mat-icon>
+        <span>Entrar</span>
+      </button>
+    }
+  </nav>
+
+  <section class="navigation-drawer__theme" aria-labelledby="drawer-theme-title">
+    <h3 id="drawer-theme-title" class="navigation-drawer__section-title">Tema</h3>
+    <div class="navigation-drawer__theme-options" role="group" aria-label="Selecionar tema">
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__theme-option"
+        [attr.aria-pressed]="themeMode() === 'light'"
+        data-testid="drawer-theme-light"
+        (click)="onThemeChange('light')"
+      >
+        <mat-icon aria-hidden="true">light_mode</mat-icon>
+        <span>Claro</span>
+      </button>
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__theme-option"
+        [attr.aria-pressed]="themeMode() === 'dark'"
+        data-testid="drawer-theme-dark"
+        (click)="onThemeChange('dark')"
+      >
+        <mat-icon aria-hidden="true">dark_mode</mat-icon>
+        <span>Escuro</span>
+      </button>
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__theme-option"
+        [attr.aria-pressed]="themeMode() === 'system'"
+        data-testid="drawer-theme-system"
+        (click)="onThemeChange('system')"
+      >
+        <mat-icon aria-hidden="true">brightness_auto</mat-icon>
+        <span>Sistema</span>
+      </button>
+    </div>
+  </section>
+
+  @if (isAuthenticated()) {
+    <footer class="navigation-drawer__footer">
+      <button
+        mat-button
+        type="button"
+        class="navigation-drawer__logout"
+        data-testid="drawer-logout"
+        (click)="logout.emit()"
+      >
+        <mat-icon aria-hidden="true">logout</mat-icon>
+        <span>Sair</span>
+      </button>
+    </footer>
+  }
+</section>

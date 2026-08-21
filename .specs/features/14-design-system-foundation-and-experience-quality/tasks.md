@@ -407,7 +407,7 @@ T29 → T30
 **Gate**: full
 **Commit**: `feat(drawer): type workflow drawer state`
 
-### T26: Create the accessible navigation drawer
+### T26: [x] Create the accessible navigation drawer
 
 **What**: Create the OnPush navigation drawer with authorized route actions, theme selection, logout, active route indication, and keyboard-safe close behavior.
 **Where**: `src/app/shared/ui/drawer/navigation-drawer.component.ts`

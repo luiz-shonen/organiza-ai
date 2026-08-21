@@ -46,14 +46,13 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await homePage.goto('/');
     await homePage.assertLoaded();
 
-    // Verify theme toggle button is present
-    await expect(homePage.themeToggleBtn).toBeVisible();
+    // Theme choices live in the navigation drawer so the toolbar stays focused on navigation.
+    await expect(homePage.navigationMenuTrigger).toBeVisible();
+    await homePage.openNavigationDrawer();
 
     // 1. Switch to Dark theme
-    await homePage.themeToggleBtn.click();
-    const darkMenuItem = page.getByRole('menuitem', { name: /escuro/i });
-    await expect(darkMenuItem).toBeVisible();
-    await darkMenuItem.click();
+    await expect(homePage.drawerThemeDark).toBeVisible();
+    await homePage.drawerThemeDark.click();
 
     // Assert DOM class and localStorage persistence
     await expect(page.locator('html')).toHaveClass(/dark/);
@@ -61,10 +60,8 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     expect(darkStorageValue).toBe('dark');
 
     // 2. Switch to Light theme
-    await homePage.themeToggleBtn.click();
-    const lightMenuItem = page.getByRole('menuitem', { name: /claro/i });
-    await expect(lightMenuItem).toBeVisible();
-    await lightMenuItem.click();
+    await expect(homePage.drawerThemeLight).toBeVisible();
+    await homePage.drawerThemeLight.click();
 
     // Assert DOM class removed and localStorage updated
     await expect(page.locator('html')).not.toHaveClass(/dark/);

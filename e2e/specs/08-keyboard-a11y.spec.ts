@@ -108,18 +108,21 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
     await homePage.goto('/');
     await homePage.assertLoaded();
 
-    // 1. Focus on theme toggle button using keyboard Tab or direct focus
-    await homePage.themeToggleBtn.focus();
-    await expect(homePage.themeToggleBtn).toBeFocused();
+    // 1. Focus on the navigation trigger using keyboard/direct focus.
+    await homePage.navigationMenuTrigger.focus();
+    await expect(homePage.navigationMenuTrigger).toBeFocused();
 
-    // 2. Open theme menu with Enter key
+    // 2. Open navigation drawer with Enter, then activate a theme choice with Enter.
     await page.keyboard.press('Enter');
-    const darkMenuItem = page.getByRole('menuitem', { name: /escuro/i });
-    await expect(darkMenuItem).toBeVisible();
+    await expect(homePage.navigationDrawer).toBeVisible();
+    await homePage.drawerThemeDark.focus();
+    await expect(homePage.drawerThemeDark).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('html')).toHaveClass(/dark/);
 
-    // 3. Dismiss menu with Escape key and verify focus is restored
+    // 3. Dismiss the drawer with Escape and verify it is closed.
     await page.keyboard.press('Escape');
-    await expect(darkMenuItem).toBeHidden();
+    await expect(homePage.navigationDrawer).toBeHidden();
   });
 
   test('should trap focus inside ConfirmDialog and dismiss via Escape key with focus restoration', async ({

@@ -28,14 +28,15 @@ export class SharePanelHarness {
       .or(this.panelRoot.getByRole('button', { name: /Copiar Link/i }))
       .or(page.locator('button[aria-label*="Copiar link"], button:has-text("Copiar Link")'));
 
-    this.inviteEmailInput = page.getByTestId('invite-email-input')
-      .or(page.getByTestId('collaborator-email-input'))
+    this.inviteEmailInput = page.getByTestId('collaborator-email-input')
+      .or(page.getByTestId('invite-email-input'))
       .or(page.getByLabel(/Email do colaborador/i))
       .or(page.locator('.collaborator-dialog input[type="email"], input[placeholder*="amigo@exemplo.com"], input[type="email"]'));
 
-    this.sendInviteBtn = page.getByTestId('send-invite-btn')
+    this.sendInviteBtn = page.getByTestId('collaborator-invite-submit')
+      .or(page.getByTestId('send-invite-btn'))
       .or(page.getByTestId('collaborator-submit-btn'))
-      .or(page.getByRole('button', { name: /Convidar/i }))
+      .or(page.getByRole('button', { name: /Enviar convite|Convidar/i }))
       .or(page.locator('.collaborator-dialog__submit-btn, button[aria-label*="Enviar convite"], button:has-text("Convidar")'));
   }
 

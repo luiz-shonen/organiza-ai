@@ -64,15 +64,16 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
     await eventEditorPage.assertLoaded();
     expect(eventDetailPage).toBeDefined();
 
-    // Open Collaborators modal dialog from editor header actions
+    // Open the collaborator workflow drawer from editor header actions.
     const collabBtn = page.getByRole('button', { name: /Colaboradores/i });
     await expect(collabBtn).toBeVisible();
     await collabBtn.click();
 
-    // Verify Collaborator dialog rendered
-    const dialog = page.getByRole('dialog').first();
-    await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText(/Convidar Colaboradores/i);
+    // The workflow is intentionally a side drawer, not a modal dialog.
+    const collaboratorDrawer = page.getByTestId('collaborator-drawer');
+    await expect(collaboratorDrawer).toBeVisible();
+    await expect(collaboratorDrawer).toHaveRole('region');
+    await expect(collaboratorDrawer).toContainText(/Convidar colaboradores/i);
 
     // Fill collaborator email input and submit
     await expect(sharePanel.inviteEmailInput).toBeVisible();

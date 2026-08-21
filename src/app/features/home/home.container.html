@@ -1,10 +1,15 @@
 <section class="home" aria-label="Eventos disponíveis" data-testid="home-page">
-  <header class="home__header">
-    <h1 class="home__title">
-      <mat-icon class="home__icon" aria-hidden="true">celebration</mat-icon>
-      Eventos
+  <header class="home__hero">
+    <div class="home__hero-badge">
+      <span class="home__hero-badge-icon">✨</span>
+      <span>Simplifique seus Eventos</span>
+    </div>
+    <h1 class="home__hero-title">
+      Descubra, Participe e <span class="home__hero-highlight">Celebre</span>
     </h1>
-    <p class="home__subtitle">Escolha um evento para participar</p>
+    <p class="home__hero-subtitle">
+      Encontre encontros, festas e momentos especiais. Confirme sua presença e combine itens com facilidade.
+    </p>
   </header>
 
   @if (events() === undefined) {
@@ -13,11 +18,26 @@
       <p>Carregando eventos...</p>
     </div>
   } @else if (events()!.length === 0) {
-    <article class="home__empty" aria-label="Nenhum evento encontrado" data-testid="home-empty-state">
-      <mat-icon class="home__empty-icon" aria-hidden="true">event_busy</mat-icon>
-      <p>Nenhum evento disponível no momento.</p>
+    <article class="home__empty glass-card" aria-label="Nenhum evento encontrado" data-testid="home-empty-state">
+      <div class="home__empty-icon-wrap">
+        <mat-icon class="home__empty-icon" aria-hidden="true">celebration</mat-icon>
+      </div>
+      <h2 class="home__empty-title">Nenhum evento disponível no momento.</h2>
+      <p class="home__empty-desc">Que tal criar o primeiro evento e reunir as pessoas especiais?</p>
+      <a mat-flat-button color="primary" routerLink="/meus-eventos/evento/novo" class="home__empty-btn">
+        <mat-icon>add</mat-icon>
+        Criar Primeiro Evento
+      </a>
     </article>
   } @else {
+    <div class="home__section-header">
+      <h2 class="home__section-title">
+        <mat-icon>event</mat-icon>
+        Próximos Eventos
+      </h2>
+      <span class="home__count-badge">{{ events()!.length }} {{ events()!.length === 1 ? 'evento' : 'eventos' }}</span>
+    </div>
+
     <nav class="home__grid" aria-label="Lista de eventos">
       @for (event of events()!; track event.id) {
         <mat-card
@@ -31,22 +51,45 @@
           (keydown.space)="navigateToEvent(event.id, $event)"
           [attr.aria-label]="'Ver detalhes do evento ' + event.title"
         >
-          <mat-card-header>
-            <mat-icon matCardAvatar class="home__card-avatar" aria-hidden="true">festival</mat-icon>
-            <mat-card-title>{{ event.title }}</mat-card-title>
-            <mat-card-subtitle>
-              <mat-icon class="home__card-inline-icon" aria-hidden="true">calendar_today</mat-icon>
+          <div class="home__card-top">
+            <div class="home__card-badge">
+              <mat-icon class="home__card-badge-icon" aria-hidden="true">festival</mat-icon>
+              <span>Evento</span>
+            </div>
+            @if (event.date) {
+              <div class="home__date-badge" aria-label="Data do evento">
+                <span class="home__date-month">{{ getMonth(event.date) }}</span>
+                <span class="home__date-day">{{ getDay(event.date) }}</span>
+              </div>
+            }
+          </div>
+
+          <mat-card-header class="home__card-header">
+            <mat-card-title class="home__card-title">{{ event.title }}</mat-card-title>
+            <mat-card-subtitle class="home__card-subtitle">
+              <mat-icon class="home__card-inline-icon" aria-hidden="true">schedule</mat-icon>
               {{ formatDate(event.date) }}
             </mat-card-subtitle>
           </mat-card-header>
 
-          <mat-card-content>
-            <p class="home__card-description">{{ event.description }}</p>
-            <p class="home__card-location">
-              <mat-icon class="home__card-inline-icon" aria-hidden="true">location_on</mat-icon>
-              {{ event.location }}
-            </p>
+          <mat-card-content class="home__card-content">
+            @if (event.description) {
+              <p class="home__card-description">{{ event.description }}</p>
+            }
+            @if (event.location) {
+              <p class="home__card-location">
+                <mat-icon class="home__card-inline-icon" aria-hidden="true">location_on</mat-icon>
+                <span>{{ event.location }}</span>
+              </p>
+            }
           </mat-card-content>
+
+          <div class="home__card-footer">
+            <span class="home__card-cta">
+              Ver Detalhes
+              <mat-icon class="home__card-arrow">arrow_forward</mat-icon>
+            </span>
+          </div>
         </mat-card>
       }
     </nav>

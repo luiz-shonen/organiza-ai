@@ -30,11 +30,24 @@ export class HomeContainer {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('pt-BR', {
-      weekday: 'long',
+      weekday: 'short',
       day: 'numeric',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
     });
+  }
+
+  protected getDay(dateStr: string): string {
+    if (!dateStr) return '';
+    return new Date(dateStr).getDate().toString().padStart(2, '0');
+  }
+
+  protected getMonth(dateStr: string): string {
+    if (!dateStr) return '';
+    return new Date(dateStr)
+      .toLocaleDateString('pt-BR', { month: 'short' })
+      .replace('.', '')
+      .toUpperCase();
   }
 
   protected navigateToEvent(eventId: string, event?: Event): void {

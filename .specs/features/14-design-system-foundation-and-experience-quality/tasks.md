@@ -122,20 +122,20 @@ T29 → T30
 
 ### Phase 2: Tokens and primitive contracts
 
-### T5: Define immutable semantic and event-accent tokens
+### T5: Define semantic and seasonal theme tokens
 
-**What**: Separate brand/semantic/surface tokens from event-scoped accent tokens and remove root seasonal overrides of shared semantic colors.
+**What**: Define semantic, surface, and seasonal theme tokens (`html.theme-junina`, `html.theme-natal`, `html.theme-pascoa`, `html.theme-ano-novo`) with high contrast, stable MDC token mappings, and single-ring glassmorphic surface defaults.
 **Where**: `src/app/shared/ui/tokens/_semantic.scss`
 **Depends on**: T4
-**Reuses**: Current palette, `ThemeService`, and seasonal decoration names.
+**Reuses**: Current palette, `ThemeService`, `SeasonalThemeService`, and seasonal decoration names.
 **Requirement**: THEME-01, THEME-02
 **Tests**: e2e
 **Gate**: build
-**Commit**: `feat(ui): define scoped semantic and event accent tokens`
+**Commit**: `feat(ui): define semantic and seasonal theme tokens`
 
 ### T6: Create the single-owner glass surface primitive
 
-**What**: Create the OnPush `OrgSurfaceComponent` and tests for one gradient ring, light/dark surfaces, responsive padding, and event accent opt-in.
+**What**: Create the OnPush `OrgSurfaceComponent` and tests for one gradient ring, light/dark surfaces, responsive padding, and seasonal theme compatibility.
 **Where**: `src/app/shared/ui/surface/`
 **Depends on**: T5
 **Reuses**: Glass background, blur, and radius intent from the current token set.
@@ -166,16 +166,16 @@ T29 → T30
 **Gate**: full
 **Commit**: `feat(ui): add accessible field label contract`
 
-### T9: Create shared action directives
+### T9: Create shared action and chip directives
 
-**What**: Add primary, secondary, danger, and icon-button directives with a 48px contract and controlled loading/disabled states.
+**What**: Add primary, secondary, danger, and icon-button directives (`OrgButtonDirective`, `OrgIconButtonDirective`) and chip directive (`OrgChipDirective`) with a 48px contract and controlled loading/disabled states.
 **Where**: `src/app/shared/ui/actions/`
 **Depends on**: T8
 **Reuses**: Native Material button directives and semantic color tokens.
 **Requirement**: DS-01, DS-05
 **Tests**: unit + e2e
 **Gate**: full
-**Commit**: `feat(ui): add action hierarchy directives`
+**Commit**: `feat(ui): add action and chip directives`
 
 ### T10: Create the semantic icon map
 
@@ -223,16 +223,16 @@ T29 → T30
 **Gate**: full
 **Commit**: `fix(profile): standardize family roster composition`
 
-### T14: Scope event accents in detail cards
+### T14: Standardize seasonal event card surface
 
-**What**: Apply event accents only to hero/category content and migrate detail, host, and RSVP surfaces so seasonal yellow/orange cannot alter structural card borders.
+**What**: Standardize event detail cards and hero with shared surfaces and seasonal theme palette, ensuring festive colors apply smoothly to cards and overlays without duplicate borders.
 **Where**: `src/app/features/event-detail/components/event-card/`
 **Depends on**: T13
 **Reuses**: Existing event category and hero fallback.
 **Requirement**: DS-02, THEME-01, THEME-02
 **Tests**: unit + e2e
 **Gate**: full
-**Commit**: `fix(event-detail): scope seasonal event accents`
+**Commit**: `fix(event-detail): standardize seasonal event card surface`
 
 ### T15: Replace the undersized mobile stepper presentation
 
@@ -247,16 +247,16 @@ T29 → T30
 
 ### Phase 4: Feedback unification
 
-### T16: Create the typed snackbar presentation
+### T16: Create the typed snackbar and banner presentation
 
-**What**: Create the custom snackbar component with success, error, and info variants, MDC annotations, icons, and a green `check_circle` success contract.
-**Where**: `src/app/shared/ui/feedback/feedback-snackbar.component.ts`
+**What**: Create the custom snackbar component (`FeedbackSnackbarComponent`) with success, error, and info variants, MDC annotations, green `check_circle` success contract, and alert banner primitive (`OrgBannerComponent`).
+**Where**: `src/app/shared/ui/feedback/`
 **Depends on**: T15
 **Reuses**: Angular Material snackbar overlay and live-region behavior.
-**Requirement**: FEED-01, FEED-02, FEED-03
+**Requirement**: FEED-01, FEED-02, FEED-03, DS-01
 **Tests**: unit + e2e
 **Gate**: full
-**Commit**: `feat(ui): add semantic feedback snackbar`
+**Commit**: `feat(ui): add semantic feedback snackbar and banner`
 
 ### T17: Create the typed feedback service
 

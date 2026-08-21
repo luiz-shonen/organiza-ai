@@ -8,10 +8,10 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 ## Goals
 
-- [ ] Establish a product-owned, reusable UI foundation with stable tokens and standalone Angular primitives for surfaces, fields, labels, buttons, icons, drawers, and feedback.
+- [ ] Establish a product-owned, reusable UI foundation in `src/app/shared/ui/` with stable tokens and standalone Angular OnPush primitives for surfaces, fields, labels, buttons, icon buttons, chips, icons, banners, drawers, and feedback.
 - [ ] Move navigation and long-form workflows to accessible right-side drawers while retaining dialogs only for short confirmation actions.
-- [ ] Make seasonal styling an explicit event accent that cannot recolor shared surfaces, form controls, or feedback states.
-- [ ] Capture every registered visual state in desktop/mobile and light/dark modes, including all content in the internal application scroll area.
+- [ ] Preserve and govern seasonal theme integration on `html` (`theme-junina`, `theme-natal`, `theme-pascoa`, `theme-ano-novo`) to theme primary accents and festive overlays while maintaining crisp single-border glassmorphism, readable contrast, and standard feedback states.
+- [ ] Capture every registered visual state in desktop/mobile and light/dark modes across all routes and drawer states, including all content in the internal application scroll area.
 - [ ] Record names for non-family RSVP companions, not only a count, without changing the verified-identity rule for the primary attendee.
 
 ## Out of Scope
@@ -30,13 +30,13 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 | --- | --- | --- | --- |
-| Reusable boundary | Create `src/app/shared/ui/` with a documented public barrel and no new package manager workspace. | It is reusable inside this SaaS and ready to extract after a real second application proves the API. | Yes |
-| Field composition | Use standalone form-field and icon directives plus token recipes on native Material outlined fields; do not wrap or reproduce the Material form API. | The native `mat-form-field` keeps Reactive Forms, suffix/prefix, hints, and errors intact while one owned directive and MDC tokens standardize its visual contract. | Yes |
-| Navigation density | The toolbar keeps brand, one hamburger trigger, and the profile/avatar trigger when authenticated. Route and theme actions move to the navigation drawer on desktop and mobile. | This directly resolves the crowded header while keeping frequent identity access visible. | Yes |
+| Reusable boundary | Create `src/app/shared/ui/` with a documented public barrel covering surfaces, form controls, actions, chips, icons, feedback, and drawers without a new package workspace. | It is reusable inside this SaaS and ready to extract after a real second application proves the API. | Yes |
+| Field composition | Use standalone form-field, label, and icon directives plus token recipes on native Material outlined fields; do not wrap or reproduce the Material form API. | The native `mat-form-field` keeps Reactive Forms, suffix/prefix, hints, and errors intact while one owned directive and MDC tokens standardize its visual contract. | Yes |
+| Navigation density | The toolbar keeps brand, one hamburger trigger, and the profile/avatar trigger when authenticated. Route, theme, and logout actions move to the navigation drawer on desktop and mobile. | This directly resolves the crowded header while keeping frequent identity access visible. | Yes |
 | Drawer behavior | Navigation, RSVP, and collaborator management open as end-positioned `mode="over"` drawers with a backdrop, Escape/backdrop close, focus restoration, and an explicit close control. | It gives long workflows room on all screen sizes without treating them as a small blocking confirmation. | Yes |
 | Dialog behavior | Only destructive or irreversible confirmation flows continue to use `MatDialog`. | A short decision benefits from a modal focus trap; editable workflows do not. | Yes |
 | Success feedback | All successful mutations use one custom snackbar component with a green success surface and `check_circle` icon. Errors use the same component family with an error variant. | A typed feedback API removes scattered text/action/duration combinations while preserving Material live announcements. | Yes |
-| Seasonal appearance | Seasonal/event themes are scoped to decorative overlays, hero/category accents, and explicitly opted-in accent tokens. Shared semantic, surface, field, and feedback tokens never change. | Current global primary/secondary/tertiary overrides explain the yellow event-card borders. The event remains festive without making the application incoherent. | Yes |
+| Seasonal appearance | Seasonal themes (`theme-junina`, `theme-natal`, `theme-pascoa`, `theme-ano-novo`) remain on `html`, styling primary gradients and festive overlays, while glassmorphism, field contrast, and semantic feedback tokens remain solid and accessible. | Seasonal themes enhance celebrations; keeping them on `html` preserves the festive experience while tokens prevent broken outlines or unreadable fills. | Yes |
 | Additional companions | A count above zero reveals one required name field per companion, up to 10. The persisted `companions` array is the source of truth; legacy `companionsCount` remains readable and is derived on new writes. | Names answer the organizer's attendance question while a bound prevents accidental unbounded form and document payloads. | Yes |
 | Companion visibility | Show named non-family companions only in organizer-facing guest management. | They are personal attendance data and have no public-profile purpose. | Yes |
 | Visual states | A typed visual-scenario registry enumerates routed pages and overlay states. Every registered state produces four baselines: desktop/light, desktop/dark, mobile/light, mobile/dark. | A registry makes coverage auditable and prevents future pages from silently missing dark-mode screenshots. | Yes |
@@ -49,18 +49,18 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 ### P1: Governed shared surfaces and form controls ⭐ MVP
 
-**User Story**: As a user, I want cards and inputs to look and behave consistently so that forms remain clear and trustworthy in every theme and viewport.
+**User Story**: As a user, I want cards, inputs, and interactive controls to look and behave consistently so that forms and actions remain clear, accessible, and trustworthy in every theme and viewport.
 
 **Why P1**: The screenshot findings are systemic consequences of unowned styling, including the white ring beside gradient borders in `13-17`, blue family fields in `13-15`, clipped active labels in `13-11`, and the inexplicable home badge outline.
 
 **Acceptance Criteria**:
 
-1. The system SHALL provide standalone, OnPush UI primitives for surfaces, form-field and label directives, buttons, icon buttons, and semantic icons through one documented `shared/ui` public API. <!-- ubiquitous -->
-2. WHEN a component renders an `OrgSurface` card, panel, drawer, or confirmation surface THEN the system SHALL render exactly one 1.5px purple-to-orange gradient border and SHALL not render a second white companion border. <!-- event-driven -->
-3. WHEN an `OrgField` is idle, hovered, focused, invalid, disabled, or autofilled THEN the system SHALL use only its documented Material MDC token values, retain a readable semantic fill in light and dark modes, and keep the label fully visible. <!-- event-driven -->
+1. The system SHALL provide standalone, OnPush UI primitives for surfaces, form-fields, labels, buttons, icon buttons, chips, semantic icons, and banners through one documented `shared/ui` public API. <!-- ubiquitous -->
+2. WHEN a component renders an `OrgSurface` card, panel, drawer, or confirmation surface THEN the system SHALL render exactly one 1.5px gradient border and SHALL not render a second white companion border. <!-- event-driven -->
+3. WHEN an `OrgField` is idle, hovered, focused, invalid, disabled, or autofilled THEN the system SHALL use only its documented Material MDC token values, retain a readable semantic fill in light, dark, and seasonal modes, and keep the label fully visible. <!-- event-driven -->
 4. WHEN a user focuses an outlined field THEN the system SHALL show one coherent primary focus treatment rather than separately colored leading, notch, and trailing outline segments. <!-- event-driven -->
-5. The system SHALL give every primary button, icon button, expansion header, drawer action, and field affordance a minimum 48px by 48px touch target. <!-- ubiquitous -->
-6. WHEN a semantic UI action renders an icon THEN the system SHALL use the documented icon mapping and a size/color token for that action rather than a local hard-coded icon treatment. <!-- event-driven -->
+5. The system SHALL give every primary button, icon button, expansion header, drawer action, filter chip, and field affordance a minimum 48px by 48px touch target. <!-- ubiquitous -->
+6. WHEN a semantic UI action renders an icon THEN the system SHALL use the documented icon mapping and a size/color token for that action via `OrgIconComponent` rather than a local hard-coded icon treatment. <!-- event-driven -->
 
 **Independent Test**: Render each primitive in light/dark and mobile/desktop component tests, then exercise representative Profile, RSVP, collaborator, editor, and Home visual scenarios.
 
@@ -74,7 +74,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 **Acceptance Criteria**:
 
-1. WHEN the application header is visible THEN the system SHALL show the brand, one accessible menu trigger, and the authenticated user's profile/avatar trigger, with route and theme actions available in the navigation drawer. <!-- event-driven -->
+1. WHEN the application header is visible THEN the system SHALL show the brand, one accessible menu trigger, and the authenticated user's profile/avatar trigger, with route, theme, and logout actions available in the navigation drawer. <!-- event-driven -->
 2. WHEN a user opens the navigation menu on desktop or mobile THEN the system SHALL open an end-positioned navigation drawer with the actions authorized for that user and SHALL close it after route navigation. <!-- event-driven -->
 3. WHEN a user opens RSVP or collaborator management THEN the system SHALL present the workflow in an end-positioned drawer with a visible title, close action, internal vertical scrolling, and no horizontal clipping. <!-- event-driven -->
 4. WHEN a user presses Escape or activates the drawer backdrop or close control THEN the system SHALL close the drawer and restore focus to its trigger. <!-- event-driven -->
@@ -84,19 +84,19 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 ---
 
-### P1: Uniform feedback and bounded event accents ⭐ MVP
+### P1: Uniform feedback and festive seasonal themes ⭐ MVP
 
-**User Story**: As a user, I want success and error feedback to communicate the same meaning everywhere and seasonal event colors to enhance, not destabilize, the interface.
+**User Story**: As a user, I want success and error feedback to communicate the same meaning everywhere and seasonal theme palettes to celebrate events while keeping the interface clear and accessible.
 
-**Why P1**: `13-12` uses a dark snackbar with a party emoji, while `13-15` uses a text-action snackbar. Current seasonal CSS globally overrides core colors, which is the source of yellow card and field-adjacent treatments.
+**Why P1**: `13-12` uses a dark snackbar with a party emoji, while `13-15` uses a text-action snackbar. Previous global overrides distorted surface contrast during seasonal themes.
 
 **Acceptance Criteria**:
 
 1. WHEN a mutation succeeds THEN the system SHALL announce one `success` feedback variant with a green semantic surface, `check_circle` icon, `role="status"`, and the mutation message. <!-- event-driven -->
 2. WHEN a recoverable mutation fails THEN the system SHALL announce one `error` feedback variant with an error semantic surface, error icon, and the failure message. <!-- event-driven -->
 3. WHILE a feedback message has no user action the system SHALL dismiss it after the configured duration without moving keyboard focus. <!-- state-driven -->
-4. WHILE an event seasonal theme is active the system SHALL keep shared surface, field, outline, focus, success, and error semantic tokens unchanged. <!-- state-driven -->
-5. WHERE an event has a seasonal classification the system SHALL apply its color only through named event-accent tokens consumed by the event hero, category badge, and decorative overlay. <!-- optional-feature -->
+4. WHILE an event seasonal theme is active THEN the system SHALL apply its seasonal class to the document to theme primary colors and gradients, and SHALL maintain clean single-border surface glassmorphism, readable field contrast, and standard feedback states. <!-- state-driven -->
+5. WHERE an event has a seasonal classification THEN the system SHALL render its festive overlays and category highlights harmoniously with the active seasonal theme. <!-- optional-feature -->
 
 **Independent Test**: Trigger profile, RSVP, event editor, share, and dashboard successes/failures and assert the same feedback structure; compare default and seasonal event scenarios.
 

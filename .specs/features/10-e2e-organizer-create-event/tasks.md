@@ -427,8 +427,8 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-27]` seeds profile with initial family members, clicks remove on one member, asserts member is removed, asserts remaining member remains, and saves screenshot `13-16-family-roster-removed-desktop.png`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-27\]"`
+- [x] `[E2E-27]` seeds profile with initial family members, clicks remove on one member, asserts member is removed, asserts remaining member remains, and saves screenshot `13-16-family-roster-removed-desktop.png`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-27\]"`
 
 **Tests**: e2e  
 **Gate**: full  

@@ -299,7 +299,7 @@ invite.
 | E2E-24 | Profile – update name | T12 | Complete |
 | E2E-25 | Family – add member | T13 | Complete |
 | E2E-26 | Family – add button ≥ 48 px | T1, T13 | Complete |
-| E2E-27 | Family – remove member | T14 | Pending |
+| E2E-27 | Family – remove member | T14 | Complete |
 | E2E-28 | Collab – dialog renders + border | T15 | Pending |
 | E2E-29 | Collab – submit → snackbar | T15 | Pending |
 

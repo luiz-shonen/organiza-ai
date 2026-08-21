@@ -794,4 +794,36 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertMinTouchTarget(addBtn, 48);
     });
   });
+
+  // Phase 4 - Task T14: Family Roster — Remove Member [E2E-27]
+  test.describe('Family Roster — Remove Member', () => {
+    test('[E2E-27] should remove a family member and keep remaining members visible', async ({
+      page,
+      profilePage,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        familyMembers: [
+          { id: 'fam-1', name: 'Mariana Silva', relationship: 'spouse', phone: '(11) 98888-7777' },
+          { id: 'fam-2', name: 'Lucas Silva', relationship: 'child', phone: '(11) 97777-6666' },
+        ],
+      });
+
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Assert both members are visible
+      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first()).toBeVisible();
+      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first()).toBeVisible();
+
+      // Delete first member
+      await profilePage.familyRoster.deleteMember(0);
+
+      // Assert Mariana is gone and Lucas remains
+      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first()).toBeHidden();
+      await expect(profilePage.familyRoster.memberCards.filter({ hasText: 'Lucas Silva' }).first()).toBeVisible();
+    });
+  });
 });

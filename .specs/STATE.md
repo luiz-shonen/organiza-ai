@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-21  
-**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) tasks drafted and gate-validated (15 atomic tasks across 4 phases). Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec, design, and tasks written and gate-validated (15 atomic tasks across 7 phases).  
+**State:** Feature 09 (`09-playwright-e2e-coverage`) complete. Feature 10 (`10-e2e-organizer-create-event`) tasks drafted and gate-validated. Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`) spec, design, and tasks written and gate-validated. Feature 15 (`15-design-system-consolidation-and-showcase`) spec and design written and approved.  
 **Test Suite:** 42 unit test files (298 tests) green (`npm test -- --watch=false`), 88 Playwright E2E tests green on Chromium & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
-**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. Feature 10 — `validate_tasks.py` PASS (0 errors). Feature 11 — `validate_spec.py` PASS (0 errors), `validate_tasks.py` PASS (0 errors).  
-**Next step:** Feature 11 — execute mapped tasks (`/tlc-spec-driven implement` or dispatch batches).  
+**Validation Gate:** Feature 09 — Independent Verifier PASS (`.specs/features/09-playwright-e2e-coverage/validation.md`). Discrimination sensor: 3/3 mutants killed. Feature 10 — `validate_tasks.py` PASS (0 errors). Feature 11 — `validate_spec.py` PASS (0 errors), `validate_tasks.py` PASS (0 errors). Feature 15 — spec & design approved.  
+**Next step:** Feature 15 — proceed with tasks breakdown or implementation.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -297,3 +297,36 @@
 **Decision:** The UI foundation uses the established pink (`#ff4d94`), orange (`#ff8c42`), and yellow (`#ffc837`) product palette as its canonical semantic-brand values. Light and dark themes adapt surfaces and contrast, not the brand identity. A technical fixture cannot produce an artifact in the public product screenshot baseline directory. On mobile, the event editor exposes a compact active-step summary instead of horizontally scrolling truncated step labels.
 **Rationale:** The purple semantic override replaced the existing visual identity, hid theme evidence behind non-product artifacts, and left the mobile stepper unreadable. A single token source and real-screen light/dark evidence prevent recurrence.
 **Status:** In force. Supersedes the purple-to-orange visual direction in Feature 14.
+
+---
+
+### AD-034 — Surface as Directive (`[orgSurface]`), Not Component
+**Date:** 2026-08-21  
+**Decision:** `OrgSurface` is implemented as an attribute directive (`[orgSurface]`) rather than a wrapper component (`<org-surface>`). The directive can be applied directly to any HTML or Angular Material element (e.g., `<div [orgSurface]="'card'">`, `<mat-card [orgSurface]="'panel'">`, `<section orgSurface>`). The directive supports variants (`'card'`, `'panel'`, `'hero'`, `'drawer'`, `'dialog'`), defaulting to `'card'`. Cross-project theming is exposed via standard CSS custom properties (`--org-gradient-border`, `--org-glass-bg`, `--org-glass-blur`, `--org-glass-shadow`, `--org-glass-ring-width`, `--org-radius-lg`). The existing `OrgSurfaceComponent` is migrated to `OrgSurfaceDirective`.  
+**Rationale:** Eliminates redundant DOM container wrapper elements, preserves semantic HTML elements (`<section>`, `<article>`, `<dialog>`, `<mat-card>`), avoids style inheritance issues, and provides seamless glassmorphic styling via host class bindings.  
+**Status:** In force.
+
+---
+
+### AD-035 — Total Removal of Legacy Utility and Glass Classes
+**Date:** 2026-08-21  
+**Decision:** Legacy style classes (`.glass-card`, `.org-glass`, `.org-legacy-form-field`, `.glass-input`) and leftover utility classes (`.h-4`, `.h-5`, `.h-6`, `.h-10`, `.h-14`, `.h-28`, `.w-10`, `.w-16`, `.w-20`, `.w-24`, `.w-32`, `.w-40`, `.w-48`, `.w-full`, `.rounded-full`, `.items-center`, `.mb-2`, `.mt-2`, `.flex`, `.gap-2`) are completely removed from `src/styles.scss` and feature stylesheets without maintaining backward-compatibility aliases. All views must exclusively use canonical primitives from `src/app/shared/ui/`.  
+**Rationale:** Deprecation aliases perpetuate ambiguity and encourage inconsistent styling patterns. Complete removal enforces a single canonical source of truth for all layout and surface styling across the entire codebase.  
+**Status:** In force.
+
+---
+
+### AD-036 — Standardized Mobile-First Breakpoints
+**Date:** 2026-08-21  
+**Decision:** All responsive styling across the application strictly adheres to three standardized mobile-first breakpoints: Small/Tablet (`--org-bp-sm: 600px`), Medium/Desktop (`--org-bp-md: 900px`), and Large/Wide (`--org-bp-lg: 1200px`). All SCSS media queries must exclusively use these canonical thresholds (`@media (min-width: 600px)`, `@media (min-width: 900px)`, `@media (min-width: 1200px)`). Arbitrary thresholds (such as 640px, 768px, 960px, 1024px) are prohibited.  
+**Rationale:** Eliminates fragmented, inconsistent responsive behavior across pages and establishes a clean, predictable layout grid hierarchy.  
+**Status:** In force.
+
+---
+
+### AD-037 — Design System Showcase Route (`/design-system`)
+**Date:** 2026-08-21  
+**Decision:** A dedicated visual showcase page is introduced at route `/design-system`, protected by `superAdminGuard` and lazy-loaded via `app.routes.ts`. The showcase renders an interactive, living catalog of all 14 design system primitive and token categories in both Light and Dark themes, complete with live component previews, interactive controls, copyable code snippets, and API property/event tables.  
+**Rationale:** Provides maintainers and super administrators with an interactive visual playground and living specification to audit, test, and govern all UI foundation primitives, preventing token drift and visual regressions.  
+**Status:** In force.
+

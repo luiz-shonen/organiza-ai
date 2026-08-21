@@ -378,12 +378,12 @@ T11 → T12 → T13 → T14 → T15
 
 **Done when**:
 
-- [ ] `[E2E-24]` clicks "Editar", updates display name, clicks "Salvar", asserts updated name displays in card, and saves screenshot `13-14-profile-name-updated-desktop.png`
-- [ ] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-24\]"`
+- [x] `[E2E-24]` clicks "Editar", updates display name, clicks "Salvar", asserts updated name displays in card, and saves screenshot `13-14-profile-name-updated-desktop.png`
+- [x] Gate check passes: `npx playwright test e2e/specs/13-organizer-happy-path.spec.ts -g "\[E2E-24\]"`
 
 **Tests**: e2e  
 **Gate**: full  
-**Commit**: `test(e2e): implement user profile name update atomic test`  
+**Commit**: `test(e2e): implement user profile update name atomic test`  
 
 ---
 

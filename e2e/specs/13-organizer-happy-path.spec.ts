@@ -712,4 +712,43 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertFontFamily(heading, 'Plus Jakarta Sans');
     });
   });
+
+  // Phase 4 - Task T12: Profile — Update Name [E2E-24]
+  test.describe('Profile — Update Display Name', () => {
+    test('[E2E-24] should edit and update user display name in profile card', async ({
+      page,
+      profilePage,
+    }) => {
+      await setupMockAuthSession(page, {
+        uid: 'test-user-uid',
+        email: 'luiz.gmr.dev@gmail.com',
+        displayName: 'Luiz Organizer',
+        userProfile: {
+          id: 'test-user-uid',
+          email: 'luiz.gmr.dev@gmail.com',
+          displayName: 'Luiz Organizer',
+          phone: '(11) 99999-9999',
+        },
+      });
+
+      await page.goto('/perfil');
+      await profilePage.assertLoaded();
+
+      // Click edit button
+      const editBtn = page.locator('.profile-info-card__edit-btn').first();
+      await expect(editBtn).toBeVisible();
+      await editBtn.click();
+
+      // Enter new name and submit
+      await expect(profilePage.nameInput).toBeVisible();
+      await profilePage.nameInput.fill('Luiz Atualizado');
+      await profilePage.saveProfileBtn.click();
+
+      // Assert updated name rendered
+      await expect(page.locator('text=Luiz Atualizado').first()).toBeVisible();
+
+      // Screenshot baseline
+      await profilePage.captureScreenshot('13-14-profile-name-updated');
+    });
+  });
 });

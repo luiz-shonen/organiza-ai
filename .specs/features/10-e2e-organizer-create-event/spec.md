@@ -296,7 +296,7 @@ invite.
 | E2E-21 | Profile – page renders | T11 | Complete |
 | E2E-22 | Profile – card backdrop-filter | T1, T11 | Complete |
 | E2E-23 | Profile – heading font-family | T1, T11 | Complete |
-| E2E-24 | Profile – update name | T12 | Pending |
+| E2E-24 | Profile – update name | T12 | Complete |
 | E2E-25 | Family – add member | T13 | Pending |
 | E2E-26 | Family – add button ≥ 48 px | T1, T13 | Pending |
 | E2E-27 | Family – remove member | T14 | Pending |

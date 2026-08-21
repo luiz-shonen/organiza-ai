@@ -392,6 +392,8 @@ T29 → T30
 **Gate**: rules
 **Commit**: `feat(rsvp): move confirmation to named companion drawer`
 
+**Follow-up (2026-08-21)**: The RSVP E2E harness targets the explicit `rsvp-cancel-btn` so its cancel action cannot resolve to the separate close control.
+
 ### Phase 6: Navigation and workflow drawers
 
 ### T25: Type the root drawer request and result contract

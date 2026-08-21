@@ -31,14 +31,7 @@ export class RsvpDialogHarness {
         )
       );
 
-    this.cancelBtn = this.dialogRoot
-      .getByTestId('rsvp-cancel-btn')
-      .or(this.dialogRoot.getByRole('button', { name: /cancelar/i }))
-      .or(
-        this.dialogRoot.locator(
-          '.guest-dialog__actions button:has-text("Cancelar"), button[aria-label="Cancelar confirmação"], button[mat-dialog-close]'
-        )
-      );
+    this.cancelBtn = this.dialogRoot.getByTestId('rsvp-cancel-btn');
 
     this.phoneInput = this.dialogRoot
       .getByTestId('rsvp-phone-input')

@@ -15,4 +15,6 @@ export type { OrgIconName, OrgIconSize } from './actions/org-icon.component';
 
 export { FeedbackSnackbarComponent } from './feedback/feedback-snackbar.component';
 export type { FeedbackSnackbarData, FeedbackVariant } from './feedback/feedback-snackbar.component';
+export { FeedbackService } from './feedback/feedback.service';
+export type { FeedbackOptions } from './feedback/feedback.service';
 export { OrgBannerComponent } from './feedback/org-banner.component';

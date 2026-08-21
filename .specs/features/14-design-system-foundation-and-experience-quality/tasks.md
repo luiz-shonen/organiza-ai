@@ -36,6 +36,7 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 ### Phase 4
 
 - [x] T16 — Create the typed snackbar and banner presentation
+- [x] T17 — Create the typed feedback service
 
 ## Test Coverage Matrix
 

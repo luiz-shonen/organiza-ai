@@ -90,23 +90,23 @@ The current screenshot baselines expose visible mobile defects that existing pas
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| LAYOUT-01 | P1: Consistent mobile surfaces and inputs | Design | Pending |
-| LAYOUT-02 | P1: Consistent mobile surfaces and inputs | Design | Pending |
-| LAYOUT-03 | P1: Consistent mobile surfaces and inputs | Design | Pending |
-| LAYOUT-04 | P1: Consistent mobile surfaces and inputs | Design | Pending |
-| LAYOUT-05 | P1: Consistent mobile surfaces and inputs | Design | Pending |
-| CAPTURE-01 | P1: Faithful visual capture | T1 | Implementing |
-| CAPTURE-02 | P1: Faithful visual capture | T1 | Implementing |
-| CAPTURE-03 | P1: Faithful visual capture | T1, T5 | Implementing |
-| RBAC-01 | P1: Organizer route and role-boundary coverage | Design | Pending |
-| RBAC-02 | P1: Organizer route and role-boundary coverage | Design | Pending |
-| RBAC-03 | P1: Organizer route and role-boundary coverage | Design | Pending |
+| LAYOUT-01 | P1: Consistent mobile surfaces and inputs | T2 | Implemented |
+| LAYOUT-02 | P1: Consistent mobile surfaces and inputs | T2 | Implemented |
+| LAYOUT-03 | P1: Consistent mobile surfaces and inputs | T3 | Implemented |
+| LAYOUT-04 | P1: Consistent mobile surfaces and inputs | T4, T5 | Implemented |
+| LAYOUT-05 | P1: Consistent mobile surfaces and inputs | T2-T5 | Implemented |
+| CAPTURE-01 | P1: Faithful visual capture | T1 | Implemented |
+| CAPTURE-02 | P1: Faithful visual capture | T1 | Implemented |
+| CAPTURE-03 | P1: Faithful visual capture | T1, T5 | Implemented |
+| RBAC-01 | P1: Organizer route and role-boundary coverage | T6 | Implemented |
+| RBAC-02 | P1: Organizer route and role-boundary coverage | T6 | Implemented |
+| RBAC-03 | P1: Organizer route and role-boundary coverage | T6 | Implemented |
 
 **Coverage:** 11 total, 11 mapped to design, 0 unmapped.
 
 ## Success Criteria
 
-- [ ] Focused visual tests fail if dialog content has less than 16px mobile inset or if an editor screenshot is offset from the application origin.
-- [ ] The affected desktop and mobile screenshots show complete card edges, labels, values, and dialog actions.
-- [ ] Non-Super-Admin organizer tests run entirely on `/meus-eventos`; `/admin` remains Super Admin-only.
-- [ ] Build, unit tests, and relevant Playwright suites pass without weakening existing assertions.
+- [x] Focused visual tests fail if dialog content has less than 16px mobile inset or if an editor screenshot is offset from the application origin.
+- [x] The affected desktop and mobile screenshots show complete card edges, labels, values, and dialog actions.
+- [x] Non-Super-Admin organizer tests run entirely on `/meus-eventos`; `/admin` remains Super Admin-only.
+- [x] Build, unit tests, and relevant Playwright suites pass without weakening existing assertions.

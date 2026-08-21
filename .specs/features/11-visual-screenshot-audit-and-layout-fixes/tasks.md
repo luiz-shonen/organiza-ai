@@ -197,10 +197,10 @@ T14 → T15
 
 **Done when**:
 
-- [ ] `.editor__stepper` header container padding set to `12px 8px` on mobile, scaling to `16px 24px` on `min-width: 600px`
-- [ ] `.editor__form` padding adjusted to `24px 12px` on mobile, scaling to `40px 32px` on desktop
-- [ ] Stepper header overflow does not trigger page-level horizontal scrollbar
-- [ ] Build gate passes: `npm run build`
+- [x] `.editor__stepper` header container padding set to `12px 8px` on mobile, scaling to `16px 24px` on `min-width: 600px`
+- [x] `.editor__form` padding adjusted to `24px 12px` on mobile, scaling to `40px 32px` on desktop
+- [x] Stepper header overflow does not trigger page-level horizontal scrollbar
+- [x] Build gate passes: `npm run build`
 
 **Tests**: none  
 **Gate**: build  

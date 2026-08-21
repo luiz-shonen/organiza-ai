@@ -71,7 +71,10 @@ export class EventDetailContainer implements OnInit {
   protected readonly session = this.guestSession.session;
 
   protected readonly guestCount = computed(() => {
-    return this.guests().reduce((sum, g) => sum + 1 + (g.companionsCount ?? 0), 0);
+    return this.guests().reduce(
+      (sum, guest) => sum + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
+      0,
+    );
   });
 
   protected readonly isUserConfirmed = computed(() => {

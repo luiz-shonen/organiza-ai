@@ -6,7 +6,7 @@ export type {
   PixType,
 } from './event.model';
 export type { EventInvitation } from './invitation.model';
-export type { Guest, GuestCreate, GuestSession } from './guest.model';
+export type { Guest, GuestCompanion, GuestCreate, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';
 export type { AuthUser } from './user.model';
 export type { UserProfile } from './profile.model';
@@ -32,4 +32,3 @@ export type {
   GuestFormDialogResult,
   BatchPrimaryGuestInput,
 } from './dialog.model';
-

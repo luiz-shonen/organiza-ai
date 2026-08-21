@@ -168,9 +168,9 @@ The visual baselines also do not cover every supported page state in dark mode o
 | THEME-02 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal surface adoption complete |
 | RSVP-01 | Complete RSVP companion information | Design | In Design |
 | RSVP-02 | Complete RSVP companion information | Design | In Design |
-| RSVP-03 | Complete RSVP companion information | Execute | In progress — T22 Firestore Emulator authorization characterization complete; T23 adds the named companion write contract |
-| RSVP-04 | Complete RSVP companion information | Design | In Design |
-| RSVP-05 | Complete RSVP companion information | Execute | In progress — T22 Firestore Emulator verifies primary allow and malformed/mismatched/family-shape denial; T23 corrects the authorized family contract |
+| RSVP-03 | Complete RSVP companion information | Execute | In progress — T22-T23 Emulator-backed primary/family batch authorization and ordered companion persistence complete; T24 supplies named form inputs |
+| RSVP-04 | Complete RSVP companion information | Execute | In progress — T23 preserves legacy count-only aggregate reads without manufacturing companion names |
+| RSVP-05 | Complete RSVP companion information | Execute | In progress — T22-T23 Emulator-backed primary and linked-family cancellation contract complete; T24 preserves the confirmation workflow |
 | VIS-01 | Full visual regression matrix | Execute | In progress — T2 anchor capture complete |
 | VIS-02 | Full visual regression matrix | Execute | In progress — T2 settling and T4 tracked comparison configuration complete |
 | VIS-03 | Full visual regression matrix | Execute | In progress — T11 Home visual consumer migration complete; T29 will add matrix scenarios |

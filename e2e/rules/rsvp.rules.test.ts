@@ -6,19 +6,30 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, setDoc } from 'firebase/firestore';
+import { deleteDoc, doc, setDoc, writeBatch } from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 const projectId = 'organizaai-rsvp-rules';
 let testEnvironment: RulesTestEnvironment;
 
-function primaryGuest(uid: string) {
+function primaryGuest(uid: string, companionNames: string[] = []) {
   return {
     uid,
     name: 'Carlos Silva',
     phone: '11999998888',
-    companionsCount: 0,
+    companions: companionNames.map((name) => ({ name })),
+    companionsCount: companionNames.length,
     isConfirmed: true,
+  };
+}
+
+function linkedFamilyGuest(primaryGuestId: string) {
+  return {
+    name: 'Mariana Silva',
+    primaryGuestId,
+    phone: '11988887777',
+    isConfirmed: true,
+    confirmedAt: '2026-08-21T00:00:00.000Z',
   };
 }
 
@@ -71,16 +82,54 @@ describe('verified RSVP Firestore rules contract', () => {
     );
   });
 
-  it('characterizes the current rejection of linked family records without verified-primary fields', async () => {
+  it('allows one atomic batch with a named primary RSVP and linked family record', async () => {
+    const db = testEnvironment.authenticatedContext('verified-user').firestore();
+    const batch = writeBatch(db);
+
+    batch.set(
+      doc(db, 'events/event-1/guests/verified-user'),
+      primaryGuest('verified-user', ['Ana', 'Bia', 'Caio']),
+    );
+    batch.set(
+      doc(db, 'events/event-1/guests/verified-user-family-1'),
+      linkedFamilyGuest('verified-user'),
+    );
+
+    await assertSucceeds(batch.commit());
+  });
+
+  it('denies a linked family record for another verified primary', async () => {
     const db = testEnvironment.authenticatedContext('verified-user').firestore();
 
     await assertFails(
-      setDoc(doc(db, 'events/event-1/guests/verified-user-family-1'), {
-        name: 'Mariana Silva',
-        primaryGuestId: 'verified-user',
-        phone: '11988887777',
-        isConfirmed: true,
-      }),
+      setDoc(
+        doc(db, 'events/event-1/guests/verified-user-family-1'),
+        linkedFamilyGuest('another-verified-user'),
+      ),
     );
+  });
+
+  it('allows the verified primary to cancel its primary and linked family records atomically', async () => {
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, 'events/event-1/guests/verified-user'), primaryGuest('verified-user'));
+      await setDoc(
+        doc(db, 'events/event-1/guests/verified-user-family-1'),
+        linkedFamilyGuest('verified-user'),
+      );
+    });
+
+    const db = testEnvironment.authenticatedContext('verified-user').firestore();
+    const batch = writeBatch(db);
+    batch.delete(doc(db, 'events/event-1/guests/verified-user'));
+    batch.delete(doc(db, 'events/event-1/guests/verified-user-family-1'));
+
+    await assertSucceeds(batch.commit());
+
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await expect(context.firestore().collection('events/event-1/guests').get()).resolves.toMatchObject({
+        empty: true,
+      });
+    });
   });
 });

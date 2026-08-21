@@ -48,6 +48,8 @@ describe('GuestService', () => {
           email: 'carlos@example.com',
           phone: '11999999999',
           photoUrl: 'https://photo.jpg',
+          companions: [],
+          companionsCount: 0,
           isConfirmed: true,
         }),
         { merge: true },
@@ -79,13 +81,21 @@ describe('GuestService', () => {
           uid: 'user-123',
           name: 'Carlos Silva',
           email: 'carlos@example.com',
-          companionsCount: 2,
+          companions: [{ name: 'Ana' }, { name: 'Bia' }],
         },
         familyMembers,
       );
 
       expect(mockGateway.runBatch).toHaveBeenCalled();
       expect(mockGateway.batchOps.set).toHaveBeenCalledTimes(3);
+      expect(mockGateway.batchOps.set).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123',
+        expect.objectContaining({
+          companions: [{ name: 'Ana' }, { name: 'Bia' }],
+          companionsCount: 2,
+        }),
+        { merge: true },
+      );
     });
 
     it('works when family members list is empty', async () => {
@@ -95,6 +105,27 @@ describe('GuestService', () => {
       });
 
       expect(mockGateway.batchOps.set).toHaveBeenCalledTimes(1);
+    });
+
+    it('preserves a legacy count without fabricating companion names during the UI transition', async () => {
+      await service.batchConfirmRsvp('evt-100', {
+        uid: 'user-123',
+        name: 'Carlos Solo',
+        companionsCount: 2,
+      });
+
+      expect(mockGateway.batchOps.set).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123',
+        expect.objectContaining({
+          companionsCount: 2,
+        }),
+        { merge: true },
+      );
+      expect(mockGateway.batchOps.set).not.toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123',
+        expect.objectContaining({ companions: [{ name: expect.any(String) }] }),
+        { merge: true },
+      );
     });
   });
 
@@ -171,6 +202,22 @@ describe('GuestService', () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe('Ana');
+    });
+
+    it('keeps a legacy count when a stored guest has no companion names', async () => {
+      mockGateway.getDocWithId.mockResolvedValue({
+        id: 'legacy-guest',
+        name: 'Maria',
+        phone: '11999998888',
+        isConfirmed: true,
+        confirmedAt: '2026-01-01',
+        companionsCount: 2,
+      });
+
+      const guest = await service.getGuest('evt-100', 'legacy-guest');
+
+      expect(guest?.companions).toBeUndefined();
+      expect(guest?.companionsCount).toBe(2);
     });
   });
 

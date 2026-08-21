@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
-import { Guest, FamilyMember } from '../models';
+import { Guest, GuestCompanion, FamilyMember } from '../models';
 
 export interface BatchPrimaryGuestInput {
   uid: string;
@@ -9,6 +9,7 @@ export interface BatchPrimaryGuestInput {
   email?: string;
   phone?: string;
   photoUrl?: string;
+  companions?: GuestCompanion[];
   companionsCount?: number;
 }
 
@@ -28,7 +29,7 @@ export class GuestService {
     return this.gateway.collectionSnapshot<Omit<Guest, 'id'>>(
       this.guestsPath(eventId),
       this.gateway.orderBy('confirmedAt', 'desc'),
-    ) as Observable<Guest[]>;
+    ).pipe(map((guests) => guests.map((guest) => this.toGuest(guest))));
   }
 
   async addGuest(eventId: string, guest: Partial<Guest>): Promise<string> {
@@ -58,6 +59,8 @@ export class GuestService {
         email: guestData.email ?? '',
         phone: guestData.phone ?? '',
         photoUrl: guestData.photoUrl ?? '',
+        companions: [],
+        companionsCount: 0,
         isConfirmed: true,
         confirmedAt: new Date().toISOString(),
       },
@@ -71,6 +74,7 @@ export class GuestService {
     familyMembers: FamilyMember[] = [],
   ): Promise<void> {
     const now = new Date().toISOString();
+    const companionsCount = primaryGuest.companions?.length ?? primaryGuest.companionsCount ?? 0;
 
     await this.gateway.runBatch((batch) => {
       batch.set(
@@ -83,7 +87,8 @@ export class GuestService {
           photoUrl: primaryGuest.photoUrl ?? '',
           isConfirmed: true,
           confirmedAt: now,
-          companionsCount: primaryGuest.companionsCount ?? 0,
+          companionsCount,
+          ...(primaryGuest.companions ? { companions: primaryGuest.companions } : {}),
           createdAt: now,
         },
         { merge: true },
@@ -160,30 +165,20 @@ export class GuestService {
     );
 
     if (docs.length === 0) return null;
-    const docData = docs[0];
-    return {
-      id: docData.id,
-      name: docData.name,
-      phone: docData.phone,
-      photoUrl: docData.photoUrl,
-      isConfirmed: docData.isConfirmed,
-      confirmedAt: docData.confirmedAt,
-      companionsCount: docData.companionsCount ?? 0,
-    };
+    return this.toGuest(docs[0]);
   }
 
   async getGuest(eventId: string, guestId: string): Promise<Guest | null> {
     const docData = await this.gateway.getDocWithId<Omit<Guest, 'id'>>(this.guestDocPath(eventId, guestId));
     if (!docData) return null;
 
+    return this.toGuest(docData);
+  }
+
+  private toGuest(guest: Guest): Guest {
     return {
-      id: docData.id,
-      name: docData.name,
-      phone: docData.phone,
-      photoUrl: docData.photoUrl,
-      isConfirmed: docData.isConfirmed,
-      confirmedAt: docData.confirmedAt,
-      companionsCount: docData.companionsCount ?? 0,
+      ...guest,
+      companionsCount: guest.companions?.length ?? guest.companionsCount ?? 0,
     };
   }
 }

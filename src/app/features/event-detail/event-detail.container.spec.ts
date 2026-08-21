@@ -202,6 +202,29 @@ describe('EventDetailContainer', () => {
     );
   });
 
+  it('uses named companion arrays first and retains legacy counts in the guest total', () => {
+    fixture.detectChanges();
+    (component as any).guests.set([
+      {
+        id: 'named-guest',
+        name: 'Ana',
+        isConfirmed: true,
+        confirmedAt: '2026-08-21T00:00:00.000Z',
+        companions: [{ name: 'Bia' }, { name: 'Caio' }],
+        companionsCount: 99,
+      },
+      {
+        id: 'legacy-guest',
+        name: 'Davi',
+        isConfirmed: true,
+        confirmedAt: '2026-08-21T00:00:00.000Z',
+        companionsCount: 2,
+      },
+    ]);
+
+    expect((component as any).guestCount()).toBe(6);
+  });
+
   describe('RSVP 1-Touch flow', () => {
     it('authenticates with Google when unauthenticated and triggers confetti on confirmed RSVP', async () => {
       fixture.detectChanges();

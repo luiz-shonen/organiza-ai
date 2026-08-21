@@ -1,3 +1,7 @@
+export interface GuestCompanion {
+  name: string;
+}
+
 export interface Guest {
   id: string;
   name: string;
@@ -8,6 +12,7 @@ export interface Guest {
   confirmedAt: string;
   primaryGuestId?: string;
   uid?: string;
+  companions?: GuestCompanion[];
   companionsCount?: number;
   createdAt?: string;
 }

@@ -12,3 +12,7 @@ export { OrgChipDirective } from './actions/org-chip.directive';
 export type { OrgChipVariant } from './actions/org-chip.directive';
 export { ORG_ICON_MAP, OrgIconComponent } from './actions/org-icon.component';
 export type { OrgIconName, OrgIconSize } from './actions/org-icon.component';
+
+export { FeedbackSnackbarComponent } from './feedback/feedback-snackbar.component';
+export type { FeedbackSnackbarData, FeedbackVariant } from './feedback/feedback-snackbar.component';
+export { OrgBannerComponent } from './feedback/org-banner.component';

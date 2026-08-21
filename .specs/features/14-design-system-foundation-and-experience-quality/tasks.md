@@ -33,6 +33,10 @@ Implement these tasks with the `tlc-spec-driven` skill. Work one task at a time 
 - [x] T14 — Standardize seasonal event card surface
 - [x] T15 — Replace the undersized mobile stepper presentation
 
+### Phase 4
+
+- [x] T16 — Create the typed snackbar and banner presentation
+
 ## Test Coverage Matrix
 
 > Generated from `AGENTS.md`, `DESIGN.md`, `README.md`, `package.json`, `playwright.config.ts`, existing Vitest component specs, and existing Playwright POM/spec patterns. Existing project quality rules require a spec for every feature, OnPush components, WCAG assertions, atomic E2E tests, a screenshot per state, both desktop and mobile coverage, and no horizontal overflow.

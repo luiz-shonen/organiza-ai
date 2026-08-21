@@ -1,0 +1,9 @@
+<section
+  class="feedback-snackbar"
+  [class]="'feedback-snackbar feedback-snackbar--' + data.variant"
+  data-testid="feedback-snackbar"
+  role="status"
+>
+  <org-icon class="feedback-snackbar__icon" [name]="icon()" size="md" />
+  <p class="feedback-snackbar__message">{{ data.message }}</p>
+</section>

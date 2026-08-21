@@ -150,7 +150,7 @@ The visual baselines also do not cover every supported page state in dark mode o
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel complete |
+| DS-01 | Shared surfaces and form controls | Execute | In progress — T10 foundation public barrel and T16 feedback primitives complete |
 | DS-02 | Shared surfaces and form controls | Execute | In progress — T11 Home, T12 Profile, T13 Family roster, and T14 Event detail single-surface migrations complete |
 | DS-03 | Shared surfaces and form controls | Execute | In progress — T8 external label association, T12 Profile, T13 Family roster, and T15 Pix field adoptions complete |
 | DS-04 | Shared surfaces and form controls | Execute | In progress — T7 coherent focus token recipe and T12 Profile focus contract adoption complete |
@@ -161,9 +161,9 @@ The visual baselines also do not cover every supported page state in dark mode o
 | NAV-03 | Calm navigation and workflows | Design | In Design |
 | NAV-04 | Calm navigation and workflows | Design | In Design |
 | NAV-05 | Calm navigation and workflows | Design | In Design |
-| FEED-01 | Uniform feedback and accents | Design | In Design |
-| FEED-02 | Uniform feedback and accents | Design | In Design |
-| FEED-03 | Uniform feedback and accents | Design | In Design |
+| FEED-01 | Uniform feedback and accents | Execute | In progress — T16 typed presentation contract complete |
+| FEED-02 | Uniform feedback and accents | Execute | In progress — T16 semantic error presentation complete |
+| FEED-03 | Uniform feedback and accents | Execute | In progress — T16 live-region presentation contract complete |
 | THEME-01 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal hero adoption complete |
 | THEME-02 | Uniform feedback and accents | Execute | In progress — T5 token mapping and T14 Event detail seasonal surface adoption complete |
 | RSVP-01 | Complete RSVP companion information | Design | In Design |

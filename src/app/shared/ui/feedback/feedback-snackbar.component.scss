@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.feedback-snackbar {
+  align-items: center;
+  border-radius: var(--org-radius-md, 0.75rem);
+  display: flex;
+  gap: 12px;
+  max-width: min(100%, 32rem);
+  padding: 12px 16px;
+}
+
+.feedback-snackbar__icon {
+  flex: 0 0 auto;
+}
+
+.feedback-snackbar__message {
+  font: inherit;
+  margin: 0;
+}
+
+.feedback-snackbar--success {
+  background: var(--org-success-container);
+  color: var(--org-on-success-container);
+}
+
+.feedback-snackbar--success .feedback-snackbar__icon {
+  --org-icon-color: var(--org-success);
+}
+
+.feedback-snackbar--error {
+  background: var(--org-error-container);
+  color: var(--org-on-error-container);
+}
+
+.feedback-snackbar--error .feedback-snackbar__icon {
+  --org-icon-color: var(--org-error);
+}
+
+.feedback-snackbar--info {
+  background: var(--org-info-container);
+  color: var(--org-on-info-container);
+}
+
+.feedback-snackbar--info .feedback-snackbar__icon {
+  --org-icon-color: var(--org-info);
+}

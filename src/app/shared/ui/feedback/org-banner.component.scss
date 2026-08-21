@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+.org-banner {
+  border-radius: var(--org-radius-md, 0.75rem);
+  padding: 12px 16px;
+}
+
+.org-banner__message {
+  font: inherit;
+  margin: 0;
+}
+
+.org-banner--success {
+  background: var(--org-success-container);
+  color: var(--org-on-success-container);
+}
+
+.org-banner--error {
+  background: var(--org-error-container);
+  color: var(--org-on-error-container);
+}
+
+.org-banner--info {
+  background: var(--org-info-container);
+  color: var(--org-on-info-container);
+}

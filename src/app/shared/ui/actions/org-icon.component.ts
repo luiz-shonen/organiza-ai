@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 export type OrgIconName =
   | 'check_circle'
   | 'error'
+  | 'info'
   | 'close'
   | 'menu'
   | 'account_circle'
@@ -30,6 +31,7 @@ export type OrgIconSize = 'sm' | 'md' | 'lg';
 export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   check_circle: 'check_circle',
   error: 'error',
+  info: 'info',
   close: 'close',
   menu: 'menu',
   account_circle: 'account_circle',

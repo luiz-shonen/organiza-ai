@@ -11,5 +11,7 @@ describe('shared UI public API', () => {
     expect(orgUi.OrgChipDirective).toBeDefined();
     expect(orgUi.OrgIconComponent).toBeDefined();
     expect(orgUi.ORG_ICON_MAP.menu).toBe('menu');
+    expect(orgUi.FeedbackSnackbarComponent).toBeDefined();
+    expect(orgUi.OrgBannerComponent).toBeDefined();
   });
 });

@@ -1,26 +1,21 @@
-<section class="dashboard" aria-label="Painel administrativo" data-testid="dashboard-page">
-  <header class="dashboard__header">
-    <h1 class="dashboard__title">
-      <mat-icon>dashboard</mat-icon>
-      Painel do Organizador
-    </h1>
-    <div class="dashboard__header-actions">
-      <a
-        mat-flat-button
-        routerLink="/meus-eventos/evento/novo"
-        matTooltip="Criar um novo evento"
-        aria-label="Criar novo evento"
-        data-testid="create-event-btn"
-      >
-        <mat-icon>add</mat-icon>
-        Novo Evento
-      </a>
-    </div>
-  </header>
+<org-page-layout maxWidth="wide" data-testid="dashboard-page">
+  <org-page-header title="Meus Eventos" icon="event">
+    <a
+      orgButton="primary"
+      orgPageHeaderActions
+      routerLink="/meus-eventos/evento/novo"
+      matTooltip="Criar um novo evento"
+      aria-label="Criar novo evento"
+      data-testid="create-event-btn"
+    >
+      <org-icon name="add" size="sm" color="var(--org-on-primary)" />
+      Novo Evento
+    </a>
+  </org-page-header>
 
   @if (events() !== undefined) {
     @if (nextEvent(); as event) {
-      <div class="dashboard__alert-banner glass-card" (click)="openPublicEvent(event)">
+      <div [orgSurface]="'card'" class="dashboard__alert-banner" (click)="openPublicEvent(event)">
         <div class="dashboard__alert-content">
           <mat-icon class="dashboard__alert-icon">notifications_active</mat-icon>
           <div class="dashboard__alert-text">
@@ -49,15 +44,14 @@
     </div>
 
     @if (filteredEvents().length === 0) {
-      <mat-card class="dashboard__empty glass-card" appearance="outlined">
-        <mat-card-content>
-          <mat-icon class="dashboard__empty-icon">event_busy</mat-icon>
-          <p>Nenhum evento encontrado para este filtro.</p>
-        </mat-card-content>
-      </mat-card>
+      <org-empty-state
+        icon="event"
+        title="Nenhum evento encontrado"
+        description="Nenhum evento encontrado para este filtro."
+      />
     } @else {
       <!-- Desktop table -->
-      <div class="dashboard__table-wrapper glass-card">
+      <section [orgSurface]="'panel'" class="dashboard__table-wrapper">
         <table
           mat-table
           [dataSource]="filteredEvents()"
@@ -95,6 +89,7 @@
               <div class="dashboard__actions">
                 <button
                   mat-icon-button
+                  orgIconButton
                   (click)="$event.stopPropagation(); editEvent(event)"
                   matTooltip="Editar"
                   [attr.aria-label]="'Editar ' + event.title"
@@ -103,6 +98,7 @@
                 </button>
                 <button
                   mat-icon-button
+                  orgIconButton
                   (click)="$event.stopPropagation(); shareWhatsApp(event)"
                   matTooltip="Compartilhar no WhatsApp"
                   [attr.aria-label]="'Compartilhar ' + event.title + ' no WhatsApp'"
@@ -111,6 +107,7 @@
                 </button>
                 <button
                   mat-icon-button
+                  orgIconButton
                   (click)="$event.stopPropagation(); copyLink(event)"
                   matTooltip="Copiar Link"
                   [attr.aria-label]="'Copiar link de ' + event.title"
@@ -119,7 +116,7 @@
                 </button>
                 <button
                   mat-icon-button
-                  color="warn"
+                  orgIconButton="danger"
                   (click)="$event.stopPropagation(); cancelEvent(event)"
                   matTooltip="Cancelar"
                   [attr.aria-label]="'Cancelar ' + event.title"
@@ -141,13 +138,14 @@
             data-testid="organizer-event-card"
           ></tr>
         </table>
-      </div>
+      </section>
 
       <!-- Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (event of filteredEvents(); track event.id) {
           <mat-card
-            class="dashboard__mobile-card glass-card dashboard__clickable-card"
+            [orgSurface]="'card'"
+            class="dashboard__mobile-card dashboard__clickable-card"
             [class.cancelled]="event.status === 'cancelled'"
             [class.history]="isHistoryEvent(event.date) && event.status !== 'cancelled'"
             appearance="outlined"
@@ -163,6 +161,7 @@
             <mat-card-actions>
               <button
                 mat-icon-button
+                orgIconButton
                 (click)="$event.stopPropagation(); editEvent(event)"
                 matTooltip="Editar"
                 aria-label="Editar"
@@ -171,6 +170,7 @@
               </button>
               <button
                 mat-icon-button
+                orgIconButton
                 (click)="$event.stopPropagation(); shareWhatsApp(event)"
                 matTooltip="Compartilhar no WhatsApp"
                 aria-label="Compartilhar"
@@ -179,6 +179,7 @@
               </button>
               <button
                 mat-icon-button
+                orgIconButton
                 (click)="$event.stopPropagation(); copyLink(event)"
                 matTooltip="Copiar Link"
                 aria-label="Copiar link"
@@ -187,7 +188,7 @@
               </button>
               <button
                 mat-icon-button
-                color="warn"
+                orgIconButton="danger"
                 (click)="$event.stopPropagation(); cancelEvent(event)"
                 matTooltip="Cancelar"
                 aria-label="Cancelar"
@@ -202,47 +203,47 @@
   } @else {
     <div aria-hidden="true">
       <!-- Skeleton Desktop table -->
-      <div class="dashboard__table-wrapper skeleton-table-wrapper">
+      <section [orgSurface]="'panel'" class="dashboard__table-wrapper skeleton-table-wrapper">
         <div class="skeleton-table">
           <!-- Header fake -->
           <div class="skeleton-table-header">
-            <div class="skeleton-box h-4 w-20"></div>
-            <div class="skeleton-box h-4 w-16"></div>
-            <div class="skeleton-box h-4 w-24"></div>
-            <div class="skeleton-box h-4 w-16"></div>
+            <div class="skeleton-box" style="height: 1rem; width: 5rem;"></div>
+            <div class="skeleton-box" style="height: 1rem; width: 4rem;"></div>
+            <div class="skeleton-box" style="height: 1rem; width: 6rem;"></div>
+            <div class="skeleton-box" style="height: 1rem; width: 4rem;"></div>
           </div>
           <!-- Rows fakes -->
           @for (i of [1, 2, 3, 4]; track i) {
             <div class="skeleton-table-row">
-              <div class="skeleton-box h-5 w-40"></div>
-              <div class="skeleton-box h-5 w-24"></div>
-              <div class="skeleton-box h-5 w-32"></div>
+              <div class="skeleton-box" style="height: 1.25rem; width: 10rem;"></div>
+              <div class="skeleton-box" style="height: 1.25rem; width: 6rem;"></div>
+              <div class="skeleton-box" style="height: 1.25rem; width: 8rem;"></div>
               <div class="dashboard__skeleton-actions">
-                <div class="skeleton-box h-10 w-10 !rounded-full"></div>
-                <div class="skeleton-box h-10 w-10 !rounded-full"></div>
-                <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+                <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
+                <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
+                <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
               </div>
             </div>
           }
         </div>
-      </div>
+      </section>
 
       <!-- Skeleton Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (i of [1, 2, 3]; track i) {
-          <mat-card class="dashboard__mobile-card glass-card" appearance="outlined">
+          <mat-card [orgSurface]="'card'" class="dashboard__mobile-card" appearance="outlined">
             <mat-card-header>
-              <mat-card-title><div class="skeleton-box h-6 w-48 mb-2"></div></mat-card-title>
-              <mat-card-subtitle><div class="skeleton-box h-4 w-32"></div></mat-card-subtitle>
+              <mat-card-title><div class="skeleton-box" style="height: 1.5rem; width: 12rem; margin-bottom: 0.5rem;"></div></mat-card-title>
+              <mat-card-subtitle><div class="skeleton-box" style="height: 1rem; width: 8rem;"></div></mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions>
-              <div class="skeleton-box h-10 w-10 !rounded-full"></div>
-              <div class="skeleton-box h-10 w-10 !rounded-full"></div>
-              <div class="skeleton-box h-10 w-10 !rounded-full"></div>
+              <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
+              <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
+              <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
             </mat-card-actions>
           </mat-card>
         }
       </div>
     </div>
   }
-</section>
+</org-page-layout>

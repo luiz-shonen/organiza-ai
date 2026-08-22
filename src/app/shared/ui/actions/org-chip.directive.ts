@@ -2,6 +2,21 @@ import { Directive, input } from '@angular/core';
 
 export type OrgChipVariant = 'default' | 'primary' | 'success' | 'warning' | 'accent';
 
+const VALID_CHIP_VARIANTS: ReadonlySet<OrgChipVariant> = new Set([
+  'default',
+  'primary',
+  'success',
+  'warning',
+  'accent',
+]);
+
+function normalizeChipVariant(value: unknown): OrgChipVariant {
+  if (typeof value === 'string' && VALID_CHIP_VARIANTS.has(value as OrgChipVariant)) {
+    return value as OrgChipVariant;
+  }
+  return 'default';
+}
+
 @Directive({
   selector: 'mat-chip-option[orgChip], mat-chip-row[orgChip], button[orgChip]',
   standalone: true,
@@ -17,5 +32,8 @@ export type OrgChipVariant = 'default' | 'primary' | 'success' | 'warning' | 'ac
   },
 })
 export class OrgChipDirective {
-  public readonly variant = input<OrgChipVariant>('default', { alias: 'orgChip' });
+  public readonly variant = input<OrgChipVariant, OrgChipVariant | string | undefined | null>('default', {
+    alias: 'orgChip',
+    transform: normalizeChipVariant,
+  });
 }

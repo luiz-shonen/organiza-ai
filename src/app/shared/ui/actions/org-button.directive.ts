@@ -2,6 +2,20 @@ import { computed, Directive, input } from '@angular/core';
 
 export type OrgButtonVariant = 'primary' | 'secondary' | 'danger' | 'text';
 
+const VALID_BUTTON_VARIANTS: ReadonlySet<OrgButtonVariant> = new Set([
+  'primary',
+  'secondary',
+  'danger',
+  'text',
+]);
+
+function normalizeButtonVariant(value: unknown): OrgButtonVariant {
+  if (typeof value === 'string' && VALID_BUTTON_VARIANTS.has(value as OrgButtonVariant)) {
+    return value as OrgButtonVariant;
+  }
+  return 'primary';
+}
+
 @Directive({
   selector: 'button[orgButton], a[orgButton]',
   standalone: true,
@@ -20,7 +34,10 @@ export type OrgButtonVariant = 'primary' | 'secondary' | 'danger' | 'text';
   },
 })
 export class OrgButtonDirective {
-  public readonly variant = input<OrgButtonVariant>('primary', { alias: 'orgButton' });
+  public readonly variant = input<OrgButtonVariant, OrgButtonVariant | string | undefined | null>('primary', {
+    alias: 'orgButton',
+    transform: normalizeButtonVariant,
+  });
   public readonly loading = input(false, { alias: 'orgButtonLoading' });
   public readonly disabled = input(false, { alias: 'orgButtonDisabled' });
   protected readonly isDisabled = computed(() => this.loading() || this.disabled());

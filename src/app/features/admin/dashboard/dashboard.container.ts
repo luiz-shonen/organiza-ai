@@ -32,6 +32,15 @@ import {
   EventStatusFilter,
   EventFilterCounts,
 } from '../../organizer/dashboard/components/event-filters/event-filters.component';
+import {
+  OrgButtonDirective,
+  OrgEmptyStateComponent,
+  OrgIconButtonDirective,
+  OrgIconComponent,
+  OrgPageHeaderComponent,
+  OrgPageLayoutComponent,
+  OrgSurfaceDirective,
+} from '../../../shared/ui';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,6 +55,13 @@ import {
     MatTooltipModule,
     MatMenuModule,
     EventDashboardFiltersComponent,
+    OrgPageLayoutComponent,
+    OrgPageHeaderComponent,
+    OrgSurfaceDirective,
+    OrgEmptyStateComponent,
+    OrgButtonDirective,
+    OrgIconButtonDirective,
+    OrgIconComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',

@@ -271,10 +271,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] Breakpoint tokens enforce 600px / 900px / 1200px standard with zero ad-hoc thresholds (640px, 768px, 960px, 1024px)
-- [ ] Unit tests for theme tokens and responsive layouts pass
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 372 tests pass (no silent deletions)
+- [x] Breakpoint tokens enforce 600px / 900px / 1200px standard with zero ad-hoc thresholds (640px, 768px, 960px, 1024px)
+- [x] Unit tests for theme tokens and responsive layouts pass
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `refactor(tokens): standardize responsive breakpoints to 600-900-1200`

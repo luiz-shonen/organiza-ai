@@ -1,20 +1,13 @@
-<section class="editor" aria-label="Editor de evento" data-testid="event-editor-page">
+<org-page-layout maxWidth="default" data-testid="event-editor-page">
   @if (loading()) {
-    <header class="editor__header editor__header--single">
-      <button mat-icon-button disabled class="editor__back-btn">
-        <mat-icon>west</mat-icon>
-      </button>
-      <h1 class="editor__title">
-        <div class="skeleton-box h-8 w-48"></div>
-      </h1>
-    </header>
+    <org-page-header title="Carregando..." icon="edit" />
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
-        <mat-card class="editor__card glass-card" appearance="outlined">
+        <mat-card [orgSurface]="'card'" class="editor__card" appearance="outlined">
           <mat-card-header>
             <div matCardAvatar class="skeleton-box editor__card-icon"></div>
             <mat-card-title>
-              <div class="skeleton-box h-6 w-40"></div>
+              <div class="skeleton-box" style="height: 1.5rem; width: 10rem;"></div>
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
@@ -31,8 +24,11 @@
       </div>
     </div>
   } @else {
-    <header class="editor__header" [class.editor__header--single]="!isEditing()">
-      <div class="editor__header-main">
+    <org-page-header
+      [title]="isEditing() ? 'Editar Evento' : 'Novo Evento'"
+      icon="edit"
+    >
+      <div orgPageHeaderActions class="editor__header-actions-slot">
         <a
           mat-button
           routerLink="/meus-eventos"
@@ -42,13 +38,7 @@
           <mat-icon>arrow_back</mat-icon>
           Voltar
         </a>
-        <h1 class="editor__title">
-          {{ isEditing() ? 'Editar Evento' : 'Novo Evento' }}
-        </h1>
-      </div>
-
-      @if (isEditing() && isOwner()) {
-        <div class="editor__header-actions">
+        @if (isEditing() && isOwner()) {
           <button
             mat-stroked-button
             type="button"
@@ -59,13 +49,14 @@
             <mat-icon>group_add</mat-icon>
             Colaboradores
           </button>
-        </div>
-      }
-    </header>
+        }
+      </div>
+    </org-page-header>
 
     @if (isEditing() && !isOwner()) {
       <div
-        class="editor__collab-banner glass-card"
+        [orgSurface]="'card'"
+        class="editor__collab-banner"
         role="status"
         aria-label="Permissões de colaborador"
       >
@@ -81,7 +72,7 @@
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
         <!-- Event Form -->
-        <mat-card class="editor__card glass-card" appearance="outlined">
+        <mat-card [orgSurface]="'card'" class="editor__card" appearance="outlined">
           <mat-card-header>
             <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
             <mat-card-title>Dados do Evento</mat-card-title>
@@ -181,7 +172,7 @@
                     }
                   </mat-form-field>
 
-                  <div class="editor__date-time-row">
+                  <div [orgFormGrid]="2" class="editor__date-time-row">
                     <mat-form-field
                       orgFormField
                       appearance="outline"
@@ -250,7 +241,7 @@
                 <ng-template matStepLabel>Endereço do evento</ng-template>
                 <form [formGroup]="addressForm" class="editor__form" id="address-form">
                   <h3 class="editor__section-title">Endereço</h3>
-                  <div class="editor__address-row-top">
+                  <div [orgFormGrid]="2" class="editor__address-row-top">
                     <mat-form-field
                       orgFormField
                       appearance="outline"
@@ -314,7 +305,7 @@
                     </mat-form-field>
                   </div>
 
-                  <div class="editor__address-row">
+                  <div [orgFormGrid]="2" class="editor__address-row">
                     <mat-form-field
                       orgFormField
                       appearance="outline"
@@ -434,7 +425,7 @@
 
         <!-- Items Manager (only when editing) -->
         @if (isEditing()) {
-          <mat-card class="editor__card glass-card" appearance="outlined">
+          <mat-card [orgSurface]="'card'" class="editor__card" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
               <mat-card-title>Lista de Itens</mat-card-title>
@@ -523,7 +514,7 @@
           />
 
           <!-- Guest List Card -->
-          <mat-card class="editor__card print-section glass-card" appearance="outlined">
+          <mat-card [orgSurface]="'card'" class="editor__card print-section" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
               <mat-card-title>Lista de Convidados</mat-card-title>
@@ -583,4 +574,4 @@
       }
     </div>
   }
-</section>
+</org-page-layout>

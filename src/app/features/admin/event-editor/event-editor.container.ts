@@ -36,7 +36,16 @@ import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
-import { FeedbackService, OrgButtonDirective, OrgFormFieldDirective } from '../../../shared/ui';
+import {
+  FeedbackService,
+  OrgButtonDirective,
+  OrgFormGridDirective,
+  OrgFormFieldDirective,
+  OrgPageHeaderComponent,
+  OrgPageLayoutComponent,
+  OrgSectionComponent,
+  OrgSurfaceDirective,
+} from '../../../shared/ui';
 import { DrawerService } from '../../../core/services/drawer.service';
 
 @Component({
@@ -61,6 +70,10 @@ import { DrawerService } from '../../../core/services/drawer.service';
     MatDialogModule,
     OrgButtonDirective,
     OrgFormFieldDirective,
+    OrgFormGridDirective,
+    OrgPageLayoutComponent,
+    OrgPageHeaderComponent,
+    OrgSurfaceDirective,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',

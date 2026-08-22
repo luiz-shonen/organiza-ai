@@ -399,10 +399,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] Event Editor template migrates to `org-page-layout`, `[orgSurface]`, `[orgFormGrid]`, and `orgFormField`
-- [ ] Unit tests in `src/app/features/admin/event-editor/event-editor.container.spec.ts` pass
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 372 tests pass (no silent deletions)
+- [x] Event Editor template migrates to `org-page-layout`, `[orgSurface]`, `[orgFormGrid]`, and `orgFormField`
+- [x] Unit tests in `src/app/features/admin/event-editor/event-editor.container.spec.ts` pass
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `refactor(editor): migrate form layout and cards to ui primitives`

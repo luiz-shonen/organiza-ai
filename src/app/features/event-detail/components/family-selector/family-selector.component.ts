@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
+import { OrgFormFieldDirective } from '../../../../shared/ui';
 
 export interface InlineFamilyMemberPayload {
   name: string;
@@ -41,6 +42,7 @@ export interface RelationshipOption {
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
+    OrgFormFieldDirective,
   ],
   templateUrl: './family-selector.component.html',
   styleUrl: './family-selector.component.scss',

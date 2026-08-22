@@ -20,6 +20,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 
+import { OrgFormFieldDirective } from '../../../../../shared/ui';
+
 export interface CollaboratorInviteDialogData {
   collaborators?: string[];
   pendingInvites?: string[];
@@ -37,6 +39,7 @@ export interface CollaboratorInviteDialogData {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    OrgFormFieldDirective,
   ],
   templateUrl: './collaborator-invite-dialog.component.html',
   styleUrl: './collaborator-invite-dialog.component.scss',

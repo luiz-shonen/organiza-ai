@@ -24,6 +24,8 @@ import {
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 
+import { OrgFormFieldDirective } from '../../../../shared/ui';
+
 export interface GuestFormDialogData {
   session: GuestSession | null;
   familyMembers?: FamilyMember[];
@@ -48,6 +50,7 @@ export interface GuestFormDialogResult {
     MatButtonModule,
     MatIconModule,
     FamilySelectorComponent,
+    OrgFormFieldDirective,
   ],
   templateUrl: './guest-form-dialog.component.html',
   styleUrl: './guest-form-dialog.component.scss',

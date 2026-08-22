@@ -3,7 +3,15 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EventService } from '../../core/services';
-import { OrgButtonDirective, OrgIconComponent, OrgSurfaceComponent } from '../../shared/ui';
+import {
+  OrgButtonDirective,
+  OrgEmptyStateComponent,
+  OrgIconComponent,
+  OrgPageHeaderComponent,
+  OrgPageLayoutComponent,
+  OrgSectionComponent,
+  OrgSurfaceDirective,
+} from '../../shared/ui';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +21,11 @@ import { OrgButtonDirective, OrgIconComponent, OrgSurfaceComponent } from '../..
     MatProgressSpinnerModule,
     OrgButtonDirective,
     OrgIconComponent,
-    OrgSurfaceComponent,
+    OrgSurfaceDirective,
+    OrgPageLayoutComponent,
+    OrgPageHeaderComponent,
+    OrgSectionComponent,
+    OrgEmptyStateComponent,
   ],
   templateUrl: './home.container.html',
   styleUrl: './home.container.scss',

@@ -61,9 +61,11 @@ describe('HomeContainer', () => {
     component = fixture.componentInstance;
   });
 
-  it('should create the component', () => {
+  it('should create the component with page layout and header primitives', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('org-page-layout')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('org-page-header')).toBeTruthy();
   });
 
   it('should show loading indicator while events are loading (undefined)', () => {
@@ -79,7 +81,7 @@ describe('HomeContainer', () => {
     eventsSubject.next([]);
     fixture.detectChanges();
 
-    const emptyEl = fixture.nativeElement.querySelector('.home__empty');
+    const emptyEl = fixture.nativeElement.querySelector('org-empty-state');
     expect(emptyEl).toBeTruthy();
     expect(emptyEl.textContent).toContain('Nenhum evento disponível no momento.');
   });
@@ -88,6 +90,9 @@ describe('HomeContainer', () => {
     fixture.detectChanges();
     eventsSubject.next(mockEvents);
     fixture.detectChanges();
+
+    const section = fixture.nativeElement.querySelector('org-section');
+    expect(section).toBeTruthy();
 
     const cards = fixture.nativeElement.querySelectorAll('.home__card');
     expect(cards.length).toBe(2);
@@ -103,12 +108,12 @@ describe('HomeContainer', () => {
     expect(descriptions).toEqual(['Venha comemorar comigo!', 'Churrasco de confraternização anual.']);
   });
 
-  it('should compose event cards with shared surfaces, semantic icons, and an accessible action', () => {
+  it('should compose event cards with shared surface directive, semantic icons, and an accessible action', () => {
     fixture.detectChanges();
     eventsSubject.next(mockEvents);
     fixture.detectChanges();
 
-    const surfaces = fixture.nativeElement.querySelectorAll('org-surface');
+    const surfaces = fixture.nativeElement.querySelectorAll('.home__card.org-surface');
     expect(surfaces).toHaveLength(2);
     expect(fixture.nativeElement.querySelectorAll('mat-card')).toHaveLength(0);
     expect(fixture.nativeElement.querySelectorAll('org-icon')).not.toHaveLength(0);

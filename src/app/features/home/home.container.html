@@ -1,16 +1,10 @@
-<section class="home" aria-label="Eventos disponíveis" data-testid="home-page">
-  <header class="home__hero">
-    <div class="home__hero-badge">
-      <org-icon name="event" size="sm" color="var(--org-primary)" />
-      <span>Simplifique seus Momentos</span>
-    </div>
-    <h1 class="home__hero-title">
-      Eventos: Descubra, Participe e <span class="home__hero-highlight">Celebre</span>
-    </h1>
-    <p class="home__hero-subtitle">
-      Encontre encontros, festas e momentos especiais. Confirme sua presença e combine itens com facilidade.
-    </p>
-  </header>
+<org-page-layout maxWidth="default">
+  <org-page-header
+    title="Eventos: Descubra, Participe e Celebre"
+    subtitle="Encontre encontros, festas e momentos especiais. Confirme sua presença e combine itens com facilidade."
+    icon="event"
+    [gradient]="true"
+  />
 
   @if (events() === undefined) {
     <div class="home__loading" role="status" aria-live="polite" aria-label="Carregando eventos">
@@ -18,44 +12,37 @@
       <p>Carregando eventos...</p>
     </div>
   } @else if (events()!.length === 0) {
-    <article class="home__empty" aria-label="Nenhum evento encontrado" data-testid="home-empty-state">
-      <org-surface variant="card" class="home__empty-surface">
-        <div class="home__empty-content">
-          <div class="home__empty-icon-wrap">
-            <org-icon name="event" size="lg" color="var(--org-primary)" />
-          </div>
-          <h2 class="home__empty-title">Nenhum evento disponível no momento.</h2>
-          <p class="home__empty-desc">Que tal criar o primeiro evento e reunir as pessoas especiais?</p>
-          <a orgButton="primary" routerLink="/meus-eventos/evento/novo" class="home__empty-btn">
-            <org-icon name="add" size="sm" color="var(--org-on-primary)" />
-            Criar Primeiro Evento
-          </a>
-        </div>
-      </org-surface>
-    </article>
+    <org-empty-state
+      icon="event"
+      title="Nenhum evento disponível no momento."
+      description="Que tal criar o primeiro evento e reunir as pessoas especiais?"
+      data-testid="home-empty-state"
+    >
+      <a
+        orgButton="primary"
+        orgEmptyStateAction
+        routerLink="/meus-eventos/evento/novo"
+        class="home__empty-btn"
+      >
+        <org-icon name="add" size="sm" color="var(--org-on-primary)" />
+        Criar Primeiro Evento
+      </a>
+    </org-empty-state>
   } @else {
-    <div class="home__section-header">
-      <h2 class="home__section-title">
-        <org-icon name="event" color="var(--org-primary)" />
-        Próximos Eventos
-      </h2>
-      <span class="home__count-badge">{{ events()!.length }} {{ events()!.length === 1 ? 'evento' : 'eventos' }}</span>
-    </div>
-
-    <nav class="home__grid" aria-label="Lista de eventos">
-      @for (event of events()!; track event.id) {
-        <a
-          class="home__card-link"
-          data-testid="event-card"
-          [routerLink]="['/evento', event.id]"
-          role="link"
-          tabindex="0"
-          (keydown.enter)="navigateToEvent(event.id)"
-          (keydown.space)="navigateToEvent(event.id, $event)"
-          [attr.aria-label]="'Ver detalhes do evento ' + event.title"
-        >
-          <org-surface variant="card" class="home__card-surface">
-            <article class="home__card">
+    <org-section title="Próximos Eventos" icon="event" [count]="events()!.length">
+      <nav class="home__grid" aria-label="Lista de eventos">
+        @for (event of events()!; track event.id) {
+          <a
+            class="home__card-link"
+            data-testid="event-card"
+            [routerLink]="['/evento', event.id]"
+            role="link"
+            tabindex="0"
+            (keydown.enter)="navigateToEvent(event.id)"
+            (keydown.space)="navigateToEvent(event.id, $event)"
+            [attr.aria-label]="'Ver detalhes do evento ' + event.title"
+          >
+            <article [orgSurface]="'card'" class="home__card">
               <div class="home__card-top">
                 <div class="home__card-badge">
                   <org-icon name="event" size="sm" color="var(--org-primary)" />
@@ -96,9 +83,9 @@
                 </span>
               </div>
             </article>
-          </org-surface>
-        </a>
-      }
-    </nav>
+          </a>
+        }
+      </nav>
+    </org-section>
   }
-</section>
+</org-page-layout>

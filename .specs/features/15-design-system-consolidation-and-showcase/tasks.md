@@ -357,10 +357,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] Home view template completely migrates to shared layout and surface primitives
-- [ ] Unit tests in `src/app/features/home/home.container.spec.ts` pass with updated selectors
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 372 tests pass (no silent deletions)
+- [x] Home view template completely migrates to shared layout and surface primitives
+- [x] Unit tests in `src/app/features/home/home.container.spec.ts` pass with updated selectors
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `refactor(home): migrate view to canonical layout and surface primitives`

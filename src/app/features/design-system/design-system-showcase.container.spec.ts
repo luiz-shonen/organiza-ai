@@ -169,17 +169,15 @@ describe('DesignSystemShowcaseContainer', () => {
 
   it('should update activeSection on scrollToSection', () => {
     const scrollMock = vi.fn();
-    const mockElem = document.createElement('div');
-    mockElem.id = 'components-buttons';
-    mockElem.scrollIntoView = scrollMock;
-    document.body.appendChild(mockElem);
+    const mockElem = fixture.nativeElement.querySelector('#components-buttons') as HTMLElement;
+    if (mockElem) {
+      mockElem.scrollIntoView = scrollMock;
+    }
 
     component.scrollToSection('components-buttons');
 
     expect(component.activeSection()).toBe('components-buttons');
     expect(scrollMock).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
-
-    document.body.removeChild(mockElem);
   });
 
   it('should toggle buttonLoadingState', () => {
@@ -212,5 +210,63 @@ describe('DesignSystemShowcaseContainer', () => {
   it('should open confirm dialog sample via MatDialog', () => {
     component.openConfirmDialogSample();
     expect(mockDialog.open).toHaveBeenCalled();
+  });
+
+  it('should render all 14 visual section IDs in the template DOM', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const sectionIds = [
+      'brand-overview',
+      'brand-colors',
+      'brand-typography',
+      'brand-icons',
+      'foundations-tokens',
+      'foundations-fundamentals',
+      'components-surfaces',
+      'components-buttons',
+      'components-forms',
+      'components-chips',
+      'components-layout',
+      'components-feedback',
+      'components-navigation',
+      'guidelines-dos-donts',
+    ];
+
+    for (const id of sectionIds) {
+      const sectionEl = compiled.querySelector(`section#${id}`);
+      expect(sectionEl).toBeTruthy();
+    }
+  });
+
+  it('should expand and display code snippet pre element when code toggle is clicked in template', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.org-ds-specimen-card__code-box')).toBeNull();
+
+    component.toggleCode('surface-specimen');
+    fixture.detectChanges();
+
+    const codeBox = compiled.querySelector('.org-ds-specimen-card__code-box');
+    expect(codeBox).toBeTruthy();
+    expect(codeBox?.textContent).toContain('article [orgSurface]');
+  });
+
+  it('should trigger feedback notifications when feedback buttons are clicked in template', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const buttons = Array.from(compiled.querySelectorAll('#components-feedback button')) as HTMLButtonElement[];
+
+    const successBtn = buttons.find((b) => b.textContent?.includes('Testar Sucesso'));
+    expect(successBtn).toBeTruthy();
+    successBtn?.click();
+    expect(mockFeedbackService.success).toHaveBeenCalledWith('Operação concluída com sucesso!');
+
+    const errorBtn = buttons.find((b) => b.textContent?.includes('Testar Erro'));
+    expect(errorBtn).toBeTruthy();
+    errorBtn?.click();
+    expect(mockFeedbackService.error).toHaveBeenCalledWith('Ocorreu um erro ao processar.');
+  });
+
+  it('should render all icon cards in the iconography section', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const iconCards = compiled.querySelectorAll('.org-ds-icon-card');
+    expect(iconCards.length).toBe(component.allIconNames.length);
   });
 });

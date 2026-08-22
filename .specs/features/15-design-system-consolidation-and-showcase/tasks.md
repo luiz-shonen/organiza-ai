@@ -527,10 +527,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] All 14 visual sections rendered with structured specimen cards (header + import, DO/DON'T guidance, live canvas, code box with copy button, API property tables)
-- [ ] Template unit tests in `src/app/features/design-system/design-system-showcase.container.spec.ts` verify all 14 sections and interactive controls render
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 60 test suites, 384 tests pass (no silent deletions)
+- [x] All 14 visual sections rendered with structured specimen cards (header + import, DO/DON'T guidance, live canvas, code box with copy button, API property tables)
+- [x] Template unit tests in `src/app/features/design-system/design-system-showcase.container.spec.ts` verify all 14 sections and interactive controls render
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 60 test suites, 384 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(showcase): populate 14 visual showcase sections with specimen cards and snippets`

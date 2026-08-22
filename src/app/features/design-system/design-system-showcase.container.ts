@@ -344,7 +344,7 @@ export class DesignSystemShowcaseContainer {
     this.activeSection.set(sectionId);
     if (typeof document !== 'undefined') {
       const target = document.getElementById(sectionId);
-      if (target) {
+      if (target && typeof target.scrollIntoView === 'function') {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }

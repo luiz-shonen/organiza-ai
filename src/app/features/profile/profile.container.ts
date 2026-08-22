@@ -13,7 +13,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { AuthService, UserService, FamilyService } from '../../core/services';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
-import { FeedbackService } from '../../shared/ui';
+import {
+  FeedbackService,
+  OrgButtonDirective,
+  OrgEmptyStateComponent,
+  OrgIconComponent,
+  OrgPageHeaderComponent,
+  OrgPageLayoutComponent,
+  OrgSectionComponent,
+  OrgSurfaceDirective,
+} from '../../shared/ui';
 import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
 import {
   FamilyRosterManagerComponent,
@@ -31,6 +40,13 @@ import {
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    OrgPageLayoutComponent,
+    OrgPageHeaderComponent,
+    OrgSectionComponent,
+    OrgSurfaceDirective,
+    OrgEmptyStateComponent,
+    OrgButtonDirective,
+    OrgIconComponent,
     ProfileInfoCardComponent,
     FamilyRosterManagerComponent,
   ],

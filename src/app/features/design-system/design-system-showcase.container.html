@@ -1,0 +1,104 @@
+<div class="org-ds-layout">
+  <!-- 1. Sticky Navigation Sidebar -->
+  <aside class="org-ds-sidebar" aria-label="Navegação do Design System">
+    <div class="org-ds-sidebar__brand">
+      <div class="org-ds-sidebar__logo-badge">
+        <org-icon name="palette" size="lg" color="var(--org-primary)" />
+      </div>
+      <div class="org-ds-sidebar__title-wrap">
+        <span class="org-ds-sidebar__brand-name">Organiza AI</span>
+        <span class="org-ds-sidebar__version-badge">Design System 2026</span>
+      </div>
+    </div>
+
+    <!-- Live Search Filter -->
+    <div class="org-ds-sidebar__search">
+      <mat-form-field appearance="outline" orgFormField class="org-ds-sidebar__search-field">
+        <org-icon matPrefix name="search" size="sm" />
+        <input
+          matInput
+          type="text"
+          placeholder="Buscar componentes..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          aria-label="Buscar componentes e tokens"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Navigation Category Groups -->
+    <nav class="org-ds-sidebar__nav">
+      @for (category of filteredCategories(); track category.id) {
+        <div class="org-ds-sidebar__nav-group">
+          <h4 class="org-ds-sidebar__group-title">{{ category.title }}</h4>
+          <ul class="org-ds-sidebar__nav-list">
+            @for (section of category.sections; track section.id) {
+              <li>
+                <button
+                  type="button"
+                  class="org-ds-sidebar__nav-link"
+                  [class.org-ds-sidebar__nav-link--active]="activeSection() === section.id"
+                  (click)="scrollToSection(section.id)"
+                  [attr.aria-current]="activeSection() === section.id ? 'true' : null"
+                >
+                  <org-icon [name]="section.icon" size="sm" />
+                  <span>{{ section.title }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </nav>
+  </aside>
+
+  <!-- 2. Main Content Canvas -->
+  <main class="org-ds-main">
+    <!-- Topbar & Theming Controller -->
+    <header class="org-ds-topbar" [orgSurface]="'panel'">
+      <div class="org-ds-topbar__title-wrap">
+        <span class="org-ds-topbar__badge">SHOWCASE V2026</span>
+        <h1 class="org-ds-topbar__title org-gradient-text">Organiza AI Design System</h1>
+      </div>
+
+      <div class="org-ds-topbar__controls">
+        <!-- Theme Mode Switcher -->
+        <button
+          type="button"
+          orgIconButton="default"
+          (click)="toggleThemeMode()"
+          [attr.aria-label]="themeService.isDark() ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
+          class="org-ds-topbar__theme-toggle"
+        >
+          <org-icon [name]="themeService.isDark() ? 'light_mode' : 'dark_mode'" size="md" />
+        </button>
+
+        <!-- Seasonal Theme Selector -->
+        <mat-form-field appearance="outline" orgFormField class="org-ds-topbar__seasonal-select">
+          <mat-select
+            [ngModel]="activeSeasonalTheme()"
+            (ngModelChange)="setSeasonalTheme($event)"
+            aria-label="Selecionar tema sazonal"
+          >
+            @for (opt of seasonalOptions; track opt.id) {
+              <mat-option [value]="opt.id">{{ opt.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </header>
+
+    <!-- Sections container -->
+    <div class="org-ds-content">
+      <!-- We will populate detailed sections in T21 -->
+      <section id="brand-overview" class="org-ds-section">
+        <org-page-header
+          title="Visão Geral"
+          subtitle="Filosofia, Single Source of Truth, acessibilidade WCAG 2.1 AA e arquitetura do Design System Organiza AI."
+          icon="info"
+          [gradient]="true"
+        />
+      </section>
+    </div>
+  </main>
+</div>

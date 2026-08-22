@@ -485,10 +485,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `DesignSystemShowcaseContainer` class implements category signals (Brand, Fundações, Componentes, Regras), search filter signal, sticky sidebar state, and theme/seasonal switcher handlers
-- [ ] Unit tests in `src/app/features/design-system/design-system-showcase.container.spec.ts` verify category navigation, search filtering, and theme switching logic
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 60 test suites, 378 tests pass (no silent deletions)
+- [x] `DesignSystemShowcaseContainer` class implements category signals (Brand, Fundações, Componentes, Regras), search filter signal, sticky sidebar state, and theme/seasonal switcher handlers
+- [x] Unit tests in `src/app/features/design-system/design-system-showcase.container.spec.ts` verify category navigation, search filtering, and theme switching logic
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 60 test suites, 378 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(showcase): create showcase container with sticky sidebar and theme switchers`

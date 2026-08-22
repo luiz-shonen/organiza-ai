@@ -548,10 +548,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `/design-system` route registered with `superAdminGuard` and drawer entry configured for superadmin users
-- [ ] App routing unit tests verify guard protection, route lazy loading, and redirect in `src/app/app.routes.spec.ts`
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 60 test suites, 386 tests pass (no silent deletions)
+- [x] `/design-system` route registered with `superAdminGuard` and drawer entry configured for superadmin users
+- [x] App routing unit tests verify guard protection, route lazy loading, and redirect in `src/app/app.routes.spec.ts`
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 60 test suites, 386 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(router): wire guarded design system route and navigation entry`

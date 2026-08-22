@@ -33,5 +33,13 @@ export const routes: Routes = [
     canActivate: [superAdminGuard],
     loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
+  {
+    path: 'design-system',
+    canActivate: [superAdminGuard],
+    loadComponent: () =>
+      import('./features/design-system/design-system-showcase.container').then(
+        (m) => m.DesignSystemShowcaseContainer,
+      ),
+  },
   { path: '**', redirectTo: '' },
 ];

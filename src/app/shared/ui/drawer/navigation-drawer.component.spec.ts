@@ -31,6 +31,7 @@ describe('NavigationDrawerComponent', () => {
       'page',
     );
     expect(root.querySelector('[data-testid="drawer-admin"]')).toBeTruthy();
+    expect(root.querySelector('[data-testid="drawer-design-system"]')).toBeTruthy();
     expect(root.querySelector('[data-testid="drawer-login"]')).toBeNull();
   });
 
@@ -45,6 +46,20 @@ describe('NavigationDrawerComponent', () => {
       ?.click();
 
     expect(navigate).toHaveBeenCalledWith('/meus-eventos');
+    expect(close).toHaveBeenCalledOnce();
+  });
+
+  it('emits /design-system route request and closes drawer when design system button is clicked', () => {
+    const navigate = vi.fn();
+    const close = vi.fn();
+    component.navigate.subscribe(navigate);
+    component.close.subscribe(close);
+
+    (fixture.nativeElement as HTMLElement)
+      .querySelector<HTMLButtonElement>('[data-testid="drawer-design-system"]')
+      ?.click();
+
+    expect(navigate).toHaveBeenCalledWith('/design-system');
     expect(close).toHaveBeenCalledOnce();
   });
 

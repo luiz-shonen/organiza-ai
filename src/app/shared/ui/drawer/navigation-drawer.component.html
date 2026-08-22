@@ -80,6 +80,17 @@
           <mat-icon aria-hidden="true">admin_panel_settings</mat-icon>
           <span>Painel administrativo</span>
         </button>
+        <button
+          mat-button
+          type="button"
+          class="navigation-drawer__route"
+          [attr.aria-current]="activeRoute().startsWith('/design-system') ? 'page' : null"
+          data-testid="drawer-design-system"
+          (click)="onNavigate('/design-system')"
+        >
+          <mat-icon aria-hidden="true">palette</mat-icon>
+          <span>Design System</span>
+        </button>
       }
     } @else {
       <button

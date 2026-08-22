@@ -7,6 +7,7 @@ import { EventDetailContainer } from './features/event-detail/event-detail.conta
 import { LoginContainer } from './features/auth/login/login.container';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
 import { ProfileContainer } from './features/profile/profile.container';
+import { DesignSystemShowcaseContainer } from './features/design-system/design-system-showcase.container';
 
 describe('App Routes', () => {
   it('should define the root route with HomeContainer lazy loading', async () => {
@@ -61,6 +62,16 @@ describe('App Routes', () => {
     expect(route?.loadChildren).toBeDefined();
     const children = await (route?.loadChildren as () => Promise<unknown>)();
     expect(children).toBe(ADMIN_ROUTES);
+  });
+
+  it('should define /design-system route protected by superAdminGuard and lazy-loading DesignSystemShowcaseContainer', async () => {
+    const route = routes.find((r: Route) => r.path === 'design-system');
+    expect(route).toBeDefined();
+    expect(route?.canActivate).toBeDefined();
+    expect(route?.canActivate).toContain(superAdminGuard);
+    expect(route?.loadComponent).toBeDefined();
+    const component = await (route?.loadComponent as () => Promise<unknown>)();
+    expect(component).toBe(DesignSystemShowcaseContainer);
   });
 
   it('should define wildcard ** route redirecting to root', () => {

@@ -8,7 +8,8 @@
   <div class="item-list-card__list">
     @for (item of items(); track item.id) {
       <div
-        class="glass-card item-list-card__item"
+        [orgSurface]="'card'"
+        class="item-list-card__item"
         [class.item-list-card__item--claimed]="item.claimedBy"
       >
         <div class="item-list-card__item-info">

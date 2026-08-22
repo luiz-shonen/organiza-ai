@@ -420,10 +420,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] Event Detail container and child cards use `org-page-layout` and `[orgSurface]`
-- [ ] Unit tests in `src/app/features/event-detail/event-detail.container.spec.ts` pass
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 372 tests pass (no silent deletions)
+- [x] Public Event Detail view and child cards migrate to shared layout and surface primitives
+- [x] Unit tests in `src/app/features/event-detail/event-detail.container.spec.ts` pass
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `refactor(event-detail): migrate view and cards to ui primitives`

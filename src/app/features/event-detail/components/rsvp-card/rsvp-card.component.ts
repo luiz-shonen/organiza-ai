@@ -3,11 +3,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { OrgSurfaceDirective } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-rsvp-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
+  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, OrgSurfaceDirective],
   templateUrl: './rsvp-card.component.html',
   styleUrl: './rsvp-card.component.scss',
 })

@@ -1,11 +1,13 @@
 @if (loading()) {
-  <div class="event-detail__loading" aria-hidden="true">
-    <div class="skeleton-box event-detail__skeleton-hero"></div>
-    <div class="skeleton-box event-detail__skeleton-card"></div>
-    <div class="skeleton-box event-detail__skeleton-card"></div>
-  </div>
+  <org-page-layout maxWidth="default">
+    <div class="event-detail__loading" aria-hidden="true">
+      <div class="skeleton-box event-detail__skeleton-hero"></div>
+      <div class="skeleton-box event-detail__skeleton-card"></div>
+      <div class="skeleton-box event-detail__skeleton-card"></div>
+    </div>
+  </org-page-layout>
 } @else if (event(); as event) {
-  <main class="event-detail" data-testid="event-detail-page">
+  <org-page-layout maxWidth="default" data-testid="event-detail-page">
     <app-event-card [event]="event" [guestCount]="guestCount()" />
 
     <section class="event-detail__section" aria-label="Confirmação de presença">
@@ -38,10 +40,13 @@
         />
       </section>
     }
-  </main>
+  </org-page-layout>
 } @else {
-  <div class="event-detail__not-found" role="alert">
-    <h2>Evento não encontrado</h2>
-    <p>O evento que você procura não existe ou foi removido.</p>
-  </div>
+  <org-page-layout maxWidth="default">
+    <org-empty-state
+      icon="event"
+      title="Evento não encontrado"
+      description="O evento que você procura não existe ou foi removido."
+    />
+  </org-page-layout>
 }

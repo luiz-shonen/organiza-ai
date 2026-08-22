@@ -24,7 +24,7 @@ import {
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest, type RsvpDrawerResult } from '../../core/models';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { FeedbackService } from '../../shared/ui';
+import { FeedbackService, OrgEmptyStateComponent, OrgPageLayoutComponent } from '../../shared/ui';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
@@ -36,6 +36,8 @@ import { PixCardComponent } from './components/pix-card/pix-card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatProgressSpinnerModule,
+    OrgPageLayoutComponent,
+    OrgEmptyStateComponent,
     EventCardComponent,
     RsvpCardComponent,
     ItemListCardComponent,

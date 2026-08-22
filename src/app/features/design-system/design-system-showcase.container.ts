@@ -196,7 +196,6 @@ export const SHOWCASE_NAV_CATEGORIES: NavCategoryGroup[] = [
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatDialogModule,
     OrgSurfaceDirective,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,

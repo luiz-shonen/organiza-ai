@@ -506,10 +506,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] Component Specimen Card styles (`.org-ds-specimen-card`, `.org-ds-rule--do`, `.org-ds-rule--dont`, `.org-ds-code-box`, `.org-ds-table`) implemented cleanly with responsive mobile-first rules
-- [ ] Unit tests in `src/app/features/design-system/design-system-showcase.container.spec.ts` verify specimen card styling rules compile without errors
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 60 test suites, 380 tests pass (no silent deletions)
+- [x] Component Specimen Card styles (`.org-ds-specimen-card`, `.org-ds-rule--do`, `.org-ds-rule--dont`, `.org-ds-code-box`, `.org-ds-table`) implemented cleanly with responsive mobile-first rules
+- [x] Unit tests in `src/app/features/design-system/design-system-showcase.container.spec.ts` verify specimen card styling rules compile without errors
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 60 test suites, 380 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `feat(showcase): implement component specimen card styling architecture`

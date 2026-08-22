@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal, type WritableSignal } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { DesignSystemShowcaseContainer, SHOWCASE_NAV_CATEGORIES } from './design-system-showcase.container';
 import { ThemeService } from '../../core/services/theme.service';
@@ -8,9 +9,10 @@ import { MatDialog } from '@angular/material/dialog';
 describe('DesignSystemShowcaseContainer', () => {
   let component: DesignSystemShowcaseContainer;
   let fixture: ComponentFixture<DesignSystemShowcaseContainer>;
+  let isDarkSignal: WritableSignal<boolean>;
   let mockThemeService: {
     mode: { set: ReturnType<typeof vi.fn> };
-    isDark: ReturnType<typeof vi.fn>;
+    isDark: WritableSignal<boolean>;
     setMode: ReturnType<typeof vi.fn>;
   };
   let mockFeedbackService: {
@@ -23,10 +25,13 @@ describe('DesignSystemShowcaseContainer', () => {
   };
 
   beforeEach(async () => {
+    isDarkSignal = signal<boolean>(false);
     mockThemeService = {
       mode: { set: vi.fn() },
-      isDark: vi.fn().mockReturnValue(false),
-      setMode: vi.fn(),
+      isDark: isDarkSignal,
+      setMode: vi.fn((newMode: string) => {
+        isDarkSignal.set(newMode === 'dark');
+      }),
     };
 
     mockFeedbackService = {
@@ -36,7 +41,7 @@ describe('DesignSystemShowcaseContainer', () => {
     };
 
     mockDialog = {
-      open: vi.fn(),
+      open: vi.fn().mockReturnValue({ afterClosed: () => ({ subscribe: vi.fn() }) }),
     };
 
     await TestBed.configureTestingModule({
@@ -112,11 +117,11 @@ describe('DesignSystemShowcaseContainer', () => {
   });
 
   it('should toggle theme mode between light and dark', () => {
-    mockThemeService.isDark.mockReturnValue(false);
+    isDarkSignal.set(false);
     component.toggleThemeMode();
     expect(mockThemeService.setMode).toHaveBeenCalledWith('dark');
 
-    mockThemeService.isDark.mockReturnValue(true);
+    isDarkSignal.set(true);
     component.toggleThemeMode();
     expect(mockThemeService.setMode).toHaveBeenCalledWith('light');
   });
@@ -190,5 +195,22 @@ describe('DesignSystemShowcaseContainer', () => {
     const filtered = component.filteredIcons();
     expect(filtered).toContain('event');
     expect(filtered.length).toBeLessThan(component.allIconNames.length);
+  });
+
+  it('should compute surfacePreviewGlassBg and surfacePreviewGlassBlur based on sliders', () => {
+    isDarkSignal.set(false);
+    component.surfaceBgOpacity.set(80);
+    component.surfaceBlurSlider.set(32);
+
+    expect(component.surfacePreviewGlassBg()).toBe('rgba(255, 255, 255, 0.8)');
+    expect(component.surfacePreviewGlassBlur()).toBe('blur(32px)');
+
+    isDarkSignal.set(true);
+    expect(component.surfacePreviewGlassBg()).toBe('rgba(31, 26, 29, 0.8)');
+  });
+
+  it('should open confirm dialog sample via MatDialog', () => {
+    component.openConfirmDialogSample();
+    expect(mockDialog.open).toHaveBeenCalled();
   });
 });

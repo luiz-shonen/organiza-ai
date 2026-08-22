@@ -8,7 +8,7 @@
     <p class="login__subtitle">Acesse ou crie sua conta para continuar</p>
   </div>
 
-  <div class="glass-card login__card">
+  <div [orgSurface]="'card'" class="login__card">
     @if (errorMessage(); as error) {
       <div class="login__error" data-testid="login-error-alert">
         <mat-icon>error</mat-icon>
@@ -17,7 +17,7 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
-      <mat-form-field appearance="outline" class="login__form-field">
+      <mat-form-field orgFormField appearance="outline" class="login__form-field">
         <mat-label>E-mail</mat-label>
         <mat-icon matPrefix>email</mat-icon>
         <input
@@ -35,7 +35,7 @@
         }
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="login__form-field">
+      <mat-form-field orgFormField appearance="outline" class="login__form-field">
         <mat-label>Senha</mat-label>
         <mat-icon matPrefix>lock</mat-icon>
         <input

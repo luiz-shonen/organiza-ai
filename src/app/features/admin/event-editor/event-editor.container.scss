@@ -532,8 +532,8 @@
 }
 
 .editor__collab-btn {
-  border-color: var(--org-accent-color, #38bdf8);
-  color: var(--org-accent-color, #38bdf8);
+  border-color: var(--org-primary, #ff4d94);
+  color: var(--org-primary, #ff4d94);
 
   mat-icon {
     margin-right: 4px;
@@ -547,12 +547,12 @@
   padding: var(--org-spacing-sm, 12px) var(--org-spacing-md, 16px);
   margin-bottom: var(--org-spacing-md, 16px);
   border-radius: var(--org-radius-md, 8px);
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  color: var(--org-text-primary, #ffffff);
+  background: rgba(255, 77, 148, 0.12);
+  border: 1px solid rgba(255, 77, 148, 0.35);
+  color: var(--mat-sys-on-surface, #2a101f);
 
   &-icon {
-    color: var(--org-accent-color, #38bdf8);
+    color: var(--org-primary, #ff4d94);
     flex-shrink: 0;
   }
 

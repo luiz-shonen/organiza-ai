@@ -292,10 +292,10 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] Outdated hex colors replaced with `--org-primary` and canonical Pink/Orange/Yellow tokens
-- [ ] Event editor container unit tests pass
-- [ ] Gate check passes: `npm test -- --watch=false`
-- [ ] Test count: 59 test suites, 372 tests pass (no silent deletions)
+- [x] Outdated hex colors replaced with `--org-primary` and canonical Pink/Orange/Yellow tokens
+- [x] Event editor container unit tests pass
+- [x] Gate check passes: `npm test -- --watch=false`
+- [x] Test count: 59 test suites, 365 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: quick
 **Commit**: `refactor(styles): replace obsolete color fallbacks with brand tokens`

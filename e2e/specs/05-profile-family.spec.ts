@@ -50,7 +50,7 @@ test.describe('User Profile and Family Roster Management', () => {
     const profileInfoCard = page.locator('app-profile-info-card');
     await expect(profileInfoCard).toBeVisible();
     await expect(page.locator('#profile-heading')).toContainText('Informações Pessoais');
-    await assertSingleSurfaceRing(profileInfoCard.locator('section.org-surface'));
+    await assertSingleSurfaceRing(profileInfoCard.locator('.org-surface'));
 
     // Family roster and attended events sections
     await expect(page.locator('app-family-roster-manager')).toBeVisible();
@@ -88,7 +88,7 @@ test.describe('User Profile and Family Roster Management', () => {
     const familyRosterRoot = page.locator('app-family-roster-manager');
     await expect(familyRosterRoot).toBeVisible();
     await expect(page.locator('#family-roster-heading, .family-roster__title').first()).toContainText('Minha Família');
-    await assertSingleSurfaceRing(familyRosterRoot.locator('section.org-surface'));
+    await assertSingleSurfaceRing(familyRosterRoot.locator('.org-surface'));
 
     // Form inputs and add button presence
     await expect(familyRoster.nameInput).toBeVisible();

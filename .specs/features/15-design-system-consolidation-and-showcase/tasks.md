@@ -569,9 +569,9 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] E2E tests verify Super Admin access, unauthorized redirect, sticky sidebar navigation, theme switchers, specimen interactions, clipboard copying, and zero-overflow across Desktop Chromium and Mobile Chrome
-- [ ] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
-- [ ] Test count: 60 unit test suites (386 unit tests) and 14 E2E test suites (155 E2E tests) pass (no silent deletions)
+- [x] E2E tests verify Super Admin access, unauthorized redirect, sticky sidebar navigation, theme switchers, specimen interactions, clipboard copying, and zero-overflow across Desktop Chromium and Mobile Chrome
+- [x] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
+- [x] Test count: 60 unit test suites (386 unit tests) and 14 E2E test suites (155 E2E tests) pass (no silent deletions)
 **Tests**: e2e
 **Gate**: full
 **Commit**: `test(e2e): add design system showcase interaction and visual tests`

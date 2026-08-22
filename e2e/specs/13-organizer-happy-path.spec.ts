@@ -813,7 +813,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.assertLoaded();
 
       // Assert glassmorphism on profile card surface
-      const profileSurface = page.locator('app-profile-info-card section.org-surface').first();
+      const profileSurface = page.locator('app-profile-info-card .org-surface').first();
       await assertGlassmorphism(profileSurface);
     });
 
@@ -857,7 +857,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(editBtn).toBeVisible();
       await editBtn.click();
 
-      const profileSurface = page.locator('app-profile-info-card section.org-surface').first();
+      const profileSurface = page.locator('app-profile-info-card .org-surface').first();
       const editField = page.locator('.profile-info-card__form-field').first();
       const surfacePadding = await profileSurface.evaluate((surface) => {
         const style = window.getComputedStyle(surface);

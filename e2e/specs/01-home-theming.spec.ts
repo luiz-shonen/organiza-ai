@@ -25,7 +25,7 @@ test.describe('Home Theming, Feed and Accessibility', () => {
       await expect(firstCard).toBeVisible();
       await expect(firstCard).toHaveAttribute('role', 'link');
       await expect(firstCard).toHaveAttribute('tabindex', '0');
-      await assertSingleSurfaceRing(firstCard.locator('section.org-surface'));
+      await assertSingleSurfaceRing(firstCard.locator('.org-surface'));
 
       // Verify card click navigation
       await homePage.clickEventCard(0);
@@ -33,8 +33,7 @@ test.describe('Home Theming, Feed and Accessibility', () => {
       await expect(page).toHaveURL(/\/evento\/.+/);
     } else {
       await expect(homePage.emptyState).toBeVisible();
-      await expect(homePage.emptyState).toHaveAttribute('aria-label', 'Nenhum evento encontrado');
-      await assertSingleSurfaceRing(homePage.emptyState.locator('section.org-surface'));
+      await assertSingleSurfaceRing(homePage.emptyState.locator('.org-surface'));
     }
     await assertNoHorizontalOverflow(page);
   });

@@ -5,6 +5,7 @@ import { OrganizerDashboardPage } from '../pages/organizer-dashboard.page';
 import { EventEditorPage } from '../pages/event-editor.page';
 import { EventDetailPage } from '../pages/event-detail.page';
 import { ProfilePage } from '../pages/profile.page';
+import { DesignSystemShowcasePage } from '../pages/design-system-showcase.page';
 import { RsvpDialogHarness } from '../components/rsvp-dialog.harness';
 import { ItemListHarness } from '../components/item-list.harness';
 import { SharePanelHarness } from '../components/share-panel.harness';
@@ -19,6 +20,7 @@ export type AppFixtures = {
   eventEditorPage: EventEditorPage;
   eventDetailPage: EventDetailPage;
   profilePage: ProfilePage;
+  showcasePage: DesignSystemShowcasePage;
   rsvpDialog: RsvpDialogHarness;
   itemList: ItemListHarness;
   sharePanel: SharePanelHarness;
@@ -45,6 +47,9 @@ export const test = base.extend<AppFixtures>({
   },
   profilePage: async ({ page }, use) => {
     await use(new ProfilePage(page));
+  },
+  showcasePage: async ({ page }, use) => {
+    await use(new DesignSystemShowcasePage(page));
   },
   rsvpDialog: async ({ page }, use) => {
     await use(new RsvpDialogHarness(page));

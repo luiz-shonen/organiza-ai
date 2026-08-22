@@ -11,7 +11,7 @@ export class EventDetailPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.pageRoot = page.getByTestId('event-detail-page').or(page.locator('main.event-detail, .event-detail__not-found, .event-detail__loading'));
+    this.pageRoot = page.getByTestId('event-detail-page').or(page.locator('main.event-detail, .event-detail__not-found, .event-detail__loading, org-empty-state'));
     this.countdownTimer = page.getByTestId('countdown-timer').or(page.locator('.countdown, .event-card__countdown, .event-card__date'));
     this.rsvpBtn = page.getByTestId('rsvp-action-btn').or(page.locator('.rsvp-card button, button:has-text("Confirmar"), button:has-text("Presença")'));
     this.pixCard = page.getByTestId('pix-card').or(page.locator('app-pix-card, .pix-card'));

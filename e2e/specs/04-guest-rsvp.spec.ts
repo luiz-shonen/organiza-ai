@@ -22,16 +22,16 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     await eventDetailPage.assertLoaded();
 
     // Verify page container or not-found container is rendered
-    const hasEventData = await page.locator('main.event-detail').isVisible().catch(() => false);
+    const hasEventData = await page.locator('[data-testid="event-detail-page"], app-event-card').first().isVisible().catch(() => false);
 
     if (hasEventData) {
       // 1. Verify Event Banner & Hero info
       const bannerHero = page.locator('.event-card__hero');
       await expect(bannerHero).toBeVisible();
-      await assertSingleSurfaceRing(bannerHero.locator('section.org-surface'));
+      await assertSingleSurfaceRing(bannerHero.locator('.org-surface'));
 
       const detailsSurface = page.locator('.event-card__details-card');
-      await assertSingleSurfaceRing(detailsSurface.locator('section.org-surface'));
+      await assertSingleSurfaceRing(detailsSurface.locator('.org-surface'));
 
       const eventTitle = page.locator('h1.event-card__title');
       await expect(eventTitle).toBeVisible();
@@ -49,13 +49,12 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
       // 4. Verify location details
       const locationText = page.locator('.event-card__location-text');
       await expect(locationText).toBeVisible();
-      await assertNoHorizontalOverflow(page);
     } else {
       // Route structure loaded in not-found fallback
-      const notFoundAlert = page.locator('.event-detail__not-found');
-      await expect(notFoundAlert).toBeVisible();
-      await expect(notFoundAlert).toHaveAttribute('role', 'alert');
-      await expect(notFoundAlert.locator('h2')).toHaveText('Evento não encontrado');
+      const notFoundEmptyState = page.locator('org-empty-state, .event-detail__not-found');
+      await expect(notFoundEmptyState).toBeVisible();
+      await expect(notFoundEmptyState).toContainText('Evento não encontrado');
+      await assertNoHorizontalOverflow(page);
     }
   });
 

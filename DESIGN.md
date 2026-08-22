@@ -1,210 +1,365 @@
----
-name: Vibrant Celebration
-colors:
-  surface: '#fff8f8'
-  surface-dim: '#fce1ed'
-  surface-bright: '#fff8f8'
-  surface-container-lowest: '#ffffff'
-  surface-container-low: '#f9f1ff'
-  surface-container: '#f4eaff'
-  surface-container-high: '#f0e3ff'
-  surface-container-highest: '#ebddff'
-  on-surface: '#2a101f'
-  on-surface-variant: '#4a4455'
-  inverse-surface: '#38265a'
-  inverse-on-surface: '#f7edff'
-  outline: '#7b7487'
-  outline-variant: '#ccc3d8'
-  surface-tint: '#732ee4'
-  primary: '#ff4d94'
-  on-primary: '#ffffff'
-  primary-container: '#ff80b3'
-  on-primary-container: '#3d001a'
-  inverse-primary: '#ffc2d9'
-  secondary: '#ff8c42'
-  on-secondary: '#ffffff'
-  secondary-container: '#ffb380'
-  on-secondary-container: '#3d1400'
-  tertiary: '#ffc837'
-  on-tertiary: '#2a1f00'
-  tertiary-container: '#8e556b'
-  on-tertiary-container: '#ffdde7'
-  error: '#ba1a1a'
-  on-error: '#ffffff'
-  error-container: '#ffdad6'
-  on-error-container: '#93000a'
-  primary-fixed: '#eaddff'
-  primary-fixed-dim: '#d2bbff'
-  on-primary-fixed: '#25005a'
-  on-primary-fixed-variant: '#5a00c6'
-  secondary-fixed: '#ffdbcc'
-  secondary-fixed-dim: '#ffb694'
-  on-secondary-fixed: '#351000'
-  on-secondary-fixed-variant: '#7b2f00'
-  tertiary-fixed: '#ffd9e4'
-  tertiary-fixed-dim: '#f9b3cc'
-  on-tertiary-fixed: '#360b1f'
-  on-tertiary-fixed-variant: '#6a364b'
-  background: '#fef7ff'
-  on-background: '#231043'
-  surface-variant: '#ebddff'
-typography:
-  display-lg:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 48px
-    fontWeight: '800'
-    lineHeight: '1.1'
-    letterSpacing: -0.02em
-  display-lg-mobile:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 36px
-    fontWeight: '800'
-    lineHeight: '1.1'
-  headline-md:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 32px
-    fontWeight: '700'
-    lineHeight: '1.2'
-  headline-sm:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 24px
-    fontWeight: '700'
-    lineHeight: '1.3'
-  body-lg:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 18px
-    fontWeight: '500'
-    lineHeight: '1.6'
-  body-md:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 16px
-    fontWeight: '400'
-    lineHeight: '1.6'
-  label-bold:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 14px
-    fontWeight: '700'
-    lineHeight: '1.2'
-    letterSpacing: 0.05em
-  label-sm:
-    fontFamily: Plus Jakarta Sans
-    fontSize: 12px
-    fontWeight: '600'
-    lineHeight: '1.2'
-rounded:
-  sm: 0.25rem
-  DEFAULT: 0.5rem
-  md: 0.75rem
-  lg: 1rem
-  xl: 1.5rem
-  full: 9999px
-spacing:
-  base: 8px
-  xs: 4px
-  sm: 12px
-  md: 24px
-  lg: 48px
-  xl: 80px
-  gutter: 24px
-  margin-mobile: 20px
-  margin-desktop: 64px
+# Organiza AI — Design System & Living Component Catalog
+
+> **Version:** 2.0.0 (Consolidated)  
+> **Status:** Production / Living Architecture  
+> **Showcase Route:** `/design-system` *(Guarded by `superAdminGuard`)*  
+> **Audience:** Core Developers, UX Designers, Feature Architects  
+
 ---
 
-## Brand & Style
+## Table of Contents
+1. [Brand Identity & Festive Narrative](#1-brand-identity--festive-narrative)
+2. [Color Palette & Semantic Tokens](#2-color-palette--semantic-tokens)
+3. [Typography Hierarchy](#3-typography-hierarchy)
+4. [Spacing, Breakpoints & Glassmorphism](#4-spacing-breakpoints--glassmorphism)
+5. [Canonical Iconography](#5-canonical-iconography)
+6. [Component Families & Public APIs](#6-component-families--public-apis)
+   - [Surfaces (`orgSurface`)](#61-surfaces-orgsurface)
+   - [Buttons & Links (`orgButton`)](#62-buttons--links-orgbutton)
+   - [Chips & Badges (`orgChip`)](#63-chips--badges-orgchip)
+   - [Forms & Fields (`orgFormField`, `orgFieldLabel`)](#64-forms--fields-orgformfield-orgfieldlabel)
+   - [Layout Primitives (`org-page-layout`, `org-page-header`, `org-section`, `orgFormGrid`)](#65-layout-primitives)
+   - [Feedback & Alerts (`org-empty-state`, `org-banner`, `FeedbackService`)](#66-feedback--alerts)
+   - [Navigation (`app-navigation-drawer`)](#67-navigation)
+7. [Seasonal Theming Architecture](#7-seasonal-theming-architecture)
+8. [Architectural Principles & Quality Standards](#8-architectural-principles--quality-standards)
+9. [DOs and DON'Ts](#9-dos-and-donts)
 
-The design system is built on a "Modern Festive Planner" narrative, designed to transform task management from a chore into a celebration. The target audience includes creative professionals, event planners, and individuals who thrive in high-energy, visually stimulating environments.
+---
 
-The aesthetic is a maximalist blend of **Glassmorphism** and **Vibrant Modernism**. It prioritizes depth through translucent layering, organic movement via background shapes, and a "bubbly" personality. Every interaction should feel energetic and high-fidelity, utilizing "Organiza-inspired" color transitions to guide the eye and evoke a sense of playfulness and momentum.
+## 1. Brand Identity & Festive Narrative
 
-## Colors
+Organiza AI is built on the **Modern Festive Planner** narrative: transforming event organization from a tedious administrative chore into a vibrant, communal celebration.
 
-The palette is led by the original vibrant **Pink**, **Orange**, and **Yellow** logo accents. A soft peach and blush surface palette lets these three hues create the festive gradient without turning the application into a purple product theme.
+### Aesthetic Pillars
+- **Vibrant Modernism:** Punchy primary accents, joyful animations, and celebratory confetti.
+- **Glassmorphism:** Multi-layered depth via single-ring translucent backdrops with hardware-accelerated blur.
+- **Bubbly Geometric Shapes:** Unapologetically rounded corners ($12\text{px}$ to $24\text{px}$, pill badges).
+- **Canonical Warm Palette:** The signature **Pink $\rightarrow$ Orange $\rightarrow$ Yellow** progression.
 
-Backgrounds are never flat; they utilize a soft peach-to-lavender base layered with blurred, floating organic shapes in primary and secondary hues (20% opacity) to create a sense of living space behind the UI.
+---
 
-## Typography
+## 2. Color Palette & Semantic Tokens
 
-This design system uses **Plus Jakarta Sans** across all roles to maintain a cohesive, rounded, and welcoming feel while ensuring legibility.
+### 2.1 Canonical Brand Triple
+| Token | CSS Variable | Hex | Usage |
+| :--- | :--- | :--- | :--- |
+| **Pink** | `--org-brand-pink` / `--org-primary` | `#FF4D94` | Primary brand accent, primary CTA, hero gradients, active highlights |
+| **Orange** | `--org-brand-orange` / `--org-secondary` | `#FF8C42` | Secondary accent, gradient mid-point, decorative highlights |
+| **Yellow** | `--org-brand-yellow` / `--org-tertiary` | `#FFC837` | Warm festive accents, countdown badges, highlights |
 
-Headlines utilize the heaviest weights (Bold/ExtraBold) to achieve the "bubbly" festive look, often paired with tight letter spacing for a punchy, modern impact. Body text remains medium weight to ensure it holds its own against the vibrant, high-contrast backgrounds. All labels should be treated with uppercase styling and increased tracking when used for categorization.
+### 2.2 Semantic Colors (Light & Dark Mode)
+```scss
+// Light Theme Defaults
+--org-surface: #FFF8F8;
+--org-surface-card: rgba(255, 255, 255, 0.72);
+--org-surface-glass: rgba(255, 255, 255, 0.45);
+--org-surface-panel: rgba(255, 255, 255, 0.85);
+--org-on-surface: #2A101F;
+--org-on-surface-variant: #4A4455;
+--org-glass-ring-color: rgba(255, 77, 148, 0.18);
+--org-glass-border-width: 1px;
 
-## Layout & Spacing
+// Dark Theme Overrides (.dark)
+--org-surface: #120816;
+--org-surface-card: rgba(30, 15, 38, 0.75);
+--org-surface-glass: rgba(25, 10, 32, 0.55);
+--org-surface-panel: rgba(38, 20, 48, 0.85);
+--org-on-surface: #F8EDF6;
+--org-on-surface-variant: #D4C5D6;
+--org-glass-ring-color: rgba(255, 77, 148, 0.28);
+```
 
-The layout follows a **Fluid Grid & Mobile-First** philosophy with generous margins to allow the background organic shapes to breathe while guaranteeing zero horizontal overflow.
+### 2.3 Status & Functional Tokens
+- **Success:** `--org-success: #10B981`, `--org-on-success: #FFFFFF`
+- **Warning:** `--org-warning: #F59E0B`, `--org-on-warning: #000000`
+- **Danger / Error:** `--org-danger: #EF4444`, `--org-on-danger: #FFFFFF`
+- **Info:** `--org-info: #3B82F6`, `--org-on-info: #FFFFFF`
 
-- **Desktop (≥ 600px / ≥ 960px):** 12-column grid, 32px-64px outer margins, 24px gutters.
-- **Mobile (< 600px):** Single-column fluid stacking, 12px-16px outer margins, 12px-16px gutters.
+---
 
-### Mobile-First Responsive Rules (AD-031)
+## 3. Typography Hierarchy
 
-1. **Form Grid Stacking**: Multi-column form layouts (e.g. Date/Time rows, Address rows, Family Roster forms) must default to a single column (`grid-template-columns: 1fr`) on mobile viewports ($< 600\text{ px}$ / $< 640\text{ px}$) and expand to multi-column grids (`2fr 1fr`, `1fr 1fr`, or 3 columns) only on `@media (min-width: 600px)` or `@media (min-width: 640px)`.
-2. **Container Padding Rhythm**: Component and page containers use fluid mobile-first padding:
-   - Mobile: `16px 12px` (or `12px` on compact cards).
-   - Desktop: `24px 16px` to `32px 16px`.
-3. **Horizontal Scroll Containers**: Any component featuring horizontally sequenced items (e.g., Stepper headers, Filter chipsets) must declare:
-   ```scss
-   max-width: 100%;
-   overflow-x: auto;
-   flex-wrap: nowrap;
-   -webkit-overflow-scrolling: touch;
-   ```
-4. **Zero Horizontal Overflow Invariant**: Every page view must maintain `document.documentElement.scrollWidth <= window.innerWidth + 1`. Unintended horizontal scrollbars on mobile viewports are strictly forbidden.
+The design system exclusively utilizes **Plus Jakarta Sans** across all roles, paired with bold weights for a welcoming, high-impact aesthetic.
 
-### Touch Target Standard (WCAG 2.5.5 AA)
+| Level | Size | Weight | Line Height | Letter Spacing | CSS Class |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Display Large** | `48px` (Mobile: `36px`) | 800 (ExtraBold) | 1.1 | `-0.02em` | `.org-display-lg` |
+| **Headline Medium** | `32px` | 700 (Bold) | 1.2 | `-0.01em` | `.org-headline-md` |
+| **Headline Small** | `24px` | 700 (Bold) | 1.3 | `normal` | `.org-headline-sm` |
+| **Title Medium** | `20px` | 600 (SemiBold) | 1.4 | `normal` | `.org-title-md` |
+| **Body Large** | `18px` | 500 (Medium) | 1.6 | `normal` | `.org-body-lg` |
+| **Body Medium** | `16px` | 400 (Regular) | 1.6 | `normal` | `.org-body-md` |
+| **Body Small** | `14px` | 400 (Regular) | 1.5 | `normal` | `.org-body-sm` |
+| **Label Bold** | `14px` | 700 (Bold) | 1.2 | `0.05em` | `.org-label-bold` |
+| **Label Small** | `12px` | 600 (SemiBold) | 1.2 | `0.04em` | `.org-label-sm` |
 
-All primary interactive controls must provide touch targets of $\ge 48\text{ px} \times 48\text{ px}$:
-- Action buttons (`mat-flat-button`, `mat-stroked-button`, `mat-button`)
-- Icon buttons (`mat-icon-button`, theme toggle, delete/remove buttons)
-- Filter and status chips (`mat-chip-option`, `.filters__chip`)
-- Modal trigger and close buttons
+---
 
-## Elevation & Depth
+## 4. Spacing, Breakpoints & Glassmorphism
 
-Depth is achieved through **Glassmorphism** rather than traditional drop shadows.
+### 4.1 Standardized Breakpoints
+- **Mobile (`< 600px`):** Single-column fluid stacking, `12px-16px` container padding, touch targets $\ge 48\text{px}$.
+- **Tablet (`600px - 899px`):** 2-column grids, `20px-24px` padding, hybrid navigation.
+- **Desktop (`900px - 1199px`):** Multi-column grids, sticky sidebar navigation, `24px-32px` padding.
+- **Wide (`≥ 1200px`):** Max content constraint ($1200\text{px}$ default, $840\text{px}$ compact), `32px-40px` padding.
 
-1.  **Base Layer:** Soft gradient background with blurred organic blobs.
-2.  **Surface Layer (Cards/Modals):** Translucent white (`rgba(255, 255, 255, 0.6)`) with a `backdrop-filter: blur(24px)`.
-3.  **Borders:** A 1.5px solid border using a linear gradient (Purple to Orange) at 40% opacity.
-4.  **Interactive Layer:** Primary buttons use a high-saturation gradient and a soft, colored glow shadow (`0px 10px 20px rgba(124, 58, 237, 0.3)`).
-5.  **Micro-interações e Celebração:** Textos de destaque (como o título do Login) utilizam a classe `.animated-gradient` para transicionar as cores do gradiente dinamicamente. Ações de sucesso significativas (confirmação de RSVP, itens assumidos) disparam chuvas de confetes através do `ConfettiService` integrado com `canvas-confetti`.
+### 4.2 Spacing Scale
+- `2xs: 2px` | `xs: 4px` | `sm: 8px` | `md: 16px` | `lg: 24px` | `xl: 32px` | `2xl: 48px` | `3xl: 64px`
 
-## Shapes
+### 4.3 Single-Ring Glassmorphism Standard
+To prevent visual artifacts, multiple overlapping borders, or nested outlines, all glass surfaces adhere to the **Single-Ring Contract**:
+```scss
+// Applied via [orgSurface]
+backdrop-filter: blur(24px);
+-webkit-backdrop-filter: blur(24px);
+border: 1px solid var(--org-glass-ring-color);
+background-clip: padding-box;
+box-shadow: 0 8px 32px 0 rgba(255, 77, 148, 0.08);
+```
 
-Shapes are unapologetically rounded to reinforce the "bubbly" and "friendly" brand vibe.
+---
 
-The standard radius for cards and major containers is `1rem` (Rounded) to `1.5rem` (`24px`). Dialogs and hero banners use `20px` to `28px` border radius. Smaller interactive elements like checkboxes or tags should use a fully pill-shaped (`rounded-xl`) radius. Avoid sharp corners entirely to maintain the organic, festive flow of the interface.
+## 5. Canonical Iconography
 
-## Components
+All system icons are rendered via `<org-icon [name]="iconName" [size]="'sm'|'md'|'lg'" [color]="colorString" />`.
 
-### Buttons
+### Supported Canonical Icons (23 Names)
+1. `event` — Calendar / Event
+2. `schedule` — Time / Clock
+3. `place` — Location pin
+4. `person` — User / Profile
+5. `people` — Guests / Attendees
+6. `add` — Add / Create
+7. `edit` — Edit / Modify
+8. `delete` — Remove / Delete
+9. `close` — Dismiss / Close
+10. `check` — Confirm / Success
+11. `share` — Share action
+12. `search` — Filter / Search
+13. `favorite` — Saved / Favorite
+14. `arrow_back` — Back navigation
+15. `arrow_forward` — Forward navigation
+16. `celebration` — Festive / Confetti
+17. `light_mode` — Light theme
+18. `dark_mode` — Dark theme
+19. `palette` — Design System / Themes
+20. `notifications` — Push notifications
+21. `content_copy` — Clipboard copy
+22. `account_circle` — Avatar fallback
+23. `admin_panel_settings` — Superadmin dashboard
 
-- **Primary:** Gradient fill (Deep Purple to Vibrant Orange), pill-shaped, white text, 1.5px inner glow border, min-height 48px.
-- **Secondary:** Glass-morphic fill, gradient border, purple text, min-height 48px.
-- **Icon Buttons:** Centered, minimum dimension $48\text{ px} \times 48\text{ px}$.
-- **Interaction:** On hover, buttons should scale slightly (1.05x) and increase backdrop blur intensity.
+---
 
-### Cards
+## 6. Component Families & Public APIs
 
-All cards must feature `backdrop-filter: blur(24px)` and a background color of `white` at 50-70% opacity. Borders must use the signature "Organiza" gradient (Purple/Pink/Orange). Padding adapts responsively from `12px-16px` on mobile to `24px` on desktop.
+All components are imported from `@shared/ui` (or `src/app/shared/ui/index.ts`).
 
-### Hero Banners (Event Detail)
+### 6.1 Surfaces (`orgSurface`)
+Direct attribute directive applicable to native HTML elements (`article`, `section`, `div`, `mat-card`) or via `<org-surface>`.
+```typescript
+import { OrgSurfaceDirective, OrgSurfaceComponent } from '@shared/ui';
+```
+#### Usage
+```html
+<article [orgSurface]="'card'" [glow]="true" [active]="false">
+  <h3>Card Title</h3>
+</article>
+```
+#### Variants
+- `'card'`: Standard container glass with $16\text{px}$ radius.
+- `'panel'`: Denser background opacity for nested forms.
+- `'glass'`: High transparency for floating overlays.
+- `'hero'`: Prominent top-of-page container with $24\text{px}$ radius.
+- `'sunken'`: Inset background with subtle inner shadow.
+- `'elevated'`: High elevation with vibrant glow border.
 
-- **Mobile:** Height $240\text{ px}$, `border-radius: 20px`.
-- **Desktop:** Height $300\text{ px}$, `border-radius: 24px`.
-- Linear gradient overlay ensures title contrast over custom imagery.
+---
 
-### Inputs & Selection
+### 6.2 Buttons & Links (`orgButton`)
+Directive enhancing native `<button>` and `<a>` elements with WCAG 2.1 AA $\ge 48\text{px}$ touch targets, ripple animations, and loading states.
+```typescript
+import { OrgButtonDirective } from '@shared/ui';
+```
+#### Usage
+```html
+<button orgButton="primary" [orgButtonLoading]="isLoading()" (click)="save()">
+  <org-icon name="check" size="sm" color="var(--org-on-primary)" />
+  Salvar Alterações
+</button>
+```
+#### Variants
+- `'primary'`: Vibrant pink-orange gradient with white text.
+- `'secondary'`: Translucent glass with primary border.
+- `'tertiary'`: Soft yellow/amber accent.
+- `'danger'`: Red gradient/fill for destructive actions.
+- `'ghost'`: Borderless interactive button with hover highlight.
 
-- **Text Fields:** Soft peach background (10% opacity) with Material 3 MDC outline tokens (`--mdc-outlined-text-field-*`) transitioning to `--org-primary` on focus.
-- **Chips/Tags:** Pill-shaped with vibrant, semi-transparent fills (`min-height: 48px` on touch targets), horizontal scroll with `flex-shrink: 0`.
-- **Checkboxes:** Circular (not square) to match the bubbly aesthetic, filling with the primary gradient when active.
+---
 
-### Lists
+### 6.3 Chips & Badges (`orgChip`)
+Directive enhancing Material `<mat-chip-option>`, `<mat-chip-row>`, and `<button>` with pill styling and touch target compliance.
+```typescript
+import { OrgChipDirective } from '@shared/ui';
+```
+#### Usage
+```html
+<mat-chip-option [orgChip]="'primary'" [selected]="isSelected()" (selectionChange)="toggle()">
+  Festa
+</mat-chip-option>
+```
+#### Variants: `'default'`, `'primary'`, `'accent'`, `'warn'`, `'outline'`
 
-- Lists should be presented as floating glass tiles with `sm` (12px) vertical spacing between items, creating a "stacked glass" effect.
+---
 
-### Modals & Dialogs
+### 6.4 Forms & Fields (`orgFormField`, `orgFieldLabel`)
+Material form-field token integration providing coherent single-color focus outlines, floating labels, and accessible error messaging.
+```typescript
+import { OrgFormFieldDirective, OrgFieldLabelDirective } from '@shared/ui';
+```
+#### Usage
+```html
+<mat-form-field orgFormField appearance="outline">
+  <mat-label orgFieldLabel>Nome do Evento</mat-label>
+  <input matInput [formControl]="nameCtrl" placeholder="Ex: Aniversário" />
+  @if (nameCtrl.invalid && nameCtrl.touched) {
+    <mat-error>Nome é obrigatório</mat-error>
+  }
+</mat-form-field>
+```
 
-- **ConfirmDialogComponent:** Generic confirmation dialog for cancellations and deletions, encapsulating action buttons and glassmorphic styling.
-- **GuestFormDialogComponent:** RSVP submission dialog with fluid padding, responsive title, and $\ge 48\text{ px}$ touch target actions.
-- **CollaboratorInviteDialogComponent:** Signal-driven collaborator management dialog with inline validation, reactive invite emissions, and mobile-friendly chip set.
+---
+
+### 6.5 Layout Primitives
+```typescript
+import {
+  OrgPageLayoutComponent,
+  OrgPageHeaderComponent,
+  OrgSectionComponent,
+  OrgFormGridDirective,
+} from '@shared/ui';
+```
+#### Usage
+```html
+<org-page-layout maxWidth="default">
+  <org-page-header
+    title="Meus Eventos"
+    subtitle="Gerencie seus eventos e convidados"
+    icon="event"
+    [gradient]="true"
+  >
+    <button orgButton="primary" headerActions routerLink="/evento/novo">
+      <org-icon name="add" size="sm" color="var(--org-on-primary)" />
+      Novo Evento
+    </button>
+  </org-page-header>
+
+  <org-section title="Próximos Eventos" icon="event" [count]="events().length">
+    <div orgFormGrid="2col">
+      <!-- Responsive Form or Event Cards -->
+    </div>
+  </org-section>
+</org-page-layout>
+```
+
+---
+
+### 6.6 Feedback & Alerts
+```typescript
+import {
+  OrgEmptyStateComponent,
+  OrgBannerComponent,
+  FeedbackService,
+  FeedbackSnackbarComponent,
+} from '@shared/ui';
+```
+#### Usage
+```html
+<!-- Empty State -->
+<org-empty-state
+  icon="event"
+  title="Nenhum evento cadastrado"
+  description="Clique abaixo para criar seu primeiro evento."
+>
+  <button orgButton="primary" orgEmptyStateAction routerLink="/evento/novo">
+    Criar Evento
+  </button>
+</org-empty-state>
+
+<!-- Inline Banner -->
+<org-banner
+  variant="warning"
+  message="Verifique os itens pendentes antes de confirmar."
+/>
+```
+#### Programmatic Feedback Service
+```typescript
+@Injectable()
+export class MyFeatureComponent {
+  private readonly feedback = inject(FeedbackService);
+
+  onSuccess(): void {
+    this.feedback.success('Operação realizada com sucesso!');
+  }
+
+  onError(): void {
+    this.feedback.error('Ocorreu um erro ao processar sua solicitação.');
+  }
+
+  onInfo(): void {
+    this.feedback.info('Você recebeu um novo convite.');
+  }
+}
+```
+
+---
+
+### 6.7 Navigation
+```typescript
+import { NavigationDrawerComponent } from '@shared/ui';
+```
+Responsive slide-over navigation drawer displaying authenticated user profile, route navigation (`/`, `/meus-eventos`, `/perfil`, `/admin`, `/design-system`), and theme switchers.
+
+---
+
+## 7. Seasonal Theming Architecture
+
+The application supports dynamic seasonal overrides on top of the base theme via root class tokens:
+- `.theme-padrao`: Standard Vibrant Festive theme.
+- `.theme-junina`: Warm amber, straw, and festive checkered warmth (`#FF9F1C`).
+- `.theme-natal`: Holiday ruby red and evergreen accents (`#E63946`, `#2A9D8F`).
+- `.theme-pascoa`: Soft pastel lilac, spring green, and blush tones (`#A8DADC`).
+- `.theme-ano-novo`: Celebratory gold and silver champagne shimmer (`#D4AF37`).
+
+---
+
+## 8. Architectural Principles & Quality Standards
+
+1. **Standalone Components Only:** All components use `standalone: true` (Angular 21+ default). No `NgModules`.
+2. **ChangeDetectionStrategy.OnPush:** Mandatory on every component. State must flow through Angular Signals (`signal`, `computed`, `effect`, `input`, `output`, `model`).
+3. **Template & Style Separation:** Every component has distinct `.ts`, `.html`, and `.scss` files. No inline templates or inline styles.
+4. **SCSS BEM Architecture:** Class naming follows strictly `.org-[block]__[element]--[modifier]`.
+5. **Zero Horizontal Overflow:** `document.documentElement.scrollWidth <= window.innerWidth + 1` across all viewports.
+6. **WCAG 2.1 AA Accessibility:**
+   - Interactive touch targets $\ge 48\text{px} \times 48\text{px}$.
+   - All interactive controls have accessible `aria-label`, `aria-expanded`, `aria-current`, or `aria-live`.
+   - Color contrast ratio $\ge 4.5:1$ for normal text, $\ge 3:1$ for large text and UI components.
+7. **Strict TypeScript:** `noImplicitAny: true`, zero `any` usage.
+
+---
+
+## 9. DOs and DON'Ts
+
+### DO
+-  Import UI components from `@shared/ui`.
+-  Use `[orgSurface]` directive for card, panel, and modal containers.
+-  Use `--org-*` semantic tokens rather than hardcoded hex values in stylesheets.
+-  Test layouts with both Light and Dark themes and across $320\text{px}$, $600\text{px}$, and $1200\text{px}$ viewports.
+-  Use `FeedbackService` for user notifications and alerts.
+
+### DON'T
+-  Do NOT write custom `.mat-mdc-*` CSS overrides in feature components.
+-  Do NOT nest multiple glassmorphic borders creating double rings.
+-  Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
+-  Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.
+-  Do NOT use `ChangeDetectionStrategy.Default`.

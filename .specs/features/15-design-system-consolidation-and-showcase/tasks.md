@@ -591,9 +591,9 @@ T24 -> T25
 - MCP: NONE
 - Skill: NONE
 **Done when**:
-- [ ] `DESIGN.md` documents all 14 UI primitives with complete usage guidelines, code examples, and CSS variable theming APIs
-- [ ] Build and unit test gate check passes: `npm run build && npm test -- --watch=false`
-- [ ] Test count: 60 test suites, 386 tests pass (no silent deletions)
+- [x] `DESIGN.md` documents Brand Identity, Colors & Semantics, Typography, Spacing/Breakpoints/Elevations/Glassmorphism, Iconography (23 canonical icons), 7 Component Families (`orgSurface`, `OrgButtonDirective`, `OrgChipDirective`, `org-form-field`, `org-page-layout`/`org-page-header`/`org-section`/`org-form-grid`, `org-empty-state`/`org-banner`/`feedback.service.ts`/`FeedbackSnackbarComponent`, `app-navigation-drawer`), Architectural Principles (OnPush, Signals, BEM, CSS variables, Token Contract), DOs and DON'Ts, and Design System Showcase Route (`/design-system`)
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] Test count: 60 test suites, 386 tests pass (no silent deletions)
 **Tests**: unit
 **Gate**: build
 **Commit**: `docs(design): update DESIGN.md into comprehensive living usage catalog`

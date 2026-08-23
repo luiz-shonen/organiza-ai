@@ -1,7 +1,7 @@
 # Material Seasonal Design System Tasks
 
 **Design**: `.specs/features/16-material-seasonal-design-system/design.md`
-**Status**: In Progress (T1 and T2 complete)
+**Status**: Complete with unrelated full-suite failure documented
 
 ## Test Coverage Matrix
 
@@ -63,3 +63,5 @@
 **Requirement**: MSDS-01, MSDS-02, MSDS-05, MSDS-06
 **Tests**: e2e
 **Gate**: full
+
+**Completed**: 2026-08-22 — 7 focused Chromium Playwright tests passed. The full Chromium suite has an unrelated existing failure in `e2e/specs/05-profile-family.spec.ts`: it expects the absent `.profile-container__subtitle` selector.

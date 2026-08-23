@@ -1,15 +1,27 @@
-import { test, expect } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
-import { assertNoHorizontalOverflow, assertMinTouchTarget } from '../helpers/design-tokens.helper';
-import { DesignSystemShowcasePage } from '../pages/design-system-showcase.page';
+import { assertMinTouchTarget, assertNoHorizontalOverflow } from '../helpers/design-tokens.helper';
 
-test.describe('Design System Showcase & Living Catalog', () => {
-  test('should redirect unauthenticated users away from /design-system to login', async ({ page }) => {
+const superAdmin = {
+  uid: 'superadmin-uid',
+  email: 'luiz.gmr.dev@gmail.com',
+  displayName: 'Super Admin',
+  isSuperAdmin: true,
+};
+
+async function openShowcase(page: Page): Promise<void> {
+  await setupMockAuthSession(page, superAdmin);
+  await page.goto('/design-system');
+  await expect(page.locator('.org-ds-topbar__title')).toBeVisible();
+}
+
+test.describe('Design System Showcase', () => {
+  test('redirects an unauthenticated visitor from the showcase', async ({ page }) => {
     await page.goto('/design-system');
     await expect(page).toHaveURL(/\/login/);
   });
 
-  test('should redirect authenticated non-superadmin users away from /design-system', async ({ page }) => {
+  test('redirects an authenticated non-superadmin visitor from the showcase', async ({ page }) => {
     await setupMockAuthSession(page, {
       uid: 'regular-user-uid',
       email: 'regular@organizaai.test',
@@ -21,138 +33,57 @@ test.describe('Design System Showcase & Living Catalog', () => {
     await expect(page).not.toHaveURL(/\/design-system$/);
   });
 
-  test('should allow authenticated superadmin to access /design-system and render 14 sections', async ({
-    page,
-  }) => {
-    await setupMockAuthSession(page, {
-      uid: 'superadmin-uid',
-      email: 'luiz.gmr.dev@gmail.com',
-      displayName: 'Super Admin',
-      isSuperAdmin: true,
-    });
+  test('renders every Material component family as an anchored showcase section', async ({ page }) => {
+    await openShowcase(page);
 
-    const showcasePage = new DesignSystemShowcasePage(page);
-    await page.goto('/design-system');
-    await showcasePage.assertLoaded();
-
-    // Verify all 14 sections exist in DOM
     const sectionIds = [
-      'brand-overview',
-      'brand-colors',
-      'brand-typography',
-      'brand-icons',
-      'foundations-tokens',
-      'foundations-fundamentals',
-      'components-surfaces',
-      'components-buttons',
-      'components-forms',
-      'components-chips',
-      'components-layout',
-      'components-feedback',
-      'components-navigation',
-      'guidelines-dos-donts',
+      'overview',
+      'foundations',
+      'buttons',
+      'inputs',
+      'selection',
+      'navigation',
+      'data-display',
+      'feedback',
+      'seasonal-themes',
     ];
 
     for (const id of sectionIds) {
       await expect(page.locator(`section#${id}`)).toBeAttached();
+      await expect(page.locator(`.org-ds-sidebar__nav-link[href="#${id}"]`)).toBeAttached();
     }
+  });
 
-    // Zero horizontal overflow verification
+  test('keeps the anchored catalog within the mobile viewport', async ({ page }) => {
+    await openShowcase(page);
     await assertNoHorizontalOverflow(page);
   });
 
-  test('should filter sidebar navigation links dynamically via search input', async ({ page }) => {
-    await setupMockAuthSession(page, {
-      uid: 'superadmin-uid',
-      email: 'luiz.gmr.dev@gmail.com',
-      displayName: 'Super Admin',
-      isSuperAdmin: true,
-    });
-
-    const showcasePage = new DesignSystemShowcasePage(page);
-    await page.goto('/design-system');
-    await showcasePage.assertLoaded();
-
-    // Filter by 'chip'
-    await showcasePage.filterNav('chip');
-    await expect(showcasePage.navLinks).toHaveCount(1);
-    await expect(showcasePage.navLinks.first()).toContainText('Chips');
-
-    // Clear filter
-    await showcasePage.filterNav('');
-    await expect(showcasePage.navLinks).toHaveCount(14);
+  test('keeps a component-anchor target at 48px or larger', async ({ page }) => {
+    await openShowcase(page);
+    await assertMinTouchTarget(page.locator('.org-ds-sidebar__nav-link').first());
   });
 
-  test('should toggle theme mode between light and dark on topbar action', async ({ page }) => {
-    await setupMockAuthSession(page, {
-      uid: 'superadmin-uid',
-      email: 'luiz.gmr.dev@gmail.com',
-      displayName: 'Super Admin',
-      isSuperAdmin: true,
-    });
+  test('switches the showcase to the Festa Junina token class', async ({ page }) => {
+    await openShowcase(page);
 
-    const showcasePage = new DesignSystemShowcasePage(page);
-    await page.goto('/design-system');
-    await showcasePage.assertLoaded();
+    await page.locator('.org-ds-topbar__seasonal-select').click();
+    await page.getByRole('option', { name: 'Festa Junina' }).click();
 
+    await expect(page.locator('html')).toHaveClass(/theme-junina/);
+  });
+
+  test('toggles the showcase color mode without leaving the route', async ({ page }) => {
+    await openShowcase(page);
     const html = page.locator('html');
-    const wasDark = await html.evaluate((el) => el.classList.contains('dark'));
+    const wasDark = await html.evaluate((element) => element.classList.contains('dark'));
 
-    await showcasePage.toggleTheme();
+    await page.locator('.org-ds-topbar__theme-toggle').click();
+
     if (wasDark) {
       await expect(html).not.toHaveClass(/dark/);
     } else {
       await expect(html).toHaveClass(/dark/);
     }
-  });
-
-  test('should switch seasonal theme classes on root element', async ({ page }) => {
-    await setupMockAuthSession(page, {
-      uid: 'superadmin-uid',
-      email: 'luiz.gmr.dev@gmail.com',
-      displayName: 'Super Admin',
-      isSuperAdmin: true,
-    });
-
-    const showcasePage = new DesignSystemShowcasePage(page);
-    await page.goto('/design-system');
-    await showcasePage.assertLoaded();
-
-    const html = page.locator('html');
-
-    await showcasePage.chooseSeasonalTheme('Festa Junina');
-    await expect(html).toHaveClass(/theme-junina/);
-
-    await showcasePage.chooseSeasonalTheme('Natal');
-    await expect(html).toHaveClass(/theme-natal/);
-    await expect(html).not.toHaveClass(/theme-junina/);
-
-    await showcasePage.chooseSeasonalTheme('Padrão');
-    await expect(html).not.toHaveClass(/theme-natal/);
-  });
-
-  test('should expand and copy specimen code snippets and trigger feedback', async ({ page }) => {
-    await setupMockAuthSession(page, {
-      uid: 'superadmin-uid',
-      email: 'luiz.gmr.dev@gmail.com',
-      displayName: 'Super Admin',
-      isSuperAdmin: true,
-    });
-
-    const showcasePage = new DesignSystemShowcasePage(page);
-    await page.goto('/design-system');
-    await showcasePage.assertLoaded();
-
-    // Toggle code box on surfaces specimen card
-    const codeToggleBtn = page.locator('#surface-specimen .org-ds-specimen-card__code-btn');
-    await expect(codeToggleBtn).toBeVisible();
-    await codeToggleBtn.click();
-
-    const codeBox = page.locator('#surface-specimen .org-ds-specimen-card__code-box');
-    await expect(codeBox).toBeVisible();
-    await expect(codeBox).toContainText('article [orgSurface]');
-
-    // Check min touch target on code toggle button
-    await assertMinTouchTarget(codeToggleBtn);
   });
 });

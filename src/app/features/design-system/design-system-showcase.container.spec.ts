@@ -47,13 +47,21 @@ describe('DesignSystemShowcaseContainer', () => {
     );
   });
 
-  it('renders all required Angular Material component families', () => {
+  it('renders every Angular Material component family required by the catalog contract', () => {
     const root = fixture.nativeElement as HTMLElement;
 
     expect(root.querySelector('button[mat-flat-button]')).toBeTruthy();
     expect(root.querySelector('mat-form-field')).toBeTruthy();
+    expect(root.querySelector('mat-select')).toBeTruthy();
+    expect(root.querySelector('mat-datepicker')).toBeTruthy();
+    expect(root.querySelector('mat-checkbox')).toBeTruthy();
+    expect(root.querySelector('mat-radio-group')).toBeTruthy();
+    expect(root.querySelector('mat-slide-toggle')).toBeTruthy();
     expect(root.querySelector('mat-chip-listbox')).toBeTruthy();
     expect(root.querySelector('mat-tab-group')).toBeTruthy();
+    expect(root.querySelector('a[mat-list-item]')).toBeTruthy();
+    expect(Array.from(root.querySelectorAll('button')).some((button) => button.textContent?.includes('Mais ações'))).toBe(true);
+    expect(root.querySelector('mat-progress-bar')).toBeTruthy();
     expect(root.querySelector('mat-progress-spinner')).toBeTruthy();
     expect(root.querySelector('mat-card')).toBeTruthy();
   });

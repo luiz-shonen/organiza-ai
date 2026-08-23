@@ -55,6 +55,7 @@ test.describe('Design System Showcase', () => {
   });
 
   test('keeps the anchored catalog within the mobile viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 800 });
     await openShowcase(page);
     await assertNoHorizontalOverflow(page);
   });

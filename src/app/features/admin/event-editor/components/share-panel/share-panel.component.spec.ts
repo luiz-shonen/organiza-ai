@@ -64,6 +64,8 @@ describe('SharePanelComponent', () => {
 
     const card = fixture.nativeElement.querySelector('.share-panel');
     expect(card).toBeTruthy();
+    expect(card.classList.contains('org-surface')).toBe(true);
+    expect(card.classList.contains('glass-card')).toBe(false);
 
     const canvas = fixture.nativeElement.querySelector('canvas');
     expect(canvas).toBeTruthy();

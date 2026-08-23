@@ -13,12 +13,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
 import QRCode from 'qrcode';
-import { FeedbackService } from '../../../../../shared/ui';
+import { FeedbackService, OrgSurfaceDirective } from '../../../../../shared/ui';
 
 @Component({
   selector: 'app-share-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCardModule, MatButtonModule, MatIconModule],
+  imports: [MatCardModule, MatButtonModule, MatIconModule, OrgSurfaceDirective],
   templateUrl: './share-panel.component.html',
   styleUrl: './share-panel.component.scss',
 })

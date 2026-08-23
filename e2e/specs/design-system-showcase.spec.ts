@@ -9,10 +9,74 @@ const superAdmin = {
   isSuperAdmin: true,
 };
 
+interface SeasonalTokenExpectation {
+  readonly label: string;
+  readonly rootClass: string;
+  readonly primary: string;
+  readonly secondary: string;
+  readonly tertiary: string;
+  readonly gradientFragment: string;
+  readonly canvasStart: string;
+  readonly canvasEnd: string;
+  readonly ringColor: string;
+}
+
+const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
+  {
+    label: 'Páscoa da Ressurreição',
+    rootClass: 'theme-pascoa',
+    primary: '#6d3ba7',
+    secondary: '#bd8b32',
+    tertiary: '#5e7d52',
+    gradientFragment: '#6d3ba7',
+    canvasStart: '#faf6ff',
+    canvasEnd: '#f9f3df',
+    ringColor: 'rgba(109, 59, 167, 0.26)',
+  },
+  {
+    label: 'Festa Junina',
+    rootClass: 'theme-junina',
+    primary: '#ff5722',
+    secondary: '#ff8c42',
+    tertiary: '#ffb300',
+    gradientFragment: '#ff5722',
+    canvasStart: '#fff6df',
+    canvasEnd: '#e8f3ff',
+    ringColor: 'rgba(255, 87, 34, 0.28)',
+  },
+  {
+    label: 'Natal de Jesus',
+    rootClass: 'theme-natal',
+    primary: '#d32f2f',
+    secondary: '#e53935',
+    tertiary: '#388e3c',
+    gradientFragment: '#d32f2f',
+    canvasStart: '#fff5f1',
+    canvasEnd: '#eef8ef',
+    ringColor: 'rgba(211, 47, 47, 0.28)',
+  },
+  {
+    label: 'Ano Novo',
+    rootClass: 'theme-ano-novo',
+    primary: '#b27a10',
+    secondary: '#283a67',
+    tertiary: '#b8c1cd',
+    gradientFragment: '#b27a10',
+    canvasStart: '#fffbed',
+    canvasEnd: '#edf1fa',
+    ringColor: 'rgba(178, 122, 16, 0.28)',
+  },
+];
+
 async function openShowcase(page: Page): Promise<void> {
   await setupMockAuthSession(page, superAdmin);
   await page.goto('/design-system');
   await expect(page.locator('.org-ds-topbar__title')).toBeVisible();
+}
+
+async function selectSeasonalTheme(page: Page, label: string): Promise<void> {
+  await page.locator('.org-ds-topbar__seasonal-select').click();
+  await page.getByRole('option', { name: label }).click();
 }
 
 test.describe('Design System Showcase', () => {
@@ -65,13 +129,34 @@ test.describe('Design System Showcase', () => {
     await assertMinTouchTarget(page.locator('.org-ds-sidebar__nav-link').first());
   });
 
-  test('switches the showcase to the Festa Junina token class', async ({ page }) => {
+  test('applies each seasonal theme to the complete shared token contract', async ({ page }) => {
     await openShowcase(page);
 
-    await page.locator('.org-ds-topbar__seasonal-select').click();
-    await page.getByRole('option', { name: 'Festa Junina' }).click();
+    for (const theme of seasonalTokenExpectations) {
+      await selectSeasonalTheme(page, theme.label);
+      await expect(page.locator('html')).toHaveClass(new RegExp(theme.rootClass));
 
-    await expect(page.locator('html')).toHaveClass(/theme-junina/);
+      const tokens = await page.locator('html').evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          primary: style.getPropertyValue('--org-primary').trim(),
+          secondary: style.getPropertyValue('--org-secondary').trim(),
+          tertiary: style.getPropertyValue('--org-tertiary').trim(),
+          gradient: style.getPropertyValue('--org-gradient-primary').trim(),
+          canvasStart: style.getPropertyValue('--org-canvas-start').trim(),
+          canvasEnd: style.getPropertyValue('--org-canvas-end').trim(),
+          ringColor: style.getPropertyValue('--org-glass-ring-color').trim(),
+        };
+      });
+
+      expect(tokens.primary).toBe(theme.primary);
+      expect(tokens.secondary).toBe(theme.secondary);
+      expect(tokens.tertiary).toBe(theme.tertiary);
+      expect(tokens.gradient).toContain(theme.gradientFragment);
+      expect(tokens.canvasStart).toBe(theme.canvasStart);
+      expect(tokens.canvasEnd).toBe(theme.canvasEnd);
+      expect(tokens.ringColor).toBe(theme.ringColor);
+    }
   });
 
   test('toggles the showcase color mode without leaving the route', async ({ page }) => {
@@ -86,5 +171,30 @@ test.describe('Design System Showcase', () => {
     } else {
       await expect(html).toHaveClass(/dark/);
     }
+  });
+
+  test('uses a 24px glass blur and seasonal gradient treatment on Material surfaces', async ({ page }) => {
+    await openShowcase(page);
+
+    const treatment = await page.locator('.org-ds-hero-card').evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { backdropFilter: style.backdropFilter, backgroundImage: style.backgroundImage };
+    });
+    const buttonBackground = await page
+      .locator('.org-ds-hero-card .org-material-button--gradient')
+      .evaluate((element) => getComputedStyle(element).backgroundImage);
+
+    expect(treatment.backdropFilter).toContain('blur(24px)');
+    expect(treatment.backgroundImage).toContain('linear-gradient');
+    expect(buttonBackground).toContain('linear-gradient');
+  });
+
+  test('preserves keyboard focus on an Angular Material field', async ({ page }) => {
+    await openShowcase(page);
+
+    const input = page.getByLabel('Título do evento');
+    await input.focus();
+
+    await expect(input).toBeFocused();
   });
 });

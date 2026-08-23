@@ -84,33 +84,53 @@ $breakpoint-lg: 1200px;
 
   html.theme-junina {
     --org-primary: #ff5722;
+    --org-on-primary: #ffffff;
     --org-primary-container: #ff8a65;
     --org-secondary: #ff8c42;
     --org-tertiary: #ffb300;
     --org-gradient-primary: linear-gradient(135deg, #ff5722 0%, #ff8c42 50%, #ffb300 100%);
+    --org-gradient-border: linear-gradient(135deg, rgba(255, 87, 34, 0.56), rgba(255, 179, 0, 0.48));
+    --org-canvas-start: #fff6df;
+    --org-canvas-end: #e8f3ff;
+    --org-glass-ring-color: rgba(255, 87, 34, 0.28);
   }
 
   html.theme-natal {
     --org-primary: #d32f2f;
+    --org-on-primary: #ffffff;
     --org-primary-container: #ef5350;
     --org-secondary: #e53935;
     --org-tertiary: #388e3c;
     --org-gradient-primary: linear-gradient(135deg, #d32f2f 0%, #e53935 50%, #388e3c 100%);
+    --org-gradient-border: linear-gradient(135deg, rgba(211, 47, 47, 0.58), rgba(56, 142, 60, 0.52));
+    --org-canvas-start: #fff5f1;
+    --org-canvas-end: #eef8ef;
+    --org-glass-ring-color: rgba(211, 47, 47, 0.28);
   }
 
   html.theme-pascoa {
-    --org-primary: #8e24aa;
-    --org-primary-container: #ba68c8;
-    --org-secondary: #ba68c8;
-    --org-tertiary: #fbc02d;
-    --org-gradient-primary: linear-gradient(135deg, #8e24aa 0%, #ba68c8 50%, #fbc02d 100%);
+    --org-primary: #6d3ba7;
+    --org-on-primary: #ffffff;
+    --org-primary-container: #d9c7f5;
+    --org-secondary: #bd8b32;
+    --org-tertiary: #5e7d52;
+    --org-gradient-primary: linear-gradient(135deg, #6d3ba7 0%, #bd8b32 52%, #5e7d52 100%);
+    --org-gradient-border: linear-gradient(135deg, rgba(109, 59, 167, 0.54), rgba(189, 139, 50, 0.5));
+    --org-canvas-start: #faf6ff;
+    --org-canvas-end: #f9f3df;
+    --org-glass-ring-color: rgba(109, 59, 167, 0.26);
   }
 
   html.theme-ano-novo {
-    --org-primary: #fbc02d;
-    --org-primary-container: #fff176;
-    --org-secondary: #fff59d;
-    --org-tertiary: #e0e0e0;
-    --org-gradient-primary: linear-gradient(135deg, #fbc02d 0%, #fff59d 50%, #e0e0e0 100%);
+    --org-primary: #b27a10;
+    --org-on-primary: #ffffff;
+    --org-primary-container: #f8df9a;
+    --org-secondary: #283a67;
+    --org-tertiary: #b8c1cd;
+    --org-gradient-primary: linear-gradient(135deg, #b27a10 0%, #f4d98a 50%, #283a67 100%);
+    --org-gradient-border: linear-gradient(135deg, rgba(178, 122, 16, 0.54), rgba(40, 58, 103, 0.48));
+    --org-canvas-start: #fffbed;
+    --org-canvas-end: #edf1fa;
+    --org-glass-ring-color: rgba(178, 122, 16, 0.28);
   }
 }

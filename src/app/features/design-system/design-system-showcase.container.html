@@ -67,7 +67,9 @@
           type="button"
           orgIconButton="default"
           (click)="toggleThemeMode()"
-          [attr.aria-label]="themeService.isDark() ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
+          [attr.aria-label]="
+            themeService.isDark() ? 'Mudar para tema claro' : 'Mudar para tema escuro'
+          "
           class="org-ds-topbar__theme-toggle"
         >
           <org-icon [name]="themeService.isDark() ? 'light_mode' : 'dark_mode'" size="md" />
@@ -107,10 +109,11 @@
           <div class="org-ds-specimen-card__guidance">
             <h3 class="org-ds-specimen-card__title">Arquitetura de Superfícies & Layouts 2026</h3>
             <p class="org-ds-specimen-card__description">
-              O Design System da Organiza AI consolida toda a identidade visual da plataforma em torno de superfícies
-              glassmorphic de anel único (Single-Ring Glassmorphism), tipografia geométrica humanista Plus Jakarta Sans,
-              paleta canônica Rosa-Laranja-Amarelo, e componentes estruturais responsivos com ChangeDetectionStrategy.OnPush
-              e Signals do Angular 21+.
+              O Design System da Organiza AI consolida toda a identidade visual da plataforma em
+              torno de superfícies glassmorphic de anel único (Single-Ring Glassmorphism),
+              tipografia geométrica humanista Plus Jakarta Sans, paleta canônica
+              Rosa-Laranja-Amarelo, e componentes estruturais responsivos com
+              ChangeDetectionStrategy.OnPush e Signals do Angular 21+.
             </p>
             <div class="org-ds-specimen-card__rules-grid">
               <div class="org-ds-rule org-ds-rule--do">
@@ -119,7 +122,10 @@
                   <span>Princípios Centrais</span>
                 </div>
                 <ul>
-                  <li>Composição limpa com <code>[orgSurface]</code>, <code>&lt;org-page-layout&gt;</code> e <code>&lt;org-section&gt;</code></li>
+                  <li>
+                    Composição limpa com <code>[orgSurface]</code>,
+                    <code>&lt;org-page-layout&gt;</code> e <code>&lt;org-section&gt;</code>
+                  </li>
                   <li>Acessibilidade WCAG 2.1 AA com alvos de toque mínimos de 48px</li>
                   <li>Zero overflow horizontal em todos os viewports móveis e desktops</li>
                 </ul>
@@ -130,8 +136,13 @@
                   <span>Proibições Arquiteturais</span>
                 </div>
                 <ul>
-                  <li>Nunca escrever classes de vidro legadas (<code>.glass-card</code>, <code>.org-glass</code>)</li>
-                  <li>Nunca escrever <code>backdrop-filter</code> manual nas folhas SCSS de features</li>
+                  <li>
+                    Nunca escrever classes de vidro legadas (<code>.glass-card</code>,
+                    <code>.org-glass</code>)
+                  </li>
+                  <li>
+                    Nunca escrever <code>backdrop-filter</code> manual nas folhas SCSS de features
+                  </li>
                   <li>Nunca criar breakpoints fora do padrão 600px / 900px / 1200px</li>
                 </ul>
               </div>
@@ -151,7 +162,7 @@
         <article class="org-ds-specimen-card" [orgSurface]="'panel'">
           <div class="org-ds-color-grid">
             <div class="org-ds-swatch">
-              <div class="org-ds-swatch__color" style="background: #ff4d94;"></div>
+              <div class="org-ds-swatch__color" style="background: #ff4d94"></div>
               <div class="org-ds-swatch__info">
                 <span class="org-ds-swatch__name">Primary Pink</span>
                 <span class="org-ds-swatch__token">--org-primary</span>
@@ -159,7 +170,7 @@
               </div>
             </div>
             <div class="org-ds-swatch">
-              <div class="org-ds-swatch__color" style="background: #ff8c42;"></div>
+              <div class="org-ds-swatch__color" style="background: #ff8c42"></div>
               <div class="org-ds-swatch__info">
                 <span class="org-ds-swatch__name">Secondary Orange</span>
                 <span class="org-ds-swatch__token">--org-secondary</span>
@@ -167,7 +178,7 @@
               </div>
             </div>
             <div class="org-ds-swatch">
-              <div class="org-ds-swatch__color" style="background: #ffc837;"></div>
+              <div class="org-ds-swatch__color" style="background: #ffc837"></div>
               <div class="org-ds-swatch__info">
                 <span class="org-ds-swatch__name">Tertiary Yellow</span>
                 <span class="org-ds-swatch__token">--org-tertiary</span>
@@ -175,7 +186,7 @@
               </div>
             </div>
             <div class="org-ds-swatch">
-              <div class="org-ds-swatch__color" style="background: #10b981;"></div>
+              <div class="org-ds-swatch__color" style="background: #10b981"></div>
               <div class="org-ds-swatch__info">
                 <span class="org-ds-swatch__name">Success</span>
                 <span class="org-ds-swatch__token">--org-success</span>
@@ -183,7 +194,7 @@
               </div>
             </div>
             <div class="org-ds-swatch">
-              <div class="org-ds-swatch__color" style="background: #ef4444;"></div>
+              <div class="org-ds-swatch__color" style="background: #ef4444"></div>
               <div class="org-ds-swatch__info">
                 <span class="org-ds-swatch__name">Error</span>
                 <span class="org-ds-swatch__token">--org-error</span>
@@ -191,7 +202,7 @@
               </div>
             </div>
             <div class="org-ds-swatch">
-              <div class="org-ds-swatch__color" style="background: #3b82f6;"></div>
+              <div class="org-ds-swatch__color" style="background: #3b82f6"></div>
               <div class="org-ds-swatch__info">
                 <span class="org-ds-swatch__name">Info</span>
                 <span class="org-ds-swatch__token">--org-info</span>
@@ -213,31 +224,52 @@
         <article class="org-ds-specimen-card" [orgSurface]="'panel'">
           <div class="org-ds-type-table">
             <div class="org-ds-type-row">
-              <h1 class="org-ds-type-row__sample" style="font-size: 2.25rem; font-weight: 800; line-height: 1.2;">
+              <h1
+                class="org-ds-type-row__sample"
+                style="font-size: 2.25rem; font-weight: 800; line-height: 1.2"
+              >
                 Display Hero (36px / 48px)
               </h1>
               <span class="org-ds-type-row__meta">Plus Jakarta Sans · ExtraBold (800)</span>
             </div>
             <div class="org-ds-type-row">
-              <h2 class="org-ds-type-row__sample" style="font-size: 1.75rem; font-weight: 800; line-height: 1.25;">
+              <h2
+                class="org-ds-type-row__sample"
+                style="font-size: 1.75rem; font-weight: 800; line-height: 1.25"
+              >
                 Headline Principal (28px / 32px)
               </h2>
               <span class="org-ds-type-row__meta">Plus Jakarta Sans · ExtraBold (800)</span>
             </div>
             <div class="org-ds-type-row">
-              <h3 class="org-ds-type-row__sample" style="font-size: 1.375rem; font-weight: 700; line-height: 1.3;">
+              <h3
+                class="org-ds-type-row__sample"
+                style="font-size: 1.375rem; font-weight: 700; line-height: 1.3"
+              >
                 Section Title (22px / 24px)
               </h3>
               <span class="org-ds-type-row__meta">Plus Jakarta Sans · Bold (700)</span>
             </div>
             <div class="org-ds-type-row">
-              <p class="org-ds-type-row__sample" style="font-size: 1rem; font-weight: 400; line-height: 1.6;">
-                Body Text — Texto corrido padrão para leitura confortável e alta legibilidade com contraste WCAG AA.
+              <p
+                class="org-ds-type-row__sample"
+                style="font-size: 1rem; font-weight: 400; line-height: 1.6"
+              >
+                Body Text — Texto corrido padrão para leitura confortável e alta legibilidade com
+                contraste WCAG AA.
               </p>
               <span class="org-ds-type-row__meta">Plus Jakarta Sans · Regular (400)</span>
             </div>
             <div class="org-ds-type-row">
-              <span class="org-ds-type-row__sample" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">
+              <span
+                class="org-ds-type-row__sample"
+                style="
+                  font-size: 0.75rem;
+                  font-weight: 700;
+                  letter-spacing: 0.05em;
+                  text-transform: uppercase;
+                "
+              >
                 Label / Badge (12px)
               </span>
               <span class="org-ds-type-row__meta">Plus Jakarta Sans · Bold (700) · Uppercase</span>
@@ -255,8 +287,8 @@
         />
 
         <article class="org-ds-specimen-card" [orgSurface]="'panel'">
-          <div class="org-ds-interactive-row" style="margin-bottom: 20px;">
-            <mat-form-field appearance="outline" orgFormField style="max-width: 280px;">
+          <div class="org-ds-interactive-row" style="margin-bottom: 20px">
+            <mat-form-field appearance="outline" orgFormField style="max-width: 280px">
               <org-icon matPrefix name="search" size="sm" />
               <input
                 matInput
@@ -297,12 +329,25 @@
             @for (iconName of filteredIcons(); track iconName) {
               <div
                 class="org-ds-icon-card"
-                (click)="copyCode('<org-icon name=&quot;' + iconName + '&quot; size=&quot;' + selectedIconSize() + '&quot; />', 'icon-' + iconName)"
+                (click)="
+                  copyCode(
+                    '<org-icon name=&quot;' +
+                      iconName +
+                      '&quot; size=&quot;' +
+                      selectedIconSize() +
+                      '&quot; />',
+                    'icon-' + iconName
+                  )
+                "
                 tabindex="0"
                 role="button"
                 [attr.aria-label]="'Copiar snippet do ícone ' + iconName"
               >
-                <org-icon [name]="iconName" [size]="selectedIconSize()" color="var(--org-primary)" />
+                <org-icon
+                  [name]="iconName"
+                  [size]="selectedIconSize()"
+                  color="var(--org-primary)"
+                />
                 <span class="org-ds-icon-card__name">{{ iconName }}</span>
               </div>
             }
@@ -383,9 +428,12 @@
         />
 
         <article class="org-ds-specimen-card" [orgSurface]="'panel'">
-          <h3 class="org-ds-specimen-card__title">Breakpoints Padronizados (600px / 900px / 1200px)</h3>
+          <h3 class="org-ds-specimen-card__title">
+            Breakpoints Padronizados (600px / 900px / 1200px)
+          </h3>
           <p class="org-ds-specimen-card__description">
-            A plataforma utiliza rigorosamente três limites de responsividade mobile-first, banindo breakpoints arbitrários.
+            A plataforma utiliza rigorosamente três limites de responsividade mobile-first, banindo
+            breakpoints arbitrários.
           </p>
 
           <table class="org-ds-table">
@@ -438,7 +486,9 @@
           <header class="org-ds-specimen-card__header">
             <div class="org-ds-specimen-card__title-wrap">
               <h3 class="org-ds-specimen-card__title">[orgSurface]</h3>
-              <code class="org-ds-specimen-card__import">src/app/shared/ui/surface/org-surface.directive.ts</code>
+              <code class="org-ds-specimen-card__import"
+                >src/app/shared/ui/surface/org-surface.directive.ts</code
+              >
             </div>
             <div class="org-ds-specimen-card__actions">
               <button
@@ -449,14 +499,17 @@
                 [attr.aria-expanded]="isCodeExpanded('surface-specimen')"
               >
                 <org-icon name="content_copy" size="sm" />
-                <span>{{ isCodeExpanded('surface-specimen') ? 'Ocultar Código' : 'Ver Código' }}</span>
+                <span>{{
+                  isCodeExpanded('surface-specimen') ? 'Ocultar Código' : 'Ver Código'
+                }}</span>
               </button>
             </div>
           </header>
 
           <div class="org-ds-specimen-card__guidance">
             <p class="org-ds-specimen-card__description">
-              Aplica vidro translúcido com anel único (gradiente Rosa para Laranja) e sombras reflexivas a qualquer elemento HTML.
+              Aplica vidro translúcido com anel único (gradiente Rosa para Laranja) e sombras
+              reflexivas a qualquer elemento HTML.
             </p>
             <div class="org-ds-specimen-card__rules-grid">
               <div class="org-ds-rule org-ds-rule--do">
@@ -486,16 +539,16 @@
           <!-- Live Canvas -->
           <div class="org-ds-specimen-card__canvas" [orgSurface]="'card'">
             <div class="org-ds-interactive-row">
-              <div [orgSurface]="'card'" style="flex: 1; min-width: 200px;">
-                <h4 style="margin: 0 0 8px;">Variante Card</h4>
-                <p style="margin: 0; font-size: 0.875rem; color: var(--mat-sys-on-surface-variant);">
+              <div [orgSurface]="'card'" style="flex: 1; min-width: 200px">
+                <h4 style="margin: 0 0 8px">Variante Card</h4>
+                <p style="margin: 0; font-size: 0.875rem; color: var(--mat-sys-on-surface-variant)">
                   Padding responsivo 16px/24px e raio 16px.
                 </p>
               </div>
 
-              <div [orgSurface]="'panel'" style="flex: 1; min-width: 200px;">
-                <h4 style="margin: 0 0 8px;">Variante Panel</h4>
-                <p style="margin: 0; font-size: 0.875rem; color: var(--mat-sys-on-surface-variant);">
+              <div [orgSurface]="'panel'" style="flex: 1; min-width: 200px">
+                <h4 style="margin: 0 0 8px">Variante Panel</h4>
+                <p style="margin: 0; font-size: 0.875rem; color: var(--mat-sys-on-surface-variant)">
                   Padding 20px/32px e raio 20px para containers principais.
                 </p>
               </div>
@@ -509,14 +562,23 @@
                 <button
                   type="button"
                   class="org-ds-copy-btn"
-                  (click)="copyCode('<article [orgSurface]=&quot;\'card\'&quot; class=&quot;my-card&quot;>\n  <h3>Título do Card</h3>\n  <p>Conteúdo do card glassmorphic</p>\n</article>', 'surface-specimen')"
+                  (click)="
+                    copyCode(
+                      '<article [orgSurface]=&quot;\'card\'&quot; class=&quot;my-card&quot;>\n  <h3>Título do Card</h3>\n  <p>Conteúdo do card glassmorphic</p>\n</article>',
+                      'surface-specimen'
+                    )
+                  "
                   aria-label="Copiar código da surface"
                 >
                   <org-icon name="content_copy" size="sm" />
-                  <span>{{ copiedSnippetId() === 'surface-specimen' ? 'Copiado!' : 'Copiar' }}</span>
+                  <span>{{
+                    copiedSnippetId() === 'surface-specimen' ? 'Copiado!' : 'Copiar'
+                  }}</span>
                 </button>
               </div>
-              <pre class="org-ds-code-pre"><code>&lt;article [orgSurface]="'card'" class="my-card"&gt;
+              <pre
+                class="org-ds-code-pre"
+              ><code>&lt;article [orgSurface]="'card'" class="my-card"&gt;
   &lt;h3&gt;Título do Card&lt;/h3&gt;
   &lt;p&gt;Conteúdo do card glassmorphic&lt;/p&gt;
 &lt;/article&gt;</code></pre>
@@ -537,7 +599,9 @@
           <header class="org-ds-specimen-card__header">
             <div class="org-ds-specimen-card__title-wrap">
               <h3 class="org-ds-specimen-card__title">[orgButton] & [orgIconButton]</h3>
-              <code class="org-ds-specimen-card__import">src/app/shared/ui/actions/org-button.directive.ts</code>
+              <code class="org-ds-specimen-card__import"
+                >src/app/shared/ui/actions/org-button.directive.ts</code
+              >
             </div>
             <div class="org-ds-specimen-card__actions">
               <button
@@ -548,14 +612,17 @@
                 [attr.aria-expanded]="isCodeExpanded('button-specimen')"
               >
                 <org-icon name="content_copy" size="sm" />
-                <span>{{ isCodeExpanded('button-specimen') ? 'Ocultar Código' : 'Ver Código' }}</span>
+                <span>{{
+                  isCodeExpanded('button-specimen') ? 'Ocultar Código' : 'Ver Código'
+                }}</span>
               </button>
             </div>
           </header>
 
           <div class="org-ds-specimen-card__guidance">
             <p class="org-ds-specimen-card__description">
-              Diretivas de botão standalone que garantem contraste WCAG AA, animações táteis, estado de carregamento acessível e dimensões mínimas de 48px para mobile.
+              Diretivas de botão standalone que garantem contraste WCAG AA, animações táteis, estado
+              de carregamento acessível e dimensões mínimas de 48px para mobile.
             </p>
           </div>
 
@@ -565,21 +632,13 @@
               <button type="button" orgButton="primary" [orgButtonLoading]="buttonLoadingState()">
                 Botão Primário
               </button>
-              <button type="button" orgButton="secondary">
-                Botão Secundário
-              </button>
-              <button type="button" orgButton="danger">
-                Botão Perigo
-              </button>
-              <button type="button" orgButton="text">
-                Botão Texto
-              </button>
-              <button type="button" orgButton="primary" disabled>
-                Desabilitado
-              </button>
+              <button type="button" orgButton="secondary">Botão Secundário</button>
+              <button type="button" orgButton="danger">Botão Perigo</button>
+              <button type="button" orgButton="text">Botão Texto</button>
+              <button type="button" orgButton="primary" disabled>Desabilitado</button>
             </div>
 
-            <div class="org-ds-interactive-row" style="margin-top: 12px;">
+            <div class="org-ds-interactive-row" style="margin-top: 12px">
               <button type="button" orgIconButton="default" aria-label="Editar item">
                 <org-icon name="edit" size="md" />
               </button>
@@ -602,14 +661,21 @@
                 <button
                   type="button"
                   class="org-ds-copy-btn"
-                  (click)="copyCode('<button type=&quot;button&quot; orgButton=&quot;primary&quot; [loading]=&quot;isLoading()&quot;>\n  Salvar Alterações\n</button>', 'button-specimen')"
+                  (click)="
+                    copyCode(
+                      '<button type=&quot;button&quot; orgButton=&quot;primary&quot; [loading]=&quot;isLoading()&quot;>\n  Salvar Alterações\n</button>',
+                      'button-specimen'
+                    )
+                  "
                   aria-label="Copiar código do botão"
                 >
                   <org-icon name="content_copy" size="sm" />
                   <span>{{ copiedSnippetId() === 'button-specimen' ? 'Copiado!' : 'Copiar' }}</span>
                 </button>
               </div>
-              <pre class="org-ds-code-pre"><code>&lt;button type="button" orgButton="primary" [loading]="isLoading()"&gt;
+              <pre
+                class="org-ds-code-pre"
+              ><code>&lt;button type="button" orgButton="primary" [loading]="isLoading()"&gt;
   Salvar Alterações
 &lt;/button&gt;</code></pre>
             </div>
@@ -629,7 +695,9 @@
           <header class="org-ds-specimen-card__header">
             <div class="org-ds-specimen-card__title-wrap">
               <h3 class="org-ds-specimen-card__title">orgFormField</h3>
-              <code class="org-ds-specimen-card__import">src/app/shared/ui/forms/org-form-field.directive.ts</code>
+              <code class="org-ds-specimen-card__import"
+                >src/app/shared/ui/forms/org-form-field.directive.ts</code
+              >
             </div>
             <div class="org-ds-specimen-card__actions">
               <button
@@ -650,7 +718,7 @@
             <div [orgFormGrid]="'1fr 1fr'">
               <div>
                 <label orgFieldLabel for="sample-name">Nome Completo</label>
-                <mat-form-field appearance="outline" orgFormField style="width: 100%;">
+                <mat-form-field appearance="outline" orgFormField style="width: 100%">
                   <org-icon matPrefix name="account_circle" size="sm" />
                   <input matInput id="sample-name" placeholder="Ex: Maria Silva" />
                 </mat-form-field>
@@ -658,7 +726,7 @@
 
               <div>
                 <label orgFieldLabel for="sample-email">E-mail</label>
-                <mat-form-field appearance="outline" orgFormField style="width: 100%;">
+                <mat-form-field appearance="outline" orgFormField style="width: 100%">
                   <org-icon matPrefix name="mail" size="sm" />
                   <input matInput id="sample-email" type="email" placeholder="maria@exemplo.com" />
                 </mat-form-field>
@@ -673,14 +741,21 @@
                 <button
                   type="button"
                   class="org-ds-copy-btn"
-                  (click)="copyCode('<label orgFieldLabel for=&quot;nome&quot;>Nome</label>\n<mat-form-field appearance=&quot;outline&quot; orgFormField>\n  <input matInput id=&quot;nome&quot; placeholder=&quot;Digite seu nome&quot; />\n</mat-form-field>', 'form-specimen')"
+                  (click)="
+                    copyCode(
+                      '<label orgFieldLabel for=&quot;nome&quot;>Nome</label>\n<mat-form-field appearance=&quot;outline&quot; orgFormField>\n  <input matInput id=&quot;nome&quot; placeholder=&quot;Digite seu nome&quot; />\n</mat-form-field>',
+                      'form-specimen'
+                    )
+                  "
                   aria-label="Copiar código do formulário"
                 >
                   <org-icon name="content_copy" size="sm" />
                   <span>{{ copiedSnippetId() === 'form-specimen' ? 'Copiado!' : 'Copiar' }}</span>
                 </button>
               </div>
-              <pre class="org-ds-code-pre"><code>&lt;label orgFieldLabel for="nome"&gt;Nome&lt;/label&gt;
+              <pre
+                class="org-ds-code-pre"
+              ><code>&lt;label orgFieldLabel for="nome"&gt;Nome&lt;/label&gt;
 &lt;mat-form-field appearance="outline" orgFormField&gt;
   &lt;input matInput id="nome" placeholder="Digite seu nome" /&gt;
 &lt;/mat-form-field&gt;</code></pre>
@@ -700,12 +775,32 @@
         <article class="org-ds-specimen-card" [orgSurface]="'panel'" id="chip-specimen">
           <!-- Live Canvas -->
           <div class="org-ds-specimen-card__canvas" [orgSurface]="'card'">
-            <div class="org-ds-interactive-row">
-              <button type="button" orgChip="default">Padrão</button>
-              <button type="button" orgChip="primary">Primário</button>
-              <button type="button" orgChip="success">Confirmado</button>
-              <button type="button" orgChip="warning">Pendente</button>
-              <button type="button" orgChip="accent">Destaque</button>
+            <div style="display: flex; flex-direction: column; gap: 16px; width: 100%">
+              <div>
+                <span style="display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7">
+                  Chips Selecionáveis (Filtros com Clique / Seleção)
+                </span>
+                <mat-chip-listbox multiple aria-label="Filtro de status interativo">
+                  <mat-chip-option orgChip="default" selected>Padrão</mat-chip-option>
+                  <mat-chip-option orgChip="primary">Primário</mat-chip-option>
+                  <mat-chip-option orgChip="success" selected>Confirmado</mat-chip-option>
+                  <mat-chip-option orgChip="warning">Pendente</mat-chip-option>
+                  <mat-chip-option orgChip="accent">Destaque</mat-chip-option>
+                </mat-chip-listbox>
+              </div>
+
+              <div>
+                <span style="display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7">
+                  Badges de Status (Informativos)
+                </span>
+                <mat-chip-set aria-label="Badges de status informativos">
+                  <mat-chip orgChip="default">Padrão</mat-chip>
+                  <mat-chip orgChip="primary">Primário</mat-chip>
+                  <mat-chip orgChip="success">Confirmado</mat-chip>
+                  <mat-chip orgChip="warning">Pendente</mat-chip>
+                  <mat-chip orgChip="accent">Destaque</mat-chip>
+                </mat-chip-set>
+              </div>
             </div>
           </div>
         </article>
@@ -743,7 +838,7 @@
 
         <article class="org-ds-specimen-card" [orgSurface]="'panel'" id="feedback-specimen">
           <div class="org-ds-specimen-card__canvas" [orgSurface]="'card'">
-            <div class="org-ds-interactive-row" style="margin-bottom: 24px;">
+            <div class="org-ds-interactive-row" style="margin-bottom: 24px">
               <button
                 type="button"
                 orgButton="primary"
@@ -772,7 +867,7 @@
               message="Este é um banner de aviso inline com surface glassmorphic."
             />
 
-            <div style="margin-top: 24px;">
+            <div style="margin-top: 24px">
               <org-empty-state
                 icon="event"
                 title="Nenhum item encontrado"
@@ -827,9 +922,15 @@
               </div>
               <ul>
                 <li>Usar <code>[orgSurface]</code> para qualquer card, painel ou diálogo</li>
-                <li>Utilizar sempre as cores canônicas Rosa (#ff4d94), Laranja (#ff8c42) e Amarelo (#ffc837)</li>
+                <li>
+                  Utilizar sempre as cores canônicas Rosa (#ff4d94), Laranja (#ff8c42) e Amarelo
+                  (#ffc837)
+                </li>
                 <li>Garantir alvos de toque mínimos de 48px em botões e controles móveis</li>
-                <li>Estruturar páginas com <code>&lt;org-page-layout&gt;</code> e <code>&lt;org-section&gt;</code></li>
+                <li>
+                  Estruturar páginas com <code>&lt;org-page-layout&gt;</code> e
+                  <code>&lt;org-section&gt;</code>
+                </li>
                 <li>Utilizar <code>[orgFormGrid]</code> para disposição responsiva de inputs</li>
               </ul>
             </div>
@@ -840,10 +941,19 @@
                 <span>O que NÃO FAZER (DON'T)</span>
               </div>
               <ul>
-                <li>NUNCA escrever <code>backdrop-filter</code> manual nas folhas SCSS de features</li>
-                <li>NUNCA utilizar as classes legadas <code>.glass-card</code> ou <code>.org-glass</code></li>
-                <li>NUNCA utilizar cores hexadecimais obsoletas (#630ed4, #6366f1, #38bdf8, #00bfa5)</li>
-                <li>NUNCA usar <code>!important</code> para sobrescrever estilos internos do Material</li>
+                <li>
+                  NUNCA escrever <code>backdrop-filter</code> manual nas folhas SCSS de features
+                </li>
+                <li>
+                  NUNCA utilizar as classes legadas <code>.glass-card</code> ou
+                  <code>.org-glass</code>
+                </li>
+                <li>
+                  NUNCA utilizar cores hexadecimais obsoletas (#630ed4, #6366f1, #38bdf8, #00bfa5)
+                </li>
+                <li>
+                  NUNCA usar <code>!important</code> para sobrescrever estilos internos do Material
+                </li>
                 <li>NUNCA criar breakpoints arbitrários fora de 600px / 900px / 1200px</li>
               </ul>
             </div>

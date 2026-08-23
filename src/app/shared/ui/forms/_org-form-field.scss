@@ -7,6 +7,22 @@
 
   width: 100%;
 
+  .mat-mdc-form-field-icon-prefix,
+  [matprefix],
+  [matPrefix] {
+    margin-left: 8px;
+    margin-right: 4px;
+    align-self: center;
+  }
+
+  .mat-mdc-form-field-icon-suffix,
+  [matsuffix],
+  [matSuffix] {
+    margin-left: 8px;
+    margin-right: 4px;
+    align-self: center;
+  }
+
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,

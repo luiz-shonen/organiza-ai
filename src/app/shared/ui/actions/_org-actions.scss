@@ -1,6 +1,5 @@
 .org-button,
-.org-icon-button,
-.org-chip--primitive {
+.org-icon-button {
   align-items: center;
   box-sizing: border-box;
   display: inline-flex;
@@ -85,26 +84,43 @@
   }
 }
 
-.org-chip--primitive {
-  border-radius: 9999px;
+.org-chip {
+  --mdc-chip-container-shape: 9999px;
+  --mat-chip-container-shape: 9999px;
 
-  &.org-chip--primary {
-    background: var(--org-primary-container);
-    color: var(--org-on-primary-container);
+  &.mat-mdc-chip-option {
+    cursor: pointer;
   }
 
-  &.org-chip--success {
-    background: var(--org-success-container, #d8f3dc);
-    color: var(--org-success, #176b35);
+  &--default {
+    --chip-bg: var(--org-surface-variant);
+    --chip-color: var(--org-on-surface-variant);
+    --chip-selected-bg: var(--org-on-surface-variant);
   }
 
-  &.org-chip--warning {
-    background: var(--org-secondary-container);
-    color: var(--org-on-secondary-container);
+  &--primary {
+    --chip-bg: var(--org-primary-container);
+    --chip-color: var(--org-on-primary-container);
+    --chip-selected-bg: var(--org-primary);
   }
 
-  &.org-chip--accent {
-    background: var(--org-secondary);
-    color: var(--org-on-secondary);
+  &--success {
+    --chip-bg: var(--org-success-container, #d8f3dc);
+    --chip-color: var(--org-success, #176b35);
+    --chip-selected-bg: var(--org-success, #176b35);
+  }
+
+  &--warning {
+    --chip-bg: var(--org-secondary-container);
+    --chip-color: var(--org-on-secondary-container);
+    --chip-selected-bg: var(--org-secondary);
+  }
+
+  &--accent {
+    --chip-bg: var(--org-secondary);
+    --chip-color: var(--org-on-secondary);
+    --chip-selected-bg: var(--org-secondary);
   }
 }
+
+

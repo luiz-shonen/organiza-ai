@@ -569,9 +569,17 @@ button.btn-primary-org {
 }
 
 .org-gradient-text {
-  background-clip: text;
-  color: transparent;
+  display: inline-block; /* ou inline com box-decoration-break */
   background-image: linear-gradient(to right, var(--mat-sys-on-background), var(--mat-sys-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+
+  /* Evita corte de caracteres com descenders/acentos */
+  padding-bottom: 0.5em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 *:not(mat-icon):not(.mat-icon):not(.material-icons):not(.material-symbols-outlined),
@@ -615,8 +623,8 @@ input[type='time'] {
   }
 }
 
-// Global Category Chips (Organiza AI Vibrant Modernism style)
-.org-chip:not(.org-chip--primitive) {
+// Global Category & Semantic Chips (Organiza AI Vibrant Modernism style)
+.org-chip {
   &.cat-aniversario {
     --chip-bg: #ffe499;
     --chip-color: #d35400;
@@ -663,7 +671,7 @@ input[type='time'] {
     --mdc-chip-container-shape: 9999px !important;
     --mat-chip-container-shape: 9999px !important;
 
-    background-color: var(--chip-bg, #eee) !important;
+    background-color: var(--chip-bg, var(--org-surface-variant)) !important;
     border-radius: 9999px !important;
     border: none !important;
     outline: none !important;
@@ -682,13 +690,13 @@ input[type='time'] {
     .mdc-evolution-chip__text-label,
     .mat-mdc-chip-action-label,
     span {
-      color: var(--chip-color, #333) !important;
+      color: var(--chip-color, var(--org-on-surface-variant)) !important;
       font-weight: 700 !important;
     }
 
     &.mat-mdc-chip-selected,
     &.mdc-evolution-chip--selected {
-      background: var(--chip-selected-bg, var(--chip-color, #333)) !important;
+      background: var(--chip-selected-bg, var(--chip-color, var(--org-primary))) !important;
       transform: scale(1.03);
 
       .mdc-evolution-chip__text-label,

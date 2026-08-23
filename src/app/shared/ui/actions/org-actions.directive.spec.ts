@@ -31,7 +31,7 @@ describe('shared action directives', () => {
     expect(action.style.minWidth).toBe('48px');
   });
 
-  it('gives icon buttons and chips their own 48px semantic variants', async () => {
+  it('gives icon buttons and chips their own semantic variants', async () => {
     await TestBed.configureTestingModule({ imports: [ActionsHostComponent] }).compileComponents();
     const fixture: ComponentFixture<ActionsHostComponent> = TestBed.createComponent(ActionsHostComponent);
     fixture.detectChanges();
@@ -40,7 +40,7 @@ describe('shared action directives', () => {
     const chip = fixture.nativeElement.querySelector('mat-chip-option') as HTMLElement;
     expect(iconButton.classList.contains('org-icon-button--primary')).toBe(true);
     expect(iconButton.style.minHeight).toBe('48px');
+    expect(chip.classList.contains('org-chip')).toBe(true);
     expect(chip.classList.contains('org-chip--success')).toBe(true);
-    expect(chip.style.minHeight).toBe('48px');
   });
 });

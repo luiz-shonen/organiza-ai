@@ -18,22 +18,23 @@ function normalizeChipVariant(value: unknown): OrgChipVariant {
 }
 
 @Directive({
-  selector: 'mat-chip-option[orgChip], mat-chip-row[orgChip], button[orgChip]',
+  selector: 'mat-chip[orgChip], mat-chip-option[orgChip], mat-chip-row[orgChip]',
   standalone: true,
   host: {
-    class: 'org-chip org-chip--primitive',
+    class: 'org-chip',
     '[class.org-chip--default]': "variant() === 'default'",
     '[class.org-chip--primary]': "variant() === 'primary'",
     '[class.org-chip--success]': "variant() === 'success'",
     '[class.org-chip--warning]': "variant() === 'warning'",
     '[class.org-chip--accent]': "variant() === 'accent'",
-    '[style.min-height]': "'48px'",
-    '[style.min-width]': "'48px'",
   },
 })
 export class OrgChipDirective {
-  public readonly variant = input<OrgChipVariant, OrgChipVariant | string | undefined | null>('default', {
-    alias: 'orgChip',
-    transform: normalizeChipVariant,
-  });
+  public readonly variant = input<OrgChipVariant, OrgChipVariant | string | undefined | null>(
+    'default',
+    {
+      alias: 'orgChip',
+      transform: normalizeChipVariant,
+    },
+  );
 }

@@ -1,7 +1,7 @@
 # Material Seasonal Design System Tasks
 
 **Design**: `.specs/features/16-material-seasonal-design-system/design.md`
-**Status**: In Progress (T1 complete)
+**Status**: In Progress (T1 and T2 complete)
 
 ## Test Coverage Matrix
 
@@ -29,7 +29,7 @@
 
 ### Phase 2: Catalog implementation
 
-`T2 -> T3 -> T4`
+`T2 -> T3`
 
 ## Task Breakdown
 
@@ -46,27 +46,20 @@
 
 ### T2: Rebuild the showcase as a Material-first catalog
 
-**What**: Replace the current specimen-heavy template with a focused Material catalog with stable anchor sections and live theme controls.
+**What**: Replace the current specimen-heavy template with a focused Material catalog with stable anchor sections and live theme controls, with requirements-derived unit coverage in the co-located spec.
 **Where**: `src/app/features/design-system/`
 **Depends on**: T1
 **Requirement**: MSDS-01, MSDS-02, MSDS-04, MSDS-05, MSDS-06
 **Tests**: unit
 **Gate**: quick
 
-### T3: Assert showcase behavior and accessibility contracts
+**Completed**: 2026-08-22 — 6 focused Vitest tests passed.
 
-**What**: Replace stale unit expectations with requirements-derived assertions for Material families, anchor navigation, and root theme controls.
-**Where**: `src/app/features/design-system/design-system-showcase.container.spec.ts`
-**Depends on**: T2
-**Requirement**: MSDS-01, MSDS-02, MSDS-03, MSDS-06
-**Tests**: unit
-**Gate**: quick
-
-### T4: Update browser-level catalog coverage
+### T3: Update browser-level catalog coverage
 
 **What**: Update the atomic E2E assertions for the anchored Material catalog and responsive accessibility contract.
 **Where**: `e2e/specs/design-system-showcase.spec.ts`
-**Depends on**: T3
+**Depends on**: T2
 **Requirement**: MSDS-01, MSDS-02, MSDS-05, MSDS-06
 **Tests**: e2e
 **Gate**: full

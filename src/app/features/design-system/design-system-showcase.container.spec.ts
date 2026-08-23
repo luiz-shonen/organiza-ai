@@ -1,56 +1,35 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, type WritableSignal } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { DesignSystemShowcaseContainer, SHOWCASE_NAV_CATEGORIES } from './design-system-showcase.container';
+import { MatDialog } from '@angular/material/dialog';
+import { DesignSystemShowcaseContainer, SHOWCASE_SECTIONS } from './design-system-showcase.container';
 import { ThemeService } from '../../core/services/theme.service';
 import { FeedbackService } from '../../shared/ui';
-import { MatDialog } from '@angular/material/dialog';
 
 describe('DesignSystemShowcaseContainer', () => {
   let component: DesignSystemShowcaseContainer;
   let fixture: ComponentFixture<DesignSystemShowcaseContainer>;
-  let isDarkSignal: WritableSignal<boolean>;
-  let mockThemeService: {
-    mode: { set: ReturnType<typeof vi.fn> };
-    isDark: WritableSignal<boolean>;
-    setMode: ReturnType<typeof vi.fn>;
-  };
-  let mockFeedbackService: {
-    success: ReturnType<typeof vi.fn>;
-    error: ReturnType<typeof vi.fn>;
-    info: ReturnType<typeof vi.fn>;
-  };
-  let mockDialog: {
-    open: ReturnType<typeof vi.fn>;
-  };
+  let isDark: WritableSignal<boolean>;
+  let themeService: { isDark: WritableSignal<boolean>; setMode: ReturnType<typeof vi.fn> };
+  let feedbackService: { success: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
+  let dialog: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
-    isDarkSignal = signal<boolean>(false);
-    mockThemeService = {
-      mode: { set: vi.fn() },
-      isDark: isDarkSignal,
-      setMode: vi.fn((newMode: string) => {
-        isDarkSignal.set(newMode === 'dark');
-      }),
+    isDark = signal(false);
+    themeService = {
+      isDark,
+      setMode: vi.fn((mode: 'light' | 'dark') => isDark.set(mode === 'dark')),
     };
-
-    mockFeedbackService = {
-      success: vi.fn(),
-      error: vi.fn(),
-      info: vi.fn(),
-    };
-
-    mockDialog = {
-      open: vi.fn().mockReturnValue({ afterClosed: () => ({ subscribe: vi.fn() }) }),
-    };
+    feedbackService = { success: vi.fn(), info: vi.fn() };
+    dialog = { open: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [DesignSystemShowcaseContainer],
       providers: [
         provideNoopAnimations(),
-        { provide: ThemeService, useValue: mockThemeService },
-        { provide: FeedbackService, useValue: mockFeedbackService },
-        { provide: MatDialog, useValue: mockDialog },
+        { provide: ThemeService, useValue: themeService },
+        { provide: FeedbackService, useValue: feedbackService },
+        { provide: MatDialog, useValue: dialog },
       ],
     }).compileComponents();
 
@@ -59,214 +38,69 @@ describe('DesignSystemShowcaseContainer', () => {
     fixture.detectChanges();
   });
 
-  it('should create the showcase container', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    document.documentElement.classList.remove(
+      'theme-junina',
+      'theme-natal',
+      'theme-pascoa',
+      'theme-ano-novo',
+    );
   });
 
-  it('should initialize with all 4 categorized navigation groups', () => {
-    const categories = component.categories();
-    expect(categories.length).toBe(4);
-    expect(categories.map((c) => c.id)).toEqual(['brand', 'foundations', 'components', 'guidelines']);
+  it('renders all required Angular Material component families', () => {
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('button[mat-flat-button]')).toBeTruthy();
+    expect(root.querySelector('mat-form-field')).toBeTruthy();
+    expect(root.querySelector('mat-chip-listbox')).toBeTruthy();
+    expect(root.querySelector('mat-tab-group')).toBeTruthy();
+    expect(root.querySelector('mat-progress-spinner')).toBeTruthy();
+    expect(root.querySelector('mat-card')).toBeTruthy();
   });
 
-  it('should contain all 14 visual showcase sections across categories', () => {
-    const totalSections = component.categories().flatMap((c) => c.sections);
-    expect(totalSections.length).toBe(14);
-    expect(totalSections.map((s) => s.id)).toContain('brand-overview');
-    expect(totalSections.map((s) => s.id)).toContain('brand-colors');
-    expect(totalSections.map((s) => s.id)).toContain('brand-typography');
-    expect(totalSections.map((s) => s.id)).toContain('brand-icons');
-    expect(totalSections.map((s) => s.id)).toContain('foundations-tokens');
-    expect(totalSections.map((s) => s.id)).toContain('foundations-fundamentals');
-    expect(totalSections.map((s) => s.id)).toContain('components-surfaces');
-    expect(totalSections.map((s) => s.id)).toContain('components-buttons');
-    expect(totalSections.map((s) => s.id)).toContain('components-forms');
-    expect(totalSections.map((s) => s.id)).toContain('components-chips');
-    expect(totalSections.map((s) => s.id)).toContain('components-layout');
-    expect(totalSections.map((s) => s.id)).toContain('components-feedback');
-    expect(totalSections.map((s) => s.id)).toContain('components-navigation');
-    expect(totalSections.map((s) => s.id)).toContain('guidelines-dos-donts');
+  it('gives every showcase section a stable element id and a matching sidebar anchor', () => {
+    const root = fixture.nativeElement as HTMLElement;
+
+    for (const section of SHOWCASE_SECTIONS) {
+      expect(root.querySelector(`section#${section.id}`)).toBeTruthy();
+      expect(root.querySelector(`.org-ds-sidebar__nav-link[href="#${section.id}"]`)).toBeTruthy();
+    }
   });
 
-  it('should filter sections based on search query', () => {
-    component.searchQuery.set('chip');
+  it('updates the selected sidebar state when an anchor is activated', () => {
+    component.setActiveSection('feedback');
     fixture.detectChanges();
 
-    const filtered = component.filteredCategories();
-    expect(filtered.length).toBe(1);
-    expect(filtered[0].id).toBe('components');
-    expect(filtered[0].sections.map((s) => s.id)).toEqual(['components-chips']);
+    const activeLink = fixture.nativeElement.querySelector('.org-ds-sidebar__nav-link--active') as HTMLAnchorElement;
+    expect(activeLink.getAttribute('href')).toBe('#feedback');
   });
 
-  it('should filter sections based on keyword match', () => {
-    component.searchQuery.set('pink');
-    fixture.detectChanges();
-
-    const filtered = component.filteredCategories();
-    expect(filtered.length).toBe(1);
-    expect(filtered[0].id).toBe('brand');
-    expect(filtered[0].sections.map((s) => s.id)).toEqual(['brand-colors']);
-  });
-
-  it('should return all categories when search query is cleared', () => {
-    component.searchQuery.set('buttons');
-    expect(component.filteredCategories().length).toBe(1);
-
-    component.searchQuery.set('');
-    expect(component.filteredCategories().length).toBe(4);
-  });
-
-  it('should toggle theme mode between light and dark', () => {
-    isDarkSignal.set(false);
-    component.toggleThemeMode();
-    expect(mockThemeService.setMode).toHaveBeenCalledWith('dark');
-
-    isDarkSignal.set(true);
-    component.toggleThemeMode();
-    expect(mockThemeService.setMode).toHaveBeenCalledWith('light');
-  });
-
-  it('should apply and switch seasonal theme classes on document element', () => {
-    component.setSeasonalTheme('theme-junina');
-    expect(component.activeSeasonalTheme()).toBe('theme-junina');
-    expect(document.documentElement.classList.contains('theme-junina')).toBe(true);
+  it('applies a single selected seasonal class to the document root', () => {
+    component.setSeasonalTheme('theme-pascoa');
+    expect(document.documentElement.classList.contains('theme-pascoa')).toBe(true);
+    expect(component.activeSeasonalTheme()).toBe('theme-pascoa');
 
     component.setSeasonalTheme('theme-natal');
-    expect(component.activeSeasonalTheme()).toBe('theme-natal');
-    expect(document.documentElement.classList.contains('theme-junina')).toBe(false);
+    expect(document.documentElement.classList.contains('theme-pascoa')).toBe(false);
     expect(document.documentElement.classList.contains('theme-natal')).toBe(true);
-
-    component.setSeasonalTheme('default');
-    expect(component.activeSeasonalTheme()).toBe('default');
-    expect(document.documentElement.classList.contains('theme-natal')).toBe(false);
   });
 
-  it('should toggle code box expansion for a specimen ID', () => {
-    const specimenId = 'surface-specimen';
-    expect(component.isCodeExpanded(specimenId)).toBe(false);
+  it('toggles the existing light and dark service mode without navigation', () => {
+    component.toggleThemeMode();
+    expect(themeService.setMode).toHaveBeenCalledWith('dark');
 
-    component.toggleCode(specimenId);
-    expect(component.isCodeExpanded(specimenId)).toBe(true);
-
-    component.toggleCode(specimenId);
-    expect(component.isCodeExpanded(specimenId)).toBe(false);
+    isDark.set(true);
+    component.toggleThemeMode();
+    expect(themeService.setMode).toHaveBeenCalledWith('light');
   });
 
-  it('should copy code snippet to clipboard and show feedback snackbar', async () => {
-    const writeTextSpy = vi.fn().mockResolvedValue(undefined);
-    Object.assign(navigator, {
-      clipboard: {
-        writeText: writeTextSpy,
-      },
-    });
+  it('uses the feedback and dialog services only for local component demonstrations', () => {
+    component.showSuccessExample();
+    component.showInfoExample();
+    component.openDialogExample();
 
-    await component.copyCode('<button orgButton="primary">Test</button>', 'btn-sample');
-
-    expect(writeTextSpy).toHaveBeenCalledWith('<button orgButton="primary">Test</button>');
-    expect(component.copiedSnippetId()).toBe('btn-sample');
-    expect(mockFeedbackService.success).toHaveBeenCalledWith('Código copiado para a área de transferência!');
-  });
-
-  it('should update activeSection on scrollToSection', () => {
-    const scrollMock = vi.fn();
-    const mockElem = fixture.nativeElement.querySelector('#components-buttons') as HTMLElement;
-    if (mockElem) {
-      mockElem.scrollIntoView = scrollMock;
-    }
-
-    component.scrollToSection('components-buttons');
-
-    expect(component.activeSection()).toBe('components-buttons');
-    expect(scrollMock).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
-  });
-
-  it('should toggle buttonLoadingState', () => {
-    expect(component.buttonLoadingState()).toBe(false);
-    component.toggleButtonLoading();
-    expect(component.buttonLoadingState()).toBe(true);
-    component.toggleButtonLoading();
-    expect(component.buttonLoadingState()).toBe(false);
-  });
-
-  it('should filter icons based on iconSearchQuery', () => {
-    component.iconSearchQuery.set('event');
-    const filtered = component.filteredIcons();
-    expect(filtered).toContain('event');
-    expect(filtered.length).toBeLessThan(component.allIconNames.length);
-  });
-
-  it('should compute surfacePreviewGlassBg and surfacePreviewGlassBlur based on sliders', () => {
-    isDarkSignal.set(false);
-    component.surfaceBgOpacity.set(80);
-    component.surfaceBlurSlider.set(32);
-
-    expect(component.surfacePreviewGlassBg()).toBe('rgba(255, 255, 255, 0.8)');
-    expect(component.surfacePreviewGlassBlur()).toBe('blur(32px)');
-
-    isDarkSignal.set(true);
-    expect(component.surfacePreviewGlassBg()).toBe('rgba(31, 26, 29, 0.8)');
-  });
-
-  it('should open confirm dialog sample via MatDialog', () => {
-    component.openConfirmDialogSample();
-    expect(mockDialog.open).toHaveBeenCalled();
-  });
-
-  it('should render all 14 visual section IDs in the template DOM', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const sectionIds = [
-      'brand-overview',
-      'brand-colors',
-      'brand-typography',
-      'brand-icons',
-      'foundations-tokens',
-      'foundations-fundamentals',
-      'components-surfaces',
-      'components-buttons',
-      'components-forms',
-      'components-chips',
-      'components-layout',
-      'components-feedback',
-      'components-navigation',
-      'guidelines-dos-donts',
-    ];
-
-    for (const id of sectionIds) {
-      const sectionEl = compiled.querySelector(`section#${id}`);
-      expect(sectionEl).toBeTruthy();
-    }
-  });
-
-  it('should expand and display code snippet pre element when code toggle is clicked in template', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.org-ds-specimen-card__code-box')).toBeNull();
-
-    component.toggleCode('surface-specimen');
-    fixture.detectChanges();
-
-    const codeBox = compiled.querySelector('.org-ds-specimen-card__code-box');
-    expect(codeBox).toBeTruthy();
-    expect(codeBox?.textContent).toContain('article [orgSurface]');
-  });
-
-  it('should trigger feedback notifications when feedback buttons are clicked in template', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const buttons = Array.from(compiled.querySelectorAll('#components-feedback button')) as HTMLButtonElement[];
-
-    const successBtn = buttons.find((b) => b.textContent?.includes('Testar Sucesso'));
-    expect(successBtn).toBeTruthy();
-    successBtn?.click();
-    expect(mockFeedbackService.success).toHaveBeenCalledWith('Operação concluída com sucesso!');
-
-    const errorBtn = buttons.find((b) => b.textContent?.includes('Testar Erro'));
-    expect(errorBtn).toBeTruthy();
-    errorBtn?.click();
-    expect(mockFeedbackService.error).toHaveBeenCalledWith('Ocorreu um erro ao processar.');
-  });
-
-  it('should render all icon cards in the iconography section', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    const iconCards = compiled.querySelectorAll('.org-ds-icon-card');
-    expect(iconCards.length).toBe(component.allIconNames.length);
+    expect(feedbackService.success).toHaveBeenCalledWith('Tema aplicado à prévia com sucesso.');
+    expect(feedbackService.info).toHaveBeenCalledWith('A prévia usa tokens sazonais compartilhados.');
+    expect(dialog.open).toHaveBeenCalledTimes(1);
   });
 });

@@ -80,12 +80,12 @@ The current catalog presents project-specific primitives as the primary system. 
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| MSDS-01 | Material component catalog | Implementing | Pending |
-| MSDS-02 | Anchored component navigation | Implementing | Pending |
-| MSDS-03 | Seasonal Material themes | Implementing | Token foundation complete |
-| MSDS-04 | Material component catalog | Implementing | Pending |
-| MSDS-05 | Material component catalog | Implementing | Pending |
-| MSDS-06 | Seasonal Material themes | Implementing | Pending |
+| MSDS-01 | Material component catalog | Implemented | Catalog and unit coverage complete |
+| MSDS-02 | Anchored component navigation | Implemented | Sidebar anchor contract complete |
+| MSDS-03 | Seasonal Material themes | Implemented | Shared token contract complete |
+| MSDS-04 | Material component catalog | Implemented | Glass and gradient Material treatment complete |
+| MSDS-05 | Material component catalog | In verification | Responsive and touch-target E2E coverage pending commit |
+| MSDS-06 | Seasonal Material themes | Implemented | Root class controls complete |
 
 **Coverage:** 6 total, 6 mapped to tasks, 0 unmapped.
 

@@ -73,7 +73,7 @@ async function setupVisualMockSession(page: Page) {
         ],
       };
 
-      const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
+      const apiKey = 'test-firebase-api-key';
       const userValue = {
         uid: 'test-visual-uid',
         email: 'luiz.gmr.dev@gmail.com',

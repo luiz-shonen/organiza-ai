@@ -69,6 +69,17 @@ Design-token & layout invariants verified in E2E tests:
 
 ## Commands
 
+## Firebase runtime configuration
+
+The Firebase web API key is loaded from the ignored `runtime-config.js` file
+so a rotated key is never committed. For local development, copy
+`public/runtime-config.example.js` to `public/runtime-config.js` and set the
+current restricted Firebase web API key. In production, place the configured
+file next to the compiled files *after* `ng build`; this keeps it out of the
+service worker manifest, allowing rotation without a new application build.
+Restrict the key to this app's authorized web origins and the Firebase APIs it
+needs in Google Cloud.
+
 ```bash
 # Development server
 ng serve                        # http://localhost:4200

@@ -72,7 +72,7 @@ async function setupMockSession(page: Page, mockEvents: any[] = mockSampleEvents
         events: events || [],
       };
 
-      const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
+      const apiKey = 'test-firebase-api-key';
       const userValue = {
         uid: 'test-organizer-uid',
         email: 'organizer@organizaai.test',

@@ -41,6 +41,7 @@ __screenshots__/
 /playwright-report
 /test-results
 e2e/screenshots/
+public/runtime-config.js
 
 
 # System files

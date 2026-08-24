@@ -58,7 +58,7 @@ async function setupA11yMockSession(page: Page) {
         events: events || [],
       };
 
-      const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
+      const apiKey = 'test-firebase-api-key';
       const userValue = {
         uid: 'test-a11y-uid',
         email: 'organizer@organizaai.test',

@@ -16,7 +16,7 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
   const email = options.email || 'luiz.gmr.dev@gmail.com';
   const displayName = options.displayName || 'Luiz Admin';
   const emailVerified = options.emailVerified !== undefined ? options.emailVerified : true;
-  const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
+  const apiKey = 'test-firebase-api-key';
 
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({

@@ -60,7 +60,7 @@ async function setupHostSession(page: Page) {
         events: [event],
       };
 
-      const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
+      const apiKey = 'test-firebase-api-key';
       const userValue = {
         uid: 'host-sync-uid',
         email: 'host@organiza.ai',
@@ -142,7 +142,7 @@ async function setupGuestSession(page: Page) {
         events: [event],
       };
 
-      const apiKey = 'AIzaSyC8G48dEFai6_hkUvolgzLL0I1HJquBHU0';
+      const apiKey = 'test-firebase-api-key';
       const userValue = {
         uid: 'guest-sync-uid',
         email: 'guest@organiza.ai',

@@ -1,0 +1,25 @@
+@if (href(); as anchorHref) {
+  <a
+    [href]="anchorHref"
+    class="navigation-drawer-link"
+    [class.navigation-drawer-link--active]="active()"
+    [attr.aria-current]="active() ? currentValue() : null"
+    [attr.data-testid]="testId()"
+    (click)="selected.emit()"
+  >
+    <mat-icon aria-hidden="true">{{ icon() }}</mat-icon>
+    <span>{{ label() }}</span>
+  </a>
+} @else {
+  <a
+    [routerLink]="route()"
+    class="navigation-drawer-link"
+    [class.navigation-drawer-link--active]="active()"
+    [attr.aria-current]="active() ? currentValue() : null"
+    [attr.data-testid]="testId()"
+    (click)="selected.emit()"
+  >
+    <mat-icon aria-hidden="true">{{ icon() }}</mat-icon>
+    <span>{{ label() }}</span>
+  </a>
+}

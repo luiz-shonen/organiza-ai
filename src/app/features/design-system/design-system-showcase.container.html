@@ -1,87 +1,30 @@
 <div class="org-material-showcase">
-  <aside class="org-ds-sidebar" aria-label="Navegação do design system">
-    <a class="org-ds-sidebar__brand" href="#overview" (click)="setActiveSection('overview')">
-      <span class="org-ds-sidebar__mark" aria-hidden="true">
-        <mat-icon>auto_awesome</mat-icon>
-      </span>
-      <span>
-        <strong>Organiza AI</strong>
-        <small>Material seasonal system</small>
-      </span>
-    </a>
-
-    <nav class="org-ds-sidebar__nav" aria-label="Componentes">
-      <span class="org-ds-sidebar__label">Componentes</span>
-      @for (section of sections; track section.id) {
-        <a
-          class="org-ds-sidebar__nav-link"
-          [class.org-ds-sidebar__nav-link--active]="activeSection() === section.id"
-          [href]="'#' + section.id"
-          (click)="setActiveSection(section.id)"
-        >
-          <mat-icon aria-hidden="true">{{ section.icon }}</mat-icon>
-          {{ section.label }}
-        </a>
-      }
-    </nav>
-
-    <div class="org-ds-sidebar__footnote">
-      <mat-icon aria-hidden="true">contrast</mat-icon>
-      <span>Material 3, transparência e temas brasileiros.</span>
-    </div>
-  </aside>
-
   <main class="org-ds-main" aria-label="Catálogo de componentes Angular Material">
     <header class="org-ds-topbar">
       <div>
         <p class="org-ds-topbar__eyebrow">Design system</p>
-        <h1 class="org-ds-topbar__title">Angular Material, com alma de celebração.</h1>
+        <h1 class="org-ds-topbar__title">Convites que dão vontade de confirmar.</h1>
         <p class="org-ds-topbar__copy">
-          Uma base Material-first para construir experiências sazonais, claras e sofisticadas.
+          Uma direção editorial, tátil e calorosa para validar antes de qualquer migração de componentes.
         </p>
       </div>
 
-      <div class="org-ds-topbar__controls" aria-label="Controles de prévia">
-        <button
-          mat-stroked-button
-          type="button"
-          class="org-ds-topbar__theme-toggle"
-          [attr.aria-label]="themeService.isDark() ? 'Ativar tema claro' : 'Ativar tema escuro'"
-          (click)="toggleThemeMode()"
-        >
-          <mat-icon aria-hidden="true">{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-          {{ themeService.isDark() ? 'Claro' : 'Escuro' }}
-        </button>
-
-        <mat-form-field appearance="outline" class="org-ds-topbar__seasonal-select">
-          <mat-label>Temporada</mat-label>
-          <mat-select
-            [value]="activeSeasonalTheme()"
-            aria-label="Selecionar tema sazonal"
-            (selectionChange)="setSeasonalTheme($event.value)"
-          >
-            @for (theme of seasonalOptions; track theme.id) {
-              <mat-option [value]="theme.id">{{ theme.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
     </header>
 
     <section id="overview" class="org-ds-section" aria-labelledby="overview-title">
       <div class="org-ds-section__heading">
         <p class="org-ds-section__eyebrow">01 · visão geral</p>
-        <h2 id="overview-title">Componentes que parecem nativos, não genéricos.</h2>
+        <h2 id="overview-title">Um sistema leve, humano e longe do visual genérico.</h2>
       </div>
 
-      <mat-card class="org-ds-hero-card">
-        <mat-card-content class="org-ds-hero-card__content">
+      <org-surface variant="hero" [atmosphere]="true" class="org-ds-hero-card">
+        <div class="org-ds-hero-card__content">
           <div class="org-ds-hero-card__identity">
             <span class="org-ds-hero-card__date">24 JUN</span>
             <div>
-              <p class="org-ds-hero-card__eyebrow">Prévia de combinação</p>
+              <p class="org-ds-hero-card__eyebrow">Prévia de convite</p>
               <h3>Arraiá no jardim</h3>
-              <p>Um painel de evento combina card, chip, botões, lista e indicadores do Material.</p>
+              <p>Coral, âmbar e porcelana em uma composição que parece convite — não painel administrativo.</p>
             </div>
           </div>
 
@@ -98,43 +41,122 @@
               </button>
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </org-surface>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.invitationPreview" />
+    </section>
+
+    <section id="seasonal-themes" class="org-ds-section" aria-labelledby="seasonal-themes-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">02 · temas sazonais</p>
+        <h2 id="seasonal-themes-title">A mesma biblioteca, quatro celebrações brasileiras.</h2>
+      </div>
+
+      <div class="org-ds-season-grid">
+        @for (theme of seasonalOptions; track theme.id) {
+          <button
+            type="button"
+            class="org-ds-season-card"
+            [class.org-ds-season-card--active]="activeSeasonalTheme() === theme.id"
+            [attr.aria-pressed]="activeSeasonalTheme() === theme.id"
+            (click)="setSeasonalTheme(theme.id)"
+          >
+            <span class="org-ds-season-card__swatch" [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"></span>
+            <strong>{{ theme.label }}</strong>
+            <small>{{ theme.description }}</small>
+          </button>
+        }
+      </div>
     </section>
 
     <section id="foundations" class="org-ds-section" aria-labelledby="foundations-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">02 · fundações</p>
-        <h2 id="foundations-title">Tokens sazonais que percorrem todo o Material.</h2>
+        <p class="org-ds-section__eyebrow">03 · fundações</p>
+        <h2 id="foundations-title">Cor, tipo e profundidade com uma assinatura própria.</h2>
       </div>
 
       <div class="org-ds-token-grid">
         <article class="org-ds-token-card org-ds-token-card--primary">
           <span>Primary</span>
-          <strong>CTA e foco</strong>
+          <strong>Convite e foco</strong>
           <code>--org-primary</code>
         </article>
         <article class="org-ds-token-card org-ds-token-card--secondary">
           <span>Secondary</span>
-          <strong>Contraponto</strong>
+          <strong>Calor e destaque</strong>
           <code>--org-secondary</code>
         </article>
         <article class="org-ds-token-card org-ds-token-card--tertiary">
           <span>Tertiary</span>
-          <strong>Detalhe e brilho</strong>
+          <strong>Ar e frescor</strong>
           <code>--org-tertiary</code>
         </article>
         <article class="org-ds-token-card org-ds-token-card--glass">
           <span>Glass</span>
-          <strong>Profundidade suave</strong>
+          <strong>Vidro discreto</strong>
           <code>--org-glass-bg</code>
+        </article>
+        <article class="org-ds-token-card org-ds-token-card--success">
+          <span>Success</span>
+          <strong>Confirmação</strong>
+          <code>--org-success</code>
+        </article>
+        <article class="org-ds-token-card org-ds-token-card--error">
+          <span>Error</span>
+          <strong>Correção</strong>
+          <code>--org-error</code>
+        </article>
+      </div>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.tokens" />
+    </section>
+
+    <section id="components" class="org-ds-section" aria-labelledby="components-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">04 · componentes</p>
+        <h2 id="components-title">APIs fechadas para construir telas sem reinventar o sistema.</h2>
+      </div>
+
+      <div class="org-ds-documentation-grid">
+        <article class="org-ds-documentation-card">
+          <span class="org-ds-documentation-card__eyebrow">Layout</span>
+          <h3>Estrutura de página</h3>
+          <p>Delimita largura, título, ícone e ações sem repetir a composição em cada feature.</p>
+          <org-page-header title="Meus eventos" subtitle="Uma composição com API previsível." icon="event" [gradient]="true" />
+          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.pageLayout" />
+        </article>
+
+        <article class="org-ds-documentation-card">
+          <span class="org-ds-documentation-card__eyebrow">Superfícies</span>
+          <h3>Card e painel</h3>
+          <p>Escolha uma variante sem criar fundos, sombras ou bordas ad hoc.</p>
+          <org-surface variant="card">
+            <strong>Lista de convidados</strong>
+            <span>Uma superfície com contraste e profundidade compartilhados.</span>
+          </org-surface>
+          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.surface" />
+        </article>
+
+        <article class="org-ds-documentation-card">
+          <span class="org-ds-documentation-card__eyebrow">Feedback</span>
+          <h3>Mensagem contextual</h3>
+          <p>Feedback persistente no banner e feedback momentâneo pelo serviço.</p>
+          <org-banner variant="info" message="Convites enviados para 42 convidados." />
+          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.feedback" />
+        </article>
+
+        <article class="org-ds-documentation-card">
+          <span class="org-ds-documentation-card__eyebrow">Estado vazio</span>
+          <h3>Ausência com próxima ação</h3>
+          <p>O estado vazio mantém contexto, sem uma tela manual para cada domínio.</p>
+          <org-empty-state icon="event" title="Nenhum evento por aqui" description="Crie o primeiro evento para começar." />
+          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.emptyState" />
         </article>
       </div>
     </section>
 
     <section id="buttons" class="org-ds-section" aria-labelledby="buttons-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">03 · botões e ações</p>
+        <p class="org-ds-section__eyebrow">04 · botões e ações</p>
         <h2 id="buttons-title">Hierarquia nítida, com movimento e cor na medida.</h2>
       </div>
 
@@ -151,25 +173,13 @@
               <mat-icon>add</mat-icon>
             </button>
           </div>
-          <mat-divider></mat-divider>
-          <div class="org-ds-control-row org-ds-control-row--between">
-            <span>Density do catálogo</span>
-            <mat-button-toggle-group
-              [value]="selectedDensity()"
-              aria-label="Selecionar density"
-              (change)="selectedDensity.set($event.value)"
-            >
-              <mat-button-toggle value="comfortable">Confortável</mat-button-toggle>
-              <mat-button-toggle value="compact">Compacta</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
         </mat-card-content>
       </mat-card>
     </section>
 
     <section id="inputs" class="org-ds-section" aria-labelledby="inputs-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">04 · campos</p>
+        <p class="org-ds-section__eyebrow">05 · campos</p>
         <h2 id="inputs-title">Formulários com ritmo, rótulos claros e uma única linguagem visual.</h2>
       </div>
 
@@ -188,24 +198,21 @@
               <mat-option value="online">Online</mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Data da celebração</mat-label>
-            <input matInput [matDatepicker]="picker" [ngModel]="eventDate()" (ngModelChange)="eventDate.set($event)" />
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
+          <org-date-field label="Data da celebração" [(value)]="eventDate" />
+          <org-time-field label="Horário de início" value="19:30" />
           <mat-form-field appearance="outline" class="org-ds-form-grid__wide">
             <mat-label>Mensagem de boas-vindas</mat-label>
-            <textarea matInput rows="3">Celebre com quem torna a vida mais bonita.</textarea>
+            <textarea matInput rows="1">Celebre com quem torna a vida mais bonita.</textarea>
             <mat-hint>Mostre a voz do tema sem perder legibilidade.</mat-hint>
           </mat-form-field>
         </mat-card-content>
       </mat-card>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.fields" />
     </section>
 
     <section id="selection" class="org-ds-section" aria-labelledby="selection-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">05 · seleção</p>
+        <p class="org-ds-section__eyebrow">06 · seleção</p>
         <h2 id="selection-title">Escolhas fáceis de escanear em qualquer tema.</h2>
       </div>
 
@@ -221,7 +228,7 @@
           <div>
             <p class="org-ds-field-label">Preferências</p>
             <div class="org-ds-selection-layout__stack">
-              <mat-checkbox checked>Enviar lembrete na véspera</mat-checkbox>
+              <mat-slide-toggle checked>Enviar lembrete na véspera</mat-slide-toggle>
               <mat-slide-toggle [checked]="notificationsEnabled()" (change)="notificationsEnabled.set($event.checked)">
                 Notificações do evento
               </mat-slide-toggle>
@@ -235,13 +242,21 @@
               <mat-chip-option>Comunidade</mat-chip-option>
             </mat-chip-listbox>
           </div>
+          <div>
+            <p class="org-ds-field-label">Múltiplas seleções</p>
+            <div class="org-ds-selection-layout__stack">
+              <mat-checkbox checked>Receber respostas por e-mail</mat-checkbox>
+              <mat-checkbox>Permitir acompanhante</mat-checkbox>
+            </div>
+          </div>
         </mat-card-content>
       </mat-card>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.selection" />
     </section>
 
     <section id="navigation" class="org-ds-section" aria-labelledby="navigation-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">06 · navegação</p>
+        <p class="org-ds-section__eyebrow">07 · navegação</p>
         <h2 id="navigation-title">Orientação compacta para fluxos densos e telas pequenas.</h2>
       </div>
 
@@ -259,32 +274,51 @@
             </mat-tab>
           </mat-tab-group>
           <mat-nav-list aria-label="Navegação de exemplo">
-            <a mat-list-item href="#data-display" (click)="setActiveSection('data-display')">
+            <button mat-list-item type="button" (click)="scrollToSection('data-display')">
               <mat-icon matListItemIcon aria-hidden="true">groups</mat-icon>
               <span matListItemTitle>Convidados confirmados</span>
               <span matListItemMeta>42</span>
-            </a>
-            <a mat-list-item href="#feedback" (click)="setActiveSection('feedback')">
+            </button>
+            <button mat-list-item type="button" (click)="scrollToSection('feedback')">
               <mat-icon matListItemIcon aria-hidden="true">mark_email_unread</mat-icon>
               <span matListItemTitle>Mensagens pendentes</span>
               <span matListItemMeta>{{ notifications() }}</span>
-            </a>
+            </button>
           </mat-nav-list>
-          <button mat-stroked-button type="button" [matMenuTriggerFor]="eventMenu">
+          <button mat-stroked-button type="button" class="org-material-button--gradient-outline org-ds-navigation-demo__menu-trigger" [matMenuTriggerFor]="eventMenu">
             Mais ações
             <mat-icon aria-hidden="true">expand_more</mat-icon>
           </button>
-          <mat-menu #eventMenu="matMenu">
+          <mat-menu #eventMenu="matMenu" class="org-ds-menu-panel">
             <button mat-menu-item type="button"><mat-icon>content_copy</mat-icon>Duplicar evento</button>
             <button mat-menu-item type="button"><mat-icon>archive</mat-icon>Arquivar rascunho</button>
           </mat-menu>
         </mat-card-content>
       </mat-card>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.navigation" />
+    </section>
+
+    <section id="stepper" class="org-ds-section" aria-labelledby="stepper-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">08 · etapas</p>
+        <h2 id="stepper-title">Progresso guiado sem perder espaço no celular.</h2>
+      </div>
+
+      <mat-card class="org-ds-panel-card">
+        <mat-card-content>
+          <mat-stepper [orientation]="stepperOrientation()" aria-label="Etapas de criação do evento">
+            <mat-step label="Informações"><p>Defina nome, data e formato.</p></mat-step>
+            <mat-step label="Convidados"><p>Escolha os canais e a lista.</p></mat-step>
+            <mat-step label="Revisão"><p>Confirme antes de publicar.</p></mat-step>
+          </mat-stepper>
+        </mat-card-content>
+      </mat-card>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.stepper" />
     </section>
 
     <section id="data-display" class="org-ds-section" aria-labelledby="data-display-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">07 · dados e cards</p>
+        <p class="org-ds-section__eyebrow">09 · dados e cards</p>
         <h2 id="data-display-title">Informação organizada sem sacrificar atmosfera.</h2>
       </div>
 
@@ -305,17 +339,18 @@
         </mat-card>
         <mat-card class="org-ds-metric-card">
           <mat-card-content>
-            <span matBadge="novo" matBadgeOverlap="false">Convites</span>
+            <span>Convites</span>
             <strong>6</strong>
             <p>aguardando resposta</p>
           </mat-card-content>
         </mat-card>
       </div>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.metrics" />
     </section>
 
     <section id="feedback" class="org-ds-section" aria-labelledby="feedback-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">08 · feedback</p>
+        <p class="org-ds-section__eyebrow">10 · feedback</p>
         <h2 id="feedback-title">Respostas calmas e reconhecíveis, sem interromper o fluxo.</h2>
       </div>
 
@@ -336,27 +371,5 @@
       </mat-card>
     </section>
 
-    <section id="seasonal-themes" class="org-ds-section" aria-labelledby="seasonal-themes-title">
-      <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">09 · temas sazonais</p>
-        <h2 id="seasonal-themes-title">A mesma biblioteca, quatro celebrações brasileiras.</h2>
-      </div>
-
-      <div class="org-ds-season-grid">
-        @for (theme of seasonalOptions; track theme.id) {
-          <button
-            type="button"
-            class="org-ds-season-card"
-            [class.org-ds-season-card--active]="activeSeasonalTheme() === theme.id"
-            [attr.aria-pressed]="activeSeasonalTheme() === theme.id"
-            (click)="setSeasonalTheme(theme.id)"
-          >
-            <span class="org-ds-season-card__swatch" [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"></span>
-            <strong>{{ theme.label }}</strong>
-            <small>{{ theme.description }}</small>
-          </button>
-        }
-      </div>
-    </section>
   </main>
 </div>

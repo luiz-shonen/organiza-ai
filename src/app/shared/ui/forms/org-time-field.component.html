@@ -1,0 +1,4 @@
+<mat-form-field appearance="outline" class="org-time-field">
+  <mat-label>{{ label() }}</mat-label>
+  <input matInput type="time" [value]="value()" (input)="updateValue($event)" />
+</mat-form-field>

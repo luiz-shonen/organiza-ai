@@ -161,6 +161,11 @@
   border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
+.app-toolbar__menu-btn {
+  margin-right: 8px;
+  order: -1;
+}
+
 .app-offline-banner {
   background-color: var(--mat-sys-error-container);
   color: var(--mat-sys-on-error-container);
@@ -195,13 +200,23 @@ mat-sidenav-content {
   backdrop-filter: var(--org-glass-blur) !important;
   -webkit-backdrop-filter: var(--org-glass-blur) !important;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
-  border-left: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-top-left-radius: 24px;
-  border-bottom-left-radius: 24px;
-  width: 400px;
+  border-left: 1px solid color-mix(in srgb, var(--org-primary) 24%, transparent);
+  border-radius: 24px 0 0 24px;
+  width: 352px;
   max-width: 90vw;
 
   .dark & {
-    border-left: 1.5px solid rgba(255, 255, 255, 0.05);
+    border-left-color: color-mix(in srgb, var(--org-primary) 32%, transparent);
+  }
+
+  &.app-sidenav-drawer--navigation {
+    border-left: 0;
+    border-right: 1px solid color-mix(in srgb, var(--org-primary) 24%, transparent);
+    border-radius: 0 24px 24px 0;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.15);
+
+    .dark & {
+      border-right-color: color-mix(in srgb, var(--org-primary) 32%, transparent);
+    }
   }
 }

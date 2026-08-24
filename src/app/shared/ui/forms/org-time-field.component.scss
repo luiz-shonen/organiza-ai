@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.org-time-field {
+  display: block;
+  width: 100%;
+
+  input[type='time'] {
+    height: 24px;
+    line-height: 24px;
+    min-height: 24px;
+    padding-block: 0;
+  }
+}

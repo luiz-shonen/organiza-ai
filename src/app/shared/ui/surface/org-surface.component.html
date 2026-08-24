@@ -1,3 +1,10 @@
-<section class="org-surface" [class]="'org-surface org-surface--' + variant()" data-testid="org-surface">
+<section
+  class="org-surface"
+  [class]="'org-surface org-surface--' + variant()"
+  [class.org-surface--atmosphere]="atmosphere()"
+  [style.--org-surface-orb-primary]="atmospherePrimary()"
+  [style.--org-surface-orb-secondary]="atmosphereSecondary()"
+  data-testid="org-surface"
+>
   <ng-content />
 </section>

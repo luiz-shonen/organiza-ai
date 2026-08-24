@@ -320,6 +320,23 @@ import { NavigationDrawerComponent } from '@shared/ui';
 ```
 Responsive slide-over navigation drawer displaying authenticated user profile, route navigation (`/`, `/meus-eventos`, `/perfil`, `/admin`, `/design-system`), and theme switchers.
 
+### 6.8 Component-First Authoring Contract
+
+When creating a new screen or feature, use the documented standalone components from `@shared/ui` as the public authoring API. The living catalog at `/design-system` contains a rendered preview and a copyable Angular example for each supported component.
+
+```typescript
+import {
+  OrgBannerComponent,
+  OrgPageHeaderComponent,
+  OrgPageLayoutComponent,
+  OrgSurfaceComponent,
+} from '@shared/ui';
+```
+
+- Prefer `<org-page-layout>`, `<org-page-header>`, `<org-section>`, `<org-surface>`, `<org-banner>`, and `<org-empty-state>` over feature-local layout and feedback markup.
+- Directives remain compatibility infrastructure for existing screens; they are not the default public API for new feature work.
+- Do not recreate a component API with ad hoc classes, Material overrides, or copied SCSS. Add or extend a standalone shared component first, then document its preview and usage in `/design-system`.
+
 ---
 
 ## 7. Seasonal Theming Architecture
@@ -352,7 +369,7 @@ The application supports dynamic seasonal overrides on top of the base theme via
 
 ### DO
 -  Import UI components from `@shared/ui`.
--  Use `[orgSurface]` directive for card, panel, and modal containers.
+-  Use `<org-surface>` for card, panel, drawer, dialog, and hero containers.
 -  Use `--org-*` semantic tokens rather than hardcoded hex values in stylesheets.
 -  Test layouts with both Light and Dark themes and across $320\text{px}$, $600\text{px}$, and $1200\text{px}$ viewports.
 -  Use `FeedbackService` for user notifications and alerts.
@@ -363,3 +380,4 @@ The application supports dynamic seasonal overrides on top of the base theme via
 -  Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
 -  Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.
 -  Do NOT use `ChangeDetectionStrategy.Default`.
+-  Do NOT introduce a new feature-local directive as a styling API when a standalone component can own the contract.

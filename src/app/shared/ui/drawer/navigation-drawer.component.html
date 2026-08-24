@@ -33,116 +33,39 @@
   }
 
   <nav class="navigation-drawer__navigation" aria-label="Navegação principal">
-    <button
-      mat-button
-      type="button"
-      class="navigation-drawer__route"
-      [attr.aria-current]="activeRoute() === '/' ? 'page' : null"
-      data-testid="drawer-home"
-      (click)="onNavigate('/')"
-    >
-      <mat-icon aria-hidden="true">home</mat-icon>
-      <span>Início</span>
-    </button>
-
-    @if (isAuthenticated()) {
-      <button
-        mat-button
-        type="button"
-        class="navigation-drawer__route"
-        [attr.aria-current]="activeRoute().startsWith('/meus-eventos') ? 'page' : null"
-        data-testid="drawer-my-events"
-        (click)="onNavigate('/meus-eventos')"
-      >
-        <mat-icon aria-hidden="true">calendar_month</mat-icon>
-        <span>Meus eventos</span>
-      </button>
-      <button
-        mat-button
-        type="button"
-        class="navigation-drawer__route"
-        [attr.aria-current]="activeRoute() === '/perfil' ? 'page' : null"
-        data-testid="drawer-profile"
-        (click)="onNavigate('/perfil')"
-      >
-        <mat-icon aria-hidden="true">person</mat-icon>
-        <span>Meu perfil</span>
-      </button>
-      @if (isSuperAdmin()) {
-        <button
-          mat-button
-          type="button"
-          class="navigation-drawer__route"
-          [attr.aria-current]="activeRoute().startsWith('/admin') ? 'page' : null"
-          data-testid="drawer-admin"
-          (click)="onNavigate('/admin')"
-        >
-          <mat-icon aria-hidden="true">admin_panel_settings</mat-icon>
-          <span>Painel administrativo</span>
-        </button>
-        <button
-          mat-button
-          type="button"
-          class="navigation-drawer__route"
-          [attr.aria-current]="activeRoute().startsWith('/design-system') ? 'page' : null"
-          data-testid="drawer-design-system"
-          (click)="onNavigate('/design-system')"
-        >
-          <mat-icon aria-hidden="true">palette</mat-icon>
-          <span>Design System</span>
-        </button>
+    @if (isDesignSystemNavigation()) {
+      @for (section of designSystemSections; track section.id) {
+        <app-navigation-drawer-link
+          [href]="'/design-system#' + section.id"
+          [icon]="section.icon"
+          [label]="section.label"
+          [testId]="'drawer-design-system-' + section.id"
+          currentValue="location"
+          (selected)="close.emit()"
+        />
       }
     } @else {
-      <button
-        mat-button
-        type="button"
-        class="navigation-drawer__route"
-        [attr.aria-current]="activeRoute() === '/login' ? 'page' : null"
-        data-testid="drawer-login"
-        (click)="onNavigate('/login')"
-      >
-        <mat-icon aria-hidden="true">login</mat-icon>
-        <span>Entrar</span>
-      </button>
+      <app-navigation-drawer-link [route]="'/'" icon="home" label="Início" testId="drawer-home" [active]="activeRoute() === '/'" (selected)="close.emit()" />
+
+      @if (isAuthenticated()) {
+        <app-navigation-drawer-link [route]="'/meus-eventos'" icon="calendar_month" label="Meus eventos" testId="drawer-my-events" [active]="activeRoute().startsWith('/meus-eventos')" (selected)="close.emit()" />
+        <app-navigation-drawer-link [route]="'/perfil'" icon="person" label="Meu perfil" testId="drawer-profile" [active]="activeRoute() === '/perfil'" (selected)="close.emit()" />
+        @if (isSuperAdmin()) {
+          <app-navigation-drawer-link [route]="'/admin'" icon="admin_panel_settings" label="Painel administrativo" testId="drawer-admin" [active]="activeRoute().startsWith('/admin')" (selected)="close.emit()" />
+          <app-navigation-drawer-link [route]="'/design-system'" icon="palette" label="Design System" testId="drawer-design-system" [active]="activeRoute().startsWith('/design-system')" (selected)="close.emit()" />
+        }
+      } @else {
+        <app-navigation-drawer-link [route]="'/login'" icon="login" label="Entrar" testId="drawer-login" [active]="activeRoute() === '/login'" (selected)="close.emit()" />
+      }
     }
   </nav>
 
   <section class="navigation-drawer__theme" aria-labelledby="drawer-theme-title">
     <h3 id="drawer-theme-title" class="navigation-drawer__section-title">Tema</h3>
     <div class="navigation-drawer__theme-options" role="group" aria-label="Selecionar tema">
-      <button
-        mat-button
-        type="button"
-        class="navigation-drawer__theme-option"
-        [attr.aria-pressed]="themeMode() === 'light'"
-        data-testid="drawer-theme-light"
-        (click)="onThemeChange('light')"
-      >
-        <mat-icon aria-hidden="true">light_mode</mat-icon>
-        <span>Claro</span>
-      </button>
-      <button
-        mat-button
-        type="button"
-        class="navigation-drawer__theme-option"
-        [attr.aria-pressed]="themeMode() === 'dark'"
-        data-testid="drawer-theme-dark"
-        (click)="onThemeChange('dark')"
-      >
-        <mat-icon aria-hidden="true">dark_mode</mat-icon>
-        <span>Escuro</span>
-      </button>
-      <button
-        mat-button
-        type="button"
-        class="navigation-drawer__theme-option"
-        [attr.aria-pressed]="themeMode() === 'system'"
-        data-testid="drawer-theme-system"
-        (click)="onThemeChange('system')"
-      >
-        <mat-icon aria-hidden="true">brightness_auto</mat-icon>
-        <span>Sistema</span>
-      </button>
+      <app-navigation-drawer-link [route]="activeRoute()" icon="light_mode" label="Claro" testId="drawer-theme-light" [active]="themeMode() === 'light'" currentValue="true" (selected)="onThemeChange('light')" />
+      <app-navigation-drawer-link [route]="activeRoute()" icon="dark_mode" label="Escuro" testId="drawer-theme-dark" [active]="themeMode() === 'dark'" currentValue="true" (selected)="onThemeChange('dark')" />
+      <app-navigation-drawer-link [route]="activeRoute()" icon="brightness_auto" label="Sistema" testId="drawer-theme-system" [active]="themeMode() === 'system'" currentValue="true" (selected)="onThemeChange('system')" />
     </div>
   </section>
 

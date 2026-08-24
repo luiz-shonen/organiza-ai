@@ -10,4 +10,10 @@ export type OrgSurfaceVariant = 'card' | 'panel' | 'drawer' | 'dialog' | 'hero';
 })
 export class OrgSurfaceComponent {
   public readonly variant = input<OrgSurfaceVariant>('card');
+  /** Enables optional token-driven floating orbs for hero or promotional surfaces. */
+  public readonly atmosphere = input(false);
+  /** Overrides the leading atmosphere orb without coupling a feature to a seasonal palette. */
+  public readonly atmospherePrimary = input<string>();
+  /** Overrides the trailing atmosphere orb without coupling a feature to a seasonal palette. */
+  public readonly atmosphereSecondary = input<string>();
 }

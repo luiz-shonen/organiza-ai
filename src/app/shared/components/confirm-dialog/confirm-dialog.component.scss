@@ -1,13 +1,16 @@
 .confirm-dialog {
   &__title {
     margin: 0;
-    font-weight: 600;
-    font-size: 1.25rem;
+    padding: 32px 36px 0;
+    font-size: 1.5rem;
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   &__content {
-    margin-top: 8px;
-    margin-bottom: 16px;
+    margin: 20px 0 28px;
+    padding: 0 36px;
   }
 
   &__message {
@@ -18,7 +21,7 @@
   }
 
   &__actions {
-    padding: 12px 16px;
-    gap: 8px;
+    gap: 12px;
+    padding: 0 24px 28px;
   }
 }

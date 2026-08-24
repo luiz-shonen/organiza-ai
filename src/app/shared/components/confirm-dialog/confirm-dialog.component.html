@@ -7,7 +7,7 @@
     <button mat-button mat-dialog-close class="confirm-dialog__cancel-btn" data-testid="confirm-dialog-cancel-btn">
       {{ data.cancelLabel || 'Cancelar' }}
     </button>
-    <button mat-flat-button color="warn" [mat-dialog-close]="true" class="confirm-dialog__confirm-btn" data-testid="confirm-dialog-confirm-btn">
+    <button mat-button [mat-dialog-close]="true" class="confirm-dialog__confirm-btn" data-testid="confirm-dialog-confirm-btn">
       {{ data.confirmLabel || 'Confirmar' }}
     </button>
   </mat-dialog-actions>

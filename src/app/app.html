@@ -1,11 +1,12 @@
 <mat-sidenav-container class="app-sidenav-container">
   <mat-sidenav
     #drawer
-    position="end"
+    [position]="drawerService.drawerType() === 'navigation' ? 'start' : 'end'"
     mode="over"
     [opened]="drawerService.isOpen()"
     (closed)="drawerService.close()"
     class="app-sidenav-drawer glass-drawer"
+    [class.app-sidenav-drawer--navigation]="drawerService.drawerType() === 'navigation'"
   >
     @if (drawerService.request(); as request) {
       @switch (request.kind) {
@@ -18,7 +19,7 @@
             [photoUrl]="user()?.photoURL ?? null"
             [activeRoute]="currentUrl()"
             [themeMode]="themeService.mode()"
-            (navigate)="navigateFromDrawer($event)"
+            [isDesignSystemNavigation]="currentUrl().startsWith('/design-system')"
             (themeChange)="themeService.setMode($event)"
             (logout)="logout()"
             (close)="drawerService.close()"

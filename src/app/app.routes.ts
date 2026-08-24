@@ -35,7 +35,6 @@ export const routes: Routes = [
   },
   {
     path: 'design-system',
-    canActivate: [superAdminGuard],
     loadComponent: () =>
       import('./features/design-system/design-system-showcase.container').then(
         (m) => m.DesignSystemShowcaseContainer,

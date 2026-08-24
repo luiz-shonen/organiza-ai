@@ -10,6 +10,8 @@ export { OrgFormGridDirective } from './layout/org-form-grid.directive';
 
 export { OrgFormFieldDirective } from './forms/org-form-field.directive';
 export { OrgFieldLabelDirective } from './forms/org-field-label.directive';
+export { OrgDateFieldComponent } from './forms/org-date-field.component';
+export { OrgTimeFieldComponent } from './forms/org-time-field.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export type { OrgButtonVariant } from './actions/org-button.directive';

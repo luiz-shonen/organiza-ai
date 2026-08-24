@@ -75,8 +75,9 @@ async function openShowcase(page: Page): Promise<void> {
 }
 
 async function selectSeasonalTheme(page: Page, label: string): Promise<void> {
-  await page.locator('.org-ds-topbar__seasonal-select').click();
-  await page.getByRole('option', { name: label }).click();
+  const card = page.locator('.org-ds-season-card').filter({ hasText: label });
+  await card.scrollIntoViewIfNeeded();
+  await card.click();
 }
 
 test.describe('Design System Showcase', () => {
@@ -112,9 +113,10 @@ test.describe('Design System Showcase', () => {
       'seasonal-themes',
     ];
 
+    await expect(page.locator('.org-ds-sidebar__nav-link')).toHaveCount(sectionIds.length);
+
     for (const id of sectionIds) {
       await expect(page.locator(`section#${id}`)).toBeAttached();
-      await expect(page.locator(`.org-ds-sidebar__nav-link[href="#${id}"]`)).toBeAttached();
     }
   });
 
@@ -173,19 +175,23 @@ test.describe('Design System Showcase', () => {
     }
   });
 
-  test('uses a 24px glass blur and seasonal gradient treatment on Material surfaces', async ({ page }) => {
+  test('uses a 24px glass blur and warm invitation treatment on showcase surfaces', async ({ page }) => {
     await openShowcase(page);
 
     const treatment = await page.locator('.org-ds-hero-card').evaluate((element) => {
       const style = getComputedStyle(element);
-      return { backdropFilter: style.backdropFilter, backgroundImage: style.backgroundImage };
+      const content = element.querySelector('.org-ds-hero-card__content');
+      return {
+        backdropFilter: style.backdropFilter,
+        contentBackgroundImage: content ? getComputedStyle(content).backgroundImage : 'none',
+      };
     });
     const buttonBackground = await page
       .locator('.org-ds-hero-card .org-material-button--gradient')
       .evaluate((element) => getComputedStyle(element).backgroundImage);
 
     expect(treatment.backdropFilter).toContain('blur(24px)');
-    expect(treatment.backgroundImage).toContain('linear-gradient');
+    expect(treatment.contentBackgroundImage).toContain('radial-gradient');
     expect(buttonBackground).toContain('linear-gradient');
   });
 

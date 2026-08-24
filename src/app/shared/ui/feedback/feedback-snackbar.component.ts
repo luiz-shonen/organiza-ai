@@ -15,6 +15,12 @@ const FEEDBACK_ICON: Readonly<Record<FeedbackVariant, OrgIconName>> = {
   info: 'info',
 };
 
+const FEEDBACK_ICON_COLOR: Readonly<Record<FeedbackVariant, string>> = {
+  success: 'currentColor',
+  error: 'currentColor',
+  info: 'currentColor',
+};
+
 @Component({
   selector: 'org-feedback-snackbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,4 +31,5 @@ const FEEDBACK_ICON: Readonly<Record<FeedbackVariant, OrgIconName>> = {
 export class FeedbackSnackbarComponent {
   protected readonly data = inject<FeedbackSnackbarData>(MAT_SNACK_BAR_DATA);
   protected readonly icon = computed(() => FEEDBACK_ICON[this.data.variant]);
+  protected readonly iconColor = computed(() => FEEDBACK_ICON_COLOR[this.data.variant]);
 }

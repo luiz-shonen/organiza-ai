@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NavigationDrawerComponent } from './navigation-drawer.component';
@@ -10,7 +11,7 @@ describe('NavigationDrawerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [NavigationDrawerComponent],
-      providers: [provideNoopAnimations()],
+      providers: [provideNoopAnimations(), provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NavigationDrawerComponent);
@@ -35,50 +36,50 @@ describe('NavigationDrawerComponent', () => {
     expect(root.querySelector('[data-testid="drawer-login"]')).toBeNull();
   });
 
-  it('emits a route request then asks its host to close the drawer', () => {
-    const navigate = vi.fn();
-    const close = vi.fn();
-    component.navigate.subscribe(navigate);
-    component.close.subscribe(close);
+  it('uses semantic links for authenticated navigation destinations', () => {
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      '[data-testid="drawer-my-events"]',
+    );
 
-    (fixture.nativeElement as HTMLElement)
-      .querySelector<HTMLButtonElement>('[data-testid="drawer-my-events"]')
-      ?.click();
-
-    expect(navigate).toHaveBeenCalledWith('/meus-eventos');
-    expect(close).toHaveBeenCalledOnce();
+    expect(link?.tagName).toBe('A');
+    expect(link?.getAttribute('href')).toBe('/meus-eventos');
   });
 
-  it('emits /design-system route request and closes drawer when design system button is clicked', () => {
-    const navigate = vi.fn();
-    const close = vi.fn();
-    component.navigate.subscribe(navigate);
-    component.close.subscribe(close);
+  it('uses a semantic link for the design system route', () => {
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      '[data-testid="drawer-design-system"]',
+    );
 
-    (fixture.nativeElement as HTMLElement)
-      .querySelector<HTMLButtonElement>('[data-testid="drawer-design-system"]')
-      ?.click();
-
-    expect(navigate).toHaveBeenCalledWith('/design-system');
-    expect(close).toHaveBeenCalledOnce();
+    expect(link?.tagName).toBe('A');
+    expect(link?.getAttribute('href')).toBe('/design-system');
   });
 
-  it('emits the selected theme mode and exposes its pressed state', () => {
+  it('uses the same drawer component for design-system section navigation', () => {
+    fixture.componentRef.setInput('isDesignSystemNavigation', true);
+    fixture.detectChanges();
+
+    const root = fixture.nativeElement as HTMLElement;
+    const overview = root.querySelector<HTMLAnchorElement>('[data-testid="drawer-design-system-overview"]');
+
+    expect(overview?.getAttribute('href')).toBe('/design-system#overview');
+    expect(root.querySelector('[data-testid="drawer-my-events"]')).toBeNull();
+  });
+
+  it('uses links for theme choices and exposes their selected state', () => {
     const themeChange = vi.fn();
     component.themeChange.subscribe(themeChange);
 
-    (fixture.nativeElement as HTMLElement)
-      .querySelector<HTMLButtonElement>('[data-testid="drawer-theme-dark"]')
-      ?.click();
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+      '[data-testid="drawer-theme-dark"]',
+    );
     fixture.componentRef.setInput('themeMode', 'dark');
     fixture.detectChanges();
 
+    expect(link?.tagName).toBe('A');
+    expect(link?.getAttribute('href')).toBe('/perfil');
+    expect(link?.getAttribute('aria-current')).toBe('true');
+    (component as unknown as { onThemeChange: (mode: 'dark') => void }).onThemeChange('dark');
     expect(themeChange).toHaveBeenCalledWith('dark');
-    expect(
-      (fixture.nativeElement as HTMLElement)
-        .querySelector('[data-testid="drawer-theme-dark"]')
-        ?.getAttribute('aria-pressed'),
-    ).toBe('true');
   });
 
   it('offers logout only to authenticated users and emits it without a domain service', () => {

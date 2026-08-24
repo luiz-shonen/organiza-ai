@@ -1,0 +1,71 @@
+:host {
+  display: block;
+}
+
+.org-ds-code-example {
+  background: #211a2f;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 16px;
+  color: #f5f0fa;
+  overflow: hidden;
+
+  &__summary {
+    align-items: center;
+    color: #c9beda;
+    cursor: pointer;
+    display: flex;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    justify-content: space-between;
+    letter-spacing: 0.08em;
+    min-height: 48px;
+    padding: 0 14px;
+    text-transform: uppercase;
+
+    &::marker,
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    mat-icon {
+      transition: transform 180ms ease;
+    }
+  }
+
+  &[open] &__summary {
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+
+    mat-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__header {
+    align-items: center;
+    color: #c9beda;
+    display: flex;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    justify-content: space-between;
+    letter-spacing: 0.08em;
+    padding: 8px 10px 8px 14px;
+    text-transform: uppercase;
+
+    button {
+      color: #f5f0fa;
+      min-height: 40px;
+    }
+  }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.65;
+    margin: 0;
+    overflow-x: auto;
+    padding: 16px;
+    white-space: pre;
+  }
+}

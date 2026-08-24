@@ -120,7 +120,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
 
     // Verify Brand title typography
     const showcaseTitle = page.locator('.org-ds-topbar__title');
-    await assertFontFamily(showcaseTitle, 'Plus Jakarta Sans');
+    await assertFontFamily(showcaseTitle, 'Fraunces');
 
     // Verify specimen card glassmorphism and single ring
     const firstSpecimen = page.locator('.org-ds-specimen-card').first();

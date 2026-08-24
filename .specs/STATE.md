@@ -330,3 +330,10 @@
 **Rationale:** Provides maintainers and super administrators with an interactive visual playground and living specification to audit, test, and govern all UI foundation primitives, preventing token drift and visual regressions.  
 **Status:** In force.
 
+---
+
+### AD-038 — Isolated Design-System Validation Before Product Migration
+**Date:** 2026-08-22
+**Decision:** The design-system showcase is the sole surface for validating the new warm editorial direction inspired by the supplied Convívio reference: Fraunces display typography, Inter body typography, coral/amber invitation gradients, porcelain canvases, plum depth, and restrained glass. Existing product components, their existing token contract, and their rendered screens are not migrated during this validation phase. The approved migration direction is component-first: closed Angular components with explicit inputs and projected slots replace styling directives for new product primitives; existing directives remain unchanged until a dedicated migration is approved.
+**Rationale:** Separating visual approval from application migration avoids visual drift and lets the design be evaluated without changing a working product. Component APIs provide a constrained, discoverable contract that prevents arbitrary application-level styling.
+**Status:** In force for Feature 16. Supersedes AD-033 only for the isolated showcase and future approved migration; AD-033 remains in force for existing product screens.

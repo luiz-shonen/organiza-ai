@@ -337,3 +337,11 @@
 **Decision:** The design-system showcase is the sole surface for validating the new warm editorial direction inspired by the supplied Convívio reference: Fraunces display typography, Inter body typography, coral/amber invitation gradients, porcelain canvases, plum depth, and restrained glass. Existing product components, their existing token contract, and their rendered screens are not migrated during this validation phase. The approved migration direction is component-first: closed Angular components with explicit inputs and projected slots replace styling directives for new product primitives; existing directives remain unchanged until a dedicated migration is approved.
 **Rationale:** Separating visual approval from application migration avoids visual drift and lets the design be evaluated without changing a working product. Component APIs provide a constrained, discoverable contract that prevents arbitrary application-level styling.
 **Status:** In force for Feature 16. Supersedes AD-033 only for the isolated showcase and future approved migration; AD-033 remains in force for existing product screens.
+
+---
+
+### AD-039 — Component-First UI Source of Truth and Consumer Migration
+**Date:** 2026-08-24
+**Decision:** Public UI authoring uses standalone `Org*` components only. Shared semantic tokens and the owning component stylesheet are the exclusive owners of reusable component color, border, radius, focus, hover, density, glass, atmosphere, and Angular Material token rules. Feature stylesheets may own page layout and domain content only. The application will migrate every current consumer of the priority UI families to the component API, then remove the legacy surface, action, chip, and form styling directives and their public exports. A deterministic contract check will reject legacy UI directive consumers and feature-owned Material component appearance rules outside documented showcase fixtures.
+**Rationale:** A directive plus per-feature SCSS contract creates multiple competing sources of truth. Closed components make behavior discoverable, let a visual fix propagate consistently, and prevent AI-assisted feature work from inventing another visual system.
+**Status:** In force. Supersedes AD-034 and expands AD-038 from showcase validation to application migration.

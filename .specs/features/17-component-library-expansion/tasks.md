@@ -70,6 +70,7 @@ T22 -> T23 -> T24 -> T25 -> T26
 **Depends on**: none  
 **Tests**: Node fixtures prove the validator rejects a legacy directive consumer, feature-owned Material appearance selector, and feature-owned MDC token, while accepting shared UI ownership.  
 **Gate**: Contract
+**Status**: ✅ Complete
 
 ### T2: Create `OrgButtonComponent`
 

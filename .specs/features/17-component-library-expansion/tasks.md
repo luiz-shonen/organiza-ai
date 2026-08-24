@@ -92,6 +92,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T4: Create `OrgChipComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/actions/`  
 **Depends on**: T3  
 **Tests**: Selection output, disabled non-emission, semantic variants, default fallback, and non-gradient treatment map to ACT-01 through ACT-03.  

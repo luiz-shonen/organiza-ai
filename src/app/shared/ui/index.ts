@@ -20,7 +20,8 @@ export { OrgIconButtonDirective } from './actions/org-icon-button.directive';
 export { OrgIconButtonComponent } from './actions/org-icon-button.component';
 export type { OrgIconButtonVariant } from './actions/org-icon-button.component';
 export { OrgChipDirective } from './actions/org-chip.directive';
-export type { OrgChipVariant } from './actions/org-chip.directive';
+export { OrgChipComponent } from './actions/org-chip.component';
+export type { OrgChipVariant } from './actions/org-chip.component';
 export { ORG_ICON_MAP, OrgIconComponent } from './actions/org-icon.component';
 export type { OrgIconName, OrgIconSize } from './actions/org-icon.component';
 

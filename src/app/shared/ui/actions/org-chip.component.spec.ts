@@ -1,0 +1,40 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { describe, expect, it, vi } from 'vitest';
+import { OrgChipComponent } from './org-chip.component';
+
+describe('OrgChipComponent', () => {
+  it('renders semantic appearance without a gradient when requested', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgChipComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgChipComponent> = TestBed.createComponent(OrgChipComponent);
+    fixture.componentRef.setInput('label', 'Confirmado');
+    fixture.componentRef.setInput('variant', 'success');
+    fixture.componentRef.setInput('gradient', false);
+    fixture.detectChanges();
+
+    const chip = fixture.nativeElement.querySelector('mat-chip-option') as HTMLElement;
+    expect(chip.textContent?.trim()).toBe('Confirmado');
+    expect(chip.classList.contains('org-chip--success')).toBe(true);
+    expect(chip.classList.contains('org-chip--gradient')).toBe(false);
+  });
+
+  it('emits selection only while enabled and normalizes variants', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgChipComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgChipComponent> = TestBed.createComponent(OrgChipComponent);
+    const selected = vi.fn();
+    fixture.componentInstance.selectionChange.subscribe(selected);
+    fixture.componentRef.setInput('label', 'Família');
+    fixture.componentRef.setInput('variant', 'other' as never);
+    fixture.componentRef.setInput('disabled', true);
+    fixture.detectChanges();
+
+    const chip = fixture.nativeElement.querySelector('mat-chip-option') as HTMLElement;
+    chip.dispatchEvent(new MouseEvent('click'));
+    expect(chip.classList.contains('org-chip--default')).toBe(true);
+    expect(selected).not.toHaveBeenCalled();
+
+    fixture.componentRef.setInput('disabled', false);
+    fixture.detectChanges();
+    chip.dispatchEvent(new MouseEvent('click'));
+    expect(selected).toHaveBeenCalledWith(true);
+  });
+});

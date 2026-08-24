@@ -1,0 +1,12 @@
+<mat-chip-option
+  class="org-chip"
+  [class.org-chip--default]="variant() === 'default'"
+  [class.org-chip--primary]="variant() === 'primary'"
+  [class.org-chip--success]="variant() === 'success'"
+  [class.org-chip--warning]="variant() === 'warning'"
+  [class.org-chip--accent]="variant() === 'accent'"
+  [class.org-chip--gradient]="gradient()"
+  [disabled]="disabled()"
+  [selected]="selected()"
+  (click)="select()"
+>{{ label() }}</mat-chip-option>

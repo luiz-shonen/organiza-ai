@@ -1,0 +1,15 @@
+:host { display: block; }
+
+.org-textarea-field {
+  display: block;
+  width: 100%;
+  --mdc-outlined-text-field-outline-color: var(--org-outline);
+  --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);
+}
+
+.org-textarea-field__error {
+  color: var(--org-danger);
+  font-size: 0.75rem;
+  margin: -16px 0 0;
+}

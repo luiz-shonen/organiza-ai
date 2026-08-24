@@ -112,6 +112,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T6: Create `OrgTextareaFieldComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/forms/`  
 **Depends on**: T5  
 **Tests**: Label, rows, model value, disabled behavior, hint/error semantics, and empty value map to FLD-01, FLD-03, and FLD-04.  

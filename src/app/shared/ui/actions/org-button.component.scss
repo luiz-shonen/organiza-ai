@@ -1,0 +1,42 @@
+:host {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.org-button__control {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+  padding-inline: 20px;
+
+  &--gradient {
+    background: var(--org-gradient-primary);
+    color: var(--org-on-primary);
+  }
+
+  &--secondary {
+    color: var(--org-primary);
+
+    &.org-button__control--gradient {
+      background: transparent;
+      border-color: transparent;
+      border-image: var(--org-gradient-border) 1;
+    }
+  }
+
+  &--danger {
+    background: var(--org-danger);
+    color: var(--org-on-danger);
+  }
+
+  &--text {
+    color: var(--org-primary);
+
+    &.org-button__control--gradient {
+      background: transparent;
+    }
+  }
+}

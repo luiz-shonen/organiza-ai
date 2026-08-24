@@ -14,7 +14,8 @@ export { OrgDateFieldComponent } from './forms/org-date-field.component';
 export { OrgTimeFieldComponent } from './forms/org-time-field.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
-export type { OrgButtonVariant } from './actions/org-button.directive';
+export { OrgButtonComponent } from './actions/org-button.component';
+export type { OrgButtonType, OrgButtonVariant } from './actions/org-button.component';
 export { OrgIconButtonDirective } from './actions/org-icon-button.directive';
 export type { OrgIconButtonVariant } from './actions/org-icon-button.directive';
 export { OrgChipDirective } from './actions/org-chip.directive';

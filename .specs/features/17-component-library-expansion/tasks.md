@@ -74,6 +74,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T2: Create `OrgButtonComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/actions/`  
 **Depends on**: T1  
 **Tests**: Variant, gradient opt-out, loading, disabled non-emission, required label, and `pressed` output map to ACT-01 through ACT-03.  

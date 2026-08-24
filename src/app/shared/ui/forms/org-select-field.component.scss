@@ -1,0 +1,4 @@
+:host { display: block; }
+.org-select-field { display: block; width: 100%; --mdc-outlined-text-field-outline-color: var(--org-outline); --mdc-outlined-text-field-focus-outline-color: var(--org-primary); }
+.org-select-field__error { color: var(--org-danger); font-size: 0.75rem; margin: -16px 0 0; }
+.org-select-field__empty { color: var(--org-on-surface-variant); font-size: 0.75rem; margin: -16px 0 0; }

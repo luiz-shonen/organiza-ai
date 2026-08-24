@@ -1,0 +1,13 @@
+<mat-form-field appearance="outline" class="org-select-field">
+  <mat-label>{{ label() }}</mat-label>
+  <mat-select [disabled]="disabled()" [required]="required()" [value]="value()" (valueChange)="updateValue($event)">
+    @for (option of options(); track option.value) {
+      <mat-option [disabled]="option.disabled ?? false" [value]="option.value">{{ option.label }}</mat-option>
+    } @empty {
+      <mat-option disabled>Nenhuma opção disponível.</mat-option>
+    }
+  </mat-select>
+  @if (hint() && !error()) { <mat-hint>{{ hint() }}</mat-hint> }
+</mat-form-field>
+@if (options().length === 0) { <p class="org-select-field__empty">Nenhuma opção disponível.</p> }
+@if (error()) { <p class="org-select-field__error" role="alert">{{ error() }}</p> }

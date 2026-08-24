@@ -15,6 +15,8 @@ export { OrgTimeFieldComponent } from './forms/org-time-field.component';
 export { OrgTextFieldComponent } from './forms/org-text-field.component';
 export type { OrgTextFieldType } from './forms/org-text-field.component';
 export { OrgTextareaFieldComponent } from './forms/org-textarea-field.component';
+export { OrgSelectFieldComponent } from './forms/org-select-field.component';
+export type { OrgSelectOption } from './forms/org-select-field.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';

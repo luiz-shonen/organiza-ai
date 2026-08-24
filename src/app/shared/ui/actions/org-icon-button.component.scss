@@ -1,0 +1,28 @@
+:host {
+  display: inline-flex;
+}
+
+.org-icon-button__control {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+
+  &--gradient {
+    background: var(--org-gradient-primary);
+    color: var(--org-on-primary);
+  }
+
+  &--default {
+    color: var(--org-on-surface-variant);
+  }
+
+  &--primary {
+    color: var(--org-primary);
+  }
+
+  &--danger {
+    color: var(--org-danger);
+  }
+}

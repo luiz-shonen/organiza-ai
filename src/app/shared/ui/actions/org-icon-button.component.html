@@ -1,0 +1,14 @@
+<button
+  mat-icon-button
+  class="org-icon-button__control"
+  [class.org-icon-button__control--default]="variant() === 'default'"
+  [class.org-icon-button__control--danger]="variant() === 'danger'"
+  [class.org-icon-button__control--primary]="variant() === 'primary'"
+  [class.org-icon-button__control--gradient]="gradient()"
+  [attr.aria-label]="ariaLabel()"
+  [disabled]="isDisabled()"
+  type="button"
+  (click)="activate()"
+>
+  <org-icon [name]="icon()" />
+</button>

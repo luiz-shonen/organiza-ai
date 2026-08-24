@@ -83,6 +83,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T3: Create `OrgIconButtonComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/actions/`  
 **Depends on**: T2  
 **Tests**: Required accessible label, icon rendering, variant/default fallback, 48px target contract, disabled non-emission, and gradient opt-out map to ACT-01 through ACT-03.  

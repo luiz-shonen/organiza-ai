@@ -12,6 +12,8 @@ export { OrgFormFieldDirective } from './forms/org-form-field.directive';
 export { OrgFieldLabelDirective } from './forms/org-field-label.directive';
 export { OrgDateFieldComponent } from './forms/org-date-field.component';
 export { OrgTimeFieldComponent } from './forms/org-time-field.component';
+export { OrgTextFieldComponent } from './forms/org-text-field.component';
+export type { OrgTextFieldType } from './forms/org-text-field.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';

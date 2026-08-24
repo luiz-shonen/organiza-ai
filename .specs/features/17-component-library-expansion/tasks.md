@@ -103,6 +103,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T5: Create `OrgTextFieldComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/forms/`  
 **Depends on**: T4  
 **Tests**: Label, model value, disabled behavior, hint/error semantics, and default text type map to FLD-01, FLD-03, and FLD-04.  

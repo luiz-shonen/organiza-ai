@@ -1,0 +1,18 @@
+<mat-form-field appearance="outline" class="org-text-field">
+  <mat-label>{{ label() }}</mat-label>
+  <input
+    matInput
+    [disabled]="disabled()"
+    [placeholder]="placeholder()"
+    [required]="required()"
+    [type]="type()"
+    [value]="value()"
+    (input)="updateValue($event)"
+  />
+  @if (hint() && !error()) {
+    <mat-hint>{{ hint() }}</mat-hint>
+  }
+</mat-form-field>
+@if (error()) {
+  <p class="org-text-field__error" role="alert">{{ error() }}</p>
+}

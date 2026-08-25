@@ -38,6 +38,10 @@ export { OrgMetricCardComponent } from './data-display/org-metric-card.component
 export { OrgBadgeComponent } from './data-display/org-badge.component';
 export type { OrgBadgeVariant } from './data-display/org-badge.component';
 
+export { OrgConfirmDialogComponent } from './feedback/org-confirm-dialog.component';
+export type { OrgConfirmDialogData } from './feedback/org-confirm-dialog.component';
+export { OrgDialogService } from './feedback/org-dialog.service';
+
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';
 export type { OrgButtonType, OrgButtonVariant } from './actions/org-button.component';

@@ -233,6 +233,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T19: Create `OrgConfirmDialogComponent` and `OrgDialogService`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/feedback/`  
 **Depends on**: T18  
 **Tests**: Typed confirmation config, confirm/cancel boolean result, dialog accessibility, and theme token surface map to OVR-01.  

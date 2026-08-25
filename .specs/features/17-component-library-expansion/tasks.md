@@ -177,6 +177,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T13: Create `OrgStepperComponent` and closed `OrgStepComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/navigation/`  
 **Depends on**: T12  
 **Tests**: Projected closed steps, selected-index model, meaningful labels, compact orientation below 600px, and no overflow map to NAV-01 and NAV-02.  

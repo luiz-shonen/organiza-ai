@@ -1,0 +1,5 @@
+<mat-stepper class="org-stepper" [orientation]="orientation()" [selectedIndex]="selectedIndex()" (selectionChange)="updateSelection($event.selectedIndex)">
+  @for (step of steps(); track step.label()) {
+    <mat-step [editable]="!step.disabled()" [label]="step.label()"><ng-container [ngTemplateOutlet]="step.content()" /></mat-step>
+  }
+</mat-stepper>

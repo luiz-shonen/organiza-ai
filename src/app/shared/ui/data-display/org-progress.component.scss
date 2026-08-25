@@ -1,0 +1,6 @@
+:host { display: block; }
+.org-progress { --mdc-linear-progress-track-color: color-mix(in srgb, var(--org-outline) 48%, transparent); }
+.org-progress--primary { --mdc-linear-progress-active-indicator-color: var(--org-primary); }
+.org-progress--success { --mdc-linear-progress-active-indicator-color: var(--org-success); }
+.org-progress--warning { --mdc-linear-progress-active-indicator-color: var(--org-warning); }
+.org-progress--gradient { --mdc-linear-progress-active-indicator-color: var(--org-primary); }

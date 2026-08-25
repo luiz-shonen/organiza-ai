@@ -204,6 +204,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T16: Create `OrgProgressComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/data-display/`  
 **Depends on**: T15  
 **Tests**: Value clamping at 0 and 100, semantic variant, gradient opt-out, and accessible progress value map to DATA-01 and DATA-02.  

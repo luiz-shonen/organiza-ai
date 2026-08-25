@@ -32,6 +32,9 @@ export type { OrgMenuAction } from './navigation/org-menu.component';
 export { OrgNavigationListComponent } from './navigation/org-navigation-list.component';
 export type { OrgNavigationItem } from './navigation/org-navigation-list.component';
 
+export { OrgProgressComponent } from './data-display/org-progress.component';
+export type { OrgProgressVariant } from './data-display/org-progress.component';
+
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';
 export type { OrgButtonType, OrgButtonVariant } from './actions/org-button.component';

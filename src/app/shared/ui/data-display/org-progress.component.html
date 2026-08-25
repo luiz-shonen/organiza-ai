@@ -1,0 +1,9 @@
+<mat-progress-bar
+  class="org-progress"
+  [attr.aria-label]="ariaLabel()"
+  [class.org-progress--gradient]="gradient()"
+  [class.org-progress--primary]="variant() === 'primary'"
+  [class.org-progress--success]="variant() === 'success'"
+  [class.org-progress--warning]="variant() === 'warning'"
+  [value]="value()"
+/>

@@ -289,6 +289,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T25: Remove legacy directives and obsolete visual overrides
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/`  
 **Depends on**: T24  
 **Tests**: The contract validator proves no application imports/selectors remain for legacy UI directives and no feature-owned in-scope Material appearance rules remain, mapping to CSS-01 and CSS-02.  

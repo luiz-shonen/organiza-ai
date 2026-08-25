@@ -26,13 +26,14 @@ export class OrgIconButtonComponent {
   public readonly variant = input<OrgIconButtonVariant, unknown>('default', { transform: normalizeVariant });
   public readonly disabled = input(false);
   public readonly gradient = input(true);
-  public readonly pressed = output<void>();
+  public readonly testId = input('');
+  public readonly pressed = output<MouseEvent>();
 
   protected readonly isDisabled = computed(() => this.disabled());
 
-  protected activate(): void {
+  protected activate(event: MouseEvent): void {
     if (!this.isDisabled()) {
-      this.pressed.emit();
+      this.pressed.emit(event);
     }
   }
 }

@@ -10,12 +10,14 @@ describe('OrgIconButtonComponent', () => {
     fixture.componentRef.setInput('icon', 'close');
     fixture.componentRef.setInput('variant', 'primary');
     fixture.componentRef.setInput('gradient', false);
+    fixture.componentRef.setInput('testId', 'dialog-close');
     fixture.detectChanges();
 
     const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
     expect(button.getAttribute('aria-label')).toBe('Fechar diálogo');
     expect(button.classList.contains('org-icon-button__control--primary')).toBe(true);
     expect(button.classList.contains('org-icon-button__control--gradient')).toBe(false);
+    expect(button.getAttribute('data-testid')).toBe('dialog-close');
     expect(fixture.nativeElement.textContent).toContain('close');
   });
 

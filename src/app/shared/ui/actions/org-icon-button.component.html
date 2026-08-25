@@ -6,9 +6,10 @@
   [class.org-icon-button__control--primary]="variant() === 'primary'"
   [class.org-icon-button__control--gradient]="gradient()"
   [attr.aria-label]="ariaLabel()"
+  [attr.data-testid]="testId() || null"
   [disabled]="isDisabled()"
   type="button"
-  (click)="activate()"
+  (click)="activate($event)"
 >
   <org-icon [name]="icon()" />
 </button>

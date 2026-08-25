@@ -54,24 +54,35 @@
 
         <span class="app-toolbar__spacer"></span>
 
-        <button mat-icon-button type="button" class="app-toolbar__menu-btn" aria-label="Abrir menu de navegação" data-testid="navigation-menu-trigger" (click)="openNavigation($event)">
-          <mat-icon aria-hidden="true">menu</mat-icon>
-        </button>
+        <org-icon-button
+          class="app-toolbar__menu-btn"
+          ariaLabel="Abrir menu de navegação"
+          icon="menu"
+          [gradient]="false"
+          testId="navigation-menu-trigger"
+          (pressed)="openNavigation($event)"
+        />
 
         @if (user() && (!user()!.isAnonymous || session())) {
-          <button
-            mat-icon-button
-            type="button"
-            (click)="navigateFromDrawer('/perfil')"
-            aria-label="Abrir meu perfil"
-            class="app-toolbar__user-btn"
-          >
-            @if (user()!.photoURL) {
+          @if (user()!.photoURL) {
+            <button
+              mat-icon-button
+              type="button"
+              (click)="navigateFromDrawer('/perfil')"
+              aria-label="Abrir meu perfil"
+              class="app-toolbar__user-btn"
+            >
               <img [src]="user()!.photoURL" alt="Avatar" class="app-toolbar__avatar" />
-            } @else {
-              <mat-icon>account_circle</mat-icon>
-            }
-          </button>
+            </button>
+          } @else {
+            <org-icon-button
+              class="app-toolbar__user-btn"
+              ariaLabel="Abrir meu perfil"
+              icon="account_circle"
+              [gradient]="false"
+              (pressed)="navigateFromDrawer('/perfil')"
+            />
+          }
         } @else {
           <a
             mat-flat-button

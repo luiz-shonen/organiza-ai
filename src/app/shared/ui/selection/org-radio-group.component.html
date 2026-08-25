@@ -1,0 +1,12 @@
+<section class="org-radio-group" [attr.aria-disabled]="disabled()" [attr.aria-label]="label()">
+  <p class="org-radio-group__label">{{ label() }}</p>
+  @if (options().length > 0) {
+    <mat-radio-group [disabled]="disabled()" [value]="value()" (change)="updateValue($event.value)">
+      @for (option of options(); track option.value) {
+        <mat-radio-button [disabled]="option.disabled ?? false" [value]="option.value">{{ option.label }}</mat-radio-button>
+      }
+    </mat-radio-group>
+  } @else {
+    <p class="org-radio-group__empty">Nenhuma opção disponível.</p>
+  }
+</section>

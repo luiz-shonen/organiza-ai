@@ -157,6 +157,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T11: Create `OrgRadioGroupComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/selection/`  
 **Depends on**: T10  
 **Tests**: Typed option rendering, model selection, empty options, disabled option/group, label, and 48px target map to SEL-01.  

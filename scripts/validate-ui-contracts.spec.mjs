@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { scanUiContracts } from './validate-ui-contracts.mjs';
+import { scanDocumentationContract, scanUiContracts } from './validate-ui-contracts.mjs';
 
 async function createFixture(files) {
   const root = await mkdtemp(join(tmpdir(), 'organiza-ui-contracts-'));
@@ -57,6 +57,29 @@ test('permits component-owned appearance rules and a clean feature consumer', as
 
   try {
     assert.deepEqual(await scanUiContracts(root), []);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('requires every closed public component to have recommended documentation and marks directives as legacy', async () => {
+  const root = await createFixture({
+    'src/app/shared/ui/index.ts': `
+      export { OrgButtonComponent } from './actions/org-button.component';
+      export { OrgButtonDirective } from './actions/org-button.directive';
+    `,
+    'DESIGN.md': '## Componentes\n### OrgButtonComponent\nUso recomendado: `<org-button />`',
+  });
+
+  try {
+    assert.deepEqual(await scanDocumentationContract(root), [
+      {
+        code: 'documentation-legacy-directive',
+        file: 'DESIGN.md',
+        line: 1,
+        message: 'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
+      },
+    ]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

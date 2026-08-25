@@ -251,6 +251,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T21: Rewrite `DESIGN.md` as the component-first public catalog
 
+**Status**: ✅ Complete
+
 **Where**: `DESIGN.md`  
 **Depends on**: T20  
 **Tests**: UI contract validator asserts every public export has a documented recommended component usage and no legacy directive is advertised as the default, mapping to DOC-01 and DOC-03.  

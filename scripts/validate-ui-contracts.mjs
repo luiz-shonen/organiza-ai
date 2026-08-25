@@ -15,6 +15,8 @@ const LEGACY_SELECTOR = /\[(?:orgSurface|orgFormGrid)\]|\borg(?:Button|IconButto
 const MATERIAL_SELECTOR = /\.(?:mat|mdc)-[\w-]+/;
 const MATERIAL_TOKEN = /--(?:mdc|mat)-[\w-]+/;
 const FEATURE_GLASS_RULE = /(?:-webkit-)?backdrop-filter\s*:/;
+const COMPONENT_EXPORT = /export\s+\{\s*(Org\w+Component)\s*\}/g;
+const DIRECTIVE_EXPORT = /export\s+\{\s*(Org\w+Directive)\s*\}/g;
 const CODE_PRIORITY = new Map([
   ['legacy-directive-import', 0],
   ['legacy-directive-selector', 1],
@@ -166,6 +168,48 @@ export async function scanUiContracts(root) {
   });
 }
 
+/**
+ * Confirms the public barrel has a corresponding recommended-usage entry in
+ * DESIGN.md and that compatibility directives are never presented as a new
+ * authoring option.
+ *
+ * @param {string} root
+ * @returns {Promise<UiContractViolation[]>}
+ */
+export async function scanDocumentationContract(root) {
+  const indexPath = resolve(root, 'src', 'app', 'shared', 'ui', 'index.ts');
+  const designPath = resolve(root, 'DESIGN.md');
+  const [indexSource, designSource] = await Promise.all([readFile(indexPath, 'utf8'), readFile(designPath, 'utf8')]);
+  const componentExports = [...indexSource.matchAll(COMPONENT_EXPORT)].map((match) => match[1]);
+  const directiveExports = [...indexSource.matchAll(DIRECTIVE_EXPORT)].map((match) => match[1]);
+  const violations = [];
+
+  for (const component of componentExports) {
+    const section = designSource.match(new RegExp(`### ${component}\\b([\\s\\S]*?)(?=\\n### |$)`));
+    if (!section || !section[1].includes('Uso recomendado')) {
+      violations.push({
+        code: 'documentation-component-usage',
+        file: 'DESIGN.md',
+        line: 1,
+        message: `Documente ${component} com uma seção e "Uso recomendado".`,
+      });
+    }
+  }
+
+  const legacySection = designSource.match(/## APIs legadas de compatibilidade([\s\S]*?)(?=\n## |$)/);
+  const documentsLegacy = legacySection && legacySection[1].includes('Não usar em novo');
+  if (!documentsLegacy || directiveExports.some((directive) => !legacySection?.[1].includes(directive))) {
+    violations.push({
+      code: 'documentation-legacy-directive',
+      file: 'DESIGN.md',
+      line: 1,
+      message: 'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
+    });
+  }
+
+  return violations;
+}
+
 function parseArguments(args) {
   const options = { root: process.cwd(), strict: false };
 
@@ -195,7 +239,11 @@ function parseArguments(args) {
 
 async function main() {
   const { root, strict } = parseArguments(process.argv.slice(2));
-  const violations = await scanUiContracts(root);
+  const [uiViolations, documentationViolations] = await Promise.all([
+    scanUiContracts(root),
+    scanDocumentationContract(root),
+  ]);
+  const violations = [...uiViolations, ...documentationViolations];
 
   if (violations.length === 0) {
     console.log('validate-ui-contracts: 0 violation(s)');

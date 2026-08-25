@@ -153,189 +153,127 @@ All system icons are rendered via `<org-icon [name]="iconName" [size]="'sm'|'md'
 
 ## 6. Component Families & Public APIs
 
-All components are imported from `@shared/ui` (or `src/app/shared/ui/index.ts`).
+Import only from `@shared/ui`. A feature owns layout and domain content; each `Org*` component owns its visual treatment, Material tokens, interaction states, density, focus, and responsive behavior. Do not recreate component styling in a feature stylesheet.
 
-### 6.1 Surfaces (`orgSurface`)
-Direct attribute directive applicable to native HTML elements (`article`, `section`, `div`, `mat-card`) or via `<org-surface>`.
-```typescript
-import { OrgSurfaceDirective, OrgSurfaceComponent } from '@shared/ui';
-```
-#### Usage
-```html
-<article [orgSurface]="'card'" [glow]="true" [active]="false">
-  <h3>Card Title</h3>
-</article>
-```
-#### Variants
-- `'card'`: Standard container glass with $16\text{px}$ radius.
-- `'panel'`: Denser background opacity for nested forms.
-- `'glass'`: High transparency for floating overlays.
-- `'hero'`: Prominent top-of-page container with $24\text{px}$ radius.
-- `'sunken'`: Inset background with subtle inner shadow.
-- `'elevated'`: High elevation with vibrant glow border.
+### OrgSurfaceComponent
 
----
+Uso recomendado: `<org-surface variant="card" [atmosphere]="true">...</org-surface>`. Variants are `card`, `panel`, `drawer`, `dialog`, and `hero`; atmosphere is opt-in and token-driven.
 
-### 6.2 Buttons & Links (`orgButton`)
-Directive enhancing native `<button>` and `<a>` elements with WCAG 2.1 AA $\ge 48\text{px}$ touch targets, ripple animations, and loading states.
-```typescript
-import { OrgButtonDirective } from '@shared/ui';
-```
-#### Usage
-```html
-<button orgButton="primary" [orgButtonLoading]="isLoading()" (click)="save()">
-  <org-icon name="check" size="sm" color="var(--org-on-primary)" />
-  Salvar Alterações
-</button>
-```
-#### Variants
-- `'primary'`: Vibrant pink-orange gradient with white text.
-- `'secondary'`: Translucent glass with primary border.
-- `'tertiary'`: Soft yellow/amber accent.
-- `'danger'`: Red gradient/fill for destructive actions.
-- `'ghost'`: Borderless interactive button with hover highlight.
+### OrgPageLayoutComponent
 
----
+Uso recomendado: `<org-page-layout maxWidth="wide">...</org-page-layout>`. Use it as the page-width boundary, never a feature-local width recipe.
 
-### 6.3 Chips & Badges (`orgChip`)
-Directive enhancing Material `<mat-chip-option>`, `<mat-chip-row>`, and `<button>` with pill styling and touch target compliance.
-```typescript
-import { OrgChipDirective } from '@shared/ui';
-```
-#### Usage
-```html
-<mat-chip-option [orgChip]="'primary'" [selected]="isSelected()" (selectionChange)="toggle()">
-  Festa
-</mat-chip-option>
-```
-#### Variants: `'default'`, `'primary'`, `'accent'`, `'warn'`, `'outline'`
+### OrgPageHeaderComponent
 
----
+Uso recomendado: `<org-page-header title="Meus eventos" icon="event" [gradient]="true" />`. Pass semantic title, subtitle, icon, and actions through its API.
 
-### 6.4 Forms & Fields (`orgFormField`, `orgFieldLabel`)
-Material form-field token integration providing coherent single-color focus outlines, floating labels, and accessible error messaging.
-```typescript
-import { OrgFormFieldDirective, OrgFieldLabelDirective } from '@shared/ui';
-```
-#### Usage
-```html
-<mat-form-field orgFormField appearance="outline">
-  <mat-label orgFieldLabel>Nome do Evento</mat-label>
-  <input matInput [formControl]="nameCtrl" placeholder="Ex: Aniversário" />
-  @if (nameCtrl.invalid && nameCtrl.touched) {
-    <mat-error>Nome é obrigatório</mat-error>
-  }
-</mat-form-field>
-```
+### OrgSectionComponent
 
----
+Uso recomendado: `<org-section title="Próximos eventos" icon="event">...</org-section>`. It provides one coherent section heading and rhythm.
 
-### 6.5 Layout Primitives
-```typescript
-import {
-  OrgPageLayoutComponent,
-  OrgPageHeaderComponent,
-  OrgSectionComponent,
-  OrgFormGridDirective,
-} from '@shared/ui';
-```
-#### Usage
-```html
-<org-page-layout maxWidth="default">
-  <org-page-header
-    title="Meus Eventos"
-    subtitle="Gerencie seus eventos e convidados"
-    icon="event"
-    [gradient]="true"
-  >
-    <button orgButton="primary" headerActions routerLink="/evento/novo">
-      <org-icon name="add" size="sm" color="var(--org-on-primary)" />
-      Novo Evento
-    </button>
-  </org-page-header>
+### OrgButtonComponent
 
-  <org-section title="Próximos Eventos" icon="event" [count]="events().length">
-    <div orgFormGrid="2col">
-      <!-- Responsive Form or Event Cards -->
-    </div>
-  </org-section>
-</org-page-layout>
-```
+Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, and `text`; use `disabled` or `loading` instead of local state CSS.
 
----
+### OrgIconButtonComponent
 
-### 6.6 Feedback & Alerts
-```typescript
-import {
-  OrgEmptyStateComponent,
-  OrgBannerComponent,
-  FeedbackService,
-  FeedbackSnackbarComponent,
-} from '@shared/ui';
-```
-#### Usage
-```html
-<!-- Empty State -->
-<org-empty-state
-  icon="event"
-  title="Nenhum evento cadastrado"
-  description="Clique abaixo para criar seu primeiro evento."
->
-  <button orgButton="primary" orgEmptyStateAction routerLink="/evento/novo">
-    Criar Evento
-  </button>
-</org-empty-state>
+Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required.
 
-<!-- Inline Banner -->
-<org-banner
-  variant="warning"
-  message="Verifique os itens pendentes antes de confirmar."
-/>
-```
-#### Programmatic Feedback Service
-```typescript
-@Injectable()
-export class MyFeatureComponent {
-  private readonly feedback = inject(FeedbackService);
+### OrgChipComponent
 
-  onSuccess(): void {
-    this.feedback.success('Operação realizada com sucesso!');
-  }
+Uso recomendado: `<org-chip label="Celebrativo" variant="accent" [selected]="selected()" (selectionChange)="toggle($event)" />`. Use it for compact selectable labels, not arbitrary button styling.
 
-  onError(): void {
-    this.feedback.error('Ocorreu um erro ao processar sua solicitação.');
-  }
+### OrgIconComponent
 
-  onInfo(): void {
-    this.feedback.info('Você recebeu um novo convite.');
-  }
-}
-```
+Uso recomendado: `<org-icon name="event" size="sm" />`. Use the typed icon map instead of a raw Material icon in feature markup.
 
----
+### OrgTextFieldComponent
 
-### 6.7 Navigation
-```typescript
-import { NavigationDrawerComponent } from '@shared/ui';
-```
-Responsive slide-over navigation drawer displaying authenticated user profile, route navigation (`/`, `/meus-eventos`, `/perfil`, `/admin`, `/design-system`), and theme switchers.
+Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`.
 
-### 6.8 Component-First Authoring Contract
+### OrgTextareaFieldComponent
 
-When creating a new screen or feature, use the documented standalone components from `@shared/ui` as the public authoring API. The living catalog at `/design-system` contains a rendered preview and a copyable Angular example for each supported component.
+Uso recomendado: `<org-textarea-field label="Mensagem" [rows]="3" [(value)]="message" />`.
 
-```typescript
-import {
-  OrgBannerComponent,
-  OrgPageHeaderComponent,
-  OrgPageLayoutComponent,
-  OrgSurfaceComponent,
-} from '@shared/ui';
-```
+### OrgSelectFieldComponent
 
-- Prefer `<org-page-layout>`, `<org-page-header>`, `<org-section>`, `<org-surface>`, `<org-banner>`, and `<org-empty-state>` over feature-local layout and feedback markup.
-- Directives remain compatibility infrastructure for existing screens; they are not the default public API for new feature work.
-- Do not recreate a component API with ad hoc classes, Material overrides, or copied SCSS. Add or extend a standalone shared component first, then document its preview and usage in `/design-system`.
+Uso recomendado: `<org-select-field label="Formato" [options]="formatOptions" [(value)]="format" />`. Options are typed objects with `value`, `label`, and optional `disabled`.
+
+### OrgDateFieldComponent
+
+Uso recomendado: `<org-date-field label="Data" [(value)]="eventDate" />`. It owns the Material datepicker integration and normal field geometry.
+
+### OrgTimeFieldComponent
+
+Uso recomendado: `<org-time-field label="Horário" [(value)]="eventTime" [minuteStep]="5" />`. It owns the custom `HH:mm` editor and increment controls; do not use native `input[type=time]` for product fields.
+
+### OrgToggleComponent
+
+Uso recomendado: `<org-toggle label="Enviar lembrete" [(checked)]="reminderEnabled" />`. Use a toggle for a setting that is immediately on or off.
+
+### OrgCheckboxComponent
+
+Uso recomendado: `<org-checkbox label="Permitir acompanhante" [(checked)]="companionAllowed" />`. Use checkboxes for independent or multiple choices.
+
+### OrgRadioGroupComponent
+
+Uso recomendado: `<org-radio-group label="Canal" [options]="channelOptions" [(value)]="channel" />`. Use it when exactly one option is selected.
+
+### OrgTabsComponent
+
+Uso recomendado: `<org-tabs [items]="tabs" [(selectedId)]="activeTab" [gradient]="true" />`. It owns tab borders and responsive overflow behavior.
+
+### OrgStepComponent
+
+Uso recomendado: `<org-step label="Informações">...</org-step>`. It is only used as projected content of `OrgStepperComponent`.
+
+### OrgStepperComponent
+
+Uso recomendado: `<org-stepper [orientation]="orientation()"><org-step label="Informações">...</org-step></org-stepper>`. The caller supplies semantic steps; the component owns compact mobile orientation.
+
+### OrgMenuComponent
+
+Uso recomendado: `<org-menu triggerLabel="Mais ações" [actions]="menuActions" (actionSelected)="act($event)" />`. Actions are typed and the component owns the Material overlay surface.
+
+### OrgNavigationListComponent
+
+Uso recomendado: `<org-navigation-list [items]="navigationItems" (selected)="navigate($event)" />`. Items are typed links with an id, label, href, and optional disabled state.
+
+### OrgProgressComponent
+
+Uso recomendado: `<org-progress [value]="67" ariaLabel="67% concluído" variant="primary" [gradient]="true" />`.
+
+### OrgMetricCardComponent
+
+Uso recomendado: `<org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />`.
+
+### OrgBadgeComponent
+
+Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use.
+
+### OrgConfirmDialogComponent
+
+Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations.
+
+### OrgEmptyStateComponent
+
+Uso recomendado: `<org-empty-state icon="event" title="Nenhum evento" description="Crie o primeiro evento para começar." />`.
+
+### FeedbackSnackbarComponent
+
+Uso recomendado: inject `FeedbackService` and call `success`, `info`, `warning`, or `error`; the snackbar component is service-owned rather than placed in feature templates.
+
+### OrgBannerComponent
+
+Uso recomendado: `<org-banner variant="info" message="Convites enviados." />` for persistent contextual feedback.
+
+### Component-first authoring contract
+
+New work begins with a public `Org*` component. If the API is missing, add a standalone OnPush component in `shared/ui`, its focused unit test, a design-system preview, and this recommended usage before using it in a feature. The `/design-system` route is the live source for all documented APIs.
+
+## APIs legadas de compatibilidade
+
+Não usar em novo código. These directives remain only while existing callers are migrated, then will be removed: `OrgSurfaceDirective`, `OrgFormGridDirective`, `OrgFormFieldDirective`, `OrgFieldLabelDirective`, `OrgButtonDirective`, `OrgIconButtonDirective`, and `OrgChipDirective`. Use `OrgSurfaceComponent`, layout components, field components, `OrgButtonComponent`, `OrgIconButtonComponent`, and `OrgChipComponent` instead.
 
 ---
 

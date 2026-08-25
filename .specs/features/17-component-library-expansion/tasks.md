@@ -222,6 +222,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T18: Create `OrgBadgeComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/data-display/`  
 **Depends on**: T17  
 **Tests**: Label, optional icon, semantic variant/default fallback, and non-gradient treatment map to DATA-01 and DATA-02.  

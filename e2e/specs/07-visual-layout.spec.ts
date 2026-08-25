@@ -6,6 +6,7 @@ import {
   assertGlassmorphism,
   assertFontFamily,
 } from '../helpers/design-tokens.helper';
+import { mockFirebaseRuntimeConfig } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -25,6 +26,7 @@ const mockSampleEvents = [
 ];
 
 async function setupVisualMockSession(page: Page) {
+  await mockFirebaseRuntimeConfig(page);
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({
       status: 200,

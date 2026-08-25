@@ -4,6 +4,7 @@ import { OrganizerDashboardPage } from '../pages/organizer-dashboard.page';
 import { EventEditorPage } from '../pages/event-editor.page';
 import { HomePage } from '../pages/home.page';
 import { EventDetailPage } from '../pages/event-detail.page';
+import { mockFirebaseRuntimeConfig } from '../helpers/auth-mock.helper';
 
 const sharedEventData = {
   id: 'event-sync-1',
@@ -21,6 +22,7 @@ const sharedEventData = {
 };
 
 async function setupHostSession(page: Page) {
+  await mockFirebaseRuntimeConfig(page);
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({
       status: 200,
@@ -103,6 +105,7 @@ async function setupHostSession(page: Page) {
 }
 
 async function setupGuestSession(page: Page) {
+  await mockFirebaseRuntimeConfig(page);
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({
       status: 200,

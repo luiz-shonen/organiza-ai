@@ -25,10 +25,10 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
   {
     label: 'Páscoa da Ressurreição',
     rootClass: 'theme-pascoa',
-    primary: '#6d3ba7',
-    secondary: '#bd8b32',
-    tertiary: '#5e7d52',
-    gradientFragment: '#6d3ba7',
+    primary: '#7552a8',
+    secondary: '#d2a060',
+    tertiary: '#f4d58e',
+    gradientFragment: '#7552a8',
     canvasStart: '#faf6ff',
     canvasEnd: '#f9f3df',
     ringColor: 'rgba(109, 59, 167, 0.26)',
@@ -47,10 +47,10 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
   {
     label: 'Natal de Jesus',
     rootClass: 'theme-natal',
-    primary: '#d32f2f',
-    secondary: '#e53935',
-    tertiary: '#388e3c',
-    gradientFragment: '#d32f2f',
+    primary: '#b84555',
+    secondary: '#d77a61',
+    tertiary: '#deb36a',
+    gradientFragment: '#b84555',
     canvasStart: '#fff5f1',
     canvasEnd: '#eef8ef',
     ringColor: 'rgba(211, 47, 47, 0.28)',
@@ -58,10 +58,10 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
   {
     label: 'Ano Novo',
     rootClass: 'theme-ano-novo',
-    primary: '#b27a10',
-    secondary: '#283a67',
-    tertiary: '#b8c1cd',
-    gradientFragment: '#b27a10',
+    primary: '#b88a33',
+    secondary: '#ead9a5',
+    tertiary: '#8293b5',
+    gradientFragment: '#b88a33',
     canvasStart: '#fffbed',
     canvasEnd: '#edf1fa',
     ringColor: 'rgba(178, 122, 16, 0.28)',
@@ -98,22 +98,22 @@ test.describe('Design System Showcase', () => {
     await expect(page).not.toHaveURL(/\/design-system$/);
   });
 
-  test('renders every Material component family as an anchored showcase section', async ({ page }) => {
+  test('renders every public component family as an anchored showcase section', async ({ page }) => {
     await openShowcase(page);
 
     const sectionIds = [
       'overview',
       'foundations',
+      'components',
       'buttons',
       'inputs',
       'selection',
       'navigation',
+      'stepper',
       'data-display',
       'feedback',
       'seasonal-themes',
     ];
-
-    await expect(page.locator('.org-ds-sidebar__nav-link')).toHaveCount(sectionIds.length);
 
     for (const id of sectionIds) {
       await expect(page.locator(`section#${id}`)).toBeAttached();
@@ -126,9 +126,9 @@ test.describe('Design System Showcase', () => {
     await assertNoHorizontalOverflow(page);
   });
 
-  test('keeps a component-anchor target at 48px or larger', async ({ page }) => {
+  test('keeps the shared navigation trigger at 48px or larger', async ({ page }) => {
     await openShowcase(page);
-    await assertMinTouchTarget(page.locator('.org-ds-sidebar__nav-link').first());
+    await assertMinTouchTarget(page.getByRole('button', { name: 'Abrir menu de navegação' }));
   });
 
   test('applies each seasonal theme to the complete shared token contract', async ({ page }) => {
@@ -161,12 +161,13 @@ test.describe('Design System Showcase', () => {
     }
   });
 
-  test('toggles the showcase color mode without leaving the route', async ({ page }) => {
+  test('toggles the shared application color mode without leaving the route', async ({ page }) => {
     await openShowcase(page);
     const html = page.locator('html');
     const wasDark = await html.evaluate((element) => element.classList.contains('dark'));
 
-    await page.locator('.org-ds-topbar__theme-toggle').click();
+    await page.getByRole('button', { name: 'Abrir menu de navegação' }).click();
+    await page.getByTestId(wasDark ? 'drawer-theme-light' : 'drawer-theme-dark').click();
 
     if (wasDark) {
       await expect(html).not.toHaveClass(/dark/);
@@ -178,20 +179,19 @@ test.describe('Design System Showcase', () => {
   test('uses a 24px glass blur and warm invitation treatment on showcase surfaces', async ({ page }) => {
     await openShowcase(page);
 
-    const treatment = await page.locator('.org-ds-hero-card').evaluate((element) => {
+    const treatment = await page.locator('.org-ds-hero-card [data-testid="org-surface"]').evaluate((element) => {
       const style = getComputedStyle(element);
-      const content = element.querySelector('.org-ds-hero-card__content');
       return {
         backdropFilter: style.backdropFilter,
-        contentBackgroundImage: content ? getComputedStyle(content).backgroundImage : 'none',
+        backgroundImage: style.backgroundImage,
       };
     });
     const buttonBackground = await page
-      .locator('.org-ds-hero-card .org-material-button--gradient')
+      .locator('.org-ds-hero-card .org-button__control--gradient')
       .evaluate((element) => getComputedStyle(element).backgroundImage);
 
     expect(treatment.backdropFilter).toContain('blur(24px)');
-    expect(treatment.contentBackgroundImage).toContain('radial-gradient');
+    expect(treatment.backgroundImage).toContain('radial-gradient');
     expect(buttonBackground).toContain('linear-gradient');
   });
 

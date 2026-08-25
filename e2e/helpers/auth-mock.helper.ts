@@ -11,12 +11,34 @@ export interface MockUserSessionOptions {
   familyMembers?: any[];
 }
 
+const TEST_FIREBASE_API_KEY = 'test-firebase-api-key';
+
+/**
+ * Makes the Firebase app boot with the same key used by the browser's mocked
+ * IndexedDB session. Keeping this in one helper avoids protected-route tests
+ * silently depending on a developer-specific runtime configuration.
+ */
+export async function mockFirebaseRuntimeConfig(page: Page): Promise<void> {
+  await page.route('**/runtime-config.js', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/javascript',
+      body: `globalThis.__organizaAiRuntimeConfig = { firebase: { apiKey: '${TEST_FIREBASE_API_KEY}' } };`,
+    });
+  });
+}
+
 export async function setupMockAuthSession(page: Page, options: MockUserSessionOptions = {}) {
   const uid = options.uid || 'test-user-uid';
   const email = options.email || 'luiz.gmr.dev@gmail.com';
   const displayName = options.displayName || 'Luiz Admin';
   const emailVerified = options.emailVerified !== undefined ? options.emailVerified : true;
-  const apiKey = 'test-firebase-api-key';
+  const apiKey = TEST_FIREBASE_API_KEY;
+
+  // The application loads its Firebase key from runtime-config.js. Keep the
+  // browser-only Auth instance and the IndexedDB record on the same test key
+  // instead of coupling E2E tests to a developer's runtime configuration.
+  await mockFirebaseRuntimeConfig(page);
 
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({

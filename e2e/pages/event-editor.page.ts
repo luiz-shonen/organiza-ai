@@ -29,7 +29,7 @@ export class EventEditorPage extends BasePage {
     this.numberInput = page.getByTestId('event-number-input').or(page.locator('input[formcontrolname="number"]')).first();
     this.saveBtn = page.getByTestId('event-save-btn').or(page.locator('.editor__save-btn, button[aria-label="Salvar evento"]')).first();
     this.cancelEventBtn = page.getByTestId('event-cancel-btn').or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]')).first();
-    this.nextStepBtns = page.locator('button[matsteppernext]');
+    this.nextStepBtns = page.getByRole('button', { name: 'Próximo' });
     this.itemNameInput = page.getByTestId('item-name-input').or(page.locator('.editor__item-name-field input')).first();
     this.itemQtyInput = page.getByTestId('item-qty-input').or(page.locator('.editor__item-qty-field input')).first();
     this.addItemBtn = page.getByTestId('add-item-btn').or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]')).first();
@@ -48,18 +48,15 @@ export class EventEditorPage extends BasePage {
     await this.descriptionInput.fill(description);
     await this.dateInput.fill(date);
     await this.timeInput.fill(time);
-    if (await this.nextStepBtns.first().isVisible()) {
-      await expect(this.nextStepBtns.first()).toBeEnabled();
-      await this.nextStepBtns.first().click();
-    }
+    await expect(this.nextStepBtns).toBeEnabled();
+    await this.nextStepBtns.click();
   }
 
   async fillCep(cep: string, number: string = '100'): Promise<void> {
     await this.cepInput.fill(cep);
     await this.numberInput.fill(number);
-    if (await this.nextStepBtns.nth(1).isVisible()) {
-      await this.nextStepBtns.nth(1).click();
-    }
+    await expect(this.nextStepBtns).toBeEnabled();
+    await this.nextStepBtns.click();
   }
 
   async saveEvent(): Promise<void> {

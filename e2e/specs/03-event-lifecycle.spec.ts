@@ -1,5 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { Page } from '@playwright/test';
+import { mockFirebaseRuntimeConfig } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -33,6 +34,7 @@ const mockSampleEvents = [
 ];
 
 async function setupMockSession(page: Page, mockEvents: any[] = mockSampleEvents) {
+  await mockFirebaseRuntimeConfig(page);
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({
       status: 200,

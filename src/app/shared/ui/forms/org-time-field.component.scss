@@ -5,6 +5,9 @@
 .org-time-field {
   display: block;
   width: 100%;
+  // Native time controls add one pixel to the MDC outlined field in Chromium.
+  // This owner-only token keeps its visible geometry equal to date/text fields.
+  --mat-form-field-container-height: 55px;
 
   input[type='time'] {
     height: 24px;

@@ -130,6 +130,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T8: Consolidate date and time field geometry under shared field ownership
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/forms/`  
 **Depends on**: T7  
 **Tests**: Existing date/time field tests are extended to assert native Material geometry, centered value/control contract, labels, and no clipping beside the text field, mapping to FLD-01 and FLD-02.  

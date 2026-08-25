@@ -23,6 +23,9 @@ export { OrgCheckboxComponent } from './selection/org-checkbox.component';
 export { OrgRadioGroupComponent } from './selection/org-radio-group.component';
 export type { OrgRadioOption } from './selection/org-radio-group.component';
 
+export { OrgTabsComponent } from './navigation/org-tabs.component';
+export type { OrgTabItem } from './navigation/org-tabs.component';
+
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';
 export type { OrgButtonType, OrgButtonVariant } from './actions/org-button.component';

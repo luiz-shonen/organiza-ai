@@ -168,6 +168,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T12: Create `OrgTabsComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/navigation/`  
 **Depends on**: T11  
 **Tests**: Typed tab items, selected-id model, change output, empty list, keyboard-ready Material tab semantics, and gradient opt-out map to NAV-01 and DATA-02.  

@@ -1,0 +1,10 @@
+<mat-tab-group
+  class="org-tabs"
+  [class.org-tabs--gradient]="gradient()"
+  [selectedIndex]="selectedIndex()"
+  (selectedIndexChange)="selectIndex($event)"
+>
+  @for (item of items(); track item.id) {
+    <mat-tab [disabled]="item.disabled ?? false" [label]="item.label" />
+  }
+</mat-tab-group>

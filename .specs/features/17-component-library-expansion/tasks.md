@@ -213,6 +213,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T17: Create `OrgMetricCardComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/data-display/`  
 **Depends on**: T16  
 **Tests**: Label/value/description/trend, atmosphere input, gradient opt-out, and semantic surface map to DATA-01 and DATA-02.  

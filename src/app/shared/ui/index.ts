@@ -34,6 +34,7 @@ export type { OrgNavigationItem } from './navigation/org-navigation-list.compone
 
 export { OrgProgressComponent } from './data-display/org-progress.component';
 export type { OrgProgressVariant } from './data-display/org-progress.component';
+export { OrgMetricCardComponent } from './data-display/org-metric-card.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';

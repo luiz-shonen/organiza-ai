@@ -148,6 +148,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T10: Create `OrgCheckboxComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/selection/`  
 **Depends on**: T9  
 **Tests**: Checked/indeterminate states, label, disabled non-change, and semantic checkbox behavior map to SEL-01 and ACT-03.  

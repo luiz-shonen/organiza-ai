@@ -1,0 +1,7 @@
+<mat-checkbox
+  class="org-checkbox"
+  [checked]="checked()"
+  [disabled]="disabled()"
+  [indeterminate]="indeterminate()"
+  (change)="updateChecked($event.checked)"
+>{{ label() }}</mat-checkbox>

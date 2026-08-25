@@ -19,6 +19,7 @@ export { OrgSelectFieldComponent } from './forms/org-select-field.component';
 export type { OrgSelectOption } from './forms/org-select-field.component';
 
 export { OrgToggleComponent } from './selection/org-toggle.component';
+export { OrgCheckboxComponent } from './selection/org-checkbox.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';

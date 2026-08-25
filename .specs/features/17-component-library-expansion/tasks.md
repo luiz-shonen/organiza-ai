@@ -195,6 +195,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T15: Create `OrgNavigationListComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/navigation/`  
 **Depends on**: T14  
 **Tests**: Typed items, active state, accessible links/items, empty collection, selected-item output, and drawer token use map to NAV-01.  

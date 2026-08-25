@@ -1,0 +1,6 @@
+:host { display: block; }
+.org-navigation-list { display: grid; gap: 4px; }
+.org-navigation-list__item { align-items: center; border-radius: var(--org-radius-md); color: var(--org-on-surface); display: flex; min-height: 48px; padding-inline: 16px; text-decoration: none; transition: background-color 160ms ease, color 160ms ease; }
+.org-navigation-list__item:hover { background: color-mix(in srgb, var(--org-primary) 10%, transparent); color: var(--org-primary); }
+.org-navigation-list__item--active { background: color-mix(in srgb, var(--org-primary) 16%, transparent); color: var(--org-primary); font-weight: 700; }
+.org-navigation-list__empty { color: var(--org-on-surface-variant); margin: 0; padding: 16px; }

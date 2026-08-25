@@ -29,6 +29,8 @@ export { OrgStepComponent } from './navigation/org-step.component';
 export { OrgStepperComponent } from './navigation/org-stepper.component';
 export { OrgMenuComponent } from './navigation/org-menu.component';
 export type { OrgMenuAction } from './navigation/org-menu.component';
+export { OrgNavigationListComponent } from './navigation/org-navigation-list.component';
+export type { OrgNavigationItem } from './navigation/org-navigation-list.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';

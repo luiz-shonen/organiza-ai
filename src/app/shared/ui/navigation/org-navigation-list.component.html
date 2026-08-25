@@ -1,0 +1,14 @@
+<nav class="org-navigation-list" aria-label="Navegação">
+  @for (item of items(); track item.id) {
+    <a
+      class="org-navigation-list__item"
+      [attr.aria-current]="activeId() === item.id ? 'page' : null"
+      [attr.aria-disabled]="item.disabled ?? false"
+      [class.org-navigation-list__item--active]="activeId() === item.id"
+      [href]="item.href"
+      (click)="select(item.id)"
+    >{{ item.label }}</a>
+  } @empty {
+    <p class="org-navigation-list__empty">Nenhum item disponível.</p>
+  }
+</nav>

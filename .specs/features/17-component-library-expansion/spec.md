@@ -33,7 +33,7 @@ This feature turns the priority component families identified in the comparison 
 | --- | --- | --- | --- |
 | Delivery boundary | Build the priority family below in phases, with no product-page migration. | It makes the contracts reviewable before application-wide adoption. | y |
 | Styling switch | Gradient border and atmosphere are opt-in typed inputs, defaulting to the current Organiza visual direction where appropriate. | A B2B application can use the same components without festive gradients. | y |
-| Form state | Closed field components expose signal-friendly `model()` values and remain compatible with native Angular Material controls. | Matches the existing date/time field pattern and avoids directive-first authoring. | y |
+| Form state | Closed field components expose signal-friendly `model()` values and remain compatible with Angular reactive forms. `OrgTimeField` owns its custom `HH:mm` editor and never delegates its visual/interaction contract to `input[type=time]`. | Avoids browser-native time-control drift while retaining Angular Material form semantics. | y |
 | Documentation | Every public component receives a collapsed, copyable "Uso recomendado" example in the showcase. | The catalog must guide both humans and AI-assisted feature work. | y |
 | Accessibility | New interactive components keep native Material semantics and provide a 48px minimum touch target. | Preserves the project WCAG and Material baseline. | y |
 | Visual ownership | Shared tokens and the owning `Org*` component stylesheet are the only location for component color, border, radius, hover, focus, density, and Material token rules. Feature styles may define layout placement and domain-only content only. | This makes a component correction propagate everywhere and prevents CSS ambiguity. | y |
@@ -70,7 +70,7 @@ This feature turns the priority component families identified in the comparison 
 **Acceptance Criteria**:
 
 1. WHEN a developer renders a text, select, date, time, or textarea field, THEN the library SHALL render an Angular Material outline field with an explicit label and signal-compatible value API. <!-- FLD-01 -->
-2. WHEN date and time fields render beside a standard text field, THEN the library SHALL preserve the native Material field height and vertically centered control value without clipping. <!-- FLD-02 -->
+2. WHEN date and time fields render beside a standard text field, THEN the library SHALL preserve the native Material field height and vertically centered control value without clipping; `OrgTimeField` SHALL own a custom, configurable `HH:mm` editor with typed minute increments and SHALL NOT render `input[type=time]`. <!-- FLD-02 -->
 3. IF a field is disabled, THEN the component SHALL prevent value-change output while retaining its accessible disabled state. <!-- FLD-03 -->
 4. WHERE a hint or error message is supplied, the field SHALL render it through Material-supported hint or error semantics. <!-- FLD-04 -->
 5. WHEN an existing application screen renders an in-scope field, THEN the screen SHALL compose the corresponding closed field component and SHALL not apply component appearance rules through feature SCSS. <!-- MIG-02 -->

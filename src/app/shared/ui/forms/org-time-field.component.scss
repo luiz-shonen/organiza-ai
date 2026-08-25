@@ -1,18 +1,4 @@
-:host {
-  display: block;
-}
-
-.org-time-field {
-  display: block;
-  width: 100%;
-  // Native time controls add one pixel to the MDC outlined field in Chromium.
-  // This owner-only token keeps its visible geometry equal to date/text fields.
-  --mat-form-field-container-height: 55px;
-
-  input[type='time'] {
-    height: 24px;
-    line-height: 24px;
-    min-height: 24px;
-    padding-block: 0;
-  }
-}
+:host { display: block; }
+.org-time-field { display: block; width: 100%; --mdc-outlined-text-field-outline-color: var(--org-outline); --mdc-outlined-text-field-focus-outline-color: var(--org-primary); --mdc-outlined-text-field-focus-label-text-color: var(--org-primary); }
+.org-time-field__controls { align-items: center; display: inline-flex; gap: 2px; }
+.org-time-field__controls button { color: var(--org-primary); min-height: 32px; min-width: 32px; }

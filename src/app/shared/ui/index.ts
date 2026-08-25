@@ -27,6 +27,8 @@ export { OrgTabsComponent } from './navigation/org-tabs.component';
 export type { OrgTabItem } from './navigation/org-tabs.component';
 export { OrgStepComponent } from './navigation/org-step.component';
 export { OrgStepperComponent } from './navigation/org-stepper.component';
+export { OrgMenuComponent } from './navigation/org-menu.component';
+export type { OrgMenuAction } from './navigation/org-menu.component';
 
 export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';

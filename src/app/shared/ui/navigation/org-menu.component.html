@@ -1,0 +1,8 @@
+<button mat-button class="org-menu__trigger" [matMenuTriggerFor]="menu" aria-haspopup="menu">{{ triggerLabel() }}</button>
+<mat-menu #menu="matMenu" class="org-menu__panel">
+  @for (action of actions(); track action.id) {
+    <button mat-menu-item [disabled]="action.disabled ?? false" (click)="select(action)">{{ action.label }}</button>
+  } @empty {
+    <button mat-menu-item disabled>Nenhuma ação disponível.</button>
+  }
+</mat-menu>

@@ -186,6 +186,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T14: Create `OrgMenuComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/navigation/`  
 **Depends on**: T13  
 **Tests**: Trigger label/icon, typed actions, empty actions, action selection output, and shared glass menu surface map to NAV-01 and OVR-01.  

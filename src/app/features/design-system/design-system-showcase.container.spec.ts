@@ -1,25 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { MatDialog } from '@angular/material/dialog';
 import { DesignSystemShowcaseContainer, SHOWCASE_SECTIONS } from './design-system-showcase.container';
-import { FeedbackService } from '../../shared/ui';
+import { FeedbackService, OrgDialogService } from '../../shared/ui';
 
 describe('DesignSystemShowcaseContainer', () => {
   let component: DesignSystemShowcaseContainer;
   let fixture: ComponentFixture<DesignSystemShowcaseContainer>;
   let feedbackService: { success: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
-  let dialog: { open: ReturnType<typeof vi.fn> };
+  let dialogService: { confirm: ReturnType<typeof vi.fn> };
 
   beforeEach(async () => {
     feedbackService = { success: vi.fn(), info: vi.fn() };
-    dialog = { open: vi.fn() };
+    dialogService = { confirm: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [DesignSystemShowcaseContainer],
       providers: [
         provideNoopAnimations(),
         { provide: FeedbackService, useValue: feedbackService },
-        { provide: MatDialog, useValue: dialog },
+        { provide: OrgDialogService, useValue: dialogService },
       ],
     }).compileComponents();
 
@@ -37,23 +36,31 @@ describe('DesignSystemShowcaseContainer', () => {
     );
   });
 
-  it('renders every Angular Material component family required by the catalog contract', () => {
+  it('renders every new catalog family through its closed Org component API', () => {
     const root = fixture.nativeElement as HTMLElement;
 
-    expect(root.querySelector('button[mat-flat-button]')).toBeTruthy();
-    expect(root.querySelector('mat-form-field')).toBeTruthy();
-    expect(root.querySelector('mat-select')).toBeTruthy();
-    expect(root.querySelector('mat-datepicker')).toBeTruthy();
-    expect(root.querySelector('mat-checkbox')).toBeTruthy();
-    expect(root.querySelector('mat-radio-group')).toBeTruthy();
-    expect(root.querySelector('mat-slide-toggle')).toBeTruthy();
-    expect(root.querySelector('mat-chip-listbox')).toBeTruthy();
-    expect(root.querySelector('mat-tab-group')).toBeTruthy();
-    expect(root.querySelector('button[mat-list-item]')).toBeTruthy();
-    expect(Array.from(root.querySelectorAll('button')).some((button) => button.textContent?.includes('Mais ações'))).toBe(true);
-    expect(root.querySelector('mat-progress-bar')).toBeTruthy();
-    expect(root.querySelector('mat-progress-spinner')).toBeTruthy();
-    expect(root.querySelector('mat-card')).toBeTruthy();
+    for (const selector of [
+      'org-button',
+      'org-icon-button',
+      'org-chip',
+      'org-text-field',
+      'org-textarea-field',
+      'org-select-field',
+      'org-date-field',
+      'org-time-field',
+      'org-toggle',
+      'org-checkbox',
+      'org-radio-group',
+      'org-tabs',
+      'org-stepper',
+      'org-menu',
+      'org-navigation-list',
+      'org-progress',
+      'org-metric-card',
+      'org-badge',
+    ]) {
+      expect(root.querySelector(selector)).toBeTruthy();
+    }
   });
 
   it('uses closed date and time field components instead of local field recipes', () => {
@@ -61,6 +68,14 @@ describe('DesignSystemShowcaseContainer', () => {
 
     expect(root.querySelector('org-date-field')).toBeTruthy();
     expect(root.querySelector('org-time-field')).toBeTruthy();
+  });
+
+  it('documents every new public component family with a collapsed recommended usage example', () => {
+    const root = fixture.nativeElement as HTMLElement;
+    const examples = Array.from(root.querySelectorAll('app-design-system-code-example'));
+
+    expect(examples.length).toBeGreaterThanOrEqual(11);
+    expect(examples.every((example) => example.textContent?.includes('Uso recomendado'))).toBe(true);
   });
 
   it('gives every showcase section a stable element id', () => {
@@ -88,6 +103,11 @@ describe('DesignSystemShowcaseContainer', () => {
 
     expect(feedbackService.success).toHaveBeenCalledWith('Tema aplicado à prévia com sucesso.');
     expect(feedbackService.info).toHaveBeenCalledWith('A prévia usa tokens sazonais compartilhados.');
-    expect(dialog.open).toHaveBeenCalledTimes(1);
+    expect(dialogService.confirm).toHaveBeenCalledWith({
+      title: 'Publicar tema',
+      message: 'Confirme a publicação do tema para a prévia.',
+      confirmLabel: 'Publicar',
+      cancelLabel: 'Agora não',
+    });
   });
 });

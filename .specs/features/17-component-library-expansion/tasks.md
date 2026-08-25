@@ -242,6 +242,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T20: Convert design-system demonstrations to public `Org*` APIs
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/features/design-system/`  
 **Depends on**: T19  
 **Tests**: Showcase fixture asserts every new family renders through `Org*`, every family has "Uso recomendado", and themes resolve shared tokens, mapping to DOC-01 through DOC-03.  

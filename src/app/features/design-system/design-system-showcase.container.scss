@@ -161,14 +161,7 @@
 
 .org-ds-panel-card,
 .org-ds-metric-card {
-  backdrop-filter: var(--org-glass-blur);
-  -webkit-backdrop-filter: var(--org-glass-blur);
-  background:
-    linear-gradient(var(--showcase-glass), var(--showcase-glass)) padding-box,
-    var(--showcase-card-border) border-box;
-  border: 1px solid transparent;
   box-shadow: var(--showcase-shadow-md);
-  overflow: hidden;
 }
 
 .org-ds-hero-card {
@@ -401,14 +394,6 @@
 
 .org-ds-panel-card {
   border-radius: 24px;
-
-  mat-card-content {
-    padding: 20px;
-
-    @media (min-width: 600px) {
-      padding: 28px;
-    }
-  }
 }
 
 .org-ds-control-row {
@@ -421,98 +406,6 @@
     justify-content: space-between;
     padding-top: 20px;
   }
-}
-
-.org-material-showcase {
-  .mat-mdc-button-base {
-    min-height: 48px;
-  }
-
-  .mat-mdc-outlined-button,
-  .mat-mdc-stroked-button {
-    --mdc-outlined-button-label-text-color: var(--showcase-ink);
-    --mdc-outlined-button-outline-color: color-mix(in srgb, var(--showcase-plum) 52%, transparent);
-    border-radius: 16px;
-  }
-
-  .mat-mdc-unelevated-button,
-  .mat-mdc-flat-button {
-    border-radius: 16px;
-  }
-
-  .mat-mdc-icon-button,
-  .mat-mdc-fab {
-    min-height: 48px;
-    min-width: 48px;
-  }
-
-  .mat-mdc-fab {
-    align-items: center;
-    display: inline-flex;
-    justify-content: center;
-    padding: 0;
-
-    .mat-icon {
-      left: 50%;
-      margin: 0 !important;
-      position: absolute;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-
-  .mat-mdc-form-field {
-    --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
-    --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);
-    --mdc-outlined-text-field-outline-color: color-mix(in srgb, var(--showcase-plum) 48%, transparent);
-    --mdc-outlined-text-field-container-shape: 16px;
-    --mat-form-field-container-shape: 16px;
-    --mdc-outlined-text-field-container-color: rgb(255 255 255 / 0.42);
-    --mdc-outlined-text-field-input-text-color: var(--showcase-ink);
-    --mdc-outlined-text-field-label-text-color: var(--showcase-muted);
-    --mat-form-field-subscript-text-color: var(--showcase-muted);
-    --mat-form-field-error-text-color: #ffb4ab;
-  }
-
-  .mat-mdc-chip {
-    --mdc-chip-elevated-container-color: rgb(255 107 91 / 0.1);
-    --mdc-chip-label-text-color: var(--org-primary);
-  }
-
-  .mat-mdc-tab-group {
-    --mat-tab-header-active-label-text-color: var(--org-primary);
-    --mat-tab-header-active-ripple-color: var(--org-primary);
-    --mat-tab-header-active-focus-label-text-color: var(--org-primary);
-    --mat-tab-header-active-hover-label-text-color: var(--org-primary);
-    --mdc-tab-indicator-active-indicator-color: var(--org-primary);
-    --mat-tab-header-inactive-label-text-color: var(--showcase-muted);
-    --mat-tab-header-inactive-hover-label-text-color: var(--showcase-ink);
-  }
-}
-
-.org-material-button--gradient {
-  background: var(--showcase-gradient);
-  border-radius: 16px;
-  box-shadow: var(--showcase-shadow-sm);
-  color: var(--org-on-primary);
-}
-
-.org-ds-feedback-layout mat-progress-spinner {
-  --mdc-circular-progress-active-indicator-color: var(--org-primary);
-}
-
-.org-ds-metric-card mat-progress-bar {
-  --mdc-linear-progress-active-indicator-color: var(--org-primary);
-}
-
-.org-ds-panel-card mat-stepper {
-  --mat-stepper-container-color: transparent;
-  --mat-stepper-header-label-text-color: var(--showcase-ink);
-  --mat-stepper-header-optional-label-text-color: var(--showcase-muted);
-  --mat-stepper-header-selected-state-label-text-color: var(--org-primary);
-  --mat-stepper-header-selected-state-icon-background-color: var(--org-primary);
-  --mat-stepper-header-done-state-icon-background-color: var(--org-primary);
-  background: transparent;
 }
 
 .org-ds-form-grid {
@@ -532,12 +425,6 @@
   }
 }
 
-.org-ds-form-grid__wide textarea {
-  min-height: 24px;
-  resize: vertical;
-}
-
-
 .org-ds-selection-layout {
   display: grid;
   gap: 28px;
@@ -547,16 +434,16 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  mat-radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
   &__stack {
     display: flex;
     flex-direction: column;
     gap: 14px;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 
@@ -571,43 +458,6 @@
 .org-ds-navigation-demo {
   display: grid;
   gap: 20px;
-
-  .mat-mdc-tab-body-content {
-    color: var(--showcase-ink);
-    padding: 16px 0;
-  }
-
-  mat-tab-group {
-    background:
-      linear-gradient(var(--showcase-glass), var(--showcase-glass)) padding-box,
-      var(--showcase-card-border) border-box;
-    border: 1px solid transparent;
-    border-radius: 16px;
-    padding: 4px;
-  }
-
-  mat-nav-list {
-    display: grid;
-    gap: 8px;
-
-    --mdc-list-list-item-label-text-color: var(--showcase-ink);
-    --mdc-list-list-item-supporting-text-color: var(--showcase-muted);
-    --mdc-list-list-item-trailing-supporting-text-color: var(--showcase-muted);
-
-    button[mat-list-item] {
-      background:
-        linear-gradient(var(--showcase-glass), var(--showcase-glass)) padding-box,
-        var(--showcase-card-border) border-box;
-      border: 1px solid transparent;
-      border-radius: 16px;
-      min-height: 56px;
-    }
-  }
-
-  &__menu-trigger {
-    justify-self: start;
-    width: auto;
-  }
 }
 
 .org-ds-data-grid {
@@ -617,15 +467,7 @@
 }
 
 .org-ds-metric-card {
-  border-radius: 22px;
-
-  mat-card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 140px;
-    padding: 22px;
-  }
+  min-height: 140px;
 
   span,
   p {
@@ -641,19 +483,6 @@
     line-height: 1;
   }
 
-  p {
-    align-items: center;
-    display: flex;
-    gap: 4px;
-    margin-top: auto;
-
-    mat-icon {
-      color: var(--org-success);
-      font-size: 18px;
-      height: 18px;
-      width: 18px;
-    }
-  }
 }
 
 .org-ds-feedback-layout {

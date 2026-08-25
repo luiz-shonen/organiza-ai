@@ -29,16 +29,13 @@
           </div>
 
           <div class="org-ds-hero-card__meta">
-            <mat-chip-set aria-label="Etiquetas do evento">
-              <mat-chip>Festa Junina</mat-chip>
-              <mat-chip>42 confirmados</mat-chip>
-            </mat-chip-set>
+            <div class="org-ds-hero-card__chips" aria-label="Etiquetas do evento">
+              <org-chip label="Festa Junina" [gradient]="false" />
+              <org-chip label="42 confirmados" [gradient]="false" />
+            </div>
             <div class="org-ds-hero-card__actions">
-              <button mat-stroked-button type="button">Ver convidados</button>
-              <button mat-flat-button type="button" class="org-material-button--gradient">
-                <mat-icon aria-hidden="true">send</mat-icon>
-                Compartilhar convite
-              </button>
+              <org-button label="Ver convidados" variant="secondary" [gradient]="false" />
+              <org-button label="Compartilhar convite" icon="share" />
             </div>
           </div>
         </div>
@@ -160,21 +157,16 @@
         <h2 id="buttons-title">Hierarquia nítida, com movimento e cor na medida.</h2>
       </div>
 
-      <mat-card class="org-ds-panel-card">
-        <mat-card-content>
-          <div class="org-ds-control-row" aria-label="Variações de botão">
-            <button mat-flat-button type="button" class="org-material-button--gradient">Ação principal</button>
-            <button mat-stroked-button type="button">Ação secundária</button>
-            <button mat-button type="button">Ação discreta</button>
-            <button mat-icon-button type="button" aria-label="Adicionar evento">
-              <mat-icon>add</mat-icon>
-            </button>
-            <button mat-fab type="button" class="org-material-button--gradient" aria-label="Criar evento">
-              <mat-icon>add</mat-icon>
-            </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <org-surface variant="panel" class="org-ds-panel-card">
+        <div class="org-ds-control-row" aria-label="Variações de botão">
+          <org-button label="Ação principal" />
+          <org-button label="Ação secundária" variant="secondary" />
+          <org-button label="Ação discreta" variant="text" [gradient]="false" />
+          <org-icon-button ariaLabel="Adicionar evento" icon="add" />
+          <org-icon-button ariaLabel="Criar evento" icon="add" variant="primary" />
+        </div>
+      </org-surface>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.actions" />
     </section>
 
     <section id="inputs" class="org-ds-section" aria-labelledby="inputs-title">
@@ -183,30 +175,15 @@
         <h2 id="inputs-title">Formulários com ritmo, rótulos claros e uma única linguagem visual.</h2>
       </div>
 
-      <mat-card class="org-ds-panel-card">
-        <mat-card-content class="org-ds-form-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Título do evento</mat-label>
-            <input matInput value="Ceia de Natal" />
-            <mat-icon matSuffix aria-hidden="true">event</mat-icon>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Formato</mat-label>
-            <mat-select value="presencial">
-              <mat-option value="presencial">Presencial</mat-option>
-              <mat-option value="hibrido">Híbrido</mat-option>
-              <mat-option value="online">Online</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <org-surface variant="panel" class="org-ds-panel-card">
+        <div class="org-ds-form-grid">
+          <org-text-field label="Título do evento" [(value)]="eventTitle" />
+          <org-select-field label="Formato" [options]="formatOptions" [(value)]="eventFormat" />
           <org-date-field label="Data da celebração" [(value)]="eventDate" />
-          <org-time-field label="Horário de início" value="19:30" />
-          <mat-form-field appearance="outline" class="org-ds-form-grid__wide">
-            <mat-label>Mensagem de boas-vindas</mat-label>
-            <textarea matInput rows="1">Celebre com quem torna a vida mais bonita.</textarea>
-            <mat-hint>Mostre a voz do tema sem perder legibilidade.</mat-hint>
-          </mat-form-field>
-        </mat-card-content>
-      </mat-card>
+          <org-time-field label="Horário de início" [(value)]="eventTime" [minuteStep]="5" />
+          <org-textarea-field class="org-ds-form-grid__wide" label="Mensagem de boas-vindas" [rows]="1" hint="Mostre a voz do tema sem perder legibilidade." [(value)]="welcomeMessage" />
+        </div>
+      </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.fields" />
     </section>
 
@@ -216,41 +193,34 @@
         <h2 id="selection-title">Escolhas fáceis de escanear em qualquer tema.</h2>
       </div>
 
-      <mat-card class="org-ds-panel-card">
-        <mat-card-content class="org-ds-selection-layout">
+      <org-surface variant="panel" class="org-ds-panel-card">
+        <div class="org-ds-selection-layout">
           <div>
-            <p class="org-ds-field-label">Canais de confirmação</p>
-            <mat-radio-group [value]="attendanceChannel()" (change)="attendanceChannel.set($event.value)">
-              <mat-radio-button value="email">E-mail</mat-radio-button>
-              <mat-radio-button value="whatsapp">WhatsApp</mat-radio-button>
-            </mat-radio-group>
+            <org-radio-group label="Canais de confirmação" [options]="channelOptions" [(value)]="attendanceChannel" />
           </div>
           <div>
-            <p class="org-ds-field-label">Preferências</p>
             <div class="org-ds-selection-layout__stack">
-              <mat-slide-toggle checked>Enviar lembrete na véspera</mat-slide-toggle>
-              <mat-slide-toggle [checked]="notificationsEnabled()" (change)="notificationsEnabled.set($event.checked)">
-                Notificações do evento
-              </mat-slide-toggle>
+              <org-toggle label="Enviar lembrete na véspera" [(checked)]="reminderEnabled" />
+              <org-toggle label="Notificações do evento" [(checked)]="notificationsEnabled" />
             </div>
           </div>
           <div>
             <p class="org-ds-field-label">Categorias</p>
-            <mat-chip-listbox aria-label="Categorias de evento">
-              <mat-chip-option selected>Celebrativo</mat-chip-option>
-              <mat-chip-option>Família</mat-chip-option>
-              <mat-chip-option>Comunidade</mat-chip-option>
-            </mat-chip-listbox>
+            <div class="org-ds-selection-layout__chips" aria-label="Categorias de evento">
+              <org-chip label="Celebrativo" variant="accent" [selected]="true" />
+              <org-chip label="Família" [gradient]="false" />
+              <org-chip label="Comunidade" [gradient]="false" />
+            </div>
           </div>
           <div>
             <p class="org-ds-field-label">Múltiplas seleções</p>
             <div class="org-ds-selection-layout__stack">
-              <mat-checkbox checked>Receber respostas por e-mail</mat-checkbox>
-              <mat-checkbox>Permitir acompanhante</mat-checkbox>
+              <org-checkbox label="Receber respostas por e-mail" [(checked)]="emailResponsesEnabled" />
+              <org-checkbox label="Permitir acompanhante" [(checked)]="companionAllowed" />
             </div>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.selection" />
     </section>
 
@@ -260,41 +230,14 @@
         <h2 id="navigation-title">Orientação compacta para fluxos densos e telas pequenas.</h2>
       </div>
 
-      <mat-card class="org-ds-panel-card">
-        <mat-card-content class="org-ds-navigation-demo">
-          <mat-tab-group animationDuration="0ms" aria-label="Navegação por abas">
-            <mat-tab label="Resumo">
-              <p>Uma aba oferece contexto imediato para o anfitrião.</p>
-            </mat-tab>
-            <mat-tab label="Convidados">
-              <p>Uma lista concentra as decisões por pessoa.</p>
-            </mat-tab>
-            <mat-tab label="Detalhes">
-              <p>Detalhes ficam próximos, sem duplicar navegação.</p>
-            </mat-tab>
-          </mat-tab-group>
-          <mat-nav-list aria-label="Navegação de exemplo">
-            <button mat-list-item type="button" (click)="scrollToSection('data-display')">
-              <mat-icon matListItemIcon aria-hidden="true">groups</mat-icon>
-              <span matListItemTitle>Convidados confirmados</span>
-              <span matListItemMeta>42</span>
-            </button>
-            <button mat-list-item type="button" (click)="scrollToSection('feedback')">
-              <mat-icon matListItemIcon aria-hidden="true">mark_email_unread</mat-icon>
-              <span matListItemTitle>Mensagens pendentes</span>
-              <span matListItemMeta>{{ notifications() }}</span>
-            </button>
-          </mat-nav-list>
-          <button mat-stroked-button type="button" class="org-material-button--gradient-outline org-ds-navigation-demo__menu-trigger" [matMenuTriggerFor]="eventMenu">
-            Mais ações
-            <mat-icon aria-hidden="true">expand_more</mat-icon>
-          </button>
-          <mat-menu #eventMenu="matMenu" class="org-ds-menu-panel">
-            <button mat-menu-item type="button"><mat-icon>content_copy</mat-icon>Duplicar evento</button>
-            <button mat-menu-item type="button"><mat-icon>archive</mat-icon>Arquivar rascunho</button>
-          </mat-menu>
-        </mat-card-content>
-      </mat-card>
+      <org-surface variant="panel" class="org-ds-panel-card">
+        <div class="org-ds-navigation-demo">
+          <org-tabs [items]="tabItems" [(selectedId)]="selectedTab" />
+          <p>Uma aba oferece contexto imediato para o anfitrião.</p>
+          <org-navigation-list [items]="navigationItems" (selected)="scrollToSection($event === 'guests' ? 'data-display' : 'feedback')" />
+          <org-menu triggerLabel="Mais ações" [actions]="menuActions" />
+        </div>
+      </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.navigation" />
     </section>
 
@@ -304,15 +247,13 @@
         <h2 id="stepper-title">Progresso guiado sem perder espaço no celular.</h2>
       </div>
 
-      <mat-card class="org-ds-panel-card">
-        <mat-card-content>
-          <mat-stepper [orientation]="stepperOrientation()" aria-label="Etapas de criação do evento">
-            <mat-step label="Informações"><p>Defina nome, data e formato.</p></mat-step>
-            <mat-step label="Convidados"><p>Escolha os canais e a lista.</p></mat-step>
-            <mat-step label="Revisão"><p>Confirme antes de publicar.</p></mat-step>
-          </mat-stepper>
-        </mat-card-content>
-      </mat-card>
+      <org-surface variant="panel" class="org-ds-panel-card">
+        <org-stepper [orientation]="stepperOrientation()">
+          <org-step label="Informações"><p>Defina nome, data e formato.</p></org-step>
+          <org-step label="Convidados"><p>Escolha os canais e a lista.</p></org-step>
+          <org-step label="Revisão"><p>Confirme antes de publicar.</p></org-step>
+        </org-stepper>
+      </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.stepper" />
     </section>
 
@@ -323,27 +264,13 @@
       </div>
 
       <div class="org-ds-data-grid">
-        <mat-card class="org-ds-metric-card">
-          <mat-card-content>
-            <span>Confirmações</span>
-            <strong>42</strong>
-            <p><mat-icon aria-hidden="true">trending_up</mat-icon> 18% nesta semana</p>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="org-ds-metric-card">
-          <mat-card-content>
-            <span>Lista de itens</span>
-            <strong>8 / 12</strong>
-            <mat-progress-bar mode="determinate" value="67" aria-label="67% dos itens concluídos"></mat-progress-bar>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="org-ds-metric-card">
-          <mat-card-content>
-            <span>Convites</span>
-            <strong>6</strong>
-            <p>aguardando resposta</p>
-          </mat-card-content>
-        </mat-card>
+        <org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />
+        <org-surface variant="card" class="org-ds-metric-card">
+          <strong>8 / 12</strong>
+          <org-progress [value]="67" ariaLabel="67% dos itens concluídos" />
+          <org-badge label="Em andamento" variant="primary" />
+        </org-surface>
+        <org-metric-card label="Convites" value="6" description="aguardando resposta" />
       </div>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.metrics" />
     </section>
@@ -354,21 +281,20 @@
         <h2 id="feedback-title">Respostas calmas e reconhecíveis, sem interromper o fluxo.</h2>
       </div>
 
-      <mat-card class="org-ds-panel-card">
-        <mat-card-content class="org-ds-feedback-layout">
+      <org-surface variant="panel" class="org-ds-panel-card">
+        <div class="org-ds-feedback-layout">
           <div class="org-ds-feedback-layout__progress">
-            <mat-progress-spinner mode="determinate" value="72" diameter="56" aria-label="72% concluído"></mat-progress-spinner>
+            <org-progress [value]="72" ariaLabel="72% concluído" />
             <div><strong>72% pronto</strong><span>Checklist do evento</span></div>
           </div>
           <div class="org-ds-control-row">
-            <button mat-flat-button type="button" class="org-material-button--gradient" (click)="showSuccessExample()">
-              Mostrar snackbar
-            </button>
-            <button mat-stroked-button type="button" (click)="showInfoExample()">Mostrar informação</button>
-            <button mat-button type="button" (click)="openDialogExample()">Abrir diálogo</button>
+            <org-button label="Mostrar snackbar" (pressed)="showSuccessExample()" />
+            <org-button label="Mostrar informação" variant="secondary" (pressed)="showInfoExample()" />
+            <org-button label="Abrir diálogo" variant="text" (pressed)="openDialogExample()" />
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </org-surface>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.overlays" />
     </section>
 
   </main>

@@ -1,33 +1,35 @@
 import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatTabsModule } from '@angular/material/tabs';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { FeedbackService } from '../../shared/ui';
 import {
   OrgBannerComponent,
+  OrgBadgeComponent,
+  OrgButtonComponent,
+  OrgCheckboxComponent,
+  OrgChipComponent,
   OrgDateFieldComponent,
+  OrgDialogService,
   OrgEmptyStateComponent,
+  OrgIconButtonComponent,
+  OrgMenuComponent,
+  OrgMetricCardComponent,
+  OrgNavigationListComponent,
   OrgPageHeaderComponent,
+  OrgProgressComponent,
+  OrgRadioGroupComponent,
+  OrgSelectFieldComponent,
+  OrgStepComponent,
+  OrgStepperComponent,
   OrgSurfaceComponent,
+  OrgTabsComponent,
+  OrgTextFieldComponent,
   OrgTimeFieldComponent,
+  OrgTextareaFieldComponent,
+  OrgToggleComponent,
+  type OrgMenuAction,
+  type OrgNavigationItem,
+  type OrgRadioOption,
+  type OrgSelectOption,
+  type OrgTabItem,
+  FeedbackService,
 } from '../../shared/ui';
 import { DesignSystemCodeExampleComponent } from './design-system-code-example.component';
 
@@ -62,31 +64,29 @@ export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = [
   selector: 'app-design-system-showcase',
   standalone: true,
   imports: [
-    FormsModule,
-    MatButtonModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatChipsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatNativeDateModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatRadioModule,
-    MatSelectModule,
-    MatSlideToggleModule,
-    MatStepperModule,
-    MatTabsModule,
     OrgBannerComponent,
+    OrgBadgeComponent,
+    OrgButtonComponent,
+    OrgCheckboxComponent,
+    OrgChipComponent,
     OrgDateFieldComponent,
     OrgEmptyStateComponent,
+    OrgIconButtonComponent,
+    OrgMenuComponent,
+    OrgMetricCardComponent,
+    OrgNavigationListComponent,
     OrgPageHeaderComponent,
+    OrgProgressComponent,
+    OrgRadioGroupComponent,
+    OrgSelectFieldComponent,
+    OrgStepComponent,
+    OrgStepperComponent,
     OrgSurfaceComponent,
+    OrgTabsComponent,
+    OrgTextFieldComponent,
     OrgTimeFieldComponent,
+    OrgTextareaFieldComponent,
+    OrgToggleComponent,
     DesignSystemCodeExampleComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -95,15 +95,45 @@ export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = [
 })
 export class DesignSystemShowcaseContainer {
   private readonly feedbackService = inject(FeedbackService);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialogService = inject(OrgDialogService);
   private readonly destroyRef = inject(DestroyRef);
 
   public readonly activeSeasonalTheme = signal<SeasonalThemeOption>('default');
   public readonly eventDate = signal<Date | null>(new Date(2026, 5, 24));
+  public readonly eventTitle = signal('Ceia de Natal');
+  public readonly eventFormat = signal<string | null>('presencial');
+  public readonly welcomeMessage = signal('Celebre com quem torna a vida mais bonita.');
+  public readonly eventTime = signal('19:30');
   public readonly attendanceChannel = signal<'email' | 'whatsapp'>('email');
   public readonly notificationsEnabled = signal<boolean>(true);
+  public readonly reminderEnabled = signal<boolean>(true);
+  public readonly emailResponsesEnabled = signal<boolean>(true);
+  public readonly companionAllowed = signal<boolean>(false);
   public readonly notifications = signal<number>(3);
+  public readonly selectedTab = signal<string | null>('summary');
   public readonly stepperOrientation = signal<'horizontal' | 'vertical'>('horizontal');
+  public readonly formatOptions: readonly OrgSelectOption[] = [
+    { value: 'presencial', label: 'Presencial' },
+    { value: 'hibrido', label: 'Híbrido' },
+    { value: 'online', label: 'Online' },
+  ];
+  public readonly channelOptions: readonly OrgRadioOption[] = [
+    { value: 'email', label: 'E-mail' },
+    { value: 'whatsapp', label: 'WhatsApp' },
+  ];
+  public readonly tabItems: readonly OrgTabItem[] = [
+    { id: 'summary', label: 'Resumo' },
+    { id: 'guests', label: 'Convidados' },
+    { id: 'details', label: 'Detalhes' },
+  ];
+  public readonly navigationItems: readonly OrgNavigationItem[] = [
+    { id: 'guests', label: 'Convidados confirmados · 42', href: '#data-display' },
+    { id: 'messages', label: 'Mensagens pendentes · 3', href: '#feedback' },
+  ];
+  public readonly menuActions: readonly OrgMenuAction[] = [
+    { id: 'duplicate', label: 'Duplicar evento' },
+    { id: 'archive', label: 'Arquivar rascunho' },
+  ];
   public readonly componentExamples = {
     invitationPreview: `import { OrgSurfaceComponent } from '@shared/ui';
 
@@ -115,22 +145,33 @@ export class DesignSystemShowcaseContainer {
   --org-secondary: #ffb648;
   --org-gradient-border: linear-gradient(135deg, var(--org-primary), var(--org-secondary));
 }`,
-    fields: `<mat-form-field appearance="outline">
-  <mat-label>Horário de início</mat-label>
-  <input matInput type="time" />
-</mat-form-field>`,
-    selection: `<mat-slide-toggle>Enviar lembrete</mat-slide-toggle>
+    actions: `import { OrgButtonComponent, OrgIconButtonComponent, OrgChipComponent } from '@shared/ui';
 
-<!-- Checkbox é reservado para opções múltiplas. -->
-<mat-checkbox>Permitir acompanhante</mat-checkbox>`,
-    navigation: `<mat-tab-group aria-label="Etapas do evento">
-  <mat-tab label="Resumo">...</mat-tab>
-  <mat-tab label="Convidados">...</mat-tab>
-</mat-tab-group>`,
-    stepper: `<mat-stepper [orientation]="stepperOrientation()">
-  <mat-step label="Informações">...</mat-step>
-  <mat-step label="Convidados">...</mat-step>
-</mat-stepper>`,
+<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" />
+<org-icon-button ariaLabel="Adicionar evento" icon="add" />
+<org-chip label="Celebrativo" variant="accent" [selected]="true" />`,
+    fields: `import { OrgTextFieldComponent, OrgDateFieldComponent, OrgTimeFieldComponent } from '@shared/ui';
+
+<org-text-field label="Título" [(value)]="title" />
+<org-date-field label="Data" [(value)]="date" />
+<org-time-field label="Horário" [(value)]="time" [minuteStep]="5" />`,
+    selection: `import { OrgToggleComponent, OrgCheckboxComponent, OrgRadioGroupComponent } from '@shared/ui';
+
+<org-toggle label="Enviar lembrete" [(checked)]="reminder" />
+<!-- Checkbox é reservado para escolhas independentes e múltiplas. -->
+<org-checkbox label="Permitir acompanhante" [(checked)]="companion" />
+<org-radio-group label="Canal" [options]="channels" [(value)]="channel" />`,
+    navigation: `import { OrgTabsComponent, OrgNavigationListComponent, OrgMenuComponent } from '@shared/ui';
+
+<org-tabs [items]="tabs" [(selectedId)]="activeTab" [gradient]="true" />
+<org-navigation-list [items]="items" (selected)="navigate($event)" />
+<org-menu triggerLabel="Mais ações" [actions]="actions" (actionSelected)="act($event)" />`,
+    stepper: `import { OrgStepComponent, OrgStepperComponent } from '@shared/ui';
+
+<org-stepper [orientation]="orientation()">
+  <org-step label="Informações">...</org-step>
+  <org-step label="Convidados">...</org-step>
+</org-stepper>`,
     pageLayout: `import { OrgPageHeaderComponent, OrgPageLayoutComponent } from '@shared/ui';
 
 <org-page-layout maxWidth="wide">
@@ -155,12 +196,18 @@ this.feedbackService.success('Evento salvo com sucesso.');`,
   title="Nenhum evento por aqui"
   description="Crie o primeiro evento para começar."
 />`,
-    metrics: `import { OrgSurfaceComponent } from '@shared/ui';
+    metrics: `import { OrgMetricCardComponent, OrgProgressComponent, OrgBadgeComponent } from '@shared/ui';
 
-<org-surface variant="card">
-  <span>Confirmações</span>
-  <strong>42</strong>
-</org-surface>`,
+<org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />
+<org-progress [value]="67" ariaLabel="67% dos itens concluídos" [gradient]="true" />
+<org-badge label="Novo" variant="success" />`,
+    overlays: `import { OrgDialogService, FeedbackService } from '@shared/ui';
+
+this.feedbackService.success('Evento salvo com sucesso.');
+this.dialogService.confirm({
+  title: 'Publicar tema',
+  message: 'Confirme a publicação do tema.',
+});`,
   } as const;
 
   public constructor() {
@@ -205,13 +252,11 @@ this.feedbackService.success('Evento salvo com sucesso.');`,
   }
 
   public openDialogExample(): void {
-    this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: 'Publicar tema',
-        message: 'Este é um exemplo de confirmação com Angular Material Dialog.',
-        confirmLabel: 'Publicar',
-        cancelLabel: 'Agora não',
-      },
+    this.dialogService.confirm({
+      title: 'Publicar tema',
+      message: 'Confirme a publicação do tema para a prévia.',
+      confirmLabel: 'Publicar',
+      cancelLabel: 'Agora não',
     });
   }
 

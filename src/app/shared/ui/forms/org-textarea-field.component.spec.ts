@@ -34,4 +34,20 @@ describe('OrgTextareaFieldComponent', () => {
     expect(fixture.componentInstance.value()).toBe('');
     expect(fixture.nativeElement.textContent).toContain('Mensagem obrigatória.');
   });
+
+  it('supports reactive-form values and touch state', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgTextareaFieldComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgTextareaFieldComponent);
+    const touched = { value: false };
+    fixture.componentRef.setInput('label', 'Mensagem');
+    fixture.componentInstance.registerOnTouched(() => { touched.value = true; });
+    fixture.componentInstance.writeValue('Mensagem inicial');
+    fixture.detectChanges();
+
+    const textarea = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    textarea.dispatchEvent(new FocusEvent('blur'));
+
+    expect(textarea.value).toBe('Mensagem inicial');
+    expect(touched.value).toBe(true);
+  });
 });

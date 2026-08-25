@@ -139,3 +139,6 @@ All fields use a shared internal field stylesheet imported only by field compone
 ## Research Notes
 
 Angular Material provides native accessibility behavior for form-field, tabs, stepper, menu, dialog, progress, selection, and data primitives. This design keeps those controls internal to `Org*` components rather than recreating their semantic behavior. The official documentation identifies form field as the shared wrapper for inputs, textareas, and selects, and preserves native tab and stepper keyboard behavior. [Angular Material components](https://material.angular.dev/components)
+# Addendum — Ownership of Material table appearance
+
+`OrgDataTableComponent` is the sole owner of Material table background and row appearance tokens. Feature containers may provide columns, data and interaction handlers, but MUST NOT override `.mat-mdc-*`, `--mat-table-*`, or use `::ng-deep` to make a table transparent. This removes the remaining dashboard appearance override without creating an exception to the component-first policy.

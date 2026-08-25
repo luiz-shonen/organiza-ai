@@ -41,21 +41,19 @@
               title="Nenhum evento no histórico"
               description="Você ainda não confirmou presença em nenhum evento. Quando você confirmar presença em uma festa ou evento, ele aparecerá aqui!"
             >
-              <a
-                orgButton="primary"
+              <org-button
                 orgEmptyStateAction
-                routerLink="/"
                 class="profile-container__explore-btn"
-                aria-label="Explorar eventos na página inicial"
-              >
-                <org-icon name="search" size="sm" color="var(--org-on-primary)" />
-                Explorar Eventos
-              </a>
+                label="Explorar Eventos"
+                icon="search"
+                (pressed)="exploreEvents()"
+              />
             </org-empty-state>
           } @else {
             <div class="profile-container__events-grid" role="list" aria-label="Lista de eventos confirmados">
               @for (event of attendedEvents(); track event.id) {
-                <article [orgSurface]="'card'" class="profile-event-card" role="listitem" [attr.aria-labelledby]="'event-title-' + event.id">
+                <org-surface variant="card" role="listitem" [attr.aria-labelledby]="'event-title-' + event.id">
+                  <article class="profile-event-card">
                   <div class="profile-event-card__header">
                     <span class="profile-event-card__category">{{ event.category || 'Evento' }}</span>
                     @if (event.status === 'cancelled') {
@@ -81,17 +79,16 @@
                   </div>
 
                   <div class="profile-event-card__actions">
-                    <a
-                      orgButton="secondary"
-                      [routerLink]="['/evento', event.id]"
+                    <org-button
                       class="profile-event-card__btn"
-                      [attr.aria-label]="'Acessar detalhes do evento ' + event.title"
-                    >
-                      <org-icon name="event" size="sm" color="var(--org-primary)" />
-                      Acessar Evento
-                    </a>
+                      label="Acessar evento"
+                      icon="event"
+                      variant="secondary"
+                      (pressed)="viewEvent(event.id)"
+                    />
                   </div>
-                </article>
+                  </article>
+                </org-surface>
               }
             </div>
           }

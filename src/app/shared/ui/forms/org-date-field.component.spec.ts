@@ -15,4 +15,16 @@ describe('OrgDateFieldComponent', () => {
     expect(field.textContent).toContain('Data da celebração');
     expect(fixture.nativeElement.querySelector('mat-datepicker-toggle')).toBeTruthy();
   });
+
+  it('supports reactive-form value and disabled contracts', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgDateFieldComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgDateFieldComponent);
+    const date = new Date(2026, 5, 24);
+    fixture.componentInstance.writeValue(date);
+    fixture.componentInstance.setDisabledState(true);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.value()).toEqual(date);
+    expect((fixture.nativeElement.querySelector('input') as HTMLInputElement).disabled).toBe(true);
+  });
 });

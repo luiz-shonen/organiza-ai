@@ -6,6 +6,7 @@ export type OrgIconName =
   | 'error'
   | 'info'
   | 'close'
+  | 'cancel'
   | 'menu'
   | 'account_circle'
   | 'group_add'
@@ -24,7 +25,17 @@ export type OrgIconName =
   | 'palette'
   | 'dark_mode'
   | 'light_mode'
-  | 'logout';
+  | 'logout'
+  | 'link'
+  | 'block'
+  | 'send'
+  | 'arrow_back'
+  | 'arrow_forward'
+  | 'save'
+  | 'download'
+  | 'print'
+  | 'add_circle'
+  | 'delete_outline';
 
 export type OrgIconSize = 'sm' | 'md' | 'lg';
 
@@ -33,6 +44,7 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   error: 'error',
   info: 'info',
   close: 'close',
+  cancel: 'cancel',
   menu: 'menu',
   account_circle: 'account_circle',
   group_add: 'group_add',
@@ -52,6 +64,16 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   dark_mode: 'dark_mode',
   light_mode: 'light_mode',
   logout: 'logout',
+  link: 'link',
+  block: 'block',
+  send: 'send',
+  arrow_back: 'arrow_back',
+  arrow_forward: 'arrow_forward',
+  save: 'save',
+  download: 'download',
+  print: 'print',
+  add_circle: 'add_circle',
+  delete_outline: 'delete_outline',
 };
 
 @Component({

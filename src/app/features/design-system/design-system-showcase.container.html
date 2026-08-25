@@ -180,7 +180,7 @@
           <org-text-field label="Título do evento" [(value)]="eventTitle" />
           <org-select-field label="Formato" [options]="formatOptions" [(value)]="eventFormat" />
           <org-date-field label="Data da celebração" [(value)]="eventDate" />
-          <org-time-field label="Horário de início" [(value)]="eventTime" [minuteStep]="5" />
+          <org-time-field label="Horário de início" [(value)]="eventTime" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />
           <org-textarea-field class="org-ds-form-grid__wide" label="Mensagem de boas-vindas" [rows]="1" hint="Mostre a voz do tema sem perder legibilidade." [(value)]="welcomeMessage" />
         </div>
       </org-surface>

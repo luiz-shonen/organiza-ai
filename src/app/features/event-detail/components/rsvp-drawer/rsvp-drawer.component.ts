@@ -19,10 +19,6 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { FamilyMember, GuestCompanion, GuestSession } from '../../../../core/models';
 import { FamilyService } from '../../../../core/services/family.service';
 import {
@@ -30,8 +26,7 @@ import {
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
-import { OrgButtonDirective } from '../../../../shared/ui/actions/org-button.directive';
-import { OrgFormFieldDirective } from '../../../../shared/ui/forms/org-form-field.directive';
+import { OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent } from '../../../../shared/ui';
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
@@ -44,13 +39,10 @@ const trimmedRequired: ValidatorFn = (control) =>
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
     FamilySelectorComponent,
-    OrgButtonDirective,
-    OrgFormFieldDirective,
+    OrgButtonComponent,
+    OrgIconButtonComponent,
+    OrgTextFieldComponent,
   ],
   templateUrl: './rsvp-drawer.component.html',
   styleUrl: './rsvp-drawer.component.scss',
@@ -90,6 +82,14 @@ export class RsvpDrawerComponent {
 
   protected onCompanionsCountInput(event: Event): void {
     const count = Number((event.target as HTMLInputElement).value);
+    this.updateCompanionCount(count);
+  }
+
+  protected onCompanionsCountChange(value: string): void {
+    this.updateCompanionCount(Number(value));
+  }
+
+  private updateCompanionCount(count: number): void {
     if (!Number.isInteger(count) || count < 0 || count > 10) {
       this.companions.clear();
       return;

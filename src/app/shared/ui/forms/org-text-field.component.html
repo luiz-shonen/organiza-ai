@@ -2,13 +2,34 @@
   <mat-label>{{ label() }}</mat-label>
   <input
     matInput
-    [disabled]="disabled()"
+    [disabled]="disabled() || disabledState"
+    [min]="min()"
+    [max]="max()"
     [placeholder]="placeholder()"
     [required]="required()"
-    [type]="type()"
+    [readonly]="readOnly()"
+    [type]="type() === 'password' && passwordVisible() ? 'text' : type()"
     [value]="value()"
+    [attr.data-testid]="testId() || null"
     (input)="updateValue($event)"
+    (blur)="markTouched()"
   />
+  @if (prefixIcon(); as prefixIcon) {
+    <mat-icon matPrefix aria-hidden="true">{{ prefixIcon }}</mat-icon>
+  }
+  @if (type() === 'password') {
+    <button
+      mat-icon-button
+      matSuffix
+      type="button"
+      [attr.aria-label]="passwordVisible() ? 'Ocultar senha' : 'Mostrar senha'"
+      (click)="requestPasswordVisibilityToggle()"
+    >
+      <mat-icon aria-hidden="true">{{ passwordVisible() ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+  } @else if (suffixIcon(); as suffixIcon) {
+    <mat-icon matSuffix aria-hidden="true">{{ suffixIcon }}</mat-icon>
+  }
   @if (hint() && !error()) {
     <mat-hint>{{ hint() }}</mat-hint>
   }

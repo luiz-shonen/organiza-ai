@@ -205,7 +205,7 @@ Uso recomendado: `<org-date-field label="Data" [(value)]="eventDate" />`. It own
 
 ### OrgTimeFieldComponent
 
-Uso recomendado: `<org-time-field label="Horário" [(value)]="eventTime" [minuteStep]="5" />`. It owns the custom `HH:mm` editor and increment controls; do not use native `input[type=time]` for product fields.
+Uso recomendado: `<org-time-field label="Horário" [(value)]="eventTime" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />`. Ele possui um editor `HH:mm` próprio, com menu Material para ajuste e atalhos tipados. Não use `input[type=time]` nos campos de produto.
 
 ### OrgToggleComponent
 
@@ -247,6 +247,10 @@ Uso recomendado: `<org-progress [value]="67" ariaLabel="67% concluído" variant=
 
 Uso recomendado: `<org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />`.
 
+### OrgDataTableComponent
+
+Uso recomendado: `<org-data-table [rows]="events" [columns]="eventColumns" [actionTemplate]="actions" (rowActivated)="open($event)" />`. A feature fornece apenas dados, colunas tipadas e o template de ações; o componente é o único proprietário da tabela Material e de seus tokens visuais.
+
 ### OrgBadgeComponent
 
 Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use.
@@ -273,7 +277,7 @@ New work begins with a public `Org*` component. If the API is missing, add a sta
 
 ## APIs legadas de compatibilidade
 
-Não usar em novo código. These directives remain only while existing callers are migrated, then will be removed: `OrgSurfaceDirective`, `OrgFormGridDirective`, `OrgFormFieldDirective`, `OrgFieldLabelDirective`, `OrgButtonDirective`, `OrgIconButtonDirective`, and `OrgChipDirective`. Use `OrgSurfaceComponent`, layout components, field components, `OrgButtonComponent`, `OrgIconButtonComponent`, and `OrgChipComponent` instead.
+Não usar em novo código. As diretivas de compatibilidade foram removidas: `OrgSurfaceDirective`, `OrgFormGridDirective`, `OrgFormFieldDirective`, `OrgFieldLabelDirective`, `OrgButtonDirective`, `OrgIconButtonDirective` e `OrgChipDirective`. `OrgSurfaceComponent`, os componentes de layout, campos, seleção e ações são a fonte única de estilo e comportamento; telas não aplicam diretivas visuais nem tokens internos do Material.
 
 ---
 

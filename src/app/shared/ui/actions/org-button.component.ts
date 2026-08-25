@@ -35,6 +35,10 @@ export class OrgButtonComponent {
   public readonly disabled = input(false);
   public readonly loading = input(false);
   public readonly gradient = input(true);
+  public readonly fullWidth = input(false);
+  public readonly imageSrc = input<string | null>(null);
+  public readonly imageAlt = input('');
+  public readonly testId = input('');
   public readonly pressed = output<void>();
 
   protected readonly isDisabled = computed(() => this.disabled() || this.loading());

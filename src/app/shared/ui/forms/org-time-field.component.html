@@ -1,8 +1,25 @@
 <mat-form-field appearance="outline" class="org-time-field">
   <mat-label>{{ label() }}</mat-label>
-  <input matInput inputmode="numeric" maxlength="5" placeholder="HH:mm" [disabled]="isDisabled()" [value]="value()" (blur)="markTouched()" (input)="updateValue($event)" />
-  <span class="org-time-field__controls" matTextSuffix>
-    <button mat-icon-button type="button" aria-label="Voltar horário" [disabled]="isDisabled()" (click)="decrement()">−</button>
-    <button mat-icon-button type="button" aria-label="Avançar horário" [disabled]="isDisabled()" (click)="increment()">+</button>
-  </span>
+  <input matInput inputmode="numeric" maxlength="5" placeholder="HH:mm" [attr.data-testid]="testId() || null" [disabled]="isDisabled()" [required]="required()" [value]="value()" (blur)="markTouched($event)" (input)="updateValue($event)" />
+  <button mat-icon-button matIconSuffix class="org-time-field__trigger" type="button" aria-label="Ajustar horário" [disabled]="isDisabled()" [matMenuTriggerFor]="timeMenu">
+    <mat-icon>schedule</mat-icon>
+  </button>
 </mat-form-field>
+
+<mat-menu #timeMenu="matMenu">
+  <button mat-menu-item type="button" [disabled]="isDisabled()" (click)="decrement()">
+    <mat-icon>remove</mat-icon>
+    <span>Reduzir {{ minuteStep() }} min</span>
+  </button>
+  <button mat-menu-item type="button" [disabled]="isDisabled()" (click)="increment()">
+    <mat-icon>add</mat-icon>
+    <span>Adicionar {{ minuteStep() }} min</span>
+  </button>
+  @for (option of quickOptions(); track option.value) {
+    <button mat-menu-item type="button" [disabled]="isDisabled()" (click)="selectQuickOption(option)">
+      <mat-icon>schedule</mat-icon>
+      <span>{{ option.label }}</span>
+    </button>
+  }
+</mat-menu>
+@if (error()) { <p class="org-time-field__error" role="alert">{{ error() }}</p> }

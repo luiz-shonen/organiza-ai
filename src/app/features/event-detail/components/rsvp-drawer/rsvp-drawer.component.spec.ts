@@ -45,7 +45,7 @@ describe('RsvpDrawerComponent', () => {
     countInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"]').click();
+    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
     fixture.detectChanges();
 
     expect(close).not.toHaveBeenCalled();
@@ -63,7 +63,7 @@ describe('RsvpDrawerComponent', () => {
     inputs[0].dispatchEvent(new Event('input'));
     inputs[1].value = 'Bia';
     inputs[1].dispatchEvent(new Event('input'));
-    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"]').click();
+    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
 
     expect(close).toHaveBeenCalledWith(expect.objectContaining({
       companions: [{ name: 'Ana' }, { name: 'Bia' }],
@@ -76,7 +76,7 @@ describe('RsvpDrawerComponent', () => {
     countInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"]').click();
+    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
     fixture.detectChanges();
 
     expect(close).not.toHaveBeenCalled();

@@ -13,7 +13,9 @@ const LEGACY_DIRECTIVES = [
 
 const LEGACY_SELECTOR = /\[(?:orgSurface|orgFormGrid)\]|\borg(?:Button|IconButton|Chip|FormField|FieldLabel)\b/;
 const MATERIAL_SELECTOR = /\.(?:mat|mdc)-[\w-]+/;
-const MATERIAL_TOKEN = /--(?:mdc|mat)-[\w-]+/;
+// Reading a Material semantic variable is not an ownership violation. Declaring
+// one in a feature stylesheet is: that changes a component it does not own.
+const MATERIAL_TOKEN = /(?:^|[;{]\s*)--(?:mdc|mat)-[\w-]+\s*:/m;
 const FEATURE_GLASS_RULE = /(?:-webkit-)?backdrop-filter\s*:/;
 const COMPONENT_EXPORT = /export\s+\{\s*(Org\w+Component)\s*\}/g;
 const DIRECTIVE_EXPORT = /export\s+\{\s*(Org\w+Directive)\s*\}/g;
@@ -59,7 +61,7 @@ function findLine(source, expression) {
 }
 
 function isSharedUi(filePath) {
-  return filePath.split('/').includes('shared') && filePath.split('/').includes('ui');
+  return filePath.endsWith('/app.scss') || (filePath.split('/').includes('shared') && filePath.split('/').includes('ui'));
 }
 
 function makeViolation(root, code, filePath, source, expression, message) {

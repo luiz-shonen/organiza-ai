@@ -256,4 +256,12 @@ describe('ProfileContainer', () => {
     expect(el.textContent).toContain('Nenhum evento no histórico');
     expect(el.textContent).toContain('Explorar Eventos');
   });
+
+  it('should compose attended-event surfaces and navigation actions through closed Org components', async () => {
+    await component.loadProfileData();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('org-surface .profile-event-card')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('org-button.profile-event-card__btn')).toBeTruthy();
+  });
 });

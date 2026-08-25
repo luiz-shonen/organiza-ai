@@ -4,13 +4,13 @@ import { Router, RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EventService } from '../../core/services';
 import {
-  OrgButtonDirective,
+  OrgButtonComponent,
   OrgEmptyStateComponent,
   OrgIconComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
   OrgSectionComponent,
-  OrgSurfaceDirective,
+  OrgSurfaceComponent,
 } from '../../shared/ui';
 
 @Component({
@@ -19,9 +19,9 @@ import {
   imports: [
     RouterLink,
     MatProgressSpinnerModule,
-    OrgButtonDirective,
+    OrgButtonComponent,
     OrgIconComponent,
-    OrgSurfaceDirective,
+    OrgSurfaceComponent,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
     OrgSectionComponent,
@@ -65,5 +65,9 @@ export class HomeContainer {
       event.preventDefault();
     }
     this.router.navigate(['/evento', eventId]);
+  }
+
+  protected createEvent(): void {
+    this.router.navigate(['/meus-eventos/evento/novo']);
   }
 }

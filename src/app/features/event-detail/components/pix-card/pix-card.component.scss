@@ -1,4 +1,26 @@
 .pix-card {
+  display: grid;
+  gap: 16px;
+
+  &__header {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+  }
+
+  &__title,
+  &__subtitle {
+    margin: 0;
+  }
+
+  &__title {
+    font: var(--org-typography-title-medium);
+  }
+
+  &__subtitle {
+    color: var(--org-on-surface-variant);
+    margin-top: 2px;
+  }
   &__icon {
     background-color: var(--org-primary, #00bfa5);
     color: #ffffff;
@@ -25,7 +47,7 @@
 
   &__split-label {
     font-size: 0.85rem;
-    color: var(--mat-sys-on-surface-variant, #666);
+    color: var(--org-on-surface-variant);
     font-weight: 500;
   }
 
@@ -38,7 +60,7 @@
   &__key-container {
     margin-top: 12px;
     padding: 12px 16px;
-    background-color: var(--mat-sys-surface-container, rgba(0, 0, 0, 0.04));
+    background-color: var(--org-surface-container);
     border-radius: 8px;
     text-align: center;
   }
@@ -47,15 +69,10 @@
     font-size: 0.95rem;
     font-family: 'Roboto Mono', monospace;
     word-break: break-all;
-    color: var(--mat-sys-on-surface);
+    color: var(--org-on-surface);
   }
 
-  &__copy-btn {
-    width: 100%;
+  &__actions {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
   }
 }
-

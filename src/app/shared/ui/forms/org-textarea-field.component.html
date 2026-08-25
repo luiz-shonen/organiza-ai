@@ -2,11 +2,13 @@
   <mat-label>{{ label() }}</mat-label>
   <textarea
     matInput
-    [disabled]="disabled()"
+    [attr.data-testid]="testId() || null"
+    [disabled]="isDisabled()"
     [placeholder]="placeholder()"
     [required]="required()"
     [rows]="rows()"
     [value]="value()"
+    (blur)="markTouched()"
     (input)="updateValue($event)"
   ></textarea>
   @if (hint() && !error()) {

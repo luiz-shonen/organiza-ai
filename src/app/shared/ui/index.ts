@@ -1,17 +1,12 @@
-export { OrgSurfaceDirective } from './surface/org-surface.directive';
-export type { OrgSurfaceVariant } from './surface/org-surface.directive';
 export { OrgSurfaceComponent } from './surface/org-surface.component';
 
 export { OrgPageLayoutComponent } from './layout/org-page-layout.component';
 export type { OrgPageLayoutMaxWidth } from './layout/org-page-layout.component';
 export { OrgPageHeaderComponent } from './layout/org-page-header.component';
 export { OrgSectionComponent } from './layout/org-section.component';
-export { OrgFormGridDirective } from './layout/org-form-grid.directive';
-
-export { OrgFormFieldDirective } from './forms/org-form-field.directive';
-export { OrgFieldLabelDirective } from './forms/org-field-label.directive';
 export { OrgDateFieldComponent } from './forms/org-date-field.component';
 export { OrgTimeFieldComponent } from './forms/org-time-field.component';
+export type { OrgTimeOption } from './forms/org-time-field.component';
 export { OrgTextFieldComponent } from './forms/org-text-field.component';
 export type { OrgTextFieldType } from './forms/org-text-field.component';
 export { OrgTextareaFieldComponent } from './forms/org-textarea-field.component';
@@ -35,6 +30,8 @@ export type { OrgNavigationItem } from './navigation/org-navigation-list.compone
 export { OrgProgressComponent } from './data-display/org-progress.component';
 export type { OrgProgressVariant } from './data-display/org-progress.component';
 export { OrgMetricCardComponent } from './data-display/org-metric-card.component';
+export { OrgDataTableComponent } from './data-display/org-data-table.component';
+export type { OrgDataColumn } from './data-display/org-data-table.component';
 export { OrgBadgeComponent } from './data-display/org-badge.component';
 export type { OrgBadgeVariant } from './data-display/org-badge.component';
 
@@ -42,13 +39,10 @@ export { OrgConfirmDialogComponent } from './feedback/org-confirm-dialog.compone
 export type { OrgConfirmDialogData } from './feedback/org-confirm-dialog.component';
 export { OrgDialogService } from './feedback/org-dialog.service';
 
-export { OrgButtonDirective } from './actions/org-button.directive';
 export { OrgButtonComponent } from './actions/org-button.component';
 export type { OrgButtonType, OrgButtonVariant } from './actions/org-button.component';
-export { OrgIconButtonDirective } from './actions/org-icon-button.directive';
 export { OrgIconButtonComponent } from './actions/org-icon-button.component';
 export type { OrgIconButtonVariant } from './actions/org-icon-button.component';
-export { OrgChipDirective } from './actions/org-chip.directive';
 export { OrgChipComponent } from './actions/org-chip.component';
 export type { OrgChipVariant } from './actions/org-chip.component';
 export { ORG_ICON_MAP, OrgIconComponent } from './actions/org-icon.component';

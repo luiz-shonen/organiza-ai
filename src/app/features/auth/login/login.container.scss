@@ -62,7 +62,7 @@
   }
 
   &__subtitle {
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--org-on-surface-variant);
     font-size: 1rem;
     font-weight: 500;
     margin: 0;
@@ -74,12 +74,12 @@
     z-index: 1;
     width: 100%;
     max-width: 400px;
-    padding: 32px 28px;
-    border-radius: 24px !important;
+  }
+
+  &__card-content {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    box-sizing: border-box;
   }
 
   &__tabs {
@@ -95,7 +95,7 @@
     border-radius: 8px;
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--org-on-surface-variant);
     text-align: center;
     background: transparent;
     border: 0;
@@ -137,42 +137,11 @@
     width: 100%;
   }
 
-  &__submit-btn {
-    width: 100%;
-    height: 50px;
-    border-radius: 9999px;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #ffffff !important;
-    border: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--org-gradient-primary) !important;
-    box-shadow: 0 6px 20px rgba(255, 77, 148, 0.4) !important;
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease !important;
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(255, 77, 148, 0.55) !important;
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-      box-shadow: none !important;
-    }
-  }
-
   &__divider {
     display: flex;
     align-items: center;
     text-align: center;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--org-on-surface-variant);
     font-size: 0.75rem;
     font-weight: 700;
     margin: 4px 0;
@@ -181,7 +150,7 @@
     &::after {
       content: '';
       flex: 1;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      border-bottom: 1px solid var(--org-outline-variant);
     }
 
     &::before {
@@ -193,52 +162,6 @@
     }
   }
 
-  &__google-btn {
-    width: 100%;
-    height: 50px;
-    background-color: #ffffff !important;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important;
-    border-radius: 9999px !important;
-    padding: 0 20px !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    color: #1f2937 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.2s ease !important;
-
-    .mdc-button__label {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 12px !important;
-      width: 100% !important;
-      height: 100% !important;
-    }
-
-    &:hover {
-      background-color: #f9fafb !important;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14) !important;
-      transform: translateY(-1px);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  &__google-icon {
-    width: 20px;
-    height: 20px;
-    display: block !important;
-    object-fit: contain;
-    flex-shrink: 0;
-    margin-right: 6px !important;
-  }
 }
 
 @keyframes orbFloat1 {

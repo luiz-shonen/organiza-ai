@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, input, model } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 
@@ -12,11 +13,12 @@ export interface OrgSelectOption {
   selector: 'org-select-field',
   standalone: true,
   imports: [MatFormFieldModule, MatSelectModule],
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => OrgSelectFieldComponent), multi: true }],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-select-field.component.html',
   styleUrl: './org-select-field.component.scss',
 })
-export class OrgSelectFieldComponent {
+export class OrgSelectFieldComponent implements ControlValueAccessor {
   public readonly label = input.required<string>();
   public readonly options = input<readonly OrgSelectOption[]>([]);
   public readonly value = model<string | null>(null);
@@ -24,10 +26,20 @@ export class OrgSelectFieldComponent {
   public readonly error = input('');
   public readonly disabled = input(false);
   public readonly required = input(false);
+  private onChange: (value: string | null) => void = () => undefined;
+  private onTouched: () => void = () => undefined;
+  protected disabledState = false;
 
   protected updateValue(value: string): void {
     if (!this.disabled()) {
       this.value.set(value);
+      this.onChange(value);
     }
   }
+
+  public writeValue(value: string | null): void { this.value.set(value); }
+  public registerOnChange(fn: (value: string | null) => void): void { this.onChange = fn; }
+  public registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  public setDisabledState(disabled: boolean): void { this.disabledState = disabled; }
+  protected markTouched(): void { this.onTouched(); }
 }

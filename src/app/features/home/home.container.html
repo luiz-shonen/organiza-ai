@@ -18,15 +18,13 @@
       description="Que tal criar o primeiro evento e reunir as pessoas especiais?"
       data-testid="home-empty-state"
     >
-      <a
-        orgButton="primary"
+      <org-button
         orgEmptyStateAction
-        routerLink="/meus-eventos/evento/novo"
         class="home__empty-btn"
-      >
-        <org-icon name="add" size="sm" color="var(--org-on-primary)" />
-        Criar Primeiro Evento
-      </a>
+        label="Criar Primeiro Evento"
+        icon="add"
+        (pressed)="createEvent()"
+      />
     </org-empty-state>
   } @else {
     <org-section title="Próximos Eventos" icon="event" [count]="events()!.length">
@@ -42,7 +40,8 @@
             (keydown.space)="navigateToEvent(event.id, $event)"
             [attr.aria-label]="'Ver detalhes do evento ' + event.title"
           >
-            <article [orgSurface]="'card'" class="home__card">
+            <org-surface variant="card">
+              <article class="home__card">
               <div class="home__card-top">
                 <div class="home__card-badge">
                   <org-icon name="event" size="sm" color="var(--org-primary)" />
@@ -82,7 +81,8 @@
                   <org-icon name="event" size="sm" color="var(--org-primary)" />
                 </span>
               </div>
-            </article>
+              </article>
+            </org-surface>
           </a>
         }
       </nav>

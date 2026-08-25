@@ -1,21 +1,17 @@
 <org-page-layout maxWidth="wide" data-testid="dashboard-page">
   <org-page-header title="Meus Eventos" icon="event">
-    <a
-      orgButton="primary"
+    <org-button
       orgPageHeaderActions
-      routerLink="/meus-eventos/evento/novo"
-      matTooltip="Criar um novo evento"
-      aria-label="Criar novo evento"
+      label="Novo evento"
+      icon="add"
+      (pressed)="createEvent()"
       data-testid="create-event-btn"
-    >
-      <org-icon name="add" size="sm" color="var(--org-on-primary)" />
-      Novo Evento
-    </a>
+    />
   </org-page-header>
 
   @if (events() !== undefined) {
     @if (nextEvent(); as event) {
-      <div [orgSurface]="'card'" class="dashboard__alert-banner" (click)="openPublicEvent(event)">
+      <org-surface variant="card" class="dashboard__alert-banner" (click)="openPublicEvent(event)">
         <div class="dashboard__alert-content">
           <mat-icon class="dashboard__alert-icon">notifications_active</mat-icon>
           <div class="dashboard__alert-text">
@@ -32,7 +28,7 @@
           </div>
         </div>
         <mat-icon class="dashboard__alert-arrow">arrow_forward_ios</mat-icon>
-      </div>
+      </org-surface>
     }
 
     <div class="dashboard__filters">
@@ -51,159 +47,59 @@
       />
     } @else {
       <!-- Desktop table -->
-      <section [orgSurface]="'panel'" class="dashboard__table-wrapper">
-        <table
-          mat-table
-          [dataSource]="filteredEvents()"
+      <org-surface variant="panel" class="dashboard__table-wrapper">
+        <org-data-table
           class="dashboard__table"
-          aria-label="Lista de eventos"
-        >
-          <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef>Evento</th>
-            <td mat-cell *matCellDef="let event">
-              <strong>{{ event.title }}</strong>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="date">
-            <th mat-header-cell *matHeaderCellDef>Data</th>
-            <td mat-cell *matCellDef="let event">{{ formatDate(event.date) }}</td>
-          </ng-container>
-
-          <ng-container matColumnDef="location">
-            <th mat-header-cell *matHeaderCellDef class="dashboard__location-cell">Local</th>
-            <td
-              mat-cell
-              *matCellDef="let event"
-              class="dashboard__location-cell"
-              [matTooltip]="event.location"
-              matTooltipPosition="above"
-            >
-              {{ event.location }}
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Ações</th>
-            <td mat-cell *matCellDef="let event">
-              <div class="dashboard__actions">
-                <button
-                  mat-icon-button
-                  orgIconButton
-                  (click)="$event.stopPropagation(); editEvent(event)"
-                  matTooltip="Editar"
-                  [attr.aria-label]="'Editar ' + event.title"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  orgIconButton
-                  (click)="$event.stopPropagation(); shareWhatsApp(event)"
-                  matTooltip="Compartilhar no WhatsApp"
-                  [attr.aria-label]="'Compartilhar ' + event.title + ' no WhatsApp'"
-                >
-                  <mat-icon>share</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  orgIconButton
-                  (click)="$event.stopPropagation(); copyLink(event)"
-                  matTooltip="Copiar Link"
-                  [attr.aria-label]="'Copiar link de ' + event.title"
-                >
-                  <mat-icon>link</mat-icon>
-                </button>
-                <button
-                  mat-icon-button
-                  orgIconButton="danger"
-                  (click)="$event.stopPropagation(); cancelEvent(event)"
-                  matTooltip="Cancelar"
-                  [attr.aria-label]="'Cancelar ' + event.title"
-                >
-                  <mat-icon>block</mat-icon>
-                </button>
-              </div>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr
-            mat-row
-            *matRowDef="let row; columns: displayedColumns"
-            (click)="openPublicEvent(row)"
-            class="dashboard__row dashboard__clickable-row"
-            [class.cancelled]="row.status === 'cancelled'"
-            [class.history]="isHistoryEvent(row.date) && row.status !== 'cancelled'"
-            data-testid="organizer-event-card"
-          ></tr>
-        </table>
-      </section>
+          [rows]="filteredEvents()"
+          [columns]="tableColumns"
+          [actionTemplate]="eventActions"
+          actionLabel="Ações"
+          ariaLabel="Lista de eventos"
+          (rowActivated)="openPublicEvent($event)"
+        />
+        <ng-template #eventActions let-event>
+          <div class="dashboard__actions">
+            <org-icon-button icon="edit" [ariaLabel]="'Editar ' + event.title" (pressed)="editEvent(event)" />
+            <org-icon-button icon="share" [ariaLabel]="'Compartilhar ' + event.title + ' no WhatsApp'" (pressed)="shareWhatsApp(event)" />
+            <org-icon-button icon="link" [ariaLabel]="'Copiar link de ' + event.title" (pressed)="copyLink(event)" />
+            <org-icon-button icon="block" variant="danger" [ariaLabel]="'Cancelar ' + event.title" (pressed)="cancelEvent(event)" />
+          </div>
+        </ng-template>
+      </org-surface>
 
       <!-- Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (event of filteredEvents(); track event.id) {
-          <mat-card
-            [orgSurface]="'card'"
+          <org-surface
+            variant="card"
             class="dashboard__mobile-card dashboard__clickable-card"
             [class.cancelled]="event.status === 'cancelled'"
             [class.history]="isHistoryEvent(event.date) && event.status !== 'cancelled'"
-            appearance="outlined"
             (click)="openPublicEvent(event)"
             data-testid="organizer-event-card"
           >
-            <mat-card-header>
-              <mat-card-title>{{ event.title }}</mat-card-title>
-              <mat-card-subtitle>
+            <article class="dashboard__mobile-card-content">
+              <header>
+              <h2 class="dashboard__mobile-card-title">{{ event.title }}</h2>
+              <p class="dashboard__mobile-card-subtitle">
                 {{ formatDate(event.date) }} · {{ event.location }}
-              </mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-actions>
-              <button
-                mat-icon-button
-                orgIconButton
-                (click)="$event.stopPropagation(); editEvent(event)"
-                matTooltip="Editar"
-                aria-label="Editar"
-              >
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                orgIconButton
-                (click)="$event.stopPropagation(); shareWhatsApp(event)"
-                matTooltip="Compartilhar no WhatsApp"
-                aria-label="Compartilhar"
-              >
-                <mat-icon>share</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                orgIconButton
-                (click)="$event.stopPropagation(); copyLink(event)"
-                matTooltip="Copiar Link"
-                aria-label="Copiar link"
-              >
-                <mat-icon>link</mat-icon>
-              </button>
-              <button
-                mat-icon-button
-                orgIconButton="danger"
-                (click)="$event.stopPropagation(); cancelEvent(event)"
-                matTooltip="Cancelar"
-                aria-label="Cancelar"
-              >
-                <mat-icon>block</mat-icon>
-              </button>
-            </mat-card-actions>
-          </mat-card>
+              </p>
+              </header>
+            <footer class="dashboard__actions">
+              <org-icon-button icon="edit" ariaLabel="Editar" (click)="stopRowClick($event)" (pressed)="editEvent(event)" />
+              <org-icon-button icon="share" ariaLabel="Compartilhar no WhatsApp" (click)="stopRowClick($event)" (pressed)="shareWhatsApp(event)" />
+              <org-icon-button icon="link" ariaLabel="Copiar link" (click)="stopRowClick($event)" (pressed)="copyLink(event)" />
+              <org-icon-button icon="block" variant="danger" ariaLabel="Cancelar" (click)="stopRowClick($event)" (pressed)="cancelEvent(event)" />
+            </footer>
+            </article>
+          </org-surface>
         }
       </div>
     }
   } @else {
     <div aria-hidden="true">
       <!-- Skeleton Desktop table -->
-      <section [orgSurface]="'panel'" class="dashboard__table-wrapper skeleton-table-wrapper">
+      <org-surface variant="panel" class="dashboard__table-wrapper skeleton-table-wrapper">
         <div class="skeleton-table">
           <!-- Header fake -->
           <div class="skeleton-table-header">
@@ -226,12 +122,13 @@
             </div>
           }
         </div>
-      </section>
+      </org-surface>
 
       <!-- Skeleton Mobile cards -->
       <div class="dashboard__mobile-cards">
         @for (i of [1, 2, 3]; track i) {
-          <mat-card [orgSurface]="'card'" class="dashboard__mobile-card" appearance="outlined">
+          <org-surface variant="card" class="dashboard__mobile-card">
+            <article class="dashboard__mobile-card-content">
             <mat-card-header>
               <mat-card-title><div class="skeleton-box" style="height: 1.5rem; width: 12rem; margin-bottom: 0.5rem;"></div></mat-card-title>
               <mat-card-subtitle><div class="skeleton-box" style="height: 1rem; width: 8rem;"></div></mat-card-subtitle>
@@ -241,7 +138,8 @@
               <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
               <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
             </mat-card-actions>
-          </mat-card>
+            </article>
+          </org-surface>
         }
       </div>
     </div>

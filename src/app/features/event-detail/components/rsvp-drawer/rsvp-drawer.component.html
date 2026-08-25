@@ -10,50 +10,25 @@
       <h2 id="rsvp-drawer-title" class="rsvp-drawer__title">Confirme seus dados</h2>
       <p class="rsvp-drawer__description">Sua presença principal permanece vinculada à sua conta verificada.</p>
     </div>
-    <button mat-icon-button type="button" aria-label="Fechar confirmação" data-testid="rsvp-close-btn" (click)="closeDrawer()">
-      <mat-icon aria-hidden="true">close</mat-icon>
-    </button>
+    <org-icon-button
+      ariaLabel="Fechar confirmação"
+      icon="close"
+      data-testid="rsvp-close-btn"
+      (pressed)="closeDrawer()"
+    />
   </header>
 
   <form [formGroup]="form" class="rsvp-drawer__form" id="rsvp-form">
     <div class="rsvp-drawer__content" mat-dialog-content>
-      <mat-form-field orgFormField appearance="outline" class="rsvp-drawer__field">
-        <mat-label>Seu nome</mat-label>
-        <input matInput formControlName="name" autocomplete="name" data-testid="rsvp-name-input" required />
-        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
-          <mat-error>Nome é obrigatório</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="rsvp-drawer__field" label="Seu nome" formControlName="name" [required]="true" testId="rsvp-name-input" [error]="form.controls.name.hasError('required') && form.controls.name.touched ? 'Nome é obrigatório' : ''" />
 
-      <mat-form-field orgFormField appearance="outline" class="rsvp-drawer__field">
-        <mat-label>WhatsApp / Telefone</mat-label>
-        <input matInput formControlName="phone" autocomplete="tel" type="tel" data-testid="rsvp-phone-input" required />
-        @if (form.controls.phone.hasError('required') && form.controls.phone.touched) {
-          <mat-error>Telefone é obrigatório</mat-error>
-        }
-        @if (form.controls.phone.hasError('minlength') && form.controls.phone.touched) {
-          <mat-error>Mínimo 10 dígitos</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="rsvp-drawer__field" label="WhatsApp / Telefone" type="tel" formControlName="phone" [required]="true" testId="rsvp-phone-input" [error]="form.controls.phone.hasError('required') && form.controls.phone.touched ? 'Telefone é obrigatório' : form.controls.phone.hasError('minlength') && form.controls.phone.touched ? 'Mínimo 10 dígitos' : ''" />
 
-      <mat-form-field orgFormField appearance="outline" class="rsvp-drawer__field">
-        <mat-label>Outros acompanhantes</mat-label>
-        <input matInput formControlName="companionsCount" type="number" min="0" max="10" (input)="onCompanionsCountInput($event)" data-testid="rsvp-companions-input" />
-        <mat-hint>De 0 a 10 acompanhantes fora da família</mat-hint>
-        @if (form.controls.companionsCount.invalid && form.controls.companionsCount.touched) {
-          <mat-error>Informe um número entre 0 e 10</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="rsvp-drawer__field" label="Outros acompanhantes" type="number" hint="De 0 a 10 acompanhantes fora da família" formControlName="companionsCount" testId="rsvp-companions-input" (valueChange)="onCompanionsCountChange($event)" [error]="form.controls.companionsCount.invalid && form.controls.companionsCount.touched ? 'Informe um número entre 0 e 10' : ''" />
 
       <div formArrayName="companions" class="rsvp-drawer__companions" aria-label="Acompanhantes">
         @for (control of companions.controls; track $index) {
-          <mat-form-field orgFormField appearance="outline" class="rsvp-drawer__field">
-            <mat-label>Acompanhante {{ $index + 1 }}</mat-label>
-            <input matInput [formControlName]="$index" [attr.aria-describedby]="'companion-error-' + $index" required />
-            @if (control.hasError('required') && control.touched) {
-              <mat-error [id]="'companion-error-' + $index">Nome do acompanhante é obrigatório</mat-error>
-            }
-          </mat-form-field>
+          <org-text-field class="rsvp-drawer__field" [label]="'Acompanhante ' + ($index + 1)" [formControlName]="$index" [required]="true" [error]="control.hasError('required') && control.touched ? 'Nome do acompanhante é obrigatório' : ''" />
         }
       </div>
 
@@ -70,10 +45,18 @@
     </div>
 
     <footer class="rsvp-drawer__actions" mat-dialog-actions align="end">
-      <button orgButton="secondary" mat-button type="button" aria-label="Cancelar confirmação" data-testid="rsvp-cancel-btn" (click)="closeDrawer()">Cancelar</button>
-      <button orgButton="primary" mat-flat-button color="primary" type="button" (click)="submit()" aria-label="Confirmar presença" data-testid="rsvp-confirm-btn">
-        Confirmar
-      </button>
+      <org-button
+        label="Cancelar"
+        variant="secondary"
+        [gradient]="false"
+        data-testid="rsvp-cancel-btn"
+        (pressed)="closeDrawer()"
+      />
+      <org-button
+        label="Confirmar"
+        data-testid="rsvp-confirm-btn"
+        (pressed)="submit()"
+      />
     </footer>
   </form>
 </section>

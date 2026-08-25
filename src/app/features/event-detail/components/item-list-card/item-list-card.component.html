@@ -7,11 +7,8 @@
   <!-- List Items -->
   <div class="item-list-card__list">
     @for (item of items(); track item.id) {
-      <div
-        [orgSurface]="'card'"
-        class="item-list-card__item"
-        [class.item-list-card__item--claimed]="item.claimedBy"
-      >
+      <org-surface variant="card">
+        <article class="item-list-card__item" [class.item-list-card__item--claimed]="item.claimedBy">
         <div class="item-list-card__item-info">
           <!-- Status Avatar -->
           @if (item.claimedBy) {
@@ -40,33 +37,32 @@
         <!-- Actions -->
         <div class="item-list-card__actions">
           @if (!item.claimedBy) {
-            <button
-              type="button"
-              (click)="onClaim.emit(item.id!)"
+            <org-button
               [disabled]="!currentUserId()"
               class="item-list-card__claim-btn"
-              [attr.aria-label]="'Levar item ' + item.name"
-            >
-              Eu Levo
-            </button>
+              label="Eu levo"
+              variant="secondary"
+              [gradient]="false"
+              (pressed)="onClaim.emit(item.id!)"
+            />
           } @else if (
             item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()
           ) {
-            <button
-              type="button"
-              (click)="onUnclaim.emit(item.id!)"
+            <org-button
               class="item-list-card__unclaim-btn"
-              [attr.aria-label]="'Desistir de levar ' + item.name"
-            >
-              Desistir
-            </button>
+              label="Desistir"
+              variant="danger"
+              [gradient]="false"
+              (pressed)="onUnclaim.emit(item.id!)"
+            />
           } @else {
             <div class="item-list-card__check-icon" aria-label="Item já atribuído">
               <mat-icon aria-hidden="true">check_circle</mat-icon>
             </div>
           }
         </div>
-      </div>
+        </article>
+      </org-surface>
     } @empty {
       <div class="item-list-card__empty">Nenhum item adicionado a este evento ainda.</div>
     }

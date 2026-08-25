@@ -7,16 +7,16 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { OrgFormFieldDirective } from '../../../../shared/ui';
+import {
+  OrgButtonComponent,
+  OrgCheckboxComponent,
+  OrgSelectFieldComponent,
+  OrgTextFieldComponent,
+  type OrgSelectOption,
+} from '../../../../shared/ui';
 
 export interface InlineFamilyMemberPayload {
   name: string;
@@ -34,15 +34,12 @@ export interface RelationshipOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule,
     MatExpansionModule,
-    MatCheckboxModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
     MatIconModule,
-    OrgFormFieldDirective,
+    OrgButtonComponent,
+    OrgCheckboxComponent,
+    OrgSelectFieldComponent,
+    OrgTextFieldComponent,
   ],
   templateUrl: './family-selector.component.html',
   styleUrl: './family-selector.component.scss',
@@ -71,6 +68,7 @@ export class FamilySelectorComponent {
     { value: 'relative', label: 'Parente' },
     { value: 'other', label: 'Outro' },
   ];
+  protected readonly relationshipSelectOptions: readonly OrgSelectOption[] = this.relationshipOptions;
 
   protected readonly allSelected = computed(() => {
     const list = this.members();
@@ -131,6 +129,11 @@ export class FamilySelectorComponent {
 
     this.showInlineForm.set(false);
     this.resetInlineForm();
+  }
+
+  protected setInlineRelationship(value: string | null): void {
+    const option = this.relationshipOptions.find((relationship) => relationship.value === value);
+    this.inlineRelationship.set(option?.value ?? 'child');
   }
 
   private resetInlineForm(): void {

@@ -265,15 +265,9 @@ describe('EventEditorContainer', () => {
       expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
         '3',
       );
-      expect(element.querySelector('#pix-form mat-form-field')?.classList).toContain(
-        'org-form-field',
-      );
-      expect(element.querySelector('#pix-form button[matstepperprevious]')?.classList).toContain(
-        'org-button',
-      );
-      expect(
-        element.querySelector('#pix-form [data-testid="event-save-btn"]')?.classList,
-      ).toContain('org-button');
+      expect(element.querySelector('#pix-form org-text-field')).toBeTruthy();
+      expect(element.querySelector('#pix-form org-button')).toBeTruthy();
+      expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')).toBeTruthy();
     });
   });
 });

@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { OrgIconComponent, OrgIconName } from '../actions/org-icon.component';
-import { OrgSurfaceDirective } from '../surface/org-surface.directive';
+import { OrgSurfaceComponent } from '../surface/org-surface.component';
 
 @Component({
   selector: 'org-empty-state',
   standalone: true,
-  imports: [OrgIconComponent, OrgSurfaceDirective],
+  imports: [OrgIconComponent, OrgSurfaceComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-empty-state.component.html',
   styleUrl: './org-empty-state.component.scss',

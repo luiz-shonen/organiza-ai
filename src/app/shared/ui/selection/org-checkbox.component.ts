@@ -10,7 +10,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   styleUrl: './org-checkbox.component.scss',
 })
 export class OrgCheckboxComponent {
-  public readonly label = input.required<string>();
+  /** A short accessible label when projected content is not sufficient. */
+  public readonly label = input('');
+  public readonly ariaLabel = input<string | null>(null);
   public readonly checked = model(false);
   public readonly indeterminate = input(false);
   public readonly disabled = input(false);

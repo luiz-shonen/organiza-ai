@@ -1,7 +1,14 @@
 <mat-checkbox
   class="org-checkbox"
+  [attr.aria-label]="ariaLabel()"
   [checked]="checked()"
   [disabled]="disabled()"
   [indeterminate]="indeterminate()"
   (change)="updateChecked($event.checked)"
->{{ label() }}</mat-checkbox>
+>
+  @if (label()) {
+    {{ label() }}
+  } @else {
+    <ng-content />
+  }
+</mat-checkbox>

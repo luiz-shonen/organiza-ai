@@ -6,11 +6,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService, DrawerService } from '../../../../../core/services';
-import { ConfirmDialogComponent } from '../../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { OrgDialogService } from '../../../../../shared/ui';
 
 @Component({
   selector: 'app-admin-form-drawer',
@@ -33,7 +32,7 @@ export class AdminFormDrawerComponent implements OnInit {
   private readonly authService = inject(AuthService);
   protected readonly drawerService = inject(DrawerService);
   private readonly snackBar = inject(MatSnackBar);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialogs = inject(OrgDialogService);
 
   readonly close = output<void>();
 
@@ -74,16 +73,13 @@ export class AdminFormDrawerComponent implements OnInit {
   }
 
   protected async removeAdmin(email: string): Promise<void> {
-    const confirmRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
+    this.dialogs
+      .confirm({
         title: 'Remover Administrador',
         message: `Tem certeza que deseja remover ${email}?`,
         confirmLabel: 'Remover',
-      },
-    });
-
-    confirmRef.afterClosed().subscribe(async (result) => {
+      })
+      .subscribe(async (result) => {
       if (result) {
         try {
           await this.authService.removeAdmin(email);

@@ -41,7 +41,7 @@
     font-weight: 600;
   }
 
-  :not(mat-icon, .mat-icon, .material-icons, .material-symbols-outlined) {
+  :not(mat-icon, .material-icons, .material-symbols-outlined) {
     font-family: var(--showcase-body) !important;
   }
 
@@ -369,8 +369,6 @@
   }
 
   &--glass {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     background:
       linear-gradient(135deg, rgb(43 31 69 / 0.82), rgb(91 58 140 / 0.58)) padding-box,
       var(--showcase-card-border) border-box;

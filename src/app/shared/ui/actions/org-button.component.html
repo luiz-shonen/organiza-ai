@@ -3,13 +3,17 @@
     mat-stroked-button
     class="org-button__control org-button__control--secondary"
     [class.org-button__control--gradient]="gradient()"
+    [class.org-button__control--full-width]="fullWidth()"
     [attr.aria-busy]="loading() ? 'true' : null"
+    [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"
     [type]="type()"
     (click)="activate()"
   >
     @if (loading()) {
       <mat-spinner diameter="18" aria-label="Carregando" />
+    } @else if (imageSrc(); as imageSrc) {
+      <img class="org-button__image" [src]="imageSrc" [alt]="imageAlt()" />
     } @else if (icon(); as icon) {
       <org-icon [name]="icon" size="sm" />
     }
@@ -20,13 +24,17 @@
     mat-button
     class="org-button__control org-button__control--text"
     [class.org-button__control--gradient]="gradient()"
+    [class.org-button__control--full-width]="fullWidth()"
     [attr.aria-busy]="loading() ? 'true' : null"
+    [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"
     [type]="type()"
     (click)="activate()"
   >
     @if (loading()) {
       <mat-spinner diameter="18" aria-label="Carregando" />
+    } @else if (imageSrc(); as imageSrc) {
+      <img class="org-button__image" [src]="imageSrc" [alt]="imageAlt()" />
     } @else if (icon(); as icon) {
       <org-icon [name]="icon" size="sm" />
     }
@@ -38,13 +46,17 @@
     class="org-button__control org-button__control--primary"
     [class.org-button__control--danger]="variant() === 'danger'"
     [class.org-button__control--gradient]="gradient()"
+    [class.org-button__control--full-width]="fullWidth()"
     [attr.aria-busy]="loading() ? 'true' : null"
+    [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"
     [type]="type()"
     (click)="activate()"
   >
     @if (loading()) {
       <mat-spinner diameter="18" aria-label="Carregando" />
+    } @else if (imageSrc(); as imageSrc) {
+      <img class="org-button__image" [src]="imageSrc" [alt]="imageAlt()" />
     } @else if (icon(); as icon) {
       <org-icon [name]="icon" size="sm" />
     }

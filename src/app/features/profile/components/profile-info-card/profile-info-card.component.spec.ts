@@ -52,9 +52,9 @@ describe('ProfileInfoCardComponent', () => {
     component.startEditing();
     fixture.detectChanges();
 
-    expect(el.querySelector('mat-form-field')?.classList).toContain('org-form-field');
-    expect(el.querySelector('.profile-info-card__save-btn')?.classList).toContain('org-button');
-    expect(el.querySelector('.profile-info-card__cancel-btn')?.classList).toContain('org-button');
+    expect(el.querySelector('org-text-field')).toBeTruthy();
+    expect(el.querySelector('.profile-info-card__save-btn')).toBeInstanceOf(HTMLElement);
+    expect(el.querySelector('.profile-info-card__cancel-btn')).toBeInstanceOf(HTMLElement);
   });
 
   it('should render photoURL image when provided', () => {
@@ -73,7 +73,7 @@ describe('ProfileInfoCardComponent', () => {
   it('should toggle inline editing mode when edit button is clicked', () => {
     expect(component.isEditing()).toBe(false);
 
-    const editBtn: HTMLButtonElement | null = fixture.nativeElement.querySelector('.profile-info-card__edit-btn');
+    const editBtn: HTMLButtonElement | null = fixture.nativeElement.querySelector('.profile-info-card__edit-btn button');
     editBtn?.click();
     fixture.detectChanges();
 

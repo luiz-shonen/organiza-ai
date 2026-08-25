@@ -4,10 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatButtonModule } from '@angular/material/button';
-import { OrgButtonDirective, OrgFormFieldDirective, OrgSurfaceDirective } from '../../../shared/ui';
+import { OrgButtonComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../shared/ui';
 
 @Component({
   selector: 'app-login',
@@ -16,12 +13,9 @@ import { OrgButtonDirective, OrgFormFieldDirective, OrgSurfaceDirective } from '
     ReactiveFormsModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatButtonModule,
-    OrgButtonDirective,
-    OrgFormFieldDirective,
-    OrgSurfaceDirective,
+    OrgButtonComponent,
+    OrgTextFieldComponent,
+    OrgSurfaceComponent,
   ],
   templateUrl: './login.container.html',
   styleUrl: './login.container.scss',

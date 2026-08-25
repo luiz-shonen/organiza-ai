@@ -3,7 +3,8 @@
     <org-page-header title="Carregando..." icon="edit" />
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
-        <mat-card [orgSurface]="'card'" class="editor__card" appearance="outlined">
+        <org-surface variant="card">
+        <mat-card class="editor__card" appearance="outlined">
           <mat-card-header>
             <div matCardAvatar class="skeleton-box editor__card-icon"></div>
             <mat-card-title>
@@ -21,6 +22,7 @@
             </div>
           </mat-card-content>
         </mat-card>
+        </org-surface>
       </div>
     </div>
   } @else {
@@ -39,23 +41,20 @@
           Voltar
         </a>
         @if (isEditing() && isOwner()) {
-          <button
-            mat-stroked-button
-            type="button"
-            (click)="openCollaboratorsDialog()"
-            aria-label="Gerenciar colaboradores"
+          <org-button
+            label="Colaboradores"
+            icon="group_add"
+            variant="secondary"
+            (pressed)="openCollaboratorsDialog()"
             class="editor__collab-btn"
-          >
-            <mat-icon>group_add</mat-icon>
-            Colaboradores
-          </button>
+          />
         }
       </div>
     </org-page-header>
 
     @if (isEditing() && !isOwner()) {
-      <div
-        [orgSurface]="'card'"
+      <org-surface
+        variant="card"
         class="editor__collab-banner"
         role="status"
         aria-label="Permissões de colaborador"
@@ -66,13 +65,14 @@
           visualizar os convidados. As informações principais do evento só podem ser alteradas pelo
           organizador.
         </div>
-      </div>
+      </org-surface>
     }
 
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
         <!-- Event Form -->
-        <mat-card [orgSurface]="'card'" class="editor__card" appearance="outlined">
+        <org-surface variant="card">
+        <mat-card class="editor__card" appearance="outlined">
           <mat-card-header>
             <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
             <mat-card-title>Dados do Evento</mat-card-title>
@@ -115,40 +115,38 @@
                 }
               </div>
             </div>
-            <mat-stepper
-              linear
+            <org-stepper
+              [linear]="true"
+              [compact]="true"
               #stepper
               class="editor__stepper editor__stepper--mobile"
-              aria-label="Etapas de criação do evento"
-              (selectionChange)="activeStepIndex.set($event.selectedIndex)"
+              ariaLabel="Etapas de criação do evento"
+              (selectionChange)="activeStepIndex.set($event)"
             >
               <!-- Step 1: Basic Info -->
-              <mat-step [stepControl]="basicInfoForm">
-                <ng-template matStepLabel>Informações do evento</ng-template>
+              <org-step label="Informações do evento" [stepControl]="basicInfoForm">
                 <form [formGroup]="basicInfoForm" class="editor__form" id="basic-info-form">
-                  <mat-form-field orgFormField appearance="outline" class="org-input">
-                    <mat-label>Título do Evento</mat-label>
-                    <input
-                      matInput
-                      formControlName="title"
-                      placeholder="Ex: Festa Junina 2026"
-                      required
-                      data-testid="event-title-input"
-                    />
-                    @if (basicInfoForm.controls.title.hasError('required')) {
-                      <mat-error>Título é obrigatório</mat-error>
-                    }
-                  </mat-form-field>
+                  <org-text-field
+                    class="org-input"
+                    label="Título do Evento"
+                    placeholder="Ex: Festa Junina 2026"
+                    [required]="true"
+                    [error]="basicInfoForm.controls.title.hasError('required') && basicInfoForm.controls.title.touched ? 'Título é obrigatório' : ''"
+                    formControlName="title"
+                    testId="event-title-input"
+                  />
 
                   <div class="editor__category-field">
                     <mat-label class="editor__category-label">Categoria do Evento</mat-label>
-                    <mat-chip-listbox formControlName="category" required>
+                    <div class="editor__category-options" role="group" aria-label="Categoria do Evento">
                       @for (cat of categories; track cat.name) {
-                        <mat-chip-option [value]="cat.name" [class]="'org-chip ' + cat.class">{{
-                          cat.name
-                        }}</mat-chip-option>
+                        <org-chip
+                          [label]="cat.name"
+                          [selected]="basicInfoForm.controls.category.value === cat.name"
+                          (selectionChange)="selectCategory(cat.name)"
+                        />
                       }
-                    </mat-chip-listbox>
+                    </div>
                     @if (
                       basicInfoForm.controls.category.hasError('required') &&
                       basicInfoForm.controls.category.touched
@@ -157,259 +155,168 @@
                     }
                   </div>
 
-                  <mat-form-field orgFormField appearance="outline" class="org-input">
-                    <mat-label>Descrição</mat-label>
-                    <textarea
-                      matInput
-                      formControlName="description"
-                      rows="4"
-                      placeholder="Descreva o evento..."
-                      required
-                      data-testid="event-description-input"
-                    ></textarea>
-                    @if (basicInfoForm.controls.description.hasError('required')) {
-                      <mat-error>Descrição é obrigatória</mat-error>
-                    }
-                  </mat-form-field>
+                  <org-textarea-field
+                    class="org-input"
+                    label="Descrição"
+                    placeholder="Descreva o evento..."
+                    [rows]="4"
+                    [required]="true"
+                    [error]="basicInfoForm.controls.description.hasError('required') && basicInfoForm.controls.description.touched ? 'Descrição é obrigatória' : ''"
+                    formControlName="description"
+                    testId="event-description-input"
+                  />
 
-                  <div [orgFormGrid]="2" class="editor__date-time-row">
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                  <div class="editor__date-time-row">
+                    <org-date-field
                       class="editor__date-field org-input"
-                    >
-                      <mat-label>Data do Evento</mat-label>
-                      <input
-                        matInput
-                        [matDatepicker]="picker"
-                        formControlName="date"
-                        required
-                        [min]="minDate"
-                        (input)="formatDate($event)"
-                        placeholder="DD/MM/AAAA"
-                        maxlength="10"
-                        data-testid="event-date-input"
-                      />
-                      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                      <mat-datepicker #picker></mat-datepicker>
-                      @if (basicInfoForm.controls.date.hasError('required')) {
-                        <mat-error>Data é obrigatória</mat-error>
-                      }
-                      @if (basicInfoForm.controls.date.hasError('matDatepickerMin')) {
-                        <mat-error>Data não pode ser no passado</mat-error>
-                      }
-                      @if (basicInfoForm.controls.date.hasError('matDatepickerParse')) {
-                        <mat-error>Data inválida</mat-error>
-                      }
-                    </mat-form-field>
+                      label="Data do Evento"
+                      [min]="minDate"
+                      [required]="true"
+                      [error]="basicInfoForm.controls.date.hasError('required') && basicInfoForm.controls.date.touched ? 'Data é obrigatória' : basicInfoForm.controls.date.hasError('matDatepickerMin') ? 'Data não pode ser no passado' : basicInfoForm.controls.date.hasError('matDatepickerParse') ? 'Data inválida' : ''"
+                      formControlName="date"
+                      testId="event-date-input"
+                    />
 
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                    <org-time-field
                       class="editor__time-field org-input"
-                    >
-                      <mat-label>Hora</mat-label>
-                      <input
-                        matInput
-                        type="time"
-                        formControlName="time"
-                        required
-                        data-testid="event-time-input"
-                      />
-                      @if (basicInfoForm.controls.time.hasError('required')) {
-                        <mat-error>Hora é obrigatória</mat-error>
-                      }
-                    </mat-form-field>
+                      label="Hora"
+                      [required]="true"
+                      [error]="basicInfoForm.controls.time.hasError('required') && basicInfoForm.controls.time.touched ? 'Hora é obrigatória' : ''"
+                      formControlName="time"
+                      testId="event-time-input"
+                    />
                   </div>
 
                   <div class="editor__step-actions">
-                    <button
-                      orgButton="primary"
-                      matStepperNext
-                      type="button"
-                      [orgButtonDisabled]="basicInfoForm.invalid"
-                    >
-                      Próximo
-                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-                    </button>
+                    <org-button
+                      label="Próximo"
+                      icon="send"
+                      [disabled]="basicInfoForm.invalid"
+                      (pressed)="nextStep(stepper)"
+                    />
                   </div>
                 </form>
-              </mat-step>
+              </org-step>
 
               <!-- Step 2: Address -->
-              <mat-step [stepControl]="addressForm">
-                <ng-template matStepLabel>Endereço do evento</ng-template>
+              <org-step label="Endereço do evento" [stepControl]="addressForm">
                 <form [formGroup]="addressForm" class="editor__form" id="address-form">
                   <h3 class="editor__section-title">Endereço</h3>
-                  <div [orgFormGrid]="2" class="editor__address-row-top">
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                  <div class="editor__address-row-top">
+                    <org-text-field
                       class="org-input editor__cep-field"
-                    >
-                      <mat-label>CEP</mat-label>
-                      <input
-                        matInput
-                        formControlName="cep"
-                        placeholder="00000-000"
-                        maxlength="9"
-                        required
-                        (input)="formatCep($event)"
-                        data-testid="event-cep-input"
-                      />
-                      @if (addressForm.controls.cep.hasError('required')) {
-                        <mat-error>CEP é obrigatório</mat-error>
-                      }
-                    </mat-form-field>
+                      label="CEP"
+                      placeholder="00000-000"
+                      [required]="true"
+                      [error]="addressForm.controls.cep.hasError('required') && addressForm.controls.cep.touched ? 'CEP é obrigatório' : ''"
+                      formControlName="cep"
+                      testId="event-cep-input"
+                      (valueChange)="formatCep($event)"
+                    />
 
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                    <org-text-field
                       class="editor__number-field org-input"
-                    >
-                      <mat-label>Número</mat-label>
-                      <input
-                        matInput
-                        formControlName="number"
-                        placeholder="Ex: 123"
-                        required
-                        data-testid="event-number-input"
-                      />
-                      @if (addressForm.controls.number.hasError('required')) {
-                        <mat-error>Número é obrigatório</mat-error>
-                      }
-                    </mat-form-field>
+                      label="Número"
+                      placeholder="Ex: 123"
+                      [required]="true"
+                      [error]="addressForm.controls.number.hasError('required') && addressForm.controls.number.touched ? 'Número é obrigatório' : ''"
+                      formControlName="number"
+                      testId="event-number-input"
+                    />
                   </div>
 
                   <div class="editor__address-row-single">
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                    <org-text-field
                       class="editor__address-field org-input editor__disabled-field"
-                    >
-                      <mat-label>Endereço</mat-label>
-                      <input
-                        matInput
-                        formControlName="address"
-                        placeholder="Ex: Rua das Festas"
-                        required
-                        readonly
-                        tabindex="-1"
-                        data-testid="event-street-input"
-                      />
-                      <mat-icon matPrefix>location_on</mat-icon>
-                      <mat-icon matSuffix class="editor__lock-icon">lock</mat-icon>
-                      @if (addressForm.controls.address.hasError('required')) {
-                        <mat-error>Endereço é obrigatório</mat-error>
-                      }
-                    </mat-form-field>
+                      label="Endereço"
+                      placeholder="Ex: Rua das Festas"
+                      prefixIcon="location_on"
+                      suffixIcon="lock"
+                      [readOnly]="true"
+                      [required]="true"
+                      [error]="addressForm.controls.address.hasError('required') && addressForm.controls.address.touched ? 'Endereço é obrigatório' : ''"
+                      formControlName="address"
+                      testId="event-street-input"
+                    />
                   </div>
 
-                  <div [orgFormGrid]="2" class="editor__address-row">
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                  <div class="editor__address-row">
+                    <org-text-field
                       class="org-input editor__disabled-field"
-                    >
-                      <mat-label>Bairro</mat-label>
-                      <input
-                        matInput
-                        formControlName="neighborhood"
-                        placeholder="Ex: Centro"
-                        required
-                        readonly
-                        tabindex="-1"
-                      />
-                      <mat-icon matSuffix class="editor__lock-icon">lock</mat-icon>
-                      @if (addressForm.controls.neighborhood.hasError('required')) {
-                        <mat-error>Bairro é obrigatório</mat-error>
-                      }
-                    </mat-form-field>
+                      label="Bairro"
+                      placeholder="Ex: Centro"
+                      suffixIcon="lock"
+                      [readOnly]="true"
+                      [required]="true"
+                      [error]="addressForm.controls.neighborhood.hasError('required') && addressForm.controls.neighborhood.touched ? 'Bairro é obrigatório' : ''"
+                      formControlName="neighborhood"
+                    />
 
-                    <mat-form-field
-                      orgFormField
-                      appearance="outline"
+                    <org-text-field
                       class="org-input editor__disabled-field"
-                    >
-                      <mat-label>Cidade/UF</mat-label>
-                      <input
-                        matInput
-                        formControlName="city"
-                        placeholder="Ex: São Paulo/SP"
-                        required
-                        readonly
-                        tabindex="-1"
-                      />
-                      <mat-icon matSuffix class="editor__lock-icon">lock</mat-icon>
-                      @if (addressForm.controls.city.hasError('required')) {
-                        <mat-error>Cidade/UF é obrigatória</mat-error>
-                      }
-                    </mat-form-field>
+                      label="Cidade/UF"
+                      placeholder="Ex: São Paulo/SP"
+                      suffixIcon="lock"
+                      [readOnly]="true"
+                      [required]="true"
+                      [error]="addressForm.controls.city.hasError('required') && addressForm.controls.city.touched ? 'Cidade/UF é obrigatória' : ''"
+                      formControlName="city"
+                    />
                   </div>
 
                   <div class="editor__step-actions">
-                    <button mat-button matStepperPrevious type="button">
-                      <mat-icon>arrow_back</mat-icon>
-                      Voltar
-                    </button>
-                    <button
-                      orgButton="primary"
-                      matStepperNext
-                      type="button"
-                      [orgButtonDisabled]="addressForm.invalid"
-                    >
-                      Próximo
-                      <mat-icon iconPositionEnd>arrow_forward</mat-icon>
-                    </button>
+                    <org-button
+                      label="Voltar"
+                      icon="arrow_back"
+                      variant="text"
+                      [gradient]="false"
+                      (pressed)="previousStep(stepper)"
+                    />
+                    <org-button
+                      label="Próximo"
+                      icon="send"
+                      [disabled]="addressForm.invalid"
+                      (pressed)="nextStep(stepper)"
+                    />
                   </div>
                 </form>
-              </mat-step>
+              </org-step>
 
               <!-- Step 3: Pix -->
-              <mat-step [stepControl]="pixForm">
-                <ng-template matStepLabel>Pagamento por Pix</ng-template>
+              <org-step label="Pagamento por Pix" [stepControl]="pixForm">
                 <form [formGroup]="pixForm" class="editor__form" id="pix-form">
                   <h3 class="editor__section-title">Pagamento (Pix)</h3>
-                  <mat-form-field orgFormField appearance="outline" class="org-input">
-                    <mat-label>Chave Pix (opcional)</mat-label>
-                    <input
-                      matInput
-                      formControlName="pixKey"
-                      placeholder="CPF, e-mail ou chave aleatória"
-                    />
-                    <mat-icon matPrefix>pix</mat-icon>
-                    <mat-hint>Deixe em branco se não quiser rachadinha</mat-hint>
-                  </mat-form-field>
+                  <org-text-field
+                    class="org-input"
+                    label="Chave Pix (opcional)"
+                    placeholder="CPF, e-mail ou chave aleatória"
+                    prefixIcon="pix"
+                    hint="Deixe em branco se não quiser rachadinha"
+                    formControlName="pixKey"
+                  />
 
                   <div class="editor__step-actions">
-                    <button orgButton="secondary" matStepperPrevious type="button">
-                      <mat-icon>arrow_back</mat-icon>
-                      Voltar
-                    </button>
+                    <org-button
+                      label="Voltar"
+                      icon="arrow_back"
+                      variant="secondary"
+                      (pressed)="previousStep(stepper)"
+                    />
                     @if (isOwner()) {
-                      <button
-                        orgButton="primary"
+                      <org-button
+                        [label]="isEditing() ? 'Salvar' : 'Criar Evento'"
+                        icon="save"
                         class="editor__save-btn"
-                        [orgButtonDisabled]="
+                        [disabled]="
                           basicInfoForm.invalid ||
                           addressForm.invalid ||
                           pixForm.invalid ||
                           saving()
                         "
-                        (click)="saveEvent()"
-                        aria-label="Salvar evento"
-                        data-testid="event-save-btn"
-                      >
-                        @if (saving()) {
-                          <mat-spinner diameter="20"></mat-spinner>
-                        }
-                        @if (!saving()) {
-                          <mat-icon>save</mat-icon>
-                        }
-                        @if (!saving()) {
-                          <span>{{ isEditing() ? 'Salvar' : 'Criar Evento' }}</span>
-                        }
-                      </button>
+                        [loading]="saving()"
+                        (pressed)="saveEvent()"
+                        testId="event-save-btn"
+                      />
                     } @else {
                       <p class="editor__collab-save-disabled">
                         <mat-icon>lock</mat-icon>
@@ -418,14 +325,16 @@
                     }
                   </div>
                 </form>
-              </mat-step>
-            </mat-stepper>
+              </org-step>
+            </org-stepper>
           </mat-card-content>
         </mat-card>
+        </org-surface>
 
         <!-- Items Manager (only when editing) -->
         @if (isEditing()) {
-          <mat-card [orgSurface]="'card'" class="editor__card" appearance="outlined">
+          <org-surface variant="card">
+          <mat-card class="editor__card" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
               <mat-card-title>Lista de Itens</mat-card-title>
@@ -433,43 +342,28 @@
             </mat-card-header>
             <mat-card-content>
               <div class="editor__add-item">
-                <mat-form-field
-                  orgFormField
-                  appearance="outline"
+                <org-text-field
                   class="editor__item-name-field org-input"
-                >
-                  <mat-label>Nome do item</mat-label>
-                  <input
-                    matInput
-                    [value]="newItemName()"
-                    (input)="newItemName.set($any($event.target).value)"
-                    placeholder="Ex: Bolo de milho"
-                    (keyup.enter)="addItem()"
-                  />
-                </mat-form-field>
-                <mat-form-field
-                  orgFormField
-                  appearance="outline"
+                  label="Nome do item"
+                  placeholder="Ex: Bolo de milho"
+                  [(value)]="newItemName"
+                />
+                <org-text-field
                   class="editor__item-qty-field org-input"
-                >
-                  <mat-label>Quantidade</mat-label>
-                  <input
-                    matInput
-                    type="number"
-                    min="1"
-                    [value]="newItemQuantity()"
-                    (input)="newItemQuantity.set(+$any($event.target).value)"
-                  />
-                </mat-form-field>
-                <button
-                  mat-icon-button
-                  (click)="addItem()"
+                  label="Quantidade"
+                  type="number"
+                  [min]="1"
+                  [value]="newItemQuantity().toString()"
+                  (valueChange)="setNewItemQuantity($event)"
+                />
+                <org-icon-button
+                  ariaLabel="Adicionar item"
+                  icon="add_circle"
+                  variant="primary"
+                  (pressed)="addItem()"
                   [disabled]="!newItemName().trim()"
-                  aria-label="Adicionar item"
                   class="editor__add-btn"
-                >
-                  <mat-icon>add_circle</mat-icon>
-                </button>
+                />
               </div>
 
               @if (items().length > 0) {
@@ -488,20 +382,19 @@
                           </span>
                         }
                       </div>
-                      <button
-                        mat-icon-button
-                        color="warn"
-                        (click)="removeItem(item)"
-                        [attr.aria-label]="'Remover ' + item.name"
-                      >
-                        <mat-icon>delete_outline</mat-icon>
-                      </button>
+                      <org-icon-button
+                        [ariaLabel]="'Remover ' + item.name"
+                        icon="delete_outline"
+                        variant="danger"
+                        (pressed)="removeItem(item)"
+                      />
                     </li>
                   }
                 </ul>
               }
             </mat-card-content>
           </mat-card>
+          </org-surface>
         }
       </div>
 
@@ -514,7 +407,8 @@
           />
 
           <!-- Guest List Card -->
-          <mat-card [orgSurface]="'card'" class="editor__card print-section" appearance="outlined">
+          <org-surface variant="card">
+          <mat-card class="editor__card print-section" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
               <mat-card-title>Lista de Convidados</mat-card-title>
@@ -522,26 +416,22 @@
             </mat-card-header>
             <mat-card-content>
               <div class="editor__guest-actions no-print">
-                <button
-                  mat-stroked-button
-                  (click)="exportToCsv()"
+                <org-button
+                  label="Excel"
+                  icon="download"
+                  variant="secondary"
+                  (pressed)="exportToCsv()"
                   [disabled]="guests().length === 0"
-                  aria-label="Exportar para Excel (CSV)"
                   class="editor__guest-action-btn"
-                >
-                  <mat-icon>download</mat-icon>
-                  Excel
-                </button>
-                <button
-                  mat-stroked-button
-                  (click)="printList()"
+                />
+                <org-button
+                  label="Imprimir"
+                  icon="print"
+                  variant="secondary"
+                  (pressed)="printList()"
                   [disabled]="guests().length === 0"
-                  aria-label="Imprimir Lista (PDF)"
                   class="editor__guest-action-btn"
-                >
-                  <mat-icon>print</mat-icon>
-                  Imprimir
-                </button>
+                />
               </div>
 
               @if (guests().length > 0) {
@@ -570,6 +460,7 @@
               }
             </mat-card-content>
           </mat-card>
+          </org-surface>
         </div>
       }
     </div>

@@ -28,6 +28,7 @@ import {
   type OrgNavigationItem,
   type OrgRadioOption,
   type OrgSelectOption,
+  type OrgTimeOption,
   type OrgTabItem,
   FeedbackService,
 } from '../../shared/ui';
@@ -104,6 +105,11 @@ export class DesignSystemShowcaseContainer {
   public readonly eventFormat = signal<string | null>('presencial');
   public readonly welcomeMessage = signal('Celebre com quem torna a vida mais bonita.');
   public readonly eventTime = signal('19:30');
+  public readonly timeOptions: readonly OrgTimeOption[] = [
+    { label: 'Abertura, 19h', value: '19:00' },
+    { label: 'Início, 19h30', value: '19:30' },
+    { label: 'Encerramento, 22h', value: '22:00' },
+  ];
   public readonly attendanceChannel = signal<'email' | 'whatsapp'>('email');
   public readonly notificationsEnabled = signal<boolean>(true);
   public readonly reminderEnabled = signal<boolean>(true);
@@ -154,7 +160,7 @@ export class DesignSystemShowcaseContainer {
 
 <org-text-field label="Título" [(value)]="title" />
 <org-date-field label="Data" [(value)]="date" />
-<org-time-field label="Horário" [(value)]="time" [minuteStep]="5" />`,
+<org-time-field label="Horário" [(value)]="time" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />`,
     selection: `import { OrgToggleComponent, OrgCheckboxComponent, OrgRadioGroupComponent } from '@shared/ui';
 
 <org-toggle label="Enviar lembrete" [(checked)]="reminder" />

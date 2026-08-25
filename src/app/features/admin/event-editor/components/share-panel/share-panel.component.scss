@@ -1,7 +1,28 @@
 .share-panel {
+  display: grid;
+  gap: 16px;
+
+  &__header {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+  }
+
+  &__title,
+  &__subtitle {
+    margin: 0;
+  }
+
+  &__title {
+    font: var(--org-typography-title-medium);
+  }
+
+  &__subtitle {
+    color: var(--org-on-surface-variant);
+  }
   &__icon {
-    background-color: var(--mat-sys-tertiary-container);
-    color: var(--mat-sys-on-tertiary-container);
+    background-color: var(--org-tertiary-container);
+    color: var(--org-on-tertiary-container);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,7 +45,7 @@
 
   &__link {
     padding: 8px 12px;
-    background: var(--mat-sys-surface-container);
+    background: var(--org-surface-container);
     border-radius: 8px;
     margin-top: 8px;
     text-align: center;
@@ -33,15 +54,15 @@
   &__url {
     font-size: 0.8rem;
     word-break: break-all;
-    color: var(--mat-sys-on-surface-variant);
+    color: var(--org-on-surface-variant);
   }
 
   &__whatsapp-btn {
-    background-color: #25d366 !important;
-    color: #fff !important;
+    --org-primary: #25d366;
+    --org-on-primary: #ffffff;
   }
 
-  mat-card-actions {
+  &__actions {
     display: flex;
     gap: 8px;
     justify-content: center;

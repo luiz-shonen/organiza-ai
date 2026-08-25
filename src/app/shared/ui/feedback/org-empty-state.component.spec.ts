@@ -46,10 +46,11 @@ describe('OrgEmptyStateComponent', () => {
 
   it('renders default info icon, title, and glass surface card', () => {
     const el = fixture.nativeElement.querySelector('#default-empty') as HTMLElement;
+    const surface = el.querySelector('org-surface .org-surface') as HTMLElement;
     const article = el.querySelector('article.org-empty-state') as HTMLElement;
     expect(article).toBeTruthy();
-    expect(article.classList.contains('org-surface')).toBe(true);
-    expect(article.classList.contains('org-surface--card')).toBe(true);
+    expect(surface.classList.contains('org-surface')).toBe(true);
+    expect(surface.classList.contains('org-surface--card')).toBe(true);
 
     const titleEl = el.querySelector('h3.org-empty-state__title') as HTMLElement;
     expect(titleEl.textContent?.trim()).toBe('Nenhum item cadastrado');

@@ -70,7 +70,7 @@ This feature turns the priority component families identified in the comparison 
 **Acceptance Criteria**:
 
 1. WHEN a developer renders a text, select, date, time, or textarea field, THEN the library SHALL render an Angular Material outline field with an explicit label and signal-compatible value API. <!-- FLD-01 -->
-2. WHEN date and time fields render beside a standard text field, THEN the library SHALL preserve the native Material field height and vertically centered control value without clipping; `OrgTimeField` SHALL own a custom, configurable `HH:mm` editor with typed minute increments and SHALL NOT render `input[type=time]`. <!-- FLD-02 -->
+2. WHEN date and time fields render beside a standard text field, THEN the library SHALL preserve the native Material field height and vertically centered control value without clipping; `OrgTimeField` SHALL own a custom, configurable `HH:mm` editor with typed minute increments, optional typed quick-time choices, and optional minimum/maximum limits, and SHALL NOT render `input[type=time]`. <!-- FLD-02 -->
 3. IF a field is disabled, THEN the component SHALL prevent value-change output while retaining its accessible disabled state. <!-- FLD-03 -->
 4. WHERE a hint or error message is supplied, the field SHALL render it through Material-supported hint or error semantics. <!-- FLD-04 -->
 5. WHEN an existing application screen renders an in-scope field, THEN the screen SHALL compose the corresponding closed field component and SHALL not apply component appearance rules through feature SCSS. <!-- MIG-02 -->

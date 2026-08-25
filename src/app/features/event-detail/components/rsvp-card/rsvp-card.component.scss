@@ -1,7 +1,30 @@
 .rsvp-card {
+  display: grid;
+  gap: 16px;
+
+  &__header {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+  }
+
+  &__title,
+  &__subtitle {
+    margin: 0;
+  }
+
+  &__title {
+    font: var(--org-typography-title-medium);
+  }
+
+  &__subtitle {
+    color: var(--org-on-surface-variant);
+    margin-top: 2px;
+  }
+
   &__icon {
-    background-color: var(--mat-sys-tertiary-container, #e8def8);
-    color: var(--mat-sys-on-tertiary-container, #49454f);
+    background-color: var(--org-tertiary-container);
+    color: var(--org-on-tertiary-container);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,7 +45,7 @@
     gap: 8px;
     margin: 8px 0 4px;
     font-size: 1rem;
-    color: var(--mat-sys-on-surface);
+    color: var(--org-on-surface);
   }
 
   &__check {
@@ -35,43 +58,18 @@
 
   &__hint {
     font-size: 0.875rem;
-    color: var(--mat-sys-on-surface-variant, #666);
+    color: var(--org-on-surface-variant);
     margin: 4px 0 0 30px;
   }
 
   &__prompt {
     margin: 8px 0 0;
-    color: var(--mat-sys-on-surface-variant, #666);
+    color: var(--org-on-surface-variant);
     line-height: 1.5;
   }
 
   &__actions {
     display: flex;
     gap: 8px;
-    padding: 8px 16px 16px;
-  }
-
-  &__confirm-btn {
-    width: 100%;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 24px;
-    font-weight: 600;
-  }
-
-  &__cancel-btn {
-    width: 100%;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  &__spinner {
-    display: inline-block;
   }
 }

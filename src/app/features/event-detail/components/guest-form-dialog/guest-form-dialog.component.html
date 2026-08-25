@@ -6,52 +6,11 @@
 
   <mat-dialog-content class="guest-dialog__content">
     <form [formGroup]="form" class="guest-dialog__form" id="guest-form">
-      <mat-form-field appearance="outline" orgFormField class="guest-dialog__field">
-        <mat-label>Seu nome</mat-label>
-        <input
-          matInput
-          formControlName="name"
-          placeholder="Ex: Maria Silva"
-          autocomplete="name"
-          data-testid="rsvp-name-input"
-          required
-        />
-        @if (form.controls.name.hasError('required')) {
-          <mat-error>Nome é obrigatório</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="guest-dialog__field" label="Seu nome" placeholder="Ex: Maria Silva" formControlName="name" testId="rsvp-name-input" [required]="true" [error]="form.controls.name.hasError('required') ? 'Nome é obrigatório' : ''" />
 
-      <mat-form-field appearance="outline" orgFormField class="guest-dialog__field">
-        <mat-label>WhatsApp / Telefone</mat-label>
-        <input
-          matInput
-          formControlName="phone"
-          placeholder="(11) 99999-9999"
-          autocomplete="tel"
-          type="tel"
-          data-testid="rsvp-phone-input"
-          required
-        />
-        @if (form.controls.phone.hasError('required')) {
-          <mat-error>Telefone é obrigatório</mat-error>
-        }
-        @if (form.controls.phone.hasError('minlength')) {
-          <mat-error>Mínimo 10 dígitos</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="guest-dialog__field" label="WhatsApp / Telefone" type="tel" placeholder="(11) 99999-9999" formControlName="phone" testId="rsvp-phone-input" [required]="true" [error]="form.controls.phone.hasError('required') ? 'Telefone é obrigatório' : form.controls.phone.hasError('minlength') ? 'Mínimo 10 dígitos' : ''" />
 
-      <mat-form-field appearance="outline" orgFormField class="guest-dialog__field">
-        <mat-label>Outros Acompanhantes</mat-label>
-        <input
-          matInput
-          formControlName="companionsCount"
-          type="number"
-          min="0"
-          placeholder="0"
-          data-testid="rsvp-companions-input"
-        />
-        <mat-hint>Amigos ou acompanhantes fora da família</mat-hint>
-      </mat-form-field>
+      <org-text-field class="guest-dialog__field" label="Outros acompanhantes" type="number" placeholder="0" hint="Amigos ou acompanhantes fora da família" formControlName="companionsCount" testId="rsvp-companions-input" />
 
       <div class="guest-dialog__family-section" data-testid="family-selector">
         <app-family-selector
@@ -67,16 +26,18 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="guest-dialog__actions">
-    <button mat-button mat-dialog-close aria-label="Cancelar confirmação" data-testid="rsvp-cancel-btn">Cancelar</button>
-    <button
-      mat-flat-button
-      color="primary"
+    <org-button
+      label="Cancelar"
+      variant="text"
+      [gradient]="false"
+      data-testid="rsvp-cancel-btn"
+      (pressed)="cancel()"
+    />
+    <org-button
+      label="Confirmar"
       [disabled]="form.invalid"
-      (click)="submit()"
-      aria-label="Confirmar presença"
       data-testid="rsvp-confirm-btn"
-    >
-      Confirmar
-    </button>
+      (pressed)="submit()"
+    />
   </mat-dialog-actions>
 </div>

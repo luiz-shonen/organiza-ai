@@ -8,7 +8,8 @@
     <p class="login__subtitle">Acesse ou crie sua conta para continuar</p>
   </div>
 
-  <div [orgSurface]="'card'" class="login__card">
+  <org-surface variant="card" class="login__card">
+    <div class="login__card-content">
     @if (errorMessage(); as error) {
       <div class="login__error" data-testid="login-error-alert">
         <mat-icon>error</mat-icon>
@@ -17,84 +18,36 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
-      <mat-form-field orgFormField appearance="outline" class="login__form-field">
-        <mat-label>E-mail</mat-label>
-        <mat-icon matPrefix>email</mat-icon>
-        <input
-          matInput
-          formControlName="email"
-          type="email"
-          autocomplete="username"
-          placeholder="seu@email.com"
-          data-testid="login-email-input"
-        />
-        @if (form.controls.email.hasError('required')) {
-          <mat-error>E-mail é obrigatório</mat-error>
-        } @else if (form.controls.email.hasError('email')) {
-          <mat-error>Digite um e-mail válido</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="login__form-field" label="E-mail" type="email" placeholder="seu@email.com" testId="login-email-input" formControlName="email" [error]="form.controls.email.hasError('required') ? 'E-mail é obrigatório' : form.controls.email.hasError('email') ? 'Digite um e-mail válido' : ''" />
 
-      <mat-form-field orgFormField appearance="outline" class="login__form-field">
-        <mat-label>Senha</mat-label>
-        <mat-icon matPrefix>lock</mat-icon>
-        <input
-          matInput
-          formControlName="password"
-          [type]="hidePassword() ? 'password' : 'text'"
-          autocomplete="current-password"
-          placeholder="Sua senha"
-          data-testid="login-password-input"
-        />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="hidePassword.set(!hidePassword())"
-          [attr.aria-label]="hidePassword() ? 'Mostrar senha' : 'Ocultar senha'"
-        >
-          <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
-        </button>
-        @if (form.controls.password.hasError('required')) {
-          <mat-error>Senha é obrigatória</mat-error>
-        } @else if (form.controls.password.hasError('minlength')) {
-          <mat-error>Mínimo 6 caracteres</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="login__form-field" label="Senha" type="password" placeholder="Sua senha" testId="login-password-input" formControlName="password" [passwordVisible]="!hidePassword()" (togglePasswordVisibility)="hidePassword.set(!hidePassword())" [error]="form.controls.password.hasError('required') ? 'Senha é obrigatória' : form.controls.password.hasError('minlength') ? 'Mínimo 6 caracteres' : ''" />
 
-      <button
-        orgButton="primary"
+      <org-button
         type="submit"
-        [orgButtonDisabled]="form.invalid || loading()"
         class="login__submit-btn"
         data-testid="login-submit-btn"
-      >
-        @if (loading()) {
-          <mat-spinner diameter="20"></mat-spinner>
-        } @else {
-          Entrar
-        }
-      </button>
+        label="Entrar"
+        [disabled]="form.invalid || loading()"
+        [loading]="loading()"
+        [fullWidth]="true"
+      />
     </form>
 
     <div class="login__divider">
       <span class="login__divider-text">OU</span>
     </div>
 
-    <button
-      mat-stroked-button
-      type="button"
+    <org-button
       [disabled]="loading()"
-      (click)="loginWithGoogle()"
       class="login__google-btn"
       data-testid="google-login-btn"
-    >
-      <img
-        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-        alt="Google"
-        class="login__google-icon"
-      />
-      Entrar com Google
-    </button>
-  </div>
+      label="Entrar com Google"
+      variant="secondary"
+      [gradient]="false"
+      [fullWidth]="true"
+      imageSrc="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+      (pressed)="loginWithGoogle()"
+    />
+    </div>
+  </org-surface>
 </main>

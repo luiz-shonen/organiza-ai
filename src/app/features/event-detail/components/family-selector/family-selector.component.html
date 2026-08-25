@@ -23,31 +23,31 @@
     <div class="family-selector__content">
       @if (members().length > 0) {
         <div class="family-selector__select-all-wrap">
-          <mat-checkbox
+          <org-checkbox
             class="family-selector__select-all"
             [checked]="allSelected()"
             [indeterminate]="indeterminate()"
-            (change)="onSelectAllChange($event.checked)"
-            aria-label="Selecionar todos os familiares"
+            (checkedChange)="onSelectAllChange($event)"
+            ariaLabel="Selecionar todos os familiares"
           >
             <span class="family-selector__select-all-label">Selecionar Todos</span>
-          </mat-checkbox>
+          </org-checkbox>
         </div>
 
         <ul class="family-selector__list" role="list" aria-label="Lista de familiares para seleção">
           @for (member of members(); track member.id) {
             <li class="family-selector__item" role="listitem">
-              <mat-checkbox
+              <org-checkbox
                 class="family-selector__checkbox"
                 [checked]="isMemberSelected(member.id)"
-                (change)="onToggleMember(member.id)"
-                [attr.aria-label]="'Confirmar presença para ' + member.name"
+                (checkedChange)="onToggleMember(member.id)"
+                [ariaLabel]="'Confirmar presença para ' + member.name"
               >
                 <div class="family-selector__member-info">
                   <span class="family-selector__member-name">{{ member.name }}</span>
                   <span class="family-selector__member-badge">{{ getRelationshipLabel(member.relationship) }}</span>
                 </div>
-              </mat-checkbox>
+              </org-checkbox>
             </li>
           }
         </ul>
@@ -59,17 +59,14 @@
 
       @if (!showInlineForm()) {
         <div class="family-selector__inline-toggle-wrap">
-          <button
-            type="button"
-            mat-button
-            color="primary"
+          <org-button
             class="family-selector__inline-toggle-btn"
-            (click)="onToggleInlineForm()"
-            aria-label="Adicionar novo familiar rapidamente"
-          >
-            <mat-icon aria-hidden="true">person_add</mat-icon>
-            + Novo Membro
-          </button>
+            label="Novo membro"
+            icon="group_add"
+            variant="text"
+            [gradient]="false"
+            (pressed)="onToggleInlineForm()"
+          />
         </div>
       } @else {
         <form
@@ -80,52 +77,37 @@
           <h4 class="family-selector__inline-title">Novo Familiar</h4>
 
           <div class="family-selector__inline-grid">
-            <mat-form-field appearance="outline" orgFormField class="family-selector__inline-field">
-              <mat-label>Nome</mat-label>
-              <input
-                matInput
-                [ngModel]="inlineName()"
-                (ngModelChange)="inlineName.set($event)"
-                name="inlineMemberName"
-                placeholder="Ex: Pedro"
-                required
-                aria-required="true"
-              />
-            </mat-form-field>
+            <org-text-field
+              class="family-selector__inline-field"
+              label="Nome"
+              placeholder="Ex: Pedro"
+              [required]="true"
+              [(value)]="inlineName"
+            />
 
-            <mat-form-field appearance="outline" orgFormField class="family-selector__inline-field">
-              <mat-label>Parentesco</mat-label>
-              <mat-select
-                [ngModel]="inlineRelationship()"
-                (ngModelChange)="inlineRelationship.set($event)"
-                name="inlineMemberRelationship"
-                aria-label="Parentesco do novo familiar"
-              >
-                @for (opt of relationshipOptions; track opt.value) {
-                  <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            <org-select-field
+              class="family-selector__inline-field"
+              label="Parentesco"
+              [options]="relationshipSelectOptions"
+              [value]="inlineRelationship()"
+              [required]="true"
+              (valueChange)="setInlineRelationship($event)"
+            />
           </div>
 
           <div class="family-selector__inline-actions">
-            <button
-              type="button"
-              mat-button
-              (click)="onCancelInlineForm()"
-              aria-label="Cancelar adição de familiar"
-            >
-              Cancelar
-            </button>
-            <button
+            <org-button
+              label="Cancelar"
+              variant="text"
+              [gradient]="false"
+              (pressed)="onCancelInlineForm()"
+            />
+            <org-button
+              label="Adicionar e selecionar"
               type="submit"
-              mat-flat-button
-              color="primary"
               [disabled]="!inlineName().trim() || isAddingInline()"
-              aria-label="Salvar e selecionar familiar"
-            >
-              Adicionar e Selecionar
-            </button>
+              [loading]="isAddingInline()"
+            />
           </div>
         </form>
       }

@@ -262,6 +262,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T22: Migrate all action and surface consumers to closed components
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/features/`  
 **Depends on**: T21  
 **Tests**: Existing route/component tests are updated only for DOM API changes and preserve existing business handlers, accessible names, and visible actions, mapping to MIG-01 and MIG-03.  
@@ -269,12 +271,16 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T23: Migrate all field and selection consumers to closed components
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/features/`  
 **Depends on**: T22  
-**Tests**: Existing form tests prove the same submit values, validation states, disabled states, and labels after migration, mapping to MIG-02 and FLD-01 through FLD-04.  
+**Tests**: Existing form tests prove the same submit values, validation states, disabled states, and labels after migration. `OrgTimeField` tests prove its typed quick-time choices and optional minimum/maximum limits preserve valid `HH:mm` values, mapping to MIG-02 and FLD-01 through FLD-04.
 **Gate**: Full + Contract
 
 ### T24: Migrate navigation, data display, and confirmation overlay consumers
+
+**Status**: ✅ Complete
 
 **Where**: `src/app/features/`  
 **Depends on**: T23  

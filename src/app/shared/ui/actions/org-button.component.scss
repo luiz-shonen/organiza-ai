@@ -12,6 +12,10 @@
   min-width: 48px;
   padding-inline: 20px;
 
+  &--full-width {
+    width: 100%;
+  }
+
   &--gradient {
     background: var(--org-gradient-primary);
     color: var(--org-on-primary);
@@ -39,4 +43,11 @@
       background: transparent;
     }
   }
+}
+
+.org-button__image {
+  flex: 0 0 auto;
+  height: 20px;
+  object-fit: contain;
+  width: 20px;
 }

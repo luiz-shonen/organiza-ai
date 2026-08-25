@@ -6,13 +6,11 @@
   height: min(100dvh, 760px);
   max-width: 100%;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(24px);
 
   &__header, &__actions { display: flex; align-items: center; padding: 16px 12px; }
   &__header { justify-content: space-between; gap: 12px; }
   &__title { margin: 0; font-size: 1.35rem; color: var(--org-text-primary); }
-  &__description { margin: 4px 0 0; color: var(--mat-sys-on-surface-variant); font-size: .875rem; }
+  &__description { margin: 4px 0 0; color: var(--org-text-secondary); font-size: .875rem; }
   &__form { display: flex; flex: 1; min-height: 0; flex-direction: column; }
   &__content { flex: 1; max-width: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 8px 12px; }
   &__field { display: block; width: 100%; }

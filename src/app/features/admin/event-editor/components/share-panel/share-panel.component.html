@@ -1,11 +1,13 @@
 @if (eventUrl()) {
-  <mat-card class="share-panel" [orgSurface]="'card'" appearance="outlined">
-    <mat-card-header>
-      <mat-icon matCardAvatar class="share-panel__icon">qr_code_2</mat-icon>
-      <mat-card-title>Compartilhar</mat-card-title>
-      <mat-card-subtitle>Convide seus amigos!</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
+  <org-surface variant="card">
+    <article class="share-panel">
+      <header class="share-panel__header">
+        <mat-icon class="share-panel__icon" aria-hidden="true">qr_code_2</mat-icon>
+        <div>
+          <h2 class="share-panel__title">Compartilhar</h2>
+          <p class="share-panel__subtitle">Convide seus amigos!</p>
+        </div>
+      </header>
       <div class="share-panel__qr-container">
         <canvas #qrCanvas class="share-panel__qr" aria-label="QR Code do evento"></canvas>
       </div>
@@ -13,21 +15,16 @@
       <div class="share-panel__link">
         <code class="share-panel__url">{{ eventUrl() }}</code>
       </div>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-stroked-button (click)="copyLink()" aria-label="Copiar link do evento">
-        <mat-icon>content_copy</mat-icon>
-        Copiar Link
-      </button>
-      <button
-        mat-flat-button
-        (click)="shareWhatsApp()"
-        aria-label="Compartilhar no WhatsApp"
+    <footer class="share-panel__actions">
+      <org-button label="Copiar link" icon="content_copy" variant="secondary" [gradient]="false" (pressed)="copyLink()" />
+      <org-button
+        label="WhatsApp"
+        icon="share"
+        [gradient]="false"
         class="share-panel__whatsapp-btn"
-      >
-        <mat-icon>share</mat-icon>
-        WhatsApp
-      </button>
-    </mat-card-actions>
-  </mat-card>
+        (pressed)="shareWhatsApp()"
+      />
+    </footer>
+    </article>
+  </org-surface>
 }

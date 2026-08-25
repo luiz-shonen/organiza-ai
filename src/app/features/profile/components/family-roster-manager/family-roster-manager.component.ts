@@ -6,11 +6,8 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { OrgButtonDirective, OrgFormFieldDirective, OrgIconButtonDirective, OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent, OrgSelectFieldComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../../shared/ui';
 
 export interface AddFamilyMemberPayload {
   name: string;
@@ -28,14 +25,12 @@ export interface RelationshipOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    OrgButtonDirective,
-    OrgFormFieldDirective,
-    OrgIconButtonDirective,
+    OrgButtonComponent,
+    OrgSelectFieldComponent,
+    OrgIconButtonComponent,
     OrgIconComponent,
     OrgSurfaceComponent,
+    OrgTextFieldComponent,
   ],
   templateUrl: './family-roster-manager.component.html',
   styleUrl: './family-roster-manager.component.scss',
@@ -63,6 +58,11 @@ export class FamilyRosterManagerComponent {
   protected getRelationshipLabel(value: FamilyRelationship): string {
     const option = this.relationshipOptions.find((opt) => opt.value === value);
     return option ? option.label : value;
+  }
+
+  protected setRelationship(value: string | null): void {
+    const option = this.relationshipOptions.find((candidate) => candidate.value === value);
+    this.newRelationship.set(option?.value ?? 'child');
   }
 
   protected onAddSubmit(): void {

@@ -6,22 +6,20 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import { AuthService, UserService, FamilyService } from '../../core/services';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import {
   FeedbackService,
-  OrgButtonDirective,
+  OrgButtonComponent,
   OrgEmptyStateComponent,
   OrgIconComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
   OrgSectionComponent,
-  OrgSurfaceDirective,
+  OrgSurfaceComponent,
 } from '../../shared/ui';
 import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
 import {
@@ -34,18 +32,15 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterLink,
     DatePipe,
     MatProgressSpinnerModule,
-    MatButtonModule,
     MatIconModule,
-    MatCardModule,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
     OrgSectionComponent,
-    OrgSurfaceDirective,
+    OrgSurfaceComponent,
     OrgEmptyStateComponent,
-    OrgButtonDirective,
+    OrgButtonComponent,
     OrgIconComponent,
     ProfileInfoCardComponent,
     FamilyRosterManagerComponent,
@@ -161,5 +156,13 @@ export class ProfileContainer implements OnInit {
     } catch {
       this.feedback.error('Não foi possível remover o familiar. Tente novamente.');
     }
+  }
+
+  protected exploreEvents(): void {
+    void this.router.navigate(['/']);
+  }
+
+  protected viewEvent(eventId: string): void {
+    void this.router.navigate(['/evento', eventId]);
   }
 }

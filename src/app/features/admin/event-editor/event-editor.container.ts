@@ -11,18 +11,14 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
-import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import {
   EventService,
@@ -38,13 +34,19 @@ import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
-  OrgButtonDirective,
-  OrgFormGridDirective,
-  OrgFormFieldDirective,
+  OrgButtonComponent,
+  OrgChipComponent,
+  OrgDateFieldComponent,
+  OrgIconButtonComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
   OrgSectionComponent,
-  OrgSurfaceDirective,
+  OrgStepComponent,
+  OrgStepperComponent,
+  OrgSurfaceComponent,
+  OrgTextFieldComponent,
+  OrgTextareaFieldComponent,
+  OrgTimeFieldComponent,
 } from '../../../shared/ui';
 import { DrawerService } from '../../../core/services/drawer.service';
 
@@ -59,21 +61,23 @@ import { DrawerService } from '../../../core/services/drawer.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     MatProgressSpinnerModule,
     MatDividerModule,
     MatTooltipModule,
     MatAutocompleteModule,
-    MatChipsModule,
-    MatStepperModule,
     MatDialogModule,
-    OrgButtonDirective,
-    OrgFormFieldDirective,
-    OrgFormGridDirective,
+    OrgButtonComponent,
+    OrgChipComponent,
+    OrgDateFieldComponent,
+    OrgIconButtonComponent,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
-    OrgSurfaceDirective,
+    OrgSurfaceComponent,
+    OrgStepComponent,
+    OrgStepperComponent,
+    OrgTextFieldComponent,
+    OrgTextareaFieldComponent,
+    OrgTimeFieldComponent,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
@@ -375,6 +379,11 @@ export class EventEditorContainer implements OnInit {
     }
   }
 
+  protected setNewItemQuantity(value: string): void {
+    const quantity = Number(value);
+    this.newItemQuantity.set(Number.isInteger(quantity) && quantity > 0 ? quantity : 1);
+  }
+
   protected async removeItem(item: PartyItem): Promise<void> {
     const eventId = this.id();
     if (!eventId) return;
@@ -416,21 +425,26 @@ export class EventEditorContainer implements OnInit {
     window.print();
   }
 
-  protected formatCep(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 5) {
-      value = value.substring(0, 5) + '-' + value.substring(5, 8);
+  protected formatCep(value: string): void {
+    let formattedValue = value.replace(/\D/g, '');
+    if (formattedValue.length > 5) {
+      formattedValue = formattedValue.substring(0, 5) + '-' + formattedValue.substring(5, 8);
     }
-    this.addressForm.controls.cep.setValue(value);
+    if (formattedValue !== value) {
+      this.addressForm.controls.cep.setValue(formattedValue);
+    }
   }
 
-  protected formatDate(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let value = input.value.replace(/\D/g, '');
-    if (value.length > 2) value = value.substring(0, 2) + '/' + value.substring(2);
-    if (value.length > 5) value = value.substring(0, 5) + '/' + value.substring(5, 9);
+  protected nextStep(stepper: OrgStepperComponent): void {
+    stepper.next();
+  }
 
-    input.value = value;
+  protected previousStep(stepper: OrgStepperComponent): void {
+    stepper.previous();
+  }
+
+  protected selectCategory(category: string): void {
+    this.basicInfoForm.controls.category.setValue(category);
+    this.basicInfoForm.controls.category.markAsTouched();
   }
 }

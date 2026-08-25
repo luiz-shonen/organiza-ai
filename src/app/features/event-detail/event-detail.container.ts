@@ -8,7 +8,6 @@ import {
   OnInit,
   DestroyRef,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   EventService,
@@ -23,8 +22,7 @@ import {
   DrawerService,
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest, type RsvpDrawerResult } from '../../core/models';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { FeedbackService, OrgEmptyStateComponent, OrgPageLayoutComponent } from '../../shared/ui';
+import { FeedbackService, OrgDialogService, OrgEmptyStateComponent, OrgPageLayoutComponent } from '../../shared/ui';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
@@ -60,7 +58,7 @@ export class EventDetailContainer implements OnInit {
   private readonly familyService = inject(FamilyService);
   private readonly confetti = inject(ConfettiService);
   private readonly seasonalThemeService = inject(SeasonalThemeService);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialogs = inject(OrgDialogService);
   private readonly drawerService = inject(DrawerService);
 
   protected readonly event = signal<PartyEvent | null>(null);
@@ -204,17 +202,14 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected async onCancelRsvp(): Promise<void> {
-    const confirmRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
+    this.dialogs
+      .confirm({
         title: 'Cancelar Presença',
         message:
           'Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.',
         confirmLabel: 'Sim, cancelar',
-      },
-    });
-
-    confirmRef.afterClosed().subscribe(async (result) => {
+      })
+      .subscribe(async (result) => {
       if (result) {
         this.rsvpLoading.set(true);
         try {

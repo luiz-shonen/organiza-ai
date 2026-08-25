@@ -2,8 +2,8 @@
   &__user-email {
     padding: 8px 16px;
     font-size: 0.875rem;
-    color: var(--mat-sys-on-surface-variant);
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    color: var(--org-on-surface-variant);
+    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__table-wrapper {
@@ -24,8 +24,8 @@
       display: grid;
       grid-template-columns: 2fr 1fr 1.5fr 150px;
       padding: 16px 24px;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
-      background-color: var(--mat-sys-surface-container-low);
+      border-bottom: 1px solid var(--org-outline-variant);
+      background-color: var(--org-surface-container-low);
     }
 
     &-row {
@@ -33,7 +33,7 @@
       grid-template-columns: 2fr 1fr 1.5fr 150px;
       padding: 12px 24px;
       align-items: center;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
+      border-bottom: 1px solid var(--org-outline-variant);
 
       &:last-child {
         border-bottom: none;
@@ -43,27 +43,6 @@
 
   &__table {
     width: 100%;
-    background: transparent !important;
-
-    --mat-table-background-color: transparent;
-    --mat-table-header-container-background-color: transparent;
-
-    ::ng-deep {
-      .mat-mdc-table,
-      .mat-mdc-header-row,
-      .mat-mdc-row,
-      .mat-mdc-header-cell,
-      .mat-mdc-cell,
-      table,
-      thead,
-      tbody,
-      tfoot,
-      tr,
-      th,
-      td {
-        background: transparent !important;
-      }
-    }
   }
 
   &__location-cell {

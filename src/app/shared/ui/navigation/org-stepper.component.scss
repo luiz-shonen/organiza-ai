@@ -1,3 +1,41 @@
-:host { display: block; max-width: 100%; }
-.org-stepper { max-width: 100%; overflow-x: auto; }
-@media (max-width: 599px) { .org-stepper { --mat-stepper-header-height: 48px; } }
+:host {
+  display: block;
+  max-width: 100%;
+}
+
+.org-stepper {
+  background: transparent;
+  border-radius: var(--org-radius-lg);
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+
+  &--compact {
+    --mat-stepper-header-height: 56px;
+    --mat-stepper-header-selected-state-icon-background-color: var(--org-primary);
+    --mat-stepper-header-selected-state-label-text-color: var(--org-primary);
+    --mat-stepper-header-selected-state-label-text-weight: 700;
+    --mat-stepper-header-done-state-icon-background-color: var(--org-primary);
+
+    @media (min-width: 600px) {
+      --mat-stepper-header-height: 64px;
+    }
+  }
+
+  &--compact ::ng-deep .mat-horizontal-stepper-header-container {
+    display: none;
+
+    @media (min-width: 600px) {
+      display: flex;
+      padding: 16px 24px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      max-width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  &--compact ::ng-deep .mat-horizontal-content-container {
+    padding: 0;
+  }
+}

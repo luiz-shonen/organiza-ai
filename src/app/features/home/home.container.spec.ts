@@ -108,12 +108,12 @@ describe('HomeContainer', () => {
     expect(descriptions).toEqual(['Venha comemorar comigo!', 'Churrasco de confraternização anual.']);
   });
 
-  it('should compose event cards with shared surface directive, semantic icons, and an accessible action', () => {
+  it('should compose event cards and the empty-state action with closed shared components', () => {
     fixture.detectChanges();
     eventsSubject.next(mockEvents);
     fixture.detectChanges();
 
-    const surfaces = fixture.nativeElement.querySelectorAll('.home__card.org-surface');
+    const surfaces = fixture.nativeElement.querySelectorAll('org-surface .home__card');
     expect(surfaces).toHaveLength(2);
     expect(fixture.nativeElement.querySelectorAll('mat-card')).toHaveLength(0);
     expect(fixture.nativeElement.querySelectorAll('org-icon')).not.toHaveLength(0);
@@ -123,8 +123,8 @@ describe('HomeContainer', () => {
 
     const emptyStateAction = fixture.nativeElement.querySelector('.home__empty-btn') as HTMLElement;
     expect(emptyStateAction).toBeTruthy();
-    expect(emptyStateAction.classList).toContain('org-button');
-    expect(emptyStateAction.style.minHeight).toBe('48px');
+    expect(emptyStateAction.tagName.toLowerCase()).toBe('org-button');
+    expect(emptyStateAction.querySelector('button.org-button__control')).toBeTruthy();
   });
 
   it('should navigate to event detail on Enter key press', () => {

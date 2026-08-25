@@ -1,20 +1,21 @@
-<mat-card [orgSurface]="'card'" class="rsvp-card" appearance="outlined">
-  <mat-card-header>
+<org-surface variant="card">
+  <article class="rsvp-card">
+    <header class="rsvp-card__header">
     <mat-icon
-      matCardAvatar
       class="rsvp-card__icon"
       [class.rsvp-card__icon--confirmed]="isConfirmed()"
       aria-hidden="true"
     >
       {{ isConfirmed() ? 'verified' : 'how_to_reg' }}
     </mat-icon>
-    <mat-card-title>
+    <div>
+      <h2 class="rsvp-card__title">
       {{ isConfirmed() ? 'Você está na lista! 🎉' : 'Confirme sua Presença' }}
-    </mat-card-title>
-    <mat-card-subtitle>{{ guestCount() }} pessoa(s) confirmada(s)</mat-card-subtitle>
-  </mat-card-header>
+      </h2>
+      <p class="rsvp-card__subtitle">{{ guestCount() }} pessoa(s) confirmada(s)</p>
+    </div>
+    </header>
 
-  <mat-card-content>
     @if (isConfirmed()) {
       <div class="rsvp-card__confirmed-content">
         <p class="rsvp-card__status">
@@ -36,47 +37,30 @@
         Confirme sua presença em 1 toque para participar do evento e assumir itens da lista colaborativa.
       </p>
     }
-  </mat-card-content>
-
-  <mat-card-actions class="rsvp-card__actions">
+    <footer class="rsvp-card__actions">
     @if (isConfirmed()) {
-      <button
-        mat-stroked-button
-        color="warn"
+      <org-button
         class="rsvp-card__cancel-btn"
-        (click)="onCancel()"
         [disabled]="isLoading()"
-        aria-label="Não poderei mais ir"
-      >
-        @if (isLoading()) {
-          <mat-spinner diameter="18" class="rsvp-card__spinner"></mat-spinner>
-          <span>Cancelando...</span>
-        } @else {
-          <ng-container>
-            <mat-icon aria-hidden="true">cancel</mat-icon>
-          </ng-container>
-          <span>Não poderei ir</span>
-        }
-      </button>
+        [label]="isLoading() ? 'Cancelando...' : 'Não poderei ir'"
+        icon="cancel"
+        variant="danger"
+        [gradient]="false"
+        [fullWidth]="true"
+        (pressed)="onCancel()"
+      />
     } @else {
-      <button
-        mat-flat-button
-        class="rsvp-card__confirm-btn org-btn-primary"
-        (click)="onConfirm()"
+      <org-button
+        class="rsvp-card__confirm-btn"
         [disabled]="isLoading()"
-        aria-label="Confirmar presença com 1 toque"
+        [loading]="isLoading()"
+        [label]="isLoading() ? 'Confirmando...' : 'Confirmar Presença (1 toque)'"
+        icon="how_to_reg"
+        [fullWidth]="true"
+        (pressed)="onConfirm()"
         data-testid="rsvp-action-btn"
-      >
-        @if (isLoading()) {
-          <mat-spinner diameter="18" class="rsvp-card__spinner"></mat-spinner>
-          <span>Confirmando...</span>
-        } @else {
-          <ng-container>
-            <mat-icon aria-hidden="true">how_to_reg</mat-icon>
-          </ng-container>
-          <span>Confirmar Presença (1-Touch)</span>
-        }
-      </button>
+      />
     }
-  </mat-card-actions>
-</mat-card>
+    </footer>
+  </article>
+</org-surface>

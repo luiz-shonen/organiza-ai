@@ -69,7 +69,7 @@ describe('ItemListCardComponent', () => {
     component.onClaim.subscribe(claimSpy);
 
     const claimBtn = fixture.nativeElement.querySelector(
-      '.item-list-card__claim-btn',
+      '.item-list-card__claim-btn button',
     ) as HTMLButtonElement;
     expect(claimBtn).toBeTruthy();
     claimBtn.click();
@@ -86,7 +86,7 @@ describe('ItemListCardComponent', () => {
     component.onUnclaim.subscribe(unclaimSpy);
 
     const unclaimBtn = fixture.nativeElement.querySelector(
-      '.item-list-card__unclaim-btn',
+      '.item-list-card__unclaim-btn button',
     ) as HTMLButtonElement;
     expect(unclaimBtn).toBeTruthy();
     unclaimBtn.click();
@@ -103,7 +103,7 @@ describe('ItemListCardComponent', () => {
     component.onUnclaim.subscribe(unclaimSpy);
 
     const unclaimBtn = fixture.nativeElement.querySelector(
-      '.item-list-card__unclaim-btn',
+      '.item-list-card__unclaim-btn button',
     ) as HTMLButtonElement;
     expect(unclaimBtn).toBeTruthy();
     unclaimBtn.click();
@@ -117,7 +117,7 @@ describe('ItemListCardComponent', () => {
     fixture.detectChanges();
 
     const claimBtn = fixture.nativeElement.querySelector(
-      '.item-list-card__claim-btn',
+      '.item-list-card__claim-btn button',
     ) as HTMLButtonElement;
     expect(claimBtn.disabled).toBe(true);
   });

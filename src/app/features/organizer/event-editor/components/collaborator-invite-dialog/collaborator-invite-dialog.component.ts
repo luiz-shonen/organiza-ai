@@ -14,13 +14,10 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 
-import { OrgFormFieldDirective } from '../../../../../shared/ui';
+import { OrgButtonComponent, OrgTextFieldComponent } from '../../../../../shared/ui';
 
 export interface CollaboratorInviteDialogData {
   collaborators?: string[];
@@ -34,12 +31,10 @@ export interface CollaboratorInviteDialogData {
     CommonModule,
     FormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    OrgFormFieldDirective,
+    OrgButtonComponent,
+    OrgTextFieldComponent,
   ],
   templateUrl: './collaborator-invite-dialog.component.html',
   styleUrl: './collaborator-invite-dialog.component.scss',

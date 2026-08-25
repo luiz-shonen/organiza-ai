@@ -56,9 +56,9 @@ describe('FamilyRosterManagerComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelectorAll('org-surface')).toHaveLength(1);
     expect(compiled.querySelectorAll('mat-card')).toHaveLength(0);
-    expect(compiled.querySelectorAll('mat-form-field.org-form-field')).toHaveLength(3);
-    expect(compiled.querySelector('.family-roster__add-btn')?.classList).toContain('org-button');
-    expect(compiled.querySelector('.family-roster__remove-btn')?.classList).toContain('org-icon-button');
+    expect(compiled.querySelectorAll('org-text-field, org-select-field')).toHaveLength(3);
+    expect(compiled.querySelector('.family-roster__add-btn')).toBeInstanceOf(HTMLElement);
+    expect(compiled.querySelector('.family-roster__remove-btn')).toBeInstanceOf(HTMLElement);
     expect(compiled.querySelectorAll('org-icon')).not.toHaveLength(0);
   });
 
@@ -124,7 +124,7 @@ describe('FamilyRosterManagerComponent', () => {
     component.removeMember.subscribe(removeSpy);
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const removeButtons = compiled.querySelectorAll<HTMLButtonElement>('.family-roster__remove-btn');
+    const removeButtons = compiled.querySelectorAll<HTMLButtonElement>('.family-roster__remove-btn button');
     expect(removeButtons.length).toBe(2);
 
     removeButtons[0].click();

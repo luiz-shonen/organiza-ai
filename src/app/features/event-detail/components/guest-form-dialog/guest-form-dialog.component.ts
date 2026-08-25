@@ -10,9 +10,6 @@ import {
   MatDialogModule,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {
   GuestSession,
@@ -24,7 +21,7 @@ import {
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 
-import { OrgFormFieldDirective } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgTextFieldComponent } from '../../../../shared/ui';
 
 export interface GuestFormDialogData {
   session: GuestSession | null;
@@ -45,12 +42,10 @@ export interface GuestFormDialogResult {
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
     MatIconModule,
     FamilySelectorComponent,
-    OrgFormFieldDirective,
+    OrgButtonComponent,
+    OrgTextFieldComponent,
   ],
   templateUrl: './guest-form-dialog.component.html',
   styleUrl: './guest-form-dialog.component.scss',
@@ -124,5 +119,9 @@ export class GuestFormDialogComponent {
         selectedFamilyMembers: selected,
       });
     }
+  }
+
+  protected cancel(): void {
+    this.dialogRef.close();
   }
 }

@@ -32,10 +32,10 @@ describe('RsvpCardComponent', () => {
 
     it('renders unconfirmed CTA button and attendee count', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const subtitle = compiled.querySelector('mat-card-subtitle');
+      const subtitle = compiled.querySelector('.rsvp-card__subtitle');
       expect(subtitle?.textContent).toContain('5 pessoa(s) confirmada(s)');
 
-      const confirmBtn = compiled.querySelector('.rsvp-card__confirm-btn') as HTMLButtonElement;
+      const confirmBtn = compiled.querySelector('.rsvp-card__confirm-btn button') as HTMLButtonElement;
       expect(confirmBtn).toBeTruthy();
       expect(confirmBtn.textContent).toContain('Confirmar Presença');
     });
@@ -45,7 +45,7 @@ describe('RsvpCardComponent', () => {
       component.confirmRsvp.subscribe(confirmSpy);
 
       const confirmBtn = fixture.nativeElement.querySelector(
-        '.rsvp-card__confirm-btn',
+        '.rsvp-card__confirm-btn button',
       ) as HTMLButtonElement;
       confirmBtn.click();
 
@@ -63,7 +63,7 @@ describe('RsvpCardComponent', () => {
 
     it('renders confirmed status message and guest name', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const title = compiled.querySelector('mat-card-title');
+      const title = compiled.querySelector('.rsvp-card__title');
       expect(title?.textContent).toContain('Você está na lista!');
 
       const status = compiled.querySelector('.rsvp-card__status');
@@ -76,7 +76,7 @@ describe('RsvpCardComponent', () => {
       component.cancelRsvp.subscribe(cancelSpy);
 
       const cancelBtn = fixture.nativeElement.querySelector(
-        '.rsvp-card__cancel-btn',
+        '.rsvp-card__cancel-btn button',
       ) as HTMLButtonElement;
       expect(cancelBtn).toBeTruthy();
       cancelBtn.click();
@@ -95,7 +95,7 @@ describe('RsvpCardComponent', () => {
       component.confirmRsvp.subscribe(confirmSpy);
 
       const confirmBtn = fixture.nativeElement.querySelector(
-        '.rsvp-card__confirm-btn',
+        '.rsvp-card__confirm-btn button',
       ) as HTMLButtonElement;
       expect(confirmBtn.disabled).toBe(true);
 
@@ -112,7 +112,7 @@ describe('RsvpCardComponent', () => {
       component.cancelRsvp.subscribe(cancelSpy);
 
       const cancelBtn = fixture.nativeElement.querySelector(
-        '.rsvp-card__cancel-btn',
+        '.rsvp-card__cancel-btn button',
       ) as HTMLButtonElement;
       expect(cancelBtn.disabled).toBe(true);
 

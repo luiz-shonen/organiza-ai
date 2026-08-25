@@ -1,14 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { OrgSurfaceDirective } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-rsvp-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, OrgSurfaceDirective],
+  imports: [MatIconModule, OrgButtonComponent, OrgSurfaceComponent],
   templateUrl: './rsvp-card.component.html',
   styleUrl: './rsvp-card.component.scss',
 })

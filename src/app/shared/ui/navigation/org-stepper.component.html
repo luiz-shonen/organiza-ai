@@ -1,5 +1,15 @@
-<mat-stepper class="org-stepper" [orientation]="orientation()" [selectedIndex]="selectedIndex()" (selectionChange)="updateSelection($event.selectedIndex)">
+<mat-stepper
+  class="org-stepper"
+  [class.org-stepper--compact]="compact()"
+  [attr.aria-label]="ariaLabel()"
+  [linear]="linear()"
+  [orientation]="orientation()"
+  [selectedIndex]="selectedIndex()"
+  (selectionChange)="updateSelection($event.selectedIndex)"
+>
   @for (step of steps(); track step.label()) {
-    <mat-step [editable]="!step.disabled()" [label]="step.label()"><ng-container [ngTemplateOutlet]="step.content()" /></mat-step>
+    <mat-step [editable]="!step.disabled()" [label]="step.label()" [stepControl]="step.materialStepControl()">
+      <ng-container [ngTemplateOutlet]="step.content()" />
+    </mat-step>
   }
 </mat-stepper>

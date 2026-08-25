@@ -6,14 +6,12 @@ import {
   computed,
   OnInit,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { effect } from '@angular/core';
@@ -25,43 +23,41 @@ import {
   EventNotificationService,
 } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { FeedbackService } from '../../../shared/ui';
+import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 import {
   EventDashboardFiltersComponent,
   EventStatusFilter,
   EventFilterCounts,
 } from '../../organizer/dashboard/components/event-filters/event-filters.component';
 import {
-  OrgButtonDirective,
+  OrgButtonComponent,
+  OrgDataColumn,
+  OrgDataTableComponent,
   OrgEmptyStateComponent,
-  OrgIconButtonDirective,
-  OrgIconComponent,
+  OrgIconButtonComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
-  OrgSurfaceDirective,
+  OrgSurfaceComponent,
 } from '../../../shared/ui';
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatTableModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatMenuModule,
     EventDashboardFiltersComponent,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
-    OrgSurfaceDirective,
+    OrgSurfaceComponent,
     OrgEmptyStateComponent,
-    OrgButtonDirective,
-    OrgIconButtonDirective,
-    OrgIconComponent,
+    OrgButtonComponent,
+    OrgDataTableComponent,
+    OrgIconButtonComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
@@ -72,7 +68,7 @@ export class DashboardContainer implements OnInit {
   private readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly clipboard = inject(Clipboard);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialogs = inject(OrgDialogService);
   private readonly notificationService = inject(NotificationService);
   private readonly eventNotificationService = inject(EventNotificationService);
 
@@ -80,7 +76,11 @@ export class DashboardContainer implements OnInit {
   protected readonly events = toSignal(this.events$);
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly user = this.authService.currentUser;
-  protected readonly displayedColumns = ['title', 'date', 'location', 'actions'];
+  protected readonly tableColumns: readonly OrgDataColumn<PartyEvent>[] = [
+    { id: 'title', label: 'Evento', value: (event) => event.title },
+    { id: 'date', label: 'Data', value: (event) => this.formatDate(event.date) },
+    { id: 'location', label: 'Local', value: (event) => event.location },
+  ];
 
   readonly activeFilter = signal<EventStatusFilter>('all');
 
@@ -193,6 +193,14 @@ export class DashboardContainer implements OnInit {
 
   ngOnInit(): void {}
 
+  protected createEvent(): void {
+    void this.router.navigate(['/meus-eventos/evento/novo']);
+  }
+
+  protected stopRowClick(event: Event): void {
+    event.stopPropagation();
+  }
+
   protected editEvent(event: PartyEvent): void {
     this.router.navigate(['/meus-eventos/evento', event.id]);
   }
@@ -210,16 +218,13 @@ export class DashboardContainer implements OnInit {
   }
 
   protected async cancelEvent(event: PartyEvent): Promise<void> {
-    const confirmRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
+    this.dialogs
+      .confirm({
         title: 'Cancelar Evento',
         message: `Tem certeza que deseja cancelar o evento "${event.title}"? Ele será movido para os cancelados e o link público avisará sobre o cancelamento.`,
         confirmLabel: 'Cancelar Evento',
-      },
-    });
-
-    confirmRef.afterClosed().subscribe(async (result) => {
+      })
+      .subscribe(async (result) => {
       if (result) {
         try {
           await this.eventService.cancelEvent(event.id);

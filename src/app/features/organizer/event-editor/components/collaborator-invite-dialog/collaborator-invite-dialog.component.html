@@ -10,36 +10,15 @@
     </p>
 
     <form class="collaborator-dialog__form" (ngSubmit)="onInvite()" aria-label="Formulário de convite de colaborador">
-      <mat-form-field appearance="outline" orgFormField class="collaborator-dialog__field">
-        <mat-label>Email do colaborador</mat-label>
-        <input
-          matInput
-          type="email"
-          name="email"
-          [value]="email()"
-          (input)="onInputChange($event)"
-          placeholder="amigo@exemplo.com"
-          aria-label="Email do colaborador"
-          autocomplete="email"
-          required
-        />
-        <mat-icon matSuffix aria-hidden="true">mail</mat-icon>
-        @if (email().length > 0 && !isEmailValid()) {
-          <mat-error>Digite um email válido</mat-error>
-        }
-      </mat-form-field>
+      <org-text-field class="collaborator-dialog__field" label="E-mail do colaborador" type="email" placeholder="amigo@exemplo.com" [value]="email()" (valueChange)="email.set($event)" [required]="true" [error]="email().length > 0 && !isEmailValid() ? 'Digite um e-mail válido' : ''" />
 
-      <button
-        mat-flat-button
-        color="primary"
+      <org-button
+        label="Convidar"
+        icon="send"
         type="submit"
         class="collaborator-dialog__submit-btn"
         [disabled]="!isEmailValid()"
-        aria-label="Enviar convite para colaborador"
-      >
-        <mat-icon aria-hidden="true">send</mat-icon>
-        Convidar
-      </button>
+      />
     </form>
 
     <section class="collaborator-dialog__section" aria-labelledby="section-active-collabs">
@@ -91,13 +70,6 @@
   </mat-dialog-content>
 
   <mat-dialog-actions align="end" class="collaborator-dialog__actions">
-    <button
-      mat-button
-      type="button"
-      (click)="closeDialog()"
-      aria-label="Fechar modal"
-    >
-      Fechar
-    </button>
+    <org-button label="Fechar" variant="text" [gradient]="false" (pressed)="closeDialog()" />
   </mat-dialog-actions>
 </div>

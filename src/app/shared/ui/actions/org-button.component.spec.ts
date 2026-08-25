@@ -65,4 +65,31 @@ describe('OrgButtonComponent', () => {
     expect(pressed).toHaveBeenCalledOnce();
     expect(button.classList.contains('org-button__control')).toBe(true);
   });
+
+  it('supports a full-width OAuth action with a decorative leading image', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgButtonComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgButtonComponent> = TestBed.createComponent(OrgButtonComponent);
+    fixture.componentRef.setInput('label', 'Entrar com Google');
+    fixture.componentRef.setInput('variant', 'secondary');
+    fixture.componentRef.setInput('fullWidth', true);
+    fixture.componentRef.setInput('imageSrc', 'https://example.com/google.svg');
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    const image = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+
+    expect(button.classList.contains('org-button__control--full-width')).toBe(true);
+    expect(image.src).toContain('google.svg');
+    expect(image.alt).toBe('');
+  });
+
+  it('forwards a stable test identifier to the internal accessible control', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgButtonComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgButtonComponent);
+    fixture.componentRef.setInput('label', 'Salvar');
+    fixture.componentRef.setInput('testId', 'save-event');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="save-event"]')).toBeTruthy();
+  });
 });

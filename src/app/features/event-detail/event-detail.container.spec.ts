@@ -2,9 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, signal } from '@angular/core';
 import { of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { MatDialog } from '@angular/material/dialog';
 import { EventDetailContainer } from './event-detail.container';
-import { FeedbackService } from '../../shared/ui';
+import { FeedbackService, OrgDialogService } from '../../shared/ui';
 import {
   EventService,
   ItemService,
@@ -68,8 +67,8 @@ describe('EventDetailContainer', () => {
     error: ReturnType<typeof vi.fn>;
     info: ReturnType<typeof vi.fn>;
   };
-  let mockDialog: {
-    open: ReturnType<typeof vi.fn>;
+  let mockDialogs: {
+    confirm: ReturnType<typeof vi.fn>;
   };
   let mockDrawerService: { open: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
   let rsvpResult: { name: string; phone: string; companions: never[]; selectedFamilyMembers: FamilyMember[] };
@@ -169,15 +168,8 @@ describe('EventDetailContainer', () => {
       companions: [],
       selectedFamilyMembers: [],
     };
-    mockDialog = {
-      open: vi.fn().mockReturnValue({
-        afterClosed: () => of({
-          name: 'Lucas Dev',
-          phone: '11999998888',
-          companions: [],
-          selectedFamilyMembers: [],
-        }),
-      }),
+    mockDialogs = {
+      confirm: vi.fn().mockReturnValue(of(true)),
     };
     mockDrawerService = {
       open: vi.fn((request: { onComplete?: (result: typeof rsvpResult) => void }) => request.onComplete?.(rsvpResult)),
@@ -197,7 +189,7 @@ describe('EventDetailContainer', () => {
         { provide: ConfettiService, useValue: mockConfettiService },
         { provide: SeasonalThemeService, useValue: mockSeasonalThemeService },
         { provide: FeedbackService, useValue: mockFeedback },
-        { provide: MatDialog, useValue: mockDialog },
+        { provide: OrgDialogService, useValue: mockDialogs },
         { provide: DrawerService, useValue: mockDrawerService },
       ],
     }).compileComponents();
@@ -333,7 +325,7 @@ describe('EventDetailContainer', () => {
 
       await (component as any).onCancelRsvp();
 
-      expect(mockDialog.open).toHaveBeenCalled();
+      expect(mockDialogs.confirm).toHaveBeenCalled();
       expect(mockGuestService.cancelRsvp).toHaveBeenCalledWith('evt-123', 'usr-1', 'usr-1');
       expect(mockGuestSessionService.clearSession).toHaveBeenCalled();
       expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.');

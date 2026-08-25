@@ -29,47 +29,34 @@
           role="form"
           aria-label="Editar nome"
         >
-          <mat-form-field orgFormField appearance="outline" class="profile-info-card__form-field">
-            <mat-label>Nome Completo</mat-label>
-            <input
-              matInput
-              type="text"
-              name="displayName"
-              [value]="editName()"
-              (input)="editName.set($any($event.target).value)"
-              placeholder="Seu nome"
-              required
-              aria-required="true"
-              aria-label="Nome completo"
-              data-testid="profile-name-input"
-            />
-            @if (editName().trim().length === 0) {
-              <mat-error>O nome não pode ficar em branco</mat-error>
-            }
-          </mat-form-field>
+          <org-text-field
+            class="profile-info-card__form-field"
+            label="Nome completo"
+            placeholder="Seu nome"
+            [value]="editName()"
+            (valueChange)="editName.set($event)"
+            [required]="true"
+            testId="profile-name-input"
+            [error]="editName().trim().length === 0 ? 'O nome não pode ficar em branco' : ''"
+          />
 
           <div class="profile-info-card__actions">
-            <button
-              orgButton="primary"
-              type="submit"
+            <org-button
               class="profile-info-card__save-btn"
               [disabled]="editName().trim().length === 0"
-              aria-label="Salvar nome de exibição"
+              label="Salvar"
+              icon="check_circle"
+              type="submit"
               data-testid="save-profile-btn"
-            >
-              <org-icon name="check_circle" size="sm" color="var(--org-on-primary)" />
-              Salvar
-            </button>
-            <button
-              orgButton="secondary"
-              type="button"
+            />
+            <org-button
               class="profile-info-card__cancel-btn"
-              (click)="cancelEditing()"
-              aria-label="Cancelar edição"
-            >
-              <org-icon name="close" size="sm" color="var(--org-primary)" />
-              Cancelar
-            </button>
+              label="Cancelar"
+              icon="close"
+              variant="secondary"
+              [gradient]="false"
+              (pressed)="cancelEditing()"
+            />
           </div>
         </form>
       } @else {
@@ -77,15 +64,14 @@
           <span class="profile-info-card__name">
             {{ user().displayName || user().name || 'Sem nome cadastrado' }}
           </span>
-          <button
-            orgIconButton="primary"
+          <org-icon-button
+            variant="primary"
             class="profile-info-card__edit-btn"
-            (click)="startEditing()"
-            aria-label="Editar nome de exibição"
+            ariaLabel="Editar nome de exibição"
+            icon="edit"
+            (pressed)="startEditing()"
             [attr.aria-expanded]="isEditing()"
-          >
-            <org-icon name="edit" size="sm" color="var(--org-primary)" />
-          </button>
+          />
         </div>
       }
     </div>

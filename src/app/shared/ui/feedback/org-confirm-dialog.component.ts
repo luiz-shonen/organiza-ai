@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
+import { OrgButtonComponent } from '../actions/org-button.component';
 
 export interface OrgConfirmDialogData {
   readonly title: string;
@@ -12,7 +12,7 @@ export interface OrgConfirmDialogData {
 @Component({
   selector: 'org-confirm-dialog',
   standalone: true,
-  imports: [MatButtonModule, MatDialogModule],
+  imports: [MatDialogModule, OrgButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: './org-confirm-dialog.component.html',

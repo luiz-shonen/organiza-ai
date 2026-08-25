@@ -27,10 +27,37 @@ describe('OrgTimeFieldComponent', () => {
     fixture.componentRef.setInput('minuteStep', 15);
     fixture.detectChanges();
 
-    const increment = fixture.nativeElement.querySelector('[aria-label="Avançar horário"]') as HTMLButtonElement;
-    increment.click();
+    fixture.componentInstance.increment();
 
     expect(fixture.componentInstance.value()).toBe('19:45');
+  });
+
+  it('uses a single Material menu trigger and applies a typed quick-time option', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgTimeFieldComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgTimeFieldComponent> = TestBed.createComponent(OrgTimeFieldComponent);
+    fixture.componentRef.setInput('quickOptions', [{ label: 'Início da festa, 19h', value: '19:00' }]);
+    fixture.detectChanges();
+
+    fixture.componentInstance.selectQuickOption({ label: 'Início da festa, 19h', value: '19:00' });
+
+    expect(fixture.componentInstance.value()).toBe('19:00');
+    expect(fixture.nativeElement.querySelectorAll('.org-time-field__trigger')).toHaveLength(1);
+    expect(fixture.nativeElement.querySelectorAll('[aria-label="Voltar horário"], [aria-label="Avançar horário"]')).toHaveLength(0);
+  });
+
+  it('does not change the value outside configured minimum and maximum limits', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgTimeFieldComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgTimeFieldComponent> = TestBed.createComponent(OrgTimeFieldComponent);
+    fixture.componentRef.setInput('value', '19:30');
+    fixture.componentRef.setInput('min', '19:00');
+    fixture.componentRef.setInput('max', '20:00');
+    fixture.detectChanges();
+
+    fixture.componentInstance.selectQuickOption({ label: 'Muito cedo', value: '18:30' });
+    fixture.componentInstance.selectQuickOption({ label: 'Horário válido', value: '20:00' });
+    fixture.componentInstance.increment();
+
+    expect(fixture.componentInstance.value()).toBe('20:00');
   });
 
   it('honors disabled state provided by Angular reactive forms', async () => {

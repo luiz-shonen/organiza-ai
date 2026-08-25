@@ -119,44 +119,6 @@
     padding: 0;
   }
 
-  &__stepper {
-    background: transparent;
-    border-radius: 20px;
-    max-width: 100%;
-    min-width: 0;
-    overflow: hidden;
-
-    ::ng-deep .mat-horizontal-stepper-header-container {
-      display: none;
-      border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
-
-      @media (min-width: 600px) {
-        display: flex;
-        padding: 16px 24px;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        max-width: 100%;
-        -webkit-overflow-scrolling: touch;
-      }
-    }
-
-    ::ng-deep .mat-horizontal-content-container {
-      padding: 0;
-    }
-  }
-
-  &__stepper--mobile {
-    --mat-stepper-header-height: 56px;
-    --mat-stepper-header-selected-state-icon-background-color: var(--org-primary);
-    --mat-stepper-header-selected-state-label-text-color: var(--org-primary);
-    --mat-stepper-header-selected-state-label-text-weight: 700;
-    --mat-stepper-header-done-state-icon-background-color: var(--org-primary);
-
-    @media (min-width: 600px) {
-      --mat-stepper-header-height: 64px;
-    }
-  }
-
   &__step-progress {
     display: grid;
     gap: 6px;
@@ -244,6 +206,12 @@
     color: var(--mat-sys-on-surface-variant);
   }
 
+  &__category-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   &__category-error {
     font-size: 0.75rem;
     padding-left: 16px;
@@ -299,22 +267,6 @@
     opacity: 0.6;
     position: relative;
     user-select: none !important;
-
-    /* Bulletproof click blocker overlay */
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 999;
-      cursor: not-allowed;
-    }
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      background: var(--mat-sys-surface-container-low) !important;
-    }
-    input {
-      color: var(--mat-sys-on-surface-variant) !important;
-    }
   }
 
   &__lock-icon {
@@ -336,12 +288,6 @@
     gap: 8px;
     align-items: flex-start;
     padding-top: 12px;
-
-    // Improve input legibility over the gradient/glass card background
-    .mat-mdc-text-field-wrapper {
-      background: var(--mat-sys-surface) !important;
-      opacity: 0.9;
-    }
   }
 
   &__item-name-field {

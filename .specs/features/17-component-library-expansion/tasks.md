@@ -139,6 +139,8 @@ T22 -> T23 -> T24 -> T25 -> T26
 
 ### T9: Create `OrgToggleComponent`
 
+**Status**: ✅ Complete
+
 **Where**: `src/app/shared/ui/selection/`  
 **Depends on**: T8  
 **Tests**: Checked model, label, disabled non-change, accessible Material toggle, and 48px target map to SEL-01 and ACT-03.  

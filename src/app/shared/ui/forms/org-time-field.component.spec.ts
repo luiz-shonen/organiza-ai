@@ -32,4 +32,13 @@ describe('OrgTimeFieldComponent', () => {
 
     expect(fixture.componentInstance.value()).toBe('19:45');
   });
+
+  it('honors disabled state provided by Angular reactive forms', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgTimeFieldComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgTimeFieldComponent> = TestBed.createComponent(OrgTimeFieldComponent);
+    fixture.componentInstance.setDisabledState(true);
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement.querySelector('input') as HTMLInputElement).disabled).toBe(true);
+  });
 });

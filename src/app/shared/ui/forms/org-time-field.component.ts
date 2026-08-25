@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, forwardRef, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, forwardRef, input, model, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -34,17 +34,19 @@ export class OrgTimeFieldComponent implements ControlValueAccessor {
   public readonly value = model('');
   public readonly minuteStep = input<number, unknown>(5, { transform: normalizeMinuteStep });
   public readonly disabled = input(false);
+  private readonly disabledFromControl = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.disabledFromControl());
   private onChange: (value: string) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
   public writeValue(value: string | null): void { this.value.set(value ?? ''); }
   public registerOnChange(onChange: (value: string) => void): void { this.onChange = onChange; }
   public registerOnTouched(onTouched: () => void): void { this.onTouched = onTouched; }
-  public setDisabledState(disabled: boolean): void { if (disabled) { this.onTouched(); } }
+  public setDisabledState(disabled: boolean): void { this.disabledFromControl.set(disabled); }
 
   public updateValue(event: Event): void {
     const parsed = parseTime((event.target as HTMLInputElement).value);
-    if (parsed && !this.disabled()) { this.setValue(formatTime(parsed)); }
+    if (parsed && !this.isDisabled()) { this.setValue(formatTime(parsed)); }
   }
 
   public increment(): void { this.adjust(this.minuteStep()); }
@@ -52,7 +54,7 @@ export class OrgTimeFieldComponent implements ControlValueAccessor {
   protected markTouched(): void { this.onTouched(); }
 
   private adjust(deltaMinutes: number): void {
-    if (this.disabled()) { return; }
+    if (this.isDisabled()) { return; }
     const parsed = parseTime(this.value()) ?? { hour: 0, minute: 0 };
     const total = (parsed.hour * 60 + parsed.minute + deltaMinutes + 1440) % 1440;
     this.setValue(formatTime({ hour: Math.floor(total / 60), minute: total % 60 }));

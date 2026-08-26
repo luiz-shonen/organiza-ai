@@ -100,12 +100,24 @@ describe('DesignSystemShowcaseContainer', () => {
   it('documents the approved typography roles, scale, and Material icon source', () => {
     const root = fixture.nativeElement as HTMLElement;
     const typography = root.querySelector<HTMLElement>('section#typography');
+    const iconography = root.querySelector<HTMLElement>('section#iconography');
 
     expect(typography).toBeTruthy();
     expect(typography?.textContent).toContain('Plus Jakarta Sans');
     expect(typography?.textContent).toContain('Fraunces');
-    expect(typography?.textContent).toContain('Material Icons');
     expect(typography?.querySelector('app-design-system-code-example')).toBeTruthy();
+    expect(iconography?.textContent).toContain('Material Icons');
+    expect(iconography?.querySelector('org-icon')).toBeTruthy();
+  });
+
+  it('separates brand and foundation documentation into anchored code-backed sections', () => {
+    const root = fixture.nativeElement as HTMLElement;
+
+    for (const id of ['colors', 'iconography', 'tokens', 'foundations']) {
+      const section = root.querySelector<HTMLElement>(`section#${id}`);
+      expect(section).toBeTruthy();
+      expect(section?.querySelector('app-design-system-code-example')).toBeTruthy();
+    }
   });
 
   it('applies a single selected seasonal class to the document root', () => {

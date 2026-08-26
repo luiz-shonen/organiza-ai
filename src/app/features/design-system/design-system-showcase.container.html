@@ -43,33 +43,10 @@
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.invitationPreview" />
     </section>
 
-    <section id="seasonal-themes" class="org-ds-section" aria-labelledby="seasonal-themes-title">
+    <section id="colors" class="org-ds-section" aria-labelledby="colors-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">02 · temas sazonais</p>
-        <h2 id="seasonal-themes-title">A mesma biblioteca, quatro celebrações brasileiras.</h2>
-      </div>
-
-      <div class="org-ds-season-grid">
-        @for (theme of seasonalOptions; track theme.id) {
-          <button
-            type="button"
-            class="org-ds-season-card"
-            [class.org-ds-season-card--active]="activeSeasonalTheme() === theme.id"
-            [attr.aria-pressed]="activeSeasonalTheme() === theme.id"
-            (click)="setSeasonalTheme(theme.id)"
-          >
-            <span class="org-ds-season-card__swatch" [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"></span>
-            <strong>{{ theme.label }}</strong>
-            <small>{{ theme.description }}</small>
-          </button>
-        }
-      </div>
-    </section>
-
-    <section id="foundations" class="org-ds-section" aria-labelledby="foundations-title">
-      <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">03 · fundações</p>
-        <h2 id="foundations-title">Cor, tipo e profundidade com uma assinatura própria.</h2>
+        <p class="org-ds-section__eyebrow">02 · cores</p>
+        <h2 id="colors-title">Uma paleta semântica, expressiva e legível em qualquer tema.</h2>
       </div>
 
       <div class="org-ds-token-grid">
@@ -104,12 +81,12 @@
           <code>--org-error</code>
         </article>
       </div>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.tokens" />
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.colors" />
     </section>
 
     <section id="typography" class="org-ds-section" aria-labelledby="typography-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">04 · tipografia e ícones</p>
+        <p class="org-ds-section__eyebrow">03 · tipografia</p>
         <h2 id="typography-title">Uma voz editorial para títulos, uma interface limpa para o restante.</h2>
       </div>
 
@@ -138,12 +115,6 @@
           <code>--org-font-mono</code>
         </article>
 
-        <article class="org-ds-type-card org-ds-type-card--icons">
-          <span class="org-ds-type-card__eyebrow">Iconografia</span>
-          <p class="org-ds-type-card__icons" aria-hidden="true">event schedule palette</p>
-          <strong>Material Icons</strong>
-          <small>Ícones semânticos são renderizados pelo componente fechado <code>org-icon</code>.</small>
-        </article>
       </div>
 
       <div class="org-ds-type-scale" aria-label="Escala tipográfica">
@@ -153,6 +124,74 @@
         <div><span>Label</span><strong>12px</strong><small>800 / 0.12em</small></div>
       </div>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.typography" />
+    </section>
+
+    <section id="iconography" class="org-ds-section" aria-labelledby="iconography-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">04 · iconografia</p>
+        <h2 id="iconography-title">Material Icons, com nomes semânticos e uma API tipada.</h2>
+      </div>
+
+      <div class="org-ds-icon-grid" aria-label="Exemplos de ícones Material">
+        <article><org-icon name="event" size="lg" /><strong>Evento</strong><code>event</code></article>
+        <article><org-icon name="schedule" size="lg" /><strong>Horário</strong><code>schedule</code></article>
+        <article><org-icon name="share" size="lg" /><strong>Compartilhar</strong><code>share</code></article>
+        <article><org-icon name="info" size="lg" /><strong>Feedback</strong><code>info</code></article>
+      </div>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.iconography" />
+    </section>
+
+    <section id="seasonal-themes" class="org-ds-section" aria-labelledby="seasonal-themes-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">05 · temas sazonais</p>
+        <h2 id="seasonal-themes-title">A mesma biblioteca, quatro celebrações brasileiras.</h2>
+      </div>
+
+      <div class="org-ds-season-grid">
+        @for (theme of seasonalOptions; track theme.id) {
+          <button
+            type="button"
+            class="org-ds-season-card"
+            [class.org-ds-season-card--active]="activeSeasonalTheme() === theme.id"
+            [attr.aria-pressed]="activeSeasonalTheme() === theme.id"
+            (click)="setSeasonalTheme(theme.id)"
+          >
+            <span class="org-ds-season-card__swatch" [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"></span>
+            <strong>{{ theme.label }}</strong>
+            <small>{{ theme.description }}</small>
+          </button>
+        }
+      </div>
+    </section>
+
+    <section id="tokens" class="org-ds-section" aria-labelledby="tokens-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">06 · tokens</p>
+        <h2 id="tokens-title">Valores semânticos que deixam a aplicação personalizável, sem CSS ad hoc.</h2>
+      </div>
+
+      <div class="org-ds-foundation-grid">
+        <article><span>Cor</span><strong>Marca e estados</strong><code>--org-primary · --org-success</code></article>
+        <article><span>Gradiente</span><strong>Acento opcional</strong><code>--org-gradient-primary</code></article>
+        <article><span>Superfície</span><strong>Vidro e contraste</strong><code>--org-glass-bg</code></article>
+        <article><span>Tipo</span><strong>Funções tipográficas</strong><code>--org-font-body</code></article>
+      </div>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.tokens" />
+    </section>
+
+    <section id="foundations" class="org-ds-section" aria-labelledby="foundations-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">07 · fundamentos</p>
+        <h2 id="foundations-title">Espaço, cantos, profundidade e movimento ajudam cada tela a respirar.</h2>
+      </div>
+
+      <div class="org-ds-foundation-grid">
+        <article><span>Espaço</span><strong>Ritmo em múltiplos de 8</strong><code>8 · 16 · 24 · 32px</code></article>
+        <article><span>Cantos</span><strong>Suave e reconhecível</strong><code>--org-radius-md</code></article>
+        <article><span>Profundidade</span><strong>Glass e sombra</strong><code>--org-glass-shadow</code></article>
+        <article><span>Movimento</span><strong>Transições curtas</strong><code>180ms ease</code></article>
+      </div>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.foundations" />
     </section>
 
     <section id="components" class="org-ds-section" aria-labelledby="components-title">

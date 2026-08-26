@@ -101,7 +101,7 @@ The `/design-system` catalog lists usable components, but it presents foundation
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
 | DSIA-01 | P1: Scan the catalog by design-system layer | Execute | Implementing |
-| DSIA-02 | P1: Inspect tokens as separate foundations | Design | Pending |
+| DSIA-02 | P1: Inspect tokens as separate foundations | Execute | Implementing |
 | DSIA-03 | P1: Use a component family without guessing its API | Design | Pending |
 | DSIA-04 | P2: Keep catalog behaviour and small screens intact | Design | Pending |
 

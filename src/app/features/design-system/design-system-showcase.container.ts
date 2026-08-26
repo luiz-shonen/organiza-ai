@@ -9,6 +9,7 @@ import {
   OrgDateFieldComponent,
   OrgDialogService,
   OrgEmptyStateComponent,
+  OrgIconComponent,
   OrgIconButtonComponent,
   OrgMenuComponent,
   OrgMetricCardComponent,
@@ -33,6 +34,10 @@ import {
   type OrgTabItem,
   FeedbackService,
 } from '../../shared/ui';
+import {
+  DESIGN_SYSTEM_SECTIONS,
+  type DesignSystemNavigationItem,
+} from '../../core/models/design-system-navigation.model';
 import { DesignSystemCodeExampleComponent } from './design-system-code-example.component';
 
 export type SeasonalThemeOption =
@@ -42,26 +47,9 @@ export type SeasonalThemeOption =
   | 'theme-pascoa'
   | 'theme-ano-novo';
 
-export interface ShowcaseSection {
-  readonly id: string;
-  readonly label: string;
-  readonly icon: string;
-}
+export type ShowcaseSection = DesignSystemNavigationItem;
 
-export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = [
-  { id: 'overview', label: 'Visão geral', icon: 'auto_awesome' },
-  { id: 'seasonal-themes', label: 'Temas sazonais', icon: 'celebration' },
-  { id: 'foundations', label: 'Fundações', icon: 'palette' },
-  { id: 'typography', label: 'Tipografia', icon: 'text_fields' },
-  { id: 'components', label: 'Componentes', icon: 'widgets' },
-  { id: 'buttons', label: 'Botões e ações', icon: 'ads_click' },
-  { id: 'inputs', label: 'Campos', icon: 'edit_note' },
-  { id: 'selection', label: 'Seleção', icon: 'check_circle' },
-  { id: 'stepper', label: 'Etapas', icon: 'format_list_numbered' },
-  { id: 'navigation', label: 'Navegação', icon: 'tab' },
-  { id: 'data-display', label: 'Dados e cards', icon: 'view_agenda' },
-  { id: 'feedback', label: 'Feedback', icon: 'notifications' },
-];
+export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = DESIGN_SYSTEM_SECTIONS;
 
 @Component({
   selector: 'app-design-system-showcase',
@@ -75,6 +63,7 @@ export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = [
     OrgChipComponent,
     OrgDateFieldComponent,
     OrgEmptyStateComponent,
+    OrgIconComponent,
     OrgIconButtonComponent,
     OrgMenuComponent,
     OrgMetricCardComponent,
@@ -162,6 +151,27 @@ export class DesignSystemShowcaseContainer {
   --org-primary: #ff6b5b;
   --org-secondary: #ffb648;
   --org-gradient-border: linear-gradient(135deg, var(--org-primary), var(--org-secondary));
+}`,
+    colors: `:root {
+  --org-primary: #ff4d94;
+  --org-secondary: #ff8c42;
+  --org-tertiary: #ffc837;
+  --org-success: #10b981;
+  --org-error: #ef4444;
+}`,
+    iconography: `import { OrgIconComponent } from '@shared/ui';
+
+<org-icon name="event" size="md" />
+<org-icon name="schedule" size="sm" />
+
+<!-- Use apenas nomes do mapa tipado do OrgIcon. -->`,
+    foundations: `:root {
+  --org-space-sm: 0.5rem;
+  --org-space-md: 1rem;
+  --org-space-lg: 1.5rem;
+  --org-radius-md: 1rem;
+  --org-glass-blur: 24px;
+  --org-glass-shadow: 0 16px 48px rgb(36 28 49 / 0.16);
 }`,
     typography: `:root {
   --org-font-body: 'Plus Jakarta Sans', sans-serif;

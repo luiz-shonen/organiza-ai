@@ -86,9 +86,9 @@ T3 → T4
 
 **Done when**:
 
-- [ ] Five foundation anchors match the shared navigation model.
-- [ ] Typography names all three type roles and iconography identifies Material Icons.
-- [ ] Each new section has one collapsed `Uso recomendado` disclosure.
+- [x] Five foundation anchors match the shared navigation model.
+- [x] Typography names all three type roles and iconography identifies Material Icons.
+- [x] Each new section has one collapsed `Uso recomendado` disclosure.
 
 **Tests**: unit
 **Gate**: quick

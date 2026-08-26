@@ -6,9 +6,9 @@ The `/design-system` catalog lists usable components, but it presents foundation
 
 ## Goals
 
-- [ ] Organize the live catalog into the clear Brand, Foundations, and Product hierarchy used as inspiration from the Freelaw reference.
-- [ ] Make every catalog family discoverable through the shared navigation drawer and an exact Angular usage example.
-- [ ] Keep the catalog isolated from product-screen migration and preserve its existing interactive demonstrations.
+- [x] Organize the live catalog into the clear Brand, Foundations, and Product hierarchy used as inspiration from the Freelaw reference.
+- [x] Make every catalog family discoverable through the shared navigation drawer and an exact Angular usage example.
+- [x] Keep the catalog isolated from product-screen migration and preserve its existing interactive demonstrations.
 
 ## Out of Scope
 
@@ -23,7 +23,7 @@ The `/design-system` catalog lists usable components, but it presents foundation
 ## Assumptions & Open Questions
 
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | Reference scope | Reuse the Freelaw information architecture, not its visual brand or React API. | Organiza AI retains its own tokens and Angular components. | yes |
 | Component documentation granularity | Each documented component family has one collapsible example containing every public component rendered by that family. | It gives maintainers copyable, exact APIs without duplicating the same demo card. | yes |
 | Navigation | Reuse `app-navigation-drawer` with grouped anchors. | It preserves the existing shared drawer contract. | yes |
@@ -100,15 +100,15 @@ The `/design-system` catalog lists usable components, but it presents foundation
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| DSIA-01 | P1: Scan the catalog by design-system layer | Execute | Implementing |
-| DSIA-02 | P1: Inspect tokens as separate foundations | Execute | Implementing |
-| DSIA-03 | P1: Use a component family without guessing its API | Execute | Implementing |
-| DSIA-04 | P2: Keep catalog behaviour and small screens intact | Execute | Implementing |
+| DSIA-01 | P1: Scan the catalog by design-system layer | Execute | ✅ Verified |
+| DSIA-02 | P1: Inspect tokens as separate foundations | Execute | ✅ Verified |
+| DSIA-03 | P1: Use a component family without guessing its API | Execute | ✅ Verified |
+| DSIA-04 | P2: Keep catalog behaviour and small screens intact | Execute | ✅ Verified |
 
-**Coverage:** 4 total, 0 mapped to tasks, 4 unmapped.
+**Coverage:** 4 total, 4 mapped to tasks, 0 unmapped.
 
 ## Success Criteria
 
-- [ ] The catalog navigation has three named groups and each item lands on a stable section anchor.
-- [ ] Every foundation and product-family section has a copyable Angular example.
-- [ ] Focused unit tests, catalog Playwright tests, and the production build pass.
+- [x] The catalog navigation has three named groups and each item lands on a stable section anchor.
+- [x] Every foundation and product-family section has a copyable Angular example.
+- [x] Focused unit tests, catalog Playwright tests, and the production build pass.

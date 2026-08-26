@@ -2,11 +2,11 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-08-21  
-**State:** Feature 15 (`15-design-system-consolidation-and-showcase`) complete. All 25 tasks executed and verified across 5 phases.  
-**Test Suite:** 60 unit test files (386 tests) green (`npm test -- --watch=false`), 15 E2E test suites green across Desktop & Mobile (`npm run test:e2e`), production build green (`npm run build`).  
-**Validation Gate:** Feature 15 — Independent Verifier PASS (`.specs/features/15-design-system-consolidation-and-showcase/validation.md`). 25/25 ACs matched spec outcome, discrimination sensor: 4/4 mutants killed. `validate_state.py` PASS (0 errors).  
-**Next step:** Ready for deployment or next milestone planning.  
+**Last updated:** 2026-08-26  
+**State:** Feature 20 (`20-design-system-information-architecture`) complete. All 4 tasks executed and verified across 3 phases.  
+**Test Suite:** 79 unit test files (426 tests) green (`npm test -- --watch=false`), 158 E2E tests green across Desktop & Mobile (`npx playwright test`), production build green (`npm run build`).  
+**Validation Gate:** Feature 20 — Independent Verifier PASS (`.specs/features/20-design-system-information-architecture/validation.md`). 12/12 ACs matched spec outcome, discrimination sensor: 2/2 mutants killed. `validate_state.py` PASS (0 errors).  
+**Next step:** Ready for next milestone planning.  
 
 **Active branches:** `main` (production)  
 **What exists:**

@@ -5,7 +5,7 @@
 Implement these tasks with `tlc-spec-driven`. Each task updates its co-located tests, passes its gate, updates this file before committing, and uses an atomic Conventional Commit.
 
 **Design**: `.specs/features/20-design-system-information-architecture/design.md`
-**Status**: In Progress
+**Status**: Complete
 
 ## Test Coverage Matrix
 

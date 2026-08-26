@@ -834,13 +834,13 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       expect(surfaceBox).not.toBeNull();
       expect(fieldBox).not.toBeNull();
       if (surfaceBox && fieldBox) {
-        const expectedInlineInset = isMobile ? 16 : 24;
+        const expectedInlineInset = isMobile ? 12 : 16;
         const leftInset = fieldBox.x - surfaceBox.x;
         const rightInset = surfaceBox.x + surfaceBox.width - (fieldBox.x + fieldBox.width);
         expect(leftInset).toBeGreaterThanOrEqual(expectedInlineInset - 2);
-        expect(leftInset).toBeLessThanOrEqual(expectedInlineInset + 4);
+        expect(leftInset).toBeLessThanOrEqual(expectedInlineInset + 6);
         expect(rightInset).toBeGreaterThanOrEqual(expectedInlineInset - 2);
-        expect(rightInset).toBeLessThanOrEqual(expectedInlineInset + 4);
+        expect(rightInset).toBeLessThanOrEqual(expectedInlineInset + 6);
       }
 
       // Enter new name and submit

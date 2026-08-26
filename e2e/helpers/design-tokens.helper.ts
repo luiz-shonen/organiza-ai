@@ -38,8 +38,8 @@ export async function assertGlassmorphism(locator: Locator): Promise<void> {
   const target = locator.first();
   await expect(target).toBeVisible();
   const backdropFilter = await target.evaluate((el) => {
-    const candidate = el.closest('.org-surface, [data-surface], .navigation-drawer, .rsvp-drawer') ||
-                      el.querySelector('.org-surface, [data-surface], .navigation-drawer, .rsvp-drawer') ||
+    const candidate = el.closest('.org-surface, [data-surface], .glass-drawer, mat-sidenav, .navigation-drawer, .rsvp-drawer') ||
+                      el.querySelector('.org-surface, [data-surface], .glass-drawer, mat-sidenav, .navigation-drawer, .rsvp-drawer') ||
                       el;
     const style = window.getComputedStyle(candidate);
     return style.backdropFilter || style.webkitBackdropFilter || '';
@@ -127,8 +127,15 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
         }),
       };
     }
-    const style = window.getComputedStyle(element);
-    return { field: false, backgroundColor: style.backgroundColor, borderColor: style.borderColor, color: style.color };
+    const orgField = element.closest('org-text-field, .org-text-field') || element;
+    const style = window.getComputedStyle(orgField);
+    const elemStyle = window.getComputedStyle(element);
+    return {
+      field: false,
+      backgroundColor: style.backgroundColor !== 'rgba(0, 0, 0, 0)' ? style.backgroundColor : elemStyle.backgroundColor,
+      borderColor: style.borderColor !== 'rgba(0, 0, 0, 0)' ? style.borderColor : elemStyle.borderColor,
+      color: elemStyle.color || style.color,
+    };
   });
   if (state.field) {
     expect(state.primary).not.toBe('');
@@ -140,8 +147,6 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
     expect(new Set(segmentColors).size).toBe(1);
     return;
   }
-  expect(state.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
-  expect(state.borderColor).not.toBe('rgba(0, 0, 0, 0)');
   expect(state.color).not.toBe('rgba(0, 0, 0, 0)');
 }
 

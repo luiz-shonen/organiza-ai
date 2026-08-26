@@ -152,7 +152,7 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
 
     // Verify dialog is visible
     await confirmDialog.assertVisible();
-    await page.waitForTimeout(300);
+    await expect(confirmDialog.cancelBtn).toBeVisible();
 
     // Focus on cancel button inside confirm dialog
     await confirmDialog.cancelBtn.focus();

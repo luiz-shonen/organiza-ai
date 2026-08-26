@@ -350,7 +350,6 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertMinTouchTarget(prevBtn, 48);
       await assertMinTouchTarget(saveBtn, 48);
       await assertNoHorizontalOverflow(page);
-      await page.waitForTimeout(300);
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-06-step3-pix-empty');

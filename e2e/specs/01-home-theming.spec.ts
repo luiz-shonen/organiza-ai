@@ -110,9 +110,6 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await homePage.goto('/');
     await homePage.assertLoaded();
 
-    // Wait for content to settle
-    await homePage.page.waitForTimeout(500);
-
     const accessibilityScanResults = await makeAxeBuilder().analyze();
     expect(accessibilityScanResults.violations).toEqual([]);
   });

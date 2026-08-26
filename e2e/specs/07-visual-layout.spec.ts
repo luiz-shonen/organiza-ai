@@ -132,7 +132,6 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
       }) => {
         await homePage.goto('/');
         await homePage.assertLoaded();
-        await page.waitForTimeout(500);
 
         // Verify zero horizontal overflow on Home
         await assertNoHorizontalOverflow(page);
@@ -174,7 +173,6 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         await setupVisualMockSession(page);
         await page.goto('/meus-eventos');
         await dashboardPage.assertLoaded();
-        await page.waitForTimeout(500);
 
         // Verify zero horizontal overflow on Dashboard
         await assertNoHorizontalOverflow(page);
@@ -261,7 +259,6 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         }
 
         await eventDetailPage.assertLoaded();
-        await page.waitForTimeout(500);
 
         // Verify zero horizontal overflow on Event Detail
         await assertNoHorizontalOverflow(page);
@@ -279,7 +276,6 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
             .catch(() => false);
           if (dialogVisible) {
             await rsvpDialog.assertVisible();
-            await page.waitForTimeout(300);
 
             // Verify zero horizontal overflow on RSVP Dialog
             await assertNoHorizontalOverflow(page);
@@ -297,7 +293,6 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         await setupVisualMockSession(page);
         await page.goto('/perfil');
         await profilePage.assertLoaded();
-        await page.waitForTimeout(500);
 
         // Verify zero horizontal overflow on Profile
         await assertNoHorizontalOverflow(page);

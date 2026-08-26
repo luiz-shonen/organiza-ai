@@ -38,11 +38,19 @@ export async function assertGlassmorphism(locator: Locator): Promise<void> {
   const target = locator.first();
   await expect(target).toBeVisible();
   const backdropFilter = await target.evaluate((el) => {
-    const candidate = el.closest('.org-surface, [data-surface], .glass-drawer, mat-sidenav, .navigation-drawer, .rsvp-drawer') ||
-                      el.querySelector('.org-surface, [data-surface], .glass-drawer, mat-sidenav, .navigation-drawer, .rsvp-drawer') ||
-                      el;
-    const style = window.getComputedStyle(candidate);
-    return style.backdropFilter || style.webkitBackdropFilter || '';
+    let current: HTMLElement | null = el;
+    while (current && current !== document.body) {
+      const style = window.getComputedStyle(current);
+      const filter = style.backdropFilter || style.webkitBackdropFilter || '';
+      if (filter && filter !== 'none') return filter;
+      current = current.parentElement;
+    }
+    const descendant = el.querySelector('.org-surface, [data-surface], .glass-drawer, mat-sidenav');
+    if (descendant) {
+      const style = window.getComputedStyle(descendant);
+      return style.backdropFilter || style.webkitBackdropFilter || '';
+    }
+    return '';
   });
   expect(backdropFilter).toContain('blur');
 }

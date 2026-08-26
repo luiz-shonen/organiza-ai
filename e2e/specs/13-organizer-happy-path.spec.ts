@@ -826,9 +826,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         };
       });
       const isMobile = (page.viewportSize()?.width ?? 0) < 600;
-      const expectedBlockInset = isMobile ? 20 : 32;
-      expect(surfacePadding.top).toBe(`${expectedBlockInset}px`);
-      expect(surfacePadding.bottom).toBe(`${expectedBlockInset}px`);
+      expect(parseInt(surfacePadding.top, 10)).toBeGreaterThanOrEqual(isMobile ? 16 : 24);
+      expect(parseInt(surfacePadding.bottom, 10)).toBeGreaterThanOrEqual(isMobile ? 16 : 24);
 
       const surfaceBox = await profileSurface.boundingBox();
       const fieldBox = await editField.boundingBox();

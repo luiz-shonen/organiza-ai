@@ -112,17 +112,17 @@ present, and submit a selected relationship payload.
 | AUTO-03 | P1: Searchable selection | T1 | Complete |
 | AUTO-04 | P1: Searchable selection | T1 | Complete |
 | AUTO-05 | P1: Searchable selection | T1 | Complete |
-| AUTO-06 | P1: Canonical threshold | T2 | Pending |
-| AUTO-07 | P1: Canonical threshold | T2 | Pending |
-| AUTO-08 | P1: Canonical threshold | T2 | Pending |
-| AUTO-09 | P1: Existing long lists | T2 | Pending |
-| AUTO-10 | P1: Existing long lists | T2 | Pending |
+| AUTO-06 | P1: Canonical threshold | T2 | Complete |
+| AUTO-07 | P1: Canonical threshold | T2 | Complete |
+| AUTO-08 | P1: Canonical threshold | T2 | Complete |
+| AUTO-09 | P1: Existing long lists | T2 | Complete |
+| AUTO-10 | P1: Existing long lists | T2 | Complete |
 
 **Coverage:** 10 total, 10 mapped to execution tasks, 0 unmapped.
 
 ## Success Criteria
 
-- [ ] Four or more single-choice options use the documented autocomplete API.
-- [ ] One to three single-choice options retain the documented select API.
-- [ ] The catalog and two existing family flows prove the same closed component
+- [x] Four or more single-choice options use the documented autocomplete API.
+- [x] One to three single-choice options retain the documented select API.
+- [x] The catalog and two existing family flows prove the same closed component
       contract.

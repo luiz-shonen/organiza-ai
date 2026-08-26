@@ -85,10 +85,10 @@
               [(value)]="inlineName"
             />
 
-            <org-select-field
+            <org-autocomplete-field
               class="family-selector__inline-field"
               label="Parentesco"
-              [options]="relationshipSelectOptions"
+              [options]="relationshipAutocompleteOptions"
               [value]="inlineRelationship()"
               [required]="true"
               (valueChange)="setInlineRelationship($event)"

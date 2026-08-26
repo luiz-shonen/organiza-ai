@@ -210,7 +210,11 @@ Uso recomendado: `<org-textarea-field label="Mensagem" [rows]="3" [(value)]="mes
 
 ### OrgSelectFieldComponent
 
-Uso recomendado: `<org-select-field label="Formato" [options]="formatOptions" [(value)]="format" />`. Options are typed objects with `value`, `label`, and optional `disabled`.
+Uso recomendado: `<org-select-field label="Formato" [options]="formatOptions" [(value)]="format" />`. Use only for a single choice with one to three options. Options are typed objects with `value`, `label`, and optional `disabled`.
+
+### OrgAutocompleteFieldComponent
+
+Uso recomendado: `<org-autocomplete-field label="Categoria" [options]="categoryOptions" [(value)]="category" />`. Use for a single choice with four or more options. It filters typed option labels without case or diacritic sensitivity and never accepts a free-text value.
 
 ### OrgDateFieldComponent
 

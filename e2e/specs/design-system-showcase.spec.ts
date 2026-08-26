@@ -215,4 +215,17 @@ test.describe('Design System Showcase', () => {
 
     await expect(input).toBeFocused();
   });
+
+  test('uses autocomplete when the catalog field has more than three options', async ({ page }) => {
+    await openShowcase(page);
+    const fields = page.locator('section#inputs');
+    const input = fields.getByLabel('Categoria do evento');
+
+    await expect(fields).toContainText('Até três opções, use Select. A partir de quatro, use Autocomplete.');
+    await input.fill('corpor');
+    await expect(page.getByRole('option', { name: 'Corporativo' })).toBeVisible();
+    await page.getByRole('option', { name: 'Corporativo' }).click();
+
+    await expect(input).toHaveValue('Corporativo');
+  });
 });

@@ -13,7 +13,7 @@ import { FamilyMember, FamilyRelationship } from '../../../../core/models';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
-  OrgSelectFieldComponent,
+  OrgAutocompleteFieldComponent,
   OrgTextFieldComponent,
   type OrgSelectOption,
 } from '../../../../shared/ui';
@@ -38,7 +38,7 @@ export interface RelationshipOption {
     MatIconModule,
     OrgButtonComponent,
     OrgCheckboxComponent,
-    OrgSelectFieldComponent,
+    OrgAutocompleteFieldComponent,
     OrgTextFieldComponent,
   ],
   templateUrl: './family-selector.component.html',
@@ -68,7 +68,7 @@ export class FamilySelectorComponent {
     { value: 'relative', label: 'Parente' },
     { value: 'other', label: 'Outro' },
   ];
-  protected readonly relationshipSelectOptions: readonly OrgSelectOption[] = this.relationshipOptions;
+  protected readonly relationshipAutocompleteOptions: readonly OrgSelectOption[] = this.relationshipOptions;
 
   protected readonly allSelected = computed(() => {
     const list = this.members();

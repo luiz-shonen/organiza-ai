@@ -2,6 +2,7 @@ import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, inject
 import {
   OrgBannerComponent,
   OrgBadgeComponent,
+  OrgAutocompleteFieldComponent,
   OrgButtonComponent,
   OrgCheckboxComponent,
   OrgChipComponent,
@@ -68,6 +69,7 @@ export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = [
   imports: [
     OrgBannerComponent,
     OrgBadgeComponent,
+    OrgAutocompleteFieldComponent,
     OrgButtonComponent,
     OrgCheckboxComponent,
     OrgChipComponent,
@@ -104,6 +106,7 @@ export class DesignSystemShowcaseContainer {
   public readonly eventDate = signal<Date | null>(new Date(2026, 5, 24));
   public readonly eventTitle = signal('Ceia de Natal');
   public readonly eventFormat = signal<string | null>('presencial');
+  public readonly eventCategory = signal<string | null>('celebrativo');
   public readonly welcomeMessage = signal('Celebre com quem torna a vida mais bonita.');
   public readonly eventTime = signal('19:30');
   public readonly timeOptions: readonly OrgTimeOption[] = [
@@ -124,6 +127,13 @@ export class DesignSystemShowcaseContainer {
     { value: 'presencial', label: 'Presencial' },
     { value: 'hibrido', label: 'Híbrido' },
     { value: 'online', label: 'Online' },
+  ];
+  public readonly eventCategoryOptions: readonly OrgSelectOption[] = [
+    { value: 'celebrativo', label: 'Celebrativo' },
+    { value: 'familia', label: 'Família' },
+    { value: 'comunidade', label: 'Comunidade' },
+    { value: 'corporativo', label: 'Corporativo' },
+    { value: 'beneficente', label: 'Beneficente' },
   ];
   public readonly channelOptions: readonly OrgRadioOption[] = [
     { value: 'email', label: 'E-mail' },
@@ -181,9 +191,13 @@ code { font-family: var(--org-font-mono); }`,
 <org-button label="Salvar" icon="check" variant="primary" [gradient]="true" />
 <org-icon-button ariaLabel="Adicionar evento" icon="add" />
 <org-chip label="Celebrativo" variant="accent" [selected]="true" />`,
-    fields: `import { OrgTextFieldComponent, OrgDateFieldComponent, OrgTimeFieldComponent } from '@shared/ui';
+    fields: `import { OrgAutocompleteFieldComponent, OrgDateFieldComponent, OrgSelectFieldComponent, OrgTextFieldComponent, OrgTimeFieldComponent } from '@shared/ui';
 
 <org-text-field label="Título" [(value)]="title" />
+<!-- Use select para até três opções. -->
+<org-select-field label="Formato" [options]="formatOptions" [(value)]="format" />
+<!-- Use autocomplete a partir de quatro opções. -->
+<org-autocomplete-field label="Categoria" [options]="categoryOptions" [(value)]="category" />
 <org-date-field label="Data" [(value)]="date" />
 <org-time-field label="Horário" [(value)]="time" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />`,
     selection: `import { OrgToggleComponent, OrgCheckboxComponent, OrgRadioGroupComponent } from '@shared/ui';

@@ -46,6 +46,7 @@ describe('DesignSystemShowcaseContainer', () => {
       'org-text-field',
       'org-textarea-field',
       'org-select-field',
+      'org-autocomplete-field',
       'org-date-field',
       'org-time-field',
       'org-toggle',
@@ -68,6 +69,16 @@ describe('DesignSystemShowcaseContainer', () => {
 
     expect(root.querySelector('org-date-field')).toBeTruthy();
     expect(root.querySelector('org-time-field')).toBeTruthy();
+  });
+
+  it('documents the select threshold and demonstrates autocomplete with more than three options', () => {
+    const inputs = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('section#inputs');
+    const autocomplete = inputs?.querySelector('org-autocomplete-field');
+
+    expect(inputs?.textContent).toContain('Até três opções, use Select. A partir de quatro, use Autocomplete.');
+    expect(autocomplete).toBeTruthy();
+    expect(component.eventCategoryOptions).toHaveLength(5);
+    expect(inputs?.querySelector('app-design-system-code-example')?.textContent).toContain('org-autocomplete-field');
   });
 
   it('documents every new public component family with a collapsed recommended usage example', () => {

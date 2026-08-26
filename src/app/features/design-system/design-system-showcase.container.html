@@ -228,8 +228,10 @@
           <org-select-field label="Formato" [options]="formatOptions" [(value)]="eventFormat" />
           <org-date-field label="Data da celebração" [(value)]="eventDate" />
           <org-time-field label="Horário de início" [(value)]="eventTime" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />
+          <org-autocomplete-field label="Categoria do evento" [options]="eventCategoryOptions" [(value)]="eventCategory" />
           <org-textarea-field class="org-ds-form-grid__wide" label="Mensagem de boas-vindas" [rows]="1" hint="Mostre a voz do tema sem perder legibilidade." [maxLength]="160" [(value)]="welcomeMessage" />
         </div>
+        <p class="org-ds-form-guidance">Até três opções, use Select. A partir de quatro, use Autocomplete.</p>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.fields" />
     </section>

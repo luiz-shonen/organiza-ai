@@ -118,6 +118,17 @@ describe('FamilySelectorComponent', () => {
     expect((component as any).inlineName()).toBe('');
   });
 
+  it('should compose the six relationship choices with the shared autocomplete field', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.componentRef.setInput('selectedIds', []);
+    fixture.detectChanges();
+
+    (component as unknown as { onToggleInlineForm: () => void }).onToggleInlineForm();
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('org-autocomplete-field')).toBeTruthy();
+  });
+
   it('should cancel inline form without emitting addInlineMember', () => {
     fixture.componentRef.setInput('members', mockMembers);
     fixture.detectChanges();

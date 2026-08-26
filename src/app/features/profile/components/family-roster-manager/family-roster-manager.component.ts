@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent, OrgSelectFieldComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../../shared/ui';
+import { OrgAutocompleteFieldComponent, OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../../shared/ui';
 
 export interface AddFamilyMemberPayload {
   name: string;
@@ -26,7 +26,7 @@ export interface RelationshipOption {
   imports: [
     FormsModule,
     OrgButtonComponent,
-    OrgSelectFieldComponent,
+    OrgAutocompleteFieldComponent,
     OrgIconButtonComponent,
     OrgIconComponent,
     OrgSurfaceComponent,

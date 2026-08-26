@@ -56,7 +56,7 @@ describe('FamilyRosterManagerComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelectorAll('org-surface')).toHaveLength(1);
     expect(compiled.querySelectorAll('mat-card')).toHaveLength(0);
-    expect(compiled.querySelectorAll('org-text-field, org-select-field')).toHaveLength(3);
+    expect(compiled.querySelectorAll('org-text-field, org-autocomplete-field')).toHaveLength(3);
     expect(compiled.querySelector('.family-roster__add-btn')).toBeInstanceOf(HTMLElement);
     expect(compiled.querySelector('.family-roster__remove-btn')).toBeInstanceOf(HTMLElement);
     expect(compiled.querySelectorAll('org-icon')).not.toHaveLength(0);
@@ -101,6 +101,20 @@ describe('FamilyRosterManagerComponent', () => {
     expect((component as any).newName()).toBe('');
     expect((component as any).newRelationship()).toBe('child');
     expect((component as any).newPhone()).toBe('');
+  });
+
+  it('should preserve the selected relationship value from the autocomplete field', () => {
+    fixture.componentRef.setInput('members', []);
+    fixture.detectChanges();
+
+    component['newName'].set('Carlos Silva');
+    component['setRelationship']('parent');
+    const addSpy = vi.fn();
+    component.addMember.subscribe(addSpy);
+
+    component['onAddSubmit']();
+
+    expect(addSpy).toHaveBeenCalledWith(expect.objectContaining({ relationship: 'parent' }));
   });
 
   it('should not emit addMember when name is empty or only whitespace', () => {

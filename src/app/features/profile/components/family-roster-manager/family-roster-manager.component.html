@@ -14,7 +14,7 @@
       <div class="family-roster__form-grid">
         <org-text-field class="family-roster__field" label="Nome do familiar" placeholder="Ex: Lucas" [value]="newName()" (valueChange)="newName.set($event)" [required]="true" />
 
-        <org-select-field class="family-roster__field" label="Parentesco" [options]="relationshipOptions" [value]="newRelationship()" (valueChange)="setRelationship($event)" />
+        <org-autocomplete-field class="family-roster__field" label="Parentesco" [options]="relationshipOptions" [value]="newRelationship()" (valueChange)="setRelationship($event)" />
 
         <org-text-field class="family-roster__field" label="Telefone / WhatsApp (opcional)" type="tel" placeholder="(11) 99999-9999" [value]="newPhone()" (valueChange)="newPhone.set($event)" />
       </div>

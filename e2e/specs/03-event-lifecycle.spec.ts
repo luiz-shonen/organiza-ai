@@ -117,7 +117,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     // Fill number to complete address form
     await eventEditorPage.numberInput.fill('1000');
-    await expect(eventEditorPage.nextStepBtns).toBeEnabled();
+    await expect(eventEditorPage.nextStepBtns.filter({ visible: true }).first()).toBeEnabled();
   });
 
   test('should render event editor steps and validate required title and date', async ({
@@ -150,11 +150,11 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Touch and blur date input without value to trigger validation
     await eventEditorPage.dateInput.focus();
     await eventEditorPage.dateInput.blur();
-    const dateError = page.locator('mat-error, .org-text-field__error').filter({ hasText: /Data é obrigatória/i }).first();
+    const dateError = page.locator('mat-error, .org-date-field__error, .org-text-field__error, [role="alert"]').filter({ hasText: /Data é obrigatória/i }).first();
     await expect(dateError).toBeVisible();
 
     // Next step button should remain disabled when form is invalid
-    await expect(eventEditorPage.nextStepBtns).toBeDisabled();
+    await expect(eventEditorPage.nextStepBtns.filter({ visible: true }).first()).toBeDisabled();
 
     // Fill required fields and verify errors clear
     await eventEditorPage.titleInput.fill('Formatura Universitária');

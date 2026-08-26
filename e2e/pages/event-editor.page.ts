@@ -29,7 +29,7 @@ export class EventEditorPage extends BasePage {
     this.numberInput = page.getByTestId('event-number-input').or(page.locator('input[formcontrolname="number"]')).first();
     this.saveBtn = page.getByTestId('event-save-btn').or(page.locator('.editor__save-btn, button[aria-label="Salvar evento"]')).first();
     this.cancelEventBtn = page.getByTestId('event-cancel-btn').or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]')).first();
-    this.nextStepBtns = page.getByTestId('stepper-next-btn').locator('button').or(page.locator('.editor__step-actions org-button button, button:has-text("Próximo")')).or(page.getByRole('button', { name: /próximo/i }));
+    this.nextStepBtns = page.locator('org-button[label="Próximo"] button, [data-testid="stepper-next-btn"] button, button:has-text("Próximo")');
     this.itemNameInput = page.getByTestId('item-name-input').or(page.locator('.editor__item-name-field input')).first();
     this.itemQtyInput = page.getByTestId('item-qty-input').or(page.locator('.editor__item-qty-field input')).first();
     this.addItemBtn = page.getByTestId('add-item-btn').or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]')).first();
@@ -48,13 +48,15 @@ export class EventEditorPage extends BasePage {
     await this.descriptionInput.fill(description);
     await this.dateInput.fill(date);
     await this.timeInput.fill(time);
-    await expect(this.nextStepBtns).toBeEnabled();
-    await this.nextStepBtns.click();
+    const nextBtn = this.nextStepBtns.filter({ visible: true }).first();
+    await expect(nextBtn).toBeEnabled();
+    await nextBtn.click();
   }
 
   async advanceStep(): Promise<void> {
-    await expect(this.nextStepBtns).toBeEnabled();
-    await this.nextStepBtns.click();
+    const nextBtn = this.nextStepBtns.filter({ visible: true }).first();
+    await expect(nextBtn).toBeEnabled();
+    await nextBtn.click();
   }
 
   async fillAddress(address: { cep: string; street?: string; number?: string; neighborhood?: string; city?: string }): Promise<void> {

@@ -19,10 +19,11 @@ export class OrganizerDashboardPage extends BasePage {
     await expect(this.pageRoot).toBeVisible();
   }
 
-  async filterByStatus(status: 'Todos' | 'Ativos' | 'Encerrados' | 'Cancelados'): Promise<void> {
-    const chip = this.page.getByRole('button', { name: new RegExp(status, 'i') })
-      .or(this.page.getByTestId(new RegExp(`status-filter-.*${status.toLowerCase()}.*`, 'i')))
-      .or(this.filterChips.filter({ hasText: new RegExp(status, 'i') }));
+  async filterByStatus(status: 'Todos' | 'Ativos' | 'Em breve' | 'Encerrados' | 'Histórico' | 'Cancelados' | string): Promise<void> {
+    const pattern = status === 'Ativos' ? 'Ativos|Em breve|active|upcoming' : status;
+    const chip = this.page.getByRole('button', { name: new RegExp(pattern, 'i') })
+      .or(this.page.getByTestId(new RegExp(`status-filter-.*(${status.toLowerCase()}|active|upcoming).*`, 'i')))
+      .or(this.filterChips.filter({ hasText: new RegExp(pattern, 'i') }));
     await chip.first().click();
   }
 

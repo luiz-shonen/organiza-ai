@@ -23,23 +23,23 @@ const mockEvent = {
   updatedAt: new Date().toISOString(),
 };
 
-test.describe('Consolidated Design System Zero-Regression Visual Baselines', () => {
-  test.beforeEach(async ({ page }) => {
-    await setupMockAuthSession(page, {
-      uid: 'superadmin-visual-uid',
+async function setupSuperAdminSession(page: any): Promise<void> {
+  await setupMockAuthSession(page, {
+    uid: 'superadmin-visual-uid',
+    email: 'luiz.gmr.dev@gmail.com',
+    displayName: 'Super Admin Visual',
+    isSuperAdmin: true,
+    events: [mockEvent],
+    userProfile: {
+      id: 'superadmin-visual-uid',
       email: 'luiz.gmr.dev@gmail.com',
       displayName: 'Super Admin Visual',
-      isSuperAdmin: true,
-      events: [mockEvent],
-      userProfile: {
-        id: 'superadmin-visual-uid',
-        email: 'luiz.gmr.dev@gmail.com',
-        displayName: 'Super Admin Visual',
-        phone: '(11) 98888-7777',
-      },
-    });
+      phone: '(11) 98888-7777',
+    },
   });
+}
 
+test.describe('Consolidated Design System Zero-Regression Visual Baselines', () => {
   test('[Visual-01] Home view should satisfy typography, glassmorphism, and zero-overflow', async ({
     page,
     homePage,
@@ -58,7 +58,6 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     page,
     loginPage,
   }) => {
-    await setupMockAuthSession(page, null);
     await loginPage.goto('/login');
     await loginPage.assertLoaded();
 
@@ -75,6 +74,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     page,
     dashboardPage,
   }) => {
+    await setupSuperAdminSession(page);
     await dashboardPage.goto('/meus-eventos');
     await dashboardPage.assertLoaded();
 
@@ -89,6 +89,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     page,
     eventEditorPage,
   }) => {
+    await setupSuperAdminSession(page);
     await eventEditorPage.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
 
@@ -102,6 +103,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     page,
     profilePage,
   }) => {
+    await setupSuperAdminSession(page);
     await profilePage.goto('/perfil');
     await profilePage.assertLoaded();
 
@@ -116,6 +118,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     page,
     showcasePage,
   }) => {
+    await setupSuperAdminSession(page);
     await showcasePage.goto('/design-system');
     await showcasePage.assertLoaded();
 

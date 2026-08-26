@@ -29,7 +29,7 @@ export class DesignSystemShowcasePage extends BasePage {
 
   async assertLoaded(): Promise<void> {
     await expect(this.topbarTitle).toBeVisible();
-    await expect(this.topbarTitle).toContainText('Organiza AI Design System');
+    await expect(this.topbarTitle).toContainText('Convites que dão vontade de confirmar.');
   }
 
   async filterNav(query: string): Promise<void> {

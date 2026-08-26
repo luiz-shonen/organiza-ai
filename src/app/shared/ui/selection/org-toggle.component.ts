@@ -13,6 +13,7 @@ export class OrgToggleComponent {
   public readonly label = input.required<string>();
   public readonly checked = model(false);
   public readonly disabled = input(false);
+  public readonly testId = input<string | null>(null);
 
   protected updateChecked(checked: boolean): void {
     if (!this.disabled()) {

@@ -18,4 +18,5 @@ export class OrgSurfaceComponent {
   public readonly atmosphereSecondary = input<string>();
   /** Applies the shared card hover/focus motion to one whole semantic surface. */
   public readonly interactive = input(false);
+  public readonly testId = input<string | null>(null);
 }

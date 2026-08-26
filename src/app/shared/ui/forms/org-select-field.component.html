@@ -1,6 +1,6 @@
 <mat-form-field appearance="outline" class="org-select-field">
   <mat-label>{{ label() }}</mat-label>
-  <mat-select panelClass="org-select-field__panel" [disabled]="disabled() || disabledState" [required]="required()" [value]="value()" (valueChange)="updateValue($event)" (closed)="markTouched()">
+  <mat-select panelClass="org-select-field__panel" [attr.data-testid]="testId() || null" [disabled]="disabled() || disabledState" [required]="required()" [value]="value()" (valueChange)="updateValue($event)" (closed)="markTouched()">
     @for (option of options(); track option.value) {
       <mat-option [disabled]="option.disabled ?? false" [value]="option.value">{{ option.label }}</mat-option>
     } @empty {

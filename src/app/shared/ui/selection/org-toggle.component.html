@@ -1,5 +1,6 @@
 <mat-slide-toggle
   class="org-toggle"
+  [attr.data-testid]="testId() || null"
   [checked]="checked()"
   [disabled]="disabled()"
   (change)="updateChecked($event.checked)"

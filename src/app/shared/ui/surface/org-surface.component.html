@@ -5,7 +5,7 @@
   [class.org-surface--interactive]="interactive()"
   [style.--org-surface-orb-primary]="atmospherePrimary()"
   [style.--org-surface-orb-secondary]="atmosphereSecondary()"
-  data-testid="org-surface"
+  [attr.data-testid]="testId() || 'org-surface'"
 >
   <ng-content />
 </section>

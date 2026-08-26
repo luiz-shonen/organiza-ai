@@ -16,6 +16,7 @@ export class OrgCheckboxComponent {
   public readonly checked = model(false);
   public readonly indeterminate = input(false);
   public readonly disabled = input(false);
+  public readonly testId = input<string | null>(null);
 
   protected updateChecked(checked: boolean): void {
     if (!this.disabled()) {

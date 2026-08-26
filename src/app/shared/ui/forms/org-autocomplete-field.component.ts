@@ -33,6 +33,7 @@ export class OrgAutocompleteFieldComponent implements ControlValueAccessor {
   public readonly placeholder = input('');
   public readonly disabled = input(false);
   public readonly required = input(false);
+  public readonly testId = input<string | null>(null);
   private readonly query = signal('');
   private readonly disabledFromControl = signal(false);
   private onChange: (value: string | null) => void = () => undefined;

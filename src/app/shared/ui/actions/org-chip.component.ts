@@ -26,6 +26,7 @@ export class OrgChipComponent {
   public readonly selected = input(false);
   public readonly disabled = input(false);
   public readonly gradient = input(true);
+  public readonly testId = input<string | null>(null);
   public readonly selectionChange = output<boolean>();
 
   protected select(): void {

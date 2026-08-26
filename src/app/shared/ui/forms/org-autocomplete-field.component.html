@@ -5,6 +5,7 @@
     type="text"
     autocomplete="off"
     [matAutocomplete]="optionsPanel"
+    [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"
     [placeholder]="placeholder()"
     [required]="required()"

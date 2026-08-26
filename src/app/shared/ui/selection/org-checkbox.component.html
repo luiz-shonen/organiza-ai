@@ -1,6 +1,7 @@
 <mat-checkbox
   class="org-checkbox"
   [attr.aria-label]="ariaLabel()"
+  [attr.data-testid]="testId() || null"
   [checked]="checked()"
   [disabled]="disabled()"
   [indeterminate]="indeterminate()"

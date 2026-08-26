@@ -12,9 +12,9 @@ export class ProfilePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.pageRoot = page.getByTestId('profile-page').or(page.locator('.profile-container')).first();
-    this.nameInput = page.getByTestId('profile-name-input').locator('input').or(page.locator('app-profile-info-card org-text-field input, app-profile-info-card input')).first();
-    this.phoneInput = page.getByTestId('profile-phone-input').locator('input').or(page.locator('input[type="tel"]')).first();
-    this.saveProfileBtn = page.getByTestId('save-profile-btn').locator('button').or(page.locator('app-profile-info-card button[type="submit"]')).first();
+    this.nameInput = page.getByTestId('profile-name-input').or(page.locator('app-profile-info-card input')).first();
+    this.phoneInput = page.getByTestId('profile-phone-input').or(page.locator('input[type="tel"]')).first();
+    this.saveProfileBtn = page.getByTestId('save-profile-btn').or(page.locator('app-profile-info-card button[type="submit"]')).first();
     this.familyRoster = new FamilyRosterHarness(page);
   }
 

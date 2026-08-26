@@ -47,7 +47,7 @@
               label="Salvar"
               icon="check_circle"
               type="submit"
-              data-testid="save-profile-btn"
+              testId="save-profile-btn"
             />
             <org-button
               class="profile-info-card__cancel-btn"
@@ -55,6 +55,7 @@
               icon="close"
               variant="secondary"
               [gradient]="false"
+              testId="cancel-profile-btn"
               (pressed)="cancelEditing()"
             />
           </div>
@@ -69,6 +70,7 @@
             class="profile-info-card__edit-btn"
             ariaLabel="Editar nome de exibição"
             icon="edit"
+            testId="edit-profile-btn"
             (pressed)="startEditing()"
             [attr.aria-expanded]="isEditing()"
           />

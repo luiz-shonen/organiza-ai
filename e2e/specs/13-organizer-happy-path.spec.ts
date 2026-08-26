@@ -233,9 +233,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const editorRegions = [
         page.locator('.editor__card, org-surface').first(),
         page.locator('.editor__title, h2, h1').first(),
-        eventEditorPage.cepInput.locator('xpath=ancestor::*[self::org-text-field or self::mat-form-field]').first(),
-        eventEditorPage.numberInput.locator('xpath=ancestor::*[self::org-text-field or self::mat-form-field]').first(),
-        eventEditorPage.streetInput.locator('xpath=ancestor::*[self::org-text-field or self::mat-form-field]').first(),
+        page.locator('org-text-field:has([data-testid="event-cep-input"])').first(),
+        page.locator('org-text-field:has([data-testid="event-number-input"])').first(),
+        page.locator('org-text-field:has([data-testid="event-street-input"])').first(),
         step2NextBtn,
       ];
       for (const region of editorRegions) {

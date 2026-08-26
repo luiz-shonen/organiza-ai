@@ -29,6 +29,7 @@ export class OrgSelectFieldComponent implements ControlValueAccessor {
   public readonly error = input('');
   public readonly disabled = input(false);
   public readonly required = input(false);
+  public readonly testId = input<string | null>(null);
   private onChange: (value: string | null) => void = () => undefined;
   private onTouched: () => void = () => undefined;
   protected disabledState = false;

@@ -22,7 +22,8 @@ export const authGuard: CanActivateFn = async () => {
     });
   }
 
-  if (authService.currentUser() !== null) {
+  const currentUser = authService.currentUser();
+  if (currentUser !== null && !currentUser.isAnonymous) {
     return true;
   }
 

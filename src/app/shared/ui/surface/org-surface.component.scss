@@ -4,13 +4,17 @@
 
 .org-surface {
   backdrop-filter: var(--org-glass-blur, blur(24px));
+  -webkit-backdrop-filter: var(--org-glass-blur, blur(24px));
   background:
     linear-gradient(var(--org-glass-bg, rgba(255, 255, 255, 0.6)), var(--org-glass-bg, rgba(255, 255, 255, 0.6))) padding-box,
     var(--org-gradient-border) border-box;
   border: var(--org-glass-ring-width, 1.5px) solid transparent;
   border-radius: var(--org-radius-lg, 1rem);
+  box-shadow: var(--org-glass-shadow);
   box-sizing: border-box;
   padding: 16px 12px;
+  position: relative;
+  transition: transform 180ms ease, box-shadow 180ms ease;
 
   &--atmosphere {
     background:
@@ -25,6 +29,34 @@
     height: 100%;
     overflow: hidden;
     padding: 0;
+  }
+
+  &--panel {
+    border-radius: 1.25rem;
+    padding: 20px 16px;
+
+    @media (min-width: 600px) {
+      padding: 32px 24px;
+    }
+  }
+
+  &--drawer {
+    border-radius: 20px 0 0 20px;
+    border-right: 0;
+    padding: 24px 16px;
+  }
+
+  &--dialog {
+    border-radius: 28px;
+    padding: 24px;
+  }
+
+  &--interactive {
+    &:hover,
+    &:focus-within {
+      box-shadow: var(--org-shadow-lg);
+      transform: translateY(-4px);
+    }
   }
 
   @media (min-width: 600px) {

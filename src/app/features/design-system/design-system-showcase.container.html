@@ -96,7 +96,7 @@
         <article class="org-ds-token-card org-ds-token-card--success">
           <span>Success</span>
           <strong>Confirmação</strong>
-          <code>--org-success</code>
+          <code>--org-gradient-confirmation</code>
         </article>
         <article class="org-ds-token-card org-ds-token-card--error">
           <span>Error</span>
@@ -107,9 +107,57 @@
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.tokens" />
     </section>
 
+    <section id="typography" class="org-ds-section" aria-labelledby="typography-title">
+      <div class="org-ds-section__heading">
+        <p class="org-ds-section__eyebrow">04 · tipografia e ícones</p>
+        <h2 id="typography-title">Uma voz editorial para títulos, uma interface limpa para o restante.</h2>
+      </div>
+
+      <div class="org-ds-typography-grid">
+        <article class="org-ds-type-card org-ds-type-card--display">
+          <span class="org-ds-type-card__eyebrow">Display</span>
+          <p class="org-ds-type-card__sample">Celebrações que ficam na memória.</p>
+          <strong>Fraunces</strong>
+          <small>Títulos editoriais, heróis e chamadas de alto impacto.</small>
+          <code>--org-font-display</code>
+        </article>
+
+        <article class="org-ds-type-card">
+          <span class="org-ds-type-card__eyebrow">Interface</span>
+          <p class="org-ds-type-card__sample org-ds-type-card__sample--body">Organize cada detalhe com clareza e ritmo.</p>
+          <strong>Plus Jakarta Sans</strong>
+          <small>Texto, ações, formulários e dados. É a fonte padrão de toda a aplicação.</small>
+          <code>--org-font-body</code>
+        </article>
+
+        <article class="org-ds-type-card">
+          <span class="org-ds-type-card__eyebrow">Código e tokens</span>
+          <p class="org-ds-type-card__sample org-ds-type-card__sample--mono">--org-primary: #ff4d94;</p>
+          <strong>JetBrains Mono</strong>
+          <small>Tokens, exemplos de código e rótulos técnicos no catálogo.</small>
+          <code>--org-font-mono</code>
+        </article>
+
+        <article class="org-ds-type-card org-ds-type-card--icons">
+          <span class="org-ds-type-card__eyebrow">Iconografia</span>
+          <p class="org-ds-type-card__icons" aria-hidden="true">event schedule palette</p>
+          <strong>Material Icons</strong>
+          <small>Ícones semânticos são renderizados pelo componente fechado <code>org-icon</code>.</small>
+        </article>
+      </div>
+
+      <div class="org-ds-type-scale" aria-label="Escala tipográfica">
+        <div><span>Display</span><strong>clamp(36px, 5vw, 72px)</strong><small>600 / 1.03</small></div>
+        <div><span>Heading</span><strong>clamp(26px, 3vw, 40px)</strong><small>600 / 1.12</small></div>
+        <div><span>Body</span><strong>16px</strong><small>400–600 / 1.6</small></div>
+        <div><span>Label</span><strong>12px</strong><small>800 / 0.12em</small></div>
+      </div>
+      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.typography" />
+    </section>
+
     <section id="components" class="org-ds-section" aria-labelledby="components-title">
       <div class="org-ds-section__heading">
-        <p class="org-ds-section__eyebrow">04 · componentes</p>
+        <p class="org-ds-section__eyebrow">05 · componentes</p>
         <h2 id="components-title">APIs fechadas para construir telas sem reinventar o sistema.</h2>
       </div>
 
@@ -163,7 +211,6 @@
           <org-button label="Ação secundária" variant="secondary" />
           <org-button label="Ação discreta" variant="text" [gradient]="false" />
           <org-icon-button ariaLabel="Adicionar evento" icon="add" />
-          <org-icon-button ariaLabel="Criar evento" icon="add" variant="primary" />
         </div>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.actions" />
@@ -181,7 +228,7 @@
           <org-select-field label="Formato" [options]="formatOptions" [(value)]="eventFormat" />
           <org-date-field label="Data da celebração" [(value)]="eventDate" />
           <org-time-field label="Horário de início" [(value)]="eventTime" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />
-          <org-textarea-field class="org-ds-form-grid__wide" label="Mensagem de boas-vindas" [rows]="1" hint="Mostre a voz do tema sem perder legibilidade." [(value)]="welcomeMessage" />
+          <org-textarea-field class="org-ds-form-grid__wide" label="Mensagem de boas-vindas" [rows]="1" hint="Mostre a voz do tema sem perder legibilidade." [maxLength]="160" [(value)]="welcomeMessage" />
         </div>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.fields" />
@@ -207,9 +254,9 @@
           <div>
             <p class="org-ds-field-label">Categorias</p>
             <div class="org-ds-selection-layout__chips" aria-label="Categorias de evento">
-              <org-chip label="Celebrativo" variant="accent" [selected]="true" />
-              <org-chip label="Família" [gradient]="false" />
-              <org-chip label="Comunidade" [gradient]="false" />
+              <org-chip label="Celebrativo" variant="accent" [selectable]="true" [selected]="true" />
+              <org-chip label="Família" [selectable]="true" [gradient]="false" />
+              <org-chip label="Comunidade" [selectable]="true" [gradient]="false" />
             </div>
           </div>
           <div>
@@ -233,8 +280,7 @@
       <org-surface variant="panel" class="org-ds-panel-card">
         <div class="org-ds-navigation-demo">
           <org-tabs [items]="tabItems" [(selectedId)]="selectedTab" />
-          <p>Uma aba oferece contexto imediato para o anfitrião.</p>
-          <org-navigation-list [items]="navigationItems" (selected)="scrollToSection($event === 'guests' ? 'data-display' : 'feedback')" />
+          <org-navigation-list [items]="navigationItems" [activeId]="activeNavigationItem()" (selected)="selectNavigationExample($event)" />
           <org-menu triggerLabel="Mais ações" [actions]="menuActions" />
         </div>
       </org-surface>
@@ -252,6 +298,10 @@
           <org-step label="Informações"><p>Defina nome, data e formato.</p></org-step>
           <org-step label="Convidados"><p>Escolha os canais e a lista.</p></org-step>
           <org-step label="Revisão"><p>Confirme antes de publicar.</p></org-step>
+        </org-stepper>
+        <org-stepper orientation="vertical" class="org-ds-stepper-vertical">
+          <org-step label="Informações"><p>Versão vertical para fluxos longos.</p></org-step>
+          <org-step label="Revisão"><p>Exemplo explícito para desktop e mobile.</p></org-step>
         </org-stepper>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.stepper" />

@@ -40,6 +40,7 @@
           [icon]="section.icon"
           [label]="section.label"
           [testId]="'drawer-design-system-' + section.id"
+          [active]="activeRoute().endsWith('#' + section.id) || (section.id === 'overview' && !activeRoute().includes('#'))"
           currentValue="location"
           (selected)="close.emit()"
         />

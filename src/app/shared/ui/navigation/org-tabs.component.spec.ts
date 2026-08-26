@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { OrgTabItem, OrgTabsComponent } from './org-tabs.component';
 
 const TABS: readonly OrgTabItem[] = [
-  { id: 'summary', label: 'Resumo' },
-  { id: 'guests', label: 'Convidados' },
+  { id: 'summary', label: 'Resumo', content: 'Resumo do evento' },
+  { id: 'guests', label: 'Convidados', content: 'Lista de convidados' },
 ];
 
 describe('OrgTabsComponent', () => {
@@ -18,6 +18,7 @@ describe('OrgTabsComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Resumo');
     expect(fixture.nativeElement.textContent).toContain('Convidados');
     expect(fixture.componentInstance.selectedId()).toBe('guests');
+    expect(fixture.nativeElement.textContent).toContain('Lista de convidados');
   });
 
   it('emits a typed selection change and accepts gradient opt-out', async () => {

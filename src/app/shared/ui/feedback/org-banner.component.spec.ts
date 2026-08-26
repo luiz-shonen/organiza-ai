@@ -16,4 +16,14 @@ describe('OrgBannerComponent', () => {
     expect(banner.classList.contains('org-banner--error')).toBe(true);
     expect(banner.textContent).toContain('Sua conexão foi interrompida.');
   });
+
+  it('renders an optional shared icon inline with the message', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgBannerComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgBannerComponent);
+    fixture.componentRef.setInput('message', 'Modo colaborador');
+    fixture.componentRef.setInput('icon', 'info');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('org-icon')).toBeTruthy();
+  });
 });

@@ -11,6 +11,8 @@
     />
     <org-button
       [label]="data.confirmLabel ?? 'Confirmar'"
+      variant="text"
+      [gradient]="false"
       testId="org-confirm-submit"
       (pressed)="confirm()"
     />

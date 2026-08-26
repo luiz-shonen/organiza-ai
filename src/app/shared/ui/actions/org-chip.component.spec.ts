@@ -11,13 +11,13 @@ describe('OrgChipComponent', () => {
     fixture.componentRef.setInput('gradient', false);
     fixture.detectChanges();
 
-    const chip = fixture.nativeElement.querySelector('mat-chip-option') as HTMLElement;
+    const chip = fixture.nativeElement.querySelector('mat-chip') as HTMLElement;
     expect(chip.textContent?.trim()).toBe('Confirmado');
     expect(chip.classList.contains('org-chip--success')).toBe(true);
     expect(chip.classList.contains('org-chip--gradient')).toBe(false);
   });
 
-  it('emits selection only while enabled and normalizes variants', async () => {
+  it('renders a static chip by default and only emits selection when explicitly enabled', async () => {
     await TestBed.configureTestingModule({ imports: [OrgChipComponent] }).compileComponents();
     const fixture: ComponentFixture<OrgChipComponent> = TestBed.createComponent(OrgChipComponent);
     const selected = vi.fn();
@@ -27,13 +27,16 @@ describe('OrgChipComponent', () => {
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
-    const chip = fixture.nativeElement.querySelector('mat-chip-option') as HTMLElement;
-    chip.dispatchEvent(new MouseEvent('click'));
-    expect(chip.classList.contains('org-chip--default')).toBe(true);
+    const staticChip = fixture.nativeElement.querySelector('mat-chip') as HTMLElement;
+    staticChip.dispatchEvent(new MouseEvent('click'));
+    expect(fixture.nativeElement.querySelector('mat-chip-option')).toBeNull();
+    expect(staticChip.classList.contains('org-chip--default')).toBe(true);
     expect(selected).not.toHaveBeenCalled();
 
     fixture.componentRef.setInput('disabled', false);
+    fixture.componentRef.setInput('selectable', true);
     fixture.detectChanges();
+    const chip = fixture.nativeElement.querySelector('mat-chip-option') as HTMLElement;
     chip.dispatchEvent(new MouseEvent('click'));
     expect(selected).toHaveBeenCalledWith(true);
   });

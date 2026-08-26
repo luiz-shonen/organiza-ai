@@ -22,13 +22,14 @@ function normalizeVariant(value: unknown): OrgChipVariant {
 export class OrgChipComponent {
   public readonly label = input.required<string>();
   public readonly variant = input<OrgChipVariant, unknown>('default', { transform: normalizeVariant });
+  public readonly selectable = input(false);
   public readonly selected = input(false);
   public readonly disabled = input(false);
   public readonly gradient = input(true);
   public readonly selectionChange = output<boolean>();
 
   protected select(): void {
-    if (!this.disabled()) {
+    if (this.selectable() && !this.disabled()) {
       this.selectionChange.emit(!this.selected());
     }
   }

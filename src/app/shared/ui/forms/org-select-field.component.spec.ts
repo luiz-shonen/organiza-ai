@@ -18,6 +18,9 @@ describe('OrgSelectFieldComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Formato');
     expect(fixture.componentInstance.value()).toBe('online');
+    expect((fixture.nativeElement.querySelector('mat-select') as HTMLElement).getAttribute('panelclass')).toBe(
+      'org-select-field__panel',
+    );
   });
 
   it('uses a safe empty state and blocks selection while disabled', async () => {

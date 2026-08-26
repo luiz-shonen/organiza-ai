@@ -34,6 +34,7 @@ import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
+  OrgBannerComponent,
   OrgButtonComponent,
   OrgChipComponent,
   OrgDateFieldComponent,
@@ -66,6 +67,7 @@ import { DrawerService } from '../../../core/services/drawer.service';
     MatTooltipModule,
     MatAutocompleteModule,
     MatDialogModule,
+    OrgBannerComponent,
     OrgButtonComponent,
     OrgChipComponent,
     OrgDateFieldComponent,

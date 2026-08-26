@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 export interface OrgNavigationItem {
   readonly id: string;
   readonly label: string;
-  readonly href: string;
+  readonly href?: string;
   readonly disabled?: boolean;
 }
 

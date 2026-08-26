@@ -53,19 +53,14 @@
     </org-page-header>
 
     @if (isEditing() && !isOwner()) {
-      <org-surface
-        variant="card"
+      <org-banner
+        variant="info"
+        icon="info"
+        [message]="'Modo Colaborador: Você tem permissão para gerenciar a lista de itens e visualizar os convidados. As informações principais do evento só podem ser alteradas pelo organizador.'"
         class="editor__collab-banner"
         role="status"
         aria-label="Permissões de colaborador"
-      >
-        <mat-icon class="editor__collab-banner-icon">info</mat-icon>
-        <div class="editor__collab-banner-text">
-          <strong>Modo Colaborador:</strong> Você tem permissão para gerenciar a lista de itens e
-          visualizar os convidados. As informações principais do evento só podem ser alteradas pelo
-          organizador.
-        </div>
-      </org-surface>
+      />
     }
 
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
@@ -142,6 +137,7 @@
                       @for (cat of categories; track cat.name) {
                         <org-chip
                           [label]="cat.name"
+                          [selectable]="true"
                           [selected]="basicInfoForm.controls.category.value === cat.name"
                           (selectionChange)="selectCategory(cat.name)"
                         />
@@ -407,7 +403,6 @@
           />
 
           <!-- Guest List Card -->
-          <org-surface variant="card">
           <mat-card class="editor__card print-section" appearance="outlined">
             <mat-card-header>
               <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
@@ -460,7 +455,6 @@
               }
             </mat-card-content>
           </mat-card>
-          </org-surface>
         </div>
       }
     </div>

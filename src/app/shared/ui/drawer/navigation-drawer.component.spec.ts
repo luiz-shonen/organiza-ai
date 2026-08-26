@@ -56,12 +56,16 @@ describe('NavigationDrawerComponent', () => {
 
   it('uses the same drawer component for design-system section navigation', () => {
     fixture.componentRef.setInput('isDesignSystemNavigation', true);
+    fixture.componentRef.setInput('activeRoute', '/design-system#overview');
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
     const overview = root.querySelector<HTMLAnchorElement>('[data-testid="drawer-design-system-overview"]');
 
     expect(overview?.getAttribute('href')).toBe('/design-system#overview');
+    expect(overview?.getAttribute('aria-current')).toBe('location');
+    expect(root.querySelector('[data-testid="drawer-design-system-typography"]')).toBeTruthy();
+    expect(root.querySelector('[data-testid="drawer-design-system-stepper"]')).toBeTruthy();
     expect(root.querySelector('[data-testid="drawer-my-events"]')).toBeNull();
   });
 

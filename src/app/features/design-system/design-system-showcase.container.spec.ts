@@ -86,6 +86,17 @@ describe('DesignSystemShowcaseContainer', () => {
     }
   });
 
+  it('documents the approved typography roles, scale, and Material icon source', () => {
+    const root = fixture.nativeElement as HTMLElement;
+    const typography = root.querySelector<HTMLElement>('section#typography');
+
+    expect(typography).toBeTruthy();
+    expect(typography?.textContent).toContain('Plus Jakarta Sans');
+    expect(typography?.textContent).toContain('Fraunces');
+    expect(typography?.textContent).toContain('Material Icons');
+    expect(typography?.querySelector('app-design-system-code-example')).toBeTruthy();
+  });
+
   it('applies a single selected seasonal class to the document root', () => {
     component.setSeasonalTheme('theme-pascoa');
     expect(document.documentElement.classList.contains('theme-pascoa')).toBe(true);
@@ -94,6 +105,17 @@ describe('DesignSystemShowcaseContainer', () => {
     component.setSeasonalTheme('theme-natal');
     expect(document.documentElement.classList.contains('theme-pascoa')).toBe(false);
     expect(document.documentElement.classList.contains('theme-natal')).toBe(true);
+  });
+
+  it('makes the selected seasonal card explicit to assistive technology and visually', () => {
+    const root = fixture.nativeElement as HTMLElement;
+    const cards = root.querySelectorAll<HTMLButtonElement>('.org-ds-season-card');
+
+    expect(cards[0].getAttribute('aria-pressed')).toBe('true');
+    component.setSeasonalTheme('theme-junina');
+    fixture.detectChanges();
+    expect(cards[2].classList.contains('org-ds-season-card--active')).toBe(true);
+    expect(cards[2].getAttribute('aria-pressed')).toBe('true');
   });
 
   it('uses the feedback and dialog services only for local component demonstrations', () => {

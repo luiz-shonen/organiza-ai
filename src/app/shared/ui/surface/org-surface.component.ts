@@ -16,4 +16,6 @@ export class OrgSurfaceComponent {
   public readonly atmospherePrimary = input<string>();
   /** Overrides the trailing atmosphere orb without coupling a feature to a seasonal palette. */
   public readonly atmosphereSecondary = input<string>();
+  /** Applies the shared card hover/focus motion to one whole semantic surface. */
+  public readonly interactive = input(false);
 }

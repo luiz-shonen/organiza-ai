@@ -4,6 +4,7 @@ export interface MockUserSessionOptions {
   uid?: string;
   email?: string;
   displayName?: string;
+  isAnonymous?: boolean;
   emailVerified?: boolean;
   isSuperAdmin?: boolean;
   events?: any[];
@@ -33,6 +34,7 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
   const email = options.email || 'luiz.gmr.dev@gmail.com';
   const displayName = options.displayName || 'Luiz Admin';
   const emailVerified = options.emailVerified !== undefined ? options.emailVerified : true;
+  const isAnonymous = options.isAnonymous ?? false;
   const apiKey = TEST_FIREBASE_API_KEY;
 
   // The application loads its Firebase key from runtime-config.js. Keep the
@@ -74,7 +76,7 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
   });
 
   await page.addInitScript(
-    ({ uid, email, displayName, emailVerified, apiKey, events, userProfile, familyMembers }) => {
+    ({ uid, email, displayName, emailVerified, isAnonymous, apiKey, events, userProfile, familyMembers }) => {
       const mockDocs: Record<string, any> = {
         events: events || [],
         users: userProfile ? [userProfile] : [{ id: uid, email, displayName, phone: '(11) 99999-9999' }],
@@ -98,7 +100,7 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
         email,
         emailVerified,
         displayName,
-        isAnonymous: false,
+        isAnonymous,
         photoURL: null,
         apiKey,
         appName: '[DEFAULT]',
@@ -135,6 +137,7 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
       email,
       displayName,
       emailVerified,
+      isAnonymous,
       apiKey,
       events: options.events || [],
       userProfile: options.userProfile,

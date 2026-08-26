@@ -3,7 +3,6 @@
 @use './app/shared/ui/forms/org-form-field';
 @use './app/shared/ui/forms/org-field-label';
 @use './app/shared/ui/actions/org-actions';
-@use './app/shared/ui/surface/org-surface';
 @use './app/shared/ui/layout/org-form-grid';
 
 :root {
@@ -43,8 +42,25 @@
   --org-outline-dark: #a08c95;
   --org-outline-variant-dark: #4f3d46;
 
-  --org-radius-lg: 1rem;
+  --org-radius-sm: 0.75rem;
+  --org-radius-md: 1rem;
+  --org-radius-lg: 1.25rem;
   --org-radius-full: 9999px;
+
+  // Typography roles. Product interface text remains Plus Jakarta Sans; the
+  // display and mono roles are opt-in through closed component/showcase APIs.
+  --org-font-body: 'Plus Jakarta Sans', sans-serif;
+  --org-font-display: 'Fraunces', Georgia, serif;
+  --org-font-mono: 'JetBrains Mono', monospace;
+  --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
+  --org-type-display-line-height: 1.03;
+  --org-type-heading-size: clamp(1.625rem, 3vw, 2.5rem);
+  --org-type-heading-line-height: 1.12;
+  --org-type-title-size: 1.25rem;
+  --org-type-body-size: 1rem;
+  --org-type-body-line-height: 1.6;
+  --org-type-label-size: 0.75rem;
+  --org-type-label-tracking: 0.12em;
 
   /* Glassmorphism & Gradients */
   --org-gradient-primary: linear-gradient(
@@ -72,6 +88,7 @@
   --org-glass-shadow:
     inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2),
     0 8px 32px rgba(35, 16, 67, 0.08);
+  --org-shadow-lg: var(--org-glass-shadow);
 
   /* Global rounding overrides for Material 3 */
   --mdc-shape-small: 16px;

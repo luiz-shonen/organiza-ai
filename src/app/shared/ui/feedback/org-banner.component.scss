@@ -3,9 +3,14 @@
 }
 
 .org-banner {
+  align-items: center;
   border-radius: var(--org-radius-md, 0.75rem);
+  display: flex;
+  gap: 12px;
   padding: 12px 16px;
 }
+
+.org-banner__icon { flex: 0 0 auto; }
 
 .org-banner__message {
   font: inherit;

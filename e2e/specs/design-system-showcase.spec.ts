@@ -104,6 +104,7 @@ test.describe('Design System Showcase', () => {
     const sectionIds = [
       'overview',
       'foundations',
+      'typography',
       'components',
       'buttons',
       'inputs',
@@ -124,6 +125,17 @@ test.describe('Design System Showcase', () => {
     await page.setViewportSize({ width: 320, height: 800 });
     await openShowcase(page);
     await assertNoHorizontalOverflow(page);
+  });
+
+  test('documents the shared typography scale and Material Icons source', async ({ page }) => {
+    await openShowcase(page);
+
+    const typography = page.locator('section#typography');
+    await expect(typography).toContainText('Plus Jakarta Sans');
+    await expect(typography).toContainText('Fraunces');
+    await expect(typography).toContainText('JetBrains Mono');
+    await expect(typography).toContainText('Material Icons');
+    await expect(typography.getByText('Uso recomendado')).toBeVisible();
   });
 
   test('keeps the shared navigation trigger at 48px or larger', async ({ page }) => {

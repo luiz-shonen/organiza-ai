@@ -54,6 +54,16 @@ describe('authGuard', () => {
     expect((result as UrlTree).toString()).toBe('/login');
   });
 
+  it('redirects to /login when currentUser() is an anonymous RSVP session', async () => {
+    loadingSignal.set(false);
+    currentUserSignal.set({ uid: 'anonymous-rsvp-user', isAnonymous: true } as User);
+
+    const result = await TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState));
+
+    expect(result instanceof UrlTree).toBe(true);
+    expect((result as UrlTree).toString()).toBe('/login');
+  });
+
   it('handles loading state waiting before evaluating currentUser()', async () => {
     loadingSignal.set(true);
     currentUserSignal.set(null);

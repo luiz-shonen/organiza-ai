@@ -1,4 +1,37 @@
-:host { display: block; }
-.org-select-field { display: block; width: 100%; --mdc-outlined-text-field-outline-color: var(--org-outline); --mdc-outlined-text-field-focus-outline-color: var(--org-primary); }
-.org-select-field__error { color: var(--org-danger); font-size: 0.75rem; margin: -16px 0 0; }
-.org-select-field__empty { color: var(--org-on-surface-variant); font-size: 0.75rem; margin: -16px 0 0; }
+.org-select-field {
+  display: block;
+  width: 100%;
+  --mdc-outlined-text-field-outline-color: var(--org-outline);
+  --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
+}
+
+.org-select-field__error,
+.org-select-field__empty {
+  font-size: 0.75rem;
+  margin: -16px 0 0;
+}
+
+.org-select-field__error { color: var(--org-danger); }
+.org-select-field__empty { color: var(--org-on-surface-variant); }
+
+// Material renders the options in the CDK overlay. `panelClass` keeps these
+// rules closed to OrgSelectField while preserving the selected check contrast.
+.org-select-field__panel.mat-mdc-select-panel {
+  background: var(--org-glass-bg);
+  color: var(--org-on-surface);
+
+  .mat-mdc-option {
+    color: var(--org-on-surface);
+  }
+
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    --mat-option-selected-state-label-text-color: var(--org-primary);
+    --mat-option-selected-state-layer-color: color-mix(in srgb, var(--org-primary) 14%, transparent);
+
+    color: var(--org-primary);
+  }
+
+  .mat-pseudo-checkbox {
+    --mat-pseudo-checkbox-minimal-selected-checkmark-color: var(--org-primary);
+  }
+}

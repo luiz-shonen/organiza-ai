@@ -10,7 +10,7 @@
   box-sizing: border-box;
   color: var(--navigation-drawer-link-color, var(--org-on-surface-variant));
   display: flex;
-  font-family: 'Inter', 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--org-font-body);
   font-size: 0.875rem;
   font-weight: 700;
   gap: 12px;

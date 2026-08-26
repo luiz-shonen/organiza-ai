@@ -1,6 +1,6 @@
 :host { display: block; }
-.org-metric-card { display: grid; gap: 8px; min-height: 148px; padding: 20px; }
-.org-metric-card--gradient { border: 1px solid transparent; border-image: var(--org-gradient-border) 1; }
+.org-metric-card { display: grid; gap: 8px; min-height: 148px; }
+.org-metric-card--gradient { background: transparent; }
 .org-metric-card__label, .org-metric-card__description { color: var(--org-on-surface-variant); margin: 0; }
 .org-metric-card__value { color: var(--org-on-surface); font-size: 2rem; line-height: 1; }
-.org-metric-card__trend { color: var(--org-success); font-weight: 600; }
+.org-metric-card__trend { color: var(--org-on-surface-variant); font-weight: 600; }

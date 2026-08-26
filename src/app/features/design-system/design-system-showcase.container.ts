@@ -51,6 +51,7 @@ export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = [
   { id: 'overview', label: 'Visão geral', icon: 'auto_awesome' },
   { id: 'seasonal-themes', label: 'Temas sazonais', icon: 'celebration' },
   { id: 'foundations', label: 'Fundações', icon: 'palette' },
+  { id: 'typography', label: 'Tipografia', icon: 'text_fields' },
   { id: 'components', label: 'Componentes', icon: 'widgets' },
   { id: 'buttons', label: 'Botões e ações', icon: 'ads_click' },
   { id: 'inputs', label: 'Campos', icon: 'edit_note' },
@@ -117,6 +118,7 @@ export class DesignSystemShowcaseContainer {
   public readonly companionAllowed = signal<boolean>(false);
   public readonly notifications = signal<number>(3);
   public readonly selectedTab = signal<string | null>('summary');
+  public readonly activeNavigationItem = signal<string | null>('guests');
   public readonly stepperOrientation = signal<'horizontal' | 'vertical'>('horizontal');
   public readonly formatOptions: readonly OrgSelectOption[] = [
     { value: 'presencial', label: 'Presencial' },
@@ -128,13 +130,13 @@ export class DesignSystemShowcaseContainer {
     { value: 'whatsapp', label: 'WhatsApp' },
   ];
   public readonly tabItems: readonly OrgTabItem[] = [
-    { id: 'summary', label: 'Resumo' },
-    { id: 'guests', label: 'Convidados' },
-    { id: 'details', label: 'Detalhes' },
+    { id: 'summary', label: 'Resumo', content: 'Uma visão geral do convite e da confirmação.' },
+    { id: 'guests', label: 'Convidados', content: '42 convidados confirmados para esta celebração.' },
+    { id: 'details', label: 'Detalhes', content: 'Detalhes de data, local e canais de presença.' },
   ];
   public readonly navigationItems: readonly OrgNavigationItem[] = [
-    { id: 'guests', label: 'Convidados confirmados · 42', href: '#data-display' },
-    { id: 'messages', label: 'Mensagens pendentes · 3', href: '#feedback' },
+    { id: 'guests', label: 'Convidados confirmados · 42' },
+    { id: 'messages', label: 'Mensagens pendentes · 3' },
   ];
   public readonly menuActions: readonly OrgMenuAction[] = [
     { id: 'duplicate', label: 'Duplicar evento' },
@@ -151,6 +153,29 @@ export class DesignSystemShowcaseContainer {
   --org-secondary: #ffb648;
   --org-gradient-border: linear-gradient(135deg, var(--org-primary), var(--org-secondary));
 }`,
+    typography: `:root {
+  --org-font-body: 'Plus Jakarta Sans', sans-serif;
+  --org-font-display: 'Fraunces', Georgia, serif;
+  --org-font-mono: 'JetBrains Mono', monospace;
+  --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
+  --org-type-body-size: 1rem;
+  --org-type-body-line-height: 1.6;
+}
+
+/* Títulos editoriais no catálogo e em chamadas de produto. */
+.org-page-header__title {
+  font-family: var(--org-font-display);
+  font-size: var(--org-type-display-size);
+  line-height: var(--org-type-display-line-height);
+}
+
+/* Texto de interface, campos e ações. */
+.org-button, .org-form-field {
+  font-family: var(--org-font-body);
+}
+
+/* Código e tokens. */
+code { font-family: var(--org-font-mono); }`,
     actions: `import { OrgButtonComponent, OrgIconButtonComponent, OrgChipComponent } from '@shared/ui';
 
 <org-button label="Salvar" icon="check" variant="primary" [gradient]="true" />
@@ -255,6 +280,10 @@ this.dialogService.confirm({
 
   public scrollToSection(sectionId: string): void {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  public selectNavigationExample(itemId: string): void {
+    this.activeNavigationItem.set(itemId);
   }
 
   public openDialogExample(): void {

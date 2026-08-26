@@ -17,6 +17,9 @@ describe('OrgConfirmDialogComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Publicar evento');
     expect(fixture.nativeElement.querySelector('[data-testid="org-confirm-dialog"]')?.getAttribute('role')).toBe('alertdialog');
+    const submit = fixture.nativeElement.querySelector('[data-testid="org-confirm-submit"]') as HTMLElement;
+    expect(submit.textContent).toContain('Publicar');
+    expect(submit.classList.contains('org-button__control--text')).toBe(true);
   });
 
   it('closes with true for confirm and false for cancel', async () => {

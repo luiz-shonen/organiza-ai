@@ -4,5 +4,8 @@
   data-testid="org-banner"
   role="alert"
 >
+  @if (icon(); as icon) {
+    <org-icon class="org-banner__icon" [name]="icon" color="currentColor" />
+  }
   <p class="org-banner__message">{{ message() }}</p>
 </section>

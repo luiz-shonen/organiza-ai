@@ -15,8 +15,8 @@ export class LoginPage extends BasePage {
     this.pageRoot = page.getByTestId('login-page').or(page.locator('main.login'));
     this.emailInput = page.getByTestId('login-email-input').or(page.getByLabel('E-mail')).or(page.locator('input[formcontrolname="email"]'));
     this.passwordInput = page.getByTestId('login-password-input').or(page.locator('input[type="password"], input[formcontrolname="password"]'));
-    this.submitBtn = page.getByTestId('login-submit-btn').or(page.locator('button[type="submit"], .login__submit-btn'));
-    this.googleBtn = page.getByTestId('google-login-btn').or(page.locator('.login__google-btn, button:has-text("Google")'));
+    this.submitBtn = page.getByTestId('login-submit-btn').getByRole('button', { name: 'Entrar' });
+    this.googleBtn = page.getByTestId('google-login-btn').getByRole('button', { name: 'Entrar com Google' });
     this.errorAlert = page.getByTestId('login-error-alert').or(page.locator('.login__error'));
     this.verificationBanner = page.getByTestId('email-verification-banner').or(page.locator('.verification-banner, app-verification-banner'));
   }

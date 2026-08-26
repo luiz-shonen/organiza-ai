@@ -3,6 +3,8 @@
   <textarea
     matInput
     [attr.data-testid]="testId() || null"
+    [attr.maxlength]="maxLength()"
+    [attr.minlength]="minLength()"
     [disabled]="isDisabled()"
     [placeholder]="placeholder()"
     [required]="required()"
@@ -13,6 +15,9 @@
   ></textarea>
   @if (hint() && !error()) {
     <mat-hint>{{ hint() }}</mat-hint>
+  }
+  @if (counterLabel() && !error()) {
+    <mat-hint align="end">{{ counterLabel() }}</mat-hint>
   }
 </mat-form-field>
 @if (error()) {

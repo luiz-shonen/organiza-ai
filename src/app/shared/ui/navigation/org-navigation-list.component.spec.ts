@@ -32,4 +32,14 @@ describe('OrgNavigationListComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Nenhum item disponível.');
     expect(selected).toHaveBeenCalledWith('events');
   });
+
+  it('renders action items as buttons when no route target is provided', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgNavigationListComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgNavigationListComponent);
+    fixture.componentRef.setInput('items', [{ id: 'guests', label: 'Convidados confirmados' }]);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('button.org-navigation-list__item')?.textContent).toContain('Convidados confirmados');
+    expect(fixture.nativeElement.querySelector('a.org-navigation-list__item')).toBeNull();
+  });
 });

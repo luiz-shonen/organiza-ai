@@ -1,3 +1,4 @@
 :host { display: block; max-width: 100%; }
 .org-tabs { max-width: 100%; overflow-x: auto; }
 .org-tabs--gradient { --mat-tab-header-active-label-text-color: var(--org-primary); --mat-tab-header-active-ripple-color: var(--org-primary); --mdc-tab-indicator-active-indicator-color: var(--org-primary); }
+.org-tabs__content { color: var(--org-on-surface-variant); margin: 16px 0 0; }

@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { OrgIconComponent, OrgIconName } from '../actions/org-icon.component';
 import type { FeedbackVariant } from './feedback-snackbar.component';
 
 @Component({
   selector: 'org-banner',
+  imports: [OrgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-banner.component.html',
   styleUrl: './org-banner.component.scss',
@@ -10,4 +12,5 @@ import type { FeedbackVariant } from './feedback-snackbar.component';
 export class OrgBannerComponent {
   public readonly message = input.required<string>();
   public readonly variant = input<FeedbackVariant>('info');
+  public readonly icon = input<OrgIconName | null>(null);
 }

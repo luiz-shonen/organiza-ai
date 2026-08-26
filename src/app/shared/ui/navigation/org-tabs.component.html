@@ -5,6 +5,10 @@
   (selectedIndexChange)="selectIndex($event)"
 >
   @for (item of items(); track item.id) {
-    <mat-tab [disabled]="item.disabled ?? false" [label]="item.label" />
+    <mat-tab [disabled]="item.disabled ?? false" [label]="item.label">
+      @if (item.content) {
+        <p class="org-tabs__content">{{ item.content }}</p>
+      }
+    </mat-tab>
   }
 </mat-tab-group>

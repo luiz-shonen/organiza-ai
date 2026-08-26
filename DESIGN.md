@@ -80,12 +80,22 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 
 ## 3. Typography Hierarchy
 
-The design system exclusively utilizes **Plus Jakarta Sans** across all roles, paired with bold weights for a welcoming, high-impact aesthetic.
+The design system has three explicit type roles. **Plus Jakarta Sans** is the
+default for every interactive and informational interface element. **Fraunces**
+is reserved for editorial display headings and hero calls. **JetBrains Mono** is
+reserved for tokens, code examples, and technical labels in the catalog. Do not
+use a fourth family or a feature-local fallback.
+
+| Role | CSS variable | Intended use |
+| :--- | :--- | :--- |
+| **Interface** | `--org-font-body` | Text, actions, fields, navigation, tables, and metrics |
+| **Display** | `--org-font-display` | Hero titles, page displays, and editorial calls |
+| **Mono** | `--org-font-mono` | Tokens, source examples, and technical annotations |
 
 | Level | Size | Weight | Line Height | Letter Spacing | CSS Class |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Display Large** | `48px` (Mobile: `36px`) | 800 (ExtraBold) | 1.1 | `-0.02em` | `.org-display-lg` |
-| **Headline Medium** | `32px` | 700 (Bold) | 1.2 | `-0.01em` | `.org-headline-md` |
+| **Display Large** | `clamp(36px, 5vw, 72px)` | 600 (SemiBold) | 1.03 | `-0.02em` | `--org-type-display-size` |
+| **Headline Medium** | `clamp(26px, 3vw, 40px)` | 600 (SemiBold) | 1.12 | `-0.01em` | `--org-type-heading-size` |
 | **Headline Small** | `24px` | 700 (Bold) | 1.3 | `normal` | `.org-headline-sm` |
 | **Title Medium** | `20px` | 600 (SemiBold) | 1.4 | `normal` | `.org-title-md` |
 | **Body Large** | `18px` | 500 (Medium) | 1.6 | `normal` | `.org-body-lg` |
@@ -122,7 +132,10 @@ box-shadow: 0 8px 32px 0 rgba(255, 77, 148, 0.08);
 
 ## 5. Canonical Iconography
 
-All system icons are rendered via `<org-icon [name]="iconName" [size]="'sm'|'md'|'lg'" [color]="colorString" />`.
+All system icons use **Material Icons** and are rendered via
+`<org-icon [name]="iconName" [size]="'sm'|'md'|'lg'" [color]="colorString" />`.
+Features must use the typed `OrgIcon` API rather than placing raw Material icon
+markup or a feature-local SVG in templates.
 
 ### Supported Canonical Icons (23 Names)
 1. `event` — Calendar / Event

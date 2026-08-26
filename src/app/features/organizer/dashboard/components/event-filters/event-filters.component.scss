@@ -7,7 +7,7 @@
   max-width: 100%;
   box-sizing: border-box;
   background: var(--org-surface-container);
-  border: 1px solid var(--org-outline-variant-light, rgba(255, 255, 255, 0.4));
+  border: 1px solid var(--org-outline-variant, rgba(255, 255, 255, 0.4));
   border-radius: 9999px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -29,7 +29,7 @@
     border: none;
     border-radius: 9999px;
     background: transparent;
-    color: var(--org-on-surface-variant-light, #4a4455);
+    color: var(--org-on-surface-variant, #4a4455);
     font-family: inherit;
     font-size: 0.875rem;
     font-weight: 600;

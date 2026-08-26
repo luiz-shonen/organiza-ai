@@ -40,7 +40,7 @@
             (keydown.space)="navigateToEvent(event.id, $event)"
             [attr.aria-label]="'Ver detalhes do evento ' + event.title"
           >
-            <org-surface variant="card">
+            <org-surface variant="card" [interactive]="true">
               <article class="home__card">
               <div class="home__card-top">
                 <div class="home__card-badge">

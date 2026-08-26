@@ -4,6 +4,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 export interface OrgTabItem {
   readonly id: string;
   readonly label: string;
+  readonly content?: string;
   readonly disabled?: boolean;
 }
 

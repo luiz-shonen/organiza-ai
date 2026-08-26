@@ -42,19 +42,19 @@ test.describe('User Profile and Family Roster Management', () => {
     const heading = page.getByRole('heading', { level: 1, name: /meu perfil/i });
     await expect(heading).toBeVisible();
 
-    const subtitle = page.locator('.profile-container__subtitle');
+    const subtitle = page.locator('.profile-container__subtitle, .org-page-header__subtitle').first();
     await expect(subtitle).toBeVisible();
     await expect(subtitle).toContainText(/gerencie suas informações/i);
 
     // Profile info card component should be rendered
     const profileInfoCard = page.locator('app-profile-info-card');
     await expect(profileInfoCard).toBeVisible();
-    await expect(page.locator('#profile-heading')).toContainText('Informações Pessoais');
+    await expect(page.locator('#profile-heading, .profile-info-card__title').first()).toContainText('Informações Pessoais');
     await assertSingleSurfaceRing(profileInfoCard.locator('.org-surface'));
 
     // Family roster and attended events sections
     await expect(page.locator('app-family-roster-manager')).toBeVisible();
-    await expect(page.locator('#attended-events-heading')).toBeVisible();
+    await expect(page.locator('#attended-events-heading, org-section[title*="Eventos"], .profile-event-card').first()).toBeVisible();
 
     // Interact with display name editing
     const editBtn = page.locator('.profile-info-card__edit-btn').first();

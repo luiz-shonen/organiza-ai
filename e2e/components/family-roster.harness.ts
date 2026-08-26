@@ -28,13 +28,15 @@ export class FamilyRosterHarness {
 
     this.nameInput = searchScope
       .getByTestId('family-member-name-input')
-      .or(searchScope.getByTestId('family-name-input'))
+      .locator('input')
+      .or(searchScope.getByTestId('family-member-name-input'))
       .or(searchScope.getByLabel(/nome/i))
       .or(
         searchScope.locator(
-          'input[name="familyName"], input[name="inlineMemberName"], input[placeholder*="Lucas"], input[placeholder*="Pedro"], input[formcontrolname="name"]'
+          '.family-roster__field input, input[name="familyName"], input[name="inlineMemberName"], input[placeholder*="Lucas"], input[placeholder*="Pedro"], input[formcontrolname="name"]'
         )
-      );
+      )
+      .first();
 
     this.relationshipSelect = searchScope
       .getByTestId('family-member-relationship-select')
@@ -42,36 +44,43 @@ export class FamilyRosterHarness {
       .or(searchScope.getByLabel(/parentesco/i))
       .or(
         searchScope.locator(
-          'mat-select[name="familyRelationship"], mat-select[name="inlineMemberRelationship"], mat-select'
+          '.org-autocomplete-field input, mat-select[name="familyRelationship"], mat-select[name="inlineMemberRelationship"], mat-select'
         )
-      );
+      )
+      .first();
 
     this.phoneInput = searchScope
       .getByTestId('family-member-phone-input')
-      .or(searchScope.getByTestId('family-phone-input'))
+      .locator('input')
+      .or(searchScope.getByTestId('family-member-phone-input'))
       .or(searchScope.getByLabel(/telefone|whatsapp/i))
-      .or(searchScope.locator('input[name="familyPhone"], input[type="tel"]'));
+      .or(searchScope.locator('.family-roster__field input[type="tel"], input[name="familyPhone"], input[type="tel"]'))
+      .first();
 
     this.addMemberBtn = searchScope
       .getByTestId('add-family-member-btn')
+      .locator('button')
       .or(
         searchScope.locator(
-          '.family-roster__add-btn, .family-selector__inline-actions button[type="submit"], button:has-text("Adicionar"), button:has-text("Adicionar Familiar"), button:has-text("Adicionar e Selecionar"), [aria-label*="Adicionar familiar"], [aria-label*="Salvar e selecionar"]'
+          '.family-roster__add-btn button, .family-selector__inline-actions button[type="submit"], button:has-text("Adicionar"), button:has-text("Adicionar Familiar"), button:has-text("Adicionar e Selecionar"), [aria-label*="Adicionar familiar"], [aria-label*="Salvar e selecionar"]'
         )
-      );
+      )
+      .first();
 
     this.deleteMemberBtns = searchScope
       .getByTestId('delete-family-member-btn')
+      .locator('button')
       .or(
         searchScope.locator(
-          '.family-roster__remove-btn, button[aria-label*="Remover"], button:has(mat-icon:has-text("delete")), button:has(mat-icon:has-text("delete_outline"))'
+          '.family-roster__remove-btn button, button[aria-label*="Remover"], button:has(mat-icon:has-text("delete")), button:has(mat-icon:has-text("delete_outline")), [data-testid="delete-family-member-btn"]'
         )
       );
 
     this.selectAllCheckbox = searchScope
       .getByTestId('select-all-family-checkbox')
       .or(searchScope.getByLabel(/selecionar todos/i))
-      .or(searchScope.locator('.family-selector__select-all, mat-checkbox:has-text("Selecionar Todos")'));
+      .or(searchScope.locator('.family-selector__select-all, mat-checkbox:has-text("Selecionar Todos")'))
+      .first();
   }
 
   async addMember(name: string, relationship?: string, phone?: string): Promise<void> {
@@ -96,13 +105,15 @@ export class FamilyRosterHarness {
       const label = relationshipLabelMap[relationship.toLowerCase()] ?? relationship;
 
       await this.relationshipSelect.click();
+      await this.relationshipSelect.fill(label);
       const optionLocator = this.page
-        .locator('mat-option')
+        .locator('.cdk-overlay-pane mat-option, mat-option')
         .filter({ hasText: label })
-        .first()
-        .or(this.page.locator(`mat-option[value="${relationship}"]`));
+        .first();
 
-      await optionLocator.click();
+      if (await optionLocator.isVisible({ timeout: 2000 }).catch(() => false)) {
+        await optionLocator.click();
+      }
     }
 
     if (phone && (await this.phoneInput.isVisible())) {

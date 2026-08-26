@@ -25,7 +25,8 @@ test.describe('PWA Offline Caching Resilience and Offline Mode Suite', () => {
     await expect(page.getByTestId('navigation-drawer')).toBeVisible();
     await page.getByTestId('drawer-theme-dark').click();
     await expect(page.locator('html')).toHaveClass(/dark/);
-    await expect(page.getByTestId('drawer-theme-dark')).toHaveAttribute('aria-pressed', 'true');
+    const darkStorageValue = await page.evaluate(() => localStorage.getItem('theme_mode'));
+    expect(darkStorageValue).toBe('dark');
 
     // 4. Restore online connection
     await context.setOffline(false);

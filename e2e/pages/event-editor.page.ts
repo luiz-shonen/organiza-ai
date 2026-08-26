@@ -27,7 +27,7 @@ export class EventEditorPage extends BasePage {
     this.cepInput = page.getByTestId('event-cep-input').or(page.locator('input[formcontrolname="cep"]')).first();
     this.streetInput = page.getByTestId('event-street-input').or(page.locator('input[formcontrolname="address"]')).first();
     this.numberInput = page.getByTestId('event-number-input').or(page.locator('input[formcontrolname="number"]')).first();
-    this.saveBtn = page.getByTestId('event-save-btn').or(page.locator('.editor__save-btn, button[aria-label="Salvar evento"]')).first();
+    this.saveBtn = page.getByTestId('event-save-btn').locator('button').or(page.locator('.editor__save-btn button, button[data-testid="event-save-btn"], button[aria-label="Salvar evento"], button:has-text("Salvar"), button:has-text("Criar Evento")')).first();
     this.cancelEventBtn = page.getByTestId('event-cancel-btn').or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]')).first();
     this.nextStepBtns = page.locator('org-button[label="Próximo"] button, [data-testid="stepper-next-btn"] button, button:has-text("Próximo")');
     this.itemNameInput = page.getByTestId('item-name-input').or(page.locator('.editor__item-name-field input')).first();
@@ -74,12 +74,15 @@ export class EventEditorPage extends BasePage {
   async fillCep(cep: string, number: string = '100'): Promise<void> {
     await this.cepInput.fill(cep);
     await this.numberInput.fill(number);
-    await expect(this.nextStepBtns).toBeEnabled();
-    await this.nextStepBtns.click();
+    const nextBtn = this.nextStepBtns.filter({ visible: true }).first();
+    await expect(nextBtn).toBeEnabled();
+    await nextBtn.click();
   }
 
   async saveEvent(): Promise<void> {
-    await this.saveBtn.click();
+    const saveButton = this.saveBtn.filter({ visible: true }).first();
+    await expect(saveButton).toBeEnabled();
+    await saveButton.click();
   }
 
   async addWishlistItem(name: string, _category: string = 'Geral', quantity: number = 1): Promise<void> {

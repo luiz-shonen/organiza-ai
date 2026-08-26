@@ -132,7 +132,7 @@ T3 → T4
 
 **Done when**:
 
-- [ ] E2E asserts grouped drawer labels, foundation anchors, code disclosures, and the data-table preview.
+- [x] E2E asserts grouped drawer labels, foundation anchors, code disclosures, and the data-table preview.
 
 **Tests**: e2e
 **Gate**: full

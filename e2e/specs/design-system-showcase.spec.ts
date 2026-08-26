@@ -103,8 +103,11 @@ test.describe('Design System Showcase', () => {
 
     const sectionIds = [
       'overview',
+      'colors',
       'foundations',
       'typography',
+      'iconography',
+      'tokens',
       'components',
       'buttons',
       'inputs',
@@ -141,6 +144,27 @@ test.describe('Design System Showcase', () => {
   test('keeps the shared navigation trigger at 48px or larger', async ({ page }) => {
     await openShowcase(page);
     await assertMinTouchTarget(page.getByRole('button', { name: 'Abrir menu de navegação' }));
+  });
+
+  test('groups the catalog and documents each layer with an exact Angular example', async ({ page }) => {
+    await openShowcase(page);
+
+    await page.getByRole('button', { name: 'Abrir menu de navegação' }).click();
+    const drawer = page.getByTestId('navigation-drawer');
+    await expect(drawer.getByRole('heading', { name: 'Marca', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('heading', { name: 'Fundações', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('heading', { name: 'Produto', exact: true })).toBeVisible();
+    await expect(drawer.getByTestId('drawer-design-system-colors')).toHaveAttribute('href', '/design-system#colors');
+    await expect(drawer.getByTestId('drawer-design-system-tokens')).toHaveAttribute('href', '/design-system#tokens');
+    await page.getByTestId('navigation-drawer-close').click();
+
+    for (const id of ['colors', 'typography', 'iconography', 'tokens', 'foundations']) {
+      await expect(page.locator(`section#${id} app-design-system-code-example`)).toContainText('Uso recomendado');
+    }
+
+    const dataDisplay = page.locator('section#data-display');
+    await expect(dataDisplay.locator('org-data-table')).toBeVisible();
+    await expect(dataDisplay.locator('app-design-system-code-example')).toContainText('org-data-table');
   });
 
   test('applies each seasonal theme to the complete shared token contract', async ({ page }) => {

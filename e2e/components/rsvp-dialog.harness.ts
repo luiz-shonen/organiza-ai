@@ -25,19 +25,29 @@ export class RsvpDialogHarness {
 
     this.confirmBtn = this.dialogRoot
       .getByTestId('rsvp-confirm-btn')
+      .locator('button')
       .or(this.dialogRoot.getByRole('button', { name: /confirmar/i }))
       .or(
         this.dialogRoot.locator(
           '.guest-dialog__actions button:has-text("Confirmar"), button[aria-label="Confirmar presença"]'
         )
-      );
+      )
+      .first();
 
-    this.cancelBtn = this.dialogRoot.getByTestId('rsvp-cancel-btn');
+    this.cancelBtn = this.dialogRoot
+      .getByTestId('rsvp-cancel-btn')
+      .locator('button')
+      .or(this.dialogRoot.getByRole('button', { name: /cancelar/i }))
+      .or(this.dialogRoot.locator('.guest-dialog__actions button:has-text("Cancelar")'))
+      .first();
 
     this.phoneInput = this.dialogRoot
       .getByTestId('rsvp-phone-input')
+      .locator('input')
+      .or(this.dialogRoot.getByTestId('rsvp-phone-input'))
       .or(this.dialogRoot.getByLabel(/telefone|whatsapp/i))
-      .or(this.dialogRoot.locator('input[type="tel"], input[formcontrolname="phone"]'));
+      .or(this.dialogRoot.locator('.org-text-field input[type="tel"], input[type="tel"], input[formcontrolname="phone"]'))
+      .first();
 
     this.familySelector = this.dialogRoot
       .getByTestId('family-selector')
@@ -45,13 +55,19 @@ export class RsvpDialogHarness {
 
     this.nameInput = this.dialogRoot
       .getByTestId('rsvp-name-input')
+      .locator('input')
+      .or(this.dialogRoot.getByTestId('rsvp-name-input'))
       .or(this.dialogRoot.getByLabel(/nome/i))
-      .or(this.dialogRoot.locator('input[formcontrolname="name"]'));
+      .or(this.dialogRoot.locator('.org-text-field input, input[formcontrolname="name"]'))
+      .first();
 
     this.companionsInput = this.dialogRoot
       .getByTestId('rsvp-companions-input')
+      .locator('input')
+      .or(this.dialogRoot.getByTestId('rsvp-companions-input'))
       .or(this.dialogRoot.getByLabel(/acompanhantes/i))
-      .or(this.dialogRoot.locator('input[formcontrolname="companionsCount"], input[type="number"]'));
+      .or(this.dialogRoot.locator('input[formcontrolname="companionsCount"], input[type="number"]'))
+      .first();
   }
 
   async assertVisible(): Promise<void> {

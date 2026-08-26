@@ -64,6 +64,11 @@ describe('NavigationDrawerComponent', () => {
 
     expect(overview?.getAttribute('href')).toBe('/design-system#overview');
     expect(overview?.getAttribute('aria-current')).toBe('location');
+    expect(root.textContent).toContain('Marca');
+    expect(root.textContent).toContain('Fundações');
+    expect(root.textContent).toContain('Produto');
+    expect(root.querySelector('[data-testid="drawer-design-system-colors"]')).toBeTruthy();
+    expect(root.querySelector('[data-testid="drawer-design-system-tokens"]')).toBeTruthy();
     expect(root.querySelector('[data-testid="drawer-design-system-typography"]')).toBeTruthy();
     expect(root.querySelector('[data-testid="drawer-design-system-stepper"]')).toBeTruthy();
     expect(root.querySelector('[data-testid="drawer-my-events"]')).toBeNull();

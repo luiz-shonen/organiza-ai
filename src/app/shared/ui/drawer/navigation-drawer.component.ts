@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import type { ThemeMode } from '../../../core/models';
+import { DESIGN_SYSTEM_NAVIGATION_GROUPS } from '../../../core/models/design-system-navigation.model';
 import { NavigationDrawerLinkComponent } from './navigation-drawer-link.component';
 
 @Component({
@@ -25,20 +26,7 @@ export class NavigationDrawerComponent {
   readonly logout = output<void>();
   readonly close = output<void>();
 
-  protected readonly designSystemSections = [
-    { id: 'overview', label: 'Visão geral', icon: 'auto_awesome' },
-    { id: 'seasonal-themes', label: 'Temas sazonais', icon: 'celebration' },
-    { id: 'foundations', label: 'Fundações', icon: 'palette' },
-    { id: 'typography', label: 'Tipografia', icon: 'text_fields' },
-    { id: 'components', label: 'Componentes', icon: 'widgets' },
-    { id: 'buttons', label: 'Botões e ações', icon: 'ads_click' },
-    { id: 'inputs', label: 'Campos', icon: 'edit_note' },
-    { id: 'selection', label: 'Seleção', icon: 'check_circle' },
-    { id: 'stepper', label: 'Etapas', icon: 'format_list_numbered' },
-    { id: 'navigation', label: 'Navegação', icon: 'tab' },
-    { id: 'data-display', label: 'Dados e cards', icon: 'view_agenda' },
-    { id: 'feedback', label: 'Feedback', icon: 'notifications' },
-  ] as const;
+  protected readonly designSystemNavigationGroups = DESIGN_SYSTEM_NAVIGATION_GROUPS;
 
   protected onThemeChange(mode: ThemeMode): void {
     this.themeChange.emit(mode);

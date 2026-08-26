@@ -89,9 +89,24 @@
   }
 
   &__navigation,
+  &__group-links,
   &__theme-options {
     display: grid;
     gap: 4px;
+  }
+
+  &__group + &__group {
+    margin-top: 20px;
+  }
+
+  &__group-title {
+    color: var(--org-on-surface-variant);
+    font-family: var(--org-font-mono);
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    margin: 0 0 8px;
+    text-transform: uppercase;
   }
 
   &__logout {

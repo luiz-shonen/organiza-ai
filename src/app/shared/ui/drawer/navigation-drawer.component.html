@@ -34,16 +34,23 @@
 
   <nav class="navigation-drawer__navigation" aria-label="Navegação principal">
     @if (isDesignSystemNavigation()) {
-      @for (section of designSystemSections; track section.id) {
-        <app-navigation-drawer-link
-          [href]="'/design-system#' + section.id"
-          [icon]="section.icon"
-          [label]="section.label"
-          [testId]="'drawer-design-system-' + section.id"
-          [active]="activeRoute().endsWith('#' + section.id) || (section.id === 'overview' && !activeRoute().includes('#'))"
-          currentValue="location"
-          (selected)="close.emit()"
-        />
+      @for (group of designSystemNavigationGroups; track group.id) {
+        <section class="navigation-drawer__group" [attr.aria-labelledby]="'drawer-group-' + group.id">
+          <h3 [id]="'drawer-group-' + group.id" class="navigation-drawer__group-title">{{ group.label }}</h3>
+          <div class="navigation-drawer__group-links">
+            @for (section of group.items; track section.id) {
+              <app-navigation-drawer-link
+                [href]="'/design-system#' + section.id"
+                [icon]="section.icon"
+                [label]="section.label"
+                [testId]="'drawer-design-system-' + section.id"
+                [active]="activeRoute().endsWith('#' + section.id) || (section.id === 'overview' && !activeRoute().includes('#'))"
+                currentValue="location"
+                (selected)="close.emit()"
+              />
+            }
+          </div>
+        </section>
       }
     } @else {
       <app-navigation-drawer-link [route]="'/'" icon="home" label="Início" testId="drawer-home" [active]="activeRoute() === '/'" (selected)="close.emit()" />

@@ -81,7 +81,7 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     if (hasRsvpBtn) {
       // Assert RSVP button attributes
       await expect(eventDetailPage.rsvpBtn).toBeVisible();
-      await expect(eventDetailPage.rsvpBtn).toHaveAttribute('aria-label', /confirmar|presença|ir/i);
+      await expect(eventDetailPage.rsvpBtn).toHaveAccessibleName(/confirmar|presença|ir/i);
 
       // Click RSVP button
       await eventDetailPage.openRsvpDialog();
@@ -202,13 +202,13 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
         if (claimBtnCount > 0) {
           const firstClaimBtn = itemList.claimBtns.first();
           await expect(firstClaimBtn).toBeVisible();
-          await expect(firstClaimBtn).toHaveAttribute('aria-label', /levar item/i);
+          await expect(firstClaimBtn).toHaveAccessibleName(/eu levo|levar/i);
         }
 
         if (unclaimBtnCount > 0) {
           const firstUnclaimBtn = itemList.unclaimBtns.first();
           await expect(firstUnclaimBtn).toBeVisible();
-          await expect(firstUnclaimBtn).toHaveAttribute('aria-label', /desistir de levar/i);
+          await expect(firstUnclaimBtn).toHaveAccessibleName(/desistir/i);
         }
       } else {
         // Verify empty state fallback

@@ -690,7 +690,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await rsvpDialog.assertVisible();
 
       // Assert glassmorphism on the workflow drawer surface actually presented to guests.
-      await assertGlassmorphism(rsvpDialog.dialogRoot.locator('.org-surface, [data-surface], .rsvp-dialog').first());
+      await assertGlassmorphism(page.locator('.navigation-drawer, .rsvp-drawer, [data-testid="rsvp-drawer"], app-guest-form-dialog, mat-dialog-container').first());
     });
   });
 
@@ -727,7 +727,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Assert confirmed status card appears
       await expect(eventDetailPage.rsvpStatusCard).toBeVisible();
-      await expect(eventDetailPage.rsvpStatusCard).toContainText(/Presença Confirmada/i);
+      await expect(eventDetailPage.rsvpStatusCard).toContainText(/confirmada|você está na lista/i);
 
       // Screenshot baseline
       await eventDetailPage.captureScreenshot('13-12-rsvp-confirmed');

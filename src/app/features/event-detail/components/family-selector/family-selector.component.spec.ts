@@ -104,7 +104,7 @@ describe('FamilySelectorComponent', () => {
 
     // Set values
     (component as any).inlineName.set('Pedro Silva');
-    (component as any).inlineRelationship.set('sibling');
+    component['setInlineRelationship']('sibling');
     (component as any).inlinePhone.set('11966665555');
 
     (component as any).onSubmitInline();
@@ -126,6 +126,7 @@ describe('FamilySelectorComponent', () => {
     (component as unknown as { onToggleInlineForm: () => void }).onToggleInlineForm();
     fixture.detectChanges();
 
+    expect(component['relationshipOptions']).toHaveLength(6);
     expect((fixture.nativeElement as HTMLElement).querySelector('org-autocomplete-field')).toBeTruthy();
   });
 

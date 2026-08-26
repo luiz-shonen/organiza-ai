@@ -56,6 +56,7 @@ describe('FamilyRosterManagerComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelectorAll('org-surface')).toHaveLength(1);
     expect(compiled.querySelectorAll('mat-card')).toHaveLength(0);
+    expect(component['relationshipOptions']).toHaveLength(6);
     expect(compiled.querySelectorAll('org-text-field, org-autocomplete-field')).toHaveLength(3);
     expect(compiled.querySelector('.family-roster__add-btn')).toBeInstanceOf(HTMLElement);
     expect(compiled.querySelector('.family-roster__remove-btn')).toBeInstanceOf(HTMLElement);

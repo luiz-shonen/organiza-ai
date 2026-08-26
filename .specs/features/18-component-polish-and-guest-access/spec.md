@@ -10,12 +10,12 @@ application presents that visitor as signed out.
 
 ## Goals
 
-- [ ] Prevent anonymous RSVP sessions from opening organizer routes or editors.
-- [ ] Make the shared component owners render the reviewed states consistently in
+- [x] Prevent anonymous RSVP sessions from opening organizer routes or editors.
+- [x] Make the shared component owners render the reviewed states consistently in
       light, dark, and seasonal themes.
-- [ ] Make `/design-system` an executable, accurate catalog whose examples work
+- [x] Make `/design-system` an executable, accurate catalog whose examples work
       and expose the exact composition code.
-- [ ] Remove the reviewed nested-surface and hover-boundary defects from the
+- [x] Remove the reviewed nested-surface and hover-boundary defects from the
       affected product screens.
 
 ## Out of Scope
@@ -138,28 +138,29 @@ reviewed routes in a signed-in and anonymous state as applicable.
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| AUTH-01 | P1: Organizer access | Tasks | Pending |
-| AUTH-02 | P1: Organizer access | Tasks | Pending |
-| AUTH-03 | P1: Organizer access | Tasks | Pending |
-| CMP-01 | P1: Closed components | Tasks | Pending |
-| CMP-02 | P1: Closed components | Tasks | Pending |
-| CMP-03 | P1: Closed components | Tasks | Pending |
-| CMP-04 | P1: Closed components | Tasks | Pending |
-| CMP-05 | P1: Closed components | Tasks | Pending |
-| CMP-06 | P1: Closed components | Tasks | Pending |
-| DOC-01 | P1: Showcase documentation | Tasks | Pending |
-| DOC-02 | P1: Showcase documentation | Tasks | Pending |
-| DOC-03 | P1: Showcase documentation | Tasks | Pending |
-| DOC-04 | P1: Showcase documentation | Tasks | Pending |
-| APP-01 | P2: Product consumers | Tasks | Pending |
-| APP-02 | P2: Product consumers | Tasks | Pending |
-| APP-03 | P2: Product consumers | Tasks | Pending |
+| AUTH-01 | P1: Organizer access | T1 | Complete |
+| AUTH-02 | P1: Organizer access | T1 | Complete |
+| AUTH-03 | P1: Organizer access | T1 | Complete |
+| CMP-01 | P1: Closed components | T2 | Complete |
+| CMP-02 | P1: Closed components | T2, T5 | Complete |
+| CMP-03 | P1: Closed components | T2, T5 | Complete |
+| CMP-04 | P1: Closed components | T3 | Complete |
+| CMP-05 | P1: Closed components | T4 | Complete |
+| CMP-06 | P1: Closed components | T5, T6 | Complete |
+| DOC-01 | P1: Showcase documentation | T7 | Complete |
+| DOC-02 | P1: Showcase documentation | T7 | Complete |
+| DOC-03 | P1: Showcase documentation | T4, T7 | Complete |
+| DOC-04 | P1: Showcase documentation | T5, T7 | Complete |
+| DOC-05 | P1: Showcase documentation | T7 | Complete |
+| APP-01 | P2: Product consumers | T6 | Complete |
+| APP-02 | P2: Product consumers | T6 | Complete |
+| APP-03 | P2: Product consumers | T6 | Complete |
 
-**Coverage:** 16 total, 0 mapped to tasks, 16 unmapped until task design is approved.
+**Coverage:** 17 total, 17 mapped to completed tasks, 0 unmapped.
 
 ## Success Criteria
 
-- [ ] An anonymous session cannot open organizer routes, while public discovery stays public.
-- [ ] The 33 annotated defects have a component-owner or product-consumer correction and regression evidence.
-- [ ] The showcase has working representative interactions and exact collapsed code examples.
-- [ ] Shared visual repairs are delivered through `Org*` components and tokens, not feature-owned component styling.
+- [x] An anonymous session cannot open organizer routes, while public discovery stays public.
+- [x] The 33 annotated defects have a component-owner or product-consumer correction and regression evidence.
+- [x] The showcase has working representative interactions and exact collapsed code examples.
+- [x] Shared visual repairs are delivered through `Org*` components and tokens, not feature-owned component styling.

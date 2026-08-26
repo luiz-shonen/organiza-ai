@@ -61,7 +61,7 @@ T6 -> T7 -> T8
 **Depends on**: none  
 **Tests**: Covers `AUTH-01` through `AUTH-03`, including direct anonymous navigation.  
 **Gate**: Quick + Full  
-**Status**: Pending
+**Status**: Complete
 
 ### T2: Make chip and action appearance semantics explicit
 
@@ -69,7 +69,7 @@ T6 -> T7 -> T8
 **Depends on**: T1  
 **Tests**: Covers static/selectable chips, spacing, gradient foregrounds, and gradient opt-out for `CMP-01` through `CMP-03`.  
 **Gate**: Quick + Contract  
-**Status**: Pending
+**Status**: Complete
 
 ### T3: Complete field component geometry and content contracts
 
@@ -77,7 +77,7 @@ T6 -> T7 -> T8
 **Depends on**: T2  
 **Tests**: Covers time suffix spacing/normal Material height, select option contrast hook, and textarea optional counter/bounds for `CMP-04`.  
 **Gate**: Quick + Contract  
-**Status**: Pending
+**Status**: Complete
 
 ### T4: Make navigation component interactions real and semantic
 
@@ -85,7 +85,7 @@ T6 -> T7 -> T8
 **Depends on**: T3  
 **Tests**: Covers tabs content changes, action/list semantics, menu surface, and vertical stepper for `CMP-05` and `DOC-03`.  
 **Gate**: Quick + Contract  
-**Status**: Pending
+**Status**: Complete
 
 ### T5: Repair single-surface composition, metric, banner, dialog, and feedback contracts
 
@@ -93,7 +93,7 @@ T6 -> T7 -> T8
 **Depends on**: T4  
 **Tests**: Covers one-ring structure, readable trend/token foregrounds, dialog action spacing, and theme-aware feedback for `CMP-02`, `CMP-03`, and `CMP-06`.  
 **Gate**: Quick + Contract  
-**Status**: Pending
+**Status**: Complete
 
 ### T6: Migrate reviewed home, dashboard, and editor consumers to the repaired owners
 
@@ -101,7 +101,7 @@ T6 -> T7 -> T8
 **Depends on**: T5  
 **Tests**: Covers `APP-01` through `APP-03` with component tests and target screenshots.  
 **Gate**: Full + Build  
-**Status**: Pending
+**Status**: Complete
 
 ### T7: Make the showcase accurate, active, and exactly documented
 
@@ -109,7 +109,7 @@ T6 -> T7 -> T8
 **Depends on**: T6  
 **Tests**: Covers `DOC-01` through `DOC-05`, reviewed chip/button examples, typography/iconography documentation, foundation token copy, and responsive title width.  
 **Gate**: Full + Build  
-**Status**: Pending
+**Status**: Complete
 
 ### T8: Run visual matrix and close traceability
 
@@ -117,7 +117,7 @@ T6 -> T7 -> T8
 **Depends on**: T7  
 **Tests**: Runs all changed component/route suites, desktop/mobile light/dark showcase checks, strict contract validation, and build.  
 **Gate**: Full + Contract + Build  
-**Status**: Pending
+**Status**: Complete
 
 ## Granularity Check
 

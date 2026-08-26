@@ -38,6 +38,17 @@ export class OrgDateFieldComponent implements ControlValueAccessor {
     }
   }
 
+  protected onTextInput(rawValue: string): void {
+    if (!rawValue) {
+      this.updateValue(null);
+      return;
+    }
+    const parsed = new Date(rawValue);
+    if (!isNaN(parsed.getTime())) {
+      this.updateValue(parsed);
+    }
+  }
+
   protected markTouched(): void { this.onTouched(); }
   protected readonly isDisabled = () => this.disabled() || this.disabledFromControl();
 }

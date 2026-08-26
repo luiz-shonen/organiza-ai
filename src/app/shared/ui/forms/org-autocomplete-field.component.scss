@@ -1,0 +1,31 @@
+.org-autocomplete-field {
+  display: block;
+  width: 100%;
+  --mdc-outlined-text-field-outline-color: var(--org-outline);
+  --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);
+}
+
+.org-autocomplete-field__error {
+  color: var(--org-danger);
+  font-size: 0.75rem;
+  margin: -16px 0 0;
+}
+
+// Material renders the options in the CDK overlay. `panelClass` confines the
+// active, selected, and disabled contrast contract to OrgAutocompleteField.
+.org-autocomplete-field__panel.mat-mdc-autocomplete-panel {
+  background: var(--org-glass-bg);
+  color: var(--org-on-surface);
+
+  .mat-mdc-option {
+    color: var(--org-on-surface);
+  }
+
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    --mat-option-selected-state-label-text-color: var(--org-primary);
+    --mat-option-selected-state-layer-color: color-mix(in srgb, var(--org-primary) 14%, transparent);
+
+    color: var(--org-primary);
+  }
+}

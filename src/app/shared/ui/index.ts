@@ -12,6 +12,7 @@ export type { OrgTextFieldType } from './forms/org-text-field.component';
 export { OrgTextareaFieldComponent } from './forms/org-textarea-field.component';
 export { OrgSelectFieldComponent } from './forms/org-select-field.component';
 export type { OrgSelectOption } from './forms/org-select-field.component';
+export { OrgAutocompleteFieldComponent } from './forms/org-autocomplete-field.component';
 
 export { OrgToggleComponent } from './selection/org-toggle.component';
 export { OrgCheckboxComponent } from './selection/org-checkbox.component';

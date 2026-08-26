@@ -1,0 +1,28 @@
+<mat-form-field appearance="outline" class="org-autocomplete-field">
+  <mat-label>{{ label() }}</mat-label>
+  <input
+    matInput
+    type="text"
+    autocomplete="off"
+    [matAutocomplete]="optionsPanel"
+    [disabled]="isDisabled()"
+    [placeholder]="placeholder()"
+    [required]="required()"
+    [value]="inputValue()"
+    (blur)="markTouched()"
+    (input)="updateQuery($event)"
+  />
+  <mat-autocomplete #optionsPanel="matAutocomplete" panelClass="org-autocomplete-field__panel" (optionSelected)="selectOption($event.option.value)">
+    @for (option of filteredOptions(); track option.value) {
+      <mat-option [disabled]="option.disabled ?? false" [value]="option.value">{{ option.label }}</mat-option>
+    } @empty {
+      <mat-option disabled>Nenhuma opção encontrada.</mat-option>
+    }
+  </mat-autocomplete>
+  @if (hint() && !error()) {
+    <mat-hint>{{ hint() }}</mat-hint>
+  }
+</mat-form-field>
+@if (error()) {
+  <p class="org-autocomplete-field__error" role="alert">{{ error() }}</p>
+}

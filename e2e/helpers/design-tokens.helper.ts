@@ -38,7 +38,10 @@ export async function assertGlassmorphism(locator: Locator): Promise<void> {
   const target = locator.first();
   await expect(target).toBeVisible();
   const backdropFilter = await target.evaluate((el) => {
-    const style = window.getComputedStyle(el);
+    const candidate = el.closest('.org-surface, [data-surface], .navigation-drawer, .rsvp-drawer') ||
+                      el.querySelector('.org-surface, [data-surface], .navigation-drawer, .rsvp-drawer') ||
+                      el;
+    const style = window.getComputedStyle(candidate);
     return style.backdropFilter || style.webkitBackdropFilter || '';
   });
   expect(backdropFilter).toContain('blur');

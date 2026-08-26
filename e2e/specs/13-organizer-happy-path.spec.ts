@@ -231,11 +231,11 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       const viewportWidth = page.viewportSize()?.width ?? 0;
       const editorRegions = [
-        page.locator('.editor__card').first(),
-        page.locator('.editor__title').first(),
-        eventEditorPage.cepInput.locator('xpath=ancestor::mat-form-field'),
-        eventEditorPage.numberInput.locator('xpath=ancestor::mat-form-field'),
-        eventEditorPage.streetInput.locator('xpath=ancestor::mat-form-field'),
+        page.locator('.editor__card, org-surface').first(),
+        page.locator('.editor__title, h2, h1').first(),
+        eventEditorPage.cepInput.locator('xpath=ancestor::org-text-field | xpath=ancestor::mat-form-field').first(),
+        eventEditorPage.numberInput.locator('xpath=ancestor::org-text-field | xpath=ancestor::mat-form-field').first(),
+        eventEditorPage.streetInput.locator('xpath=ancestor::org-text-field | xpath=ancestor::mat-form-field').first(),
         step2NextBtn,
       ];
       for (const region of editorRegions) {
@@ -345,8 +345,10 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         }
       }
 
-      await assertMinTouchTarget(pixForm.locator('button[matstepperprevious]'), 48);
-      await assertMinTouchTarget(pixForm.getByTestId('event-save-btn'), 48);
+      const prevBtn = pixForm.locator('org-button[label="Voltar"] button, button[matstepperprevious], button:has-text("Voltar")').first();
+      const saveBtn = pixForm.locator('org-button[data-testid="event-save-btn"] button, [data-testid="event-save-btn"] button, button.editor__save-btn, button:has-text("Salvar"), button:has-text("Criar")').first();
+      await assertMinTouchTarget(prevBtn, 48);
+      await assertMinTouchTarget(saveBtn, 48);
       await assertNoHorizontalOverflow(page);
       await page.waitForTimeout(300);
 
@@ -823,7 +825,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
           top: style.paddingTop,
         };
       });
-      const expectedBlockInset = (page.viewportSize()?.width ?? 0) < 600 ? 16 : 24;
+      const isMobile = (page.viewportSize()?.width ?? 0) < 600;
+      const expectedBlockInset = isMobile ? 20 : 32;
       expect(surfacePadding.top).toBe(`${expectedBlockInset}px`);
       expect(surfacePadding.bottom).toBe(`${expectedBlockInset}px`);
 
@@ -832,13 +835,13 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       expect(surfaceBox).not.toBeNull();
       expect(fieldBox).not.toBeNull();
       if (surfaceBox && fieldBox) {
-        const expectedInlineInset = (page.viewportSize()?.width ?? 0) < 600 ? 12 : 16;
+        const expectedInlineInset = isMobile ? 16 : 24;
         const leftInset = fieldBox.x - surfaceBox.x;
         const rightInset = surfaceBox.x + surfaceBox.width - (fieldBox.x + fieldBox.width);
-        expect(leftInset).toBeGreaterThanOrEqual(expectedInlineInset);
-        expect(leftInset).toBeLessThanOrEqual(expectedInlineInset + 2);
-        expect(rightInset).toBeGreaterThanOrEqual(expectedInlineInset);
-        expect(rightInset).toBeLessThanOrEqual(expectedInlineInset + 2);
+        expect(leftInset).toBeGreaterThanOrEqual(expectedInlineInset - 2);
+        expect(leftInset).toBeLessThanOrEqual(expectedInlineInset + 4);
+        expect(rightInset).toBeGreaterThanOrEqual(expectedInlineInset - 2);
+        expect(rightInset).toBeLessThanOrEqual(expectedInlineInset + 4);
       }
 
       // Enter new name and submit

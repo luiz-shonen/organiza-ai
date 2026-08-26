@@ -107,16 +107,16 @@ present, and submit a selected relationship payload.
 
 | Requirement ID | Story | Phase | Status |
 | --- | --- | --- | --- |
-| AUTO-01 | P1: Searchable selection | T1 | Complete |
-| AUTO-02 | P1: Searchable selection | T1 | Complete |
-| AUTO-03 | P1: Searchable selection | T1 | Complete |
-| AUTO-04 | P1: Searchable selection | T1 | Complete |
-| AUTO-05 | P1: Searchable selection | T1 | Complete |
-| AUTO-06 | P1: Canonical threshold | T2 | Complete |
-| AUTO-07 | P1: Canonical threshold | T2 | Complete |
-| AUTO-08 | P1: Canonical threshold | T2 | Complete |
-| AUTO-09 | P1: Existing long lists | T2 | Complete |
-| AUTO-10 | P1: Existing long lists | T2 | Complete |
+| AUTO-01 | P1: Searchable selection | T1 | Verified |
+| AUTO-02 | P1: Searchable selection | T1 | Verified |
+| AUTO-03 | P1: Searchable selection | T1 | Verified |
+| AUTO-04 | P1: Searchable selection | T1 | Verified |
+| AUTO-05 | P1: Searchable selection | T1 | Verified |
+| AUTO-06 | P1: Canonical threshold | T2 | Verified |
+| AUTO-07 | P1: Canonical threshold | T2 | Verified |
+| AUTO-08 | P1: Canonical threshold | T2 | Verified |
+| AUTO-09 | P1: Existing long lists | T2 | Verified |
+| AUTO-10 | P1: Existing long lists | T2 | Verified |
 
 **Coverage:** 10 total, 10 mapped to execution tasks, 0 unmapped.
 

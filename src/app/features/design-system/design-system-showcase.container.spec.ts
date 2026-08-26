@@ -58,6 +58,7 @@ describe('DesignSystemShowcaseContainer', () => {
       'org-navigation-list',
       'org-progress',
       'org-metric-card',
+      'org-data-table',
       'org-badge',
     ]) {
       expect(root.querySelector(selector)).toBeTruthy();
@@ -87,6 +88,7 @@ describe('DesignSystemShowcaseContainer', () => {
 
     expect(examples.length).toBeGreaterThanOrEqual(11);
     expect(examples.every((example) => example.textContent?.includes('Uso recomendado'))).toBe(true);
+    expect(root.querySelector('section#data-display app-design-system-code-example')?.textContent).toContain('org-data-table');
   });
 
   it('gives every showcase section a stable element id', () => {

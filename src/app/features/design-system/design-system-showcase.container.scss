@@ -164,6 +164,12 @@
   box-shadow: var(--showcase-shadow-md);
 }
 
+.org-ds-table-card {
+  display: block;
+  margin-top: 14px;
+  overflow-x: auto;
+}
+
 .org-ds-hero-card {
   border-radius: 28px;
   box-shadow: var(--showcase-shadow-md);

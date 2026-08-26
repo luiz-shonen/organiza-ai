@@ -363,6 +363,9 @@
         </org-surface>
         <org-metric-card label="Convites" value="6" description="aguardando resposta" />
       </div>
+      <org-surface variant="card" class="org-ds-table-card">
+        <org-data-table [rows]="eventRows" [columns]="eventColumns" ariaLabel="Eventos recentes" />
+      </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.metrics" />
     </section>
 

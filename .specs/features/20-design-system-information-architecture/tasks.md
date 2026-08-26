@@ -109,9 +109,9 @@ T3 → T4
 
 **Done when**:
 
-- [ ] Product index documents component families and their public API ownership.
-- [ ] Data display renders `org-data-table` with typed rows and columns.
-- [ ] Every Product family’s usage disclosure names every component rendered by that family.
+- [x] Product index documents component families and their public API ownership.
+- [x] Data display renders `org-data-table` with typed rows and columns.
+- [x] Every Product family’s usage disclosure names every component rendered by that family.
 
 **Tests**: unit
 **Gate**: quick

@@ -7,6 +7,7 @@ import {
   OrgCheckboxComponent,
   OrgChipComponent,
   OrgDateFieldComponent,
+  OrgDataTableComponent,
   OrgDialogService,
   OrgEmptyStateComponent,
   OrgIconComponent,
@@ -27,6 +28,7 @@ import {
   OrgTextareaFieldComponent,
   OrgToggleComponent,
   type OrgMenuAction,
+  type OrgDataColumn,
   type OrgNavigationItem,
   type OrgRadioOption,
   type OrgSelectOption,
@@ -51,6 +53,11 @@ export type ShowcaseSection = DesignSystemNavigationItem;
 
 export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = DESIGN_SYSTEM_SECTIONS;
 
+interface ShowcaseEventRow {
+  readonly event: string;
+  readonly status: string;
+}
+
 @Component({
   selector: 'app-design-system-showcase',
   standalone: true,
@@ -62,6 +69,7 @@ export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = DESIGN_SYSTEM_SECTI
     OrgCheckboxComponent,
     OrgChipComponent,
     OrgDateFieldComponent,
+    OrgDataTableComponent,
     OrgEmptyStateComponent,
     OrgIconComponent,
     OrgIconButtonComponent,
@@ -140,6 +148,14 @@ export class DesignSystemShowcaseContainer {
   public readonly menuActions: readonly OrgMenuAction[] = [
     { id: 'duplicate', label: 'Duplicar evento' },
     { id: 'archive', label: 'Arquivar rascunho' },
+  ];
+  public readonly eventRows: readonly ShowcaseEventRow[] = [
+    { event: 'Arraiá no jardim', status: 'Publicado' },
+    { event: 'Ceia de Natal', status: 'Rascunho' },
+  ];
+  public readonly eventColumns: readonly OrgDataColumn<ShowcaseEventRow>[] = [
+    { id: 'event', label: 'Evento', value: (row) => row.event },
+    { id: 'status', label: 'Status', value: (row) => row.status },
   ];
   public readonly componentExamples = {
     invitationPreview: `import { OrgSurfaceComponent } from '@shared/ui';
@@ -251,11 +267,12 @@ this.feedbackService.success('Evento salvo com sucesso.');`,
   title="Nenhum evento por aqui"
   description="Crie o primeiro evento para começar."
 />`,
-    metrics: `import { OrgMetricCardComponent, OrgProgressComponent, OrgBadgeComponent } from '@shared/ui';
+    metrics: `import { OrgBadgeComponent, OrgDataTableComponent, OrgMetricCardComponent, OrgProgressComponent } from '@shared/ui';
 
 <org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />
 <org-progress [value]="67" ariaLabel="67% dos itens concluídos" [gradient]="true" />
-<org-badge label="Novo" variant="success" />`,
+<org-badge label="Novo" variant="success" />
+<org-data-table [rows]="events" [columns]="eventColumns" ariaLabel="Eventos recentes" />`,
     overlays: `import { OrgDialogService, FeedbackService } from '@shared/ui';
 
 this.feedbackService.success('Evento salvo com sucesso.');

@@ -134,11 +134,13 @@ test.describe('Design System Showcase', () => {
     await openShowcase(page);
 
     const typography = page.locator('section#typography');
+    const iconography = page.locator('section#iconography');
     await expect(typography).toContainText('Plus Jakarta Sans');
     await expect(typography).toContainText('Fraunces');
     await expect(typography).toContainText('JetBrains Mono');
-    await expect(typography).toContainText('Material Icons');
     await expect(typography.getByText('Uso recomendado')).toBeVisible();
+    await expect(iconography).toContainText('Material Icons');
+    await expect(iconography.locator('org-icon').first()).toBeVisible();
   });
 
   test('keeps the shared navigation trigger at 48px or larger', async ({ page }) => {

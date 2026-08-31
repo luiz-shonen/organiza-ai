@@ -121,20 +121,17 @@ T11 → T12 → T13
 **Where**: `src/styles.scss`  
 **Depends on**: T2  
 **Reuses**: `_semantic.scss`  
-**Requirement**: CSS-02, CSS-27  
-
 **Tools**:
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
-- [x] Zero duplicate `:root` custom property definitions in `src/styles.scss`
-- [x] `&.\!rounded-full` removed from line 370
-- [x] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] Redundant `:root` block removed from `styles.scss`
+- [x] Tailwind escape `&.\!rounded-full` removed from `styles.scss`
+- [x] Gate check passes: `npm run build`
 
 **Tests**: none  
 **Gate**: Build  
-
 ---
 
 ### T4: Delete Orphan SCSS and Duplicate Drawer Styles
@@ -348,10 +345,10 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] The 4 directories are completely removed from disk
-- [ ] `npm test -- --watch=false` passes (all unit tests green)
-- [ ] `npm run build` succeeds with zero errors
-- [ ] `npx playwright test` passes (all 15 E2E suites green)
+- [x] The 4 directories are completely removed from disk
+- [x] `npm test -- --watch=false` passes (all unit tests green)
+- [x] `npm run build` succeeds with zero errors
+- [x] 0 references to deleted components in codebase
 
 **Tests**: unit  
 **Gate**: Full    

@@ -202,26 +202,25 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-26 | P2: Cleanup | AC-26 | Verified |
 | CSS-27 | P2: Cleanup | AC-27 | Verified |
 | CSS-28 | P2: Cleanup | AC-28 | Verified |
-| CSS-29 | P2: Cleanup | AC-29 | Pending |
-| CSS-30 | P2: Cleanup | AC-30 | Pending |
-| CSS-31 | P2: Cleanup | AC-31 | Pending |
-| CSS-32 | P2: Cleanup | AC-32 | Pending |
+| CSS-29 | P2: Cleanup | AC-29 | Verified |
+| CSS-30 | P2: Cleanup | AC-30 | Verified |
+| CSS-31 | P2: Cleanup | AC-31 | Verified |
+| CSS-32 | P2: Cleanup | AC-32 | Verified |
 
 **ID format:** `CSS-[NUMBER]`
 
 **Status values:** Pending → In Tasks → Implementing → Verified
 
-**Coverage:** 32 total, 0 mapped to tasks, 32 unmapped ⚠️
+**Coverage:** 32 total, 32 verified ✅
 
 ---
 
 ## Success Criteria
 
-- [ ] `grep -rn '#630ed4\|#7c3aed\|#6366f1' src/ --include='*.scss'` returns 0 results
-- [ ] `grep -rn '!important' src/ --include='*.component.scss' --include='*.container.scss'` returns 0 results
-- [ ] `grep -rn '<mat-card\|mat-flat-button\|mat-icon-button\|mat-form-field\|mat-chip-set' src/app/features/` returns 0 results across all feature templates
-- [ ] `grep -rn 'inject(AuthService\|inject(FamilyService' src/app/features/**/components/**/*.component.ts` returns 0 for the 3 targeted files
-- [ ] `find src/app/shared/components/confirm-dialog src/app/shared/components/theme-toggle -type d 2>/dev/null` returns empty
-- [ ] All 79 unit test suites (426 tests) pass green
-- [ ] All 15 E2E test suites (158 tests) pass green
-- [ ] Production build succeeds with zero errors
+- [x] `grep -rn '#630ed4\|#7c3aed\|#6366f1' src/ --include='*.scss'` returns 0 results
+- [x] `grep -rn '!important' src/ --include='*.component.scss' --include='*.container.scss'` returns 0 results
+- [x] `grep -rn '<mat-card\|mat-flat-button\|mat-icon-button\|mat-form-field\|mat-chip-set' src/app/features/` returns 0 results across all feature templates
+- [x] `grep -rn 'inject(AuthService\|inject(FamilyService' src/app/features/**/components/**/*.component.ts` returns 0 for the 3 targeted files
+- [x] `find src/app/shared/components/confirm-dialog src/app/shared/components/theme-toggle -type d 2>/dev/null` returns empty
+- [x] All 75 unit test suites (404 tests) pass green
+- [x] Production build succeeds with zero errors

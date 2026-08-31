@@ -48,9 +48,9 @@ Consolidate single source of truth for design tokens and purge orphan/duplicate 
 T1 → T2 → T3
 ```
 
-### Phase 2: Color Purge, Font & Component SCSS Refactoring
+### Phase 2: Ubiquitous Color Purge, Font & Component SCSS Refactoring
 
-Eliminate legacy purple palette, hardcoded hex values, component `!important` flags, and adopt responsive mixins.
+Eliminate legacy purple palette, hardcoded hex values across all components, component `!important` flags, and adopt responsive mixins.
 
 ```
 T4 → T5 → T6 → T7 → T8 → T9
@@ -58,7 +58,7 @@ T4 → T5 → T6 → T7 → T8 → T9
 
 ### Phase 3: Smart/Dumb Architecture & Design System Migration
 
-Decouple presentational components, migrate raw Material to `Org*` components, and delete dead code.
+Decouple presentational components, migrate all feature templates to `Org*` components, and delete dead code.
 
 ```
 T10 → T11 → T12
@@ -68,9 +68,9 @@ T10 → T11 → T12
 
 ## Task Breakdown
 
-### T1: Consolidate Design Tokens in Semantic SCSS
+### T1: Consolidate Design Tokens in Semantic SCSS (Org-Export Ready)
 
-**What**: Declare all missing tokens (`--org-danger`, `--org-on-danger`, `--org-warning`, `--org-on-warning`, `--org-text-primary`, `--org-text-secondary`, `--org-text-muted`, `--org-border`, `--org-primary-light`) and align token values in `_semantic.scss`.  
+**What**: Declare all missing tokens (`--org-danger`, `--org-on-danger`, `--org-warning`, `--org-on-warning`, `--org-text-primary`, `--org-text-secondary`, `--org-text-muted`, `--org-border`, `--org-primary-light`) and align token values in `_semantic.scss` for modular org-level export.  
 **Where**: `src/app/shared/ui/tokens/_semantic.scss`  
 **Depends on**: None  
 **Reuses**: `DESIGN.md` §2  
@@ -177,9 +177,9 @@ T10 → T11 → T12
 
 ---
 
-### T6: Purge Hardcoded Colors from Auth, Home & Filter Stylesheets
+### T6: Ubiquitous Hex Color Purge Across All Feature Stylesheets
 
-**What**: Replace hardcoded status colors and neutral hex values in `login.container.scss`, `home.container.scss`, and `event-filters.component.scss` with `--org-*` tokens.  
+**What**: Perform a codebase-wide sweep across `src/app/**/*.scss` (including `login`, `home`, `event-filters`, `admin`, `shared`) replacing all hardcoded hex values with `--org-*` tokens.  
 **Where**: `src/app/features/auth/login/login.container.scss`  
 **Depends on**: T5  
 **Reuses**: `_semantic.scss`  
@@ -190,7 +190,7 @@ T10 → T11 → T12
 - Skill: NONE
 
 **Done when**:
-- [ ] Hardcoded hex colors replaced with `--org-error`, `--org-success`, `--org-surface`, etc.
+- [ ] `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/` returns zero hardcoded colors outside `_semantic.scss`
 - [ ] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
@@ -200,7 +200,7 @@ T10 → T11 → T12
 
 ### T7: Eliminate Component-Level !important & Adopt Breakpoint Mixins
 
-**What**: Refactor 28 component-level `!important` occurrences using proper specificity, and replace raw `@media` queries with `@include semantic.tablet`, `@include semantic.desktop`, `@include semantic.wide`.  
+**What**: Refactor 28 component-level `!important` occurrences using proper specificity (BEM classes and `:host`), and replace raw `@media` queries with `@include semantic.tablet`, `@include semantic.desktop`, `@include semantic.wide`.  
 **Where**: `src/app/features/admin/event-editor/event-editor.container.scss`  
 **Depends on**: T6  
 **Reuses**: `_semantic.scss` breakpoint mixins  
@@ -287,9 +287,9 @@ T10 → T11 → T12
 
 ---
 
-### T11: Migrate Raw Material Elements to Design System Components
+### T11: Complete Design System Migration Across All Feature Templates
 
-**What**: Replace raw Material tags (`mat-card`, `mat-button`, `mat-form-field`, `mat-chip-set`) with `<org-surface>`, `<org-button>`, `<org-text-field>`, `<org-chip>` in `event-editor.container.html`, `dashboard.container.html`, and `collaborator-drawer.component.html`.  
+**What**: Sweep all feature templates (`src/app/features/**/*.html`) and replace all raw Material tags (`mat-card`, `mat-button`, `mat-icon-button`, `mat-form-field`, `mat-chip-set`) with `<org-surface>`, `<org-button>`, `<org-icon-button>`, `<org-text-field>`, `<org-chip>`.  
 **Where**: `src/app/features/admin/event-editor/event-editor.container.html`  
 **Depends on**: T10  
 **Reuses**: `@shared/ui` component library  
@@ -300,7 +300,7 @@ T10 → T11 → T12
 - Skill: NONE
 
 **Done when**:
-- [ ] 0 raw `mat-card`, `mat-button`, or `mat-form-field` tags in targeted templates
+- [ ] 0 raw `mat-card`, `mat-button`, `mat-icon-button`, `mat-chip-set`, or `mat-form-field` tags in any feature template
 - [ ] UI contracts validator passes: `node scripts/validate-ui-contracts.mjs --strict`
 - [ ] Gate check passes: `npm test -- --watch=false && npm run build`
 
@@ -353,12 +353,12 @@ Phase 3:  T10 ──→ T11 ──→ T12
 | T3: Delete Orphan SCSS and Duplicate Drawer Styles | 2 files (delete + modify `app.scss`) | ✅ Granular |
 | T4: Purge Purple Palette & Hardcoded Colors from Profile | 2 files (profile styles) | ✅ Granular |
 | T5: Purge Purple Palette & Fix Typography in Event Detail | 4 related component styles | ✅ Granular |
-| T6: Purge Hardcoded Colors from Auth, Home & Filter | 3 component styles | ✅ Granular |
-| T7: Eliminate Component-Level !important & Adopt Mixins | Component stylesheets | ✅ Granular |
+| T6: Ubiquitous Hex Color Purge Across All Stylesheets | Component styles across features | ✅ Granular |
+| T7: Eliminate !important & Adopt Mixins | Component stylesheets | ✅ Granular |
 | T8: Deduplicate CSS Selectors in Editor and Drawer | 2 component SCSS files | ✅ Granular |
 | T9: Replace Template Inline Skeleton Styles | 2 HTML templates | ✅ Granular |
 | T10: Refactor Dialogs & Drawers to Smart/Dumb | 2 dumb components + 1 container | ✅ Granular |
-| T11: Migrate Raw Material to Design System | 3 HTML templates | ✅ Granular |
+| T11: Complete Design System Migration Across All Templates | Feature templates | ✅ Granular |
 | T12: Delete Dead Component Directories | 4 dead folders | ✅ Granular |
 
 ---
@@ -391,10 +391,10 @@ Phase 3:  T10 ──→ T11 ──→ T12
 | T3: Delete Orphan SCSS | Styles / Global | none (Build gate) | none | ✅ OK |
 | T4: Purge Purple Palette Profile | Component SCSS | unit | unit | ✅ OK |
 | T5: Purge Purple Palette Event Detail | Component SCSS | unit | unit | ✅ OK |
-| T6: Purge Hardcoded Colors Auth/Home | Component SCSS | unit | unit | ✅ OK |
+| T6: Ubiquitous Hex Color Purge | Component SCSS | unit | unit | ✅ OK |
 | T7: Eliminate !important & Adopt Mixins | Component SCSS | unit | unit | ✅ OK |
 | T8: Deduplicate CSS Selectors | Component SCSS | none (Build gate) | none | ✅ OK |
 | T9: Replace Template Inline Skeleton | Templates | unit | unit | ✅ OK |
 | T10: Refactor Dialogs to Smart/Dumb | Presentational Components | unit | unit | ✅ OK |
-| T11: Migrate Raw Material to Org* | Templates | unit | unit | ✅ OK |
+| T11: Complete Design System Migration | Templates | unit | unit | ✅ OK |
 | T12: Delete Dead Component Directories | Dead Components | unit | unit | ✅ OK |

@@ -2,17 +2,17 @@
 
 ## Problem Statement
 
-The Organiza AI Angular project has severe CSS/SCSS technical debt and component architecture violations. A comprehensive audit identified: 100% token duplication between `styles.scss` and `_semantic.scss` with divergent values, usage of legacy hardcoded purple hex colors (`#630ed4`, `#7c3aed`, `#6366f1`) when the canonical brand is Pink-Orange-Yellow, 12+ missing token declarations consumed by components but never defined, 28 `!important` flags in component SCSS (110+ in globals), breakpoint mixins defined but at 0% adoption, and 16 inline styles in templates. Additionally, 3 presentational components violate the smart/dumb pattern (AD-011) by injecting services and executing Firebase mutations, 4 templates bypass the design system with raw Angular Material elements, and 4 dead/orphaned components remain on disk.
+The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token fragmentation, and component architecture violations across features. A comprehensive audit identified: 100% token duplication between `styles.scss` and `_semantic.scss` with divergent values, usage of legacy hardcoded purple hex colors (`#630ed4`, `#7c3aed`, `#6366f1`) when the canonical brand is Pink-Orange-Yellow, 12+ missing token declarations consumed by components but never defined, 28 `!important` flags in component SCSS (110+ in globals), breakpoint mixins defined but at 0% adoption, and 16 inline styles in templates. Additionally, 3 presentational components violate the smart/dumb pattern (AD-011) by injecting services and executing Firebase mutations, multiple templates bypass the design system with raw Angular Material elements, and 4 dead/orphaned components remain on disk. Furthermore, the design system and token structure must be standardized cleanly in `@shared/ui` so that it is modular, flexible, and exportable as an organization-wide library in the future.
 
 ## Goals
 
-- [ ] Single source of truth for all CSS design tokens in `_semantic.scss`
-- [ ] Zero hardcoded hex colors in component SCSS (all using `--org-*` tokens)
+- [ ] Single source of truth for all CSS design tokens in `_semantic.scss`, architected for future organization-wide export
+- [ ] Zero hardcoded hex colors across all component and container SCSS files (`src/app/**/*.scss`), strictly referencing `--org-*` tokens
 - [ ] Zero legacy purple palette colors anywhere in the codebase
-- [ ] Zero `!important` in component-level SCSS files
+- [ ] Zero `!important` in component-level SCSS files (relying on clean BEM specificity and CSS custom property cascades)
 - [ ] 100% breakpoint mixin adoption (zero raw `@media` in component SCSS)
-- [ ] All 3 smart/dumb violations fixed (presentational components emit, containers orchestrate)
-- [ ] All 4 templates migrated from raw Material to design system components
+- [ ] All smart/dumb violations fixed (presentational components emit `output()`, containers orchestrate)
+- [ ] Complete migration across all feature pages from raw Angular Material to `Org*` design system components
 - [ ] All 4 dead components deleted
 
 ## Out of Scope
@@ -32,9 +32,11 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 |---|---|---|---|
+| Design system tokens and components in `@shared/ui` are built modularly for future org-wide export | yes | Clean separation between reusable UI primitives and application business logic | y |
 | Canonical brand colors (Pink `#ff4d94`, Orange `#ff8c42`, Yellow `#ffc837`) replace all legacy purple | yes | AD-033, AD-038, AD-039, DESIGN.md §2.1 | y |
 | `_semantic.scss` becomes the single token source; `styles.scss` `:root` block is removed | yes | Eliminates dual-source divergence | y |
 | `org-surface`, `org-button`, `org-text-field`, `org-icon-button`, `org-chip` are production-ready | yes | Audit confirms 32 Org* components in `shared/ui/` | y |
+| Component SCSS files work cleanly without `!important` via BEM specificity and token inheritance | yes | Component-encapsulated styles with custom Org* elements have no specificity wars | y |
 | Smart/dumb refactoring uses `output()` signals (not legacy `@Output` decorators) | yes | AD-003 mandates Signals | y |
 | Global `styles.scss` `!important` overrides for Material are out of scope | yes | They often need `!important` to beat Material internal specificity; defer to incremental cleanup | y |
 | Non-standard breakpoints (`480px`, `640px`, `760px`, `768px`) standardize to canonical (`600px`, `900px`, `1200px`) | yes | `_semantic.scss` defines `@mixin mobile/tablet/desktop/wide` at these breakpoints | y |
@@ -46,11 +48,11 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 ## User Stories
 
-### P1: Token Source of Truth Unification ⭐ MVP
+### P1: Token Source of Truth Unification & Org-Ready Modular Design ⭐ MVP
 
-**User Story**: As a developer, I want a single source of truth for design tokens so that styling is consistent and there are no conflicting values.
+**User Story**: As a frontend architect, I want a single source of truth for design tokens and modular UI components in `src/app/shared/ui/` so that styling is consistent, maintainable, and structured for future export as an organization-wide design system.
 
-**Why P1**: The dual-source (`styles.scss` vs `_semantic.scss`) causes silent divergence — `--org-glass-blur` has two different values today.
+**Why P1**: Eliminates the dual-source divergence between `styles.scss` and `_semantic.scss`, ensuring tokens are fully documented and export-ready.
 
 **Acceptance Criteria**:
 
@@ -62,20 +64,20 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 ---
 
-### P1: Hardcoded Color Purge & Purple Palette Removal ⭐ MVP
+### P1: Ubiquitous Hardcoded Color Purge & Brand Palette Unification ⭐ MVP
 
-**User Story**: As a designer, I want all components to use canonical brand tokens so that the app matches the Pink-Orange-Yellow identity.
+**User Story**: As a designer, I want all components and containers across the entire codebase to use canonical brand tokens with zero hardcoded arbitrary colors so that the whole app matches the Pink-Orange-Yellow identity.
 
-**Why P1**: Legacy purple (`#630ed4`) creates visual inconsistency with the current brand (Pink `#ff4d94`).
+**Why P1**: Eliminates visual inconsistency and removes legacy purple (`#630ed4`, `#7c3aed`, `#6366f1`) and random hex values from all stylesheets.
 
 **Acceptance Criteria**:
 
 4. The system SHALL NOT contain the hex strings `#630ed4`, `#7c3aed`, or `#6366f1` in any SCSS file. <!-- ubiquitous -->
-5. The system SHALL NOT contain hardcoded hex color values in `profile-info-card.component.scss`, `profile.container.scss`, `family-selector.component.scss`, `guest-form-dialog.component.scss`, `rsvp-card.component.scss`, `login.container.scss`, `event-detail.container.scss`, `pix-card.component.scss`, `home.container.scss`, `event-filters.component.scss`, or `admin-form-drawer.component.scss` — all color values SHALL reference `--org-*` CSS custom properties. <!-- ubiquitous -->
+5. The system SHALL NOT contain hardcoded hex color values (`#XXXXXX` or `#XXX`) in any component or container SCSS file across the entire application (`src/app/**/*.scss`) — all color properties SHALL reference `--org-*` CSS custom properties. <!-- ubiquitous -->
 6. The `pix-card.component.scss` file SHALL use `var(--org-font-mono)` for its monospace `font-family` property instead of `'Roboto Mono', monospace`. <!-- ubiquitous -->
 7. The `event-card.component.scss` file SHALL NOT contain the hardcoded string `'Plus Jakarta Sans', sans-serif` — it SHALL inherit or use `var(--org-font-body)`. <!-- ubiquitous -->
 
-**Independent Test**: `grep -rn '#630ed4\|#7c3aed\|#6366f1\|Roboto Mono' src/ --include='*.scss'` returns zero results.
+**Independent Test**: `grep -rn '#630ed4\|#7c3aed\|#6366f1\|Roboto Mono' src/ --include='*.scss'` returns zero results; `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/` returns only token definitions in `_semantic.scss`.
 
 ---
 
@@ -98,33 +100,33 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 ---
 
-### P2: Raw Material → Design System Migration
+### P2: Comprehensive Design System Migration Across All Pages
 
-**User Story**: As a developer, I want all templates to use Org* design system components instead of raw Angular Material so that visual consistency and the component-first contract are maintained.
+**User Story**: As a developer, I want all pages and components across the application to uniformly use `Org*` design system components instead of raw Angular Material tags so that visual consistency and the component-first contract are maintained throughout.
 
-**Why P2**: 4 templates bypass the design system with raw `mat-button`, `mat-card`, `mat-form-field`.
+**Why P2**: Raw Material buttons, cards, and form fields bypass the design system tokens and break visual cohesion.
 
 **Acceptance Criteria**:
 
-14. The `admin-form-drawer.component.html` SHALL use `<org-icon-button>`, `<org-button>`, `<org-text-field>`, and `<org-chip>` instead of raw `<button mat-icon-button>`, `<button mat-flat-button>`, `<mat-form-field>`, and `<mat-chip-set>`. <!-- ubiquitous -->
-15. The `collaborator-drawer.component.html` SHALL use `<org-icon-button>` and `<org-button>` instead of raw `<button mat-icon-button>` and `<button mat-flat-button>`. <!-- ubiquitous -->
-16. The `event-editor.container.html` SHALL use `<org-surface>` instead of `<mat-card class="editor__card" appearance="outlined">` for all 4 card instances. <!-- ubiquitous -->
-17. The `dashboard.container.html` SHALL use `<org-surface>` instead of `<mat-card>` for skeleton placeholder cards. <!-- ubiquitous -->
+14. The system SHALL NOT contain raw `<mat-card>` tags in any feature template (`src/app/features/**/*.html`) — all card containers SHALL use `<org-surface>`. <!-- ubiquitous -->
+15. The system SHALL NOT contain raw `<button mat-button>`, `<button mat-raised-button>`, `<button mat-flat-button>`, `<button mat-stroked-button>`, or `<button mat-icon-button>` tags in any feature template — all buttons SHALL use `<org-button>` or `<org-icon-button>`. <!-- ubiquitous -->
+16. The system SHALL NOT contain raw `<mat-form-field>` tags in feature templates — all input fields SHALL use `<org-text-field>`, `<org-select-field>`, `<org-date-field>`, or `<org-time-field>`. <!-- ubiquitous -->
+17. The system SHALL NOT contain raw `<mat-chip-set>` or `<mat-chip-row>` tags in feature templates — all chips SHALL use `<org-chip>`. <!-- ubiquitous -->
 
-**Independent Test**: `grep -n 'mat-icon-button\|mat-flat-button\|mat-card\|mat-chip-set\|mat-form-field' ` in the 4 targeted template files returns zero results.
+**Independent Test**: `grep -rn '<mat-card\|mat-flat-button\|mat-icon-button\|mat-form-field\|mat-chip-set' src/app/features/` returns zero results.
 
 ---
 
-### P2: Breakpoint Mixin Adoption & `!important` Elimination
+### P2: Breakpoint Mixin Adoption & Component `!important` Elimination
 
 **User Story**: As a developer, I want responsive designs to use canonical SCSS mixins and zero `!important` in component SCSS so that breakpoints are consistent and specificity is clean.
 
-**Why P2**: Breakpoint mixins exist at 0% adoption; 28 component-level `!important` overrides.
+**Why P2**: Breakpoint mixins exist at 0% adoption; 28 component-level `!important` overrides cause specificity conflicts.
 
 **Acceptance Criteria**:
 
 18. All component-level SCSS files SHALL use `@include semantic.tablet`, `@include semantic.desktop`, or `@include semantic.wide` for responsive media queries instead of raw `@media (min-width: ...)` declarations. <!-- ubiquitous -->
-19. The system SHALL NOT contain `!important` in any component-level `.component.scss` or `.container.scss` file. <!-- ubiquitous -->
+19. The system SHALL NOT contain `!important` in any component-level `.component.scss` or `.container.scss` file — specificity SHALL be managed via proper BEM class scoping and `:host` styles. <!-- ubiquitous -->
 20. The system SHALL NOT use non-standard breakpoint values (`480px`, `640px`, `760px`, `768px`) in any SCSS file — only the canonical `600px`, `900px`, `1200px` breakpoints (via mixins) SHALL be used. <!-- ubiquitous -->
 
 **Independent Test**: `grep -rn '!important' src/ --include='*.component.scss' --include='*.container.scss'` returns zero results.
@@ -156,7 +158,7 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 ## Edge Cases
 
-- IF a third-party Angular Material component requires `!important` to override its encapsulated styles THEN the override SHALL be placed in a global overrides section of `styles.scss` with a comment explaining why, not in a component SCSS file. <!-- unwanted-behavior -->
+- IF a third-party Angular Material overlay (e.g. CDK dialog overlay or menu backdrop) requires high specificity to override default styles THEN the override SHALL be placed in a global overrides section of `styles.scss` with an explicit MDC token or host class, never in a component SCSS file. <!-- unwanted-behavior -->
 - IF extracting `AuthService` from `AdminFormDrawerComponent` causes cascading test failures in `DashboardContainer` specs THEN the container spec SHALL be updated to mock the new `output()` events. <!-- unwanted-behavior -->
 - IF a component uses a `var(--org-primary, #630ed4)` fallback pattern THEN the fallback SHALL be updated to `var(--org-primary)` with no hardcoded fallback (the token is always declared). <!-- unwanted-behavior -->
 
@@ -209,6 +211,7 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 - [ ] `grep -rn '#630ed4\|#7c3aed\|#6366f1' src/ --include='*.scss'` returns 0 results
 - [ ] `grep -rn '!important' src/ --include='*.component.scss' --include='*.container.scss'` returns 0 results
+- [ ] `grep -rn '<mat-card\|mat-flat-button\|mat-icon-button\|mat-form-field\|mat-chip-set' src/app/features/` returns 0 results across all feature templates
 - [ ] `grep -rn 'inject(AuthService\|inject(FamilyService' src/app/features/**/components/**/*.component.ts` returns 0 for the 3 targeted files
 - [ ] `find src/app/shared/components/confirm-dialog src/app/shared/components/theme-toggle -type d 2>/dev/null` returns empty
 - [ ] All 79 unit test suites (426 tests) pass green

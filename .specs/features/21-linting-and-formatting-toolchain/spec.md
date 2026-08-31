@@ -6,12 +6,13 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Goals
 
-- [ ] Comprehensive ESLint config covering TypeScript, Angular templates, unit tests, and Playwright E2E tests
-- [ ] Comprehensive Stylelint config enforcing BEM, `!important` prohibition, design token usage, and color token validation
+- [ ] Comprehensive ESLint config covering TypeScript, Angular templates, unit tests, and Playwright E2E tests (including `no-wait-for-timeout`, web-first assertions, and `data-testid` conventions)
+- [ ] Comprehensive Stylelint config enforcing BEM, `!important` prohibition, design token usage, duplicate class prevention across components, and color token validation against `DESIGN.md`
 - [ ] Prettier formatting all file types (`.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md`) enforced on commit
 - [ ] Commit message format enforced via commitlint (Conventional Commits)
-- [ ] CI quality gate (`quality.yml`) runs BEFORE Playwright E2E and blocks PRs on violations
-- [ ] `.agents/` skills folder with style guide, component/page creation guides, and design system usage reference
+- [ ] CI quality gate (`quality.yml`) runs BEFORE Playwright E2E and blocks PRs on violations, including Design System contract validation
+- [ ] `.agents/` skills folder with style guide, smart/dumb component recipes, page creation guides, and design system usage reference
+- [ ] Company-wide style guide documentation exportable and mirrored in `DESIGN.md` and `/design-system`
 - [ ] AI agent verification: all linters pass clean after any AI-generated change
 
 ## Out of Scope
@@ -35,11 +36,12 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | `@typescript-eslint/no-explicit-any` set to `warn` initially | warn | 70+ existing violations; error blocks all commits until Feature 23 | y |
 | `declaration-no-important` in Stylelint set to `warn` initially | warn | 110+ existing violations; error blocks until Feature 22 | y |
 | Stylelint enforces color function token preference via `color-no-hex` as `warn` | warn + allowlist | Catches new hardcoded hex; existing ones are Feature 22 cleanup | y |
+| Playwright ESLint enforces web-first assertions and bans `waitForTimeout` | yes | Guarantees deterministic, flake-free E2E tests | y |
 | CI `quality.yml` is separate from `e2e.yml` | separate | Fail-fast: if quality fails, no reason to run Playwright | y |
 | `quality.yml` runs BEFORE E2E (via workflow dependency or PR required checks ordering) | yes | User confirmed: "if it fails, no reason to run the playwright tests" | y |
 | `quality.yml` includes `validate-ui-contracts.mjs` to check design system compliance | yes | Existing script; wired as `npm run lint:contracts` | y |
 | Prettier formats `.yml` files | yes | User requested "formatting as much file as possible" | y |
-| `.agents/` skills live at project root (`.agents/skills/`) | yes | Accessible to all AI agents and contributors in the repo | y |
+| `.agents/` skills live at project root (`.agents/skills/`) and mirror to `docs/STYLE_GUIDE.md` | yes | Accessible to AI agents, local developers, and exportable across the company | y |
 | `.agents/` skills reference `tdd`, `bem-css`, and `tlc-spec-driven` by name | yes | User requested these be mentioned as recommended practices | y |
 | Test-specific ESLint config relaxes some rules (e.g., `no-explicit-any` at `warn`) | separate override | Test mocks legitimately need some casting; warn keeps visibility without blocking | y |
 | Playwright-specific ESLint config uses `eslint-plugin-playwright` | yes | Industry standard; catches common Playwright anti-patterns | y |
@@ -67,7 +69,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 7. The system SHALL include `eslint-config-prettier` to disable all formatting rules that conflict with Prettier. <!-- ubiquitous -->
 8. The system SHALL configure an `angular.json` lint architect target using `@angular-eslint/builder:lint` enabling `ng lint`. <!-- ubiquitous -->
 9. The system SHALL provide a separate ESLint override for test files (`*.spec.ts`, `*.mock.ts`) that sets `@typescript-eslint/no-explicit-any` to `warn` and allows `as unknown as` casting patterns. <!-- ubiquitous -->
-10. The system SHALL provide a separate ESLint override for Playwright E2E files (`e2e/**/*.ts`) using `eslint-plugin-playwright` with rules for `no-conditional-in-test`, `no-focused-test`, `expect-expect`, and `no-force-option` at warning level. <!-- ubiquitous -->
+10. The system SHALL provide a separate ESLint override for Playwright E2E files (`e2e/**/*.ts`) using `eslint-plugin-playwright` with rules enforcing `no-wait-for-timeout`, `prefer-web-first-assertions`, `prefer-to-have-count`, `no-element-handle`, `no-eval`, `no-conditional-in-test`, `no-focused-test`, `expect-expect`, and `no-force-option` at warning level. <!-- ubiquitous -->
 11. The system SHALL enforce `@angular-eslint/template/accessibility-alt-text`, `@angular-eslint/template/accessibility-label-has-associated-control`, and `@angular-eslint/template/click-events-have-key-events` at warning level for HTML templates. <!-- ubiquitous -->
 
 **Independent Test**: Run `npm run lint` — it executes and reports results (may have warnings from existing code; zero config errors).
@@ -76,9 +78,9 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ### P1: Stylelint Comprehensive SCSS Configuration ⭐ MVP
 
-**User Story**: As a developer, I want SCSS-aware linting that enforces BEM naming, prohibits `!important`, validates design token usage, and catches hardcoded colors so that CSS quality is maintained.
+**User Story**: As a developer, I want SCSS-aware linting that enforces BEM naming, prohibits `!important`, validates design token usage against `DESIGN.md`, and prevents duplicate unnamespaced classes across components so that CSS quality is maintained.
 
-**Why P1**: The CSS audit found 110+ `!important`, non-standard breakpoints, hardcoded purple palette, and undefined CSS custom properties — all undetected today.
+**Why P1**: The CSS audit found 110+ `!important`, non-standard breakpoints, hardcoded purple palette, class collisions, and undefined CSS custom properties — all undetected today.
 
 **Acceptance Criteria**:
 
@@ -87,7 +89,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 14. The system SHALL enforce `declaration-no-important` as a warning-level rule. <!-- ubiquitous -->
 15. The system SHALL allow custom properties prefixed with `--org-`, `--mat-`, `--mdc-`, `--mat-sys-`, and `--showcase-` without triggering unknown-property warnings. <!-- ubiquitous -->
 16. The system SHALL enforce `color-no-hex` as a warning-level rule to discourage hardcoded hex values in favor of `--org-*` CSS custom properties, with an allowlist for `#fff`, `#000`, and `#ffffff` only. <!-- ubiquitous -->
-17. The system SHALL enforce `selector-class-pattern` matching BEM naming convention (`^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$`) as a warning-level rule. <!-- ubiquitous -->
+17. The system SHALL enforce `selector-class-pattern` matching strict BEM naming conventions (`^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$`) to ensure all classes are properly scoped to their component block and prevent collision across different components. <!-- ubiquitous -->
 
 **Independent Test**: Run `npm run lint:styles` — it executes and reports results.
 
@@ -127,35 +129,35 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ### P1: `.agents/` Developer & AI Style Guide Skills ⭐ MVP
 
-**User Story**: As a developer or AI agent, I want project-local skills and a style guide in `.agents/` so that every contributor follows the same patterns for creating pages, components, and using the design system — preventing hallucinations and drift.
+**User Story**: As a developer or AI agent, I want project-local skills and a style guide in `.agents/` so that every contributor follows the exact same smart/dumb architecture, design system components, and testing practices — preventing hallucinations and drift.
 
-**Why P1**: The audit's root cause is lack of enforceable guidance. AGENTS.md has high-level rules but no actionable "how to" for common tasks. AI agents need concrete skills to avoid inventing patterns.
+**Why P1**: The audit's root cause is lack of enforceable guidance. AI agents and developers need concrete recipes for smart vs dumb components, page creation, and design system contracts to avoid inventing patterns.
 
 **Acceptance Criteria**:
 
-24. The system SHALL provide a `.agents/skills/style-guide/SKILL.md` containing DOs and DON'Ts for TypeScript, Angular components, SCSS/BEM, Firebase, testing (unit + E2E), and accessibility — with concrete code examples for each rule. <!-- ubiquitous -->
-25. The system SHALL provide a `.agents/skills/creating-pages/SKILL.md` describing the step-by-step process to create a new routed page: container creation, route registration, guard application, design system component usage, and required tests. <!-- ubiquitous -->
-26. The system SHALL provide a `.agents/skills/creating-components/SKILL.md` describing how to create presentational vs container components following the smart/dumb pattern (AD-011), including `input()`/`output()` API design, OnPush, and template separation. <!-- ubiquitous -->
-27. The system SHALL provide a `.agents/skills/design-system-usage/SKILL.md` cataloging all available `Org*` components with their public APIs, import paths, and usage examples — and explicitly listing what raw Material elements they replace. <!-- ubiquitous -->
+24. The system SHALL provide a `.agents/skills/style-guide/SKILL.md` containing DOs and DON'Ts for TypeScript, Angular components, SCSS/BEM, Firebase, testing (unit + E2E with `data-testid`), and accessibility — mirrored into `docs/STYLE_GUIDE.md` for export as a company-wide standard. <!-- ubiquitous -->
+25. The system SHALL provide a `.agents/skills/creating-pages/SKILL.md` describing the step-by-step process to create a new routed page: smart container creation, route registration, guard application, design system layout primitives, and dumb presentational child wiring. <!-- ubiquitous -->
+26. The system SHALL provide a `.agents/skills/creating-components/SKILL.md` explicitly defining the smart/dumb component separation (AD-011): smart containers handle Firebase and state; dumb presentational components only use `input()`/`output()` Signals with zero business logic or service injection. <!-- ubiquitous -->
+27. The system SHALL provide a `.agents/skills/design-system-usage/SKILL.md` cataloging all 32 `Org*` components with their public APIs, import paths from `@shared/ui`, and replacements for raw Material elements. <!-- ubiquitous -->
 28. Each `.agents/skills/*/SKILL.md` SHALL reference the project's existing methodology skills (`tdd`, `bem-css`, `tlc-spec-driven`) by name as recommended practices for the relevant workflow step. <!-- ubiquitous -->
 
-**Independent Test**: Read each SKILL.md — it contains actionable instructions with code examples that match the project's actual component APIs.
+**Independent Test**: Read each SKILL.md — it contains actionable instructions with concrete smart/dumb code examples and design system API mappings.
 
 ---
 
 ### P2: CI Quality Gate Workflow (Fail-Fast Before E2E)
 
-**User Story**: As a project maintainer, I want a CI workflow that blocks PRs before Playwright runs, so that broken code never wastes E2E compute time.
+**User Story**: As a project maintainer, I want a CI workflow that blocks PRs before Playwright runs and validates Design System compliance, so that broken code never wastes E2E compute time.
 
-**Why P2**: Local hooks can be bypassed with `--no-verify`. CI is the final safety net and should fail fast.
+**Why P2**: Local hooks can be bypassed with `--no-verify`. CI is the final safety net and must strictly enforce Design System contracts.
 
 **Acceptance Criteria**:
 
 29. WHEN a PR is opened or pushed to `main` THEN the system SHALL run a `quality.yml` GitHub Actions workflow that executes `npm run lint`, `npm run lint:styles`, `npm run lint:contracts`, `npm run format:check`, and `npm run build` in sequence, failing the workflow if any step exits non-zero. <!-- event-driven -->
 30. The `e2e.yml` workflow SHALL depend on `quality.yml` succeeding before running Playwright tests, so that E2E tests only execute on quality-passing code. <!-- ubiquitous -->
-31. The `quality.yml` workflow SHALL include `npm run lint:contracts` (the `validate-ui-contracts.mjs` script) to verify design system component usage compliance. <!-- ubiquitous -->
+31. The `quality.yml` workflow SHALL execute `npm run lint:contracts` (`validate-ui-contracts.mjs`) to strictly enforce that no feature component declares raw Material selectors, declares Material tokens, bypasses `Org*` components, or uses duplicate glassmorphic rules. <!-- ubiquitous -->
 
-**Independent Test**: Open a PR with a lint violation → `quality.yml` fails → `e2e.yml` does not run.
+**Independent Test**: Open a PR with a lint violation or design system contract breach → `quality.yml` fails → `e2e.yml` does not run.
 
 ---
 
@@ -253,5 +255,6 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 - [ ] `git commit` with staged unformatted file triggers auto-fix via lint-staged
 - [ ] `npm run quality` chains lint + lint:styles + lint:contracts + format:check
 - [ ] `quality.yml` CI workflow runs on PRs and blocks E2E if it fails
-- [ ] `.agents/skills/` contains 4 actionable SKILL.md files with code examples
+- [ ] `.agents/skills/` contains 4 actionable SKILL.md files with smart/dumb recipes and code examples
+- [ ] `docs/STYLE_GUIDE.md` is populated for company-wide style guide export
 - [ ] Each SKILL.md references `tdd`, `bem-css`, and `tlc-spec-driven` skills

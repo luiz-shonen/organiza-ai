@@ -150,9 +150,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] File `src/app/shared/ui/surface/_org-surface.scss` is deleted
-- [ ] `.glass-drawer` removed from `src/app/app.scss`
-- [ ] Gate check passes: `npm run build`
+- [x] File `src/app/shared/ui/surface/_org-surface.scss` is deleted
+- [x] `.glass-drawer` removed from `src/app/app.scss`
+- [x] Gate check passes: `npm run build`
 
 **Tests**: none  
 **Gate**: Build  

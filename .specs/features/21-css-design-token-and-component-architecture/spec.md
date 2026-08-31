@@ -196,10 +196,10 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-20 | P2: Breakpoints/Important | AC-20 | Pending |
 | CSS-21 | P2: Breakpoints/Important | AC-21 | Pending |
 | CSS-22 | P2: Breakpoints/Important | AC-22 | Pending |
-| CSS-23 | P2: Cleanup | AC-23 | Pending |
+| CSS-23 | P2: Cleanup | AC-23 | Verified |
 | CSS-24 | P2: Cleanup | AC-24 | Pending |
 | CSS-25 | P2: Cleanup | AC-25 | Pending |
-| CSS-26 | P2: Cleanup | AC-26 | Pending |
+| CSS-26 | P2: Cleanup | AC-26 | Verified |
 | CSS-27 | P2: Cleanup | AC-27 | Verified |
 | CSS-28 | P2: Cleanup | AC-28 | Pending |
 | CSS-29 | P2: Cleanup | AC-29 | Pending |

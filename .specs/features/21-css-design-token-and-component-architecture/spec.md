@@ -1,4 +1,4 @@
-# Feature 22: CSS Design Token Unification & Component Architecture
+# Feature 21: CSS Design Token Unification & Component Architecture
 
 ## Problem Statement
 
@@ -19,11 +19,11 @@ The Organiza AI Angular project has severe CSS/SCSS technical debt and component
 
 | Feature | Reason |
 |---|---|
-| Installing linting tools (ESLint, Stylelint, Prettier) | Feature 21 scope |
-| Creating shared utility functions or extracting duplicated logic | Feature 23 scope |
-| Updating documentation files (AGENTS.md, README.md, CONTEXT.md) | Feature 23 scope |
-| Route restructuring (`/admin` vs `/meus-eventos`) | Feature 23 scope |
-| Eliminating `any` types in TypeScript | Feature 23 scope |
+| Creating shared utility functions or extracting duplicated logic | Feature 22 scope |
+| Updating documentation files (AGENTS.md, README.md, CONTEXT.md) | Feature 22 scope |
+| Route restructuring (`/admin` vs `/meus-eventos`) | Feature 22 scope |
+| Eliminating `any` types in TypeScript | Feature 22 scope |
+| Installing linting tools (ESLint, Stylelint, Prettier, git hooks) | Feature 23 scope |
 | Reducing `!important` in global `styles.scss` Material overrides | Requires careful incremental work; global overrides often need `!important` to beat Material specificity |
 
 ---

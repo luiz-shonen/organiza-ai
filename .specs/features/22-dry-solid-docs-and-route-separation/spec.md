@@ -1,4 +1,4 @@
-# Feature 23: DRY/SOLID Architecture, Route Separation & Documentation Sync
+# Feature 22: DRY/SOLID Architecture, Route Separation & Documentation Sync
 
 ## Problem Statement
 
@@ -19,9 +19,9 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 
 | Feature | Reason |
 |---|---|
-| Installing linting and formatting tools | Feature 21 scope |
-| SCSS token unification, hardcoded color fixes, and component `!important` elimination | Feature 22 scope |
-| Component-level dumb component refactoring and dead component deletion | Feature 22 scope |
+| SCSS token unification, hardcoded color fixes, and component `!important` elimination | Feature 21 scope |
+| Component-level dumb component refactoring and dead component deletion | Feature 21 scope |
+| Installing linting and formatting tools (ESLint, Stylelint, Prettier, git hooks) | Feature 23 scope |
 | Major backend schema changes to Firestore | Only frontend architecture and domain routing are refactored |
 
 ---

@@ -1,13 +1,13 @@
-# Feature 21: Linting, Formatting & Developer Style Guide Toolchain
+# Feature 23: Linting, Formatting & Developer Style Guide Toolchain
 
 ## Problem Statement
 
-The project has zero automated code quality enforcement. No ESLint, no Stylelint, no git hooks, no commitlint. Prettier exists as a dependency but is not wired to any scripts or hooks. There are no `.agents/` skills guiding AI contributors on how to create pages, components, or follow the design system. Every contributor (human or AI) can introduce violations unchecked — leading to the CSS duplication, `any` types, `!important` abuse, hardcoded colors, and architecture drift documented in the August 2026 audit. This feature installs the complete quality toolchain AND creates the developer style guide that prevents future regressions.
+The project has zero automated code quality enforcement. No ESLint, no Stylelint, no git hooks, no commitlint. Prettier exists as a dependency but is not wired to any scripts or hooks. There are no `.agents/` skills guiding AI contributors on how to create pages, components, or follow the design system. Having cleaned up the CSS tokens and component architecture in Feature 21, and unified DRY models, services, and typings in Feature 22, this feature installs the complete quality toolchain with strict, uncompromising error-level rules and creates the developer style guide that prevents future regressions.
 
 ## Goals
 
 - [ ] Comprehensive ESLint config covering TypeScript, Angular templates, unit tests, and Playwright E2E tests (including `no-wait-for-timeout`, web-first assertions, and `data-testid` conventions)
-- [ ] Comprehensive Stylelint config enforcing BEM, `!important` prohibition, design token usage, duplicate class prevention across components, and color token validation against `DESIGN.md`
+- [ ] Strict Stylelint config enforcing BEM, `!important` prohibition, design token usage, duplicate class prevention across components, and color token validation against `DESIGN.md` as error-level rules
 - [ ] Prettier formatting all file types (`.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md`) enforced on commit
 - [ ] Commit message format enforced via commitlint (Conventional Commits)
 - [ ] CI quality gate (`quality.yml`) runs BEFORE Playwright E2E and blocks PRs on violations, including Design System contract validation
@@ -19,11 +19,11 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 | Feature | Reason |
 |---|---|
-| Fixing existing CSS violations (hardcoded colors, `!important`, token duplication) | Feature 22 scope |
-| Fixing existing smart/dumb violations or dead component removal | Feature 22 scope |
-| Fixing existing `any` types or duplicated logic | Feature 23 scope |
-| Updating AGENTS.md, README.md, CONTEXT.md content accuracy | Feature 23 scope |
-| Custom ESLint rules for smart/dumb enforcement | Complex; add incrementally after baseline |
+| Fixing CSS violations (hardcoded colors, `!important`, token duplication) | Handled in Feature 21 |
+| Fixing smart/dumb violations or dead component removal | Handled in Feature 21 |
+| Fixing `any` types or duplicated logic | Handled in Feature 22 |
+| Updating AGENTS.md, README.md, CONTEXT.md content accuracy | Handled in Feature 22 |
+| Route restructuring (`/admin` vs `/meus-eventos`) | Handled in Feature 22 |
 | Writing the TDD, BEM-CSS, or TLC spec-driven skills themselves | They already exist in `.gemini/config/skills/`; we reference them |
 
 ---
@@ -33,9 +33,9 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 |---|---|---|---|
 | ESLint uses Flat Config (`eslint.config.mjs`) | Flat Config | ESLint 9+ default; Angular ESLint v19+ supports it | y |
-| `@typescript-eslint/no-explicit-any` set to `warn` initially | warn | 70+ existing violations; error blocks all commits until Feature 23 | y |
-| `declaration-no-important` in Stylelint set to `warn` initially | warn | 110+ existing violations; error blocks until Feature 22 | y |
-| Stylelint enforces color function token preference via `color-no-hex` as `warn` | warn + allowlist | Catches new hardcoded hex; existing ones are Feature 22 cleanup | y |
+| `@typescript-eslint/no-explicit-any` set to `error` | error | Codebase is clean after Feature 22; zero `any` types permitted | y |
+| `declaration-no-important` in Stylelint set to `error` for components | error | Codebase is clean after Feature 21; zero `!important` permitted in components | y |
+| Stylelint enforces color token preference via `color-no-hex` as `error` | error + allowlist | Codebase is clean after Feature 21; all colors must use `--org-*` tokens | y |
 | Playwright ESLint enforces web-first assertions and bans `waitForTimeout` | yes | Guarantees deterministic, flake-free E2E tests | y |
 | CI `quality.yml` is separate from `e2e.yml` | separate | Fail-fast: if quality fails, no reason to run Playwright | y |
 | `quality.yml` runs BEFORE E2E (via workflow dependency or PR required checks ordering) | yes | User confirmed: "if it fails, no reason to run the playwright tests" | y |
@@ -65,14 +65,14 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 3. The system SHALL enforce `@angular-eslint/prefer-on-push-component-change-detection` as an error-level rule for all component files. <!-- ubiquitous -->
 4. The system SHALL enforce `@angular-eslint/prefer-standalone` as an error-level rule for all component files. <!-- ubiquitous -->
 5. The system SHALL enforce `@angular-eslint/component-selector` with prefix `org` or `app`, style `kebab-case` as an error-level rule. <!-- ubiquitous -->
-6. The system SHALL enforce `@typescript-eslint/no-explicit-any` as a warning-level rule for production code. <!-- ubiquitous -->
+6. The system SHALL enforce `@typescript-eslint/no-explicit-any` as an error-level rule for production code. <!-- ubiquitous -->
 7. The system SHALL include `eslint-config-prettier` to disable all formatting rules that conflict with Prettier. <!-- ubiquitous -->
 8. The system SHALL configure an `angular.json` lint architect target using `@angular-eslint/builder:lint` enabling `ng lint`. <!-- ubiquitous -->
 9. The system SHALL provide a separate ESLint override for test files (`*.spec.ts`, `*.mock.ts`) that sets `@typescript-eslint/no-explicit-any` to `warn` and allows `as unknown as` casting patterns. <!-- ubiquitous -->
 10. The system SHALL provide a separate ESLint override for Playwright E2E files (`e2e/**/*.ts`) using `eslint-plugin-playwright` with rules enforcing `no-wait-for-timeout`, `prefer-web-first-assertions`, `prefer-to-have-count`, `no-element-handle`, `no-eval`, `no-conditional-in-test`, `no-focused-test`, `expect-expect`, and `no-force-option` at warning level. <!-- ubiquitous -->
 11. The system SHALL enforce `@angular-eslint/template/accessibility-alt-text`, `@angular-eslint/template/accessibility-label-has-associated-control`, and `@angular-eslint/template/click-events-have-key-events` at warning level for HTML templates. <!-- ubiquitous -->
 
-**Independent Test**: Run `npm run lint` — it executes and reports results (may have warnings from existing code; zero config errors).
+**Independent Test**: Run `npm run lint` — it executes and reports results with zero config errors and zero error-level violations.
 
 ---
 
@@ -80,18 +80,18 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 **User Story**: As a developer, I want SCSS-aware linting that enforces BEM naming, prohibits `!important`, validates design token usage against `DESIGN.md`, and prevents duplicate unnamespaced classes across components so that CSS quality is maintained.
 
-**Why P1**: The CSS audit found 110+ `!important`, non-standard breakpoints, hardcoded purple palette, class collisions, and undefined CSS custom properties — all undetected today.
+**Why P1**: Ensures that the clean CSS architecture established in Feature 21 remains protected by automated gates.
 
 **Acceptance Criteria**:
 
 12. WHEN a developer runs `npm run lint:styles` THEN the system SHALL execute Stylelint against all `src/**/*.scss` files and report violations. <!-- event-driven -->
 13. WHEN a developer runs `npm run lint:styles:fix` THEN the system SHALL execute Stylelint with `--fix` flag and auto-correct fixable violations. <!-- event-driven -->
-14. The system SHALL enforce `declaration-no-important` as a warning-level rule. <!-- ubiquitous -->
+14. The system SHALL enforce `declaration-no-important` as an error-level rule for component stylesheets. <!-- ubiquitous -->
 15. The system SHALL allow custom properties prefixed with `--org-`, `--mat-`, `--mdc-`, `--mat-sys-`, and `--showcase-` without triggering unknown-property warnings. <!-- ubiquitous -->
-16. The system SHALL enforce `color-no-hex` as a warning-level rule to discourage hardcoded hex values in favor of `--org-*` CSS custom properties, with an allowlist for `#fff`, `#000`, and `#ffffff` only. <!-- ubiquitous -->
+16. The system SHALL enforce `color-no-hex` as an error-level rule to require `--org-*` CSS custom properties, with an allowlist for `#fff`, `#000`, and `#ffffff` only. <!-- ubiquitous -->
 17. The system SHALL enforce `selector-class-pattern` matching strict BEM naming conventions (`^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$`) to ensure all classes are properly scoped to their component block and prevent collision across different components. <!-- ubiquitous -->
 
-**Independent Test**: Run `npm run lint:styles` — it executes and reports results.
+**Independent Test**: Run `npm run lint:styles` — it executes and reports results with zero error-level violations.
 
 ---
 
@@ -131,7 +131,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 **User Story**: As a developer or AI agent, I want project-local skills and a style guide in `.agents/` so that every contributor follows the exact same smart/dumb architecture, design system components, and testing practices — preventing hallucinations and drift.
 
-**Why P1**: The audit's root cause is lack of enforceable guidance. AI agents and developers need concrete recipes for smart vs dumb components, page creation, and design system contracts to avoid inventing patterns.
+**Why P1**: Equips AI agents and human contributors with concrete, self-contained playbooks in the repository.
 
 **Acceptance Criteria**:
 

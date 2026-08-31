@@ -2,11 +2,11 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-08-26  
-**State:** Specify phase complete for Features 21, 22, and 23 (Code Quality Overhaul, CSS Tokens & Component Architecture, DRY/SOLID & Route Decoupling). All 3 specs validated with 0 errors via `validate_spec.py`.  
+**Last updated:** 2026-08-31  
+**State:** Feature 21 (`21-css-design-token-and-component-architecture`) Spec, Design, and Tasks complete and validated. Features 22 (`22-dry-solid-docs-and-route-separation`) and 23 (`23-linting-and-formatting-toolchain`) specified and validated per Option B sequence.  
 **Test Suite:** 79 unit test files (426 tests) green (`npm test -- --watch=false`), 158 E2E tests green across Desktop & Mobile (`npx playwright test`), production build green (`npm run build`).  
-**Validation Gate:** Features 21, 22, 23 Specs PASS. Ready for user review and Feature 21 task breakdown.  
-**Next step:** Review specifications and proceed with Feature 21 execution.  
+**Validation Gate:** Feature 21 Spec PASS (0 errors), Feature 21 Tasks PASS (0 errors), Feature 22 Spec PASS (0 errors), Feature 23 Spec PASS (0 errors).  
+**Next step:** Execute Feature 21 Phase 1 (Tasks T1, T2, T3: Token unification and stylesheet cleanup).  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -345,3 +345,20 @@
 **Decision:** Public UI authoring uses standalone `Org*` components only. Shared semantic tokens and the owning component stylesheet are the exclusive owners of reusable component color, border, radius, focus, hover, density, glass, atmosphere, and Angular Material token rules. Feature stylesheets may own page layout and domain content only. The application will migrate every current consumer of the priority UI families to the component API, then remove the legacy surface, action, chip, and form styling directives and their public exports. A deterministic contract check will reject legacy UI directive consumers and feature-owned Material component appearance rules outside documented showcase fixtures.
 **Rationale:** A directive plus per-feature SCSS contract creates multiple competing sources of truth. Closed components make behavior discoverable, let a visual fix propagate consistently, and prevent AI-assisted feature work from inventing another visual system.
 **Status:** In force. Supersedes AD-034 and expands AD-038 from showcase validation to application migration.
+
+---
+
+### AD-040 — Unified Design Token Architecture in `_semantic.scss`
+**Date:** 2026-08-31  
+**Decision:** All `--org-*` CSS custom properties, seasonal theme classes, and breakpoint mixins are exclusively defined in `src/app/shared/ui/tokens/_semantic.scss`. `src/styles.scss` must delegate 100% of token declarations to `_semantic.scss` via `@include semantic.apply;` with zero duplicate `:root` definitions.  
+**Rationale:** Eliminates silent divergence between globals and component tokens, and prepares `@shared/ui` tokens for modular, standalone export across the organization.  
+**Status:** In force.
+
+---
+
+### AD-041 — Zero `!important` and Ubiquitous Design System Migration
+**Date:** 2026-08-31  
+**Decision:** All feature templates across the application must exclusively consume `Org*` components from `@shared/ui` (e.g. `<org-surface>`, `<org-button>`, `<org-icon-button>`, `<org-text-field>`, `<org-chip>`). Raw Angular Material tags (`<mat-card>`, `<button mat-button>`, `<mat-form-field>`) in feature templates are prohibited. Component stylesheets must contain zero `!important` flags and zero hardcoded arbitrary hex values, managing styling purely through BEM classes and `--org-*` CSS custom properties.  
+**Rationale:** Guarantees visual consistency, clean specificity without specificity wars, and complete encapsulation matching the design system contracts.  
+**Status:** In force.
+

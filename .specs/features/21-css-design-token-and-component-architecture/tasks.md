@@ -9,6 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Spec**: `.specs/features/21-css-design-token-and-component-architecture/spec.md`  
+**Design**: `.specs/features/21-css-design-token-and-component-architecture/design.md`  
 **Status**: Draft
 
 ---

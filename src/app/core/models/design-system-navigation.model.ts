@@ -27,6 +27,7 @@ export const DESIGN_SYSTEM_NAVIGATION_GROUPS: readonly DesignSystemNavigationGro
     label: 'Fundações',
     items: [
       { id: 'tokens', label: 'Tokens', icon: 'tune' },
+      { id: 'spacing', label: 'Espaçamento e dimensões', icon: 'straighten' },
       { id: 'foundations', label: 'Fundamentos', icon: 'layers' },
     ],
   },

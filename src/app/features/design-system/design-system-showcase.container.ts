@@ -168,6 +168,19 @@ export class DesignSystemShowcaseContainer {
   --org-secondary: #ffb648;
   --org-gradient-border: linear-gradient(135deg, var(--org-primary), var(--org-secondary));
 }`,
+    spacing: `/* Margens, espaçamento interno e gaps de grid/flex */
+.minha-secao {
+  padding: var(--org-space-lg);
+  gap: var(--org-space-md);
+  border-radius: var(--org-radius-md);
+}
+
+.grade-itens {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--org-space-md);
+  margin-bottom: var(--org-space-xl);
+}`,
     colors: `:root {
   --org-primary: #ff4d94;
   --org-secondary: #ff8c42;

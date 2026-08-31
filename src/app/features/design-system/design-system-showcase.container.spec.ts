@@ -115,11 +115,39 @@ describe('DesignSystemShowcaseContainer', () => {
   it('separates brand and foundation documentation into anchored code-backed sections', () => {
     const root = fixture.nativeElement as HTMLElement;
 
-    for (const id of ['colors', 'iconography', 'tokens', 'foundations']) {
+    for (const id of ['colors', 'iconography', 'tokens', 'spacing', 'foundations']) {
       const section = root.querySelector<HTMLElement>(`section#${id}`);
       expect(section).toBeTruthy();
       expect(section?.querySelector('app-design-system-code-example')).toBeTruthy();
     }
+  });
+
+  it('renders all 8 spacing scale tokens and border radius preview cards in the spacing section', () => {
+    const root = fixture.nativeElement as HTMLElement;
+    const spacingSection = root.querySelector<HTMLElement>('section#spacing');
+    expect(spacingSection).toBeTruthy();
+
+    const spacingTokens = [
+      '--org-space-2xs',
+      '--org-space-xs',
+      '--org-space-sm',
+      '--org-space-md',
+      '--org-space-lg',
+      '--org-space-xl',
+      '--org-space-2xl',
+      '--org-space-3xl',
+    ];
+
+    for (const token of spacingTokens) {
+      expect(spacingSection?.textContent).toContain(token);
+    }
+
+    const radiusCards = spacingSection?.querySelectorAll('.org-ds-radius-card');
+    expect(radiusCards?.length).toBe(4);
+    expect(spacingSection?.textContent).toContain('--org-radius-sm');
+    expect(spacingSection?.textContent).toContain('--org-radius-md');
+    expect(spacingSection?.textContent).toContain('--org-radius-lg');
+    expect(spacingSection?.textContent).toContain('--org-radius-full');
   });
 
   it('applies a single selected seasonal class to the document root', () => {

@@ -585,6 +585,121 @@
   border-radius: 24px;
 }
 
+.org-ds-subsection-title {
+  font-size: 1.125rem;
+  margin: 0 0 16px;
+  font-family: var(--showcase-display);
+
+  &:not(:first-child) {
+    margin-top: 32px;
+  }
+}
+
+.org-ds-spacing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.org-ds-spacing-row {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 140px 50px 1fr;
+
+  @media (min-width: 600px) {
+    gap: 16px;
+    grid-template-columns: 160px 60px 1fr;
+  }
+}
+
+.org-ds-spacing-token {
+  color: var(--org-primary);
+  font-family: var(--showcase-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.org-ds-spacing-value {
+  color: var(--showcase-muted);
+  font-family: var(--showcase-mono);
+  font-size: 0.8125rem;
+}
+
+.org-ds-spacing-bar-container {
+  align-items: center;
+  background: var(--showcase-glass);
+  border-radius: 6px;
+  display: flex;
+  min-height: 24px;
+  padding: 4px;
+}
+
+.org-ds-spacing-bar {
+  background: var(--showcase-gradient);
+  border-radius: 4px;
+  height: 16px;
+  transition: width 180ms ease;
+
+  &--2xs { width: var(--org-space-2xs); min-width: 2px; }
+  &--xs { width: var(--org-space-xs); }
+  &--sm { width: var(--org-space-sm); }
+  &--md { width: var(--org-space-md); }
+  &--lg { width: var(--org-space-lg); }
+  &--xl { width: var(--org-space-xl); }
+  &--2xl { width: var(--org-space-2xl); }
+  &--3xl { width: var(--org-space-3xl); }
+}
+
+.org-ds-radius-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.org-ds-radius-card {
+  align-items: center;
+  background: var(--showcase-glass);
+  border: 1.5px solid var(--org-glass-ring-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 110px;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+
+  &--sm { border-radius: var(--org-radius-sm); }
+  &--md { border-radius: var(--org-radius-md); }
+  &--lg { border-radius: var(--org-radius-lg); }
+  &--full { border-radius: var(--org-radius-full); }
+
+  strong {
+    font-size: 0.9375rem;
+  }
+
+  code {
+    color: var(--org-primary);
+    font-family: var(--showcase-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  small {
+    color: var(--showcase-muted);
+    font-size: 0.75rem;
+  }
+}
+
 .org-ds-control-row {
   align-items: center;
   display: flex;

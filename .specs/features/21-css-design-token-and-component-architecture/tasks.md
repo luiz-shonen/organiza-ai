@@ -105,10 +105,10 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Navigation item `spacing` registered in `design-system-navigation.model.ts` under `foundations` group
-- [ ] Showcase renders `#spacing` section with visual bars for all 8 spacing scale tokens (`--org-space-2xs` through `--org-space-3xl`)
-- [ ] Radius preview chips and copyable CSS grid/flex gap usage snippet render cleanly
-- [ ] Gate check passes: `npm test -- --watch=false && npm run build`
+- [x] Navigation item `spacing` registered in `design-system-navigation.model.ts` under `foundations` group
+- [x] Showcase renders `#spacing` section with visual bars for all 8 spacing scale tokens (`--org-space-2xs` through `--org-space-3xl`)
+- [x] Radius preview chips and copyable CSS grid/flex gap usage snippet render cleanly
+- [x] Gate check passes: `npm test -- --watch=false && npm run build`
 
 **Tests**: unit  
 **Gate**: Full  

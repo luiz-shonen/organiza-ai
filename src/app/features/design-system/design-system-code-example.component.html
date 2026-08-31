@@ -5,10 +5,14 @@
   </summary>
   <div class="org-ds-code-example__content">
     <header class="org-ds-code-example__header">
-      <button mat-button type="button" (click)="copy()" [attr.aria-label]="copied() ? 'Código copiado' : 'Copiar código'">
-        <mat-icon aria-hidden="true">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
-        {{ copied() ? 'Copiado' : 'Copiar' }}
-      </button>
+      <org-button
+        type="button"
+        variant="text"
+        [label]="copied() ? 'Copiado' : 'Copiar'"
+        [icon]="copied() ? 'check_circle' : 'content_copy'"
+        (pressed)="copy()"
+        [attr.aria-label]="copied() ? 'Código copiado' : 'Copiar código'"
+      />
     </header>
     <pre><code>{{ code() }}</code></pre>
   </div>

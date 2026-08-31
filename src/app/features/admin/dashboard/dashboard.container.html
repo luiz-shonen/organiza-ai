@@ -129,15 +129,15 @@
         @for (i of [1, 2, 3]; track i) {
           <org-surface variant="card" class="dashboard__mobile-card">
             <article class="dashboard__mobile-card-content">
-            <mat-card-header>
-              <mat-card-title><div class="skeleton-box dashboard__skeleton-card-title"></div></mat-card-title>
-              <mat-card-subtitle><div class="skeleton-box dashboard__skeleton-card-subtitle"></div></mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-actions>
+            <header class="dashboard__mobile-card-header">
+              <div class="skeleton-box dashboard__skeleton-card-title"></div>
+              <div class="skeleton-box dashboard__skeleton-card-subtitle"></div>
+            </header>
+            <footer class="dashboard__mobile-card-actions">
               <div class="skeleton-box dashboard__skeleton-card-action"></div>
               <div class="skeleton-box dashboard__skeleton-card-action"></div>
               <div class="skeleton-box dashboard__skeleton-card-action"></div>
-            </mat-card-actions>
+            </footer>
             </article>
           </org-surface>
         }

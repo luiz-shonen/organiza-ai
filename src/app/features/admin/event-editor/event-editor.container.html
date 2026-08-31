@@ -3,15 +3,12 @@
     <org-page-header title="Carregando..." icon="edit" />
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
-        <org-surface variant="card">
-        <mat-card class="editor__card" appearance="outlined">
-          <mat-card-header>
-            <div matCardAvatar class="skeleton-box editor__card-icon"></div>
-            <mat-card-title>
-              <div class="skeleton-box editor__skeleton-title"></div>
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
+        <org-surface variant="card" class="editor__card">
+          <div class="editor__card-header">
+            <div class="skeleton-box editor__card-icon"></div>
+            <div class="skeleton-box editor__skeleton-title"></div>
+          </div>
+          <div class="editor__card-content">
             <div class="editor__form">
               <div class="skeleton-box editor__skeleton-input"></div>
               <div class="skeleton-box editor__skeleton-textarea"></div>
@@ -20,8 +17,7 @@
               <div class="skeleton-box editor__skeleton-input"></div>
               <div class="skeleton-box editor__skeleton-btn"></div>
             </div>
-          </mat-card-content>
-        </mat-card>
+          </div>
         </org-surface>
       </div>
     </div>
@@ -31,15 +27,14 @@
       icon="edit"
     >
       <div orgPageHeaderActions class="editor__header-actions-slot">
-        <a
-          mat-button
-          routerLink="/meus-eventos"
+        <org-button
+          label="Voltar"
+          icon="arrow_back"
+          variant="secondary"
+          (pressed)="router.navigate(['/meus-eventos'])"
           aria-label="Voltar para a lista de eventos"
           class="editor__back-btn"
-        >
-          <mat-icon>arrow_back</mat-icon>
-          Voltar
-        </a>
+        />
         @if (isEditing() && isOwner()) {
           <org-button
             label="Colaboradores"
@@ -66,13 +61,12 @@
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
         <!-- Event Form -->
-        <org-surface variant="card">
-        <mat-card class="editor__card" appearance="outlined">
-          <mat-card-header>
-            <mat-icon matCardAvatar class="editor__card-icon">edit_note</mat-icon>
-            <mat-card-title>Dados do Evento</mat-card-title>
-          </mat-card-header>
-          <mat-card-content class="editor__card-content-stepper">
+        <org-surface variant="card" class="editor__card">
+          <div class="editor__card-header">
+            <mat-icon class="editor__card-icon">edit_note</mat-icon>
+            <h2 class="editor__card-title">Dados do Evento</h2>
+          </div>
+          <div class="editor__card-content-stepper">
             <div
               class="editor__step-progress"
               data-testid="event-step-progress"
@@ -325,20 +319,20 @@
                 </form>
               </org-step>
             </org-stepper>
-          </mat-card-content>
-        </mat-card>
+          </div>
         </org-surface>
 
         <!-- Items Manager (only when editing) -->
         @if (isEditing()) {
-          <org-surface variant="card">
-          <mat-card class="editor__card" appearance="outlined">
-            <mat-card-header>
-              <mat-icon matCardAvatar class="editor__card-icon">checklist</mat-icon>
-              <mat-card-title>Lista de Itens</mat-card-title>
-              <mat-card-subtitle>{{ items().length }} itens cadastrados</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
+          <org-surface variant="card" class="editor__card">
+            <div class="editor__card-header">
+              <mat-icon class="editor__card-icon">checklist</mat-icon>
+              <div class="editor__card-title-group">
+                <h2 class="editor__card-title">Lista de Itens</h2>
+                <p class="editor__card-subtitle">{{ items().length }} itens cadastrados</p>
+              </div>
+            </div>
+            <div class="editor__card-content">
               <div class="editor__add-item">
                 <org-text-field
                   class="editor__item-name-field org-input"
@@ -390,8 +384,7 @@
                   }
                 </ul>
               }
-            </mat-card-content>
-          </mat-card>
+            </div>
           </org-surface>
         }
       </div>
@@ -405,13 +398,15 @@
           />
 
           <!-- Guest List Card -->
-          <mat-card class="editor__card print-section" appearance="outlined">
-            <mat-card-header>
-              <mat-icon matCardAvatar class="editor__card-icon">group</mat-icon>
-              <mat-card-title>Lista de Convidados</mat-card-title>
-              <mat-card-subtitle>{{ guests().length }} confirmados</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
+          <org-surface variant="card" class="editor__card print-section">
+            <div class="editor__card-header">
+              <mat-icon class="editor__card-icon">group</mat-icon>
+              <div class="editor__card-title-group">
+                <h2 class="editor__card-title">Lista de Convidados</h2>
+                <p class="editor__card-subtitle">{{ guests().length }} confirmados</p>
+              </div>
+            </div>
+            <div class="editor__card-content">
               <div class="editor__guest-actions no-print">
                 <org-button
                   label="Excel"
@@ -455,8 +450,8 @@
                   Nenhum convidado confirmou presença ainda.
                 </p>
               }
-            </mat-card-content>
-          </mat-card>
+            </div>
+          </org-surface>
         </div>
       }
     </div>

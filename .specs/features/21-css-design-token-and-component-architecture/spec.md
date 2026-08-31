@@ -189,10 +189,10 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-13 | P1: Smart/Dumb | AC-13 | Verified |
 | CSS-14 | P1: Smart/Dumb | AC-14 | Verified |
 | CSS-15 | P1: Smart/Dumb | AC-15 | Verified |
-| CSS-16 | P2: Material Migration | AC-16 | Pending |
-| CSS-17 | P2: Material Migration | AC-17 | Pending |
-| CSS-18 | P2: Material Migration | AC-18 | Pending |
-| CSS-19 | P2: Material Migration | AC-19 | Pending |
+| CSS-16 | P2: Material Migration | AC-16 | Verified |
+| CSS-17 | P2: Material Migration | AC-17 | Verified |
+| CSS-18 | P2: Material Migration | AC-18 | Verified |
+| CSS-19 | P2: Material Migration | AC-19 | Verified |
 | CSS-20 | P2: Breakpoints/Important | AC-20 | Verified |
 | CSS-21 | P2: Breakpoints/Important | AC-21 | Verified |
 | CSS-22 | P2: Breakpoints/Important | AC-22 | Verified |

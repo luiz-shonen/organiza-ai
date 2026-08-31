@@ -326,9 +326,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] 0 raw `mat-card`, `mat-button`, `mat-icon-button`, `mat-chip-set`, or `mat-form-field` tags in any feature template
-- [ ] UI contracts validator passes: `node scripts/validate-ui-contracts.mjs --strict`
-- [ ] Gate check passes: `npm test -- --watch=false && npm run build`
+- [x] Zero raw Material container or action tags in feature templates
+- [x] All feature templates use closed Org components (`<org-surface>`, `<org-button>`, etc.)
+- [x] Gate check passes: `node scripts/validate-ui-contracts.mjs --strict && npm run build && npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: Full  

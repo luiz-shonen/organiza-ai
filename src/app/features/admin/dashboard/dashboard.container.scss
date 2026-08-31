@@ -112,11 +112,12 @@
 
   &__mobile-card {
     background-color: transparent;
-    mat-card-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 4px;
-    }
+  }
+
+  &__mobile-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
   }
 
   &__skeleton-actions {

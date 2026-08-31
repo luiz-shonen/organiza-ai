@@ -3,6 +3,22 @@ $breakpoint-sm: 600px;
 $breakpoint-md: 900px;
 $breakpoint-lg: 1200px;
 
+// Standard Spacing Scale (AD-031, DESIGN.md §4.2)
+$space-2xs: 2px;
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+$space-2xl: 48px;
+$space-3xl: 64px;
+
+// Border Radius Tokens
+$radius-sm: 0.75rem;
+$radius-md: 1rem;
+$radius-lg: 1.25rem;
+$radius-full: 9999px;
+
 @mixin mobile {
   @media (max-width: #{$breakpoint-sm - 1px}) {
     @content;
@@ -29,8 +45,7 @@ $breakpoint-lg: 1200px;
 
 @mixin apply() {
   :root {
-    // The product brand is the original logo palette: pink, orange and yellow.
-    // Keep it here as the sole semantic source consumed by shared primitives.
+    // Canonical Brand Triple from Logo (Vibrant Pink, Orange, Yellow)
     --org-primary: #ff4d94;
     --org-on-primary: #ffffff;
     --org-primary-container: #ff80b3;
@@ -41,10 +56,18 @@ $breakpoint-lg: 1200px;
     --org-on-secondary-container: #3d1400;
     --org-tertiary: #ffc837;
     --org-on-tertiary: #2a1f00;
+    --org-tertiary-container: #ffe499;
+    --org-on-tertiary-container: #332600;
+
+    // Status & Functional Tokens
     --org-error: #ba1a1a;
     --org-on-error: #ffffff;
     --org-error-container: #ffdad6;
     --org-on-error-container: #93000a;
+    --org-danger: #ef4444;
+    --org-on-danger: #ffffff;
+    --org-warning: #f59e0b;
+    --org-on-warning: #000000;
     --org-success: #176b35;
     --org-on-success: #ffffff;
     --org-success-container: #d8f3dc;
@@ -53,20 +76,93 @@ $breakpoint-lg: 1200px;
     --org-on-info: #ffffff;
     --org-info-container: #dbe8ff;
     --org-on-info-container: #002b75;
+
+    // Surfaces & Outlines
     --org-surface: #fff8f8;
     --org-on-surface: #2a101f;
     --org-surface-variant: #fce1ed;
     --org-on-surface-variant: #4f3d46;
+    --org-border: rgba(133, 115, 123, 0.2);
+    --org-primary-light: #fce1ed;
+
+    --org-background-light: #fff8f8;
+    --org-on-background-light: #2a101f;
+    --org-surface-light: #fff8f8;
+    --org-on-surface-light: #2a101f;
+    --org-surface-variant-light: #fce1ed;
+    --org-on-surface-variant-light: #4f3d46;
+    --org-outline-light: #85737b;
+    --org-outline-variant-light: #d8c2cb;
+
+    --org-background-dark: #241c31;
+    --org-on-background-dark: #fdecf2;
+    --org-surface-dark: #241c31;
+    --org-on-surface-dark: #fdecf2;
+    --org-surface-variant-dark: #4f3d46;
+    --org-on-surface-variant-dark: #d8c2cb;
+    --org-outline-dark: #a08c95;
+    --org-outline-variant-dark: #4f3d46;
+
+    // Typography Tokens
+    --org-text-primary: #2a101f;
+    --org-text-secondary: #4f3d46;
+    --org-text-muted: #85737b;
+    --org-font-body: 'Plus Jakarta Sans', sans-serif;
+    --org-font-display: 'Fraunces', Georgia, serif;
+    --org-font-mono: 'JetBrains Mono', monospace;
+    --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
+    --org-type-display-line-height: 1.03;
+    --org-type-heading-size: clamp(1.625rem, 3vw, 2.5rem);
+    --org-type-heading-line-height: 1.12;
+    --org-type-title-size: 1.25rem;
+    --org-type-body-size: 1rem;
+    --org-type-body-line-height: 1.6;
+    --org-type-label-size: 0.75rem;
+    --org-type-label-tracking: 0.12em;
+
+    // Standardized Spacing Scale (DESIGN.md §4.2)
+    --org-space-2xs: 2px;
+    --org-space-xs: 4px;
+    --org-space-sm: 8px;
+    --org-space-md: 16px;
+    --org-space-lg: 24px;
+    --org-space-xl: 32px;
+    --org-space-2xl: 48px;
+    --org-space-3xl: 64px;
+
+    // Border Radius Tokens
+    --org-radius-sm: 0.75rem;
+    --org-radius-md: 1rem;
+    --org-radius-lg: 1.25rem;
+    --org-radius-full: 9999px;
+
+    // Form Field Tokens
     --org-field-fill: rgba(255, 248, 248, 0.88);
     --org-field-text: #2a101f;
     --org-field-label: #4f3d46;
     --org-field-outline: #85737b;
     --org-field-disabled-outline: rgba(133, 115, 123, 0.38);
-    --org-glass-bg: rgba(255, 255, 255, 0.6);
-    --org-glass-blur: blur(24px);
+
+    // Glassmorphism, Shadows & Gradients
+    --org-glass-bg: rgba(255, 255, 255, 0.65);
+    --org-glass-bg-strong: rgba(255, 255, 255, 0.8);
+    --org-glass-blur: blur(24px) saturate(210%);
     --org-glass-ring-width: 1.5px;
+    --org-glass-ring-color: rgba(255, 77, 148, 0.28);
+    --org-glass-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2),
+      0 8px 32px rgba(35, 16, 67, 0.08);
+    --org-shadow-lg: var(--org-glass-shadow);
+
     --org-gradient-primary: linear-gradient(135deg, #ff4d94 0%, #ff8c42 50%, #ffc837 100%);
     --org-gradient-border: linear-gradient(135deg, rgba(255, 77, 148, 0.4), rgba(255, 140, 66, 0.4));
+    --org-gradient-border-focus: var(--org-gradient-primary);
+    --org-gradient-invitation: linear-gradient(135deg, #ff6b5b 0%, #ffb648 100%);
+    --org-gradient-dusk: linear-gradient(160deg, #2b1f45 0%, #5b3a8c 55%, #ff6b5b 130%);
+    --org-gradient-confirmation: linear-gradient(135deg, #4fc3e8 0%, #3ddc97 100%);
+    --org-gradient-ring: conic-gradient(from 0deg, #ff6b5b, #ffb648, #4fc3e8, #5b3a8c, #ff6b5b);
+    --org-canvas-start: #fff7fb;
+    --org-canvas-end: #fff1e4;
   }
 
   html.dark {
@@ -74,7 +170,14 @@ $breakpoint-lg: 1200px;
     --org-on-surface: #fdecf2;
     --org-surface-variant: #4f3d46;
     --org-on-surface-variant: #d8c2cb;
+    --org-text-primary: #fdecf2;
+    --org-text-secondary: #d8c2cb;
+    --org-text-muted: #a08c95;
+    --org-border: rgba(216, 194, 203, 0.2);
+    --org-primary-light: rgba(255, 77, 148, 0.2);
     --org-glass-bg: rgb(43 31 69 / 0.62);
+    --org-glass-bg-strong: rgb(43 31 69 / 0.8);
+    --org-glass-shadow: 0 8px 24px hsl(265deg 60% 4% / 0.3);
     --org-field-fill: rgba(79, 61, 70, 0.88);
     --org-field-text: #fdecf2;
     --org-field-label: #d8c2cb;
@@ -134,3 +237,4 @@ $breakpoint-lg: 1200px;
     --org-glass-ring-color: rgba(178, 122, 16, 0.28);
   }
 }
+

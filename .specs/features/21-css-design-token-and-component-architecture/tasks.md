@@ -82,10 +82,10 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] All missing `--org-*` status, semantic, and typography tokens declared in `_semantic.scss`
-- [ ] Standardized spacing scale (`--org-space-2xs` through `--org-space-3xl`) and radius (`--org-radius-sm` through `--org-radius-full`) declared in `_semantic.scss`
-- [ ] Single source of truth established for glassmorphism, spacing, and semantic tokens
-- [ ] Gate check passes: `npm run build`
+- [x] All missing `--org-*` status, semantic, and typography tokens declared in `_semantic.scss`
+- [x] Standardized spacing scale (`--org-space-2xs` through `--org-space-3xl`) and radius (`--org-radius-sm` through `--org-radius-full`) declared in `_semantic.scss`
+- [x] Single source of truth established for glassmorphism, spacing, and semantic tokens
+- [x] Gate check passes: `npm run build`
 
 **Tests**: none  
 **Gate**: Build  

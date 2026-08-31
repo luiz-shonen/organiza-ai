@@ -1,3 +1,5 @@
+@use '../../../shared/ui/tokens/semantic' as semantic;
+
 .dashboard {
   &__user-email {
     padding: 8px 16px;
@@ -9,10 +11,10 @@
   &__table-wrapper {
     display: none;
     margin-bottom: 24px;
-    padding: 0 !important;
+    padding: 0;
     overflow: hidden;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       display: block;
     }
   }
@@ -62,13 +64,13 @@
     flex-direction: column;
     gap: 12px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       display: none;
     }
   }
 
   &__mobile-card {
-    background-color: transparent !important;
+    background-color: transparent;
     mat-card-actions {
       display: flex;
       justify-content: flex-end;
@@ -87,7 +89,7 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.04) !important;
+      background-color: rgba(0, 0, 0, 0.04);
       transform: translateY(-2px);
     }
   }

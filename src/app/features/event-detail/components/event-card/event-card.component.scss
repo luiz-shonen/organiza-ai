@@ -1,3 +1,5 @@
+@use '../../../../shared/ui/tokens/semantic' as semantic;
+
 .event-card {
   width: 100%;
   position: relative;
@@ -9,7 +11,7 @@
     height: 280px;
     border-radius: 20px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       height: 300px;
       border-radius: 24px;
     }
@@ -53,7 +55,7 @@
     left: 16px;
     right: 16px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       bottom: 28px;
       left: 24px;
       right: 24px;
@@ -81,7 +83,7 @@
     margin: 0;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       font-size: 2rem;
     }
   }

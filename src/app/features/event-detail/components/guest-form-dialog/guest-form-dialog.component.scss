@@ -1,3 +1,5 @@
+@use '../../../../shared/ui/tokens/semantic' as semantic;
+
 :host {
   display: block;
 }
@@ -12,7 +14,7 @@
     color: var(--org-text-primary);
     padding: 16px 16px 8px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       padding: 16px 24px 8px;
     }
   }
@@ -26,7 +28,7 @@
     max-height: 75vh;
     overflow-y: auto;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       padding: 8px 24px;
     }
   }
@@ -48,7 +50,7 @@
   &__actions {
     padding: 16px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       padding: 16px 24px;
     }
 

@@ -1,3 +1,5 @@
+@use '../../ui/tokens/semantic' as semantic;
+
 .seasonal-overlay {
   position: fixed;
   inset: 0;
@@ -119,7 +121,7 @@
     height: 55px;
     object-fit: contain;
 
-    @media (min-width: 768px) {
+    @include semantic.tablet {
       top: 12px;
       right: 40px;
       width: 75px;
@@ -136,7 +138,7 @@
     background: linear-gradient(to bottom, rgba(255, 215, 0, 0.4), transparent);
     filter: blur(1px);
 
-    @media (min-width: 768px) {
+    @include semantic.tablet {
       top: 85px;
       right: 77px;
     }
@@ -206,7 +208,7 @@
     object-position: center bottom;
     opacity: 0.5;
 
-    @media (min-width: 768px) {
+    @include semantic.tablet {
       height: 100px;
     }
   }
@@ -233,7 +235,7 @@
     height: 90px;
     object-fit: contain;
 
-    @media (min-width: 768px) {
+    @include semantic.tablet {
       top: 14px;
       width: 90px;
       height: 115px;

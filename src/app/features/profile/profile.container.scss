@@ -1,3 +1,5 @@
+@use '../../shared/ui/tokens/semantic' as semantic;
+
 .profile-container {
   max-width: 900px;
   margin: 0 auto;
@@ -6,7 +8,7 @@
   flex-direction: column;
   gap: 1.5rem;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     padding: 32px 16px;
     gap: 2rem;
   }
@@ -24,7 +26,7 @@
     margin: 0;
     letter-spacing: -0.02em;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       font-size: 2rem;
     }
   }

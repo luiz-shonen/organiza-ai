@@ -1,3 +1,5 @@
+@use '../../../../../shared/ui/tokens/semantic' as semantic;
+
 .collaborator-dialog {
   display: flex;
   flex-direction: column;
@@ -7,7 +9,7 @@
   padding: 16px;
   color: var(--org-text-primary);
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     padding: 24px;
   }
 
@@ -20,7 +22,7 @@
     margin: 0;
     color: var(--mat-sys-on-surface);
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       font-size: 1.25rem;
     }
   }
@@ -49,7 +51,7 @@
     flex-direction: column;
     gap: 8px;
 
-    @media (min-width: 480px) {
+    @include semantic.tablet {
       flex-direction: row;
       align-items: flex-start;
       gap: 8px;
@@ -105,14 +107,14 @@
   }
 
   &__chip {
-    background: rgba(255, 77, 148, 0.1) !important;
-    color: var(--mat-sys-on-surface) !important;
-    border: 1px solid rgba(255, 77, 148, 0.25) !important;
+    background: rgba(255, 77, 148, 0.1);
+    color: var(--mat-sys-on-surface);
+    border: 1px solid rgba(255, 77, 148, 0.25);
 
     &--pending {
-      border: 1px dashed var(--org-tertiary) !important;
-      color: var(--mat-sys-on-surface) !important;
-      background: rgba(255, 200, 55, 0.12) !important;
+      border: 1px dashed var(--org-tertiary);
+      color: var(--mat-sys-on-surface);
+      background: rgba(255, 200, 55, 0.12);
     }
   }
 

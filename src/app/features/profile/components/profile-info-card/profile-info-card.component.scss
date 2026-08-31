@@ -1,3 +1,5 @@
+@use '../../../../shared/ui/tokens/semantic' as semantic;
+
 :host {
   display: block;
 }
@@ -101,7 +103,7 @@
     gap: 0.75rem;
     align-items: stretch;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       flex-direction: row;
       align-items: center;
     }

@@ -1,3 +1,5 @@
+@use './shared/ui/tokens/semantic' as semantic;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -8,7 +10,7 @@
   flex: 1;
   height: 100%;
   width: 100%;
-  background: transparent !important;
+  background: transparent;
 }
 
 .app-toolbar {
@@ -23,7 +25,7 @@
   color: var(--mat-sys-on-surface);
   border-bottom: 1px solid rgba(255, 77, 148, 0.15);
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     padding: 0 16px;
     min-height: 64px;
   }
@@ -62,7 +64,7 @@
     height: 40px;
     width: auto;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       height: 48px;
     }
   }
@@ -97,7 +99,7 @@
   &__login-label-full {
     display: none;
 
-    @media (min-width: 480px) {
+    @include semantic.tablet {
       display: inline;
     }
   }
@@ -105,7 +107,7 @@
   &__login-label-short {
     display: inline;
 
-    @media (min-width: 480px) {
+    @include semantic.tablet {
       display: none;
     }
   }
@@ -114,12 +116,12 @@
     margin-left: 8px;
     min-height: 48px;
     min-width: 48px;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     .mat-icon {
-      margin: 0 !important;
+      margin: 0;
     }
   }
 
@@ -128,14 +130,14 @@
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
-    display: block !important;
-    margin: 0 auto !important;
+    display: block;
+    margin: 0 auto;
   }
 
   &__label {
     margin-left: 4px;
 
-    @media (max-width: 480px) {
+    @include semantic.mobile {
       display: none;
     }
   }
@@ -185,13 +187,13 @@
 
 mat-sidenav-content,
 .mat-drawer-container {
-  background: transparent !important;
+  background: transparent;
 }
 
 mat-sidenav-content {
-  display: flex !important;
-  flex-direction: column !important;
-  height: 100dvh !important;
-  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
 }
 

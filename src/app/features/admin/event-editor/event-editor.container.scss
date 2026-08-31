@@ -1,3 +1,5 @@
+@use '../../../shared/ui/tokens/semantic' as semantic;
+
 .editor {
   box-sizing: border-box;
   width: 100%;
@@ -6,7 +8,7 @@
   padding: 16px 12px 32px;
   min-width: 0;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     padding: 24px 16px 48px;
   }
 
@@ -17,14 +19,14 @@
     margin-bottom: 24px;
     position: relative;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
     }
 
     &--single {
-      @media (min-width: 900px) {
+      @include semantic.desktop {
         max-width: 800px;
         margin-inline: auto;
       }
@@ -50,7 +52,7 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       font-size: 2rem;
     }
   }
@@ -61,13 +63,13 @@
     gap: 24px;
     min-width: 0;
 
-    @media (min-width: 900px) {
+    @include semantic.desktop {
       grid-template-columns: 1fr 350px;
       align-items: start;
     }
 
     &--single {
-      @media (min-width: 900px) {
+      @include semantic.desktop {
         grid-template-columns: 800px;
         justify-content: center;
       }
@@ -126,7 +128,7 @@
     border-bottom: 1px solid rgba(var(--mat-sys-outline-rgb), 0.2);
     color: var(--mat-sys-on-surface);
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       display: none;
     }
   }
@@ -171,7 +173,7 @@
     padding-top: 16px;
     border-top: 1px dashed rgba(var(--mat-sys-outline-rgb), 0.2);
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       flex-direction: row;
       align-items: center;
     }
@@ -187,7 +189,7 @@
     gap: 20px;
     padding: 20px 16px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       padding: 32px 28px;
     }
 
@@ -224,7 +226,7 @@
     gap: 16px;
     align-items: start;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       grid-template-columns: 2fr 1fr;
     }
   }
@@ -243,7 +245,7 @@
     grid-template-columns: 1fr;
     gap: 16px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       grid-template-columns: 1fr 1fr;
     }
   }
@@ -258,7 +260,7 @@
     grid-template-columns: 1fr;
     gap: 16px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       grid-template-columns: 2fr 1fr;
     }
   }
@@ -266,13 +268,13 @@
   &__disabled-field {
     opacity: 0.6;
     position: relative;
-    user-select: none !important;
+    user-select: none;
   }
 
   &__lock-icon {
-    font-size: 18px !important;
-    width: 18px !important;
-    height: 18px !important;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
     opacity: 0.6;
     color: var(--mat-sys-on-surface-variant);
   }
@@ -445,24 +447,24 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    box-shadow: none !important;
-    border: none !important;
+    box-shadow: none;
+    border: none;
   }
 
   // Hide the UI actions
   .no-print {
-    display: none !important;
+    display: none;
   }
 
   // Simplify colors for print
   .guest-table {
     th {
-      background-color: var(--org-surface) !important;
-      color: var(--org-text-primary) !important;
+      background-color: var(--org-surface);
+      color: var(--org-text-primary);
     }
     td {
-      color: var(--org-text-primary) !important;
-      border-bottom: 1px solid var(--org-border) !important;
+      color: var(--org-text-primary);
+      border-bottom: 1px solid var(--org-border);
     }
   }
 

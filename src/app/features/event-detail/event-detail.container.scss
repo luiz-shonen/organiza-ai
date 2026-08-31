@@ -1,3 +1,5 @@
+@use '../../shared/ui/tokens/semantic' as semantic;
+
 .event-detail {
   width: 100%;
   max-width: 680px;
@@ -6,7 +8,7 @@
   position: relative;
   z-index: 10;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     padding: 0 16px 96px;
   }
 
@@ -16,7 +18,7 @@
     margin: 0 auto;
     padding: 40px 12px 0;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       padding: 40px 16px 0;
     }
   }
@@ -27,7 +29,7 @@
     border-radius: 20px;
     margin-bottom: 16px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       height: 300px;
       border-radius: 24px;
     }

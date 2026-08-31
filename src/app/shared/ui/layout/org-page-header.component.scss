@@ -1,8 +1,10 @@
+@use '../tokens/semantic' as semantic;
+
 :host {
   display: block;
   margin-bottom: 24px;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     margin-bottom: 36px;
   }
 }
@@ -13,7 +15,7 @@
   gap: 16px;
   align-items: flex-start;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -50,7 +52,7 @@
     margin: 0;
     letter-spacing: -0.02em;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       font-size: 2.25rem;
     }
   }
@@ -62,7 +64,7 @@
     line-height: 1.5;
     max-width: 600px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       font-size: 1.0625rem;
     }
   }
@@ -74,7 +76,7 @@
     flex-wrap: wrap;
     width: 100%;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       width: auto;
     }
   }

@@ -103,10 +103,10 @@
     transition: all 0.2s ease;
 
     &--active {
-      background-color: var(--org-surface) !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
-      font-weight: 700 !important;
-      color: var(--org-primary) !important;
+      background-color: var(--org-surface);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      font-weight: 700;
+      color: var(--org-primary);
     }
   }
 

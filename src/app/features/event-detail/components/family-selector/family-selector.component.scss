@@ -1,12 +1,14 @@
+@use '../../../../shared/ui/tokens/semantic' as semantic;
+
 .family-selector {
   width: 100%;
   margin: 12px 0;
 
   &__panel {
-    background: var(--org-surface) !important;
-    border: 1px solid var(--org-border) !important;
-    border-radius: 16px !important;
-    box-shadow: none !important;
+    background: var(--org-surface);
+    border: 1px solid var(--org-border);
+    border-radius: 16px;
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -153,7 +155,7 @@
     grid-template-columns: 1fr;
     gap: 8px;
 
-    @media (min-width: 480px) {
+    @include semantic.tablet {
       grid-template-columns: 1.5fr 1fr;
     }
   }

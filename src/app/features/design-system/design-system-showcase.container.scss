@@ -1,3 +1,5 @@
+@use '../../shared/ui/tokens/semantic' as semantic;
+
 :host {
   display: block;
   min-height: 100%;
@@ -42,15 +44,15 @@
   }
 
   :not(mat-icon, .material-icons, .material-symbols-outlined) {
-    font-family: var(--showcase-body) !important;
+    font-family: var(--showcase-body);
   }
 
   :is(h1, h2, h3, h4, .org-ds-topbar__title) {
-    font-family: var(--showcase-display) !important;
+    font-family: var(--showcase-display);
   }
 
   :is(code, .org-ds-topbar__eyebrow, .org-ds-section__eyebrow, .org-ds-hero-card__eyebrow) {
-    font-family: var(--showcase-mono) !important;
+    font-family: var(--showcase-mono);
   }
 }
 
@@ -74,11 +76,11 @@
   padding: 32px 16px 72px;
   width: 100%;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     padding: 48px 24px 96px;
   }
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     padding: 64px 40px 112px;
   }
 }
@@ -90,7 +92,7 @@
   gap: 24px;
   margin-bottom: 40px;
 
-  @media (min-width: 760px) {
+  @include semantic.tablet {
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
@@ -132,13 +134,12 @@
   margin-bottom: 72px;
   scroll-margin-top: 24px;
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     scroll-margin-top: 40px;
   }
 
   &__heading {
     margin-bottom: 24px;
-    max-width: none;
   }
 
   &__eyebrow {
@@ -147,15 +148,51 @@
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.12em;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     text-transform: uppercase;
   }
 
-  h2 {
+  &__title {
     font-size: var(--org-type-heading-size);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
     line-height: var(--org-type-heading-line-height);
+    margin: 0 0 8px;
+  }
+
+  &__copy {
+    color: var(--showcase-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
     margin: 0;
+    max-width: 640px;
+  }
+}
+
+.org-ds-hero {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+  margin-bottom: 72px;
+
+  @include semantic.desktop {
+    grid-template-columns: 1.35fr 1fr;
+  }
+
+  &__primary,
+  &__secondary-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__stats {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    @include semantic.tablet {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 }
 
@@ -181,7 +218,7 @@
     gap: 36px;
     padding: 28px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       padding: 44px;
     }
   }
@@ -255,11 +292,11 @@
   gap: 14px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: 1200px) {
+  @include semantic.wide {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -269,7 +306,7 @@
   gap: 16px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -398,11 +435,11 @@
   gap: 14px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 1200px) {
+  @include semantic.wide {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
@@ -489,7 +526,7 @@
   margin-top: 14px;
   overflow: hidden;
 
-  @media (min-width: 760px) {
+  @include semantic.tablet {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
@@ -524,11 +561,11 @@
   gap: 14px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 1200px) {
+  @include semantic.wide {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
@@ -608,7 +645,7 @@
   gap: 12px;
   grid-template-columns: 140px 50px 1fr;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     gap: 16px;
     grid-template-columns: 160px 60px 1fr;
   }
@@ -657,11 +694,11 @@
   gap: 14px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 600px) {
+  @include semantic.tablet {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -717,13 +754,13 @@
   gap: 12px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     gap: 20px;
     grid-template-columns: 1fr 1fr;
   }
 
   &__wide {
-    @media (min-width: 900px) {
+    @include semantic.desktop {
       grid-column: 1 / -1;
     }
   }
@@ -740,7 +777,7 @@
   gap: 28px;
   grid-template-columns: 1fr;
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     grid-template-columns: repeat(3, 1fr);
   }
 
@@ -771,7 +808,7 @@
 }
 
 .org-ds-data-grid {
-  @media (min-width: 1200px) {
+  @include semantic.wide {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -801,7 +838,7 @@
   flex-direction: column;
   gap: 24px;
 
-  @media (min-width: 900px) {
+  @include semantic.desktop {
     flex-direction: row;
     justify-content: space-between;
   }
@@ -829,7 +866,7 @@
 }
 
 .org-ds-season-grid {
-  @media (min-width: 1200px) {
+  @include semantic.wide {
     grid-template-columns: repeat(5, 1fr);
   }
 }
@@ -922,7 +959,7 @@
   }
 }
 
-@media (min-width: 760px) {
+@include semantic.tablet {
   .org-material-showcase {
     flex-direction: row;
   }

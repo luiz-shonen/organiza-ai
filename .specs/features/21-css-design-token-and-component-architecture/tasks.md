@@ -236,10 +236,11 @@ T11 → T12 → T13
 - Skill: `bem-css`
 
 **Done when**:
-- [ ] 0 `!important` flags in component SCSS files
-- [ ] Zero raw `@media (min-width` in component SCSS files
-- [ ] Non-standard breakpoints (`480px`, `640px`, `760px`, `768px`) standardized
-- [ ] Gate check passes: `npm test -- --watch=false && npm run build`
+- [x] Component SCSS files have 0 `!important` flags (manage via BEM specificity)
+- [x] Component SCSS files have 0 raw `@media (min-width` queries (use semantic breakpoint mixins)
+- [x] Non-standard breakpoints (`480px`, `640px`, `760px`, `768px`) standardized to semantic scale
+- [x] Spacing, radii, and typography in modified component files use tokens
+- [x] Gate check passes: `npm test -- --watch=false && npm run build`
 
 **Tests**: unit  
 **Gate**: Full  

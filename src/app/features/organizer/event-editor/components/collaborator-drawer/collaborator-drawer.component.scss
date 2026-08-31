@@ -1,4 +1,17 @@
-.collaborator-drawer { box-sizing: border-box; min-height: 100%; max-width: 100%; overflow-x: hidden; overflow-y: auto; padding: 16px 12px; }
+@use '../../../../../shared/ui/tokens/semantic' as semantic;
+
+.collaborator-drawer {
+  box-sizing: border-box;
+  min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 16px 12px;
+
+  @include semantic.tablet {
+    padding: 24px 16px;
+  }
+}
 .collaborator-drawer__header { display: flex; min-height: 48px; justify-content: space-between; gap: 12px; }
 .collaborator-drawer__header h2, .collaborator-drawer__header p { margin: 0; }
 .collaborator-drawer__form { display: grid; gap: 12px; margin: 24px 0; }
@@ -7,4 +20,3 @@
 .collaborator-drawer section { margin-top: 24px; }
 .collaborator-drawer__chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .collaborator-drawer__pending { display: block; overflow-wrap: anywhere; padding: 8px 0; }
-@media (min-width: 600px) { .collaborator-drawer { padding: 24px 16px; } }

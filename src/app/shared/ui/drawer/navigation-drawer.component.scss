@@ -1,3 +1,5 @@
+@use '../tokens/semantic' as semantic;
+
 .navigation-drawer {
   --navigation-drawer-link-color: var(--org-text-secondary);
   box-sizing: border-box;
@@ -10,6 +12,10 @@
   padding: 16px 12px;
   color: var(--org-on-surface);
   font-family: var(--org-font-body);
+
+  @include semantic.tablet {
+    padding: 24px 16px;
+  }
 
   &__header,
   &__identity,
@@ -110,19 +116,19 @@
   }
 
   &__logout {
+    color: var(--org-error);
     gap: 12px;
-    justify-content: flex-start !important;
+    justify-content: flex-start;
     max-width: 100%;
     padding: 0 12px;
     text-align: left;
     width: fit-content;
 
     .mdc-button__label {
-      justify-content: flex-start !important;
+      justify-content: flex-start;
       text-align: left;
     }
   }
-
 
   &__section-title {
     margin-bottom: 8px;
@@ -132,14 +138,6 @@
   &__footer {
     margin-top: auto;
     padding-top: 24px;
-  }
-
-  &__logout {
-    color: var(--org-error);
-  }
-
-  @media (min-width: 600px) {
-    padding: 24px 16px;
   }
 }
 

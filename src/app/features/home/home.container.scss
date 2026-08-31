@@ -1,10 +1,12 @@
+@use '../../shared/ui/tokens/semantic' as semantic;
+
 .home {
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 24px;
     }

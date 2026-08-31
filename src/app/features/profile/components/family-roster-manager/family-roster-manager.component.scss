@@ -1,3 +1,5 @@
+@use '../../../../shared/ui/tokens/semantic' as semantic;
+
 .family-roster {
   &__content {
     display: flex;
@@ -11,7 +13,7 @@
     flex-direction: column;
     align-items: flex-start;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--org-outline-variant, rgba(204, 195, 216, 0.4));
+    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__header-title-wrap {
@@ -45,7 +47,7 @@
     grid-template-columns: 1fr;
     gap: 0.75rem;
 
-    @media (min-width: 640px) {
+    @include semantic.tablet {
       grid-template-columns: 1.3fr 1fr 1.2fr;
     }
   }
@@ -62,7 +64,7 @@
   &__add-btn {
     width: 100%;
 
-    @media (min-width: 640px) {
+    @include semantic.tablet {
       width: auto;
     }
   }
@@ -78,8 +80,8 @@
     justify-content: center;
     padding: 32px 16px;
     text-align: center;
-    border: 1px dashed var(--org-outline-variant, rgba(204, 195, 216, 0.4));
-    border-radius: var(--org-radius-md, 0.75rem);
+    border: 1px dashed var(--org-outline-variant);
+    border-radius: var(--org-radius-md);
     color: var(--org-on-surface-variant);
     gap: 0.5rem;
   }
@@ -110,7 +112,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--org-outline-variant, rgba(204, 195, 216, 0.4));
+    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__item-avatar {

@@ -193,9 +193,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Zero instances of `#6366f1` or hardcoded hex in Event Detail stylesheets
-- [ ] Monospace font uses `var(--org-font-mono)` in `pix-card.component.scss`
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Zero instances of `#6366f1` or hardcoded hex in Event Detail stylesheets
+- [x] Monospace font uses `var(--org-font-mono)` in `pix-card.component.scss`
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: Quick  

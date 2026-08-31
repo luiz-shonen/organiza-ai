@@ -75,8 +75,8 @@
   &__cancel-btn {
     padding: 8px 20px;
     border-radius: 9999px;
-    border: 1px solid #ba1a1a;
-    color: #ba1a1a;
+    border: 1px solid var(--org-error);
+    color: var(--org-error);
     font-weight: 700;
     font-size: 0.875rem;
     background: transparent;
@@ -86,7 +86,7 @@
       color 0.2s ease;
 
     &:hover {
-      background-color: #ffdad6;
+      background-color: var(--org-error-container);
     }
   }
 
@@ -99,12 +99,12 @@
     h2 {
       font-size: 1.5rem;
       font-weight: 700;
-      color: #ba1a1a;
+      color: var(--org-error);
       margin: 0 0 8px;
     }
 
     p {
-      color: var(--mat-sys-on-surface-variant);
+      color: var(--org-on-surface-variant);
       margin: 0;
     }
   }

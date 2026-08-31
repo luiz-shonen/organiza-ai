@@ -58,7 +58,7 @@
     flex-shrink: 0;
 
     &--claimed {
-      background-color: #ffffff;
+      background-color: var(--org-surface);
       color: var(--org-outline);
     }
 

@@ -260,8 +260,8 @@ T11 → T12 → T13
 - Skill: `bem-css`
 
 **Done when**:
-- [ ] Duplicate selector declarations removed
-- [ ] Gate check passes: `npm run build`
+- [x] Duplicate selector declarations removed
+- [x] Gate check passes: `npm run build`
 
 **Tests**: none  
 **Gate**: Build  

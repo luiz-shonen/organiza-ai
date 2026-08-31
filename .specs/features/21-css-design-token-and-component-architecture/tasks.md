@@ -128,9 +128,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Zero duplicate `:root` custom property definitions in `src/styles.scss`
-- [ ] `&.\!rounded-full` removed from line 370
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] Zero duplicate `:root` custom property definitions in `src/styles.scss`
+- [x] `&.\!rounded-full` removed from line 370
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: Build  

@@ -5,90 +5,12 @@
 @use './app/shared/ui/actions/org-actions';
 @use './app/shared/ui/layout/org-form-grid';
 
-:root {
-  // Brand Colors from Logo (Vibrant Pink, Orange, Yellow)
-  --org-primary: #ff4d94;
-  --org-on-primary: #ffffff;
-  --org-primary-container: #ff80b3;
-  --org-on-primary-container: #3d001a;
+@include semantic.apply;
 
-  --org-secondary: #ff8c42;
-  --org-on-secondary: #ffffff;
-  --org-secondary-container: #ffb380;
-  --org-on-secondary-container: #3d1400;
-
-  --org-tertiary: #ffc837;
-  --org-on-tertiary: #2a1f00;
-  --org-tertiary-container: #ffe499;
-  --org-on-tertiary-container: #332600;
-
-  // Light Theme Surfaces
-  --org-background-light: #fff8f8;
-  --org-on-background-light: #2a101f;
-  --org-surface-light: #fff8f8;
-  --org-on-surface-light: #2a101f;
-  --org-surface-variant-light: #fce1ed;
-  --org-on-surface-variant-light: #4f3d46;
-  --org-outline-light: #85737b;
-  --org-outline-variant-light: #d8c2cb;
-
-  // Dark Theme Surfaces
-  --org-background-dark: #241c31;
-  --org-on-background-dark: #fdecf2;
-  --org-surface-dark: #241c31;
-  --org-on-surface-dark: #fdecf2;
-  --org-surface-variant-dark: #4f3d46;
-  --org-on-surface-variant-dark: #d8c2cb;
-  --org-outline-dark: #a08c95;
-  --org-outline-variant-dark: #4f3d46;
-
-  --org-radius-sm: 0.75rem;
-  --org-radius-md: 1rem;
-  --org-radius-lg: 1.25rem;
-  --org-radius-full: 9999px;
-
-  // Typography roles. Product interface text remains Plus Jakarta Sans; the
-  // display and mono roles are opt-in through closed component/showcase APIs.
-  --org-font-body: 'Plus Jakarta Sans', sans-serif;
-  --org-font-display: 'Fraunces', Georgia, serif;
-  --org-font-mono: 'JetBrains Mono', monospace;
-  --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
-  --org-type-display-line-height: 1.03;
-  --org-type-heading-size: clamp(1.625rem, 3vw, 2.5rem);
-  --org-type-heading-line-height: 1.12;
-  --org-type-title-size: 1.25rem;
-  --org-type-body-size: 1rem;
-  --org-type-body-line-height: 1.6;
-  --org-type-label-size: 0.75rem;
-  --org-type-label-tracking: 0.12em;
-
-  /* Glassmorphism & Gradients */
-  --org-gradient-primary: linear-gradient(
-    135deg,
-    var(--org-primary) 0%,
-    var(--org-secondary) 50%,
-    var(--org-tertiary) 100%
-  );
-  --org-gradient-invitation: linear-gradient(135deg, #ff6b5b 0%, #ffb648 100%);
-  --org-gradient-dusk: linear-gradient(160deg, #2b1f45 0%, #5b3a8c 55%, #ff6b5b 130%);
-  --org-gradient-confirmation: linear-gradient(135deg, #4fc3e8 0%, #3ddc97 100%);
-  --org-gradient-ring: conic-gradient(from 0deg, #ff6b5b, #ffb648, #4fc3e8, #5b3a8c, #ff6b5b);
-  --org-gradient-border: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--org-primary) 50%, transparent),
-    color-mix(in srgb, var(--org-secondary) 40%, transparent)
-  );
-  --org-gradient-border-focus: var(--org-gradient-primary);
-  --org-canvas-start: #fff7fb;
-  --org-canvas-end: #fff1e4;
-  --org-glass-ring-color: rgba(255, 77, 148, 0.28);
-  --org-glass-blur: blur(24px) saturate(210%);
-  --org-glass-bg: rgba(255, 255, 255, 0.65);
-  --org-glass-bg-strong: rgba(255, 255, 255, 0.8);
-  --org-glass-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2),
-    0 8px 32px rgba(35, 16, 67, 0.08);
-  --org-shadow-lg: var(--org-glass-shadow);
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 
   /* Global rounding overrides for Material 3 */
   --mdc-shape-small: 16px;
@@ -98,12 +20,6 @@
   --mdc-filled-text-field-container-shape: 16px;
   --mdc-dialog-container-shape: 28px;
   --mat-menu-container-shape: 16px;
-}
-
-html {
-  height: 100%;
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
 
   // Tema Light (Padrão)
   @include mat.theme(
@@ -178,73 +94,8 @@ html {
     --mat-sys-on-surface-variant: var(--org-on-surface-variant-dark);
     --mat-sys-outline: var(--org-outline-dark);
     --mat-sys-outline-variant: var(--org-outline-variant-dark);
-    --org-background-dark: #241c31;
-    --org-surface-dark: #241c31;
-    --org-on-background-dark: #f5f0fa;
-    --org-on-surface-dark: #f5f0fa;
-    --org-on-surface-variant-dark: #c9beda;
-    --org-glass-bg: rgb(43 31 69 / 0.62);
-    --org-glass-bg-strong: rgb(43 31 69 / 0.8);
-    --org-glass-shadow: 0 8px 24px hsl(265deg 60% 4% / 0.3);
   }
 }
-
-// ──────────────────────────────────────────────
-// Seasonal Theme Color Overrides
-// ──────────────────────────────────────────────
-html.theme-junina {
-  --org-primary: #ff5722;
-  --org-on-primary: #ffffff;
-  --org-primary-container: #ff8a65;
-  --org-secondary: #ff8c42;
-  --org-tertiary: #ffb300;
-  --org-gradient-primary: linear-gradient(135deg, #ff5722 0%, #ff8c42 50%, #ffb300 100%);
-  --org-gradient-border: linear-gradient(135deg, rgba(255, 87, 34, 0.56), rgba(255, 179, 0, 0.48));
-  --org-canvas-start: #fff6df;
-  --org-canvas-end: #e8f3ff;
-  --org-glass-ring-color: rgba(255, 87, 34, 0.28);
-}
-
-html.theme-natal {
-  --org-primary: #b84555;
-  --org-on-primary: #ffffff;
-  --org-primary-container: #f1c6c9;
-  --org-secondary: #d77a61;
-  --org-tertiary: #deb36a;
-  --org-gradient-primary: linear-gradient(135deg, #b84555 0%, #d77a61 50%, #deb36a 100%);
-  --org-gradient-border: linear-gradient(135deg, rgba(184, 69, 85, 0.58), rgba(222, 179, 106, 0.52));
-  --org-canvas-start: #fff5f1;
-  --org-canvas-end: #eef8ef;
-  --org-glass-ring-color: rgba(211, 47, 47, 0.28);
-}
-
-html.theme-pascoa {
-  --org-primary: #7552a8;
-  --org-on-primary: #ffffff;
-  --org-primary-container: #e4d5f4;
-  --org-secondary: #d2a060;
-  --org-tertiary: #f4d58e;
-  --org-gradient-primary: linear-gradient(135deg, #7552a8 0%, #d2a060 52%, #f4d58e 100%);
-  --org-gradient-border: linear-gradient(135deg, rgba(117, 82, 168, 0.54), rgba(244, 213, 142, 0.5));
-  --org-canvas-start: #faf6ff;
-  --org-canvas-end: #f9f3df;
-  --org-glass-ring-color: rgba(109, 59, 167, 0.26);
-}
-
-html.theme-ano-novo {
-  --org-primary: #b88a33;
-  --org-on-primary: #ffffff;
-  --org-primary-container: #f2dfad;
-  --org-secondary: #ead9a5;
-  --org-tertiary: #8293b5;
-  --org-gradient-primary: linear-gradient(135deg, #b88a33 0%, #ead9a5 50%, #8293b5 100%);
-  --org-gradient-border: linear-gradient(135deg, rgba(184, 138, 51, 0.54), rgba(130, 147, 181, 0.48));
-  --org-canvas-start: #fffbed;
-  --org-canvas-end: #edf1fa;
-  --org-glass-ring-color: rgba(178, 122, 16, 0.28);
-}
-
-@include semantic.apply;
 
 body {
   color-scheme: light;
@@ -365,8 +216,7 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   animation: skeletonPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   display: block;
 
-  &--circle,
-  &.\!rounded-full {
+  &--circle {
     border-radius: 50% !important;
   }
 }

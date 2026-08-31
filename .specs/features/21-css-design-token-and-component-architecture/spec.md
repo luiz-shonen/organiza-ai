@@ -175,7 +175,7 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | Requirement ID | Story | AC# | Status |
 |---|---|---|---|
 | CSS-01 | P1: Token Unification | AC-1 | Verified |
-| CSS-02 | P1: Token Unification | AC-2 | Pending |
+| CSS-02 | P1: Token Unification | AC-2 | Verified |
 | CSS-03 | P1: Token Unification | AC-3 | Verified |
 | CSS-04 | P1: Token Unification | AC-4 | Verified |
 | CSS-05 | P1: Token Unification | AC-5 | Verified |
@@ -200,7 +200,7 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-24 | P2: Cleanup | AC-24 | Pending |
 | CSS-25 | P2: Cleanup | AC-25 | Pending |
 | CSS-26 | P2: Cleanup | AC-26 | Pending |
-| CSS-27 | P2: Cleanup | AC-27 | Pending |
+| CSS-27 | P2: Cleanup | AC-27 | Verified |
 | CSS-28 | P2: Cleanup | AC-28 | Pending |
 | CSS-29 | P2: Cleanup | AC-29 | Pending |
 | CSS-30 | P2: Cleanup | AC-30 | Pending |

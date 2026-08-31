@@ -172,8 +172,8 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] Zero instances of purple hex or hardcoded colors in `profile-info-card.component.scss` and `profile.container.scss`
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Zero instances of purple hex or hardcoded colors in `profile-info-card.component.scss` and `profile.container.scss`
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: Quick  

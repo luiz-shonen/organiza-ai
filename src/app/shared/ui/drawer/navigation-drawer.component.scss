@@ -1,5 +1,5 @@
 .navigation-drawer {
-  --navigation-drawer-link-color: #4e455b;
+  --navigation-drawer-link-color: var(--org-text-secondary);
   box-sizing: border-box;
   display: flex;
   min-height: 100%;
@@ -144,5 +144,5 @@
 }
 
 :host-context(.dark) .navigation-drawer {
-  --navigation-drawer-link-color: #d5c9dc;
+  --navigation-drawer-link-color: var(--org-text-secondary);
 }

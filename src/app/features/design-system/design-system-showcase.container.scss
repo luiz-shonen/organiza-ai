@@ -4,13 +4,13 @@
 }
 
 .org-material-showcase {
-  --showcase-coral: #ff6b5b;
-  --showcase-amber: #ffb648;
-  --showcase-plum: #5b3a8c;
-  --showcase-sky: #4fc3e8;
-  --showcase-canvas: #fdf8f4;
-  --showcase-ink: #241c31;
-  --showcase-muted: #6b6178;
+  --showcase-coral: var(--org-primary);
+  --showcase-amber: var(--org-secondary);
+  --showcase-plum: var(--org-tertiary);
+  --showcase-sky: var(--org-info);
+  --showcase-canvas: var(--org-canvas-start);
+  --showcase-ink: var(--org-text-primary);
+  --showcase-muted: var(--org-text-muted);
   --showcase-glass: var(--org-glass-bg);
   --showcase-hero-glass: var(--org-glass-bg-strong);
   --showcase-border: rgba(255, 255, 255, 0.65);
@@ -55,9 +55,9 @@
 }
 
 :host-context(.dark) .org-material-showcase {
-  --showcase-canvas: #241c31;
-  --showcase-ink: #f5f0fa;
-  --showcase-muted: #c9beda;
+  --showcase-canvas: var(--org-surface);
+  --showcase-ink: var(--org-text-primary);
+  --showcase-muted: var(--org-text-muted);
   --showcase-glass: var(--org-glass-bg);
   --showcase-hero-glass: var(--org-glass-bg-strong);
   --showcase-border: rgba(255, 255, 255, 0.14);
@@ -214,7 +214,7 @@
     background: var(--showcase-gradient);
     border: 0;
     border-radius: 12px;
-    color: #ffffff;
+    color: var(--org-on-primary);
     display: inline-flex;
     flex: 0 0 auto;
     font-size: 0.75rem;
@@ -332,7 +332,7 @@
 .org-ds-token-card {
   border: 1px solid transparent;
   border-radius: 20px;
-  color: #ffffff;
+  color: var(--org-on-primary);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -379,7 +379,7 @@
       linear-gradient(135deg, rgb(43 31 69 / 0.82), rgb(91 58 140 / 0.58)) padding-box,
       var(--showcase-card-border) border-box;
     border: 1px solid transparent;
-    color: #f5f0fa;
+    color: var(--org-on-surface);
   }
 
   &--success {
@@ -462,7 +462,7 @@
     background:
       linear-gradient(135deg, rgb(91 58 140 / 0.96), rgb(255 107 91 / 0.76)) padding-box,
       var(--showcase-card-border) border-box;
-    color: #ffffff;
+    color: var(--org-on-primary);
 
     small,
     code {
@@ -901,23 +901,23 @@
     width: 100%;
 
     &--default {
-      background: linear-gradient(135deg, #ff4d94, #ff8c42 50%, #ffc837);
+      background: var(--org-gradient-primary);
     }
 
     &--theme-pascoa {
-      background: linear-gradient(135deg, #7552a8, #d2a060 52%, #f4d58e);
+      background: var(--org-gradient-theme-pascoa);
     }
 
     &--theme-junina {
-      background: linear-gradient(135deg, #ff5722, #ff8c42 50%, #ffb300);
+      background: var(--org-gradient-theme-junina);
     }
 
     &--theme-natal {
-      background: linear-gradient(135deg, #b84555, #d77a61 50%, #deb36a);
+      background: var(--org-gradient-theme-natal);
     }
 
     &--theme-ano-novo {
-      background: linear-gradient(135deg, #b88a33, #ead9a5 50%, #8293b5);
+      background: var(--org-gradient-theme-ano-novo);
     }
   }
 }

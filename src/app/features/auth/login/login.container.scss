@@ -103,7 +103,7 @@
     transition: all 0.2s ease;
 
     &--active {
-      background-color: #ffffff !important;
+      background-color: var(--org-surface) !important;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
       font-weight: 700 !important;
       color: var(--org-primary) !important;
@@ -118,12 +118,12 @@
     border-radius: 12px;
     background: rgba(186, 26, 26, 0.12);
     border: 1px solid rgba(186, 26, 26, 0.3);
-    color: #ff5449;
+    color: var(--org-error);
     font-size: 0.875rem;
     font-weight: 600;
 
     mat-icon {
-      color: #ff5449;
+      color: var(--org-error);
     }
   }
 

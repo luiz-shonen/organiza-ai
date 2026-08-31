@@ -215,8 +215,8 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/` returns zero hardcoded colors outside `_semantic.scss`
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/` returns zero hardcoded colors outside `_semantic.scss`
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: Quick  

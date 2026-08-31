@@ -58,8 +58,8 @@
   }
 
   &__whatsapp-btn {
-    --org-primary: #25d366;
-    --org-on-primary: #ffffff;
+    --org-primary: var(--org-brand-whatsapp);
+    --org-on-primary: var(--org-on-primary);
   }
 
   &__actions {

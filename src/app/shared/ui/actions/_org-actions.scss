@@ -105,9 +105,9 @@
   }
 
   &--success {
-    --chip-bg: var(--org-success-container, #d8f3dc);
-    --chip-color: var(--org-success, #176b35);
-    --chip-selected-bg: var(--org-success, #176b35);
+    --chip-bg: var(--org-success-container);
+    --chip-color: var(--org-success);
+    --chip-selected-bg: var(--org-success);
   }
 
   &--warning {

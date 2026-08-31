@@ -249,7 +249,7 @@
     position: absolute;
     display: block;
     border-radius: 50%;
-    background: #ffd700;
+    background: var(--org-color-gold);
     animation: particleAscend 6s ease-out infinite;
 
     &--1 {

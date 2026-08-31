@@ -179,8 +179,8 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-03 | P1: Token Unification | AC-3 | Verified |
 | CSS-04 | P1: Token Unification | AC-4 | Verified |
 | CSS-05 | P1: Token Unification | AC-5 | Verified |
-| CSS-06 | P1: Color Purge | AC-6 | Pending |
-| CSS-07 | P1: Color Purge | AC-7 | Pending |
+| CSS-06 | P1: Color Purge | AC-6 | Verified |
+| CSS-07 | P1: Color Purge | AC-7 | Verified |
 | CSS-08 | P1: Color Purge | AC-8 | Verified |
 | CSS-09 | P1: Color Purge | AC-9 | Verified |
 | CSS-10 | P1: Smart/Dumb | AC-10 | Pending |

@@ -110,7 +110,7 @@
     border: 1px solid rgba(255, 77, 148, 0.25) !important;
 
     &--pending {
-      border: 1px dashed var(--mat-sys-tertiary, #ffc837) !important;
+      border: 1px dashed var(--org-tertiary) !important;
       color: var(--mat-sys-on-surface) !important;
       background: rgba(255, 200, 55, 0.12) !important;
     }

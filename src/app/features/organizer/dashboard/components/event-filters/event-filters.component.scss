@@ -7,7 +7,7 @@
   max-width: 100%;
   box-sizing: border-box;
   background: var(--org-surface-container);
-  border: 1px solid var(--org-outline-variant, rgba(255, 255, 255, 0.4));
+  border: 1px solid var(--org-outline-variant);
   border-radius: 9999px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -29,7 +29,7 @@
     border: none;
     border-radius: 9999px;
     background: transparent;
-    color: var(--org-on-surface-variant, #4a4455);
+    color: var(--org-on-surface-variant);
     font-family: inherit;
     font-size: 0.875rem;
     font-weight: 600;
@@ -40,16 +40,16 @@
 
     &:hover:not(&--active) {
       background: rgba(255, 77, 148, 0.08);
-      color: var(--org-primary, #ff4d94);
+      color: var(--org-primary);
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 2px var(--org-primary, #ff4d94);
+      box-shadow: 0 0 0 2px var(--org-primary);
     }
 
     &--active {
-      background: var(--org-gradient-primary, linear-gradient(135deg, #ff4d94 0%, #ff8c42 100%));
-      color: #ffffff;
+      background: var(--org-gradient-primary);
+      color: var(--org-on-primary);
       box-shadow: 0 4px 12px rgba(255, 77, 148, 0.3);
     }
   }
@@ -75,7 +75,7 @@
 
     &--active {
       background: rgba(255, 255, 255, 0.28);
-      color: #ffffff;
+      color: var(--org-on-primary);
     }
   }
 }

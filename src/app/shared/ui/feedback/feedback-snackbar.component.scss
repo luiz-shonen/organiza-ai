@@ -36,11 +36,11 @@
 .feedback-snackbar--success {
   --feedback-ring: var(--org-gradient-confirmation);
 
-  color: #164736;
+  color: var(--org-on-success-container);
 }
 
 .feedback-snackbar--error {
-  --feedback-ring: linear-gradient(135deg, var(--org-error), #ff8a80);
+  --feedback-ring: linear-gradient(135deg, var(--org-error), var(--org-error-container));
 
   color: var(--org-on-error-container);
 }
@@ -54,5 +54,5 @@
 :host-context(.dark) .feedback-snackbar {
   --feedback-glass: rgb(43 31 69 / 0.84);
 
-  color: #f5f0fa;
+  color: var(--org-on-surface);
 }

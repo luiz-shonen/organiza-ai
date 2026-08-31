@@ -15,7 +15,6 @@ import {
   GuestSession,
   FamilyMember,
 } from '../../../../core/models';
-import { FamilyService } from '../../../../core/services/family.service';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
@@ -54,7 +53,6 @@ export class GuestFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<GuestFormDialogComponent>);
   private readonly data: GuestFormDialogData = inject(MAT_DIALOG_DATA, { optional: true }) ?? { session: null };
   private readonly fb = inject(FormBuilder);
-  private readonly familyService = inject(FamilyService);
 
   readonly familyMembers = signal<FamilyMember[]>(this.data.familyMembers ?? []);
   readonly selectedFamilyMemberIds = signal<string[]>([]);
@@ -83,29 +81,16 @@ export class GuestFormDialogComponent {
     }
   }
 
-  protected async onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): Promise<void> {
-    const userId = this.data.userId;
-    try {
-      this.isAddingInline.set(true);
-      let newMember: FamilyMember;
-      if (userId) {
-        newMember = await this.familyService.addFamilyMember(userId, payload);
-      } else {
-        newMember = {
-          id: `temp_${Date.now()}`,
-          name: payload.name,
-          relationship: payload.relationship,
-          phone: payload.phone,
-          createdAt: new Date().toISOString(),
-        };
-      }
-      this.familyMembers.update((list) => [...list, newMember]);
-      this.selectedFamilyMemberIds.update((ids) => [...ids, newMember.id]);
-    } catch (err) {
-      console.error('Error adding inline family member:', err);
-    } finally {
-      this.isAddingInline.set(false);
-    }
+  protected onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): void {
+    const newMember: FamilyMember = {
+      id: `temp_${Date.now()}`,
+      name: payload.name,
+      relationship: payload.relationship,
+      phone: payload.phone,
+      createdAt: new Date().toISOString(),
+    };
+    this.familyMembers.update((list) => [...list, newMember]);
+    this.selectedFamilyMemberIds.update((ids) => [...ids, newMember.id]);
   }
 
   protected submit(): void {

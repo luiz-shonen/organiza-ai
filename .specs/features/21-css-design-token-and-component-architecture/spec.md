@@ -183,12 +183,12 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-07 | P1: Color Purge | AC-7 | Verified |
 | CSS-08 | P1: Color Purge | AC-8 | Verified |
 | CSS-09 | P1: Color Purge | AC-9 | Verified |
-| CSS-10 | P1: Smart/Dumb | AC-10 | Pending |
-| CSS-11 | P1: Smart/Dumb | AC-11 | Pending |
-| CSS-12 | P1: Smart/Dumb | AC-12 | Pending |
-| CSS-13 | P1: Smart/Dumb | AC-13 | Pending |
-| CSS-14 | P1: Smart/Dumb | AC-14 | Pending |
-| CSS-15 | P1: Smart/Dumb | AC-15 | Pending |
+| CSS-10 | P1: Smart/Dumb | AC-10 | Verified |
+| CSS-11 | P1: Smart/Dumb | AC-11 | Verified |
+| CSS-12 | P1: Smart/Dumb | AC-12 | Verified |
+| CSS-13 | P1: Smart/Dumb | AC-13 | Verified |
+| CSS-14 | P1: Smart/Dumb | AC-14 | Verified |
+| CSS-15 | P1: Smart/Dumb | AC-15 | Verified |
 | CSS-16 | P2: Material Migration | AC-16 | Pending |
 | CSS-17 | P2: Material Migration | AC-17 | Pending |
 | CSS-18 | P2: Material Migration | AC-18 | Pending |

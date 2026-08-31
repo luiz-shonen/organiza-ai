@@ -303,10 +303,10 @@ T11 → T12 → T13
 - Skill: `tdd`
 
 **Done when**:
-- [ ] `GuestFormDialogComponent` has 0 service injections
-- [ ] `RsvpDrawerComponent` has 0 service injections
-- [ ] `EventDetailContainer` handles the `FamilyService` write calls
-- [ ] Unit test suites for all 3 files pass: `npm test -- --watch=false`
+- [x] `GuestFormDialogComponent` has 0 service injections
+- [x] `RsvpDrawerComponent` has 0 service injections
+- [x] `EventDetailContainer` handles the `FamilyService` write calls
+- [x] Unit test suites for all 3 files pass: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: Full  

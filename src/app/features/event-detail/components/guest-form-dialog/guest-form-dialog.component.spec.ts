@@ -6,7 +6,6 @@ import {
   GuestFormDialogComponent,
   GuestFormDialogData,
 } from './guest-form-dialog.component';
-import { FamilyService } from '../../../../core/services/family.service';
 import { FamilyMember } from '../../../../core/models';
 
 describe('GuestFormDialogComponent', () => {
@@ -15,9 +14,6 @@ describe('GuestFormDialogComponent', () => {
 
   let mockDialogRef: {
     close: ReturnType<typeof vi.fn>;
-  };
-  let mockFamilyService: {
-    addFamilyMember: ReturnType<typeof vi.fn>;
   };
 
   const mockFamilyMembers: FamilyMember[] = [
@@ -46,14 +42,6 @@ describe('GuestFormDialogComponent', () => {
     mockDialogRef = {
       close: vi.fn(),
     };
-    mockFamilyService = {
-      addFamilyMember: vi.fn().mockResolvedValue({
-        id: 'fam-new',
-        name: 'Pedro',
-        relationship: 'sibling',
-        createdAt: '2026-08-19T00:00:00.000Z',
-      }),
-    };
 
     await TestBed.configureTestingModule({
       imports: [GuestFormDialogComponent],
@@ -61,7 +49,6 @@ describe('GuestFormDialogComponent', () => {
         provideNoopAnimations(),
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: defaultData },
-        { provide: FamilyService, useValue: mockFamilyService },
       ],
     }).compileComponents();
 
@@ -101,21 +88,17 @@ describe('GuestFormDialogComponent', () => {
     expect(component.selectedFamilyMemberIds()).toEqual([]);
   });
 
-  it('should add inline family member via FamilyService and auto-select them', async () => {
-    await (component as any).onAddInlineFamilyMember({
-      name: 'Pedro',
-      relationship: 'sibling',
-      phone: '11955554444',
-    });
-
-    expect(mockFamilyService.addFamilyMember).toHaveBeenCalledWith('user-123', {
+  it('should add inline family member and auto-select them without service injection', () => {
+    (component as any).onAddInlineFamilyMember({
       name: 'Pedro',
       relationship: 'sibling',
       phone: '11955554444',
     });
 
     expect(component.familyMembers().length).toBe(3);
-    expect(component.selectedFamilyMemberIds()).toContain('fam-new');
+    const added = component.familyMembers().find((m) => m.name === 'Pedro');
+    expect(added).toBeDefined();
+    expect(component.selectedFamilyMemberIds()).toContain(added!.id);
   });
 
   it('should close dialog with form payload and selected family members on submit', () => {

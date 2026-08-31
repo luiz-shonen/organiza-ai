@@ -20,7 +20,6 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { FamilyMember, GuestCompanion, GuestSession } from '../../../../core/models';
-import { FamilyService } from '../../../../core/services/family.service';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
@@ -51,7 +50,6 @@ export class RsvpDrawerComponent {
   private readonly dialogRef = inject(MatDialogRef<RsvpDrawerComponent>, { optional: true });
   private readonly legacyData: RsvpDrawerData | null = inject(MAT_DIALOG_DATA, { optional: true });
   private readonly fb = inject(FormBuilder);
-  private readonly familyService = inject(FamilyService);
 
   readonly drawerData = input<RsvpDrawerData>(this.legacyData ?? { session: null, familyMembers: [], userId: '' });
   readonly submitted = output<RsvpDrawerResult>();
@@ -113,23 +111,16 @@ export class RsvpDrawerComponent {
     this.selectedFamilyMemberIds.set(selectAll ? this.familyMembers().map((member) => member.id) : []);
   }
 
-  protected async onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): Promise<void> {
-    try {
-      this.isAddingInline.set(true);
-      const member = this.drawerData().userId
-        ? await this.familyService.addFamilyMember(this.drawerData().userId, payload)
-        : {
-            id: `temp_${Date.now()}`,
-            name: payload.name,
-            relationship: payload.relationship,
-            phone: payload.phone,
-            createdAt: new Date().toISOString(),
-          };
-      this.familyMembers.update((members) => [...members, member]);
-      this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
-    } finally {
-      this.isAddingInline.set(false);
-    }
+  protected onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): void {
+    const member: FamilyMember = {
+      id: `temp_${Date.now()}`,
+      name: payload.name,
+      relationship: payload.relationship,
+      phone: payload.phone,
+      createdAt: new Date().toISOString(),
+    };
+    this.familyMembers.update((members) => [...members, member]);
+    this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
   }
 
   protected submit(): void {

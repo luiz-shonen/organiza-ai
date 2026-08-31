@@ -3,7 +3,6 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RsvpDrawerComponent } from './rsvp-drawer.component';
-import { FamilyService } from '../../../../core/services/family.service';
 
 describe('RsvpDrawerComponent', () => {
   let component: RsvpDrawerComponent;
@@ -18,7 +17,6 @@ describe('RsvpDrawerComponent', () => {
         provideNoopAnimations(),
         { provide: MatDialogRef, useValue: { close } },
         { provide: MAT_DIALOG_DATA, useValue: { session: { name: 'Carlos', phone: '11999998888' } } },
-        { provide: FamilyService, useValue: { addFamilyMember: vi.fn() } },
       ],
     }).compileComponents();
 

@@ -350,7 +350,7 @@
 
 ### AD-040 — Unified Design Token Architecture in `_semantic.scss`
 **Date:** 2026-08-31  
-**Decision:** All `--org-*` CSS custom properties, seasonal theme classes, and breakpoint mixins are exclusively defined in `src/app/shared/ui/tokens/_semantic.scss`. `src/styles.scss` must delegate 100% of token declarations to `_semantic.scss` via `@include semantic.apply;` with zero duplicate `:root` definitions.  
+**Decision:** All `--org-*` CSS custom properties (brand & status colors, glassmorphism, standardized spacing scale `--org-space-*`, border radius `--org-radius-*`, and typography), seasonal theme classes, and breakpoint mixins are exclusively defined in `src/app/shared/ui/tokens/_semantic.scss`. `src/styles.scss` must delegate 100% of token declarations to `_semantic.scss` via `@include semantic.apply;` with zero duplicate `:root` definitions.  
 **Rationale:** Eliminates silent divergence between globals and component tokens, and prepares `@shared/ui` tokens for modular, standalone export across the organization.  
 **Status:** In force.
 

@@ -6,7 +6,9 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 ## Goals
 
-- [ ] Single source of truth for all CSS design tokens in `_semantic.scss`, architected for future organization-wide export
+- [ ] Single source of truth for all CSS design tokens (colors, glassmorphism, spacing, border-radius, and typography) in `_semantic.scss`, architected for future organization-wide export
+- [ ] Canonical spacing scale tokens (`--org-space-*`) and border-radius tokens (`--org-radius-*`) declared in `_semantic.scss` and adopted for margins, paddings, and gaps across components
+- [ ] Dedicated interactive Spacing & Dimensions section on the `/design-system` showcase route displaying the full `--org-space-*` and `--org-radius-*` scale, visual sizing rulers, and copyable usage snippets
 - [ ] Zero hardcoded hex colors across all component and container SCSS files (`src/app/**/*.scss`), strictly referencing `--org-*` tokens
 - [ ] Zero legacy purple palette colors anywhere in the codebase
 - [ ] Zero `!important` in component-level SCSS files (relying on clean BEM specificity and CSS custom property cascades)
@@ -34,6 +36,8 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 |---|---|---|---|
 | Design system tokens and components in `@shared/ui` are built modularly for future org-wide export | yes | Clean separation between reusable UI primitives and application business logic | y |
 | Canonical brand colors (Pink `#ff4d94`, Orange `#ff8c42`, Yellow `#ffc837`) replace all legacy purple | yes | AD-033, AD-038, AD-039, DESIGN.md §2.1 | y |
+| Spacing scale (`2xs: 2px` to `3xl: 64px`) and radius tokens are formalized in `_semantic.scss` | yes | Provides standardized CSS variables for margins, paddings, and gaps | y |
+| Spacing scale and dimensions receive a dedicated interactive section on `/design-system` showcase | yes | User confirmed: "that should also has it's own section in the design system page" | y |
 | `_semantic.scss` becomes the single token source; `styles.scss` `:root` block is removed | yes | Eliminates dual-source divergence | y |
 | `org-surface`, `org-button`, `org-text-field`, `org-icon-button`, `org-chip` are production-ready | yes | Audit confirms 32 Org* components in `shared/ui/` | y |
 | Component SCSS files work cleanly without `!important` via BEM specificity and token inheritance | yes | Component-encapsulated styles with custom Org* elements have no specificity wars | y |
@@ -50,17 +54,19 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 ### P1: Token Source of Truth Unification & Org-Ready Modular Design ⭐ MVP
 
-**User Story**: As a frontend architect, I want a single source of truth for design tokens and modular UI components in `src/app/shared/ui/` so that styling is consistent, maintainable, and structured for future export as an organization-wide design system.
+**User Story**: As a frontend architect, I want a single source of truth for design tokens (colors, spacing, radius, typography) and modular UI components in `src/app/shared/ui/` with interactive showcase documentation at `/design-system` so that styling is consistent, maintainable, and structured for future export as an organization-wide design system.
 
-**Why P1**: Eliminates the dual-source divergence between `styles.scss` and `_semantic.scss`, ensuring tokens are fully documented and export-ready.
+**Why P1**: Eliminates the dual-source divergence between `styles.scss` and `_semantic.scss`, ensuring tokens are fully documented, visually demonstrable, and export-ready.
 
 **Acceptance Criteria**:
 
 1. The system SHALL define all `--org-*` CSS custom properties exclusively in `src/app/shared/ui/tokens/_semantic.scss`. <!-- ubiquitous -->
 2. The `src/styles.scss` file SHALL NOT contain any `:root` block that declares `--org-*` CSS custom properties. <!-- ubiquitous -->
-3. The `_semantic.scss` file SHALL declare the following currently-missing tokens: `--org-danger`, `--org-on-danger`, `--org-warning`, `--org-on-warning`, `--org-text-primary`, `--org-text-secondary`, `--org-text-muted`, `--org-border`, and `--org-primary-light`. <!-- ubiquitous -->
+3. The `_semantic.scss` file SHALL declare the following currently-missing status and semantic tokens: `--org-danger`, `--org-on-danger`, `--org-warning`, `--org-on-warning`, `--org-text-primary`, `--org-text-secondary`, `--org-text-muted`, `--org-border`, and `--org-primary-light`. <!-- ubiquitous -->
+4. The `_semantic.scss` file SHALL declare the standardized spacing scale tokens (`--org-space-2xs: 2px`, `--org-space-xs: 4px`, `--org-space-sm: 8px`, `--org-space-md: 16px`, `--org-space-lg: 24px`, `--org-space-xl: 32px`, `--org-space-2xl: 48px`, `--org-space-3xl: 64px`) and border radius tokens (`--org-radius-sm: 0.75rem`, `--org-radius-md: 1rem`, `--org-radius-lg: 1.25rem`, `--org-radius-full: 9999px`) in accordance with `DESIGN.md` §4.2, and component/layout stylesheets SHALL reference `--org-space-*` tokens for standard margins, paddings, and flex/grid gaps. <!-- ubiquitous -->
+5. The `/design-system` showcase page SHALL include a dedicated "Espaçamento e dimensões" section (`id="spacing"`) registered in `DESIGN_SYSTEM_NAVIGATION_GROUPS`, rendering visual spacing rulers/bars for all 8 spacing tokens, pixel/rem conversions, radius chips, and copyable code examples for layout gaps and margins. <!-- ubiquitous -->
 
-**Independent Test**: `grep -r '^\s*--org-' src/styles.scss` returns zero `:root`-level declarations; `grep -r '--org-danger' src/app/shared/ui/tokens/_semantic.scss` returns the declaration.
+**Independent Test**: `grep -r '^\s*--org-' src/styles.scss` returns zero `:root`-level declarations; `grep -r '--org-danger' src/app/shared/ui/tokens/_semantic.scss` returns the declaration; `grep -r '--org-space-md' src/app/shared/ui/tokens/_semantic.scss` returns the declaration; `/design-system` showcase renders the `#spacing` section with all 8 spacing tokens.
 
 ---
 
@@ -72,10 +78,10 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 **Acceptance Criteria**:
 
-4. The system SHALL NOT contain the hex strings `#630ed4`, `#7c3aed`, or `#6366f1` in any SCSS file. <!-- ubiquitous -->
-5. The system SHALL NOT contain hardcoded hex color values (`#XXXXXX` or `#XXX`) in any component or container SCSS file across the entire application (`src/app/**/*.scss`) — all color properties SHALL reference `--org-*` CSS custom properties. <!-- ubiquitous -->
-6. The `pix-card.component.scss` file SHALL use `var(--org-font-mono)` for its monospace `font-family` property instead of `'Roboto Mono', monospace`. <!-- ubiquitous -->
-7. The `event-card.component.scss` file SHALL NOT contain the hardcoded string `'Plus Jakarta Sans', sans-serif` — it SHALL inherit or use `var(--org-font-body)`. <!-- ubiquitous -->
+6. The system SHALL NOT contain the hex strings `#630ed4`, `#7c3aed`, or `#6366f1` in any SCSS file. <!-- ubiquitous -->
+7. The system SHALL NOT contain hardcoded hex color values (`#XXXXXX` or `#XXX`) in any component or container SCSS file across the entire application (`src/app/**/*.scss`) — all color properties SHALL reference `--org-*` CSS custom properties. <!-- ubiquitous -->
+8. The `pix-card.component.scss` file SHALL use `var(--org-font-mono)` for its monospace `font-family` property instead of `'Roboto Mono', monospace`. <!-- ubiquitous -->
+9. The `event-card.component.scss` file SHALL NOT contain the hardcoded string `'Plus Jakarta Sans', sans-serif` — it SHALL inherit or use `var(--org-font-body)`. <!-- ubiquitous -->
 
 **Independent Test**: `grep -rn '#630ed4\|#7c3aed\|#6366f1\|Roboto Mono' src/ --include='*.scss'` returns zero results; `grep -rn '#[0-9a-fA-F]\{3,6\}' src/app/` returns only token definitions in `_semantic.scss`.
 
@@ -89,12 +95,12 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 **Acceptance Criteria**:
 
-8. The `AdminFormDrawerComponent` SHALL NOT inject `AuthService`, `DrawerService`, `MatSnackBar`, or `OrgDialogService`. It SHALL accept admin data via `input()` and emit `addAdmin` and `removeAdmin` events via `output()`. <!-- ubiquitous -->
-9. The `GuestFormDialogComponent` SHALL NOT inject `FamilyService`. It SHALL emit family member payloads via the dialog result to the parent container. <!-- ubiquitous -->
-10. The `RsvpDrawerComponent` SHALL NOT inject `FamilyService`. It SHALL emit family member payloads via `output()` to the parent container. <!-- ubiquitous -->
-11. WHEN `AdminFormDrawerComponent` emits an `addAdmin` or `removeAdmin` event THEN `DashboardContainer` SHALL handle the `AuthService` call and error feedback. <!-- event-driven -->
-12. WHEN `GuestFormDialogComponent` returns a family member payload THEN `EventDetailContainer` SHALL execute `FamilyService.addFamilyMember()`. <!-- event-driven -->
-13. WHEN `RsvpDrawerComponent` emits a family member payload THEN `EventDetailContainer` SHALL execute `FamilyService.addFamilyMember()`. <!-- event-driven -->
+10. The `AdminFormDrawerComponent` SHALL NOT inject `AuthService`, `DrawerService`, `MatSnackBar`, or `OrgDialogService`. It SHALL accept admin data via `input()` and emit `addAdmin` and `removeAdmin` events via `output()`. <!-- ubiquitous -->
+11. The `GuestFormDialogComponent` SHALL NOT inject `FamilyService`. It SHALL emit family member payloads via the dialog result to the parent container. <!-- ubiquitous -->
+12. The `RsvpDrawerComponent` SHALL NOT inject `FamilyService`. It SHALL emit family member payloads via `output()` to the parent container. <!-- ubiquitous -->
+13. WHEN `AdminFormDrawerComponent` emits an `addAdmin` or `removeAdmin` event THEN `DashboardContainer` SHALL handle the `AuthService` call and error feedback. <!-- event-driven -->
+14. WHEN `GuestFormDialogComponent` returns a family member payload THEN `EventDetailContainer` SHALL execute `FamilyService.addFamilyMember()`. <!-- event-driven -->
+15. WHEN `RsvpDrawerComponent` emits a family member payload THEN `EventDetailContainer` SHALL execute `FamilyService.addFamilyMember()`. <!-- event-driven -->
 
 **Independent Test**: `grep -n 'inject(AuthService\|inject(FamilyService' src/app/features/**/components/**/*.component.ts` in the 3 targeted files returns zero results.
 
@@ -108,10 +114,10 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 **Acceptance Criteria**:
 
-14. The system SHALL NOT contain raw `<mat-card>` tags in any feature template (`src/app/features/**/*.html`) — all card containers SHALL use `<org-surface>`. <!-- ubiquitous -->
-15. The system SHALL NOT contain raw `<button mat-button>`, `<button mat-raised-button>`, `<button mat-flat-button>`, `<button mat-stroked-button>`, or `<button mat-icon-button>` tags in any feature template — all buttons SHALL use `<org-button>` or `<org-icon-button>`. <!-- ubiquitous -->
-16. The system SHALL NOT contain raw `<mat-form-field>` tags in feature templates — all input fields SHALL use `<org-text-field>`, `<org-select-field>`, `<org-date-field>`, or `<org-time-field>`. <!-- ubiquitous -->
-17. The system SHALL NOT contain raw `<mat-chip-set>` or `<mat-chip-row>` tags in feature templates — all chips SHALL use `<org-chip>`. <!-- ubiquitous -->
+16. The system SHALL NOT contain raw `<mat-card>` tags in any feature template (`src/app/features/**/*.html`) — all card containers SHALL use `<org-surface>`. <!-- ubiquitous -->
+17. The system SHALL NOT contain raw `<button mat-button>`, `<button mat-raised-button>`, `<button mat-flat-button>`, `<button mat-stroked-button>`, or `<button mat-icon-button>` tags in any feature template — all buttons SHALL use `<org-button>` or `<org-icon-button>`. <!-- ubiquitous -->
+18. The system SHALL NOT contain raw `<mat-form-field>` tags in feature templates — all input fields SHALL use `<org-text-field>`, `<org-select-field>`, `<org-date-field>`, or `<org-time-field>`. <!-- ubiquitous -->
+19. The system SHALL NOT contain raw `<mat-chip-set>` or `<mat-chip-row>` tags in feature templates — all chips SHALL use `<org-chip>`. <!-- ubiquitous -->
 
 **Independent Test**: `grep -rn '<mat-card\|mat-flat-button\|mat-icon-button\|mat-form-field\|mat-chip-set' src/app/features/` returns zero results.
 
@@ -125,9 +131,9 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 **Acceptance Criteria**:
 
-18. All component-level SCSS files SHALL use `@include semantic.tablet`, `@include semantic.desktop`, or `@include semantic.wide` for responsive media queries instead of raw `@media (min-width: ...)` declarations. <!-- ubiquitous -->
-19. The system SHALL NOT contain `!important` in any component-level `.component.scss` or `.container.scss` file — specificity SHALL be managed via proper BEM class scoping and `:host` styles. <!-- ubiquitous -->
-20. The system SHALL NOT use non-standard breakpoint values (`480px`, `640px`, `760px`, `768px`) in any SCSS file — only the canonical `600px`, `900px`, `1200px` breakpoints (via mixins) SHALL be used. <!-- ubiquitous -->
+20. All component-level SCSS files SHALL use `@include semantic.tablet`, `@include semantic.desktop`, or `@include semantic.wide` for responsive media queries instead of raw `@media (min-width: ...)` declarations. <!-- ubiquitous -->
+21. The system SHALL NOT contain `!important` in any component-level `.component.scss` or `.container.scss` file — specificity SHALL be managed via proper BEM class scoping and `:host` styles. <!-- ubiquitous -->
+22. The system SHALL NOT use non-standard breakpoint values (`480px`, `640px`, `760px`, `768px`) in any SCSS file — only the canonical `600px`, `900px`, `1200px` breakpoints (via mixins) SHALL be used. <!-- ubiquitous -->
 
 **Independent Test**: `grep -rn '!important' src/ --include='*.component.scss' --include='*.container.scss'` returns zero results.
 
@@ -141,16 +147,16 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 
 **Acceptance Criteria**:
 
-21. The `src/app/app.scss` file SHALL NOT contain the `.glass-drawer` selector block (duplicate of `styles.scss` `.app-sidenav-drawer`). <!-- ubiquitous -->
-22. The `event-editor.container.scss` file SHALL NOT contain duplicate `.editor__guest-actions` or `.editor__header-main` selector blocks. <!-- ubiquitous -->
-23. The `navigation-drawer.component.scss` file SHALL NOT contain duplicate `.navigation-drawer__logout` declarations. <!-- ubiquitous -->
-24. The file `src/app/shared/ui/surface/_org-surface.scss` SHALL NOT exist (orphan partial, never imported). <!-- ubiquitous -->
-25. The `styles.scss` file SHALL NOT contain the Tailwind remnant `&.\!rounded-full`. <!-- ubiquitous -->
-26. The `dashboard.container.html` and `event-editor.container.html` files SHALL NOT contain `style="height:` inline style attributes — skeleton dimensions SHALL use SCSS utility classes. <!-- ubiquitous -->
-27. The directory `src/app/shared/components/confirm-dialog/` SHALL NOT exist (superseded by `OrgConfirmDialogComponent`). <!-- ubiquitous -->
-28. The directory `src/app/shared/components/theme-toggle/` SHALL NOT exist (unused in runtime). <!-- ubiquitous -->
-29. The directory `src/app/features/organizer/event-editor/components/collaborator-invite-dialog/` SHALL NOT exist (superseded by `CollaboratorDrawerComponent`). <!-- ubiquitous -->
-30. The directory `src/app/features/admin/dashboard/components/admin-form-drawer/` SHALL NOT exist (retired by AD-021). <!-- ubiquitous -->
+23. The `src/app/app.scss` file SHALL NOT contain the `.glass-drawer` selector block (duplicate of `styles.scss` `.app-sidenav-drawer`). <!-- ubiquitous -->
+24. The `event-editor.container.scss` file SHALL NOT contain duplicate `.editor__guest-actions` or `.editor__header-main` selector blocks. <!-- ubiquitous -->
+25. The `navigation-drawer.component.scss` file SHALL NOT contain duplicate `.navigation-drawer__logout` declarations. <!-- ubiquitous -->
+26. The file `src/app/shared/ui/surface/_org-surface.scss` SHALL NOT exist (orphan partial, never imported). <!-- ubiquitous -->
+27. The `styles.scss` file SHALL NOT contain the Tailwind remnant `&.\!rounded-full`. <!-- ubiquitous -->
+28. The `dashboard.container.html` and `event-editor.container.html` files SHALL NOT contain `style="height:` inline style attributes — skeleton dimensions SHALL use SCSS utility classes. <!-- ubiquitous -->
+29. The directory `src/app/shared/components/confirm-dialog/` SHALL NOT exist (superseded by `OrgConfirmDialogComponent`). <!-- ubiquitous -->
+30. The directory `src/app/shared/components/theme-toggle/` SHALL NOT exist (unused in runtime). <!-- ubiquitous -->
+31. The directory `src/app/features/organizer/event-editor/components/collaborator-invite-dialog/` SHALL NOT exist (superseded by `CollaboratorDrawerComponent`). <!-- ubiquitous -->
+32. The directory `src/app/features/admin/dashboard/components/admin-form-drawer/` SHALL NOT exist (retired by AD-021). <!-- ubiquitous -->
 
 **Independent Test**: `test -d src/app/shared/components/confirm-dialog && echo FAIL || echo PASS` returns PASS for each deleted directory.
 
@@ -171,25 +177,25 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-01 | P1: Token Unification | AC-1 | Pending |
 | CSS-02 | P1: Token Unification | AC-2 | Pending |
 | CSS-03 | P1: Token Unification | AC-3 | Pending |
-| CSS-04 | P1: Color Purge | AC-4 | Pending |
-| CSS-05 | P1: Color Purge | AC-5 | Pending |
+| CSS-04 | P1: Token Unification | AC-4 | Pending |
+| CSS-05 | P1: Token Unification | AC-5 | Pending |
 | CSS-06 | P1: Color Purge | AC-6 | Pending |
 | CSS-07 | P1: Color Purge | AC-7 | Pending |
-| CSS-08 | P1: Smart/Dumb | AC-8 | Pending |
-| CSS-09 | P1: Smart/Dumb | AC-9 | Pending |
+| CSS-08 | P1: Color Purge | AC-8 | Pending |
+| CSS-09 | P1: Color Purge | AC-9 | Pending |
 | CSS-10 | P1: Smart/Dumb | AC-10 | Pending |
 | CSS-11 | P1: Smart/Dumb | AC-11 | Pending |
 | CSS-12 | P1: Smart/Dumb | AC-12 | Pending |
 | CSS-13 | P1: Smart/Dumb | AC-13 | Pending |
-| CSS-14 | P2: Material Migration | AC-14 | Pending |
-| CSS-15 | P2: Material Migration | AC-15 | Pending |
+| CSS-14 | P1: Smart/Dumb | AC-14 | Pending |
+| CSS-15 | P1: Smart/Dumb | AC-15 | Pending |
 | CSS-16 | P2: Material Migration | AC-16 | Pending |
 | CSS-17 | P2: Material Migration | AC-17 | Pending |
-| CSS-18 | P2: Breakpoints/Important | AC-18 | Pending |
-| CSS-19 | P2: Breakpoints/Important | AC-19 | Pending |
+| CSS-18 | P2: Material Migration | AC-18 | Pending |
+| CSS-19 | P2: Material Migration | AC-19 | Pending |
 | CSS-20 | P2: Breakpoints/Important | AC-20 | Pending |
-| CSS-21 | P2: Cleanup | AC-21 | Pending |
-| CSS-22 | P2: Cleanup | AC-22 | Pending |
+| CSS-21 | P2: Breakpoints/Important | AC-21 | Pending |
+| CSS-22 | P2: Breakpoints/Important | AC-22 | Pending |
 | CSS-23 | P2: Cleanup | AC-23 | Pending |
 | CSS-24 | P2: Cleanup | AC-24 | Pending |
 | CSS-25 | P2: Cleanup | AC-25 | Pending |
@@ -198,12 +204,14 @@ The Organiza AI Angular project has accumulated CSS/SCSS technical debt, token f
 | CSS-28 | P2: Cleanup | AC-28 | Pending |
 | CSS-29 | P2: Cleanup | AC-29 | Pending |
 | CSS-30 | P2: Cleanup | AC-30 | Pending |
+| CSS-31 | P2: Cleanup | AC-31 | Pending |
+| CSS-32 | P2: Cleanup | AC-32 | Pending |
 
 **ID format:** `CSS-[NUMBER]`
 
 **Status values:** Pending → In Tasks → Implementing → Verified
 
-**Coverage:** 30 total, 0 mapped to tasks, 30 unmapped ⚠️
+**Coverage:** 32 total, 0 mapped to tasks, 32 unmapped ⚠️
 
 ---
 

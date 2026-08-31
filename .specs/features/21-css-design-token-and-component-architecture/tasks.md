@@ -43,10 +43,10 @@ Phases are ordered and run sequentially - each phase completes before the next b
 
 ### Phase 1: Design Tokens & Global Styles (Foundation)
 
-Consolidate single source of truth for design tokens and purge orphan/duplicate styles.
+Consolidate single source of truth for design tokens, showcase spacing on `/design-system`, and purge orphan/duplicate styles.
 
 ```
-T1 → T2 → T3
+T1 → T2 → T3 → T4
 ```
 
 ### Phase 2: Ubiquitous Color Purge, Font & Component SCSS Refactoring
@@ -54,7 +54,7 @@ T1 → T2 → T3
 Eliminate legacy purple palette, hardcoded hex values across all components, component `!important` flags, and adopt responsive mixins.
 
 ```
-T4 → T5 → T6 → T7 → T8 → T9
+T5 → T6 → T7 → T8 → T9 → T10
 ```
 
 ### Phase 3: Smart/Dumb Architecture & Design System Migration
@@ -62,7 +62,7 @@ T4 → T5 → T6 → T7 → T8 → T9
 Decouple presentational components, migrate all feature templates to `Org*` components, and delete dead code.
 
 ```
-T10 → T11 → T12
+T11 → T12 → T13
 ```
 
 ---
@@ -71,19 +71,20 @@ T10 → T11 → T12
 
 ### T1: Consolidate Design Tokens in Semantic SCSS (Org-Export Ready)
 
-**What**: Declare all missing tokens (`--org-danger`, `--org-on-danger`, `--org-warning`, `--org-on-warning`, `--org-text-primary`, `--org-text-secondary`, `--org-text-muted`, `--org-border`, `--org-primary-light`) and align token values in `_semantic.scss` for modular org-level export.  
+**What**: Declare all status tokens (`--org-danger`, `--org-on-danger`, `--org-warning`, `--org-on-warning`), typography tokens (`--org-text-primary`, `--org-text-secondary`, `--org-text-muted`), surface utility tokens (`--org-border`, `--org-primary-light`), standardized spacing scale tokens (`--org-space-2xs: 2px`, `--org-space-xs: 4px`, `--org-space-sm: 8px`, `--org-space-md: 16px`, `--org-space-lg: 24px`, `--org-space-xl: 32px`, `--org-space-2xl: 48px`, `--org-space-3xl: 64px`), and border radius tokens (`--org-radius-sm: 0.75rem`, `--org-radius-md: 1rem`, `--org-radius-lg: 1.25rem`, `--org-radius-full: 9999px`) in `_semantic.scss` for modular org-level export.  
 **Where**: `src/app/shared/ui/tokens/_semantic.scss`  
 **Depends on**: None  
-**Reuses**: `DESIGN.md` §2  
-**Requirement**: CSS-01, CSS-03  
+**Reuses**: `DESIGN.md` §2, §4.2  
+**Requirement**: CSS-01, CSS-03, CSS-04  
 
 **Tools**:
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
-- [ ] All missing `--org-*` tokens declared in `_semantic.scss`
-- [ ] Single source of truth established for glassmorphism and semantic tokens
+- [ ] All missing `--org-*` status, semantic, and typography tokens declared in `_semantic.scss`
+- [ ] Standardized spacing scale (`--org-space-2xs` through `--org-space-3xl`) and radius (`--org-radius-sm` through `--org-radius-full`) declared in `_semantic.scss`
+- [ ] Single source of truth established for glassmorphism, spacing, and semantic tokens
 - [ ] Gate check passes: `npm run build`
 
 **Tests**: none  
@@ -91,13 +92,36 @@ T10 → T11 → T12
 
 ---
 
-### T2: Clean Global Stylesheet Tokens & Tailwind Remnants
+### T2: Add Spacing & Dimensions Section to Design System Showcase Page
+
+**What**: Add a dedicated "Espaçamento e dimensões" section (`id="spacing"`) in `design-system-showcase.container.html`, register the navigation item in `src/app/core/models/design-system-navigation.model.ts`, add visual spacing bars, radius chips, and code examples for layout gaps/margins.  
+**Where**: `src/app/features/design-system/design-system-showcase.container.html`  
+**Depends on**: T1  
+**Reuses**: `_semantic.scss`, `DESIGN.md` §4.2  
+**Requirement**: CSS-05  
+
+**Tools**:
+- MCP: `filesystem`
+- Skill: NONE
+
+**Done when**:
+- [ ] Navigation item `spacing` registered in `design-system-navigation.model.ts` under `foundations` group
+- [ ] Showcase renders `#spacing` section with visual bars for all 8 spacing scale tokens (`--org-space-2xs` through `--org-space-3xl`)
+- [ ] Radius preview chips and copyable CSS grid/flex gap usage snippet render cleanly
+- [ ] Gate check passes: `npm test -- --watch=false && npm run build`
+
+**Tests**: unit  
+**Gate**: Full  
+
+---
+
+### T3: Clean Global Stylesheet Tokens & Tailwind Remnants
 
 **What**: Remove redundant `:root` token block from `styles.scss` (deferring to `_semantic.scss`) and delete Tailwind escape selector `&.\!rounded-full`.  
 **Where**: `src/styles.scss`  
-**Depends on**: T1  
+**Depends on**: T2  
 **Reuses**: `_semantic.scss`  
-**Requirement**: CSS-02, CSS-17  
+**Requirement**: CSS-02, CSS-27  
 
 **Tools**:
 - MCP: `filesystem`
@@ -113,13 +137,13 @@ T10 → T11 → T12
 
 ---
 
-### T3: Delete Orphan SCSS and Duplicate Drawer Styles
+### T4: Delete Orphan SCSS and Duplicate Drawer Styles
 
 **What**: Delete orphan file `_org-surface.scss` and remove `.glass-drawer` duplicate block from `app.scss`.  
 **Where**: `src/app/shared/ui/surface/_org-surface.scss`  
-**Depends on**: T2  
+**Depends on**: T3  
 **Reuses**: `src/styles.scss` `.app-sidenav-drawer`  
-**Requirement**: CSS-11, CSS-24  
+**Requirement**: CSS-23, CSS-26  
 
 **Tools**:
 - MCP: `filesystem`
@@ -135,13 +159,13 @@ T10 → T11 → T12
 
 ---
 
-### T4: Purge Purple Palette & Hardcoded Colors from Profile Components
+### T5: Purge Purple Palette & Hardcoded Colors from Profile Components
 
 **What**: Replace all instances of `#630ed4`, `#7c3aed`, `#ede0ff`, and hardcoded hex values in Profile components with `--org-*` tokens.  
 **Where**: `src/app/features/profile/components/profile-info-card/profile-info-card.component.scss`  
 **Depends on**: None  
 **Reuses**: `_semantic.scss`  
-**Requirement**: CSS-04, CSS-05  
+**Requirement**: CSS-06, CSS-07  
 
 **Tools**:
 - MCP: `filesystem`
@@ -156,13 +180,13 @@ T10 → T11 → T12
 
 ---
 
-### T5: Purge Purple Palette & Fix Typography in Event Detail Components
+### T6: Purge Purple Palette & Fix Typography in Event Detail Components
 
 **What**: Replace `#6366f1` and hardcoded colors in `family-selector`, `guest-form-dialog`, `rsvp-card`, and `event-detail.container` with `--org-*` tokens; fix font in `pix-card` to `var(--org-font-mono)` and inherit body font in `event-card`.  
 **Where**: `src/app/features/event-detail/components/pix-card/pix-card.component.scss`  
-**Depends on**: T4  
+**Depends on**: T5  
 **Reuses**: `_semantic.scss`  
-**Requirement**: CSS-04, CSS-05, CSS-06, CSS-07  
+**Requirement**: CSS-06, CSS-07, CSS-08, CSS-09  
 
 **Tools**:
 - MCP: `filesystem`
@@ -178,13 +202,13 @@ T10 → T11 → T12
 
 ---
 
-### T6: Ubiquitous Hex Color Purge Across All Feature Stylesheets
+### T7: Ubiquitous Hex Color Purge Across All Feature Stylesheets
 
 **What**: Perform a codebase-wide sweep across `src/app/**/*.scss` (including `login`, `home`, `event-filters`, `admin`, `shared`) replacing all hardcoded hex values with `--org-*` tokens.  
 **Where**: `src/app/features/auth/login/login.container.scss`  
-**Depends on**: T5  
+**Depends on**: T6  
 **Reuses**: `_semantic.scss`  
-**Requirement**: CSS-05  
+**Requirement**: CSS-07  
 
 **Tools**:
 - MCP: `filesystem`
@@ -199,13 +223,13 @@ T10 → T11 → T12
 
 ---
 
-### T7: Eliminate Component-Level !important & Adopt Breakpoint Mixins
+### T8: Eliminate Component-Level !important & Adopt Breakpoint Mixins
 
-**What**: Refactor 28 component-level `!important` occurrences using proper specificity (BEM classes and `:host`), and replace raw `@media` queries with `@include semantic.tablet`, `@include semantic.desktop`, `@include semantic.wide`.  
+**What**: Refactor 28 component-level `!important` occurrences using proper specificity (BEM classes and `:host`), replace raw `@media` queries with `@include semantic.tablet`, `@include semantic.desktop`, `@include semantic.wide`, and standardize margins/gaps to `--org-space-*` tokens.  
 **Where**: `src/app/features/admin/event-editor/event-editor.container.scss`  
-**Depends on**: T6  
-**Reuses**: `_semantic.scss` breakpoint mixins  
-**Requirement**: CSS-08, CSS-09, CSS-10, CSS-18, CSS-19, CSS-20  
+**Depends on**: T7  
+**Reuses**: `_semantic.scss` breakpoint mixins & spacing tokens  
+**Requirement**: CSS-20, CSS-21, CSS-22  
 
 **Tools**:
 - MCP: `filesystem`
@@ -222,13 +246,13 @@ T10 → T11 → T12
 
 ---
 
-### T8: Deduplicate CSS Selectors in Event Editor and Navigation Drawer
+### T9: Deduplicate CSS Selectors in Event Editor and Navigation Drawer
 
 **What**: Remove duplicate `.editor__guest-actions`, `.editor__header-main`, and `.navigation-drawer__logout` blocks.  
 **Where**: `src/app/shared/ui/drawer/navigation-drawer.component.scss`  
-**Depends on**: T7  
+**Depends on**: T8  
 **Reuses**: Existing BEM blocks  
-**Requirement**: CSS-12, CSS-13, CSS-22, CSS-23  
+**Requirement**: CSS-24, CSS-25  
 
 **Tools**:
 - MCP: `filesystem`
@@ -243,13 +267,13 @@ T10 → T11 → T12
 
 ---
 
-### T9: Replace Template Inline Skeleton Styles with SCSS Classes
+### T10: Replace Template Inline Skeleton Styles with SCSS Classes
 
 **What**: Replace 16 hardcoded `style="height: ...; width: ...;"` inline attributes in `dashboard.container.html` and `event-editor.container.html` with SCSS helper classes.  
 **Where**: `src/app/features/admin/dashboard/dashboard.container.html`  
-**Depends on**: T8  
+**Depends on**: T9  
 **Reuses**: Design system skeleton patterns  
-**Requirement**: CSS-15, CSS-16, CSS-26  
+**Requirement**: CSS-28  
 
 **Tools**:
 - MCP: `filesystem`
@@ -265,13 +289,13 @@ T10 → T11 → T12
 
 ---
 
-### T10: Refactor Presentational Dialogs & Drawers to Pure Smart/Dumb Pattern
+### T11: Refactor Presentational Dialogs & Drawers to Pure Smart/Dumb Pattern
 
 **What**: Decouple `GuestFormDialogComponent` and `RsvpDrawerComponent` from `FamilyService`, emitting family member payloads via `output()` or dialog results to `EventDetailContainer`.  
 **Where**: `src/app/features/event-detail/components/guest-form-dialog/guest-form-dialog.component.ts`  
 **Depends on**: None  
 **Reuses**: Angular Signals `output()` API  
-**Requirement**: CSS-09, CSS-10, CSS-12, CSS-13  
+**Requirement**: CSS-10, CSS-11, CSS-12, CSS-13, CSS-14, CSS-15  
 
 **Tools**:
 - MCP: `filesystem`
@@ -288,13 +312,13 @@ T10 → T11 → T12
 
 ---
 
-### T11: Complete Design System Migration Across All Feature Templates
+### T12: Complete Design System Migration Across All Feature Templates
 
 **What**: Sweep all feature templates (`src/app/features/**/*.html`) and replace all raw Material tags (`mat-card`, `mat-button`, `mat-icon-button`, `mat-form-field`, `mat-chip-set`) with `<org-surface>`, `<org-button>`, `<org-icon-button>`, `<org-text-field>`, `<org-chip>`.  
 **Where**: `src/app/features/admin/event-editor/event-editor.container.html`  
-**Depends on**: T10  
+**Depends on**: T11  
 **Reuses**: `@shared/ui` component library  
-**Requirement**: CSS-14, CSS-15, CSS-16, CSS-17, CSS-21, CSS-22, CSS-23, CSS-24  
+**Requirement**: CSS-16, CSS-17, CSS-18, CSS-19  
 
 **Tools**:
 - MCP: `filesystem`
@@ -310,13 +334,13 @@ T10 → T11 → T12
 
 ---
 
-### T12: Delete Dead Component Directories & Clean References
+### T13: Delete Dead Component Directories & Clean References
 
 **What**: Delete unused legacy component directories (`confirm-dialog/`, `theme-toggle/`, `collaborator-invite-dialog/`, and `admin-form-drawer/`) and remove obsolete imports.  
 **Where**: `src/app/shared/components/confirm-dialog/`  
-**Depends on**: T11  
+**Depends on**: T12  
 **Reuses**: `OrgConfirmDialogComponent` in `shared/ui/`  
-**Requirement**: CSS-25, CSS-26, CSS-27, CSS-28, CSS-29, CSS-30  
+**Requirement**: CSS-29, CSS-30, CSS-31, CSS-32  
 
 **Tools**:
 - MCP: `filesystem`
@@ -329,7 +353,7 @@ T10 → T11 → T12
 - [ ] `npx playwright test` passes (all 15 E2E suites green)
 
 **Tests**: unit  
-**Gate**: Full  
+**Gate**: Full    
 
 ---
 
@@ -338,9 +362,9 @@ T10 → T11 → T12
 ```
 Phase 1 → Phase 2 → Phase 3
 
-Phase 1:  T1 ──→ T2 ──→ T3
-Phase 2:  T4 ──→ T5 ──→ T6 ──→ T7 ──→ T8 ──→ T9
-Phase 3:  T10 ──→ T11 ──→ T12
+Phase 1:  T1 ──→ T2 ──→ T3 ──→ T4
+Phase 2:  T5 ──→ T6 ──→ T7 ──→ T8 ──→ T9 ──→ T10
+Phase 3:  T11 ──→ T12 ──→ T13
 ```
 
 ---
@@ -350,17 +374,18 @@ Phase 3:  T10 ──→ T11 ──→ T12
 | Task | Scope | Status |
 | ---- | ----- | ------ |
 | T1: Consolidate Design Tokens in Semantic SCSS | 1 file (`_semantic.scss`) | ✅ Granular |
-| T2: Clean Global Stylesheet Tokens & Tailwind Remnants | 1 file (`styles.scss`) | ✅ Granular |
-| T3: Delete Orphan SCSS and Duplicate Drawer Styles | 2 files (delete + modify `app.scss`) | ✅ Granular |
-| T4: Purge Purple Palette & Hardcoded Colors from Profile | 2 files (profile styles) | ✅ Granular |
-| T5: Purge Purple Palette & Fix Typography in Event Detail | 4 related component styles | ✅ Granular |
-| T6: Ubiquitous Hex Color Purge Across All Stylesheets | Component styles across features | ✅ Granular |
-| T7: Eliminate !important & Adopt Mixins | Component stylesheets | ✅ Granular |
-| T8: Deduplicate CSS Selectors in Editor and Drawer | 2 component SCSS files | ✅ Granular |
-| T9: Replace Template Inline Skeleton Styles | 2 HTML templates | ✅ Granular |
-| T10: Refactor Dialogs & Drawers to Smart/Dumb | 2 dumb components + 1 container | ✅ Granular |
-| T11: Complete Design System Migration Across All Templates | Feature templates | ✅ Granular |
-| T12: Delete Dead Component Directories | 4 dead folders | ✅ Granular |
+| T2: Add Spacing Section to Showcase Page | 4 files (showcase template, TS, SCSS, nav model) | ✅ Granular |
+| T3: Clean Global Stylesheet Tokens & Tailwind Remnants | 1 file (`styles.scss`) | ✅ Granular |
+| T4: Delete Orphan SCSS and Duplicate Drawer Styles | 2 files (delete + modify `app.scss`) | ✅ Granular |
+| T5: Purge Purple Palette & Hardcoded Colors from Profile | 2 files (profile styles) | ✅ Granular |
+| T6: Purge Purple Palette & Fix Typography in Event Detail | 4 related component styles | ✅ Granular |
+| T7: Ubiquitous Hex Color Purge Across All Stylesheets | Component styles across features | ✅ Granular |
+| T8: Eliminate !important & Adopt Mixins | Component stylesheets | ✅ Granular |
+| T9: Deduplicate CSS Selectors in Editor and Drawer | 2 component SCSS files | ✅ Granular |
+| T10: Replace Template Inline Skeleton Styles | 2 HTML templates | ✅ Granular |
+| T11: Refactor Dialogs & Drawers to Smart/Dumb | 2 dumb components + 1 container | ✅ Granular |
+| T12: Complete Design System Migration Across All Templates | Feature templates | ✅ Granular |
+| T13: Delete Dead Component Directories | 4 dead folders | ✅ Granular |
 
 ---
 
@@ -371,15 +396,16 @@ Phase 3:  T10 ──→ T11 ──→ T12
 | T1 | None | Entry point | ✅ Match |
 | T2 | T1 | T1 → T2 | ✅ Match |
 | T3 | T2 | T2 → T3 | ✅ Match |
-| T4 | None | Entry point (Phase 2) | ✅ Match |
-| T5 | T4 | T4 → T5 | ✅ Match |
+| T4 | T3 | T3 → T4 | ✅ Match |
+| T5 | None | Entry point (Phase 2) | ✅ Match |
 | T6 | T5 | T5 → T6 | ✅ Match |
 | T7 | T6 | T6 → T7 | ✅ Match |
 | T8 | T7 | T7 → T8 | ✅ Match |
 | T9 | T8 | T8 → T9 | ✅ Match |
-| T10 | None | Entry point (Phase 3) | ✅ Match |
-| T11 | T10 | T10 → T11 | ✅ Match |
+| T10 | T9 | T9 → T10 | ✅ Match |
+| T11 | None | Entry point (Phase 3) | ✅ Match |
 | T12 | T11 | T11 → T12 | ✅ Match |
+| T13 | T12 | T12 → T13 | ✅ Match |
 
 ---
 
@@ -388,14 +414,15 @@ Phase 3:  T10 ──→ T11 ──→ T12
 | Task | Code Layer Created/Modified | Matrix Requires | Task Says | Status |
 | ---- | --------------------------- | --------------- | --------- | ------ |
 | T1: Consolidate Design Tokens | Styles / Tokens | none (Build gate) | none | ✅ OK |
-| T2: Clean Global Stylesheet Tokens | Styles / Global | none (Build gate) | none | ✅ OK |
-| T3: Delete Orphan SCSS | Styles / Global | none (Build gate) | none | ✅ OK |
-| T4: Purge Purple Palette Profile | Component SCSS | unit | unit | ✅ OK |
-| T5: Purge Purple Palette Event Detail | Component SCSS | unit | unit | ✅ OK |
-| T6: Ubiquitous Hex Color Purge | Component SCSS | unit | unit | ✅ OK |
-| T7: Eliminate !important & Adopt Mixins | Component SCSS | unit | unit | ✅ OK |
-| T8: Deduplicate CSS Selectors | Component SCSS | none (Build gate) | none | ✅ OK |
-| T9: Replace Template Inline Skeleton | Templates | unit | unit | ✅ OK |
-| T10: Refactor Dialogs to Smart/Dumb | Presentational Components | unit | unit | ✅ OK |
-| T11: Complete Design System Migration | Templates | unit | unit | ✅ OK |
-| T12: Delete Dead Component Directories | Dead Components | unit | unit | ✅ OK |
+| T2: Add Spacing Section to Showcase | Presentational / Showcase | unit | unit | ✅ OK |
+| T3: Clean Global Stylesheet Tokens | Styles / Global | none (Build gate) | none | ✅ OK |
+| T4: Delete Orphan SCSS | Styles / Global | none (Build gate) | none | ✅ OK |
+| T5: Purge Purple Palette Profile | Component SCSS | unit | unit | ✅ OK |
+| T6: Purge Purple Palette Event Detail | Component SCSS | unit | unit | ✅ OK |
+| T7: Ubiquitous Hex Color Purge | Component SCSS | unit | unit | ✅ OK |
+| T8: Eliminate !important & Adopt Mixins | Component SCSS | unit | unit | ✅ OK |
+| T9: Deduplicate CSS Selectors | Component SCSS | none (Build gate) | none | ✅ OK |
+| T10: Replace Template Inline Skeleton | Templates | unit | unit | ✅ OK |
+| T11: Refactor Dialogs to Smart/Dumb | Presentational Components | unit | unit | ✅ OK |
+| T12: Complete Design System Migration | Templates | unit | unit | ✅ OK |
+| T13: Delete Dead Component Directories | Dead Components | unit | unit | ✅ OK |

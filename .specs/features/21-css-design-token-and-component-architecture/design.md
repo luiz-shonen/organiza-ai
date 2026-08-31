@@ -92,7 +92,36 @@ graph TD
 --org-surface-card: rgba(255, 255, 255, 0.72);
 --org-surface-glass: rgba(255, 255, 255, 0.45);
 --org-surface-panel: rgba(255, 255, 255, 0.85);
+
+// Canonical Spacing Scale (DESIGN.md §4.2)
+--org-space-2xs: 2px;
+--org-space-xs: 4px;
+--org-space-sm: 8px;
+--org-space-md: 16px;
+--org-space-lg: 24px;
+--org-space-xl: 32px;
+--org-space-2xl: 48px;
+--org-space-3xl: 64px;
+
+// Border Radius Tokens
+--org-radius-sm: 0.75rem;
+--org-radius-md: 1rem;
+--org-radius-lg: 1.25rem;
+--org-radius-full: 9999px;
 ```
+
+### 3. Spacing, Gap, Margin & Padding Model
+- **Padding (Component-Internal)**: Owned and encapsulated strictly by `Org*` components (`OrgSurface`, `OrgButton`, `OrgTextField`, `OrgSection`, `OrgPageLayout`, `OrgChip`). Parent feature stylesheets SHALL NOT override internal component paddings.
+- **Margin & Gap (Layout-External)**: Spacing between components and within layout containers is managed via CSS Flexbox/Grid `gap: var(--org-space-*)` or BEM element margins using `--org-space-*` tokens.
+- **Prohibition of Ad-Hoc Utilities**: Arbitrary utility classes (`.mb-2`, `.mt-2`, `.gap-2`) and arbitrary pixel offsets (e.g. `margin: 13px`) are prohibited (AD-035).
+
+### 4. Showcase Spacing Section Architecture (`/design-system#spacing`)
+- **Navigation Registration**: In `src/app/core/models/design-system-navigation.model.ts`, the `foundations` group adds:
+  `{ id: 'spacing', label: 'Espaçamento e dimensões', icon: 'straighten' }`
+- **Visual Presentation**:
+  - **Spacing Scale Ruler**: Renders visual bars for all 8 spacing steps (`--org-space-2xs: 2px` through `--org-space-3xl: 64px`) alongside pixel/rem measurements and canonical semantic usage tags (Micro, Chip/Button gap, Card padding, Section rhythm, Touch target minimum).
+  - **Border Radius Palette**: Visual pill and rounded preview blocks for `--org-radius-sm`, `--org-radius-md`, `--org-radius-lg`, `--org-radius-full`.
+  - **Recommended Usage Snippet**: `<app-design-system-code-example label="Uso recomendado" [code]="componentExamples.spacing" />` showing standard CSS Grid `gap: var(--org-space-lg);` and component padding composition.
 
 ---
 

@@ -103,21 +103,21 @@
         <div class="skeleton-table">
           <!-- Header fake -->
           <div class="skeleton-table-header">
-            <div class="skeleton-box" style="height: 1rem; width: 5rem;"></div>
-            <div class="skeleton-box" style="height: 1rem; width: 4rem;"></div>
-            <div class="skeleton-box" style="height: 1rem; width: 6rem;"></div>
-            <div class="skeleton-box" style="height: 1rem; width: 4rem;"></div>
+            <div class="skeleton-box skeleton-table__header-title"></div>
+            <div class="skeleton-box skeleton-table__header-date"></div>
+            <div class="skeleton-box skeleton-table__header-location"></div>
+            <div class="skeleton-box skeleton-table__header-status"></div>
           </div>
           <!-- Rows fakes -->
           @for (i of [1, 2, 3, 4]; track i) {
             <div class="skeleton-table-row">
-              <div class="skeleton-box" style="height: 1.25rem; width: 10rem;"></div>
-              <div class="skeleton-box" style="height: 1.25rem; width: 6rem;"></div>
-              <div class="skeleton-box" style="height: 1.25rem; width: 8rem;"></div>
+              <div class="skeleton-box skeleton-table__cell-title"></div>
+              <div class="skeleton-box skeleton-table__cell-date"></div>
+              <div class="skeleton-box skeleton-table__cell-location"></div>
               <div class="dashboard__skeleton-actions">
-                <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
-                <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
-                <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
+                <div class="skeleton-box skeleton-table__action-btn"></div>
+                <div class="skeleton-box skeleton-table__action-btn"></div>
+                <div class="skeleton-box skeleton-table__action-btn"></div>
               </div>
             </div>
           }
@@ -130,13 +130,13 @@
           <org-surface variant="card" class="dashboard__mobile-card">
             <article class="dashboard__mobile-card-content">
             <mat-card-header>
-              <mat-card-title><div class="skeleton-box" style="height: 1.5rem; width: 12rem; margin-bottom: 0.5rem;"></div></mat-card-title>
-              <mat-card-subtitle><div class="skeleton-box" style="height: 1rem; width: 8rem;"></div></mat-card-subtitle>
+              <mat-card-title><div class="skeleton-box dashboard__skeleton-card-title"></div></mat-card-title>
+              <mat-card-subtitle><div class="skeleton-box dashboard__skeleton-card-subtitle"></div></mat-card-subtitle>
             </mat-card-header>
             <mat-card-actions>
-              <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
-              <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
-              <div class="skeleton-box" style="height: 2.5rem; width: 2.5rem; border-radius: 9999px;"></div>
+              <div class="skeleton-box dashboard__skeleton-card-action"></div>
+              <div class="skeleton-box dashboard__skeleton-card-action"></div>
+              <div class="skeleton-box dashboard__skeleton-card-action"></div>
             </mat-card-actions>
             </article>
           </org-surface>

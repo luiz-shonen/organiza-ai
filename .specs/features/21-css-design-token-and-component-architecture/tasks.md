@@ -281,9 +281,9 @@ T11 → T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] 0 inline `style="height:` attributes in `dashboard.container.html` and `event-editor.container.html`
-- [ ] Skeletons render identically using SCSS classes
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Zero `style="height:` or inline skeleton styles remain in `dashboard.container.html` and `event-editor.container.html`
+- [x] All skeleton sizes managed via `.skeleton-*` classes in respective SCSS files
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: Quick  

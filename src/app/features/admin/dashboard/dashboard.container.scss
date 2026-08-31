@@ -30,6 +30,26 @@
       background-color: var(--org-surface-container-low);
     }
 
+    &__header-title {
+      height: 1rem;
+      width: 5rem;
+    }
+
+    &__header-date {
+      height: 1rem;
+      width: 4rem;
+    }
+
+    &__header-location {
+      height: 1rem;
+      width: 6rem;
+    }
+
+    &__header-status {
+      height: 1rem;
+      width: 4rem;
+    }
+
     &-row {
       display: grid;
       grid-template-columns: 2fr 1fr 1.5fr 150px;
@@ -40,6 +60,27 @@
       &:last-child {
         border-bottom: none;
       }
+    }
+
+    &__cell-title {
+      height: 1.25rem;
+      width: 10rem;
+    }
+
+    &__cell-date {
+      height: 1.25rem;
+      width: 6rem;
+    }
+
+    &__cell-location {
+      height: 1.25rem;
+      width: 8rem;
+    }
+
+    &__action-btn {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: var(--org-radius-full);
     }
   }
 
@@ -81,6 +122,23 @@
   &__skeleton-actions {
     display: flex;
     gap: 8px;
+  }
+
+  &__skeleton-card-title {
+    height: 1.5rem;
+    width: 12rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__skeleton-card-subtitle {
+    height: 1rem;
+    width: 8rem;
+  }
+
+  &__skeleton-card-action {
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: var(--org-radius-full);
   }
 
   &__clickable-row,

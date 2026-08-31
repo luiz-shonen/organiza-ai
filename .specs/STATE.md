@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-31  
-**State:** Feature 21 (`21-css-design-token-and-component-architecture`) Spec, Design, and Tasks complete. Feature 22 (`22-dry-solid-docs-and-route-separation`) Spec, Design, and Tasks complete and validated. Feature 23 (`23-linting-and-formatting-toolchain`) Spec, Design, and Tasks complete and validated.  
-**Test Suite:** 79 unit test files (426 tests) green (`npm test -- --watch=false`), 158 E2E tests green across Desktop & Mobile (`npx playwright test`), production build green (`npm run build`).  
-**Validation Gate:** Feature 21 Spec PASS (0 errors), Feature 21 Tasks PASS (0 errors), Feature 22 Spec PASS (0 errors), Feature 22 Tasks PASS (0 errors), Feature 23 Spec PASS (0 errors), Feature 23 Tasks PASS (0 errors).  
-**Next step:** Execute Feature 21 Phase 1 or approve Feature 22 / Feature 23 Tasks for execution.  
+**State:** Feature 21 (`21-css-design-token-and-component-architecture`) 100% complete, verified by independent Verifier sub-agent (`validation.md` PASS, 32/32 ACs, 3/3 sensor mutants killed). Feature 22 (`22-dry-solid-docs-and-route-separation`) Spec, Design, and Tasks complete and validated. Feature 23 (`23-linting-and-formatting-toolchain`) Spec, Design, and Tasks complete and validated.  
+**Test Suite:** 75 unit test files (404 tests) green (`npm test -- --watch=false`), strict UI contracts 0 violations (`node scripts/validate-ui-contracts.mjs --strict`), production build green (`npm run build`).  
+**Validation Gate:** Feature 21 PASS (0 errors), Feature 22 Spec/Tasks PASS (0 errors), Feature 23 Spec/Tasks PASS (0 errors).  
+**Next step:** Approve and execute Feature 22 or Feature 23.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -38,6 +38,7 @@
   - **CI/CD Automation**: `.github/workflows/e2e.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
 - **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys.
 - **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Design written and approved (`design.md`) establishing Mobile-First SCSS architecture, responsive component layouts (Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, Event Detail & Modals), WCAG 2.5.5 AA 48px touch targets, and `assertNoHorizontalOverflow` Playwright assertion helper.
+- **Feature 21 (`21-css-design-token-and-component-architecture`)**: Full design token unification in `_semantic.scss` (org-export ready), spacing showcase section, complete purge of legacy purple palette and hardcoded hex values, 0 component-level `!important` occurrences, standardized mobile-first breakpoint mixins (`semantic.tablet`, `semantic.desktop`, `semantic.wide`), smart/dumb refactoring of dialogs and drawers, complete migration of all feature templates to closed `Org*` design system components, and deletion of obsolete component folders. Validated by independent Verifier sub-agent (32/32 ACs PASS, 3/3 sensor mutants killed).
 
 ---
 

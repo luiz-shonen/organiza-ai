@@ -6,22 +6,22 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 
 ## Goals
 
-- [ ] Centralize shared utility functions into `src/app/core/utils/` (date, sharing, id, cep, relationship)
-- [ ] Consolidate duplicated models and interfaces in `src/app/core/models/` and export via `index.ts`
+- [ ] Centralize shared utility functions and rich value objects into `src/app/core/utils/` (date, sharing, id, cep, relationship)
+- [ ] Consolidate models into granular, one-file-per-interface files in `src/app/core/models/` and export cleanly via `index.ts`
 - [ ] Enforce SRP in `AuthService` (add `isAuthenticated`, `waitForAuthReady()`) and `UserService` (clean passthroughs and duplicate mappers)
 - [ ] Eliminate explicit `any` types in production code and provide typed `window.__MOCK_DOCUMENTS__`
 - [ ] Deduplicate E2E mock setup across Playwright test suites using `setupMockAuthSession()`
-- [ ] Decouple `/admin` (Super Admin) from `/meus-eventos` (Organizer) with dedicated routes and container components
-- [ ] Synchronize all documentation files (`AGENTS.md`, `README.md`, `CONTEXT.md`, `DESIGN.md`, `.gemini/GEMINI.md`, `.claude/CLAUDE.md`, `.specs/STATE.md`) with the actual codebase
-- [ ] Establish a `.agents/skills/` library providing actionable guides for page creation, component design, style guides, and design system usage
+- [ ] Decouple `/admin` (Super Admin) from `/meus-eventos` (Organizer) with dedicated routes and container components in separate feature domains
+- [ ] Synchronize all documentation files with clear role boundaries (`DESIGN.md` for design tokens/catalog, `AGENTS.md` for engineering rules, `README.md` for project overview)
+- [ ] Establish a `.agents/skills/` library providing explicit, hallucination-resistant guides for page creation, component design, and style guides, also exposed as a section in `/design-system`
 
 ## Out of Scope
 
 | Feature | Reason |
 |---|---|
-| SCSS token unification, hardcoded color fixes, and component `!important` elimination | Feature 21 scope |
-| Component-level dumb component refactoring and dead component deletion | Feature 21 scope |
-| Installing linting and formatting tools (ESLint, Stylelint, Prettier, git hooks) | Feature 23 scope |
+| SCSS token unification, hardcoded color fixes, and component `!important` elimination | Handled in Feature 21 |
+| Component-level dumb component refactoring and dead component deletion | Handled in Feature 21 |
+| Installing linting and formatting tools (ESLint, Stylelint, Prettier, git hooks) | Handled in Feature 23 |
 | Major backend schema changes to Firestore | Only frontend architecture and domain routing are refactored |
 
 ---
@@ -30,12 +30,14 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 
 | Assumption / decision | Chosen default | Rationale | Confirmed? |
 |---|---|---|---|
-| Shared utilities live in `src/app/core/utils/` | yes | Standard Angular architectural layer for pure helpers | y |
+| Shared utilities and rich value objects live in `src/app/core/utils/` | yes | Standard Angular architectural layer for pure helpers and domain value objects | y |
+| Granular model files: one interface/model per file in `src/app/core/models/` | yes | User confirmed: "we want to be granular regarding the files" | y |
 | `/meus-eventos` containers move to `src/app/features/organizer/` | yes | Clarifies ownership; organizer features belong in organizer domain | y |
 | `/admin` route gets dedicated Super Admin management container in `src/app/features/admin/` | yes | User confirmed: "/admin should be different than /meus-eventos, absolutely." | y |
 | Global `window.__MOCK_DOCUMENTS__` is typed in `src/app/testing/types/mock-window.d.ts` | yes | Eliminates 21 `(window as any)` production casts safely | y |
 | Documentation updates will reflect 79 unit test suites (426 tests) and 15 E2E suites (158 tests) | yes | Matches actual verified test run counts | y |
-| `.agents/skills/` contains 4 skills referencing `tdd`, `bem-css`, and `tlc-spec-driven` | yes | Provides unified guidance for both human contributors and AI agents | y |
+| `DESIGN.md` is the sole source of truth for design tokens; `AGENTS.md` references it | yes | Eliminates duplicate docs and token drift | y |
+| `.agents/skills/` contains 4 skills referencing `tdd`, `bem-css`, and `tlc-spec-driven` | yes | Provides unified, explicit guidance to prevent AI hallucinations | y |
 
 **Open questions:** none — all resolved or logged above.
 
@@ -43,20 +45,20 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 
 ## User Stories
 
-### P1: Core Utilities & Interface Consolidation ⭐ MVP
+### P1: Core Utilities & Granular Model Consolidation ⭐ MVP
 
-**User Story**: As a developer, I want duplicated helper functions and interfaces centralized into `core/utils/` and `core/models/` so that logic is DRY and single-sourced.
+**User Story**: As a developer, I want duplicated helper functions, rich value objects, and interfaces centralized into granular, single-responsibility files in `core/utils/` and `core/models/` so that logic is DRY and well-organized.
 
-**Why P1**: Prevents diverging implementations of date formatting, sharing links, CEP cleaning, and model contracts.
+**Why P1**: Prevents diverging implementations of date formatting, sharing links, CEP cleaning, and messy monolithic model files.
 
 **Acceptance Criteria**:
 
-1. The system SHALL provide pure utility functions in `src/app/core/utils/date.utils.ts`, `src/app/core/utils/sharing.utils.ts`, `src/app/core/utils/id.utils.ts`, `src/app/core/utils/cep.utils.ts`, and `src/app/core/utils/relationship.utils.ts`. <!-- ubiquitous -->
+1. The system SHALL provide pure utility functions and rich value objects in `src/app/core/utils/date.utils.ts`, `src/app/core/utils/sharing.utils.ts`, `src/app/core/utils/id.utils.ts`, `src/app/core/utils/cep.utils.ts`, and `src/app/core/utils/relationship.utils.ts`. <!-- ubiquitous -->
 2. The system SHALL import date formatting (`formatDate`, `getDay`, `getMonth`), WhatsApp sharing (`shareWhatsApp`), clipboard copying (`copyLink`), and CEP formatting from `src/app/core/utils/` across all feature containers and components. <!-- ubiquitous -->
-3. The system SHALL define single canonical interfaces in `src/app/core/models/` for `BatchPrimaryGuestInput`, `GuestFormDialogData`, `GuestFormDialogResult`, `RelationshipOption`, `FamilyMemberCreate`, `OrgConfirmDialogData`, `ViaCepResponse`, `DesignSystemNavigationItem`, and `DesignSystemNavigationGroup`. <!-- ubiquitous -->
+3. The system SHALL define consolidated models in granular, one-file-per-interface files in `src/app/core/models/` for `BatchPrimaryGuestInput`, `GuestFormDialogData`, `GuestFormDialogResult`, `RelationshipOption`, `FamilyMemberCreate`, `OrgConfirmDialogData`, `ViaCepResponse`, `DesignSystemNavigationItem`, and `DesignSystemNavigationGroup`. <!-- ubiquitous -->
 4. The system SHALL export all consolidated model interfaces from `src/app/core/models/index.ts` and eliminate duplicate local interface declarations in components and services. <!-- ubiquitous -->
 
-**Independent Test**: `find src/app/core/utils/ -type f` returns all 5 utility files; `npm run build` succeeds with zero model import errors.
+**Independent Test**: `find src/app/core/utils/ -type f` returns all 5 utility files; `find src/app/core/models/ -type f` returns individual model files; `npm run build` succeeds with zero model import errors.
 
 ---
 
@@ -80,7 +82,7 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 
 ### P1: Route & Domain Decoupling (/admin vs /meus-eventos) ⭐ MVP
 
-**User Story**: As an organizer and Super Admin, I want `/meus-eventos` and `/admin` to load distinct domain containers so that organizer workflows and Super Admin governance are completely separate.
+**User Story**: As an organizer and Super Admin, I want `/meus-eventos` and `/admin` to load distinct domain containers in their respective feature folders so that organizer workflows and Super Admin governance are completely separate and cleanly maintainable.
 
 **Why P1**: Currently both routes load the same admin routes and containers, confusing roles and domain boundaries.
 
@@ -110,32 +112,32 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 
 ---
 
-### P2: Documentation Synchronization
+### P2: Documentation Synchronization & Clear Boundary Architecture
 
-**User Story**: As a contributor and AI agent, I want all project documentation updated to reflect the exact current codebase so that documentation drift and hallucinations are eliminated.
+**User Story**: As a contributor and AI agent, I want all project documentation updated with clear separation of concerns (`DESIGN.md` for tokens/visuals, `AGENTS.md` for engineering rules, `README.md` for overview) so that documentation drift and hallucinations are eliminated.
 
-**Why P2**: Accurate context files are the primary mechanism for preventing AI hallucinations.
+**Why P2**: Accurate context files with non-overlapping responsibilities prevent AI hallucinations.
 
 **Acceptance Criteria**:
 
-16. The `AGENTS.md` and `README.md` files SHALL document the canonical Pink-Orange-Yellow brand palette (`#ff4d94`, `#ff8c42`, `#ffc837`), exact test metrics (79 unit suites / 426 tests, 15 E2E suites / 158 tests, 60 baselines), and complete core services list (17 services). <!-- ubiquitous -->
-17. The `CONTEXT.md` and `DESIGN.md` files SHALL reference standalone `Org*` components (`<org-surface>`, `<org-button>`, etc.), omit removed legacy attribute directives, fix markdown links, and update decision logs through AD-039. <!-- ubiquitous -->
-18. The `.gemini/GEMINI.md`, `.claude/CLAUDE.md`, and `.specs/STATE.md` files SHALL reflect Angular 22, verified-only RSVP rules (AD-024), open registration (AD-016), and updated decision logs through AD-039. <!-- ubiquitous -->
+16. The `README.md` file SHALL document project overview, quick start, commands, architecture summary, exact test metrics (79 unit suites / 426 tests, 15 E2E suites / 158 tests, 60 baselines), and complete core services list (17 services). <!-- ubiquitous -->
+17. The `DESIGN.md` file SHALL remain the exclusive source of truth for the brand palette (`#ff4d94`, `#ff8c42`, `#ffc837`), design tokens, typography, glassmorphism, and living component catalog. <!-- ubiquitous -->
+18. The `AGENTS.md`, `CONTEXT.md`, `.gemini/GEMINI.md`, `.claude/CLAUDE.md`, and `.specs/STATE.md` files SHALL reference `DESIGN.md` for design tokens, reference standalone `Org*` components (`<org-surface>`, `<org-button>`, etc.), omit removed legacy attribute directives, fix markdown links, and update decision logs through AD-041. <!-- ubiquitous -->
 
 **Independent Test**: Review `AGENTS.md`, `README.md`, `CONTEXT.md`, and `DESIGN.md` — all token values, test counts, component names, and route tables match code reality.
 
 ---
 
-### P2: Project Agent Skills & Engineering Style Guide
+### P2: Project Agent Skills & Explicit Engineering Style Guide
 
-**User Story**: As a developer and AI agent, I want `.agents/skills/` containing standardized recipes and style guides referencing `tdd`, `bem-css`, and `tlc-spec-driven` so that all contributors follow consistent patterns.
+**User Story**: As a developer and AI agent, I want `.agents/skills/` containing explicit, step-by-step recipes and style guides (also exposed on the `/design-system` page) referencing `tdd`, `bem-css`, and `tlc-spec-driven` so that all contributors follow consistent patterns without hallucinating.
 
-**Why P2**: Equips AI agents and human contributors with clear, self-contained playbooks in the repository.
+**Why P2**: Equips AI agents and human contributors with unambiguous, self-contained playbooks in the repository.
 
 **Acceptance Criteria**:
 
-19. The system SHALL provide `.agents/skills/style-guide/SKILL.md` documenting DOs/DON'Ts for TypeScript, OnPush Signals, SCSS/BEM, Firebase, testing, and accessibility with concrete code snippets. <!-- ubiquitous -->
-20. The system SHALL provide `.agents/skills/creating-pages/SKILL.md` with step-by-step guidance on routed containers, route registration, guards, and design system layout primitives. <!-- ubiquitous -->
+19. The system SHALL provide `.agents/skills/style-guide/SKILL.md` documenting DOs/DON'Ts for TypeScript, OnPush Signals, SCSS/BEM, Firebase, testing, and accessibility with concrete code snippets, mirrored into `docs/STYLE_GUIDE.md` and accessible via the `/design-system` showcase page. <!-- ubiquitous -->
+20. The system SHALL provide `.agents/skills/creating-pages/SKILL.md` with explicit, step-by-step guidance on routed containers, route registration, guards, and design system layout primitives. <!-- ubiquitous -->
 21. The system SHALL provide `.agents/skills/creating-components/SKILL.md` with recipes for pure presentational components, `input()`/`output()` APIs, and OnPush change detection. <!-- ubiquitous -->
 22. The system SHALL provide `.agents/skills/design-system-usage/SKILL.md` cataloging all 32 `Org*` components, import paths from `@shared/ui`, and replacements for raw Angular Material tags. <!-- ubiquitous -->
 23. The skill files in `.agents/skills/` SHALL explicitly reference `tdd`, `bem-css`, and `tlc-spec-driven` as mandatory methodology standards. <!-- ubiquitous -->
@@ -208,10 +210,10 @@ The Organiza AI project has accumulated code duplication, Single Responsibility 
 ## Success Criteria
 
 - [ ] All 5 utility files in `src/app/core/utils/` created and consumed across features
-- [ ] 0 duplicate interface declarations remain across model, service, and component files
+- [ ] 0 duplicate interface declarations remain across model, service, and component files (granular one-file-per-interface structure)
 - [ ] `AuthService` exposes `isAuthenticated` and `waitForAuthReady()`; guards use them cleanly
 - [ ] `/meus-eventos` and `/admin` routes map to separate containers in `features/organizer/` and `features/admin/`
 - [ ] `grep -rn '(window as any)' src/app/` returns 0 results
-- [ ] `AGENTS.md`, `README.md`, `CONTEXT.md`, and `DESIGN.md` fully synchronized with current code state
-- [ ] `.agents/skills/` contains all 4 complete, actionable SKILL.md guides
+- [ ] `AGENTS.md`, `README.md`, `CONTEXT.md`, and `DESIGN.md` fully synchronized with clear non-overlapping roles
+- [ ] `.agents/skills/` contains all 4 complete, actionable SKILL.md guides with explicit step-by-step instructions
 - [ ] All unit tests (426 tests) and Playwright E2E tests (158 tests) pass green

@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-08-31  
-**State:** Feature 21 (`21-css-design-token-and-component-architecture`) Spec, Design, and Tasks complete and validated. Features 22 (`22-dry-solid-docs-and-route-separation`) and 23 (`23-linting-and-formatting-toolchain`) specified and validated per Option B sequence.  
+**State:** Feature 21 (`21-css-design-token-and-component-architecture`) Spec, Design, and Tasks complete. Feature 22 (`22-dry-solid-docs-and-route-separation`) Spec, Design, and Tasks complete and validated. Feature 23 (`23-linting-and-formatting-toolchain`) Spec, Design, and Tasks complete and validated.  
 **Test Suite:** 79 unit test files (426 tests) green (`npm test -- --watch=false`), 158 E2E tests green across Desktop & Mobile (`npx playwright test`), production build green (`npm run build`).  
-**Validation Gate:** Feature 21 Spec PASS (0 errors), Feature 21 Tasks PASS (0 errors), Feature 22 Spec PASS (0 errors), Feature 23 Spec PASS (0 errors).  
-**Next step:** Execute Feature 21 Phase 1 (Tasks T1, T2, T3: Token unification and stylesheet cleanup).  
+**Validation Gate:** Feature 21 Spec PASS (0 errors), Feature 21 Tasks PASS (0 errors), Feature 22 Spec PASS (0 errors), Feature 22 Tasks PASS (0 errors), Feature 23 Spec PASS (0 errors), Feature 23 Tasks PASS (0 errors).  
+**Next step:** Execute Feature 21 Phase 1 or approve Feature 22 / Feature 23 Tasks for execution.  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -361,4 +361,13 @@
 **Decision:** All feature templates across the application must exclusively consume `Org*` components from `@shared/ui` (e.g. `<org-surface>`, `<org-button>`, `<org-icon-button>`, `<org-text-field>`, `<org-chip>`). Raw Angular Material tags (`<mat-card>`, `<button mat-button>`, `<mat-form-field>`) in feature templates are prohibited. Component stylesheets must contain zero `!important` flags and zero hardcoded arbitrary hex values, managing styling purely through BEM classes and `--org-*` CSS custom properties.  
 **Rationale:** Guarantees visual consistency, clean specificity without specificity wars, and complete encapsulation matching the design system contracts.  
 **Status:** In force.
+
+---
+
+### AD-042 — Comprehensive Code Quality Toolchain & Developer Style Guide
+**Date:** 2026-08-31  
+**Decision:** The project adopts a 4-tier automated code quality enforcement toolchain: (1) ESLint 9+ Flat Config enforcing TypeScript strict typing (`no-explicit-any: error` in prod), Angular Standalone/OnPush, template a11y, and Playwright E2E standards; (2) Stylelint enforcing SCSS BEM conventions, zero component `!important`, and `--org-*` token usage via `color-no-hex`; (3) Husky pre-commit (lint-staged) and commit-msg (commitlint Conventional Commits); (4) Fail-fast CI quality gate (`quality.yml`) executing ahead of E2E; and (5) Project-local skills in `.agents/skills/` (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`) mirrored to `docs/STYLE_GUIDE.md`.  
+**Rationale:** Eliminates regressions across human and AI contributions, provides deterministic pre-commit correction, saves CI compute resources, and provides actionable smart/dumb and design system playbooks.  
+**Status:** In force. Specified in 23-linting-and-formatting-toolchain.
+
 

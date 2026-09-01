@@ -129,6 +129,7 @@ describe('AuthService', () => {
       expect(service.isSuperAdmin()).toBe(true);
       expect(service.isAdmin()).toBe(true);
       expect(service.loading()).toBe(false);
+      expect(service.isAuthenticated()).toBe(true);
     });
 
     it('sets currentUser, isSuperAdmin=false, and loading=false when regular user emits', () => {
@@ -140,6 +141,7 @@ describe('AuthService', () => {
       expect(service.isSuperAdmin()).toBe(false);
       expect(service.isAdmin()).toBe(false);
       expect(service.loading()).toBe(false);
+      expect(service.isAuthenticated()).toBe(true);
     });
 
     it('sets currentUser=null, isSuperAdmin=false, and loading=false when null emits', () => {
@@ -151,6 +153,28 @@ describe('AuthService', () => {
       expect(service.isSuperAdmin()).toBe(false);
       expect(service.isAdmin()).toBe(false);
       expect(service.loading()).toBe(false);
+      expect(service.isAuthenticated()).toBe(false);
+    });
+
+    it('returns isAuthenticated=false when user is anonymous', () => {
+      const cb = mocks.getAuthCallback();
+      expect(cb).toBeDefined();
+      const anonUser = {
+        uid: 'anon-uid',
+        isAnonymous: true,
+        email: null,
+      } as unknown as User;
+      cb!(anonUser);
+
+      expect(service.currentUser()).toEqual(anonUser);
+      expect(service.isAuthenticated()).toBe(false);
+    });
+  });
+
+  describe('waitForAuthReady', () => {
+    it('calls auth.authStateReady and resolves cleanly', async () => {
+      await expect(service.waitForAuthReady()).resolves.toBeUndefined();
+      expect(mockAuth.authStateReady).toHaveBeenCalled();
     });
   });
 

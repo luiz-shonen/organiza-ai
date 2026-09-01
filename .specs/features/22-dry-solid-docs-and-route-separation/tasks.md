@@ -283,10 +283,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `isAuthenticated` computed signal returns true for non-null, non-anonymous users
-- [ ] `waitForAuthReady()` returns Promise resolving when auth state is ready
-- [ ] `src/app/core/services/auth.service.spec.ts` covers `isAuthenticated` and `waitForAuthReady`
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `isAuthenticated` computed signal returns true for non-null, non-anonymous users
+- [x] `waitForAuthReady()` returns Promise resolving when auth state is ready
+- [x] `src/app/core/services/auth.service.spec.ts` covers `isAuthenticated` and `waitForAuthReady`
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

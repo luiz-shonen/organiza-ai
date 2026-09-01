@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import {
   Auth,
   User,
@@ -26,9 +26,17 @@ export class AuthService {
   readonly isAdmin = this._isSuperAdmin.asReadonly();
   readonly isSuperAdmin = this._isSuperAdmin.asReadonly();
   readonly loading = this._loading.asReadonly();
+  readonly isAuthenticated = computed(() => {
+    const user = this._currentUser();
+    return user !== null && !user.isAnonymous;
+  });
 
   isSuperAdminEmail(email: string | null): boolean {
     return email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com';
+  }
+
+  async waitForAuthReady(): Promise<void> {
+    await this.auth.authStateReady();
   }
 
   constructor() {

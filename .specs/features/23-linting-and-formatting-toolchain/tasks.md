@@ -189,10 +189,10 @@ T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `commitlint.config.mjs` created extending `@commitlint/config-conventional`
-- [ ] `.husky/commit-msg` hook invokes `npx --no -- commitlint --edit "${1}"`
-- [ ] `package.json` contains `"prepare": "husky"`
-- [ ] Gate check passes: `echo "feat(test): valid message" | npx commitlint`
+- [x] `commitlint.config.mjs` created extending `@commitlint/config-conventional`
+- [x] `.husky/commit-msg` hook invokes `npx --no -- commitlint --edit "${1}"`
+- [x] `package.json` contains `"prepare": "husky"`
+- [x] Gate check passes: `echo "feat(test): valid message" | npx commitlint`
 
 **Tests**: none  
 **Gate**: Build  

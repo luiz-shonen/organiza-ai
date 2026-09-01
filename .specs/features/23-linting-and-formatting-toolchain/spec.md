@@ -224,7 +224,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | LINT-19 | P1: Prettier | AC-19 | Implementing (T3, T4) |
 | LINT-20 | P1: Prettier | AC-20 | Implementing (T3) |
 | LINT-21 | P1: Git Hooks | AC-21 | In Tasks (T6) |
-| LINT-22 | P1: Git Hooks | AC-22 | In Tasks (T5) |
+| LINT-22 | P1: Git Hooks | AC-22 | Implementing (T5) |
 | LINT-23 | P1: Git Hooks | AC-23 | In Tasks (T6) |
 | LINT-24 | P1: Style Guide | AC-24 | In Tasks (T8) |
 | LINT-25 | P1: Style Guide | AC-25 | P1: In Tasks (T9) |

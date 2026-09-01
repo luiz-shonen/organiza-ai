@@ -16,7 +16,8 @@
     "lint:styles": "stylelint \"src/**/*.scss\"",
     "lint:styles:fix": "stylelint \"src/**/*.scss\" --fix",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
-    "format:write": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\""
+    "format:write": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
+    "prepare": "husky"
   },
   "private": true,
   "packageManager": "npm@11.9.0",

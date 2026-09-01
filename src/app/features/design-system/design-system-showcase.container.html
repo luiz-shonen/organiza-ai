@@ -515,16 +515,40 @@
             </div>
           </div>
           <div>
-            <p class="org-ds-field-label">Categorias</p>
+            <p class="org-ds-field-label">Categorias Temáticas de Eventos</p>
             <div class="org-ds-selection-layout__chips" aria-label="Categorias de evento">
               <org-chip
-                label="Celebrativo"
-                variant="accent"
+                label="Aniversário"
+                class="cat-aniversario"
                 [selectable]="true"
                 [selected]="true"
               />
-              <org-chip label="Família" [selectable]="true" [gradient]="false" />
-              <org-chip label="Comunidade" [selectable]="true" [gradient]="false" />
+              <org-chip
+                label="Casamento"
+                class="cat-casamento"
+                [selectable]="true"
+                [selected]="true"
+              />
+              <org-chip label="Festa" class="cat-festa" [selectable]="true" [selected]="true" />
+              <org-chip
+                label="Churrasco"
+                class="cat-churrasco"
+                [selectable]="true"
+                [selected]="true"
+              />
+              <org-chip
+                label="Happy Hour"
+                class="cat-happy"
+                [selectable]="true"
+                [selected]="true"
+              />
+              <org-chip
+                label="Formatura"
+                class="cat-formatura"
+                [selectable]="true"
+                [selected]="true"
+              />
+              <org-chip label="Outros" class="cat-outros" [selectable]="true" [selected]="true" />
             </div>
           </div>
           <div>

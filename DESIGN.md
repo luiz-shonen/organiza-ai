@@ -61,8 +61,26 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 --org-surface-panel: rgba(255, 255, 255, 0.85);
 --org-on-surface: #2a101f;
 --org-on-surface-variant: #4a4455;
+--org-primary-container: rgba(255, 77, 148, 0.12);
+--org-secondary-container: rgba(255, 140, 66, 0.14);
 --org-glass-ring-color: rgba(255, 77, 148, 0.18);
 --org-glass-border-width: 1px;
+
+// Category Chip Semantic Tokens (Light)
+--org-cat-aniversario-bg: rgba(255, 77, 148, 0.12);
+--org-cat-aniversario-color: #d81b60;
+--org-cat-casamento-bg: rgba(156, 39, 176, 0.12);
+--org-cat-casamento-color: #8e24aa;
+--org-cat-festa-bg: rgba(255, 140, 66, 0.14);
+--org-cat-festa-color: #e65100;
+--org-cat-churrasco-bg: rgba(244, 67, 54, 0.12);
+--org-cat-churrasco-color: #c62828;
+--org-cat-happy-bg: rgba(255, 200, 55, 0.18);
+--org-cat-happy-color: #b78103;
+--org-cat-formatura-bg: rgba(33, 150, 243, 0.12);
+--org-cat-formatura-color: #1565c0;
+--org-cat-outros-bg: rgba(158, 158, 158, 0.14);
+--org-cat-outros-color: #616161;
 
 // Dark Theme Overrides (.dark)
 --org-surface: #120816;
@@ -71,7 +89,25 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 --org-surface-panel: rgba(38, 20, 48, 0.85);
 --org-on-surface: #f8edf6;
 --org-on-surface-variant: #d4c5d6;
+--org-primary-container: rgba(255, 77, 148, 0.22);
+--org-secondary-container: rgba(255, 140, 66, 0.24);
 --org-glass-ring-color: rgba(255, 77, 148, 0.28);
+
+// Category Chip Semantic Tokens (Dark)
+--org-cat-aniversario-bg: rgba(255, 77, 148, 0.22);
+--org-cat-aniversario-color: #ff80ab;
+--org-cat-casamento-bg: rgba(186, 104, 200, 0.22);
+--org-cat-casamento-color: #ce93d8;
+--org-cat-festa-bg: rgba(255, 140, 66, 0.22);
+--org-cat-festa-color: #ffb74d;
+--org-cat-churrasco-bg: rgba(239, 83, 80, 0.22);
+--org-cat-churrasco-color: #ef9a9a;
+--org-cat-happy-bg: rgba(255, 200, 55, 0.22);
+--org-cat-happy-color: #ffe082;
+--org-cat-formatura-bg: rgba(66, 165, 245, 0.22);
+--org-cat-formatura-color: #90caf9;
+--org-cat-outros-bg: rgba(189, 189, 189, 0.22);
+--org-cat-outros-color: #e0e0e0;
 ```
 
 ### 2.3 Status & Functional Tokens
@@ -142,35 +178,53 @@ box-shadow: 0 8px 32px 0 rgba(255, 77, 148, 0.08);
 ## 5. Canonical Iconography
 
 All system icons use **Material Icons** and are rendered via
-`<org-icon [name]="iconName" [size]="'sm'|'md'|'lg'" [color]="colorString" />`.
-Features must use the typed `OrgIcon` API rather than placing raw Material icon
-markup or a feature-local SVG in templates.
+`<org-icon [name]="iconName" [size]="'sm'|'md'|'lg'" [color]="colorString" />` or `<org-icon-button>`.
+Features must use the typed `OrgIcon` API rather than placing raw Material icon markup (`<mat-icon>`) or local SVGs in templates.
 
-### Supported Canonical Icons (23 Names)
+### Supported Canonical Icons (45 Typed Names)
 
-1. `event` — Calendar / Event
-2. `schedule` — Time / Clock
-3. `place` — Location pin
-4. `person` — User / Profile
-5. `people` — Guests / Attendees
-6. `add` — Add / Create
-7. `edit` — Edit / Modify
-8. `delete` — Remove / Delete
-9. `close` — Dismiss / Close
-10. `check` — Confirm / Success
-11. `share` — Share action
-12. `search` — Filter / Search
-13. `favorite` — Saved / Favorite
-14. `arrow_back` — Back navigation
-15. `arrow_forward` — Forward navigation
-16. `celebration` — Festive / Confetti
-17. `light_mode` — Light theme
-18. `dark_mode` — Dark theme
-19. `palette` — Design System / Themes
-20. `notifications` — Push notifications
-21. `content_copy` — Clipboard copy
-22. `account_circle` — Avatar fallback
-23. `admin_panel_settings` — Superadmin dashboard
+1. `check_circle` — Confirm / Success
+2. `error` — Alert / Error state
+3. `info` — Contextual information
+4. `close` — Dismiss / Close action
+5. `cancel` — Cancel operation
+6. `menu` — Navigation hamburger trigger
+7. `account_circle` — Avatar / User profile fallback
+8. `group_add` — Add collaborator / guest
+9. `how_to_reg` — RSVP presence confirmation
+10. `share` — Share action
+11. `content_copy` — Clipboard copy
+12. `event` — Calendar / Event
+13. `place` — Location pin
+14. `schedule` — Time / Clock
+15. `delete` / `delete_outline` — Remove / Delete action
+16. `edit` / `edit_note` — Edit / Modify
+17. `add` / `add_circle` — Create / Add
+18. `search` — Filter / Search
+19. `mail` — Email
+20. `phone` — WhatsApp / Phone
+21. `palette` — Theme / Design system
+22. `dark_mode` / `light_mode` — Theme mode toggles
+23. `logout` / `login` — Auth session actions
+24. `link` — URL / Hyperlink
+25. `block` / `lock` — Permission restriction
+26. `send` — Send invitation
+27. `arrow_back` / `arrow_forward` / `arrow_forward_ios` — Directional navigation
+28. `save` — Save changes
+29. `download` — File / CSV export
+30. `print` — Print guest list
+31. `checklist` — Item wishlist
+32. `person` / `group` — User and attendee indicators
+33. `notifications_active` — Imminent event alert
+34. `verified_user` / `verified` — Super admin and confirmed badges
+35. `admin_panel_settings` — Admin privileges
+36. `qr_code_2` — Event QR Code share
+37. `pix` — Pix payment / rachadinha
+38. `diversity_3` — Family roster selector
+39. `shopping_cart` — Unclaimed item indicator
+40. `person_add` — RSVP attendee dialog
+41. `expand_more` — Expandable accordion / details
+42. `cloud_off` — Offline network banner
 
 ---
 
@@ -331,7 +385,7 @@ The application supports dynamic seasonal overrides on top of the base theme via
    - Interactive touch targets $\ge 48\text{px} \times 48\text{px}$.
    - All interactive controls have accessible `aria-label`, `aria-expanded`, `aria-current`, or `aria-live`.
    - Color contrast ratio $\ge 4.5:1$ for normal text, $\ge 3:1$ for large text and UI components.
-7. **Strict TypeScript:** `noImplicitAny: true`, zero `any` usage.
+7. **Strict TypeScript & Contracts:** `noImplicitAny: true`, zero `any` usage. Features must pass `node scripts/validate-ui-contracts.mjs --strict`.
 
 ---
 
@@ -339,15 +393,17 @@ The application supports dynamic seasonal overrides on top of the base theme via
 
 ### DO
 
-- Import UI components from `@shared/ui`.
+- Import UI components exclusively from `@shared/ui`.
 - Use `<org-surface>` for card, panel, drawer, dialog, and hero containers.
 - Use `--org-*` semantic tokens rather than hardcoded hex values in stylesheets.
+- Use `<org-icon>` or `<org-icon-button>` with typed `OrgIconName` for all iconography.
 - Test layouts with both Light and Dark themes and across $320\text{px}$, $600\text{px}$, and $1200\text{px}$ viewports.
 - Use `FeedbackService` for user notifications and alerts.
 
 ### DON'T
 
 - Do NOT write custom `.mat-mdc-*` CSS overrides in feature components.
+- Do NOT use raw `<mat-icon>`, `<mat-chip>`, `<button mat-button>` or import `MatIconModule`, `MatButtonModule`, `MatChipsModule` in features.
 - Do NOT nest multiple glassmorphic borders creating double rings.
 - Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
 - Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.

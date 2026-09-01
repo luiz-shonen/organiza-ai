@@ -10,7 +10,7 @@
 
 1. **`DESIGN.md`** — Colour palette, Glassmorphism rules, typography, spacing, `--org-*` tokens, and mobile-first responsive guidelines.
 2. **`README.md`** — Architecture, routes, services, commands, and test structure.
-3. **`.specs/STATE.md`** — Architectural Decision Log (AD-001..AD-042). If a decision is already logged, apply it without questioning it.
+3. **`.specs/STATE.md`** — Architectural Decision Log (AD-001..AD-044). If a decision is already logged, apply it without questioning it.
 
 ---
 
@@ -22,7 +22,7 @@
 - **Signals** — local state uses `signal()`, `computed()`, `effect()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams converted via `toSignal()` (AD-003).
 - **Signal-Driven Form Inputs** — for reactive modal forms and instant validation, prefer signal state binding (`[value]="sig()"`, `(input)="sig.set($any($event.target).value)"`) or Reactive Forms to avoid `[(ngModel)]` lifecycle synchronization delays.
 - **Smart/Dumb Pattern** — Containers (`*.container.ts`) handle Firebase and state. Presentational (`*.component.ts`) receive `input()` and emit `output()`. Zero business logic inside presentational components (AD-011).
-- **Design System Primitives** — Features exclusively consume 32 closed `Org*` components from `@shared/ui` with zero raw Angular Material tags in feature views (AD-039, AD-041).
+- **Design System Primitives** — Features exclusively consume 32 closed `Org*` components from `@shared/ui` with zero raw Angular Material tags in feature views (AD-039, AD-041, AD-044).
 - **Template Separation** — always `templateUrl` + `styleUrl`. Never inline template or styles.
 
 ## 2. Routes & Domains
@@ -117,9 +117,10 @@ Every new feature goes through:
 
 Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.
 
-## 9. Code Quality, Linters & CI Toolchain (AD-042) — Mandatory
+## 9. Code Quality, Linters & CI Toolchain (AD-042, AD-044) — Mandatory
 
 - **Unified Quality Gate**: Run `npm run quality` before committing or completing tasks. It executes ESLint, Stylelint, Design System contract validation (`npm run lint:contracts`), and Prettier format check.
+- **Strict UI Contracts**: `scripts/validate-ui-contracts.mjs` enforces zero raw Material tags (`<mat-icon>`, `<mat-button>`, `<mat-chip>`), zero direct Material module imports outside `@shared/ui`, zero `.mat-` classes in feature SCSS, and zero undeclared glass styles.
 - **Production Build Gate**: `npm run build` must succeed with zero TypeScript or template errors.
 - **ESLint Flat Config (`eslint.config.mjs`)**:
   - `@typescript-eslint/no-explicit-any: error` in production code (`warn` only in `*.spec.ts` / `*.mock.ts`).

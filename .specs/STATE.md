@@ -424,3 +424,12 @@
 **Decision:** The application uses GitHub Actions for continuous delivery to Firebase Hosting and Cloud Firestore: (1) `cd.yml` triggers via `workflow_run` on `CI Pipeline` completion on `main`, injects runtime config (`public/runtime-config.js`) from `FIREBASE_API_KEY`, deploys Firestore security rules and composite indexes via `firebase-tools`, and deploys hosting to the `live` channel via `FirebaseExtended/action-hosting-deploy@v0`; (2) `cd-preview.yml` deploys ephemeral preview channels for pull requests from the origin repository (hosting only, omitting global rules); (3) `ci.yml` employs `dorny/paths-filter@v3` to ensure formatting validation always executes while skipping compute-intensive linters, build, and E2E for markdown-only changes; (4) Firestore security rules explicitly govern `events/{id}/invitations/{email}`, `/{path=**}/invitations/{email}`, and `users/{uid}/family/{memberId}` with verified unit tests in `e2e/rules/`; and (5) `package.json` includes `npm run deploy` for manual local releases.  
 **Rationale:** Guarantees zero-touch, zero-downtime production deployment on green CI, prevents broken invitation and family collection access in production, protects secrets from untrusted forks, and conserves CI runner minutes.  
 **Status:** In force. Specified in 24-firebase-hosting-deploy.
+
+---
+
+### AD-044 — Design Token Category Harmonization and Template UI Contract Enforcement Gate
+
+**Date:** 2026-09-01  
+**Decision:** (1) Introduced canonical semantic category tokens (`--org-cat-*-bg`, `--org-cat-*-color`) in `_semantic.scss` and container tokens (`--org-primary-container`, `--org-secondary-container`) to ensure crisp contrast across Light and Dark themes for all event categories; (2) Expanded `scripts/validate-ui-contracts.mjs` with strict template and module contract rules (`feature-raw-material-tag`, `feature-raw-material-button-attr`, `feature-raw-material-module-import`) prohibiting raw Angular Material elements (`<mat-icon>`, `<button mat-button>`, `<mat-chip>`) or direct module imports across features and the app shell; (3) Migrated all application icons to `<org-icon>` backed by the typed `OrgIconName` union (45 canonical icons).  
+**Rationale:** Eliminates manual/unregulated CSS overrides, ensures category color visibility in dark mode, and enforces closed design system encapsulation automatically on every pre-commit and CI quality run.  
+**Status:** In force.

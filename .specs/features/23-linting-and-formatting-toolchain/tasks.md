@@ -329,10 +329,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `.agents/skills/creating-components/SKILL.md` created with clear smart vs dumb rules
-- [ ] Includes concrete code examples using `input()`, `output()`, and `ChangeDetectionStrategy.OnPush`
-- [ ] References `tdd` and `bem-css` methodology skills by name
-- [ ] Gate check passes: `npm run format:check`
+- [x] `.agents/skills/creating-components/SKILL.md` created with clear smart vs dumb rules
+- [x] Includes concrete code examples using `input()`, `output()`, and `ChangeDetectionStrategy.OnPush`
+- [x] References `tdd` and `bem-css` methodology skills by name
+- [x] Gate check passes: `npm run format:check`
 
 **Tests**: none  
 **Gate**: Quick  

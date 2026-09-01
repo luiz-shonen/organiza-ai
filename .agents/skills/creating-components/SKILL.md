@@ -10,6 +10,7 @@ This skill provides step-by-step instructions for authoring pure presentational 
 ## Core Methodologies
 
 All component authoring must adhere to:
+
 - **`tlc-spec-driven`**: Ensure component contracts (inputs/outputs/models) are specified before implementation; commit changes with atomic Conventional Commits.
 - **`tdd`**: Author component unit tests (`.component.spec.ts`) testing input rendering, output emissions, disabled behavior, and accessibility.
 - **`bem-css`**: Style components using strict BEM SCSS, `--org-*` custom properties, and glassmorphism styling.
@@ -30,32 +31,18 @@ All component authoring must adhere to:
 ## 2. Step-by-Step Component Recipe
 
 ### Step 1: TypeScript Component (`.component.ts`)
+
 ```typescript
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { PartyItem } from '../../../core/models';
-import {
-  OrgBadgeComponent,
-  OrgButtonComponent,
-  OrgSurfaceComponent,
-} from '../../../shared/ui';
+import { OrgBadgeComponent, OrgButtonComponent, OrgSurfaceComponent } from '../../../shared/ui';
 
 @Component({
   selector: 'app-item-card',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatIconModule,
-    OrgSurfaceComponent,
-    OrgBadgeComponent,
-    OrgButtonComponent,
-  ],
+  imports: [MatIconModule, OrgSurfaceComponent, OrgBadgeComponent, OrgButtonComponent],
   templateUrl: './item-card.component.html',
   styleUrl: './item-card.component.scss',
 })
@@ -86,26 +73,24 @@ export class ItemCardComponent {
 ```
 
 ### Step 2: Semantic HTML Template (`.component.html`)
+
 ```html
 <org-surface class="item-card" [class.item-card--claimed]="isAssigned()">
   <div class="item-card__header">
     <h3 class="item-card__title">{{ item().name }}</h3>
     @if (item().quantity > 1) {
-      <org-badge variant="default" [label]="item().quantity + ' un'" />
+    <org-badge variant="default" [label]="item().quantity + ' un'" />
     }
   </div>
 
   @if (item().description) {
-    <p class="item-card__description">{{ item().description }}</p>
+  <p class="item-card__description">{{ item().description }}</p>
   }
 
   <div class="item-card__footer">
     <span class="item-card__status">
-      @if (isAssigned()) {
-        Trazido por: <strong>{{ item().assignedToName || 'Convidado' }}</strong>
-      } @else {
-        Disponível para levar
-      }
+      @if (isAssigned()) { Trazido por: <strong>{{ item().assignedToName || 'Convidado' }}</strong>
+      } @else { Disponível para levar }
     </span>
 
     <org-button
@@ -120,13 +105,16 @@ export class ItemCardComponent {
 ```
 
 ### Step 3: BEM Scoped Styles (`.component.scss`)
+
 ```scss
 .item-card {
   display: flex;
   flex-direction: column;
   gap: var(--org-spacing-3, 12px);
   padding: var(--org-spacing-4, 16px);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
 
   &__header {
     display: flex;
@@ -170,6 +158,7 @@ export class ItemCardComponent {
 ```
 
 ### Step 4: Unit Test Suite (`.component.spec.ts`)
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, vi } from 'vitest';

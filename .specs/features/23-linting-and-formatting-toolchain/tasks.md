@@ -10,7 +10,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 **Spec**: `.specs/features/23-linting-and-formatting-toolchain/spec.md`  
 **Design**: `.specs/features/23-linting-and-formatting-toolchain/design.md`  
-**Status**: Draft  
+**Status**: Draft
 
 ---
 
@@ -18,22 +18,22 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 > Generated from codebase, project guidelines, and spec - confirm before Execute. Guidelines found: `AGENTS.md`, `DESIGN.md`, `.specs/STATE.md`.
 
-| Code Layer | Required Test Type | Coverage Expectation | Location Pattern | Run Command |
-| ---------- | ------------------ | -------------------- | ---------------- | ----------- |
-| Tooling & Linter Configs | none | Build gate passes; linter/formatter execution verified with zero config errors | `eslint.config.mjs`, `stylelint.config.mjs`, `.prettierignore`, `.lintstagedrc.json`, `commitlint.config.mjs` | `npm run quality` |
-| CI / CD Automation | none | YAML syntax valid; quality gate runs fail-fast ahead of E2E | `.github/workflows/quality.yml`, `.github/workflows/e2e.yml` | `npm run build` |
-| Documentation & Skills | none | Markdown valid; recipes, DOs/DON'Ts, smart/dumb patterns, and verification checklists complete | `.agents/skills/**/*.md`, `docs/STYLE_GUIDE.md` | `npm run format:check` |
-| Application & Test Suites | none | All linters and formatters pass clean; existing 426 unit tests & 158 E2E tests maintain 100% pass rate | `src/**/*.{ts,html,scss}`, `e2e/**/*.ts` | `npm run quality && npm test -- --watch=false` |
+| Code Layer                | Required Test Type | Coverage Expectation                                                                                   | Location Pattern                                                                                              | Run Command                                    |
+| ------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Tooling & Linter Configs  | none               | Build gate passes; linter/formatter execution verified with zero config errors                         | `eslint.config.mjs`, `stylelint.config.mjs`, `.prettierignore`, `.lintstagedrc.json`, `commitlint.config.mjs` | `npm run quality`                              |
+| CI / CD Automation        | none               | YAML syntax valid; quality gate runs fail-fast ahead of E2E                                            | `.github/workflows/quality.yml`, `.github/workflows/e2e.yml`                                                  | `npm run build`                                |
+| Documentation & Skills    | none               | Markdown valid; recipes, DOs/DON'Ts, smart/dumb patterns, and verification checklists complete         | `.agents/skills/**/*.md`, `docs/STYLE_GUIDE.md`                                                               | `npm run format:check`                         |
+| Application & Test Suites | none               | All linters and formatters pass clean; existing 426 unit tests & 158 E2E tests maintain 100% pass rate | `src/**/*.{ts,html,scss}`, `e2e/**/*.ts`                                                                      | `npm run quality && npm test -- --watch=false` |
 
 ## Gate Check Commands
 
 > Generated from codebase - confirm before Execute.
 
-| Gate Level | When to Use | Command |
-| ---------- | ----------- | ------- |
-| Quick | After tasks modifying formatting or skill documentation | `npm run format:check` |
-| Full | After tasks modifying linters, git hooks, or CI workflows | `npm run quality` |
-| Build | After phase completion or codebase-wide sweep tasks | `npm run quality && npm run build && npm test -- --watch=false` |
+| Gate Level | When to Use                                               | Command                                                         |
+| ---------- | --------------------------------------------------------- | --------------------------------------------------------------- |
+| Quick      | After tasks modifying formatting or skill documentation   | `npm run format:check`                                          |
+| Full       | After tasks modifying linters, git hooks, or CI workflows | `npm run quality`                                               |
+| Build      | After phase completion or codebase-wide sweep tasks       | `npm run quality && npm run build && npm test -- --watch=false` |
 
 ---
 
@@ -83,13 +83,15 @@ T12 → T13
 **Where**: `eslint.config.mjs`  
 **Depends on**: None  
 **Reuses**: `spec.md` P1 ESLint ACs, `eslint-config-prettier`  
-**Requirement**: LINT-01, LINT-02, LINT-03, LINT-04, LINT-05, LINT-06, LINT-07, LINT-09, LINT-10, LINT-11  
+**Requirement**: LINT-01, LINT-02, LINT-03, LINT-04, LINT-05, LINT-06, LINT-07, LINT-09, LINT-10, LINT-11
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [x] `eslint.config.mjs` exports flat config with TypeScript, HTML template, test override, and Playwright blocks
 - [x] `@angular-eslint/prefer-on-push-component-change-detection`, `@angular-eslint/prefer-standalone`, and `@typescript-eslint/no-explicit-any` set to `error` for production code
 - [x] Test files (`*.spec.ts`, `*.mock.ts`) configure `no-explicit-any: warn`
@@ -109,13 +111,15 @@ T12 → T13
 **Where**: `stylelint.config.mjs`  
 **Depends on**: T1  
 **Reuses**: `DESIGN.md` §2, `stylelint-config-standard-scss`  
-**Requirement**: LINT-12, LINT-13, LINT-14, LINT-15, LINT-16, LINT-17  
+**Requirement**: LINT-12, LINT-13, LINT-14, LINT-15, LINT-16, LINT-17
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: `bem-css`
 
 **Done when**:
+
 - [x] `stylelint.config.mjs` created with `stylelint-config-standard-scss`
 - [x] `declaration-no-important` set to `true` for component stylesheets
 - [x] `color-no-hex` set to `true` with allowlist for `#fff`, `#000`, and `#ffffff`
@@ -135,13 +139,15 @@ T12 → T13
 **Where**: `.prettierignore`  
 **Depends on**: T2  
 **Reuses**: `/.prettierrc`  
-**Requirement**: LINT-18, LINT-19, LINT-20  
+**Requirement**: LINT-18, LINT-19, LINT-20
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [x] `.prettierignore` excludes build outputs, coverage, and screenshot baselines
 - [x] `.prettierrc` configured with 100 print width, single quotes, and Angular HTML parser
 - [x] Gate check passes: `npx prettier --check package.json`
@@ -158,13 +164,15 @@ T12 → T13
 **Where**: `angular.json`  
 **Depends on**: T3  
 **Reuses**: `/package.json`  
-**Requirement**: LINT-01, LINT-02, LINT-08, LINT-12, LINT-13, LINT-18, LINT-19  
+**Requirement**: LINT-01, LINT-02, LINT-08, LINT-12, LINT-13, LINT-18, LINT-19
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [x] `angular.json` contains `architect.lint` target using `@angular-eslint/builder:lint`
 - [x] `package.json` contains scripts: `lint`, `lint:fix`, `lint:styles`, `lint:styles:fix`, `format:check`, `format:write`
 - [x] Required dev dependencies installed in `package.json`
@@ -182,13 +190,15 @@ T12 → T13
 **Where**: `commitlint.config.mjs`  
 **Depends on**: None  
 **Reuses**: AD-012 Conventional Commits standard  
-**Requirement**: LINT-22  
+**Requirement**: LINT-22
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [x] `commitlint.config.mjs` created extending `@commitlint/config-conventional`
 - [x] `.husky/commit-msg` hook invokes `npx --no -- commitlint --edit "${1}"`
 - [x] `package.json` contains `"prepare": "husky"`
@@ -206,16 +216,18 @@ T12 → T13
 **Where**: `.lintstagedrc.json`  
 **Depends on**: T5  
 **Reuses**: `eslint.config.mjs`, `stylelint.config.mjs`, `.prettierrc`  
-**Requirement**: LINT-21, LINT-23  
+**Requirement**: LINT-21, LINT-23
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
-- [ ] `.lintstagedrc.json` maps `*.{ts,html}` to ESLint + Prettier, `*.scss` to Stylelint + Prettier, `*.{json,yml,yaml,md}` to Prettier
-- [ ] `.husky/pre-commit` hook runs `npx lint-staged`
-- [ ] Gate check passes: `npx lint-staged --help`
+
+- [x] `.lintstagedrc.json` maps `*.{ts,html}` to ESLint + Prettier, `*.scss` to Stylelint + Prettier, `*.{json,yml,yaml,md}` to Prettier
+- [x] `.husky/pre-commit` hook runs `npx lint-staged`
+- [x] Gate check passes: `npx lint-staged --help`
 
 **Tests**: none  
 **Gate**: Build  
@@ -229,13 +241,15 @@ T12 → T13
 **Where**: `.github/workflows/quality.yml`  
 **Depends on**: T6  
 **Reuses**: `.github/workflows/e2e.yml`  
-**Requirement**: LINT-29, LINT-30, LINT-31  
+**Requirement**: LINT-29, LINT-30, LINT-31
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [ ] `.github/workflows/quality.yml` created executing `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build`
 - [ ] Workflow triggers on pull requests and pushes to `main`
 - [ ] `.github/workflows/e2e.yml` updated with workflow alignment
@@ -253,13 +267,15 @@ T12 → T13
 **Where**: `.agents/skills/style-guide/SKILL.md`  
 **Depends on**: None  
 **Reuses**: `AGENTS.md`, `DESIGN.md`, `.specs/STATE.md`  
-**Requirement**: LINT-24, LINT-28, LINT-33, LINT-34  
+**Requirement**: LINT-24, LINT-28, LINT-33, LINT-34
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [ ] Broken symlink removed and directory `.agents/skills/style-guide/` created
 - [ ] `SKILL.md` contains comprehensive DOs and DON'Ts for TS, Angular, SCSS/BEM, Firebase, and a11y
 - [ ] Verification checklist mandates `npm run quality` and `npm run build`
@@ -278,13 +294,15 @@ T12 → T13
 **Where**: `.agents/skills/creating-pages/SKILL.md`  
 **Depends on**: T8  
 **Reuses**: AD-011, AD-027, AD-031  
-**Requirement**: LINT-25, LINT-28  
+**Requirement**: LINT-25, LINT-28
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [ ] `.agents/skills/creating-pages/SKILL.md` created with step-by-step recipes
 - [ ] References `tlc-spec-driven` and `tdd` methodology skills by name
 - [ ] Covers container creation, route registration, guards, and dumb child wiring
@@ -302,13 +320,15 @@ T12 → T13
 **Where**: `.agents/skills/creating-components/SKILL.md`  
 **Depends on**: T9  
 **Reuses**: AD-002, AD-003, AD-011  
-**Requirement**: LINT-26, LINT-28  
+**Requirement**: LINT-26, LINT-28
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: `bem-css`
 
 **Done when**:
+
 - [ ] `.agents/skills/creating-components/SKILL.md` created with clear smart vs dumb rules
 - [ ] Includes concrete code examples using `input()`, `output()`, and `ChangeDetectionStrategy.OnPush`
 - [ ] References `tdd` and `bem-css` methodology skills by name
@@ -326,13 +346,15 @@ T12 → T13
 **Where**: `.agents/skills/design-system-usage/SKILL.md`  
 **Depends on**: T10  
 **Reuses**: `src/app/shared/ui/index.ts`, `DESIGN.md`  
-**Requirement**: LINT-27, LINT-28  
+**Requirement**: LINT-27, LINT-28
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: `bem-css`
 
 **Done when**:
+
 - [ ] `.agents/skills/design-system-usage/SKILL.md` catalogs all 32 `Org*` components with properties, events, and examples
 - [ ] Provides direct replacement guide for raw Material elements
 - [ ] References `bem-css` methodology skill by name
@@ -350,13 +372,15 @@ T12 → T13
 **Where**: `package.json`  
 **Depends on**: None  
 **Reuses**: `scripts/validate-ui-contracts.mjs`  
-**Requirement**: LINT-31, LINT-32  
+**Requirement**: LINT-31, LINT-32
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [ ] `package.json` includes `lint:contracts` and `quality` scripts
 - [ ] `npm run lint:contracts` executes `node scripts/validate-ui-contracts.mjs --strict`
 - [ ] `npm run quality` executes all 4 checks in sequence
@@ -374,13 +398,15 @@ T12 → T13
 **Where**: `src/styles.scss`  
 **Depends on**: T12  
 **Reuses**: All toolchain configs created in T1-T12  
-**Requirement**: LINT-01, LINT-06, LINT-12, LINT-18, LINT-29, LINT-32  
+**Requirement**: LINT-01, LINT-06, LINT-12, LINT-18, LINT-29, LINT-32
 
 **Tools**:
+
 - MCP: `filesystem`
 - Skill: NONE
 
 **Done when**:
+
 - [ ] `npm run quality` passes with 0 errors across all linters, formatters, and contracts
 - [ ] `npm test -- --watch=false` passes (426 unit tests green)
 - [ ] `npm run build` succeeds with zero errors
@@ -407,58 +433,58 @@ Phase 4:  T12 ──→ T13
 
 ## Task Granularity Check
 
-| Task | Scope | Status |
-| ---- | ----- | ------ |
-| T1: Configure ESLint Flat Config | 1 config file (`eslint.config.mjs`) | ✅ Granular |
-| T2: Configure Stylelint SCSS Rules | 1 config file (`stylelint.config.mjs`) | ✅ Granular |
-| T3: Configure Prettier Multi-Format | 1 ignore file (`.prettierignore`) | ✅ Granular |
-| T4: Configure Angular.json Architect Target & Scripts | 1 config file (`angular.json`) | ✅ Granular |
-| T5: Configure Commitlint & Husky | 1 config file (`commitlint.config.mjs`) | ✅ Granular |
-| T6: Configure lint-staged & Pre-Commit | 1 config file (`.lintstagedrc.json`) | ✅ Granular |
-| T7: Create CI Quality Gate Workflow | 1 workflow file (`.github/workflows/quality.yml`) | ✅ Granular |
-| T8: Create Developer & AI Style Guide Skill | 1 skill file (`.agents/skills/style-guide/SKILL.md`) | ✅ Granular |
-| T9: Create Routed Page Creation Guide Skill | 1 skill file (`.agents/skills/creating-pages/SKILL.md`) | ✅ Granular |
-| T10: Create Smart/Dumb Component Skill | 1 skill file (`.agents/skills/creating-components/SKILL.md`) | ✅ Granular |
-| T11: Create Design System Usage Skill | 1 skill file (`.agents/skills/design-system-usage/SKILL.md`) | ✅ Granular |
-| T12: Integrate Unified Quality Script | 1 manifest file (`package.json`) | ✅ Granular |
-| T13: Execute Baseline Quality Sweep | Toolchain verification & stylesheet baseline | ✅ Granular |
+| Task                                                  | Scope                                                        | Status      |
+| ----------------------------------------------------- | ------------------------------------------------------------ | ----------- |
+| T1: Configure ESLint Flat Config                      | 1 config file (`eslint.config.mjs`)                          | ✅ Granular |
+| T2: Configure Stylelint SCSS Rules                    | 1 config file (`stylelint.config.mjs`)                       | ✅ Granular |
+| T3: Configure Prettier Multi-Format                   | 1 ignore file (`.prettierignore`)                            | ✅ Granular |
+| T4: Configure Angular.json Architect Target & Scripts | 1 config file (`angular.json`)                               | ✅ Granular |
+| T5: Configure Commitlint & Husky                      | 1 config file (`commitlint.config.mjs`)                      | ✅ Granular |
+| T6: Configure lint-staged & Pre-Commit                | 1 config file (`.lintstagedrc.json`)                         | ✅ Granular |
+| T7: Create CI Quality Gate Workflow                   | 1 workflow file (`.github/workflows/quality.yml`)            | ✅ Granular |
+| T8: Create Developer & AI Style Guide Skill           | 1 skill file (`.agents/skills/style-guide/SKILL.md`)         | ✅ Granular |
+| T9: Create Routed Page Creation Guide Skill           | 1 skill file (`.agents/skills/creating-pages/SKILL.md`)      | ✅ Granular |
+| T10: Create Smart/Dumb Component Skill                | 1 skill file (`.agents/skills/creating-components/SKILL.md`) | ✅ Granular |
+| T11: Create Design System Usage Skill                 | 1 skill file (`.agents/skills/design-system-usage/SKILL.md`) | ✅ Granular |
+| T12: Integrate Unified Quality Script                 | 1 manifest file (`package.json`)                             | ✅ Granular |
+| T13: Execute Baseline Quality Sweep                   | Toolchain verification & stylesheet baseline                 | ✅ Granular |
 
 ---
 
 ## Diagram-Definition Cross-Check
 
-| Task | Depends On (task body) | Diagram Shows | Status |
-| ---- | ---------------------- | ------------- | ------ |
-| T1 | None | Entry point (Phase 1) | ✅ Match |
-| T2 | T1 | T1 → T2 | ✅ Match |
-| T3 | T2 | T2 → T3 | ✅ Match |
-| T4 | T3 | T3 → T4 | ✅ Match |
-| T5 | None | Entry point (Phase 2) | ✅ Match |
-| T6 | T5 | T5 → T6 | ✅ Match |
-| T7 | T6 | T6 → T7 | ✅ Match |
-| T8 | None | Entry point (Phase 3) | ✅ Match |
-| T9 | T8 | T8 → T9 | ✅ Match |
-| T10 | T9 | T9 → T10 | ✅ Match |
-| T11 | T10 | T10 → T11 | ✅ Match |
-| T12 | None | Entry point (Phase 4) | ✅ Match |
-| T13 | T12 | T12 → T13 | ✅ Match |
+| Task | Depends On (task body) | Diagram Shows         | Status   |
+| ---- | ---------------------- | --------------------- | -------- |
+| T1   | None                   | Entry point (Phase 1) | ✅ Match |
+| T2   | T1                     | T1 → T2               | ✅ Match |
+| T3   | T2                     | T2 → T3               | ✅ Match |
+| T4   | T3                     | T3 → T4               | ✅ Match |
+| T5   | None                   | Entry point (Phase 2) | ✅ Match |
+| T6   | T5                     | T5 → T6               | ✅ Match |
+| T7   | T6                     | T6 → T7               | ✅ Match |
+| T8   | None                   | Entry point (Phase 3) | ✅ Match |
+| T9   | T8                     | T8 → T9               | ✅ Match |
+| T10  | T9                     | T9 → T10              | ✅ Match |
+| T11  | T10                    | T10 → T11             | ✅ Match |
+| T12  | None                   | Entry point (Phase 4) | ✅ Match |
+| T13  | T12                    | T12 → T13             | ✅ Match |
 
 ---
 
 ## Test Co-location Validation
 
-| Task | Code Layer Created/Modified | Matrix Requires | Task Says | Status |
-| ---- | --------------------------- | --------------- | --------- | ------ |
-| T1: Configure ESLint Flat Config | Tooling / Config | none (Build gate) | none | ✅ OK |
-| T2: Configure Stylelint SCSS Rules | Tooling / Config | none (Build gate) | none | ✅ OK |
-| T3: Configure Prettier Multi-Format | Tooling / Config | none (Quick gate) | none | ✅ OK |
-| T4: Configure Angular.json Architect & Scripts | Tooling / Config | none (Build gate) | none | ✅ OK |
-| T5: Configure Commitlint & Husky | Tooling / Hooks | none (Build gate) | none | ✅ OK |
-| T6: Configure lint-staged & Pre-Commit | Tooling / Hooks | none (Build gate) | none | ✅ OK |
-| T7: Create CI Quality Gate Workflow | CI / Workflows | none (Build gate) | none | ✅ OK |
-| T8: Create Developer & AI Style Guide Skill | Documentation / Skills | none (Quick gate) | none | ✅ OK |
-| T9: Create Routed Page Creation Guide Skill | Documentation / Skills | none (Quick gate) | none | ✅ OK |
-| T10: Create Smart/Dumb Component Skill | Documentation / Skills | none (Quick gate) | none | ✅ OK |
-| T11: Create Design System Usage Skill | Documentation / Skills | none (Quick gate) | none | ✅ OK |
-| T12: Integrate Unified Quality Script | Tooling / Scripts | none (Full gate) | none | ✅ OK |
-| T13: Execute Baseline Quality Sweep | Application & Tests | none (Build gate) | none | ✅ OK |
+| Task                                           | Code Layer Created/Modified | Matrix Requires   | Task Says | Status |
+| ---------------------------------------------- | --------------------------- | ----------------- | --------- | ------ |
+| T1: Configure ESLint Flat Config               | Tooling / Config            | none (Build gate) | none      | ✅ OK  |
+| T2: Configure Stylelint SCSS Rules             | Tooling / Config            | none (Build gate) | none      | ✅ OK  |
+| T3: Configure Prettier Multi-Format            | Tooling / Config            | none (Quick gate) | none      | ✅ OK  |
+| T4: Configure Angular.json Architect & Scripts | Tooling / Config            | none (Build gate) | none      | ✅ OK  |
+| T5: Configure Commitlint & Husky               | Tooling / Hooks             | none (Build gate) | none      | ✅ OK  |
+| T6: Configure lint-staged & Pre-Commit         | Tooling / Hooks             | none (Build gate) | none      | ✅ OK  |
+| T7: Create CI Quality Gate Workflow            | CI / Workflows              | none (Build gate) | none      | ✅ OK  |
+| T8: Create Developer & AI Style Guide Skill    | Documentation / Skills      | none (Quick gate) | none      | ✅ OK  |
+| T9: Create Routed Page Creation Guide Skill    | Documentation / Skills      | none (Quick gate) | none      | ✅ OK  |
+| T10: Create Smart/Dumb Component Skill         | Documentation / Skills      | none (Quick gate) | none      | ✅ OK  |
+| T11: Create Design System Usage Skill          | Documentation / Skills      | none (Quick gate) | none      | ✅ OK  |
+| T12: Integrate Unified Quality Script          | Tooling / Scripts           | none (Full gate)  | none      | ✅ OK  |
+| T13: Execute Baseline Quality Sweep            | Application & Tests         | none (Build gate) | none      | ✅ OK  |

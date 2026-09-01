@@ -17,34 +17,34 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Out of Scope
 
-| Feature | Reason |
-|---|---|
-| Fixing CSS violations (hardcoded colors, `!important`, token duplication) | Handled in Feature 21 |
-| Fixing smart/dumb violations or dead component removal | Handled in Feature 21 |
-| Fixing `any` types or duplicated logic | Handled in Feature 22 |
-| Updating AGENTS.md, README.md, CONTEXT.md content accuracy | Handled in Feature 22 |
-| Route restructuring (`/admin` vs `/meus-eventos`) | Handled in Feature 22 |
-| Writing the TDD, BEM-CSS, or TLC spec-driven skills themselves | They already exist in `.gemini/config/skills/`; we reference them |
+| Feature                                                                   | Reason                                                            |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Fixing CSS violations (hardcoded colors, `!important`, token duplication) | Handled in Feature 21                                             |
+| Fixing smart/dumb violations or dead component removal                    | Handled in Feature 21                                             |
+| Fixing `any` types or duplicated logic                                    | Handled in Feature 22                                             |
+| Updating AGENTS.md, README.md, CONTEXT.md content accuracy                | Handled in Feature 22                                             |
+| Route restructuring (`/admin` vs `/meus-eventos`)                         | Handled in Feature 22                                             |
+| Writing the TDD, BEM-CSS, or TLC spec-driven skills themselves            | They already exist in `.gemini/config/skills/`; we reference them |
 
 ---
 
 ## Assumptions & Open Questions
 
-| Assumption / decision | Chosen default | Rationale | Confirmed? |
-|---|---|---|---|
-| ESLint uses Flat Config (`eslint.config.mjs`) | Flat Config | ESLint 9+ default; Angular ESLint v19+ supports it | y |
-| `@typescript-eslint/no-explicit-any` set to `error` | error | Codebase is clean after Feature 22; zero `any` types permitted | y |
-| `declaration-no-important` in Stylelint set to `error` for components | error | Codebase is clean after Feature 21; zero `!important` permitted in components | y |
-| Stylelint enforces color token preference via `color-no-hex` as `error` | error + allowlist | Codebase is clean after Feature 21; all colors must use `--org-*` tokens | y |
-| Playwright ESLint enforces web-first assertions and bans `waitForTimeout` | yes | Guarantees deterministic, flake-free E2E tests | y |
-| CI `quality.yml` is separate from `e2e.yml` | separate | Fail-fast: if quality fails, no reason to run Playwright | y |
-| `quality.yml` runs BEFORE E2E (via workflow dependency or PR required checks ordering) | yes | User confirmed: "if it fails, no reason to run the playwright tests" | y |
-| `quality.yml` includes `validate-ui-contracts.mjs` to check design system compliance | yes | Existing script; wired as `npm run lint:contracts` | y |
-| Prettier formats `.yml` files | yes | User requested "formatting as much file as possible" | y |
-| `.agents/` skills live at project root (`.agents/skills/`) and mirror to `docs/STYLE_GUIDE.md` | yes | Accessible to AI agents, local developers, and exportable across the company | y |
-| `.agents/` skills reference `tdd`, `bem-css`, and `tlc-spec-driven` by name | yes | User requested these be mentioned as recommended practices | y |
-| Test-specific ESLint config relaxes some rules (e.g., `no-explicit-any` at `warn`) | separate override | Test mocks legitimately need some casting; warn keeps visibility without blocking | y |
-| Playwright-specific ESLint config uses `eslint-plugin-playwright` | yes | Industry standard; catches common Playwright anti-patterns | y |
+| Assumption / decision                                                                          | Chosen default    | Rationale                                                                         | Confirmed? |
+| ---------------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------- | ---------- |
+| ESLint uses Flat Config (`eslint.config.mjs`)                                                  | Flat Config       | ESLint 9+ default; Angular ESLint v19+ supports it                                | y          |
+| `@typescript-eslint/no-explicit-any` set to `error`                                            | error             | Codebase is clean after Feature 22; zero `any` types permitted                    | y          |
+| `declaration-no-important` in Stylelint set to `error` for components                          | error             | Codebase is clean after Feature 21; zero `!important` permitted in components     | y          |
+| Stylelint enforces color token preference via `color-no-hex` as `error`                        | error + allowlist | Codebase is clean after Feature 21; all colors must use `--org-*` tokens          | y          |
+| Playwright ESLint enforces web-first assertions and bans `waitForTimeout`                      | yes               | Guarantees deterministic, flake-free E2E tests                                    | y          |
+| CI `quality.yml` is separate from `e2e.yml`                                                    | separate          | Fail-fast: if quality fails, no reason to run Playwright                          | y          |
+| `quality.yml` runs BEFORE E2E (via workflow dependency or PR required checks ordering)         | yes               | User confirmed: "if it fails, no reason to run the playwright tests"              | y          |
+| `quality.yml` includes `validate-ui-contracts.mjs` to check design system compliance           | yes               | Existing script; wired as `npm run lint:contracts`                                | y          |
+| Prettier formats `.yml` files                                                                  | yes               | User requested "formatting as much file as possible"                              | y          |
+| `.agents/` skills live at project root (`.agents/skills/`) and mirror to `docs/STYLE_GUIDE.md` | yes               | Accessible to AI agents, local developers, and exportable across the company      | y          |
+| `.agents/` skills reference `tdd`, `bem-css`, and `tlc-spec-driven` by name                    | yes               | User requested these be mentioned as recommended practices                        | y          |
+| Test-specific ESLint config relaxes some rules (e.g., `no-explicit-any` at `warn`)             | separate override | Test mocks legitimately need some casting; warn keeps visibility without blocking | y          |
+| Playwright-specific ESLint config uses `eslint-plugin-playwright`                              | yes               | Industry standard; catches common Playwright anti-patterns                        | y          |
 
 **Open questions:** none — all resolved or logged above.
 
@@ -201,42 +201,42 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Requirement Traceability
 
-| Requirement ID | Story | AC# | Status |
-|---|---|---|---|
-| LINT-01 | P1: ESLint | AC-1 | Implementing (T1, T4, T13) |
-| LINT-02 | P1: ESLint | AC-2 | Implementing (T1, T4) |
-| LINT-03 | P1: ESLint | AC-3 | Implementing (T1) |
-| LINT-04 | P1: ESLint | AC-4 | Implementing (T1) |
-| LINT-05 | P1: ESLint | AC-5 | Implementing (T1) |
-| LINT-06 | P1: ESLint | AC-6 | Implementing (T1, T13) |
-| LINT-07 | P1: ESLint | AC-7 | Implementing (T1) |
-| LINT-08 | P1: ESLint | AC-8 | Implementing (T4) |
-| LINT-09 | P1: ESLint | AC-9 | Implementing (T1) |
-| LINT-10 | P1: ESLint | AC-10 | Implementing (T1) |
-| LINT-11 | P1: ESLint | AC-11 | Implementing (T1) |
-| LINT-12 | P1: Stylelint | AC-12 | Implementing (T2, T4, T13) |
-| LINT-13 | P1: Stylelint | AC-13 | Implementing (T2, T4) |
-| LINT-14 | P1: Stylelint | AC-14 | Implementing (T2) |
-| LINT-15 | P1: Stylelint | AC-15 | Implementing (T2) |
-| LINT-16 | P1: Stylelint | AC-16 | Implementing (T2) |
-| LINT-17 | P1: Stylelint | AC-17 | Implementing (T2) |
-| LINT-18 | P1: Prettier | AC-18 | Implementing (T3, T4, T13) |
-| LINT-19 | P1: Prettier | AC-19 | Implementing (T3, T4) |
-| LINT-20 | P1: Prettier | AC-20 | Implementing (T3) |
-| LINT-21 | P1: Git Hooks | AC-21 | In Tasks (T6) |
-| LINT-22 | P1: Git Hooks | AC-22 | Implementing (T5) |
-| LINT-23 | P1: Git Hooks | AC-23 | In Tasks (T6) |
-| LINT-24 | P1: Style Guide | AC-24 | In Tasks (T8) |
-| LINT-25 | P1: Style Guide | AC-25 | P1: In Tasks (T9) |
-| LINT-26 | P1: Style Guide | AC-26 | In Tasks (T10) |
-| LINT-27 | P1: Style Guide | AC-27 | In Tasks (T11) |
-| LINT-28 | P1: Style Guide | AC-28 | In Tasks (T8, T9, T10, T11) |
-| LINT-29 | P2: CI Gate | AC-29 | In Tasks (T7, T13) |
-| LINT-30 | P2: CI Gate | AC-30 | In Tasks (T7) |
-| LINT-31 | P2: CI Gate | AC-31 | In Tasks (T7, T12) |
-| LINT-32 | P2: Quality Script | AC-32 | In Tasks (T12, T13) |
-| LINT-33 | P2: AI Verification | AC-33 | In Tasks (T8) |
-| LINT-34 | P2: AI Verification | AC-34 | In Tasks (T8) |
+| Requirement ID | Story               | AC#   | Status                      |
+| -------------- | ------------------- | ----- | --------------------------- |
+| LINT-01        | P1: ESLint          | AC-1  | Implementing (T1, T4, T13)  |
+| LINT-02        | P1: ESLint          | AC-2  | Implementing (T1, T4)       |
+| LINT-03        | P1: ESLint          | AC-3  | Implementing (T1)           |
+| LINT-04        | P1: ESLint          | AC-4  | Implementing (T1)           |
+| LINT-05        | P1: ESLint          | AC-5  | Implementing (T1)           |
+| LINT-06        | P1: ESLint          | AC-6  | Implementing (T1, T13)      |
+| LINT-07        | P1: ESLint          | AC-7  | Implementing (T1)           |
+| LINT-08        | P1: ESLint          | AC-8  | Implementing (T4)           |
+| LINT-09        | P1: ESLint          | AC-9  | Implementing (T1)           |
+| LINT-10        | P1: ESLint          | AC-10 | Implementing (T1)           |
+| LINT-11        | P1: ESLint          | AC-11 | Implementing (T1)           |
+| LINT-12        | P1: Stylelint       | AC-12 | Implementing (T2, T4, T13)  |
+| LINT-13        | P1: Stylelint       | AC-13 | Implementing (T2, T4)       |
+| LINT-14        | P1: Stylelint       | AC-14 | Implementing (T2)           |
+| LINT-15        | P1: Stylelint       | AC-15 | Implementing (T2)           |
+| LINT-16        | P1: Stylelint       | AC-16 | Implementing (T2)           |
+| LINT-17        | P1: Stylelint       | AC-17 | Implementing (T2)           |
+| LINT-18        | P1: Prettier        | AC-18 | Implementing (T3, T4, T13)  |
+| LINT-19        | P1: Prettier        | AC-19 | Implementing (T3, T4)       |
+| LINT-20        | P1: Prettier        | AC-20 | Implementing (T3)           |
+| LINT-21        | P1: Git Hooks       | AC-21 | Implementing (T6)           |
+| LINT-22        | P1: Git Hooks       | AC-22 | Implementing (T5)           |
+| LINT-23        | P1: Git Hooks       | AC-23 | Implementing (T6)           |
+| LINT-24        | P1: Style Guide     | AC-24 | In Tasks (T8)               |
+| LINT-25        | P1: Style Guide     | AC-25 | P1: In Tasks (T9)           |
+| LINT-26        | P1: Style Guide     | AC-26 | In Tasks (T10)              |
+| LINT-27        | P1: Style Guide     | AC-27 | In Tasks (T11)              |
+| LINT-28        | P1: Style Guide     | AC-28 | In Tasks (T8, T9, T10, T11) |
+| LINT-29        | P2: CI Gate         | AC-29 | In Tasks (T7, T13)          |
+| LINT-30        | P2: CI Gate         | AC-30 | In Tasks (T7)               |
+| LINT-31        | P2: CI Gate         | AC-31 | In Tasks (T7, T12)          |
+| LINT-32        | P2: Quality Script  | AC-32 | In Tasks (T12, T13)         |
+| LINT-33        | P2: AI Verification | AC-33 | In Tasks (T8)               |
+| LINT-34        | P2: AI Verification | AC-34 | In Tasks (T8)               |
 
 **ID format:** `LINT-[NUMBER]`
 

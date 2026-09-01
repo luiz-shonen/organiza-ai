@@ -89,12 +89,12 @@
 ## Gate Check
 
 - **Gate commands**:
-  - `npm run test:rules`: 13 passed, 0 failed, 0 skipped (3 test files: `family.rules.test.ts`, `invitations.rules.test.ts`, `rsvp.rules.test.ts`)
+  - `npm run test:rules`: 31 passed, 0 failed, 0 skipped (6 test files: `family.rules.test.ts`, `invitations.rules.test.ts`, `rsvp.rules.test.ts`, `items.rules.test.ts`, `events.rules.test.ts`, `users-and-admins.rules.test.ts`)
   - `npm run quality`: 0 errors (ESLint, Stylelint, validate-ui-contracts, Prettier format check all passed)
   - `npm run build`: Angular production build completed successfully in 5.4s
 - **Test count before feature**: 6 rules tests
-- **Test count after feature**: 13 rules tests
-- **Delta**: +7 new unit tests covering family and collaborator invitation rules
+- **Test count after feature**: 31 rules tests
+- **Delta**: +25 new unit tests covering 100% of collections and rules in `firestore.rules`
 - **Skipped tests**: 0
 - **Failures**: 0
 
@@ -134,13 +134,13 @@
 
 **Spec-anchored check**: 21/21 ACs matched spec outcome | 0 spec-precision gaps
 **Sensor**: 3/3 mutations killed
-**Gate**: `npm run test:rules` (13/13 passed), `npm run quality` (0 errors), `npm run build` (success)
+**Gate**: `npm run test:rules` (31/31 passed), `npm run quality` (0 errors), `npm run build` (success)
 
 **What works**:
 
 - Automated production CD pipeline (`cd.yml`) triggered on CI Pipeline success for `main`
 - PR preview deployment (`cd-preview.yml`) for pull requests from same repo
 - Smart CI path filtering (`ci.yml`) skipping heavy jobs on markdown-only changes while enforcing formatting
-- Firestore security rules for `events/{id}/invitations/{email}`, `/{path=**}/invitations/{email}`, and `users/{uid}/family/{memberId}` with 13 passing emulator tests
+- 100% Firestore security rules coverage across all collections (`events`, `guests`, `items`, `invitations`, `users`, `family`, `admins`) with 31 passing emulator tests
 - `npm run deploy` convenience script for local deployment
 - AD-043 decision and architecture documented across `README.md`, `AGENTS.md`, `GEMINI.md`, and `STATE.md`

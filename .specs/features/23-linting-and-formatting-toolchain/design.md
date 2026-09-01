@@ -1,7 +1,7 @@
 # Feature 23 Design: Linting, Formatting & Developer Style Guide Toolchain
 
 **Spec**: `.specs/features/23-linting-and-formatting-toolchain/spec.md`  
-**Status**: Draft  
+**Status**: Draft
 
 ---
 
@@ -11,7 +11,7 @@ Feature 23 establishes a complete, multi-tiered code quality enforcement toolcha
 
 1. **IDE & Local Development Layer**: Real-time linting via ESLint 9+ (Flat Config) for TypeScript and Angular templates, Stylelint for SCSS BEM and design tokens, and Prettier for universal multi-format formatting.
 2. **Git Pre-Commit & Commit-Msg Boundary**: Husky and lint-staged execute automated fixes (`eslint --fix`, `stylelint --fix`, `prettier --write`) on staged files, while commitlint strictly enforces Conventional Commits (`feat(...)`, `fix(...)`, etc.).
-3. **CI/CD Quality Gate**: A standalone GitHub Actions workflow (`quality.yml`) runs fail-fast before E2E suites, asserting `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build`.
+3. **CI/CD Quality Gate**: A unified GitHub Actions workflow (`.github/workflows/ci.yml`) runs the `quality` job fail-fast before E2E suites (`needs: quality`), asserting `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build`.
 4. **Agent & Contributor Knowledge Layer**: Project-local skills in `.agents/skills/` (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`) and `docs/STYLE_GUIDE.md` give AI agents and human engineers explicit, actionable recipes for smart/dumb architecture and design system component usage.
 
 ```mermaid
@@ -34,14 +34,15 @@ graph TD
         HuskyMsg --> Commitlint["commitlint (Conventional Commits)"]
     end
 
-    subgraph CI / CD Quality Gate
-        Commitlint -->|git push / PR| CI["quality.yml (Fail-Fast Gate)"]
-        CI --> CILint["npm run lint"]
-        CI --> CIStyles["npm run lint:styles"]
-        CI --> CIContracts["npm run lint:contracts"]
-        CI --> CIFormat["npm run format:check"]
-        CI --> CIBuild["npm run build"]
-        CI -->|Pass| CIE2E["e2e.yml (Playwright Suites)"]
+    subgraph CI / CD Pipeline
+        Commitlint -->|git push / PR| CI["ci.yml (Pipeline)"]
+        CI --> QualityJob["quality (Job: Fail-Fast Gate)"]
+        QualityJob --> CILint["npm run lint"]
+        QualityJob --> CIStyles["npm run lint:styles"]
+        QualityJob --> CIContracts["npm run lint:contracts"]
+        QualityJob --> CIFormat["npm run format:check"]
+        QualityJob --> CIBuild["npm run build"]
+        QualityJob -->|needs: quality| CIE2E["e2e (Job: Playwright Suites)"]
     end
 ```
 
@@ -51,24 +52,24 @@ graph TD
 
 ### Existing Components & Configurations to Leverage
 
-| Component / File | Location | How to Use |
-| ---------------- | -------- | ---------- |
-| `scripts/validate-ui-contracts.mjs` | `scripts/validate-ui-contracts.mjs` | Wire directly into `npm run lint:contracts` and CI `quality.yml` to enforce Design System component contracts. |
-| `.prettierrc` | `/.prettierrc` | Existing configuration (single quotes, 100 print width, Angular HTML parser) preserved and expanded with `.prettierignore`. |
-| `.github/workflows/e2e.yml` | `.github/workflows/e2e.yml` | Update workflow trigger or dependency chain to run downstream of `quality.yml`. |
-| `angular.json` | `/angular.json` | Add `@angular-eslint/builder:lint` target under `architect.lint` enabling `ng lint`. |
-| `DESIGN.md` | `/DESIGN.md` | Single source of truth for color tokens (`--org-*`), typography, and BEM conventions referenced by Stylelint rules and style guide skills. |
-| `AGENTS.md` | `/AGENTS.md` | High-level engineering guidelines extracted into granular `.agents/skills/` playbooks. |
+| Component / File                    | Location                            | How to Use                                                                                                                                 |
+| ----------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `scripts/validate-ui-contracts.mjs` | `scripts/validate-ui-contracts.mjs` | Wire directly into `npm run lint:contracts` and CI `quality` job to enforce Design System component contracts.                             |
+| `.prettierrc`                       | `/.prettierrc`                      | Existing configuration (single quotes, 100 print width, Angular HTML parser) preserved and expanded with `.prettierignore`.                |
+| `.github/workflows/ci.yml`          | `.github/workflows/ci.yml`          | Unified workflow chaining `quality` and `e2e` jobs via `needs: quality`.                                                                   |
+| `angular.json`                      | `/angular.json`                     | Add `@angular-eslint/builder:lint` target under `architect.lint` enabling `ng lint`.                                                       |
+| `DESIGN.md`                         | `/DESIGN.md`                        | Single source of truth for color tokens (`--org-*`), typography, and BEM conventions referenced by Stylelint rules and style guide skills. |
+| `AGENTS.md`                         | `/AGENTS.md`                        | High-level engineering guidelines extracted into granular `.agents/skills/` playbooks.                                                     |
 
 ### Integration Points
 
-| System | Integration Method |
-| ------ | ------------------ |
-| Angular CLI (`ng lint`) | `@angular-eslint/builder` configured in `angular.json`. |
-| ESLint Flat Config | `eslint.config.mjs` unifying TypeScript, Angular HTML templates, Unit Tests, and Playwright E2E files. |
-| Stylelint SCSS | `stylelint.config.mjs` running against `src/**/*.scss` enforcing BEM, `--org-*` tokens, and `!important` ban. |
-| Git Lifecycle | Husky `prepare` script initializing `.husky/` hooks for pre-commit and commit-msg. |
-| GitHub Actions | `.github/workflows/quality.yml` running on pull requests and pushes to `main`. |
+| System                  | Integration Method                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Angular CLI (`ng lint`) | `@angular-eslint/builder` configured in `angular.json`.                                                       |
+| ESLint Flat Config      | `eslint.config.mjs` unifying TypeScript, Angular HTML templates, Unit Tests, and Playwright E2E files.        |
+| Stylelint SCSS          | `stylelint.config.mjs` running against `src/**/*.scss` enforcing BEM, `--org-*` tokens, and `!important` ban. |
+| Git Lifecycle           | Husky `prepare` script initializing `.husky/` hooks for pre-commit and commit-msg.                            |
+| GitHub Actions          | `.github/workflows/ci.yml` running `quality` and `e2e` jobs on pull requests and pushes to `main`.            |
 
 ---
 
@@ -79,16 +80,16 @@ graph TD
 - **Purpose**: Enforce TypeScript strict typing, Angular Standalone/OnPush architecture, accessible templates, and Playwright E2E standards.
 - **Location**: `/eslint.config.mjs`
 - **Rules & Scopes**:
-  - **Production TypeScript (`src/**/*.ts` excluding tests)**:
+  - **Production TypeScript (`src/**/\*.ts` excluding tests)\*\*:
     - `@angular-eslint/prefer-on-push-component-change-detection`: `error`
     - `@angular-eslint/prefer-standalone`: `error`
     - `@angular-eslint/component-selector`: `error` (prefix: `org` or `app`, style: `kebab-case`)
     - `@typescript-eslint/no-explicit-any`: `error`
     - `no-console`: `warn` (allow `warn`, `error`, `info`)
-  - **Unit Tests & Mocks (`src/**/*.spec.ts`, `src/**/*.mock.ts`, `src/app/testing/**`)**:
+  - **Unit Tests & Mocks (`src/**/_.spec.ts`, `src/\*\*/_.mock.ts`, `src/app/testing/**`)**:
     - `@typescript-eslint/no-explicit-any`: `warn`
     - `@angular-eslint/prefer-on-push-component-change-detection`: `off`
-  - **Playwright E2E Tests (`e2e/**/*.ts`)**:
+  - **Playwright E2E Tests (`e2e/**/\*.ts`)\*\*:
     - `playwright/no-wait-for-timeout`: `warn`
     - `playwright/prefer-web-first-assertions`: `warn`
     - `playwright/prefer-to-have-count`: `warn`
@@ -98,7 +99,7 @@ graph TD
     - `playwright/no-focused-test`: `error`
     - `playwright/expect-expect`: `warn`
     - `playwright/no-force-option`: `warn`
-  - **Angular HTML Templates (`src/**/*.html`)**:
+  - **Angular HTML Templates (`src/**/\*.html`)\*\*:
     - `@angular-eslint/template/accessibility-alt-text`: `warn`
     - `@angular-eslint/template/accessibility-label-has-associated-control`: `warn`
     - `@angular-eslint/template/click-events-have-key-events`: `warn`
@@ -132,17 +133,22 @@ graph TD
   - `*.{json,yml,yaml,md}`: `["prettier --write"]`
 - **commitlint**: Extends `@commitlint/config-conventional` (valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`).
 
-### 5. CI Quality Gate Workflow (`.github/workflows/quality.yml`)
+### 5. CI Quality Gate Workflow (`.github/workflows/ci.yml`)
 
-- **Purpose**: Automated blocking PR gate running ahead of E2E tests.
-- **Location**: `/.github/workflows/quality.yml`
-- **Steps**:
+- **Purpose**: Automated blocking PR pipeline running Quality Gate ahead of E2E tests (`e2e` job with `needs: quality`).
+- **Location**: `/.github/workflows/ci.yml`
+- **Quality Job Steps**:
   1. `npm ci`
   2. `npm run lint` (ESLint TypeScript & Templates)
   3. `npm run lint:styles` (Stylelint SCSS)
   4. `npm run lint:contracts` (Design System UI Contracts check)
   5. `npm run format:check` (Prettier Check)
   6. `npm run build` (Production Build Verification)
+- **E2E Job Steps** (`needs: quality`):
+  1. `npm ci`
+  2. `npx playwright install --with-deps` (cached)
+  3. `npm run test:e2e`
+  4. Playwright report upload on failure
 
 ### 6. `.agents/` Skills & Developer Style Guide
 
@@ -157,35 +163,35 @@ graph TD
 
 ## Error Handling Strategy
 
-| Error Scenario | Handling | User / Developer Impact |
-| -------------- | -------- | ----------------------- |
-| Commit message does not follow Conventional Commits | Husky `commit-msg` hook invokes `commitlint` and aborts commit with clear syntax instructions | Commit is blocked locally with explanatory error message. |
-| Staged file contains unformatted code or fixable lint errors | `lint-staged` auto-applies `eslint --fix`, `stylelint --fix`, and `prettier --write` and re-stages | Commit succeeds with cleanly formatted, compliant code. |
-| Staged file contains unfixable lint error (e.g. `any` in production code or `!important`) | `lint-staged` exits with code 1 and aborts commit | Commit is blocked; developer fixes violation before proceeding. |
-| Developer runs `git commit --no-verify` to bypass local hooks | GitHub Actions `quality.yml` workflow catches violations on pull request | PR cannot be merged; CI fails-fast before running E2E. |
-| Husky `prepare` script runs in CI environment where git hooks are unnecessary | Husky checks `CI=true` and skips hook installation gracefully | `npm ci` succeeds cleanly in GitHub Actions without errors. |
+| Error Scenario                                                                            | Handling                                                                                           | User / Developer Impact                                         |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Commit message does not follow Conventional Commits                                       | Husky `commit-msg` hook invokes `commitlint` and aborts commit with clear syntax instructions      | Commit is blocked locally with explanatory error message.       |
+| Staged file contains unformatted code or fixable lint errors                              | `lint-staged` auto-applies `eslint --fix`, `stylelint --fix`, and `prettier --write` and re-stages | Commit succeeds with cleanly formatted, compliant code.         |
+| Staged file contains unfixable lint error (e.g. `any` in production code or `!important`) | `lint-staged` exits with code 1 and aborts commit                                                  | Commit is blocked; developer fixes violation before proceeding. |
+| Developer runs `git commit --no-verify` to bypass local hooks                             | GitHub Actions `.github/workflows/ci.yml` quality job catches violations on pull request           | PR cannot be merged; CI fails-fast before running E2E.          |
+| Husky `prepare` script runs in CI environment where git hooks are unnecessary             | Husky checks `CI=true` and skips hook installation gracefully                                      | `npm ci` succeeds cleanly in GitHub Actions without errors.     |
 
 ---
 
 ## Risks & Concerns
 
-| Concern | Location (file:line) | Impact | Mitigation |
-| ------- | -------------------- | ------ | ---------- |
-| Legacy broken `.agents` symlink | `/.agents` | May cause file access errors or duplicate path resolution | Remove broken symlink and create a clean project-local `.agents/skills/` directory structure. |
-| ESLint Flat Config syntax incompatibility with older tooling | `eslint.config.mjs` | Tooling failure if dependencies mismatch | Use official `@angular-eslint` 19+ / 22+ Flat Config presets and verified dependencies. |
-| Strict BEM regex flagging valid third-party or utility class names | `stylelint.config.mjs` | False positive stylelint errors | Scope BEM regex to component stylesheets; allow Material/Design System custom properties and standard BEM modifiers. |
-| Test mocks requiring type assertions flagged by `no-explicit-any` | `src/**/*.spec.ts` | Test authoring friction | Configure explicit ESLint override for `*.spec.ts` and `*.mock.ts` with `no-explicit-any: warn`. |
+| Concern                                                            | Location (file:line)   | Impact                                                    | Mitigation                                                                                                           |
+| ------------------------------------------------------------------ | ---------------------- | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Legacy broken `.agents` symlink                                    | `/.agents`             | May cause file access errors or duplicate path resolution | Remove broken symlink and create a clean project-local `.agents/skills/` directory structure.                        |
+| ESLint Flat Config syntax incompatibility with older tooling       | `eslint.config.mjs`    | Tooling failure if dependencies mismatch                  | Use official `@angular-eslint` 19+ / 22+ Flat Config presets and verified dependencies.                              |
+| Strict BEM regex flagging valid third-party or utility class names | `stylelint.config.mjs` | False positive stylelint errors                           | Scope BEM regex to component stylesheets; allow Material/Design System custom properties and standard BEM modifiers. |
+| Test mocks requiring type assertions flagged by `no-explicit-any`  | `src/**/*.spec.ts`     | Test authoring friction                                   | Configure explicit ESLint override for `*.spec.ts` and `*.mock.ts` with `no-explicit-any: warn`.                     |
 
 ---
 
 ## Tech Decisions
 
-| Decision | Choice | Rationale |
-| -------- | ------ | --------- |
-| ESLint Configuration Format | Flat Config (`eslint.config.mjs`) | Modern standard for ESLint 9+ and Angular ESLint 19+; future-proof and modular. |
-| SCSS Color Enforcement | `color-no-hex` as `error` with `#fff`, `#000`, `#ffffff` allowlist | Enforces universal usage of `--org-*` tokens established in Feature 21. |
-| Git Hook Automation | Husky + lint-staged + commitlint | Zero-overhead local enforcement preventing bad commits from reaching repository. |
-| CI Quality Workflow Architecture | Standalone `quality.yml` workflow executed before `e2e.yml` | Fail-fast principle: saves CI compute time by rejecting non-compliant PRs before spinning up Playwright browsers. |
-| Style Guide & Skills Placement | `.agents/skills/` with export mirror in `docs/STYLE_GUIDE.md` | Makes playbooks directly discoverable by AI tools while exportable as corporate standard. |
+| Decision                         | Choice                                                                    | Rationale                                                                                                         |
+| -------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ESLint Configuration Format      | Flat Config (`eslint.config.mjs`)                                         | Modern standard for ESLint 9+ and Angular ESLint 19+; future-proof and modular.                                   |
+| SCSS Color Enforcement           | `color-no-hex` as `error` with `#fff`, `#000`, `#ffffff` allowlist        | Enforces universal usage of `--org-*` tokens established in Feature 21.                                           |
+| Git Hook Automation              | Husky + lint-staged + commitlint                                          | Zero-overhead local enforcement preventing bad commits from reaching repository.                                  |
+| CI Quality Workflow Architecture | Chained `.github/workflows/ci.yml` pipeline (`e2e` with `needs: quality`) | Fail-fast principle: saves CI compute time by rejecting non-compliant PRs before spinning up Playwright browsers. |
+| Style Guide & Skills Placement   | `.agents/skills/` with export mirror in `docs/STYLE_GUIDE.md`             | Makes playbooks directly discoverable by AI tools while exportable as corporate standard.                         |
 
 > **Project-Level Decision Logged**: `AD-042 — Comprehensive Code Quality Toolchain & Developer Style Guide` appended to `.specs/STATE.md`.

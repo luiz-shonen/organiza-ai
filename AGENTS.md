@@ -110,3 +110,21 @@ Every new feature goes through:
 5. **Validation** — independent Verifier sub-agent + Discrimination Sensor.
 
 Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.
+
+## 9. Code Quality, Linters & CI Toolchain (AD-042) — Mandatory
+
+- **Unified Quality Gate**: Run `npm run quality` before committing or completing tasks. It executes ESLint, Stylelint, Design System contract validation (`npm run lint:contracts`), and Prettier format check.
+- **Production Build Gate**: `npm run build` must succeed with zero TypeScript or template errors.
+- **ESLint Flat Config (`eslint.config.mjs`)**:
+  - `@typescript-eslint/no-explicit-any: error` in production code (`warn` only in `*.spec.ts` / `*.mock.ts`).
+  - `@angular-eslint/prefer-on-push-component-change-detection: error` on all components.
+  - `@angular-eslint/prefer-standalone: error` on all components.
+  - Template accessibility rules (`alt-text`, `label-has-associated-control`, `click-events-have-key-events`).
+  - Playwright E2E rules (`eslint-plugin-playwright`).
+- **Stylelint (`stylelint.config.mjs`)**:
+  - Strict BEM selector pattern: `^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$`.
+  - `declaration-no-important: true` (zero `!important` in component stylesheets).
+  - `color-no-hex: true` (all colors must use `--org-*` tokens, with allowlist for `#fff`/`#000`/`#ffffff`).
+- **Prettier**: Formats `.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md` files.
+- **Git Hooks**: Husky pre-commit (`lint-staged` auto-formatting) and commit-msg (`commitlint` enforcing Conventional Commits).
+- **CI/CD Pipeline (`.github/workflows/ci.yml`)**: Single pipeline running `quality` first, and `e2e` downstream with `needs: quality`.

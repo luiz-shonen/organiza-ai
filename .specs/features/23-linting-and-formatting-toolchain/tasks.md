@@ -21,7 +21,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 | Code Layer                | Required Test Type | Coverage Expectation                                                                                   | Location Pattern                                                                                              | Run Command                                    |
 | ------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
 | Tooling & Linter Configs  | none               | Build gate passes; linter/formatter execution verified with zero config errors                         | `eslint.config.mjs`, `stylelint.config.mjs`, `.prettierignore`, `.lintstagedrc.json`, `commitlint.config.mjs` | `npm run quality`                              |
-| CI / CD Automation        | none               | YAML syntax valid; quality gate runs fail-fast ahead of E2E                                            | `.github/workflows/quality.yml`, `.github/workflows/e2e.yml`                                                  | `npm run build`                                |
+| CI / CD Automation        | none               | YAML syntax valid; quality gate runs fail-fast ahead of E2E                                            | `.github/workflows/ci.yml`                                                                                    | `npm run build`                                |
 | Documentation & Skills    | none               | Markdown valid; recipes, DOs/DON'Ts, smart/dumb patterns, and verification checklists complete         | `.agents/skills/**/*.md`, `docs/STYLE_GUIDE.md`                                                               | `npm run format:check`                         |
 | Application & Test Suites | none               | All linters and formatters pass clean; existing 426 unit tests & 158 E2E tests maintain 100% pass rate | `src/**/*.{ts,html,scss}`, `e2e/**/*.ts`                                                                      | `npm run quality && npm test -- --watch=false` |
 
@@ -51,7 +51,7 @@ T1 → T2 → T3 → T4
 
 ### Phase 2: Git Hooks & CI Quality Gate
 
-Configure commitlint for Conventional Commits, lint-staged for automated pre-commit fixing, and the fail-fast `quality.yml` GitHub Actions workflow.
+Configure commitlint for Conventional Commits, lint-staged for automated pre-commit fixing, and the fail-fast `ci.yml` GitHub Actions workflow.
 
 ```
 T5 → T6 → T7
@@ -237,10 +237,10 @@ T12 → T13
 
 ### T7: Create CI Quality Gate Workflow & Chain E2E
 
-**What**: Create `.github/workflows/quality.yml` running lint, styles, contracts, format, and build, and update `.github/workflows/e2e.yml` to run downstream of quality checks.  
-**Where**: `.github/workflows/quality.yml`  
+**What**: Create `.github/workflows/ci.yml` running quality checks (lint, styles, contracts, format, and build) and chaining downstream Playwright E2E tests (`needs: quality`).  
+**Where**: `.github/workflows/ci.yml`  
 **Depends on**: T6  
-**Reuses**: `.github/workflows/e2e.yml`  
+**Reuses**: `.github/workflows/ci.yml`  
 **Requirement**: LINT-29, LINT-30, LINT-31
 
 **Tools**:
@@ -250,9 +250,9 @@ T12 → T13
 
 **Done when**:
 
-- [x] `.github/workflows/quality.yml` created executing `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build`
+- [x] `.github/workflows/ci.yml` created executing `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build` in `quality` job
 - [x] Workflow triggers on pull requests and pushes to `main`
-- [x] `.github/workflows/e2e.yml` updated with workflow alignment
+- [x] `e2e` job updated with `needs: quality` workflow alignment
 - [x] Gate check passes: `npm run build`
 
 **Tests**: none  
@@ -441,7 +441,7 @@ Phase 4:  T12 ──→ T13
 | T4: Configure Angular.json Architect Target & Scripts | 1 config file (`angular.json`)                               | ✅ Granular |
 | T5: Configure Commitlint & Husky                      | 1 config file (`commitlint.config.mjs`)                      | ✅ Granular |
 | T6: Configure lint-staged & Pre-Commit                | 1 config file (`.lintstagedrc.json`)                         | ✅ Granular |
-| T7: Create CI Quality Gate Workflow                   | 1 workflow file (`.github/workflows/quality.yml`)            | ✅ Granular |
+| T7: Create CI Quality Gate Workflow                   | 1 workflow file (`.github/workflows/ci.yml`)                 | ✅ Granular |
 | T8: Create Developer & AI Style Guide Skill           | 1 skill file (`.agents/skills/style-guide/SKILL.md`)         | ✅ Granular |
 | T9: Create Routed Page Creation Guide Skill           | 1 skill file (`.agents/skills/creating-pages/SKILL.md`)      | ✅ Granular |
 | T10: Create Smart/Dumb Component Skill                | 1 skill file (`.agents/skills/creating-components/SKILL.md`) | ✅ Granular |

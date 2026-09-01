@@ -10,7 +10,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 - [x] Strict Stylelint config enforcing BEM, `!important` prohibition, design token usage, duplicate class prevention across components, and color token validation against `DESIGN.md` as error-level rules
 - [x] Prettier formatting all file types (`.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md`) enforced on commit
 - [x] Commit message format enforced via commitlint (Conventional Commits)
-- [x] CI quality gate (`quality.yml`) runs BEFORE Playwright E2E and blocks PRs on violations, including Design System contract validation
+- [x] CI quality gate (`.github/workflows/ci.yml`) runs BEFORE Playwright E2E and blocks PRs on violations, including Design System contract validation
 - [x] `.agents/` skills folder with style guide, smart/dumb component recipes, page creation guides, and design system usage reference
 - [x] Company-wide style guide documentation exportable and mirrored in `DESIGN.md` and `/design-system`
 - [x] AI agent verification: all linters pass clean after any AI-generated change
@@ -37,9 +37,8 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | `declaration-no-important` in Stylelint set to `error` for components                          | error             | Codebase is clean after Feature 21; zero `!important` permitted in components     | y          |
 | Stylelint enforces color token preference via `color-no-hex` as `error`                        | error + allowlist | Codebase is clean after Feature 21; all colors must use `--org-*` tokens          | y          |
 | Playwright ESLint enforces web-first assertions and bans `waitForTimeout`                      | yes               | Guarantees deterministic, flake-free E2E tests                                    | y          |
-| CI `quality.yml` is separate from `e2e.yml`                                                    | separate          | Fail-fast: if quality fails, no reason to run Playwright                          | y          |
-| `quality.yml` runs BEFORE E2E (via workflow dependency or PR required checks ordering)         | yes               | User confirmed: "if it fails, no reason to run the playwright tests"              | y          |
-| `quality.yml` includes `validate-ui-contracts.mjs` to check design system compliance           | yes               | Existing script; wired as `npm run lint:contracts`                                | y          |
+| CI `quality` job runs before `e2e` in `.github/workflows/ci.yml` via `needs: quality`          | chained jobs      | Fail-fast: if quality fails, no reason to run Playwright                          | y          |
+| `quality` job includes `validate-ui-contracts.mjs` to check design system compliance           | yes               | Existing script; wired as `npm run lint:contracts`                                | y          |
 | Prettier formats `.yml` files                                                                  | yes               | User requested "formatting as much file as possible"                              | y          |
 | `.agents/` skills live at project root (`.agents/skills/`) and mirror to `docs/STYLE_GUIDE.md` | yes               | Accessible to AI agents, local developers, and exportable across the company      | y          |
 | `.agents/` skills reference `tdd`, `bem-css`, and `tlc-spec-driven` by name                    | yes               | User requested these be mentioned as recommended practices                        | y          |
@@ -153,11 +152,11 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 **Acceptance Criteria**:
 
-29. WHEN a PR is opened or pushed to `main` THEN the system SHALL run a `quality.yml` GitHub Actions workflow that executes `npm run lint`, `npm run lint:styles`, `npm run lint:contracts`, `npm run format:check`, and `npm run build` in sequence, failing the workflow if any step exits non-zero. <!-- event-driven -->
-30. The `e2e.yml` workflow SHALL depend on `quality.yml` succeeding before running Playwright tests, so that E2E tests only execute on quality-passing code. <!-- ubiquitous -->
-31. The `quality.yml` workflow SHALL execute `npm run lint:contracts` (`validate-ui-contracts.mjs`) to strictly enforce that no feature component declares raw Material selectors, declares Material tokens, bypasses `Org*` components, or uses duplicate glassmorphic rules. <!-- ubiquitous -->
+29. WHEN a PR is opened or pushed to `main` THEN the system SHALL run the `quality` job in `.github/workflows/ci.yml` that executes `npm run lint`, `npm run lint:styles`, `npm run lint:contracts`, `npm run format:check`, and `npm run build` in sequence, failing the workflow if any step exits non-zero. <!-- event-driven -->
+30. The `e2e` job in `.github/workflows/ci.yml` SHALL declare `needs: quality` so that Playwright E2E tests only execute on quality-passing code. <!-- ubiquitous -->
+31. The `quality` job SHALL execute `npm run lint:contracts` (`validate-ui-contracts.mjs`) to strictly enforce that no feature component declares raw Material selectors, declares Material tokens, bypasses `Org*` components, or uses duplicate glassmorphic rules. <!-- ubiquitous -->
 
-**Independent Test**: Open a PR with a lint violation or design system contract breach → `quality.yml` fails → `e2e.yml` does not run.
+**Independent Test**: Open a PR with a lint violation or design system contract breach → `quality` job fails → `e2e` job does not run.
 
 ---
 
@@ -193,7 +192,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 ## Edge Cases
 
 - IF Husky `prepare` script runs during `npm install` in CI (where hooks are unnecessary) THEN the system SHALL handle gracefully via Husky's built-in CI detection (`CI=true` exits 0). <!-- unwanted-behavior -->
-- IF a developer bypasses hooks with `git commit --no-verify` THEN the CI `quality.yml` gate SHALL still catch violations on PR. <!-- unwanted-behavior -->
+- IF a developer bypasses hooks with `git commit --no-verify` THEN the CI `quality` job in `ci.yml` SHALL still catch violations on PR. <!-- unwanted-behavior -->
 - IF lint-staged encounters a file failing both ESLint and Prettier THEN the system SHALL run ESLint `--fix` first, then Prettier `--write`, to avoid conflicts. <!-- unwanted-behavior -->
 - IF `eslint-plugin-playwright` is not compatible with the project's ESLint version THEN the system SHALL fall back to manual Playwright-specific rules in the flat config without the plugin. <!-- unwanted-behavior -->
 
@@ -254,7 +253,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 - [x] `git commit` with bad message format is rejected by commitlint
 - [x] `git commit` with staged unformatted file triggers auto-fix via lint-staged
 - [x] `npm run quality` chains lint + lint:styles + lint:contracts + format:check
-- [x] `quality.yml` CI workflow runs on PRs and blocks E2E if it fails
+- [x] `.github/workflows/ci.yml` pipeline runs on PRs and blocks E2E if Quality Gate fails
 - [x] `.agents/skills/` contains 4 actionable SKILL.md files with smart/dumb recipes and code examples
 - [x] `docs/STYLE_GUIDE.md` is populated for company-wide style guide export
 - [x] Each SKILL.md references `tdd`, `bem-css`, and `tlc-spec-driven` skills

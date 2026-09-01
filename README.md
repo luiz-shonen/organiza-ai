@@ -4,13 +4,15 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 
 ## Stack
 
-| Layer         | Technology                                  |
-| ------------- | ------------------------------------------- |
-| Framework     | Angular 22 (Standalone Components, Signals) |
-| UI Components | Angular Material 22 (MDC tokens)            |
-| Backend       | Firebase (Firestore, Auth, PWA/NGSW)        |
-| Unit Tests    | Vitest 4                                    |
-| E2E Tests     | Playwright 1.62                             |
+| Layer          | Technology                                  |
+| -------------- | ------------------------------------------- |
+| Framework      | Angular 22 (Standalone Components, Signals) |
+| UI Components  | Angular Material 22 (MDC tokens)            |
+| Backend        | Firebase (Firestore, Auth, PWA/NGSW)        |
+| Quality / Lint | ESLint 9 Flat Config, Stylelint, Prettier   |
+| Git Hooks      | Husky, lint-staged, commitlint              |
+| Unit Tests     | Vitest 4                                    |
+| E2E Tests      | Playwright 1.62                             |
 
 ## Architecture
 
@@ -53,6 +55,7 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 - **Atomic E2E Test Philosophy** — each test sets up its own state, asserts one step, captures a screenshot (AD-030)
 - **Mobile-First Responsive Layouts & Zero-Overflow Invariant** — fluid single-column stacking on mobile, $\ge 48\text{ px}$ touch targets, automated `assertNoHorizontalOverflow` (AD-031)
 - **Component-First Design System Primitives** — 32 closed `Org*` components in `@shared/ui` with zero raw Material tags in feature views (AD-039, AD-041)
+- **Comprehensive Code Quality Toolchain** — ESLint Flat Config, Stylelint BEM/Tokens, Prettier, Husky, commitlint, and fail-fast CI quality gate (AD-042)
 - **Spec-Driven Development** — TLC Spec-Driven v3.3.0; every feature goes through Specify → (Design) → (Tasks) → Execute → Independent Verification (AD-013)
 
 For the full decision log, read `.specs/STATE.md`.
@@ -73,7 +76,7 @@ Design-token & layout invariants verified in E2E tests:
 
 ## Commands
 
-## Firebase runtime configuration
+### Firebase runtime configuration
 
 The Firebase web API key is loaded from the ignored `runtime-config.js` file
 so a rotated key is never committed. For local development, copy
@@ -90,6 +93,13 @@ ng serve                        # http://localhost:4200
 
 # Production build
 npm run build
+
+# Code Quality & Linting
+npm run quality                 # Full suite: ESLint + Stylelint + UI Contracts + Prettier
+npm run lint                    # ESLint (TypeScript + Angular templates)
+npm run lint:styles             # Stylelint (SCSS BEM & design tokens)
+npm run format:check            # Prettier formatting check
+npm run format:write            # Prettier in-place auto-format
 
 # Unit tests (Vitest)
 npm test -- --watch=false       # 446 tests, 80 suites
@@ -145,8 +155,8 @@ To reach Step 2 of the event editor, that test's own `beforeEach` fills and adva
 
 ## CI/CD
 
-GitHub Actions (`.github/workflows/e2e.yml`) runs on every push/PR to `main`:
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push/PR to `main`:
 
-- npm cache + Playwright browser cache
-- Desktop Chromium + Mobile Chrome
+- **Job 1 (`quality`)**: Fail-fast quality gate (ESLint, Stylelint, Design System contract validation, Prettier format check, Angular production build)
+- **Job 2 (`e2e`)**: Runs downstream of `quality` (`needs: quality`) with npm cache + Playwright browser cache across Desktop Chromium and Mobile Chrome
 - Report and trace upload on failure (30-day retention)

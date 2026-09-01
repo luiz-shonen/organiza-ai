@@ -2,8 +2,7 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-09-01  
-**State:** Feature 23 (`23-linting-and-formatting-toolchain`) 100% complete and verified by independent Verifier sub-agent (`validation.md` PASS, 34/34 ACs, 3/3 sensor mutants killed). ESLint Flat Config, Stylelint SCSS rules, Prettier multi-format, Husky + lint-staged + commitlint hooks, CI quality gate (`quality.yml`), `.agents/skills/` library, and unified `npm run quality` toolchain fully operational.  
+**Last updated:** 2026-09-01 **State:** Feature 23 (`23-linting-and-formatting-toolchain`) 100% complete and verified by independent Verifier sub-agent (`validation.md` PASS, 34/34 ACs, 3/3 sensor mutants killed). ESLint Flat Config, Stylelint SCSS rules, Prettier multi-format, Husky + lint-staged + commitlint hooks, unified CI pipeline (`.github/workflows/ci.yml`), `.agents/skills/` library, and unified `npm run quality` toolchain fully operational.  
 **Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), 15 E2E test suites (216 tests) green (`npm run test:e2e`), quality suite green (`npm run quality`), production build green (`npm run build`).  
 **Validation Gate:** Feature 23 PASS (0 errors across `validate_spec`, `validate_tasks`, `validate_state`).  
 **Next step:** All planned features 01 through 23 are complete and verified. Ready for release.
@@ -36,7 +35,7 @@
     10. `10-share-qr.spec.ts`: QR code canvas rendering dimensions, WhatsApp URI schema construction, clipboard copy feedback toast.
     11. `11-pwa-offline.spec.ts`: PWA offline caching resilience, form interactivity retention, seamless online recovery.
     12. `12-network-loading.spec.ts`: Throttled network latency handling, layout shift prevention, skeleton shimmer stability.
-  - **CI/CD Automation**: `.github/workflows/e2e.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
+  - **CI/CD Automation**: `.github/workflows/ci.yml` running on pull requests and pushes to `main` with npm/Playwright browser caching and failure artifact uploads.
 - **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys.
 - **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Design written and approved (`design.md`) establishing Mobile-First SCSS architecture, responsive component layouts (Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, Event Detail & Modals), WCAG 2.5.5 AA 48px touch targets, and `assertNoHorizontalOverflow` Playwright assertion helper.
 - **Feature 21 (`21-css-design-token-and-component-architecture`)**: Full design token unification in `_semantic.scss` (org-export ready), spacing showcase section, complete purge of legacy purple palette and hardcoded hex values, 0 component-level `!important` occurrences, standardized mobile-first breakpoint mixins (`semantic.tablet`, `semantic.desktop`, `semantic.wide`), smart/dumb refactoring of dialogs and drawers, complete migration of all feature templates to closed `Org*` design system components, and deletion of obsolete component folders. Validated by independent Verifier sub-agent (32/32 ACs PASS, 3/3 sensor mutants killed).
@@ -294,7 +293,7 @@
 ### AD-029 — Comprehensive Playwright E2E Architecture & CI Automation
 
 **Date:** 2026-08-20  
-**Decision:** Automated regression testing leverages Playwright with Page Object Models (`e2e/pages/`), Component Test Harnesses (`e2e/components/`), deterministic mock authentication/Firestore injection (`e2e/helpers/`), `@axe-core/playwright` accessibility audits, and GitHub Actions CI (`.github/workflows/e2e.yml`) across Desktop Chromium and Mobile Chrome viewports.  
+**Decision:** Automated regression testing leverages Playwright with Page Object Models (`e2e/pages/`), Component Test Harnesses (`e2e/components/`), deterministic mock authentication/Firestore injection (`e2e/helpers/`), `@axe-core/playwright` accessibility audits, and GitHub Actions CI (`.github/workflows/ci.yml`) across Desktop Chromium and Mobile Chrome viewports.  
 **Rationale:** Eliminates external Firebase rate-limiting flakes, guarantees 100% core flow coverage across devices, verifies WCAG 2.1 AA accessibility, and protects production releases automatically on pull requests.  
 **Status:** In force. Specified and verified in 09-playwright-e2e-coverage.
 
@@ -411,6 +410,6 @@
 ### AD-042 — Comprehensive Code Quality Toolchain & Developer Style Guide
 
 **Date:** 2026-08-31  
-**Decision:** The project adopts a 4-tier automated code quality enforcement toolchain: (1) ESLint 9+ Flat Config enforcing TypeScript strict typing (`no-explicit-any: error` in prod), Angular Standalone/OnPush, template a11y, and Playwright E2E standards; (2) Stylelint enforcing SCSS BEM conventions, zero component `!important`, and `--org-*` token usage via `color-no-hex`; (3) Husky pre-commit (lint-staged) and commit-msg (commitlint Conventional Commits); (4) Fail-fast CI quality gate (`quality.yml`) executing ahead of E2E; and (5) Project-local skills in `.agents/skills/` (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`) mirrored to `docs/STYLE_GUIDE.md`.  
+**Decision:** The project adopts a 4-tier automated code quality enforcement toolchain: (1) ESLint 9+ Flat Config enforcing TypeScript strict typing (`no-explicit-any: error` in prod), Angular Standalone/OnPush, template a11y, and Playwright E2E standards; (2) Stylelint enforcing SCSS BEM conventions, zero component `!important`, and `--org-*` token usage via `color-no-hex`; (3) Husky pre-commit (lint-staged) and commit-msg (commitlint Conventional Commits); (4) Fail-fast CI quality gate (`.github/workflows/ci.yml`) executing quality checks and chaining E2E; and (5) Project-local skills in `.agents/skills/` (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`) mirrored to `docs/STYLE_GUIDE.md`.  
 **Rationale:** Eliminates regressions across human and AI contributions, provides deterministic pre-commit correction, saves CI compute resources, and provides actionable smart/dumb and design system playbooks.  
 **Status:** In force. Specified in 23-linting-and-formatting-toolchain.

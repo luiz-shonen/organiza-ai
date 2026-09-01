@@ -355,10 +355,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `.agents/skills/design-system-usage/SKILL.md` catalogs all 32 `Org*` components with properties, events, and examples
-- [ ] Provides direct replacement guide for raw Material elements
-- [ ] References `bem-css` methodology skill by name
-- [ ] Gate check passes: `npm run format:check`
+- [x] `.agents/skills/design-system-usage/SKILL.md` catalogs all 32 `Org*` components with properties, events, and examples
+- [x] Provides direct replacement guide for raw Material elements
+- [x] References `bem-css` methodology skill by name
+- [x] Gate check passes: `npm run format:check`
 
 **Tests**: none  
 **Gate**: Quick  

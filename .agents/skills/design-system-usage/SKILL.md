@@ -10,6 +10,7 @@ This guide documents the complete suite of 32 `Org*` design system components an
 ## Core Methodologies
 
 All UI components and features consuming the design system must follow:
+
 - **`tlc-spec-driven`**: Implement requirements using testable EARS acceptance criteria and atomic Conventional Commits.
 - **`tdd`**: Write unit tests asserting component rendering, accessibility attributes, and user interaction outputs.
 - **`bem-css`**: Style custom feature wrappers with BEM SCSS using `--org-*` custom properties.
@@ -28,12 +29,12 @@ All UI components and features consuming the design system must follow:
 
 ### Layout Primitives
 
-| Component | Selector | Purpose | Key Inputs / Outputs |
-|---|---|---|---|
-| `OrgPageLayoutComponent` | `<org-page-layout>` | Outer responsive page container | `maxWidth`: `'narrow'` \| `'default'` \| `'wide'` \| `'full'` |
+| Component                | Selector            | Purpose                                     | Key Inputs / Outputs                                                   |
+| ------------------------ | ------------------- | ------------------------------------------- | ---------------------------------------------------------------------- |
+| `OrgPageLayoutComponent` | `<org-page-layout>` | Outer responsive page container             | `maxWidth`: `'narrow'` \| `'default'` \| `'wide'` \| `'full'`          |
 | `OrgPageHeaderComponent` | `<org-page-header>` | Page heading with gradient and actions slot | `title`, `subtitle`, `icon`, `gradient`; slot `[orgPageHeaderActions]` |
-| `OrgSectionComponent` | `<org-section>` | Content section container | `title`, `icon`, `count` |
-| `OrgSurfaceComponent` | `<org-surface>` | Glassmorphic surface card | `elevation`: `'none'` \| `'low'` \| `'glass'` \| `'elevated'` |
+| `OrgSectionComponent`    | `<org-section>`     | Content section container                   | `title`, `icon`, `count`                                               |
+| `OrgSurfaceComponent`    | `<org-surface>`     | Glassmorphic surface card                   | `elevation`: `'none'` \| `'low'` \| `'glass'` \| `'elevated'`          |
 
 ```html
 <org-page-layout maxWidth="wide">
@@ -52,12 +53,12 @@ All UI components and features consuming the design system must follow:
 
 ### Actions & Triggers
 
-| Component | Selector | Purpose | Key Inputs / Outputs |
-|---|---|---|---|
-| `OrgButtonComponent` | `<org-button>` | Primary, secondary, danger, and text buttons | `label`, `variant`, `icon`, `disabled`, `loading`, `type`, `(pressed)` |
-| `OrgIconButtonComponent` | `<org-icon-button>` | Accessible circular action button | `icon`, `ariaLabel`, `variant`, `disabled`, `(pressed)` |
-| `OrgChipComponent` | `<org-chip>` | Selectable filter or tag pill | `label`, `selected`, `variant`, `(selectedChange)` |
-| `OrgIconComponent` | `<org-icon>` | Standard SVG icon renderer | `name`, `size` (`'sm'` \| `'md'` \| `'lg'`), `color` |
+| Component                | Selector            | Purpose                                      | Key Inputs / Outputs                                                   |
+| ------------------------ | ------------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| `OrgButtonComponent`     | `<org-button>`      | Primary, secondary, danger, and text buttons | `label`, `variant`, `icon`, `disabled`, `loading`, `type`, `(pressed)` |
+| `OrgIconButtonComponent` | `<org-icon-button>` | Accessible circular action button            | `icon`, `ariaLabel`, `variant`, `disabled`, `(pressed)`                |
+| `OrgChipComponent`       | `<org-chip>`        | Selectable filter or tag pill                | `label`, `selected`, `variant`, `(selectedChange)`                     |
+| `OrgIconComponent`       | `<org-icon>`        | Standard SVG icon renderer                   | `name`, `size` (`'sm'` \| `'md'` \| `'lg'`), `color`                   |
 
 ```html
 <org-button label="Salvar Alterações" variant="primary" icon="save" (pressed)="onSave()" />
@@ -70,17 +71,21 @@ All UI components and features consuming the design system must follow:
 
 ### Form & Input Controls
 
-| Component | Selector | Purpose | Key Inputs / Outputs |
-|---|---|---|---|
-| `OrgTextFieldComponent` | `<org-text-field>` | Single-line input with CVA support | `label`, `type`, `placeholder`, `hint`, `formControlName`, `[(value)]` |
-| `OrgTextareaFieldComponent` | `<org-textarea-field>` | Multi-line text input | `label`, `placeholder`, `rows`, `formControlName`, `[(value)]` |
-| `OrgDateFieldComponent` | `<org-date-field>` | Date picker input with mask | `label`, `minDate`, `maxDate`, `formControlName`, `[(value)]` |
-| `OrgTimeFieldComponent` | `<org-time-field>` | Time selector input | `label`, `options`, `formControlName`, `[(value)]` |
-| `OrgSelectFieldComponent` | `<org-select-field>` | Dropdown select menu | `label`, `options`: `OrgSelectOption[]`, `formControlName` |
-| `OrgAutocompleteFieldComponent` | `<org-autocomplete-field>` | Autocomplete search field | `label`, `suggestions`, `(searchChange)` |
+| Component                       | Selector                   | Purpose                            | Key Inputs / Outputs                                                   |
+| ------------------------------- | -------------------------- | ---------------------------------- | ---------------------------------------------------------------------- |
+| `OrgTextFieldComponent`         | `<org-text-field>`         | Single-line input with CVA support | `label`, `type`, `placeholder`, `hint`, `formControlName`, `[(value)]` |
+| `OrgTextareaFieldComponent`     | `<org-textarea-field>`     | Multi-line text input              | `label`, `placeholder`, `rows`, `formControlName`, `[(value)]`         |
+| `OrgDateFieldComponent`         | `<org-date-field>`         | Date picker input with mask        | `label`, `minDate`, `maxDate`, `formControlName`, `[(value)]`          |
+| `OrgTimeFieldComponent`         | `<org-time-field>`         | Time selector input                | `label`, `options`, `formControlName`, `[(value)]`                     |
+| `OrgSelectFieldComponent`       | `<org-select-field>`       | Dropdown select menu               | `label`, `options`: `OrgSelectOption[]`, `formControlName`             |
+| `OrgAutocompleteFieldComponent` | `<org-autocomplete-field>` | Autocomplete search field          | `label`, `suggestions`, `(searchChange)`                               |
 
 ```html
-<org-text-field label="Nome do Evento" placeholder="Ex: Aniversário de 30 anos" formControlName="title" />
+<org-text-field
+  label="Nome do Evento"
+  placeholder="Ex: Aniversário de 30 anos"
+  formControlName="title"
+/>
 <org-date-field label="Data" formControlName="date" />
 <org-select-field label="Categoria" [options]="categoryOptions" formControlName="category" />
 ```
@@ -89,34 +94,34 @@ All UI components and features consuming the design system must follow:
 
 ### Selection Controls
 
-| Component | Selector | Purpose | Key Inputs / Outputs |
-|---|---|---|---|
-| `OrgToggleComponent` | `<org-toggle>` | Binary switch toggle | `label`, `checked`, `disabled`, `(toggleChange)` |
-| `OrgCheckboxComponent` | `<org-checkbox>` | Accessible checkbox | `label`, `checked`, `disabled`, `(checkedChange)` |
-| `OrgRadioGroupComponent` | `<org-radio-group>` | Radio button group | `name`, `options`: `OrgRadioOption[]`, `[(value)]` |
+| Component                | Selector            | Purpose              | Key Inputs / Outputs                               |
+| ------------------------ | ------------------- | -------------------- | -------------------------------------------------- |
+| `OrgToggleComponent`     | `<org-toggle>`      | Binary switch toggle | `label`, `checked`, `disabled`, `(toggleChange)`   |
+| `OrgCheckboxComponent`   | `<org-checkbox>`    | Accessible checkbox  | `label`, `checked`, `disabled`, `(checkedChange)`  |
+| `OrgRadioGroupComponent` | `<org-radio-group>` | Radio button group   | `name`, `options`: `OrgRadioOption[]`, `[(value)]` |
 
 ---
 
 ### Navigation
 
-| Component | Selector | Purpose | Key Inputs / Outputs |
-|---|---|---|---|
-| `OrgTabsComponent` | `<org-tabs>` | Horizontal tab navigation bar | `items`: `OrgTabItem[]`, `activeId`, `(tabChange)` |
-| `OrgStepperComponent` | `<org-stepper>` | Multi-step wizard coordinator | `activeStepIndex`, `linear`, `(stepChange)` |
-| `OrgStepComponent` | `<org-step>` | Individual step in stepper | `label`, `completed`, `editable` |
-| `OrgMenuComponent` | `<org-menu>` | Contextual dropdown menu | `actions`: `OrgMenuAction[]`, `(actionSelected)` |
-| `OrgNavigationListComponent` | `<org-navigation-list>` | Vertical navigation link list | `items`: `OrgNavigationItem[]`, `(itemSelected)` |
+| Component                    | Selector                | Purpose                       | Key Inputs / Outputs                               |
+| ---------------------------- | ----------------------- | ----------------------------- | -------------------------------------------------- |
+| `OrgTabsComponent`           | `<org-tabs>`            | Horizontal tab navigation bar | `items`: `OrgTabItem[]`, `activeId`, `(tabChange)` |
+| `OrgStepperComponent`        | `<org-stepper>`         | Multi-step wizard coordinator | `activeStepIndex`, `linear`, `(stepChange)`        |
+| `OrgStepComponent`           | `<org-step>`            | Individual step in stepper    | `label`, `completed`, `editable`                   |
+| `OrgMenuComponent`           | `<org-menu>`            | Contextual dropdown menu      | `actions`: `OrgMenuAction[]`, `(actionSelected)`   |
+| `OrgNavigationListComponent` | `<org-navigation-list>` | Vertical navigation link list | `items`: `OrgNavigationItem[]`, `(itemSelected)`   |
 
 ---
 
 ### Data Display
 
-| Component | Selector | Purpose | Key Inputs / Outputs |
-|---|---|---|---|
-| `OrgMetricCardComponent` | `<org-metric-card>` | KPI statistic card | `label`, `value`, `description`, `trend` |
-| `OrgDataTableComponent` | `<org-data-table>` | Tabular data display with columns | `columns`: `OrgDataColumn<T>[]`, `data`: `T[]` |
-| `OrgBadgeComponent` | `<org-badge>` | Status and count pill badge | `label`, `variant`: `'default'` \| `'primary'` \| `'success'` \| `'warning'` \| `'danger'` |
-| `OrgProgressComponent` | `<org-progress>` | Progress indicator | `value`, `variant`: `'linear'` \| `'circular'` |
+| Component                | Selector            | Purpose                           | Key Inputs / Outputs                                                                       |
+| ------------------------ | ------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
+| `OrgMetricCardComponent` | `<org-metric-card>` | KPI statistic card                | `label`, `value`, `description`, `trend`                                                   |
+| `OrgDataTableComponent`  | `<org-data-table>`  | Tabular data display with columns | `columns`: `OrgDataColumn<T>[]`, `data`: `T[]`                                             |
+| `OrgBadgeComponent`      | `<org-badge>`       | Status and count pill badge       | `label`, `variant`: `'default'` \| `'primary'` \| `'success'` \| `'warning'` \| `'danger'` |
+| `OrgProgressComponent`   | `<org-progress>`    | Progress indicator                | `value`, `variant`: `'linear'` \| `'circular'`                                             |
 
 ```html
 <org-metric-card label="Total de Convidados" value="48" description="32 confirmados" />
@@ -127,25 +132,53 @@ All UI components and features consuming the design system must follow:
 
 ### Feedback & Overlays
 
-| Component / Service | Type | Purpose | Key API |
-|---|---|---|---|
-| `OrgConfirmDialogComponent` | Component | Confirmation modal dialog | Injected via `OrgDialogService` |
-| `OrgDialogService` | Service | Programmatic confirm dialogs | `confirm(data: OrgConfirmDialogData): Observable<boolean>` |
-| `OrgEmptyStateComponent` | Component | Empty list placeholder | `icon`, `title`, `description` |
-| `OrgBannerComponent` | Component | Top-level alert banner | `variant`, `title`, `message`, `dismissible` |
-| `FeedbackSnackbarComponent` | Component | Toast notification popup | Injected via `FeedbackService` |
-| `FeedbackService` | Service | Global toast notification trigger | `success(msg)`, `error(msg)`, `info(msg)`, `warning(msg)` |
+| Component / Service         | Type      | Purpose                           | Key API                                                    |
+| --------------------------- | --------- | --------------------------------- | ---------------------------------------------------------- |
+| `OrgConfirmDialogComponent` | Component | Confirmation modal dialog         | Injected via `OrgDialogService`                            |
+| `OrgDialogService`          | Service   | Programmatic confirm dialogs      | `confirm(data: OrgConfirmDialogData): Observable<boolean>` |
+| `OrgEmptyStateComponent`    | Component | Empty list placeholder            | `icon`, `title`, `description`                             |
+| `OrgBannerComponent`        | Component | Top-level alert banner            | `variant`, `title`, `message`, `dismissible`               |
+| `FeedbackSnackbarComponent` | Component | Toast notification popup          | Injected via `FeedbackService`                             |
+| `FeedbackService`           | Service   | Global toast notification trigger | `success(msg)`, `error(msg)`, `info(msg)`, `warning(msg)`  |
 
 ```typescript
 // Dialog confirmation usage
-this.dialogs.confirm({
-  title: 'Excluir Item',
-  message: 'Tem certeza que deseja excluir este item da lista?',
-  confirmLabel: 'Excluir',
-}).subscribe((confirmed) => {
-  if (confirmed) this.deleteItem();
-});
+this.dialogs
+  .confirm({
+    title: 'Excluir Item',
+    message: 'Tem certeza que deseja excluir este item da lista?',
+    confirmLabel: 'Excluir',
+  })
+  .subscribe((confirmed) => {
+    if (confirmed) this.deleteItem();
+  });
 
 // Toast feedback usage
 this.feedback.success('Evento salvo com sucesso!');
 ```
+
+---
+
+## 3. Direct Replacement Guide for Angular Material
+
+Never use raw Angular Material tags or directives in feature views. Use the canonical `Org*` design system components:
+
+| Raw Material Syntax (FORBIDDEN)                    | Canonical Org Component (MANDATORY)                        | Import from `@shared/ui`                  |
+| -------------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------- |
+| `<button mat-button>` / `<button mat-flat-button>` | `<org-button [label]="..." variant="...">`                 | `OrgButtonComponent`                      |
+| `<button mat-icon-button>`                         | `<org-icon-button icon="..." [ariaLabel]="...">`           | `OrgIconButtonComponent`                  |
+| `<mat-chip-set>` / `<mat-chip>`                    | `<org-chip [label]="..." [selected]="...">`                | `OrgChipComponent`                        |
+| `<mat-card>`                                       | `<org-surface elevation="glass">`                          | `OrgSurfaceComponent`                     |
+| `<mat-form-field>` + `<input matInput>`            | `<org-text-field [label]="..." formControlName="...">`     | `OrgTextFieldComponent`                   |
+| `<mat-form-field>` + `<textarea matInput>`         | `<org-textarea-field [label]="..." formControlName="...">` | `OrgTextareaFieldComponent`               |
+| `<mat-form-field>` + `<mat-select>`                | `<org-select-field [label]="..." [options]="...">`         | `OrgSelectFieldComponent`                 |
+| `<mat-form-field>` + `<mat-datepicker>`            | `<org-date-field [label]="..." formControlName="...">`     | `OrgDateFieldComponent`                   |
+| `<mat-checkbox>`                                   | `<org-checkbox [label]="..." [checked]="...">`             | `OrgCheckboxComponent`                    |
+| `<mat-slide-toggle>`                               | `<org-toggle [label]="..." [checked]="...">`               | `OrgToggleComponent`                      |
+| `<mat-radio-group>` / `<mat-radio-button>`         | `<org-radio-group [options]="..." [(value)]="...">`        | `OrgRadioGroupComponent`                  |
+| `<mat-tab-group>` / `<mat-tab>`                    | `<org-tabs [items]="..." [activeId]="...">`                | `OrgTabsComponent`                        |
+| `<mat-stepper>` / `<mat-step>`                     | `<org-stepper>` + `<org-step>`                             | `OrgStepperComponent`, `OrgStepComponent` |
+| `<mat-menu>` / `<button [matMenuTriggerFor]>`      | `<org-menu [actions]="...">`                               | `OrgMenuComponent`                        |
+| `<mat-icon>`                                       | `<org-icon [name]="...">`                                  | `OrgIconComponent`                        |
+| `MatDialog.open(...)` (confirmations)              | `OrgDialogService.confirm(...)`                            | `OrgDialogService`                        |
+| `MatSnackBar.open(...)`                            | `FeedbackService.success(...)` / `.error(...)`             | `FeedbackService`                         |

@@ -70,3 +70,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F }}
           channelId: live
           projectId: organiza-ai-3416f
+          target: organizaai

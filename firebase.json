@@ -18,6 +18,7 @@
     }
   },
   "hosting": {
+    "site": "organizaai",
     "public": "dist/organizaai/browser",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [

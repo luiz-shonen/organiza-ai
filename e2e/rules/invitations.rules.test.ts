@@ -6,7 +6,16 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { collectionGroup, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import {
+  collectionGroup,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, describe, it } from 'vitest';
 
 const projectId = 'organizaai-invitation-rules';
@@ -86,15 +95,13 @@ describe('collaborator invitation Firestore rules contract', () => {
       .authenticatedContext('invited-uid', { email: invitedEmail })
       .firestore();
 
+    const invDoc = doc(db, `events/event-1/invitations/${invitedEmail}`);
+
     await assertSucceeds(
       getDocs(query(collectionGroup(db, 'invitations'), where('invitedEmail', '==', invitedEmail))),
     );
-
-    await assertSucceeds(
-      doc(db, `events/event-1/invitations/${invitedEmail}`).firestore.doc
-        ? Promise.resolve()
-        : Promise.resolve(),
-    );
+    await assertSucceeds(getDoc(invDoc));
+    await assertSucceeds(deleteDoc(invDoc));
   });
 
   it('denies another user from reading or deleting someone elses invitation', async () => {
@@ -108,9 +115,12 @@ describe('collaborator invitation Firestore rules contract', () => {
     });
 
     const db = testEnvironment.authenticatedContext('other-uid', { email: otherEmail }).firestore();
+    const invDoc = doc(db, `events/event-1/invitations/${invitedEmail}`);
 
     await assertFails(
       getDocs(query(collectionGroup(db, 'invitations'), where('invitedEmail', '==', invitedEmail))),
     );
+    await assertFails(getDoc(invDoc));
+    await assertFails(deleteDoc(invDoc));
   });
 });

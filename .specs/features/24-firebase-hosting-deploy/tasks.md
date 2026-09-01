@@ -213,10 +213,10 @@ T5 -> T6
 
 **Done when**:
 
-- [ ] `README.md` CI/CD section documents the pipeline (`ci.yml` → `cd.yml`), `cd-preview.yml`, smart CI filtering, required secrets, and `npm run deploy`
-- [ ] `AGENTS.md` and `GEMINI.md` CI/CD section updated with automated deployment architecture
-- [ ] `.specs/STATE.md` updated with AD-043 (Automated Firebase Hosting CD Pipeline & Firestore Rules Governance)
-- [ ] Build gate passes: `npm run quality`
+- [x] `README.md` CI/CD section documents the pipeline (`ci.yml` → `cd.yml`), `cd-preview.yml`, smart CI filtering, required secrets, and `npm run deploy`
+- [x] `AGENTS.md` and `GEMINI.md` CI/CD section updated with automated deployment architecture
+- [x] `.specs/STATE.md` updated with AD-043 (Automated Firebase Hosting CD Pipeline & Firestore Rules Governance)
+- [x] Build gate passes: `npm run quality`
 
 **Tests**: none
 **Gate**: build

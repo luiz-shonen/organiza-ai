@@ -127,4 +127,8 @@ Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.
   - `color-no-hex: true` (all colors must use `--org-*` tokens, with allowlist for `#fff`/`#000`/`#ffffff`).
 - **Prettier**: Formats `.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md` files.
 - **Git Hooks**: Husky pre-commit (`lint-staged` auto-formatting) and commit-msg (`commitlint` enforcing Conventional Commits).
-- **CI/CD Pipeline (`.github/workflows/ci.yml`)**: Single pipeline running `quality` first, and `e2e` downstream with `needs: quality`.
+- **CI/CD & Automated Deployment**:
+  - **CI Pipeline (`.github/workflows/ci.yml`)**: Smart path filtering with `dorny/paths-filter@v3` (always executes `format:check`, bypasses heavy linters/build/E2E on markdown-only changes), running `quality` first, and `e2e` downstream with `needs: quality`.
+  - **Production CD (`.github/workflows/cd.yml`)**: Chained via `workflow_run` on CI success on `main`, injects `public/runtime-config.js` with `FIREBASE_API_KEY`, deploys Firestore security rules and indexes, and deploys hosting to the `live` channel (`FirebaseExtended/action-hosting-deploy@v0`).
+  - **PR Preview CD (`.github/workflows/cd-preview.yml`)**: Deploys hosting preview channels for pull requests from the origin repository.
+  - **Local Deployment**: `"deploy": "npm run build && firebase deploy --only hosting,firestore"`.

@@ -173,7 +173,7 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 21 total, 0 mapped to tasks, 21 unmapped ⚠️
+**Coverage:** 21 total, 21 mapped to tasks, 0 unmapped ✅
 
 ---
 

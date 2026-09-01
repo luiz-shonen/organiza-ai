@@ -2,10 +2,10 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-09-01 **State:** Feature 23 (`23-linting-and-formatting-toolchain`) 100% complete and verified by independent Verifier sub-agent (`validation.md` PASS, 34/34 ACs, 3/3 sensor mutants killed). ESLint Flat Config, Stylelint SCSS rules, Prettier multi-format, Husky + lint-staged + commitlint hooks, unified CI pipeline (`.github/workflows/ci.yml`), `.agents/skills/` library, and unified `npm run quality` toolchain fully operational.  
-**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), 15 E2E test suites (216 tests) green (`npm run test:e2e`), quality suite green (`npm run quality`), production build green (`npm run build`).  
-**Validation Gate:** Feature 23 PASS (0 errors across `validate_spec`, `validate_tasks`, `validate_state`).  
-**Next step:** All planned features 01 through 23 are complete and verified. Ready for release.
+**Last updated:** 2026-09-01 **State:** Feature 24 (`24-firebase-hosting-deploy`) complete. Automated continuous delivery pipeline (`cd.yml`), ephemeral PR preview channel workflow (`cd-preview.yml`), smart path filtering in CI (`ci.yml`), complete Firestore security rules coverage for invitations and family rosters (`firestore.rules` with 13 rules unit tests), and local deploy script (`npm run deploy`) are fully operational.  
+**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), 3 Firestore rules test suites (13 tests) green (`npm run test:rules`), 15 E2E test suites (216 tests) green (`npm run test:e2e`), quality suite green (`npm run quality`), production build green (`npm run build`).  
+**Validation Gate:** Feature 24 validated across all 21 requirements (DEPLOY-01..DEPLOY-21).  
+**Next step:** Ready for release and production deployments.
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -40,6 +40,8 @@
 - **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Design written and approved (`design.md`) establishing Mobile-First SCSS architecture, responsive component layouts (Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, Event Detail & Modals), WCAG 2.5.5 AA 48px touch targets, and `assertNoHorizontalOverflow` Playwright assertion helper.
 - **Feature 21 (`21-css-design-token-and-component-architecture`)**: Full design token unification in `_semantic.scss` (org-export ready), spacing showcase section, complete purge of legacy purple palette and hardcoded hex values, 0 component-level `!important` occurrences, standardized mobile-first breakpoint mixins (`semantic.tablet`, `semantic.desktop`, `semantic.wide`), smart/dumb refactoring of dialogs and drawers, complete migration of all feature templates to closed `Org*` design system components, and deletion of obsolete component folders. Validated by independent Verifier sub-agent (32/32 ACs PASS, 3/3 sensor mutants killed).
 - **Feature 22 (`22-dry-solid-docs-and-route-separation`)**: Pure shared utility modules in `src/app/core/utils/` (`date`, `sharing`, `id`, `cep`, `relationship`), granular one-file-per-interface models in `src/app/core/models/`, `AuthService.isAuthenticated` and `waitForAuthReady()`, single responsibility in `UserService`, complete route and domain decoupling between `/meus-eventos` (`ORGANIZER_ROUTES`) and `/admin` (`ADMIN_ROUTES` with dedicated `AdminDashboardContainer`), typed `MockDocumentStore` with zero `(window as any)` or `$any` casts, `.agents/skills/` library (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`), and synchronized docs (`README.md`, `DESIGN.md`, `AGENTS.md`, `STATE.md`). Validated by independent Verifier sub-agent (25/25 ACs PASS, 3/3 sensor mutants killed).
+- **Feature 23 (`23-linting-and-formatting-toolchain`)**: 4-tier automated code quality toolchain: ESLint 9 Flat Config (`no-explicit-any`, Angular Standalone/OnPush, template a11y, Playwright), Stylelint (SCSS BEM, zero component `!important`, `--org-*` tokens), Prettier multi-format, Husky pre-commit (lint-staged) + commit-msg (commitlint), unified CI quality gate, and `.agents/skills/` playbooks. Validated by independent Verifier sub-agent (34/34 ACs PASS, 3/3 sensor mutants killed).
+- **Feature 24 (`24-firebase-hosting-deploy`)**: Automated continuous delivery pipeline (`cd.yml`) chained to CI completion, ephemeral PR preview deployments (`cd-preview.yml`), smart path filtering in CI (`dorny/paths-filter@v3`), complete Firestore security rules coverage for invitations and family roster (`firestore.rules` with 13 rules unit tests in `e2e/rules/`), and local deploy script (`npm run deploy`). Validated across all 21 requirements (DEPLOY-01..DEPLOY-21).
 
 ---
 
@@ -413,3 +415,12 @@
 **Decision:** The project adopts a 4-tier automated code quality enforcement toolchain: (1) ESLint 9+ Flat Config enforcing TypeScript strict typing (`no-explicit-any: error` in prod), Angular Standalone/OnPush, template a11y, and Playwright E2E standards; (2) Stylelint enforcing SCSS BEM conventions, zero component `!important`, and `--org-*` token usage via `color-no-hex`; (3) Husky pre-commit (lint-staged) and commit-msg (commitlint Conventional Commits); (4) Fail-fast CI quality gate (`.github/workflows/ci.yml`) executing quality checks and chaining E2E; and (5) Project-local skills in `.agents/skills/` (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`) mirrored to `docs/STYLE_GUIDE.md`.  
 **Rationale:** Eliminates regressions across human and AI contributions, provides deterministic pre-commit correction, saves CI compute resources, and provides actionable smart/dumb and design system playbooks.  
 **Status:** In force. Specified in 23-linting-and-formatting-toolchain.
+
+---
+
+### AD-043 — Automated Firebase Hosting CD Pipeline & Firestore Rules Governance
+
+**Date:** 2026-09-01  
+**Decision:** The application uses GitHub Actions for continuous delivery to Firebase Hosting and Cloud Firestore: (1) `cd.yml` triggers via `workflow_run` on `CI Pipeline` completion on `main`, injects runtime config (`public/runtime-config.js`) from `FIREBASE_API_KEY`, deploys Firestore security rules and composite indexes via `firebase-tools`, and deploys hosting to the `live` channel via `FirebaseExtended/action-hosting-deploy@v0`; (2) `cd-preview.yml` deploys ephemeral preview channels for pull requests from the origin repository (hosting only, omitting global rules); (3) `ci.yml` employs `dorny/paths-filter@v3` to ensure formatting validation always executes while skipping compute-intensive linters, build, and E2E for markdown-only changes; (4) Firestore security rules explicitly govern `events/{id}/invitations/{email}`, `/{path=**}/invitations/{email}`, and `users/{uid}/family/{memberId}` with verified unit tests in `e2e/rules/`; and (5) `package.json` includes `npm run deploy` for manual local releases.  
+**Rationale:** Guarantees zero-touch, zero-downtime production deployment on green CI, prevents broken invitation and family collection access in production, protects secrets from untrusted forks, and conserves CI runner minutes.  
+**Status:** In force. Specified in 24-firebase-hosting-deploy.

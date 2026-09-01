@@ -91,8 +91,9 @@ needs in Google Cloud.
 # Development server
 ng serve                        # http://localhost:4200
 
-# Production build
-npm run build
+# Production build & deploy
+npm run build                   # Production Angular build
+npm run deploy                  # Build + deploy hosting & Firestore rules to Firebase
 
 # Code Quality & Linting
 npm run quality                 # Full suite: ESLint + Stylelint + UI Contracts + Prettier
@@ -103,6 +104,7 @@ npm run format:write            # Prettier in-place auto-format
 
 # Unit tests (Vitest)
 npm test -- --watch=false       # 446 tests, 80 suites
+npm run test:rules              # Firestore security rules tests against emulator
 
 # E2E tests (Playwright)
 npm run test:e2e                # 158 tests across Desktop Chromium + Mobile Chrome (15 suites)
@@ -118,6 +120,7 @@ e2e/
 ├── helpers/         # auth-mock, firestore-mock, a11y, visual & overflow helpers
 ├── pages/           # Page Object Models (BasePage, HomePage, LoginPage, ...)
 ├── components/      # Component Harnesses (RsvpDialog, ItemList, SharePanel, ...)
+├── rules/           # Firestore security rules unit tests (*.rules.test.ts)
 ├── specs/           # Test suites (01-home-theming ... 15-showcase-visual-matrix)
 └── screenshots/     # 60 visual baselines ({milestone}-desktop/mobile.png)
 ```
@@ -153,10 +156,36 @@ To reach Step 2 of the event editor, that test's own `beforeEach` fills and adva
 - **ViaCEP**: `page.route()` with a deterministic response
 - **No real Firebase dependency** — tests run fully offline
 
-## CI/CD
+## CI/CD & Deployment
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on every push/PR to `main`:
+The project employs a fully automated CI/CD pipeline on GitHub Actions with smart path filtering and automated deployments:
 
-- **Job 1 (`quality`)**: Fail-fast quality gate (ESLint, Stylelint, Design System contract validation, Prettier format check, Angular production build)
-- **Job 2 (`e2e`)**: Runs downstream of `quality` (`needs: quality`) with npm cache + Playwright browser cache across Desktop Chromium and Mobile Chrome
-- Report and trace upload on failure (30-day retention)
+### 1. CI Pipeline (`.github/workflows/ci.yml`)
+
+Runs on every push and pull request against `main`:
+
+- **Smart Path Filtering (`dorny/paths-filter@v3`)**: `npm run format:check` runs unconditionally on all commits. Linters, contract checks, build, and E2E tests are skipped when changes only touch markdown (`**/*.md`), completing CI in ~15 seconds.
+- **Quality Gate (`quality`)**: ESLint Flat Config, Stylelint SCSS/tokens, UI Contract validation, and Angular production build.
+- **E2E Testing (`e2e`)**: Runs downstream of `quality` (`needs: quality`) across Chromium and Mobile Chrome with browser and npm caching.
+
+### 2. Production CD Pipeline (`.github/workflows/cd.yml`)
+
+Triggers automatically via `workflow_run` when the CI Pipeline completes successfully on `main`:
+
+- Injects `public/runtime-config.js` with the `FIREBASE_API_KEY` secret.
+- Builds the production Angular application (`npm run build`).
+- Deploys Cloud Firestore security rules and composite indexes (`firebase deploy --only firestore`).
+- Deploys hosting assets to the `live` channel (`FirebaseExtended/action-hosting-deploy@v0`).
+
+### 3. PR Preview Deployments (`.github/workflows/cd-preview.yml`)
+
+Triggers on pull requests against `main` (for non-fork branches with code changes):
+
+- Injects `public/runtime-config.js` with the `FIREBASE_API_KEY` secret.
+- Builds the application and deploys to an ephemeral Firebase Hosting preview channel.
+- Automatically posts a comment on the PR with the live preview URL.
+
+### Required GitHub Secrets
+
+- `FIREBASE_API_KEY`: Restricted Firebase Web API Key for `runtime-config.js`.
+- `FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F`: Google Cloud / Firebase Service Account JSON credentials for deployment.

@@ -6,10 +6,10 @@
 .org-button__control {
   align-items: center;
   display: inline-flex;
-  gap: 8px;
+  gap: var(--org-space-sm, 8px);
   justify-content: center;
-  min-height: 48px;
-  min-width: 48px;
+  min-height: var(--org-space-2xl, 48px);
+  min-width: var(--org-space-2xl, 48px);
   padding-inline: 20px;
 
   &--full-width {
@@ -50,7 +50,7 @@
   display: inline-block;
   flex: 0 0 auto;
   height: 20px;
-  margin-right: 8px;
+  margin-right: var(--org-space-sm, 8px);
   object-fit: contain;
   vertical-align: middle;
   width: 20px;
@@ -58,13 +58,13 @@
 
 .org-button__icon {
   display: inline-flex;
-  margin-right: 8px;
+  margin-right: var(--org-space-sm, 8px);
   vertical-align: middle;
 }
 
 .org-button__spinner {
   display: inline-block;
-  margin-right: 8px;
+  margin-right: var(--org-space-sm, 8px);
   vertical-align: middle;
 }
 

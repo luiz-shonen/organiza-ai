@@ -53,12 +53,12 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: var(--org-space-lg, 20px);
   }
 
   &__logo {
     height: 76px;
-    margin-bottom: 8px;
+    margin-bottom: var(--org-space-sm, 8px);
   }
 
   &__subtitle {
@@ -79,12 +79,12 @@
   &__card-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--org-space-lg, 20px);
   }
 
   &__tabs {
     display: flex;
-    padding: 4px;
+    padding: var(--org-space-xs, 4px);
     background-color: var(--org-surface-variant);
     border-radius: var(--org-radius-sm, 8px);
   }
@@ -92,7 +92,7 @@
   &__tab {
     flex: 1;
     padding: 10px 14px;
-    border-radius: 8px;
+    border-radius: var(--org-radius-sm, 8px);
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--org-on-surface-variant);
@@ -113,7 +113,7 @@
   &__error {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--org-space-sm, 10px);
     padding: 12px 16px;
     border-radius: 12px;
     background: rgba(186, 26, 26, 0.12);
@@ -130,7 +130,7 @@
   &__form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--org-space-md, 16px);
   }
 
   &__form-field {
@@ -144,7 +144,7 @@
     color: var(--org-on-surface-variant);
     font-size: 0.75rem;
     font-weight: 700;
-    margin: 4px 0;
+    margin: var(--org-space-xs, 4px) 0;
 
     &::before,
     &::after {
@@ -154,11 +154,11 @@
     }
 
     &::before {
-      margin-right: 12px;
+      margin-right: var(--org-space-md, 12px);
     }
 
     &::after {
-      margin-left: 12px;
+      margin-left: var(--org-space-md, 12px);
     }
   }
 }

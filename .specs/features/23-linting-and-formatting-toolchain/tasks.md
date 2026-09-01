@@ -381,10 +381,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `package.json` includes `lint:contracts` and `quality` scripts
-- [ ] `npm run lint:contracts` executes `node scripts/validate-ui-contracts.mjs --strict`
-- [ ] `npm run quality` executes all 4 checks in sequence
-- [ ] Gate check passes: `npm run quality`
+- [x] `package.json` includes `lint:contracts` and `quality` scripts
+- [x] `npm run lint:contracts` executes `node scripts/validate-ui-contracts.mjs --strict`
+- [x] `npm run quality` executes all 4 checks in sequence
+- [x] Gate check passes: `npm run quality`
 
 **Tests**: none  
 **Gate**: Full  

@@ -15,8 +15,10 @@
     "lint:fix": "ng lint --fix",
     "lint:styles": "stylelint \"src/**/*.scss\"",
     "lint:styles:fix": "stylelint \"src/**/*.scss\" --fix",
+    "lint:contracts": "node scripts/validate-ui-contracts.mjs --strict",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
+    "quality": "npm run lint && npm run lint:styles && npm run lint:contracts && npm run format:check",
     "prepare": "husky"
   },
   "private": true,

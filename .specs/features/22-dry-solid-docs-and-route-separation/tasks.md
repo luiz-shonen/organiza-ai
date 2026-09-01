@@ -454,10 +454,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `/meus-eventos` lazy-loads `ORGANIZER_ROUTES` under `authGuard`
-- [ ] `/admin` lazy-loads `ADMIN_ROUTES` under `superAdminGuard`
-- [ ] `src/app/app.routes.spec.ts` passes with 100% assertions
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `/meus-eventos` lazy-loads `ORGANIZER_ROUTES` under `authGuard`
+- [x] `/admin` lazy-loads `ADMIN_ROUTES` under `superAdminGuard`
+- [x] `src/app/app.routes.spec.ts` passes with 100% assertions
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

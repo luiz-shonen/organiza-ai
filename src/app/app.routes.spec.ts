@@ -6,6 +6,7 @@ import { HomeContainer } from './features/home/home.container';
 import { EventDetailContainer } from './features/event-detail/event-detail.container';
 import { LoginContainer } from './features/auth/login/login.container';
 import { ADMIN_ROUTES } from './features/admin/admin.routes';
+import { ORGANIZER_ROUTES } from './features/organizer/organizer.routes';
 import { ProfileContainer } from './features/profile/profile.container';
 import { DesignSystemShowcaseContainer } from './features/design-system/design-system-showcase.container';
 
@@ -44,14 +45,14 @@ describe('App Routes', () => {
     expect(component).toBe(LoginContainer);
   });
 
-  it('should define /meus-eventos route protected by authGuard and lazy-loading ADMIN_ROUTES', async () => {
+  it('should define /meus-eventos route protected by authGuard and lazy-loading ORGANIZER_ROUTES', async () => {
     const route = routes.find((r: Route) => r.path === 'meus-eventos');
     expect(route).toBeDefined();
     expect(route?.canActivate).toBeDefined();
     expect(route?.canActivate).toContain(authGuard);
     expect(route?.loadChildren).toBeDefined();
     const children = await (route?.loadChildren as () => Promise<unknown>)();
-    expect(children).toBe(ADMIN_ROUTES);
+    expect(children).toBe(ORGANIZER_ROUTES);
   });
 
   it('should define /admin route protected by superAdminGuard and lazy-loading ADMIN_ROUTES', async () => {

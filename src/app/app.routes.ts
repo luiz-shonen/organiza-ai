@@ -26,7 +26,8 @@ export const routes: Routes = [
   {
     path: 'meus-eventos',
     canActivate: [authGuard],
-    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+    loadChildren: () =>
+      import('./features/organizer/organizer.routes').then((m) => m.ORGANIZER_ROUTES),
   },
   {
     path: 'admin',

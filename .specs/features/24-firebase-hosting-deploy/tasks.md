@@ -127,15 +127,15 @@ T5 -> T6
 
 **Done when**:
 
-- [ ] Workflow triggers on `workflow_run` of `CI Pipeline` (success, `main` branch)
-- [ ] `paths-ignore` includes `**/*.md`
-- [ ] Generates `public/runtime-config.js` from `FIREBASE_API_KEY` secret
-- [ ] Runs `npm run build`
-- [ ] Deploys Firestore rules via `npx firebase-tools deploy --only firestore`
-- [ ] Deploys hosting via `FirebaseExtended/action-hosting-deploy@v0` with `channelId: live`
-- [ ] Uses `FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F` secret
-- [ ] Uses Node.js 22 with npm cache
-- [ ] YAML is valid
+- [x] Workflow triggers on `workflow_run` of `CI Pipeline` (success, `main` branch)
+- [x] `paths-ignore` includes `**/*.md`
+- [x] Generates `public/runtime-config.js` from `FIREBASE_API_KEY` secret
+- [x] Runs `npm run build`
+- [x] Deploys Firestore rules via `npx firebase-tools deploy --only firestore`
+- [x] Deploys hosting via `FirebaseExtended/action-hosting-deploy@v0` with `channelId: live`
+- [x] Uses `FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F` secret
+- [x] Uses Node.js 22 with npm cache
+- [x] YAML is valid
 
 **Tests**: none
 **Gate**: build

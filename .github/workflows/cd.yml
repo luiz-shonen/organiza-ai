@@ -1,0 +1,72 @@
+name: CD Pipeline - Production Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI Pipeline']
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy-production:
+    name: Deploy to Production (Firebase Hosting & Firestore)
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check Paths Filter
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '!**/*.md'
+
+      - name: Setup Node.js
+        if: steps.filter.outputs.code == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        if: steps.filter.outputs.code == 'true'
+        run: npm ci
+
+      - name: Generate Runtime Config
+        if: steps.filter.outputs.code == 'true'
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+        run: |
+          cat <<EOF > public/runtime-config.js
+          globalThis.__organizaAiRuntimeConfig = {
+            firebase: {
+              apiKey: '${FIREBASE_API_KEY}',
+            },
+          };
+          EOF
+
+      - name: Build Application
+        if: steps.filter.outputs.code == 'true'
+        run: npm run build
+
+      - name: Deploy Firestore Rules & Indexes
+        if: steps.filter.outputs.code == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F }}
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
+          GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json npx firebase-tools deploy --only firestore --project organiza-ai-3416f
+          rm -f /tmp/sa.json
+
+      - name: Deploy to Firebase Hosting (Live Channel)
+        if: steps.filter.outputs.code == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F }}
+          channelId: live
+          projectId: organiza-ai-3416f

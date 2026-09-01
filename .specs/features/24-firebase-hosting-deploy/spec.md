@@ -147,12 +147,12 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 
 | Requirement ID | Story                            | Phase   | Status   |
 | -------------- | -------------------------------- | ------- | -------- |
-| DEPLOY-01      | P1: Automated Production Deploy  | Design  | Pending  |
-| DEPLOY-02      | P1: Automated Production Deploy  | Design  | Pending  |
-| DEPLOY-03      | P1: Automated Production Deploy  | Design  | Pending  |
-| DEPLOY-04      | P1: Automated Production Deploy  | Design  | Pending  |
-| DEPLOY-05      | P1: Automated Production Deploy  | Design  | Pending  |
-| DEPLOY-06      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-01      | P1: Automated Production Deploy  | Execute | Verified |
+| DEPLOY-02      | P1: Automated Production Deploy  | Execute | Verified |
+| DEPLOY-03      | P1: Automated Production Deploy  | Execute | Verified |
+| DEPLOY-04      | P1: Automated Production Deploy  | Execute | Verified |
+| DEPLOY-05      | P1: Automated Production Deploy  | Execute | Verified |
+| DEPLOY-06      | P1: Automated Production Deploy  | Execute | Verified |
 | DEPLOY-07      | P1: PR Preview Deploy            | Design  | Pending  |
 | DEPLOY-08      | P1: PR Preview Deploy            | Design  | Pending  |
 | DEPLOY-09      | P1: PR Preview Deploy            | Design  | Pending  |
@@ -167,7 +167,7 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 | DEPLOY-18      | P1: Firestore Security Rules Fix | Execute | Verified |
 | DEPLOY-19      | P1: Firestore Security Rules Fix | Execute | Verified |
 | DEPLOY-20      | P2: CI Pipeline Optimization     | Execute | Verified |
-| DEPLOY-21      | P2: CI Pipeline Optimization     | Design  | Pending  |
+| DEPLOY-21      | P2: CI Pipeline Optimization     | Execute | Verified |
 
 **ID format:** `DEPLOY-[NUMBER]`
 

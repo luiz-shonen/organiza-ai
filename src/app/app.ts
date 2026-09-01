@@ -9,8 +9,6 @@ import {
 } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
@@ -24,6 +22,7 @@ import {
 } from './core/services';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
+import { OrgIconComponent } from './shared/ui/actions/org-icon.component';
 import { OrgIconButtonComponent } from './shared/ui/actions/org-icon-button.component';
 import { RsvpDrawerComponent } from './features/event-detail/components/rsvp-drawer/rsvp-drawer.component';
 import { CollaboratorDrawerComponent } from './features/organizer/event-editor/components/collaborator-drawer/collaborator-drawer.component';
@@ -37,11 +36,10 @@ import type { RsvpDrawerResult } from './core/models';
     RouterOutlet,
     RouterLink,
     MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
     MatSidenavModule,
     SeasonalOverlayComponent,
     NavigationDrawerComponent,
+    OrgIconComponent,
     OrgIconButtonComponent,
     RsvpDrawerComponent,
     CollaboratorDrawerComponent,

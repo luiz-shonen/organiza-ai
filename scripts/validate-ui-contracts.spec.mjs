@@ -19,10 +19,12 @@ async function createFixture(files) {
   return root;
 }
 
-test('rejects legacy UI directive consumers and feature-owned component appearance rules', async () => {
+test('rejects legacy UI directive consumers, raw material usages, and feature-owned component appearance rules', async () => {
   const root = await createFixture({
-    'src/app/features/demo/demo.component.ts': "import { OrgButtonDirective } from '../../shared/ui';",
-    'src/app/features/demo/demo.component.html': '<button orgButton="primary">Salvar</button>',
+    'src/app/features/demo/demo.component.ts':
+      "import { OrgButtonDirective } from '../../shared/ui';\nimport { MatIconModule } from '@angular/material/icon';",
+    'src/app/features/demo/demo.component.html':
+      '<button orgButton="primary">Salvar</button>\n<mat-icon>star</mat-icon>\n<button mat-button>Clique</button>',
     'src/app/features/demo/demo.component.scss': `
       .mat-mdc-button { color: pink; }
       .demo { --mdc-outlined-text-field-outline-color: pink; backdrop-filter: blur(8px); }
@@ -36,6 +38,9 @@ test('rejects legacy UI directive consumers and feature-owned component appearan
     assert.deepEqual(codes, [
       'legacy-directive-import',
       'legacy-directive-selector',
+      'feature-raw-material-tag',
+      'feature-raw-material-button-attr',
+      'feature-raw-material-module-import',
       'feature-material-selector',
       'feature-material-token',
       'feature-glass-rule',

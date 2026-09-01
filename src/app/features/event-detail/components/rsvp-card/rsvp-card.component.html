@@ -1,13 +1,12 @@
 <org-surface variant="card">
   <article class="rsvp-card">
     <header class="rsvp-card__header">
-      <mat-icon
+      <org-icon
+        [name]="isConfirmed() ? 'verified' : 'how_to_reg'"
         class="rsvp-card__icon"
         [class.rsvp-card__icon--confirmed]="isConfirmed()"
         aria-hidden="true"
-      >
-        {{ isConfirmed() ? 'verified' : 'how_to_reg' }}
-      </mat-icon>
+      />
       <div>
         <h2 class="rsvp-card__title">
           {{ isConfirmed() ? 'Você está na lista! 🎉' : 'Confirme sua Presença' }}
@@ -19,7 +18,7 @@
     @if (isConfirmed()) {
       <div class="rsvp-card__confirmed-content">
         <p class="rsvp-card__status">
-          <mat-icon class="rsvp-card__check" aria-hidden="true">check_circle</mat-icon>
+          <org-icon name="check_circle" class="rsvp-card__check" aria-hidden="true" />
           <span>
             @if (guestName()) {
               Olá, <strong>{{ guestName() }}</strong

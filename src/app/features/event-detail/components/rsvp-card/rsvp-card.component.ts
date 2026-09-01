@@ -1,11 +1,10 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { OrgButtonComponent, OrgSurfaceComponent } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-rsvp-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, OrgButtonComponent, OrgSurfaceComponent],
+  imports: [OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent],
   templateUrl: './rsvp-card.component.html',
   styleUrl: './rsvp-card.component.scss',
 })

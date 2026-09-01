@@ -7,16 +7,20 @@ import {
   ElementRef,
   viewChild,
 } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
 import QRCode from 'qrcode';
-import { FeedbackService, OrgButtonComponent, OrgSurfaceComponent } from '../../../../../shared/ui';
+import {
+  FeedbackService,
+  OrgButtonComponent,
+  OrgIconComponent,
+  OrgSurfaceComponent,
+} from '../../../../../shared/ui';
 import { shareWhatsApp } from '../../../../../core/utils';
 
 @Component({
   selector: 'app-share-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, OrgButtonComponent, OrgSurfaceComponent],
+  imports: [OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent],
   templateUrl: './share-panel.component.html',
   styleUrl: './share-panel.component.scss',
 })

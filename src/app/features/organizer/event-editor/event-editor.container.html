@@ -60,7 +60,7 @@
         <!-- Event Form -->
         <org-surface variant="card" class="editor__card">
           <div class="editor__card-header">
-            <mat-icon class="editor__card-icon">edit_note</mat-icon>
+            <org-icon name="edit_note" class="editor__card-icon" />
             <h2 class="editor__card-title">Dados do Evento</h2>
           </div>
           <div class="editor__card-content-stepper">
@@ -128,7 +128,7 @@
                   />
 
                   <div class="editor__category-field">
-                    <mat-label class="editor__category-label">Categoria do Evento</mat-label>
+                    <span class="editor__category-label">Categoria do Evento</span>
                     <div
                       class="editor__category-options"
                       role="group"
@@ -137,6 +137,7 @@
                       @for (cat of categories; track cat.name) {
                         <org-chip
                           [label]="cat.name"
+                          [class]="cat.class"
                           [selectable]="true"
                           [selected]="basicInfoForm.controls.category.value === cat.name"
                           (selectionChange)="selectCategory(cat.name)"
@@ -147,7 +148,9 @@
                       basicInfoForm.controls.category.hasError('required') &&
                       basicInfoForm.controls.category.touched
                     ) {
-                      <mat-error class="editor__category-error">Selecione uma categoria</mat-error>
+                      <span class="editor__category-error" role="alert"
+                        >Selecione uma categoria</span
+                      >
                     }
                   </div>
 
@@ -157,6 +160,7 @@
                     placeholder="Descreva o evento..."
                     [rows]="4"
                     [required]="true"
+                    [maxLength]="500"
                     [error]="
                       basicInfoForm.controls.description.hasError('required') &&
                       basicInfoForm.controls.description.touched
@@ -361,7 +365,7 @@
                       />
                     } @else {
                       <p class="editor__collab-save-disabled">
-                        <mat-icon>lock</mat-icon>
+                        <org-icon name="lock" />
                         Apenas o organizador principal pode salvar alterações principais.
                       </p>
                     }
@@ -376,7 +380,7 @@
         @if (isEditing()) {
           <org-surface variant="card" class="editor__card">
             <div class="editor__card-header">
-              <mat-icon class="editor__card-icon">checklist</mat-icon>
+              <org-icon name="checklist" class="editor__card-icon" />
               <div class="editor__card-title-group">
                 <h2 class="editor__card-title">Lista de Itens</h2>
                 <p class="editor__card-subtitle">{{ items().length }} itens cadastrados</p>
@@ -400,8 +404,9 @@
                 />
                 <org-icon-button
                   ariaLabel="Adicionar item"
-                  icon="add_circle"
+                  icon="add"
                   variant="primary"
+                  [gradient]="false"
                   (pressed)="addItem()"
                   [disabled]="!newItemName().trim()"
                   class="editor__add-btn"
@@ -419,15 +424,16 @@
                         }
                         @if (item.claimedBy) {
                           <span class="editor__item-claimed">
-                            <mat-icon>person</mat-icon>
+                            <org-icon name="person" size="sm" />
                             {{ item.claimedBy.name }}
                           </span>
                         }
                       </div>
                       <org-icon-button
                         [ariaLabel]="'Remover ' + item.name"
-                        icon="delete_outline"
-                        variant="danger"
+                        icon="delete"
+                        variant="default"
+                        [gradient]="false"
                         (pressed)="removeItem(item)"
                       />
                     </li>
@@ -450,7 +456,7 @@
           <!-- Guest List Card -->
           <org-surface variant="card" class="editor__card print-section">
             <div class="editor__card-header">
-              <mat-icon class="editor__card-icon">group</mat-icon>
+              <org-icon name="group" class="editor__card-icon" />
               <div class="editor__card-title-group">
                 <h2 class="editor__card-title">Lista de Convidados</h2>
                 <p class="editor__card-subtitle">{{ guests().length }} confirmados</p>

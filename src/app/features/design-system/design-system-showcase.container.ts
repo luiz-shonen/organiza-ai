@@ -239,7 +239,10 @@ code { font-family: var(--org-font-mono); }`,
     actions: `import { OrgButtonComponent, OrgIconButtonComponent, OrgChipComponent } from '@shared/ui';
 
 <org-button label="Salvar" icon="check" variant="primary" [gradient]="true" />
-<org-icon-button ariaLabel="Adicionar evento" icon="add" />
+<org-button label="Voltar" icon="arrow_back" variant="secondary" />
+<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" [gradient]="true" />
+<org-icon-button ariaLabel="Compartilhar" icon="share" variant="primary" [gradient]="false" />
+<org-icon-button ariaLabel="Remover" icon="delete" variant="danger" [gradient]="false" />
 <org-chip label="Celebrativo" variant="accent" [selected]="true" />`,
     fields: `import { OrgAutocompleteFieldComponent, OrgDateFieldComponent, OrgSelectFieldComponent, OrgTextFieldComponent, OrgTimeFieldComponent } from '@shared/ui';
 

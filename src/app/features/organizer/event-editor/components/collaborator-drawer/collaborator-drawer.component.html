@@ -4,31 +4,34 @@
   aria-labelledby="collaborator-drawer-title"
 >
   <header class="collaborator-drawer__header">
-    <div>
-      <h2 id="collaborator-drawer-title">Convidar colaboradores</h2>
-      <p>Gerencie quem pode colaborar neste evento.</p>
+    <div class="collaborator-drawer__header-text">
+      <h2 id="collaborator-drawer-title" class="collaborator-drawer__title">
+        Convidar colaboradores
+      </h2>
+      <p class="collaborator-drawer__subtitle">Gerencie quem pode colaborar neste evento.</p>
     </div>
     <org-icon-button
       type="button"
       icon="close"
+      variant="default"
+      [gradient]="false"
       ariaLabel="Fechar colaboradores"
       data-testid="collaborator-drawer-close"
       (pressed)="closed.emit()"
     />
   </header>
   <form class="collaborator-drawer__form" (submit)="$event.preventDefault(); invite()">
-    <label for="collaborator-email">E-mail do colaborador</label>
-    <input
-      id="collaborator-email"
+    <org-text-field
+      label="E-mail do colaborador"
       type="email"
-      [value]="email()"
-      (input)="onInput($event)"
-      autocomplete="email"
-      data-testid="collaborator-email-input"
+      placeholder="nome@email.com"
+      [(value)]="email"
+      testId="collaborator-email-input"
     />
     <org-button
       type="submit"
       label="Enviar convite"
+      icon="send"
       [disabled]="!isEmailValid()"
       testId="collaborator-invite-submit"
     />
@@ -43,7 +46,7 @@
         class="collaborator-drawer__chip"
         (click)="action.emit({ action: 'remove', collaboratorId: collaborator })"
       >
-        {{ collaborator }} <mat-icon aria-hidden="true">close</mat-icon>
+        {{ collaborator }} <org-icon name="close" size="sm" aria-hidden="true" />
       </button>
     }
   </section>

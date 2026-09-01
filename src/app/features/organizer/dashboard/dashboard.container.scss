@@ -209,4 +209,10 @@
     width: 18px;
     height: 18px;
   }
+
+  &__actions {
+    align-items: center;
+    display: inline-flex;
+    gap: var(--org-space-2xs, 4px);
+  }
 }

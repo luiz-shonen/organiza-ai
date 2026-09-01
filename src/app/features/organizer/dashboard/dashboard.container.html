@@ -13,7 +13,7 @@
     @if (nextEvent(); as event) {
       <org-surface variant="card" class="dashboard__alert-banner" (click)="openPublicEvent(event)">
         <div class="dashboard__alert-content">
-          <mat-icon class="dashboard__alert-icon">notifications_active</mat-icon>
+          <org-icon name="notifications_active" class="dashboard__alert-icon" />
           <div class="dashboard__alert-text">
             <strong>Próximo evento iminente:</strong> {{ event.title }}
             <span>
@@ -27,7 +27,7 @@
             </span>
           </div>
         </div>
-        <mat-icon class="dashboard__alert-arrow">arrow_forward_ios</mat-icon>
+        <org-icon name="arrow_forward_ios" size="sm" class="dashboard__alert-arrow" />
       </org-surface>
     }
 
@@ -61,22 +61,29 @@
           <div class="dashboard__actions">
             <org-icon-button
               icon="edit"
+              variant="default"
+              [gradient]="false"
               [ariaLabel]="'Editar ' + event.title"
               (pressed)="editEvent(event)"
             />
             <org-icon-button
               icon="share"
+              variant="default"
+              [gradient]="false"
               [ariaLabel]="'Compartilhar ' + event.title + ' no WhatsApp'"
               (pressed)="shareWhatsApp(event)"
             />
             <org-icon-button
               icon="link"
+              variant="default"
+              [gradient]="false"
               [ariaLabel]="'Copiar link de ' + event.title"
               (pressed)="copyLink(event)"
             />
             <org-icon-button
               icon="block"
               variant="danger"
+              [gradient]="false"
               [ariaLabel]="'Cancelar ' + event.title"
               (pressed)="cancelEvent(event)"
             />

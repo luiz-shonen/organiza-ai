@@ -1,111 +1,111 @@
-.admin-dashboard {
-  &__header-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--org-spacing-3, 12px);
+@use '../../shared/ui/tokens/semantic' as semantic;
 
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      margin-right: var(--org-spacing-1, 4px);
-    }
+.admin-dashboard {
+  org-section {
+    margin-top: var(--org-space-2xl, 48px);
+  }
+
+  &__header-actions {
+    align-items: center;
+    display: flex;
+    gap: var(--org-space-md, 12px);
   }
 
   &__metrics-grid {
     display: grid;
+    gap: var(--org-space-md, 16px);
     grid-template-columns: 1fr;
-    gap: var(--org-spacing-4, 16px);
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    @media (min-width: 960px) {
+    @include semantic.desktop {
       grid-template-columns: repeat(4, 1fr);
     }
   }
 
   &__loading-surface {
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: var(--org-spacing-8, 32px);
+    padding: var(--org-space-xl, 32px);
   }
 
   &__spinner-wrapper {
+    align-items: center;
+    color: var(--org-on-surface-variant);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--org-spacing-3, 12px);
-    color: var(--org-on-surface-variant);
-    font-size: var(--org-font-size-sm, 0.875rem);
+    font-size: 0.875rem;
+    gap: var(--org-space-md, 12px);
   }
 
   &__admins-card {
-    padding: 0;
     overflow: hidden;
+    padding: 0;
   }
 
   &__admin-list {
+    display: flex;
+    flex-direction: column;
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
   }
 
   &__admin-item {
+    align-items: center;
+    border-bottom: 1px solid var(--org-border);
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: var(--org-spacing-4, 16px) var(--org-spacing-5, 20px);
-    border-bottom: 1px solid var(--org-outline-variant);
-    transition: background-color 0.2s ease;
+    padding: var(--org-space-md, 16px) var(--org-space-lg, 20px);
+    transition: background-color 160ms ease;
 
     &:last-child {
       border-bottom: none;
     }
 
     &:hover {
-      background-color: var(--org-surface-variant);
+      background-color: color-mix(in srgb, var(--org-surface-variant) 40%, transparent);
     }
   }
 
   &__admin-info {
-    display: flex;
     align-items: center;
-    gap: var(--org-spacing-3, 12px);
+    display: flex;
+    gap: var(--org-space-md, 12px);
   }
 
   &__admin-icon {
     color: var(--org-primary);
     font-size: 24px;
-    width: 24px;
     height: 24px;
+    width: 24px;
   }
 
   &__admin-details {
     display: flex;
     flex-direction: column;
-    gap: var(--org-spacing-1, 4px);
+    gap: var(--org-space-2xs, 4px);
   }
 
   &__admin-email {
-    font-size: var(--org-font-size-base, 1rem);
-    font-weight: 600;
     color: var(--org-on-surface);
+    font-size: 1rem;
+    font-weight: 600;
     word-break: break-all;
   }
 
   &__admin-badges {
     display: flex;
-    gap: var(--org-spacing-2, 8px);
+    gap: var(--org-space-sm, 8px);
   }
 
   &__admin-actions {
-    display: flex;
     align-items: center;
-    gap: var(--org-spacing-2, 8px);
+    display: flex;
+    gap: var(--org-space-sm, 8px);
   }
 }

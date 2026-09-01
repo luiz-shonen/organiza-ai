@@ -1,7 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
@@ -27,6 +25,7 @@ import {
   OrgDataColumn,
   OrgDataTableComponent,
   OrgEmptyStateComponent,
+  OrgIconComponent,
   OrgIconButtonComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
@@ -37,8 +36,6 @@ import {
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatButtonModule,
-    MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatMenuModule,
@@ -48,8 +45,9 @@ import {
     OrgSurfaceComponent,
     OrgEmptyStateComponent,
     OrgButtonComponent,
-    OrgDataTableComponent,
+    OrgIconComponent,
     OrgIconButtonComponent,
+    OrgDataTableComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',

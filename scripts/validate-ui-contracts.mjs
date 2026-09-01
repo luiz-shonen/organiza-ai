@@ -12,6 +12,9 @@ const LEGACY_DIRECTIVES = [
 ];
 
 const LEGACY_SELECTOR = /\[(?:orgSurface|orgFormGrid)\]|\borg(?:Button|IconButton|Chip|FormField|FieldLabel)\b/;
+const RAW_MATERIAL_TAG = /<mat-(?:icon|chip|chips|button)\b/;
+const RAW_MATERIAL_BUTTON_ATTR = /\bmat-(?:raised-button|flat-button|stroked-button|icon-button|fab|mini-fab|button)\b/;
+const RAW_MATERIAL_MODULE = /\bMat(?:Icon|Chip|Chips|Button)Module\b/;
 const MATERIAL_SELECTOR = /\.(?:mat|mdc)-[\w-]+/;
 // Reading a Material semantic variable is not an ownership violation. Declaring
 // one in a feature stylesheet is: that changes a component it does not own.
@@ -22,9 +25,12 @@ const DIRECTIVE_EXPORT = /export\s+\{\s*(Org\w+Directive)\s*\}/g;
 const CODE_PRIORITY = new Map([
   ['legacy-directive-import', 0],
   ['legacy-directive-selector', 1],
-  ['feature-material-selector', 2],
-  ['feature-material-token', 3],
-  ['feature-glass-rule', 4],
+  ['feature-raw-material-tag', 2],
+  ['feature-raw-material-button-attr', 3],
+  ['feature-raw-material-module-import', 4],
+  ['feature-material-selector', 5],
+  ['feature-material-token', 6],
+  ['feature-glass-rule', 7],
 ]);
 
 /** @typedef {{ code: string, file: string, line: number, message: string }} UiContractViolation */
@@ -107,19 +113,60 @@ export async function scanUiContracts(root) {
           ),
         );
       }
+
+      if (RAW_MATERIAL_MODULE.test(source)) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-raw-material-module-import',
+            filePath,
+            source,
+            RAW_MATERIAL_MODULE,
+            'Importe o componente fechado `@shared/ui` equivalente em vez do módulo Angular Material.',
+          ),
+        );
+      }
     }
 
-    if (filePath.endsWith('.html') && LEGACY_SELECTOR.test(source)) {
-      violations.push(
-        makeViolation(
-          root,
-          'legacy-directive-selector',
-          filePath,
-          source,
-          LEGACY_SELECTOR,
-          'Use um componente Org fechado em vez de um seletor de diretiva legada.',
-        ),
-      );
+    if (filePath.endsWith('.html')) {
+      if (LEGACY_SELECTOR.test(source)) {
+        violations.push(
+          makeViolation(
+            root,
+            'legacy-directive-selector',
+            filePath,
+            source,
+            LEGACY_SELECTOR,
+            'Use um componente Org fechado em vez de um seletor de diretiva legada.',
+          ),
+        );
+      }
+
+      if (RAW_MATERIAL_TAG.test(source)) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-raw-material-tag',
+            filePath,
+            source,
+            RAW_MATERIAL_TAG,
+            'Use um componente fechado Org (`<org-icon>`, `<org-chip>`, `<org-button>`, etc.) em vez de tags brutas do Angular Material.',
+          ),
+        );
+      }
+
+      if (RAW_MATERIAL_BUTTON_ATTR.test(source)) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-raw-material-button-attr',
+            filePath,
+            source,
+            RAW_MATERIAL_BUTTON_ATTR,
+            'Use `<org-button>` ou `<org-icon-button>` em vez de diretivas de botão Material em `<button>`.',
+          ),
+        );
+      }
     }
 
     if (filePath.endsWith('.scss')) {

@@ -35,7 +35,25 @@ export type OrgIconName =
   | 'download'
   | 'print'
   | 'add_circle'
-  | 'delete_outline';
+  | 'delete_outline'
+  | 'edit_note'
+  | 'lock'
+  | 'checklist'
+  | 'person'
+  | 'group'
+  | 'notifications_active'
+  | 'arrow_forward_ios'
+  | 'verified_user'
+  | 'verified'
+  | 'admin_panel_settings'
+  | 'qr_code_2'
+  | 'pix'
+  | 'diversity_3'
+  | 'shopping_cart'
+  | 'person_add'
+  | 'expand_more'
+  | 'login'
+  | 'cloud_off';
 
 export type OrgIconSize = 'sm' | 'md' | 'lg';
 
@@ -74,6 +92,24 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   print: 'print',
   add_circle: 'add_circle',
   delete_outline: 'delete_outline',
+  edit_note: 'edit_note',
+  lock: 'lock',
+  checklist: 'checklist',
+  person: 'person',
+  group: 'group',
+  notifications_active: 'notifications_active',
+  arrow_forward_ios: 'arrow_forward_ios',
+  verified_user: 'verified_user',
+  verified: 'verified',
+  admin_panel_settings: 'admin_panel_settings',
+  qr_code_2: 'qr_code_2',
+  pix: 'pix',
+  diversity_3: 'diversity_3',
+  shopping_cart: 'shopping_cart',
+  person_add: 'person_add',
+  expand_more: 'expand_more',
+  login: 'login',
+  cloud_off: 'cloud_off',
 };
 
 @Component({

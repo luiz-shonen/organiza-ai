@@ -92,40 +92,121 @@
 }
 
 .org-chip {
-  --mdc-chip-container-shape: 9999px;
-  --mat-chip-container-shape: 9999px;
+  --mdc-chip-container-shape: var(--org-radius-full, 9999px);
+  --mat-chip-container-shape: var(--org-radius-full, 9999px);
+  --mdc-chip-label-text-font: var(--org-font-body);
+  --mdc-chip-label-text-size: 0.875rem;
 
   &.mat-mdc-chip-option {
     cursor: pointer;
   }
 
   &--default {
-    --chip-bg: var(--org-surface-variant);
-    --chip-color: var(--org-on-surface-variant);
-    --chip-selected-bg: var(--org-on-surface-variant);
+    --chip-bg: color-mix(in srgb, var(--org-surface-variant) 70%, transparent);
+    --chip-color: var(--org-on-surface);
+    --chip-selected-bg: var(--org-primary);
+    --chip-selected-color: var(--org-on-primary);
   }
 
   &--primary {
-    --chip-bg: var(--org-primary-container);
-    --chip-color: var(--org-on-primary-container);
+    --chip-bg: color-mix(in srgb, var(--org-primary) 14%, transparent);
+    --chip-color: var(--org-primary);
     --chip-selected-bg: var(--org-primary);
+    --chip-selected-color: var(--org-on-primary);
   }
 
   &--success {
-    --chip-bg: var(--org-success-container);
+    --chip-bg: color-mix(in srgb, var(--org-success) 14%, transparent);
     --chip-color: var(--org-success);
     --chip-selected-bg: var(--org-success);
+    --chip-selected-color: var(--org-on-success);
   }
 
   &--warning {
-    --chip-bg: var(--org-secondary-container);
-    --chip-color: var(--org-on-secondary-container);
+    --chip-bg: color-mix(in srgb, var(--org-secondary) 14%, transparent);
+    --chip-color: var(--org-secondary);
     --chip-selected-bg: var(--org-secondary);
+    --chip-selected-color: var(--org-on-secondary);
   }
 
   &--accent {
-    --chip-bg: var(--org-secondary);
-    --chip-color: var(--org-on-secondary);
-    --chip-selected-bg: var(--org-secondary);
+    --chip-bg: color-mix(in srgb, var(--org-tertiary) 18%, transparent);
+    --chip-color: var(--org-tertiary);
+    --chip-selected-bg: var(--org-tertiary);
+    --chip-selected-color: var(--org-on-tertiary);
+  }
+
+  &.cat-aniversario,
+  :host(.cat-aniversario) & {
+    --chip-bg: var(--org-cat-aniversario-bg);
+    --chip-color: var(--org-cat-aniversario-color);
+    --chip-selected-bg: var(--org-cat-aniversario-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.cat-casamento,
+  :host(.cat-casamento) & {
+    --chip-bg: var(--org-cat-casamento-bg);
+    --chip-color: var(--org-cat-casamento-color);
+    --chip-selected-bg: var(--org-cat-casamento-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.cat-festa,
+  :host(.cat-festa) & {
+    --chip-bg: var(--org-cat-festa-bg);
+    --chip-color: var(--org-cat-festa-color);
+    --chip-selected-bg: var(--org-cat-festa-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.cat-churrasco,
+  :host(.cat-churrasco) & {
+    --chip-bg: var(--org-cat-churrasco-bg);
+    --chip-color: var(--org-cat-churrasco-color);
+    --chip-selected-bg: var(--org-cat-churrasco-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.cat-happy,
+  :host(.cat-happy) & {
+    --chip-bg: var(--org-cat-happy-bg);
+    --chip-color: var(--org-cat-happy-color);
+    --chip-selected-bg: var(--org-cat-happy-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.cat-formatura,
+  :host(.cat-formatura) & {
+    --chip-bg: var(--org-cat-formatura-bg);
+    --chip-color: var(--org-cat-formatura-color);
+    --chip-selected-bg: var(--org-cat-formatura-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.cat-outros,
+  :host(.cat-outros) & {
+    --chip-bg: var(--org-cat-outros-bg);
+    --chip-color: var(--org-cat-outros-color);
+    --chip-selected-bg: var(--org-cat-outros-color);
+    --chip-selected-color: var(--org-on-primary);
+  }
+
+  &.mat-mdc-chip-selected,
+  &.mdc-evolution-chip--selected {
+    --mdc-chip-elevated-container-color: var(--chip-selected-bg);
+    --mdc-chip-flat-container-color: var(--chip-selected-bg);
+    --mdc-chip-selected-flat-container-color: var(--chip-selected-bg);
+    --mdc-chip-label-text-color: var(--chip-selected-color);
+    --mdc-chip-with-icon-selected-icon-color: var(--chip-selected-color);
+
+    background-color: var(--chip-selected-bg);
+    color: var(--chip-selected-color);
+
+    .mdc-evolution-chip__text-label,
+    .mat-mdc-chip-action-label,
+    .mat-icon {
+      color: var(--chip-selected-color);
+    }
   }
 }

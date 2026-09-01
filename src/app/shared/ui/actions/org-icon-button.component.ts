@@ -27,7 +27,7 @@ export class OrgIconButtonComponent {
     transform: normalizeVariant,
   });
   public readonly disabled = input(false);
-  public readonly gradient = input(true);
+  public readonly gradient = input(false);
   public readonly testId = input('');
   public readonly pressed = output<MouseEvent>();
 

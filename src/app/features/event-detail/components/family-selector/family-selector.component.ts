@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatIconModule } from '@angular/material/icon';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
 import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
+  OrgIconComponent,
   OrgAutocompleteFieldComponent,
   OrgTextFieldComponent,
   type OrgSelectOption,
@@ -24,9 +24,9 @@ export interface InlineFamilyMemberPayload {
   imports: [
     CommonModule,
     MatExpansionModule,
-    MatIconModule,
     OrgButtonComponent,
     OrgCheckboxComponent,
+    OrgIconComponent,
     OrgAutocompleteFieldComponent,
     OrgTextFieldComponent,
   ],

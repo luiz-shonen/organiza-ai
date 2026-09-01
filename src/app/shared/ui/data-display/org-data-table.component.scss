@@ -1,9 +1,43 @@
 :host {
+  border-radius: inherit;
   display: block;
+  overflow: hidden;
   overflow-x: auto;
+  width: 100%;
 }
 
 .org-data-table {
-  width: 100%;
   background: transparent;
+  border-collapse: collapse;
+  width: 100%;
+
+  th.mat-mdc-header-cell {
+    background: transparent;
+    border-bottom: 1px solid var(--org-border);
+    color: var(--org-on-surface-variant);
+    font-family: var(--org-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: var(--org-space-md, 16px);
+  }
+
+  td.mat-mdc-cell {
+    border-bottom: 1px solid var(--org-border);
+    color: var(--org-on-surface);
+    font-family: var(--org-font-body);
+    font-size: 0.875rem;
+    padding: var(--org-space-sm, 12px) var(--org-space-md, 16px);
+  }
+
+  tr.mat-mdc-row {
+    transition: background-color 160ms ease;
+
+    &:hover {
+      background: color-mix(in srgb, var(--org-primary) 6%, transparent);
+    }
+
+    &:last-child td.mat-mdc-cell {
+      border-bottom: none;
+    }
+  }
 }

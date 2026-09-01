@@ -76,6 +76,41 @@ export class AuthService {
     const result = await signInWithPopup(this.auth, provider);
     this._currentUser.set(result.user);
     this._isSuperAdmin.set(this.isSuperAdminEmail(result.user.email));
+
+    if (result.user.uid) {
+      try {
+        const userRef = `users/${result.user.uid}`;
+        const existing = await this.gateway.getDoc<Record<string, unknown>>(userRef);
+        const now = new Date().toISOString();
+        if (existing) {
+          await this.gateway.updateDoc(userRef, {
+            displayName:
+              (existing['displayName'] as string | undefined) ||
+              (existing['name'] as string | undefined) ||
+              result.user.displayName,
+            name:
+              (existing['name'] as string | undefined) ||
+              (existing['displayName'] as string | undefined) ||
+              result.user.displayName,
+            email: (existing['email'] as string | undefined) || result.user.email,
+            photoURL: (existing['photoURL'] as string | undefined) || result.user.photoURL,
+            updatedAt: now,
+          });
+        } else {
+          await this.gateway.setDoc(userRef, {
+            uid: result.user.uid,
+            displayName: result.user.displayName,
+            name: result.user.displayName,
+            email: result.user.email,
+            photoURL: result.user.photoURL,
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+      } catch (err) {
+        console.error('Error syncing Google profile to Firestore:', err);
+      }
+    }
   }
 
   async sendVerificationEmail(): Promise<void> {

@@ -70,7 +70,6 @@
         @if (user() && (!user()!.isAnonymous || session())) {
           @if (user()!.photoURL) {
             <button
-              mat-icon-button
               type="button"
               (click)="navigateFromDrawer('/perfil')"
               aria-label="Abrir meu perfil"
@@ -88,13 +87,8 @@
             />
           }
         } @else {
-          <a
-            mat-flat-button
-            routerLink="/login"
-            aria-label="Acessar ou cadastrar"
-            class="app-toolbar__login-btn"
-          >
-            <mat-icon>login</mat-icon>
+          <a routerLink="/login" aria-label="Acessar ou cadastrar" class="app-toolbar__login-btn">
+            <org-icon name="login" />
             <span class="app-toolbar__login-label">
               <span class="app-toolbar__login-label-full">Entrar / Cadastrar</span>
               <span class="app-toolbar__login-label-short">Entrar</span>
@@ -106,7 +100,7 @@
 
     @if (isOffline()) {
       <div class="app-offline-banner" role="alert" aria-live="assertive">
-        <mat-icon>cloud_off</mat-icon>
+        <org-icon name="cloud_off" />
         Você está offline. Algumas funções podem estar indisponíveis.
       </div>
     }

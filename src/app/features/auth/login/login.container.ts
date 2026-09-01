@@ -1,19 +1,23 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services';
-import { OrgButtonComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../shared/ui';
+import {
+  OrgButtonComponent,
+  OrgIconComponent,
+  OrgSurfaceComponent,
+  OrgTextFieldComponent,
+} from '../../../shared/ui';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    MatIconModule,
     MatProgressSpinnerModule,
     OrgButtonComponent,
+    OrgIconComponent,
     OrgTextFieldComponent,
     OrgSurfaceComponent,
   ],

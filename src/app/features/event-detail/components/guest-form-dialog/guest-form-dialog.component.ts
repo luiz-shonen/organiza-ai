@@ -1,14 +1,13 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
 import { GuestSession, FamilyMember } from '../../../../core/models';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 
-import { OrgButtonComponent, OrgTextFieldComponent } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgIconComponent, OrgTextFieldComponent } from '../../../../shared/ui';
 
 export interface GuestFormDialogData {
   session: GuestSession | null;
@@ -29,9 +28,9 @@ export interface GuestFormDialogResult {
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
-    MatIconModule,
     FamilySelectorComponent,
     OrgButtonComponent,
+    OrgIconComponent,
     OrgTextFieldComponent,
   ],
   templateUrl: './guest-form-dialog.component.html',

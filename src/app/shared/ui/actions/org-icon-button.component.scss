@@ -4,25 +4,56 @@
 
 .org-icon-button__control {
   align-items: center;
+  border-radius: var(--org-radius-full, 9999px);
   display: inline-flex;
   justify-content: center;
-  min-height: 48px;
-  min-width: 48px;
+  min-height: var(--org-space-2xl, 48px);
+  min-width: var(--org-space-2xl, 48px);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--org-primary) 10%, transparent);
+    transform: scale(1.05);
+  }
 
   &--gradient {
     background: var(--org-gradient-primary);
     color: var(--org-on-primary);
+
+    &:hover:not(:disabled) {
+      background: var(--org-gradient-primary);
+      filter: brightness(1.08);
+      transform: scale(1.05);
+    }
   }
 
   &--default {
     color: var(--org-on-surface-variant);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--org-on-surface) 8%, transparent);
+      color: var(--org-on-surface);
+    }
   }
 
   &--primary {
     color: var(--org-primary);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--org-primary) 14%, transparent);
+      color: var(--org-primary);
+    }
   }
 
   &--danger {
-    color: var(--org-danger);
+    color: var(--org-error);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--org-error) 14%, transparent);
+      color: var(--org-error);
+    }
   }
 }

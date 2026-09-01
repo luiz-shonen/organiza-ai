@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { OrgButtonComponent } from '../../shared/ui';
+import { OrgButtonComponent, OrgIconComponent } from '../../shared/ui';
 
 @Component({
   selector: 'app-design-system-code-example',
   standalone: true,
-  imports: [OrgButtonComponent, MatIconModule],
+  imports: [OrgButtonComponent, OrgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './design-system-code-example.component.html',
   styleUrl: './design-system-code-example.component.scss',

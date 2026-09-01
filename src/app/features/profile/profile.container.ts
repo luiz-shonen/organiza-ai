@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatIconModule } from '@angular/material/icon';
 import { AuthService, UserService, FamilyService } from '../../core/services';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import {
@@ -28,7 +27,6 @@ import {
     CommonModule,
     DatePipe,
     MatProgressSpinnerModule,
-    MatIconModule,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
     OrgSectionComponent,
@@ -81,7 +79,12 @@ export class ProfileContainer implements OnInit {
       ]);
 
       if (profile) {
-        this.userProfile.set(profile);
+        this.userProfile.set({
+          ...profile,
+          displayName: profile.displayName || profile.name || user.displayName || null,
+          email: profile.email || user.email || null,
+          photoURL: profile.photoURL || user.photoURL || null,
+        });
       } else {
         this.userProfile.set({
           uid: user.uid,

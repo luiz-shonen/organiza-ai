@@ -170,6 +170,22 @@ $radius-full: 9999px;
     --org-color-gold: #ffd700;
     --org-canvas-start: #fff7fb;
     --org-canvas-end: #fff1e4;
+
+    // Category Chip Tokens
+    --org-cat-aniversario-bg: #ffe499;
+    --org-cat-aniversario-color: #d35400;
+    --org-cat-casamento-bg: #fce1ed;
+    --org-cat-casamento-color: #8e44ad;
+    --org-cat-festa-bg: #ffb380;
+    --org-cat-festa-color: #c0392b;
+    --org-cat-churrasco-bg: #d5dbdb;
+    --org-cat-churrasco-color: #2c3e50;
+    --org-cat-happy-bg: #aed6f1;
+    --org-cat-happy-color: #2980b9;
+    --org-cat-formatura-bg: #d2b4de;
+    --org-cat-formatura-color: #4a235a;
+    --org-cat-outros-bg: #e5e7e9;
+    --org-cat-outros-color: #7f8c8d;
   }
 
   html.dark {
@@ -177,6 +193,12 @@ $radius-full: 9999px;
     --org-on-surface: #fdecf2;
     --org-surface-variant: #4f3d46;
     --org-on-surface-variant: #d8c2cb;
+    --org-primary-container: #5c183b;
+    --org-on-primary-container: #ffd8e6;
+    --org-secondary-container: #5a2c14;
+    --org-on-secondary-container: #ffdcc2;
+    --org-tertiary-container: #4e3900;
+    --org-on-tertiary-container: #ffe088;
     --org-text-primary: #fdecf2;
     --org-text-secondary: #d8c2cb;
     --org-text-muted: #a08c95;
@@ -190,6 +212,22 @@ $radius-full: 9999px;
     --org-field-label: #d8c2cb;
     --org-field-outline: #d8c2cb;
     --org-field-disabled-outline: rgba(216, 194, 203, 0.38);
+
+    // Category Chip Tokens (Dark Mode)
+    --org-cat-aniversario-bg: #4a3800;
+    --org-cat-aniversario-color: #ffd566;
+    --org-cat-casamento-bg: #471b3c;
+    --org-cat-casamento-color: #f1a9ee;
+    --org-cat-festa-bg: #521c10;
+    --org-cat-festa-color: #ff8a65;
+    --org-cat-churrasco-bg: #2d3748;
+    --org-cat-churrasco-color: #cbd5e0;
+    --org-cat-happy-bg: #1a365d;
+    --org-cat-happy-color: #90cdf4;
+    --org-cat-formatura-bg: #321c4d;
+    --org-cat-formatura-color: #d6bcfa;
+    --org-cat-outros-bg: #2d3748;
+    --org-cat-outros-color: #a0aec0;
   }
 
   html.theme-junina {

@@ -1,13 +1,11 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import { PartyItem } from '../../../../core/models';
-import { OrgButtonComponent, OrgSurfaceComponent } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-item-list-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatIconModule, OrgButtonComponent, OrgSurfaceComponent],
+  imports: [OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent],
   templateUrl: './item-list-card.component.html',
   styleUrl: './item-list-card.component.scss',
 })

@@ -1,16 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatIconModule } from '@angular/material/icon';
 import type {
   CollaboratorDrawerRequestData,
   CollaboratorDrawerResult,
 } from '../../../../../core/models';
-import { OrgButtonComponent, OrgIconButtonComponent } from '../../../../../shared/ui';
+import {
+  OrgButtonComponent,
+  OrgIconComponent,
+  OrgIconButtonComponent,
+  OrgTextFieldComponent,
+} from '../../../../../shared/ui';
 
 @Component({
   selector: 'app-collaborator-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgButtonComponent, OrgIconButtonComponent, MatChipsModule, MatIconModule],
+  imports: [OrgButtonComponent, OrgIconComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   templateUrl: './collaborator-drawer.component.html',
   styleUrl: './collaborator-drawer.component.scss',
 })

@@ -417,11 +417,35 @@
       </div>
 
       <org-surface variant="panel" class="org-ds-panel-card">
+        <h3 class="org-ds-subsection-title">Botões com texto</h3>
         <div class="org-ds-control-row" aria-label="Variações de botão">
           <org-button label="Ação principal" />
           <org-button label="Ação secundária" variant="secondary" />
           <org-button label="Ação discreta" variant="text" [gradient]="false" />
-          <org-icon-button ariaLabel="Adicionar evento" icon="add" />
+          <org-button label="Perigo" variant="danger" />
+        </div>
+
+        <h3 class="org-ds-subsection-title">Botões de ícone (OrgIconButton)</h3>
+        <div class="org-ds-control-row" aria-label="Variações de botão de ícone">
+          <org-icon-button
+            ariaLabel="Adicionar evento"
+            icon="add"
+            variant="primary"
+            [gradient]="true"
+          />
+          <org-icon-button
+            ariaLabel="Compartilhar"
+            icon="share"
+            variant="primary"
+            [gradient]="false"
+          />
+          <org-icon-button
+            ariaLabel="Editar informações"
+            icon="edit"
+            variant="default"
+            [gradient]="false"
+          />
+          <org-icon-button ariaLabel="Remover" icon="delete" variant="danger" [gradient]="false" />
         </div>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.actions" />
@@ -578,9 +602,12 @@
           [atmosphere]="true"
         />
         <org-surface variant="card" class="org-ds-metric-card">
+          <div class="org-ds-metric-card__header">
+            <span>Progresso da lista</span>
+            <org-badge label="Em andamento" variant="primary" />
+          </div>
           <strong>8 / 12</strong>
           <org-progress [value]="67" ariaLabel="67% dos itens concluídos" />
-          <org-badge label="Em andamento" variant="primary" />
         </org-surface>
         <org-metric-card label="Convites" value="6" description="aguardando resposta" />
       </div>

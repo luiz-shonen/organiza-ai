@@ -1,12 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { OrgButtonComponent, OrgSurfaceComponent } from '../../../../shared/ui';
+import { OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent } from '../../../../shared/ui';
 
 @Component({
   selector: 'app-pix-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconModule, OrgButtonComponent, OrgSurfaceComponent],
+  imports: [OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent],
   templateUrl: './pix-card.component.html',
   styleUrl: './pix-card.component.scss',
 })

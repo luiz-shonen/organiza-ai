@@ -10,10 +10,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -38,6 +34,7 @@ import {
   OrgButtonComponent,
   OrgChipComponent,
   OrgDateFieldComponent,
+  OrgIconComponent,
   OrgIconButtonComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
@@ -55,10 +52,6 @@ import { DrawerService } from '../../../core/services/drawer.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
     MatProgressSpinnerModule,
     MatDividerModule,
     MatTooltipModule,
@@ -68,6 +61,7 @@ import { DrawerService } from '../../../core/services/drawer.service';
     OrgButtonComponent,
     OrgChipComponent,
     OrgDateFieldComponent,
+    OrgIconComponent,
     OrgIconButtonComponent,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,

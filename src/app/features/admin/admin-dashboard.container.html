@@ -60,9 +60,11 @@
             @for (adminEmail of admins(); track adminEmail) {
               <li class="admin-dashboard__admin-item" data-testid="admin-user-item">
                 <div class="admin-dashboard__admin-info">
-                  <mat-icon class="admin-dashboard__admin-icon" aria-hidden="true">
-                    {{ isSuperAdminUser(adminEmail) ? 'verified_user' : 'admin_panel_settings' }}
-                  </mat-icon>
+                  <org-icon
+                    [name]="isSuperAdminUser(adminEmail) ? 'verified_user' : 'admin_panel_settings'"
+                    class="admin-dashboard__admin-icon"
+                    aria-hidden="true"
+                  />
                   <div class="admin-dashboard__admin-details">
                     <span class="admin-dashboard__admin-email">{{ adminEmail }}</span>
                     <div class="admin-dashboard__admin-badges">
@@ -79,6 +81,8 @@
                   @if (!isSuperAdminUser(adminEmail)) {
                     <org-icon-button
                       icon="delete"
+                      variant="default"
+                      [gradient]="false"
                       ariaLabel="Remover administrador"
                       testId="remove-admin-btn"
                       (pressed)="handleRemoveAdmin(adminEmail)"

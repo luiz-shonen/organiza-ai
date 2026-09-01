@@ -504,9 +504,9 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `.agents/skills/creating-pages/SKILL.md` created with container recipe, state handling, and route setup
-- [ ] References `tdd`, `bem-css`, and `tlc-spec-driven`
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] `.agents/skills/creating-pages/SKILL.md` created with container recipe, state handling, and route setup
+- [x] References `tdd`, `bem-css`, and `tlc-spec-driven`
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: build  

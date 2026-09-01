@@ -129,12 +129,12 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] Tests verify `date.utils.ts` with valid dates, invalid strings, and boundary values
-- [ ] Tests verify `sharing.utils.ts` WhatsApp URI construction and clipboard operations
-- [ ] Tests verify `id.utils.ts` unique generation and prefix format
-- [ ] Tests verify `cep.utils.ts` masking, digit stripping, and length checks
-- [ ] Tests verify `relationship.utils.ts` label mappings for all 6 relation types
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Tests verify `date.utils.ts` with valid dates, invalid strings, and boundary values
+- [x] Tests verify `sharing.utils.ts` WhatsApp URI construction and clipboard operations
+- [x] Tests verify `id.utils.ts` unique generation and prefix format
+- [x] Tests verify `cep.utils.ts` masking, digit stripping, and length checks
+- [x] Tests verify `relationship.utils.ts` label mappings for all 6 relation types
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

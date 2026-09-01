@@ -692,9 +692,9 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `RsvpDialogHarness` targets `rsvp-drawer`, `rsvp-confirm-btn`, `rsvp-phone-input`, `rsvp-name-input`
-- [ ] Legacy selectors (`app-guest-form-dialog`, `input[formcontrolname="phone"]`, etc.) removed
-- [ ] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
+- [x] `RsvpDialogHarness` targets `rsvp-drawer`, `rsvp-confirm-btn`, `rsvp-phone-input`, `rsvp-name-input`
+- [x] Legacy selectors (`app-guest-form-dialog`, `input[formcontrolname="phone"]`, etc.) removed
+- [x] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

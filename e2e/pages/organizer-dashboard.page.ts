@@ -20,10 +20,23 @@ export class OrganizerDashboardPage extends BasePage {
   }
 
   async filterByStatus(status: 'Todos' | 'Ativos' | 'Em breve' | 'Encerrados' | 'Histórico' | 'Cancelados' | string): Promise<void> {
+    const statusLower = status.toLowerCase();
+    const idMap: Record<string, string> = {
+      'todos': 'all',
+      'ativos': 'active',
+      'em breve': 'active',
+      'histórico': 'past',
+      'historico': 'past',
+      'encerrados': 'past',
+      'cancelados': 'cancelled',
+    };
+    const testIdName = idMap[statusLower] || statusLower;
     const pattern = status === 'Ativos' ? 'Ativos|Em breve|active|upcoming' : status;
-    const chip = this.page.getByRole('button', { name: new RegExp(pattern, 'i') })
-      .or(this.page.getByTestId(new RegExp(`status-filter-.*(${status.toLowerCase()}|active|upcoming).*`, 'i')))
+    const chip = this.page.getByTestId(`status-filter-${testIdName}-chip`)
+      .or(this.page.getByRole('tab', { name: new RegExp(pattern, 'i') }))
+      .or(this.page.getByRole('button', { name: new RegExp(pattern, 'i') }))
       .or(this.filterChips.filter({ hasText: new RegExp(pattern, 'i') }));
+    await chip.first().scrollIntoViewIfNeeded();
     await chip.first().click();
   }
 

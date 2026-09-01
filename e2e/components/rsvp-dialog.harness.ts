@@ -16,29 +16,23 @@ export class RsvpDialogHarness {
   readonly companionsInput: Locator;
 
   constructor(private readonly page: Page) {
-    this.dialogRoot = page
-      .getByTestId('rsvp-drawer')
-      .or(page.getByTestId('rsvp-dialog'))
-      .or(page.getByTestId('guest-form-dialog'))
-      .or(page.getByRole('dialog'))
-      .or(page.locator('mat-dialog-container, app-guest-form-dialog'));
+    this.dialogRoot = page.getByTestId('rsvp-drawer');
 
     this.confirmBtn = this.dialogRoot
       .getByTestId('rsvp-confirm-btn')
-      .locator('button')
       .or(this.dialogRoot.getByRole('button', { name: /confirmar/i }))
-      .or(
-        this.dialogRoot.locator(
-          '.guest-dialog__actions button:has-text("Confirmar"), button[aria-label="Confirmar presença"]'
-        )
-      )
       .first();
 
     this.cancelBtn = this.dialogRoot
       .getByTestId('rsvp-cancel-btn')
-      .locator('button')
       .or(this.dialogRoot.getByRole('button', { name: /cancelar/i }))
-      .or(this.dialogRoot.locator('.guest-dialog__actions button:has-text("Cancelar")'))
+      .first();
+
+    this.nameInput = this.dialogRoot
+      .getByTestId('rsvp-name-input')
+      .locator('input')
+      .or(this.dialogRoot.getByTestId('rsvp-name-input'))
+      .or(this.dialogRoot.getByLabel(/nome/i))
       .first();
 
     this.phoneInput = this.dialogRoot
@@ -46,19 +40,6 @@ export class RsvpDialogHarness {
       .locator('input')
       .or(this.dialogRoot.getByTestId('rsvp-phone-input'))
       .or(this.dialogRoot.getByLabel(/telefone|whatsapp/i))
-      .or(this.dialogRoot.locator('.org-text-field input[type="tel"], input[type="tel"], input[formcontrolname="phone"]'))
-      .first();
-
-    this.familySelector = this.dialogRoot
-      .getByTestId('family-selector')
-      .or(this.dialogRoot.locator('app-family-selector, .family-selector, .guest-dialog__family-section'));
-
-    this.nameInput = this.dialogRoot
-      .getByTestId('rsvp-name-input')
-      .locator('input')
-      .or(this.dialogRoot.getByTestId('rsvp-name-input'))
-      .or(this.dialogRoot.getByLabel(/nome/i))
-      .or(this.dialogRoot.locator('.org-text-field input, input[formcontrolname="name"]'))
       .first();
 
     this.companionsInput = this.dialogRoot
@@ -66,8 +47,9 @@ export class RsvpDialogHarness {
       .locator('input')
       .or(this.dialogRoot.getByTestId('rsvp-companions-input'))
       .or(this.dialogRoot.getByLabel(/acompanhantes/i))
-      .or(this.dialogRoot.locator('input[formcontrolname="companionsCount"], input[type="number"]'))
       .first();
+
+    this.familySelector = this.dialogRoot.getByTestId('family-selector');
   }
 
   async assertVisible(): Promise<void> {
@@ -104,9 +86,7 @@ export class RsvpDialogHarness {
     await expect(this.dialogRoot.first()).toBeVisible();
 
     const isInitialFocusInside = await this.page.evaluate(() => {
-      const dialog = document.querySelector(
-        '[data-testid="rsvp-drawer"], mat-dialog-container, [role="dialog"], .guest-dialog__form, app-guest-form-dialog'
-      );
+      const dialog = document.querySelector('[data-testid="rsvp-drawer"]');
       return dialog ? dialog.contains(document.activeElement) : false;
     });
     expect(isInitialFocusInside).toBe(true);
@@ -114,9 +94,7 @@ export class RsvpDialogHarness {
     for (let i = 0; i < 5; i++) {
       await this.page.keyboard.press('Tab');
       const isFocusInside = await this.page.evaluate(() => {
-        const dialog = document.querySelector(
-          '[data-testid="rsvp-drawer"], mat-dialog-container, [role="dialog"], .guest-dialog__form, app-guest-form-dialog'
-        );
+        const dialog = document.querySelector('[data-testid="rsvp-drawer"]');
         return dialog ? dialog.contains(document.activeElement) : false;
       });
       expect(isFocusInside).toBe(true);

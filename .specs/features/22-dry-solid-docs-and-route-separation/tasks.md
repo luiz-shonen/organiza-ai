@@ -430,10 +430,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `ADMIN_ROUTES` maps `path: ''` to `AdminDashboardContainer`
-- [ ] Removed organizer event routes from `ADMIN_ROUTES`
-- [ ] Unit tests for admin routes updated
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `ADMIN_ROUTES` maps `path: ''` to `AdminDashboardContainer`
+- [x] Removed organizer event routes from `ADMIN_ROUTES`
+- [x] Unit tests for admin routes updated
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

@@ -4,7 +4,7 @@ import { OrganizerDashboardPage } from '../pages/organizer-dashboard.page';
 import { EventEditorPage } from '../pages/event-editor.page';
 import { HomePage } from '../pages/home.page';
 import { EventDetailPage } from '../pages/event-detail.page';
-import { mockFirebaseRuntimeConfig } from '../helpers/auth-mock.helper';
+import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const sharedEventData = {
   id: 'event-sync-1',
@@ -22,169 +22,33 @@ const sharedEventData = {
 };
 
 async function setupHostSession(page: Page) {
-  await mockFirebaseRuntimeConfig(page);
-  await page.route('https://securetoken.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        access_token: 'host-access-token',
-        expires_in: '3600',
-        token_type: 'Bearer',
-        refresh_token: 'host-refresh-token',
-        id_token: 'host-id-token',
-        user_id: 'host-sync-uid',
-        project_id: 'organiza-ai-3416f',
-      }),
-    });
-  });
-
-  await page.route('https://identitytoolkit.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        users: [
-          {
-            localId: 'host-sync-uid',
-            email: 'host@organiza.ai',
-            emailVerified: true,
-            displayName: 'Host Organizer',
-          },
-        ],
-      }),
-    });
-  });
-
-  await page.addInitScript(
-    ({ event }) => {
-      (window as any).__MOCK_DOCUMENTS__ = {
-        events: [event],
-      };
-
-      const apiKey = 'test-firebase-api-key';
-      const userValue = {
-        uid: 'host-sync-uid',
-        email: 'host@organiza.ai',
-        emailVerified: true,
-        displayName: 'Host Organizer',
-        isAnonymous: false,
-        photoURL: null,
-        apiKey,
-        appName: '[DEFAULT]',
-        authDomain: 'organiza-ai-3416f.firebaseapp.com',
-        stsTokenManager: {
-          apiKey,
-          refreshToken: 'host-refresh-token',
-          accessToken: 'host-access-token',
-          expirationTime: Date.now() + 36000000,
-        },
-        createdAt: '1700000000000',
-        lastLoginAt: '1700000000000',
-      };
-
-      const req = indexedDB.open('firebaseLocalStorageDb', 1);
-      req.onupgradeneeded = (e: any) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
-          db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
-        }
-      };
-      req.onsuccess = (e: any) => {
-        const db = e.target.result;
-        const tx = db.transaction('firebaseLocalStorage', 'readwrite');
-        const store = tx.objectStore('firebaseLocalStorage');
-        store.put({
-          fbase_key: `firebase:authUser:${apiKey}:[DEFAULT]`,
-          value: userValue,
-        });
-      };
+  await setupMockAuthSession(page, {
+    uid: 'host-sync-uid',
+    email: 'host@organiza.ai',
+    displayName: 'Host Organizer',
+    events: [sharedEventData],
+    userProfile: {
+      id: 'host-sync-uid',
+      email: 'host@organiza.ai',
+      displayName: 'Host Organizer',
+      phone: '(11) 99999-1111',
     },
-    { event: sharedEventData }
-  );
+  });
 }
 
 async function setupGuestSession(page: Page) {
-  await mockFirebaseRuntimeConfig(page);
-  await page.route('https://securetoken.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        access_token: 'guest-access-token',
-        expires_in: '3600',
-        token_type: 'Bearer',
-        refresh_token: 'guest-refresh-token',
-        id_token: 'guest-id-token',
-        user_id: 'guest-sync-uid',
-        project_id: 'organiza-ai-3416f',
-      }),
-    });
-  });
-
-  await page.route('https://identitytoolkit.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        users: [
-          {
-            localId: 'guest-sync-uid',
-            email: 'guest@organiza.ai',
-            emailVerified: true,
-            displayName: 'Guest Attendee',
-          },
-        ],
-      }),
-    });
-  });
-
-  await page.addInitScript(
-    ({ event }) => {
-      (window as any).__MOCK_DOCUMENTS__ = {
-        events: [event],
-      };
-
-      const apiKey = 'test-firebase-api-key';
-      const userValue = {
-        uid: 'guest-sync-uid',
-        email: 'guest@organiza.ai',
-        emailVerified: true,
-        displayName: 'Guest Attendee',
-        isAnonymous: false,
-        photoURL: null,
-        apiKey,
-        appName: '[DEFAULT]',
-        authDomain: 'organiza-ai-3416f.firebaseapp.com',
-        stsTokenManager: {
-          apiKey,
-          refreshToken: 'guest-refresh-token',
-          accessToken: 'guest-access-token',
-          expirationTime: Date.now() + 36000000,
-        },
-        createdAt: '1700000000000',
-        lastLoginAt: '1700000000000',
-      };
-
-      const req = indexedDB.open('firebaseLocalStorageDb', 1);
-      req.onupgradeneeded = (e: any) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
-          db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
-        }
-      };
-      req.onsuccess = (e: any) => {
-        const db = e.target.result;
-        const tx = db.transaction('firebaseLocalStorage', 'readwrite');
-        const store = tx.objectStore('firebaseLocalStorage');
-        store.put({
-          fbase_key: `firebase:authUser:${apiKey}:[DEFAULT]`,
-          value: userValue,
-        });
-      };
+  await setupMockAuthSession(page, {
+    uid: 'guest-sync-uid',
+    email: 'guest@organiza.ai',
+    displayName: 'Guest Attendee',
+    events: [sharedEventData],
+    userProfile: {
+      id: 'guest-sync-uid',
+      email: 'guest@organiza.ai',
+      displayName: 'Guest Attendee',
+      phone: '(11) 99999-2222',
     },
-    { event: sharedEventData }
-  );
+  });
 }
 
 test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {

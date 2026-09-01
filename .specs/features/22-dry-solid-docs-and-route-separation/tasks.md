@@ -646,9 +646,9 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `09-multi-user-sync.spec.ts` uses `setupMockAuthSession()` with context-scoped options
-- [ ] Redundant session setup code removed
-- [ ] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
+- [x] `09-multi-user-sync.spec.ts` uses `setupMockAuthSession()` with context-scoped options
+- [x] Redundant session setup code removed
+- [x] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

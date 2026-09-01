@@ -357,11 +357,11 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `DashboardContainer` files relocated to `src/app/features/organizer/dashboard/`
-- [ ] `EventEditorContainer` files relocated to `src/app/features/organizer/event-editor/`
-- [ ] `SharePanelComponent` relocated to `src/app/features/organizer/event-editor/components/share-panel/`
-- [ ] All relative imports updated cleanly
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `DashboardContainer` files relocated to `src/app/features/organizer/dashboard/`
+- [x] `EventEditorContainer` files relocated to `src/app/features/organizer/event-editor/`
+- [x] `SharePanelComponent` relocated to `src/app/features/organizer/event-editor/components/share-panel/`
+- [x] All relative imports updated cleanly
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

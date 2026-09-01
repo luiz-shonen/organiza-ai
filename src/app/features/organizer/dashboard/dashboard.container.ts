@@ -28,7 +28,7 @@ import {
   EventDashboardFiltersComponent,
   EventStatusFilter,
   EventFilterCounts,
-} from '../../organizer/dashboard/components/event-filters/event-filters.component';
+} from './components/event-filters/event-filters.component';
 import {
   OrgButtonComponent,
   OrgDataColumn,

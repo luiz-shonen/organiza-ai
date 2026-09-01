@@ -550,10 +550,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `.agents/skills/design-system-usage/SKILL.md` catalogs all 32 components with input/output contracts
-- [ ] Replaces raw Angular Material tag references with canonical `Org*` components
-- [ ] References `tdd`, `bem-css`, and `tlc-spec-driven`
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] `.agents/skills/design-system-usage/SKILL.md` catalogs all 32 components with input/output contracts
+- [x] Replaces raw Angular Material tag references with canonical `Org*` components
+- [x] References `tdd`, `bem-css`, and `tlc-spec-driven`
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: build  

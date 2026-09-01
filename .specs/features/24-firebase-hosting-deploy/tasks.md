@@ -72,11 +72,11 @@ T5 -> T6
 
 **Done when**:
 
-- [ ] `firestore.rules` includes match for `events/{eventId}/invitations/{email}`
-- [ ] `firestore.rules` includes match for `/{path=**}/invitations/{email}` for collection group queries
-- [ ] `firestore.rules` includes match for `users/{uid}/family/{memberId}`
-- [ ] Unit tests in `e2e/rules/` cover invitation permissions, family roster permissions, and collection group query
-- [ ] Gate check passes: `npm run test:rules` (or vitest unit testing against emulator)
+- [x] `firestore.rules` includes match for `events/{eventId}/invitations/{email}`
+- [x] `firestore.rules` includes match for `/{path=**}/invitations/{email}` for collection group queries
+- [x] `firestore.rules` includes match for `users/{uid}/family/{memberId}`
+- [x] Unit tests in `e2e/rules/` cover invitation permissions, family roster permissions, and collection group query
+- [x] Gate check passes: `npm run test:rules` (or vitest unit testing against emulator)
 
 **Tests**: unit
 **Gate**: quick

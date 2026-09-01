@@ -145,29 +145,29 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 
 ## Requirement Traceability
 
-| Requirement ID | Story                            | Phase  | Status  |
-| -------------- | -------------------------------- | ------ | ------- |
-| DEPLOY-01      | P1: Automated Production Deploy  | Design | Pending |
-| DEPLOY-02      | P1: Automated Production Deploy  | Design | Pending |
-| DEPLOY-03      | P1: Automated Production Deploy  | Design | Pending |
-| DEPLOY-04      | P1: Automated Production Deploy  | Design | Pending |
-| DEPLOY-05      | P1: Automated Production Deploy  | Design | Pending |
-| DEPLOY-06      | P1: Automated Production Deploy  | Design | Pending |
-| DEPLOY-07      | P1: PR Preview Deploy            | Design | Pending |
-| DEPLOY-08      | P1: PR Preview Deploy            | Design | Pending |
-| DEPLOY-09      | P1: PR Preview Deploy            | Design | Pending |
-| DEPLOY-10      | P1: PR Preview Deploy            | Design | Pending |
-| DEPLOY-11      | P1: PR Preview Deploy            | Design | Pending |
-| DEPLOY-12      | P2: Local Deploy Script          | Design | Pending |
-| DEPLOY-13      | P2: Local Deploy Script          | Design | Pending |
-| DEPLOY-14      | P2: CI Pipeline Optimization     | Design | Pending |
-| DEPLOY-15      | P2: CI Pipeline Optimization     | Design | Pending |
-| DEPLOY-16      | P1: Firestore Security Rules Fix | Design | Pending |
-| DEPLOY-17      | P1: Firestore Security Rules Fix | Design | Pending |
-| DEPLOY-18      | P1: Firestore Security Rules Fix | Design | Pending |
-| DEPLOY-19      | P1: Firestore Security Rules Fix | Design | Pending |
-| DEPLOY-20      | P2: CI Pipeline Optimization     | Design | Pending |
-| DEPLOY-21      | P2: CI Pipeline Optimization     | Design | Pending |
+| Requirement ID | Story                            | Phase   | Status   |
+| -------------- | -------------------------------- | ------- | -------- |
+| DEPLOY-01      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-02      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-03      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-04      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-05      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-06      | P1: Automated Production Deploy  | Design  | Pending  |
+| DEPLOY-07      | P1: PR Preview Deploy            | Design  | Pending  |
+| DEPLOY-08      | P1: PR Preview Deploy            | Design  | Pending  |
+| DEPLOY-09      | P1: PR Preview Deploy            | Design  | Pending  |
+| DEPLOY-10      | P1: PR Preview Deploy            | Design  | Pending  |
+| DEPLOY-11      | P1: PR Preview Deploy            | Design  | Pending  |
+| DEPLOY-12      | P2: Local Deploy Script          | Design  | Pending  |
+| DEPLOY-13      | P2: Local Deploy Script          | Design  | Pending  |
+| DEPLOY-14      | P2: CI Pipeline Optimization     | Design  | Pending  |
+| DEPLOY-15      | P2: CI Pipeline Optimization     | Design  | Pending  |
+| DEPLOY-16      | P1: Firestore Security Rules Fix | Execute | Verified |
+| DEPLOY-17      | P1: Firestore Security Rules Fix | Execute | Verified |
+| DEPLOY-18      | P1: Firestore Security Rules Fix | Execute | Verified |
+| DEPLOY-19      | P1: Firestore Security Rules Fix | Execute | Verified |
+| DEPLOY-20      | P2: CI Pipeline Optimization     | Design  | Pending  |
+| DEPLOY-21      | P2: CI Pipeline Optimization     | Design  | Pending  |
 
 **ID format:** `DEPLOY-[NUMBER]`
 

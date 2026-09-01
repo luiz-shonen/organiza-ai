@@ -41,7 +41,9 @@ __screenshots__/
 /test-results
 e2e/screenshots/
 public/runtime-config.js
-
+firestore-debug.log
+ui-debug.log
+firebase-debug.log
 
 # System files
 .DS_Store

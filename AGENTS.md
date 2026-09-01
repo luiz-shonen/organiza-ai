@@ -89,6 +89,12 @@ Organizer sub-routes:
 - Focus on component API: `input()` changes update the template; interactions trigger `output()`.
 - Include accessibility assertions (ARIA, roles).
 
+### Firestore Security Rules Tests (Vitest + Emulator)
+
+- 6 test suites, 31 tests in `e2e/rules/*.rules.test.ts` (`npm run test:rules`).
+- 100% security rules coverage across `events`, `guests`, `items`, `invitations`, `users`, `family`, and `admins`.
+- Isolated test environments (`organizaai-*-rules`) with per-test Firestore state reset (`testEnvironment.clearFirestore()`).
+
 ### E2E Tests (Playwright)
 
 - 15 test suites, 158 tests across Desktop Chromium and Mobile Chrome.

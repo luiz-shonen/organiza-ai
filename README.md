@@ -104,7 +104,7 @@ npm run format:write            # Prettier in-place auto-format
 
 # Unit tests (Vitest)
 npm test -- --watch=false       # 446 tests, 80 suites
-npm run test:rules              # Firestore security rules tests against emulator
+npm run test:rules              # 31 rules tests across 6 suites against Firestore emulator
 
 # E2E tests (Playwright)
 npm run test:e2e                # 158 tests across Desktop Chromium + Mobile Chrome (15 suites)

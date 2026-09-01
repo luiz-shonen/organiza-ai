@@ -2,9 +2,9 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-09-01 **State:** Feature 24 (`24-firebase-hosting-deploy`) complete. Automated continuous delivery pipeline (`cd.yml`), ephemeral PR preview channel workflow (`cd-preview.yml`), smart path filtering in CI (`ci.yml`), complete Firestore security rules coverage for invitations and family rosters (`firestore.rules` with 13 rules unit tests), and local deploy script (`npm run deploy`) are fully operational.  
-**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), 3 Firestore rules test suites (13 tests) green (`npm run test:rules`), 15 E2E test suites (216 tests) green (`npm run test:e2e`), quality suite green (`npm run quality`), production build green (`npm run build`).  
-**Validation Gate:** Feature 24 validated across all 21 requirements (DEPLOY-01..DEPLOY-21).  
+**Last updated:** 2026-09-01 **State:** Feature 24 (`24-firebase-hosting-deploy`) complete with 100% comprehensive Firestore security rules test coverage. Automated continuous delivery pipeline (`cd.yml`), ephemeral PR preview channel workflow (`cd-preview.yml`), smart path filtering in CI (`ci.yml`), complete Firestore security rules coverage (`firestore.rules` with 31 rules unit tests across 6 suites), and local deploy script (`npm run deploy`) are fully operational.  
+**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), 6 Firestore rules test suites (31 tests) green (`npm run test:rules`), 15 E2E test suites (216 tests) green (`npm run test:e2e`), quality suite green (`npm run quality`), production build green (`npm run build`).  
+**Validation Gate:** Feature 24 validated across all 21 requirements (DEPLOY-01..DEPLOY-21) and all Firestore security rule collections.  
 **Next step:** Ready for release and production deployments.
 
 **Active branches:** `main` (production)  

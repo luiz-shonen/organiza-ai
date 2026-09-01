@@ -259,10 +259,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] Template event binding uses typed `(input)="onInputChange($event)"`
-- [ ] Component method safely extracts `(event.target as HTMLInputElement | null)?.value`
-- [ ] Zero occurrences of `$any` remain in `src/app/` templates
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Template event binding uses typed `(input)="onInputChange($event)"`
+- [x] Component method safely extracts `(event.target as HTMLInputElement | null)?.value`
+- [x] Zero occurrences of `$any` remain in `src/app/` templates
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

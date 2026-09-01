@@ -1,6 +1,6 @@
 <mat-form-field appearance="outline" class="org-date-field">
   <mat-label>{{ label() }}</mat-label>
-  <input matInput [matDatepicker]="picker" [attr.data-testid]="testId() || null" [disabled]="isDisabled()" [min]="min()" [required]="required()" [value]="value()" (blur)="markTouched()" (dateInput)="updateValue($event.value)" (dateChange)="updateValue($event.value)" (input)="onTextInput($any($event.target).value)" />
+  <input matInput [matDatepicker]="picker" [attr.data-testid]="testId() || null" [disabled]="isDisabled()" [min]="min()" [required]="required()" [value]="value()" (blur)="markTouched()" (dateInput)="updateValue($event.value)" (dateChange)="updateValue($event.value)" (input)="onInputChange($event)" />
   <mat-datepicker-toggle matIconSuffix [disabled]="isDisabled()" [for]="picker" />
   <mat-datepicker #picker />
   @if (hint() && !error()) { <mat-hint>{{ hint() }}</mat-hint> }

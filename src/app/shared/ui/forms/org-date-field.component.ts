@@ -38,7 +38,8 @@ export class OrgDateFieldComponent implements ControlValueAccessor {
     }
   }
 
-  protected onTextInput(rawValue: string): void {
+  protected onInputChange(event: Event): void {
+    const rawValue = (event.target as HTMLInputElement | null)?.value ?? '';
     if (!rawValue) {
       this.updateValue(null);
       return;

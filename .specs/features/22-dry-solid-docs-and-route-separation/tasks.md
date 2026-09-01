@@ -669,9 +669,9 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `ConfirmDialogHarness` targets `org-confirm-dialog`, `org-confirm-submit`, `org-confirm-cancel`
-- [ ] Legacy selectors (`.confirm-dialog__confirm-btn`, `app-confirm-dialog`, etc.) removed
-- [ ] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
+- [x] `ConfirmDialogHarness` targets `org-confirm-dialog`, `org-confirm-submit`, `org-confirm-cancel`
+- [x] Legacy selectors (`.confirm-dialog__confirm-btn`, `app-confirm-dialog`, etc.) removed
+- [x] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

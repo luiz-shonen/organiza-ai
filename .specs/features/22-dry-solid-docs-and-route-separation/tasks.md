@@ -307,10 +307,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `auth.guard.ts` awaits `waitForAuthReady()` and checks `authService.isAuthenticated()`
-- [ ] `super-admin.guard.ts` awaits `waitForAuthReady()` and checks `authService.isSuperAdmin()`
-- [ ] Guard unit test suites `auth.guard.spec.ts` and `super-admin.guard.spec.ts` updated and green
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `auth.guard.ts` awaits `waitForAuthReady()` and checks `authService.isAuthenticated()`
+- [x] `super-admin.guard.ts` awaits `waitForAuthReady()` and checks `authService.isSuperAdmin()`
+- [x] Guard unit test suites `auth.guard.spec.ts` and `super-admin.guard.spec.ts` updated and green
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

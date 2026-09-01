@@ -7,28 +7,25 @@ import {
   provideRouter,
 } from '@angular/router';
 import { signal, WritableSignal } from '@angular/core';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AuthService } from '../services';
 import { superAdminGuard } from './super-admin.guard';
-import { User } from 'firebase/auth';
 
 describe('superAdminGuard', () => {
-  let loadingSignal: WritableSignal<boolean>;
   let isSuperAdminSignal: WritableSignal<boolean>;
-  let currentUserSignal: WritableSignal<User | null>;
   let router: Router;
+  let waitForAuthReadyMock: ReturnType<typeof vi.fn>;
 
   const mockRoute = {} as ActivatedRouteSnapshot;
   const mockState = {} as RouterStateSnapshot;
 
   beforeEach(() => {
-    loadingSignal = signal(false);
     isSuperAdminSignal = signal(false);
-    currentUserSignal = signal<User | null>(null);
+    waitForAuthReadyMock = vi.fn().mockResolvedValue(undefined);
 
     const authServiceMock = {
-      loading: loadingSignal.asReadonly(),
       isSuperAdmin: isSuperAdminSignal.asReadonly(),
-      currentUser: currentUserSignal.asReadonly(),
+      waitForAuthReady: waitForAuthReadyMock,
     };
 
     TestBed.configureTestingModule({
@@ -39,62 +36,56 @@ describe('superAdminGuard', () => {
   });
 
   it('allows access (returns true) when isSuperAdmin() is true', async () => {
-    loadingSignal.set(false);
     isSuperAdminSignal.set(true);
-    currentUserSignal.set({ uid: 'superadmin-123', email: 'luiz.gmr.dev@gmail.com' } as User);
 
     const result = await TestBed.runInInjectionContext(() => superAdminGuard(mockRoute, mockState));
 
+    expect(waitForAuthReadyMock).toHaveBeenCalled();
     expect(result).toBe(true);
   });
 
   it('redirects to /meus-eventos when authenticated but not superadmin (isSuperAdmin() is false)', async () => {
-    loadingSignal.set(false);
     isSuperAdminSignal.set(false);
-    currentUserSignal.set({ uid: 'regular-user-456', email: 'organizer@test.com' } as User);
 
     const result = await TestBed.runInInjectionContext(() => superAdminGuard(mockRoute, mockState));
 
+    expect(waitForAuthReadyMock).toHaveBeenCalled();
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toBe('/meus-eventos');
   });
 
-  it('redirects to /meus-eventos when unauthenticated (currentUser() is null and isSuperAdmin() is false)', async () => {
-    loadingSignal.set(false);
+  it('redirects to /meus-eventos when unauthenticated (isSuperAdmin() is false)', async () => {
     isSuperAdminSignal.set(false);
-    currentUserSignal.set(null);
 
     const result = await TestBed.runInInjectionContext(() => superAdminGuard(mockRoute, mockState));
 
+    expect(waitForAuthReadyMock).toHaveBeenCalled();
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toBe('/meus-eventos');
   });
 
-  it('handles loading state waiting before evaluating isSuperAdmin()', async () => {
-    loadingSignal.set(true);
-    isSuperAdminSignal.set(false);
-    currentUserSignal.set(null);
+  it('awaits waitForAuthReady before checking isSuperAdmin', async () => {
+    let authReadyResolved = false;
+    let resolveAuthReady: () => void = () => {};
+    waitForAuthReadyMock.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveAuthReady = () => {
+            authReadyResolved = true;
+            resolve();
+          };
+        })
+    );
 
-    let guardResolved = false;
-    const guardPromise = Promise.resolve(
-      TestBed.runInInjectionContext(() => superAdminGuard(mockRoute, mockState)),
-    ).then((res) => {
-      guardResolved = true;
-      return res;
-    });
-
-    // Verify the guard has not resolved yet while loading is true
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    expect(guardResolved).toBe(false);
-
-    // Update state to superadmin and finish loading
     isSuperAdminSignal.set(true);
-    currentUserSignal.set({ uid: 'superadmin-123', email: 'luiz.gmr.dev@gmail.com' } as User);
-    loadingSignal.set(false);
-    TestBed.flushEffects();
+
+    const guardPromise = TestBed.runInInjectionContext(() => superAdminGuard(mockRoute, mockState));
+
+    expect(authReadyResolved).toBe(false);
+    resolveAuthReady();
 
     const result = await guardPromise;
-    expect(guardResolved).toBe(true);
+    expect(authReadyResolved).toBe(true);
     expect(result).toBe(true);
   });
 });

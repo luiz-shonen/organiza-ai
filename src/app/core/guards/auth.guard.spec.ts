@@ -6,26 +6,31 @@ import {
   UrlTree,
   provideRouter,
 } from '@angular/router';
-import { signal, WritableSignal } from '@angular/core';
+import { signal, WritableSignal, computed } from '@angular/core';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AuthService } from '../services';
 import { authGuard } from './auth.guard';
 import { User } from 'firebase/auth';
 
 describe('authGuard', () => {
-  let loadingSignal: WritableSignal<boolean>;
   let currentUserSignal: WritableSignal<User | null>;
   let router: Router;
+  let waitForAuthReadyMock: ReturnType<typeof vi.fn>;
 
   const mockRoute = {} as ActivatedRouteSnapshot;
   const mockState = {} as RouterStateSnapshot;
 
   beforeEach(() => {
-    loadingSignal = signal(false);
     currentUserSignal = signal<User | null>(null);
+    waitForAuthReadyMock = vi.fn().mockResolvedValue(undefined);
 
     const authServiceMock = {
-      loading: loadingSignal.asReadonly(),
       currentUser: currentUserSignal.asReadonly(),
+      isAuthenticated: computed(() => {
+        const u = currentUserSignal();
+        return u !== null && !u.isAnonymous;
+      }),
+      waitForAuthReady: waitForAuthReadyMock,
     };
 
     TestBed.configureTestingModule({
@@ -35,58 +40,57 @@ describe('authGuard', () => {
     router = TestBed.inject(Router);
   });
 
-  it('permits access (returns true) when currentUser() is non-null (authenticated)', async () => {
-    loadingSignal.set(false);
-    currentUserSignal.set({ uid: 'user-123', email: 'organizer@test.com' } as User);
+  it('permits access (returns true) when user is authenticated', async () => {
+    currentUserSignal.set({ uid: 'user-123', email: 'organizer@test.com', isAnonymous: false } as User);
 
     const result = await TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState));
 
+    expect(waitForAuthReadyMock).toHaveBeenCalled();
     expect(result).toBe(true);
   });
 
-  it('redirects to /login when currentUser() is null (unauthenticated)', async () => {
-    loadingSignal.set(false);
+  it('redirects to /login when user is unauthenticated (null)', async () => {
     currentUserSignal.set(null);
 
     const result = await TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState));
 
+    expect(waitForAuthReadyMock).toHaveBeenCalled();
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toBe('/login');
   });
 
-  it('redirects to /login when currentUser() is an anonymous RSVP session', async () => {
-    loadingSignal.set(false);
+  it('redirects to /login when user is an anonymous RSVP session', async () => {
     currentUserSignal.set({ uid: 'anonymous-rsvp-user', isAnonymous: true } as User);
 
     const result = await TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState));
 
+    expect(waitForAuthReadyMock).toHaveBeenCalled();
     expect(result instanceof UrlTree).toBe(true);
     expect((result as UrlTree).toString()).toBe('/login');
   });
 
-  it('handles loading state waiting before evaluating currentUser()', async () => {
-    loadingSignal.set(true);
-    currentUserSignal.set(null);
+  it('awaits waitForAuthReady before checking isAuthenticated', async () => {
+    let authReadyResolved = false;
+    let resolveAuthReady: () => void = () => {};
+    waitForAuthReadyMock.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveAuthReady = () => {
+            authReadyResolved = true;
+            resolve();
+          };
+        })
+    );
 
-    let guardResolved = false;
-    const guardPromise = Promise.resolve(
-      TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState)),
-    ).then((res) => {
-      guardResolved = true;
-      return res;
-    });
+    currentUserSignal.set({ uid: 'user-123', isAnonymous: false } as User);
 
-    // Verify the guard has not resolved yet while loading is true
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    expect(guardResolved).toBe(false);
+    const guardPromise = TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState));
 
-    // Update state to authenticated and finish loading
-    currentUserSignal.set({ uid: 'user-123', email: 'organizer@test.com' } as User);
-    loadingSignal.set(false);
-    TestBed.flushEffects();
+    expect(authReadyResolved).toBe(false);
+    resolveAuthReady();
 
     const result = await guardPromise;
-    expect(guardResolved).toBe(true);
+    expect(authReadyResolved).toBe(true);
     expect(result).toBe(true);
   });
 });

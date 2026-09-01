@@ -165,10 +165,10 @@ T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `angular.json` contains `architect.lint` target using `@angular-eslint/builder:lint`
-- [ ] `package.json` contains scripts: `lint`, `lint:fix`, `lint:styles`, `lint:styles:fix`, `format:check`, `format:write`
-- [ ] Required dev dependencies installed in `package.json`
-- [ ] Gate check passes: `npm run lint || true`
+- [x] `angular.json` contains `architect.lint` target using `@angular-eslint/builder:lint`
+- [x] `package.json` contains scripts: `lint`, `lint:fix`, `lint:styles`, `lint:styles:fix`, `format:check`, `format:write`
+- [x] Required dev dependencies installed in `package.json`
+- [x] Gate check passes: `npm run lint || true`
 
 **Tests**: none  
 **Gate**: Build  

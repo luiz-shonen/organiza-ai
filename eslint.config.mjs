@@ -44,6 +44,14 @@ export default tseslint.config(
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@angular-eslint/prefer-standalone': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
     },
   },
@@ -77,8 +85,8 @@ export default tseslint.config(
       ...angular.configs.templateAccessibility,
     ],
     rules: {
-      '@angular-eslint/template/accessibility-alt-text': 'warn',
-      '@angular-eslint/template/accessibility-label-has-associated-control': 'warn',
+      '@angular-eslint/template/alt-text': 'warn',
+      '@angular-eslint/template/label-has-associated-control': 'warn',
       '@angular-eslint/template/click-events-have-key-events': 'warn',
       '@angular-eslint/template/prefer-control-flow': 'error',
     },

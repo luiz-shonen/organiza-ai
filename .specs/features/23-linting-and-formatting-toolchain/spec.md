@@ -210,7 +210,7 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | LINT-05 | P1: ESLint | AC-5 | Implementing (T1) |
 | LINT-06 | P1: ESLint | AC-6 | Implementing (T1, T13) |
 | LINT-07 | P1: ESLint | AC-7 | Implementing (T1) |
-| LINT-08 | P1: ESLint | AC-8 | In Tasks (T4) |
+| LINT-08 | P1: ESLint | AC-8 | Implementing (T4) |
 | LINT-09 | P1: ESLint | AC-9 | Implementing (T1) |
 | LINT-10 | P1: ESLint | AC-10 | Implementing (T1) |
 | LINT-11 | P1: ESLint | AC-11 | Implementing (T1) |

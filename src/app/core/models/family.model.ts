@@ -14,6 +14,5 @@ export interface FamilyMember {
   phone?: string;
 }
 
-export type FamilyMemberCreate = Omit<FamilyMember, 'id' | 'createdAt'> & {
-  createdAt?: string;
-};
+export * from './family-member-create.model';
+export * from './relationship-option.model';

@@ -179,16 +179,16 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] Create `src/app/core/models/batch-primary-guest-input.model.ts`
-- [ ] Create `src/app/core/models/guest-form-dialog-data.model.ts`
-- [ ] Create `src/app/core/models/guest-form-dialog-result.model.ts`
-- [ ] Create `src/app/core/models/relationship-option.model.ts`
-- [ ] Create `src/app/core/models/family-member-create.model.ts`
-- [ ] Create `src/app/core/models/org-confirm-dialog-data.model.ts`
-- [ ] Create `src/app/core/models/via-cep-response.model.ts`
-- [ ] Create `src/app/core/models/design-system-navigation-item.model.ts`
-- [ ] Create `src/app/core/models/design-system-navigation-group.model.ts`
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] Create `src/app/core/models/batch-primary-guest-input.model.ts`
+- [x] Create `src/app/core/models/guest-form-dialog-data.model.ts`
+- [x] Create `src/app/core/models/guest-form-dialog-result.model.ts`
+- [x] Create `src/app/core/models/relationship-option.model.ts`
+- [x] Create `src/app/core/models/family-member-create.model.ts`
+- [x] Create `src/app/core/models/org-confirm-dialog-data.model.ts`
+- [x] Create `src/app/core/models/via-cep-response.model.ts`
+- [x] Create `src/app/core/models/design-system-navigation-item.model.ts`
+- [x] Create `src/app/core/models/design-system-navigation-group.model.ts`
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: build  

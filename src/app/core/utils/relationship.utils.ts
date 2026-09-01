@@ -1,9 +1,7 @@
 import type { FamilyRelationship } from '../models/family.model';
+import type { RelationshipOption } from '../models/relationship-option.model';
 
-export interface RelationshipOption {
-  readonly value: FamilyRelationship;
-  readonly label: string;
-}
+export type { RelationshipOption };
 
 export const RELATIONSHIP_OPTIONS: readonly RelationshipOption[] = [
   { value: 'spouse', label: 'Cônjuge' },

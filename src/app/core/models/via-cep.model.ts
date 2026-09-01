@@ -1,9 +1,1 @@
-export interface ViaCepResponse {
-  cep: string;
-  logradouro: string;
-  complemento: string;
-  bairro: string;
-  localidade: string;
-  uf: string;
-  erro?: boolean;
-}
+export * from './via-cep-response.model';

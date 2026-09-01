@@ -1,14 +1,8 @@
-export interface DesignSystemNavigationItem {
-  readonly id: string;
-  readonly label: string;
-  readonly icon: string;
-}
+import type { DesignSystemNavigationItem } from './design-system-navigation-item.model';
+import type { DesignSystemNavigationGroup } from './design-system-navigation-group.model';
 
-export interface DesignSystemNavigationGroup {
-  readonly id: string;
-  readonly label: string;
-  readonly items: readonly DesignSystemNavigationItem[];
-}
+export * from './design-system-navigation-item.model';
+export * from './design-system-navigation-group.model';
 
 export const DESIGN_SYSTEM_NAVIGATION_GROUPS: readonly DesignSystemNavigationGroup[] = [
   {

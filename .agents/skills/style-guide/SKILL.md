@@ -10,6 +10,7 @@ This style guide establishes mandatory engineering standards for Organiza AI. Al
 ## Core Methodologies
 
 All feature development and code modifications must follow three foundational methodology skills:
+
 1. **`tlc-spec-driven`**: Feature planning and execution through 4 adaptive phases (Specify, Design, Tasks, Execute) with atomic Conventional Commits, testable EARS acceptance criteria, and independent validation.
 2. **`tdd`**: Test-Driven Development with Vitest (unit/component API) and Playwright (E2E journeys). Every feature ships with automated tests verifying contracts before completion.
 3. **`bem-css`**: Strict Block-Element-Modifier (BEM) naming conventions in SCSS, scoped components, and tokenized custom properties (`--org-*`).
@@ -19,6 +20,7 @@ All feature development and code modifications must follow three foundational me
 ## 1. TypeScript & Architecture Guidelines
 
 ### Strictness & Typing
+
 - **DO**: Use strict TypeScript with zero `any` types.
 - **DO**: Create granular, one-interface-per-file models in `src/app/core/models/` and re-export them cleanly via `src/app/core/models/index.ts`.
 - **DO**: Use typed mock window declarations (`src/app/testing/types/mock-window.d.ts`) for browser globals.
@@ -26,6 +28,7 @@ All feature development and code modifications must follow three foundational me
 - **DON'T**: Declare duplicate interfaces across components or services.
 
 #### Code Example
+
 ```typescript
 // ✅ DO: Strict model interface in src/app/core/models/relationship-option.model.ts
 import type { FamilyRelationship } from './family.model';
@@ -46,6 +49,7 @@ function process(data: any) {
 ## 2. Angular Core & Signals Architecture
 
 ### Change Detection & Modern Control Flow
+
 - **DO**: Use `ChangeDetectionStrategy.OnPush` on EVERY component without exception (AD-002).
 - **DO**: Use standalone components exclusively; NgModules are forbidden (AD-001).
 - **DO**: Use modern control flow syntax: `@if`, `@for (item of items; track item.id)`, `@switch`.
@@ -54,11 +58,13 @@ function process(data: any) {
 - **DON'T**: Use `BehaviorSubject` for local component state.
 
 ### Smart / Dumb Pattern
+
 - **DO**: Keep Presentational Components pure and dumb (`*.component.ts`). They receive state via `input()` and emit events via `output()`.
 - **DO**: Place business logic, Firebase calls, dialog dispatches, and navigation in Container components (`*.container.ts`) (AD-011).
 - **DON'T**: Inject Firestore or API services directly into presentational dumb components.
 
 #### Code Example
+
 ```typescript
 // ✅ DO: Pure Dumb Presentational Component
 @Component({
@@ -84,6 +90,7 @@ export class ItemCardComponent {
 ## 3. Styling, Theming & Glassmorphism
 
 ### BEM & Design Tokens
+
 - **DO**: Write modular SCSS using BEM methodology (`.block__element--modifier`).
 - **DO**: Use `--org-*` CSS variables defined in `src/styles.scss` (Brand palette: `#ff4d94`, `#ff8c42`, `#ffc837`).
 - **DO**: Apply Glassmorphism to cards, surfaces, and modals: `backdrop-filter: blur(24px)`, `background: var(--org-surface-glass)`, subtle gradient borders.
@@ -93,6 +100,7 @@ export class ItemCardComponent {
 - **DON'T**: Cause horizontal overflow (`scrollWidth > innerWidth`).
 
 #### Code Example
+
 ```scss
 // ✅ DO: BEM styling with --org-* tokens and glassmorphism
 .admin-card {
@@ -149,3 +157,17 @@ export class ItemCardComponent {
 
 - **Unit Tests (Vitest)**: Every component, service, and utility must ship with a `.spec.ts` testing inputs, outputs, branch conditions, and accessibility attributes.
 - **E2E Tests (Playwright)**: Write atomic tests with independent state setups using `setupMockAuthSession()`. Assert design tokens, layout invariants (`assertNoHorizontalOverflow`), and touch target sizes ($\ge 48\text{ px}$).
+
+---
+
+## 7. Mandatory Verification Checklist
+
+Before completing any task or opening a pull request, all developers and AI agents MUST execute the following verification steps:
+
+1. **Format Check**: `npm run format:check` — Ensure all files follow repository formatting rules. Auto-fix with `npm run format:write`.
+2. **TypeScript & Template Lint**: `npm run lint` — Confirm zero ESLint errors across components, templates, and specs.
+3. **Stylelint Verification**: `npm run lint:styles` — Ensure zero BEM, token, or `!important` errors.
+4. **Design System Contract Check**: `npm run lint:contracts` — Verify no raw Material tags, tokens, or duplicate glass rules exist.
+5. **Unified Quality Gate**: `npm run quality` — All quality checks must pass cleanly with exit code 0.
+6. **Production Build Gate**: `npm run build` — Application bundle generation must succeed with zero TypeScript or build errors.
+7. **Unit Test Suite**: `npm test -- --watch=false` — All unit test suites must pass 100% green.

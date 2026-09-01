@@ -276,11 +276,11 @@ T12 → T13
 
 **Done when**:
 
-- [ ] Broken symlink removed and directory `.agents/skills/style-guide/` created
-- [ ] `SKILL.md` contains comprehensive DOs and DON'Ts for TS, Angular, SCSS/BEM, Firebase, and a11y
-- [ ] Verification checklist mandates `npm run quality` and `npm run build`
-- [ ] Mirrored into `docs/STYLE_GUIDE.md`
-- [ ] Gate check passes: `npm run format:check`
+- [x] Broken symlink removed and directory `.agents/skills/style-guide/` created
+- [x] `SKILL.md` contains comprehensive DOs and DON'Ts for TS, Angular, SCSS/BEM, Firebase, and a11y
+- [x] Verification checklist mandates `npm run quality` and `npm run build`
+- [x] Mirrored into `docs/STYLE_GUIDE.md`
+- [x] Gate check passes: `npm run format:check`
 
 **Tests**: none  
 **Gate**: Quick  

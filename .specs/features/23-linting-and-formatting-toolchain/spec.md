@@ -201,42 +201,42 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Requirement Traceability
 
-| Requirement ID | Story               | AC#   | Status                      |
-| -------------- | ------------------- | ----- | --------------------------- |
-| LINT-01        | P1: ESLint          | AC-1  | Implementing (T1, T4, T13)  |
-| LINT-02        | P1: ESLint          | AC-2  | Implementing (T1, T4)       |
-| LINT-03        | P1: ESLint          | AC-3  | Implementing (T1)           |
-| LINT-04        | P1: ESLint          | AC-4  | Implementing (T1)           |
-| LINT-05        | P1: ESLint          | AC-5  | Implementing (T1)           |
-| LINT-06        | P1: ESLint          | AC-6  | Implementing (T1, T13)      |
-| LINT-07        | P1: ESLint          | AC-7  | Implementing (T1)           |
-| LINT-08        | P1: ESLint          | AC-8  | Implementing (T4)           |
-| LINT-09        | P1: ESLint          | AC-9  | Implementing (T1)           |
-| LINT-10        | P1: ESLint          | AC-10 | Implementing (T1)           |
-| LINT-11        | P1: ESLint          | AC-11 | Implementing (T1)           |
-| LINT-12        | P1: Stylelint       | AC-12 | Implementing (T2, T4, T13)  |
-| LINT-13        | P1: Stylelint       | AC-13 | Implementing (T2, T4)       |
-| LINT-14        | P1: Stylelint       | AC-14 | Implementing (T2)           |
-| LINT-15        | P1: Stylelint       | AC-15 | Implementing (T2)           |
-| LINT-16        | P1: Stylelint       | AC-16 | Implementing (T2)           |
-| LINT-17        | P1: Stylelint       | AC-17 | Implementing (T2)           |
-| LINT-18        | P1: Prettier        | AC-18 | Implementing (T3, T4, T13)  |
-| LINT-19        | P1: Prettier        | AC-19 | Implementing (T3, T4)       |
-| LINT-20        | P1: Prettier        | AC-20 | Implementing (T3)           |
-| LINT-21        | P1: Git Hooks       | AC-21 | Implementing (T6)           |
-| LINT-22        | P1: Git Hooks       | AC-22 | Implementing (T5)           |
-| LINT-23        | P1: Git Hooks       | AC-23 | Implementing (T6)           |
-| LINT-24        | P1: Style Guide     | AC-24 | In Tasks (T8)               |
-| LINT-25        | P1: Style Guide     | AC-25 | P1: In Tasks (T9)           |
-| LINT-26        | P1: Style Guide     | AC-26 | In Tasks (T10)              |
-| LINT-27        | P1: Style Guide     | AC-27 | In Tasks (T11)              |
-| LINT-28        | P1: Style Guide     | AC-28 | In Tasks (T8, T9, T10, T11) |
-| LINT-29        | P2: CI Gate         | AC-29 | Implementing (T7, T13)      |
-| LINT-30        | P2: CI Gate         | AC-30 | Implementing (T7)           |
-| LINT-31        | P2: CI Gate         | AC-31 | Implementing (T7, T12)      |
-| LINT-32        | P2: Quality Script  | AC-32 | In Tasks (T12, T13)         |
-| LINT-33        | P2: AI Verification | AC-33 | In Tasks (T8)               |
-| LINT-34        | P2: AI Verification | AC-34 | In Tasks (T8)               |
+| Requirement ID | Story               | AC#   | Status                          |
+| -------------- | ------------------- | ----- | ------------------------------- |
+| LINT-01        | P1: ESLint          | AC-1  | Implementing (T1, T4, T13)      |
+| LINT-02        | P1: ESLint          | AC-2  | Implementing (T1, T4)           |
+| LINT-03        | P1: ESLint          | AC-3  | Implementing (T1)               |
+| LINT-04        | P1: ESLint          | AC-4  | Implementing (T1)               |
+| LINT-05        | P1: ESLint          | AC-5  | Implementing (T1)               |
+| LINT-06        | P1: ESLint          | AC-6  | Implementing (T1, T13)          |
+| LINT-07        | P1: ESLint          | AC-7  | Implementing (T1)               |
+| LINT-08        | P1: ESLint          | AC-8  | Implementing (T4)               |
+| LINT-09        | P1: ESLint          | AC-9  | Implementing (T1)               |
+| LINT-10        | P1: ESLint          | AC-10 | Implementing (T1)               |
+| LINT-11        | P1: ESLint          | AC-11 | Implementing (T1)               |
+| LINT-12        | P1: Stylelint       | AC-12 | Implementing (T2, T4, T13)      |
+| LINT-13        | P1: Stylelint       | AC-13 | Implementing (T2, T4)           |
+| LINT-14        | P1: Stylelint       | AC-14 | Implementing (T2)               |
+| LINT-15        | P1: Stylelint       | AC-15 | Implementing (T2)               |
+| LINT-16        | P1: Stylelint       | AC-16 | Implementing (T2)               |
+| LINT-17        | P1: Stylelint       | AC-17 | Implementing (T2)               |
+| LINT-18        | P1: Prettier        | AC-18 | Implementing (T3, T4, T13)      |
+| LINT-19        | P1: Prettier        | AC-19 | Implementing (T3, T4)           |
+| LINT-20        | P1: Prettier        | AC-20 | Implementing (T3)               |
+| LINT-21        | P1: Git Hooks       | AC-21 | Implementing (T6)               |
+| LINT-22        | P1: Git Hooks       | AC-22 | Implementing (T5)               |
+| LINT-23        | P1: Git Hooks       | AC-23 | Implementing (T6)               |
+| LINT-24        | P1: Style Guide     | AC-24 | Implementing (T8)               |
+| LINT-25        | P1: Style Guide     | AC-25 | P1: In Tasks (T9)               |
+| LINT-26        | P1: Style Guide     | AC-26 | In Tasks (T10)                  |
+| LINT-27        | P1: Style Guide     | AC-27 | In Tasks (T11)                  |
+| LINT-28        | P1: Style Guide     | AC-28 | Implementing (T8, T9, T10, T11) |
+| LINT-29        | P2: CI Gate         | AC-29 | Implementing (T7, T13)          |
+| LINT-30        | P2: CI Gate         | AC-30 | Implementing (T7)               |
+| LINT-31        | P2: CI Gate         | AC-31 | Implementing (T7, T12)          |
+| LINT-32        | P2: Quality Script  | AC-32 | In Tasks (T12, T13)             |
+| LINT-33        | P2: AI Verification | AC-33 | Implementing (T8)               |
+| LINT-34        | P2: AI Verification | AC-34 | Implementing (T8)               |
 
 **ID format:** `LINT-[NUMBER]`
 

@@ -102,13 +102,13 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `src/app/core/utils/date.utils.ts` exports `formatDate`, `getDay`, `getMonth`, `formatTime`
-- [ ] `src/app/core/utils/sharing.utils.ts` exports `buildWhatsAppShareUrl`, `shareWhatsApp`, `copyToClipboard`
-- [ ] `src/app/core/utils/id.utils.ts` exports `generateId`, `generateNotificationId`
-- [ ] `src/app/core/utils/cep.utils.ts` exports `formatCep`, `cleanCep`, `isValidCep`
-- [ ] `src/app/core/utils/relationship.utils.ts` exports `RELATIONSHIP_OPTIONS`, `getRelationshipLabel`
-- [ ] `src/app/core/utils/index.ts` re-exports all utility functions cleanly
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `src/app/core/utils/date.utils.ts` exports `formatDate`, `getDay`, `getMonth`, `formatTime`
+- [x] `src/app/core/utils/sharing.utils.ts` exports `buildWhatsAppShareUrl`, `shareWhatsApp`, `copyToClipboard`
+- [x] `src/app/core/utils/id.utils.ts` exports `generateId`, `generateNotificationId`
+- [x] `src/app/core/utils/cep.utils.ts` exports `formatCep`, `cleanCep`, `isValidCep`
+- [x] `src/app/core/utils/relationship.utils.ts` exports `RELATIONSHIP_OPTIONS`, `getRelationshipLabel`
+- [x] `src/app/core/utils/index.ts` re-exports all utility functions cleanly
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

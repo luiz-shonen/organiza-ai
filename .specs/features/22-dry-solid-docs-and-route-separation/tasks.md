@@ -235,10 +235,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `src/app/testing/types/mock-window.d.ts` created defining `MockDocumentStore` and augmenting `Window`
-- [ ] `firestore.gateway.ts` accesses `window.__MOCK_DOCUMENTS__` with zero `(window as any)` or `any` casts
-- [ ] `grep -rn '(window as any)' src/app/` returns 0 results
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `src/app/testing/types/mock-window.d.ts` created defining `MockDocumentStore` and augmenting `Window`
+- [x] `firestore.gateway.ts` accesses `window.__MOCK_DOCUMENTS__` with zero `(window as any)` or `any` casts
+- [x] `grep -rn '(window as any)' src/app/` returns 0 results
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

@@ -480,10 +480,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `.agents/skills/style-guide/SKILL.md` created with YAML frontmatter, rules, and code snippets
-- [ ] `docs/STYLE_GUIDE.md` mirrored for human contributors and showcase documentation
-- [ ] References `tdd`, `bem-css`, and `tlc-spec-driven`
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] `.agents/skills/style-guide/SKILL.md` created with YAML frontmatter, rules, and code snippets
+- [x] `docs/STYLE_GUIDE.md` mirrored for human contributors and showcase documentation
+- [x] References `tdd`, `bem-css`, and `tlc-spec-driven`
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: build  

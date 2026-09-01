@@ -1,6 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { Page } from '@playwright/test';
-import { mockFirebaseRuntimeConfig } from '../helpers/auth-mock.helper';
+import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -12,7 +12,7 @@ const mockSampleEvents = [
     location: 'Rua Augusta, 500 - Consolação - São Paulo/SP',
     status: 'active',
     createdBy: 'test-a11y-uid',
-  creatorEmail: 'organizer@organizaai.test',
+    creatorEmail: 'organizer@organizaai.test',
     collaborators: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -20,86 +20,18 @@ const mockSampleEvents = [
 ];
 
 async function setupA11yMockSession(page: Page) {
-  await mockFirebaseRuntimeConfig(page);
-  await page.route('https://securetoken.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        access_token: 'mock-access-token',
-        expires_in: '3600',
-        token_type: 'Bearer',
-        refresh_token: 'mock-refresh-token',
-        id_token: 'mock-id-token',
-        user_id: 'test-a11y-uid',
-        project_id: 'organiza-ai-3416f',
-      }),
-    });
-  });
-
-  await page.route('https://identitytoolkit.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        users: [
-          {
-            localId: 'test-a11y-uid',
-            email: 'organizer@organizaai.test',
-            emailVerified: true,
-            displayName: 'Luiz A11y Tester',
-          },
-        ],
-      }),
-    });
-  });
-
-  await page.addInitScript(
-    ({ events }) => {
-      (window as any).__MOCK_DOCUMENTS__ = {
-        events: events || [],
-      };
-
-      const apiKey = 'test-firebase-api-key';
-      const userValue = {
-        uid: 'test-a11y-uid',
-        email: 'organizer@organizaai.test',
-        emailVerified: true,
-        displayName: 'Luiz A11y Tester',
-        isAnonymous: false,
-        photoURL: null,
-        apiKey,
-        appName: '[DEFAULT]',
-        authDomain: 'organiza-ai-3416f.firebaseapp.com',
-        stsTokenManager: {
-          apiKey,
-          refreshToken: 'mock-refresh-token',
-          accessToken: 'mock-access-token',
-          expirationTime: Date.now() + 36000000,
-        },
-        createdAt: '1700000000000',
-        lastLoginAt: '1700000000000',
-      };
-
-      const req = indexedDB.open('firebaseLocalStorageDb', 1);
-      req.onupgradeneeded = (e: any) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
-          db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
-        }
-      };
-      req.onsuccess = (e: any) => {
-        const db = e.target.result;
-        const tx = db.transaction('firebaseLocalStorage', 'readwrite');
-        const store = tx.objectStore('firebaseLocalStorage');
-        store.put({
-          fbase_key: `firebase:authUser:${apiKey}:[DEFAULT]`,
-          value: userValue,
-        });
-      };
+  await setupMockAuthSession(page, {
+    uid: 'test-a11y-uid',
+    email: 'organizer@organizaai.test',
+    displayName: 'Luiz A11y Tester',
+    events: mockSampleEvents,
+    userProfile: {
+      id: 'test-a11y-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz A11y Tester',
+      phone: '(11) 98888-7777',
     },
-    { events: mockSampleEvents }
-  );
+  });
 }
 
 test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', () => {

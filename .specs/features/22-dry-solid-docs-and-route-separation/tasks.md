@@ -623,9 +623,9 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `08-keyboard-a11y.spec.ts` uses `setupMockAuthSession()`
-- [ ] Redundant 40-line route mocking helper removed
-- [ ] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
+- [x] `08-keyboard-a11y.spec.ts` uses `setupMockAuthSession()`
+- [x] Redundant 40-line route mocking helper removed
+- [x] Gate check passes: `npm test -- --watch=false && npm run test:e2e`
 
 **Tests**: e2e  
 **Gate**: full  

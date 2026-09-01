@@ -382,10 +382,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `ORGANIZER_ROUTES` created and exported in `src/app/features/organizer/organizer.routes.ts`
-- [ ] Lazy-load route definitions correctly load organizer containers
-- [ ] Unit test verifies route definitions
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `ORGANIZER_ROUTES` created and exported in `src/app/features/organizer/organizer.routes.ts`
+- [x] Lazy-load route definitions correctly load organizer containers
+- [x] Unit test verifies route definitions
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

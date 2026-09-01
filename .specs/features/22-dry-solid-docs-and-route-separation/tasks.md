@@ -527,9 +527,9 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `.agents/skills/creating-components/SKILL.md` created with OnPush, signal inputs/outputs, and BEM SCSS
-- [ ] References `tdd`, `bem-css`, and `tlc-spec-driven`
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] `.agents/skills/creating-components/SKILL.md` created with OnPush, signal inputs/outputs, and BEM SCSS
+- [x] References `tdd`, `bem-css`, and `tlc-spec-driven`
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: build  

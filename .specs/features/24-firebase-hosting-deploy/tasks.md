@@ -158,15 +158,15 @@ T5 -> T6
 
 **Done when**:
 
-- [ ] Workflow triggers on `pull_request` against `main`
-- [ ] `paths-ignore` includes `**/*.md`
-- [ ] Guard: `if: github.event.pull_request.head.repo.full_name == github.repository`
-- [ ] Generates `public/runtime-config.js` from `FIREBASE_API_KEY` secret
-- [ ] Runs `npm run build`
-- [ ] Deploys hosting only (no Firestore rules) via `FirebaseExtended/action-hosting-deploy@v0` (no `channelId`)
-- [ ] Uses `FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F` secret
-- [ ] Uses Node.js 22 with npm cache
-- [ ] YAML is valid
+- [x] Workflow triggers on `pull_request` against `main`
+- [x] `paths-ignore` includes `**/*.md`
+- [x] Guard: `if: github.event.pull_request.head.repo.full_name == github.repository`
+- [x] Generates `public/runtime-config.js` from `FIREBASE_API_KEY` secret
+- [x] Runs `npm run build`
+- [x] Deploys hosting only (no Firestore rules) via `FirebaseExtended/action-hosting-deploy@v0` (no `channelId`)
+- [x] Uses `FIREBASE_SERVICE_ACCOUNT_ORGANIZA_AI_3416F` secret
+- [x] Uses Node.js 22 with npm cache
+- [x] YAML is valid
 
 **Tests**: none
 **Gate**: build

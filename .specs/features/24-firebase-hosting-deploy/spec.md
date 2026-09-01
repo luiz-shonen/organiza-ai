@@ -153,11 +153,11 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 | DEPLOY-04      | P1: Automated Production Deploy  | Execute | Verified |
 | DEPLOY-05      | P1: Automated Production Deploy  | Execute | Verified |
 | DEPLOY-06      | P1: Automated Production Deploy  | Execute | Verified |
-| DEPLOY-07      | P1: PR Preview Deploy            | Design  | Pending  |
-| DEPLOY-08      | P1: PR Preview Deploy            | Design  | Pending  |
-| DEPLOY-09      | P1: PR Preview Deploy            | Design  | Pending  |
-| DEPLOY-10      | P1: PR Preview Deploy            | Design  | Pending  |
-| DEPLOY-11      | P1: PR Preview Deploy            | Design  | Pending  |
+| DEPLOY-07      | P1: PR Preview Deploy            | Execute | Verified |
+| DEPLOY-08      | P1: PR Preview Deploy            | Execute | Verified |
+| DEPLOY-09      | P1: PR Preview Deploy            | Execute | Verified |
+| DEPLOY-10      | P1: PR Preview Deploy            | Execute | Verified |
+| DEPLOY-11      | P1: PR Preview Deploy            | Execute | Verified |
 | DEPLOY-12      | P2: Local Deploy Script          | Design  | Pending  |
 | DEPLOY-13      | P2: Local Deploy Script          | Design  | Pending  |
 | DEPLOY-14      | P2: CI Pipeline Optimization     | Execute | Verified |

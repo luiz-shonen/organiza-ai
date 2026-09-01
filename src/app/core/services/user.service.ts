@@ -1,19 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { FirestoreGateway } from './firestore.gateway';
-import { FamilyService } from './family.service';
+import { EventService } from './event.service';
 import type {
   UserProfile,
   PartyEvent,
-  FamilyMember,
-  FamilyMemberCreate,
-  AddressDetails,
   ThemeMode,
 } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly gateway = inject(FirestoreGateway);
-  private readonly familyService = inject(FamilyService);
+  private readonly eventService = inject(EventService);
 
   private userPath(uid: string) {
     return `users/${uid}`;
@@ -110,17 +107,9 @@ export class UserService {
         // Fallback gracefully
       }
 
-      // Fetch details for each event
+      // Fetch details for each event via EventService
       const fetchPromises = Array.from(eventIds).map(async (eventId) => {
-        try {
-          const eventData = await this.gateway.getDocWithId<Record<string, unknown>>(`events/${eventId}`);
-          if (eventData) {
-            return this.mapEventData(eventData);
-          }
-        } catch {
-          return null;
-        }
-        return null;
+        return this.eventService.getEventById(eventId);
       });
 
       const results = await Promise.all(fetchPromises);
@@ -135,34 +124,5 @@ export class UserService {
       console.error('Error fetching attended events:', err);
       return [];
     }
-  }
-
-  async getFamilyMembers(uid: string): Promise<FamilyMember[]> {
-    return this.familyService.getFamilyMembers(uid);
-  }
-
-  async addFamilyMember(uid: string, member: FamilyMemberCreate): Promise<FamilyMember> {
-    return this.familyService.addFamilyMember(uid, member);
-  }
-
-  async deleteFamilyMember(uid: string, memberId: string): Promise<void> {
-    return this.familyService.deleteFamilyMember(uid, memberId);
-  }
-
-  private mapEventData(data: Record<string, unknown> & { id: string }): PartyEvent {
-    const dateVal = this.gateway.timestampToDate(data['date']);
-    return {
-      id: data.id,
-      title: (data['title'] as string) ?? '',
-      category: (data['category'] as string) ?? '',
-      description: (data['description'] as string) ?? '',
-      date: dateVal ? dateVal.toISOString() : ((data['date'] as string) ?? ''),
-      location: (data['location'] as string) ?? '',
-      addressDetails: (data['addressDetails'] as AddressDetails | undefined) ?? undefined,
-      pixKey: (data['pixKey'] as string | null) ?? null,
-      status: (data['status'] as 'active' | 'cancelled') ?? 'active',
-      createdAt: (data['createdAt'] as string) ?? '',
-      updatedAt: (data['updatedAt'] as string) ?? '',
-    };
   }
 }

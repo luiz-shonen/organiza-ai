@@ -331,10 +331,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] Family passthrough methods removed from `UserService`
-- [ ] Private `mapEventData` removed from `UserService`; delegates mapping to `EventService`
-- [ ] `UserService` unit tests updated to verify clean single responsibility
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Family passthrough methods removed from `UserService`
+- [x] Private `mapEventData` removed from `UserService`; delegates mapping to `EventService`
+- [x] `UserService` unit tests updated to verify clean single responsibility
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

@@ -214,7 +214,17 @@ export class EventService {
     });
   }
 
-  private mapEventData(data: Record<string, unknown> & { id: string }): PartyEvent {
+  async getEventById(eventId: string): Promise<PartyEvent | null> {
+    try {
+      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(`${this.collectionName}/${eventId}`);
+      if (!docData) return null;
+      return this.mapEventData(docData);
+    } catch {
+      return null;
+    }
+  }
+
+  mapEventData(data: Record<string, unknown> & { id: string }): PartyEvent {
     const dateVal = this.gateway.timestampToDate(data['date']);
     return {
       id: data.id,

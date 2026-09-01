@@ -126,6 +126,41 @@ describe('EventService', () => {
     });
   });
 
+  describe('getEventById', () => {
+    it('returns mapped PartyEvent when document exists', async () => {
+      mockGateway.getDocWithId.mockResolvedValue({
+        id: 'evt-1',
+        title: 'Single Event',
+        date: '2026-10-01T00:00:00.000Z',
+        category: 'Party',
+        status: 'active',
+      });
+
+      const result = await service.getEventById('evt-1');
+
+      expect(result).not.toBeNull();
+      expect(result?.id).toBe('evt-1');
+      expect(result?.title).toBe('Single Event');
+      expect(mockGateway.getDocWithId).toHaveBeenCalledWith('events/evt-1');
+    });
+
+    it('returns null when document does not exist', async () => {
+      mockGateway.getDocWithId.mockResolvedValue(null);
+
+      const result = await service.getEventById('evt-missing');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns null when getDocWithId throws an error', async () => {
+      mockGateway.getDocWithId.mockRejectedValue(new Error('Firestore error'));
+
+      const result = await service.getEventById('evt-error');
+
+      expect(result).toBeNull();
+    });
+  });
+
   describe('createEvent', () => {
     it('adds new document to events collection with timestamps and active status', async () => {
       mockGateway.addDoc.mockResolvedValue('new-evt-id');

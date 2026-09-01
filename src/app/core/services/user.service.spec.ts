@@ -2,24 +2,21 @@ import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { UserService } from './user.service';
 import { FirestoreGateway } from './firestore.gateway';
-import { FamilyService } from './family.service';
+import { EventService } from './event.service';
 import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
+import type { PartyEvent } from '../models';
 
 describe('UserService', () => {
   let service: UserService;
   let mockGateway: MockFirestoreGateway;
-  let mockFamilyService: {
-    getFamilyMembers: ReturnType<typeof vi.fn>;
-    addFamilyMember: ReturnType<typeof vi.fn>;
-    deleteFamilyMember: ReturnType<typeof vi.fn>;
+  let mockEventService: {
+    getEventById: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
     mockGateway = createMockFirestoreGateway();
-    mockFamilyService = {
-      getFamilyMembers: vi.fn(),
-      addFamilyMember: vi.fn(),
-      deleteFamilyMember: vi.fn(),
+    mockEventService = {
+      getEventById: vi.fn(),
     };
 
     TestBed.configureTestingModule({
@@ -30,8 +27,8 @@ describe('UserService', () => {
           useValue: mockGateway,
         },
         {
-          provide: FamilyService,
-          useValue: mockFamilyService,
+          provide: EventService,
+          useValue: mockEventService,
         },
       ],
     });
@@ -182,7 +179,7 @@ describe('UserService', () => {
       expect(events).toEqual([]);
     });
 
-    it('retrieves events from rsvpEvents and collectionGroup queries', async () => {
+    it('retrieves events and delegates fetching to EventService', async () => {
       mockGateway.getDoc.mockResolvedValue({
         rsvpEvents: ['event-1'],
       });
@@ -191,28 +188,36 @@ describe('UserService', () => {
         { eventId: 'event-2' },
       ]);
 
-      mockGateway.getDocWithId.mockImplementation((path: string) => {
-        if (path === 'events/event-1') {
-          return Promise.resolve({
-            id: 'event-1',
-            title: 'Churrasco da Firma',
-            date: '2026-07-15T12:00:00.000Z',
-            location: 'Sítio',
-            category: 'Aniversário',
-            status: 'active',
-          });
-        }
-        if (path === 'events/event-2') {
-          return Promise.resolve({
-            id: 'event-2',
-            title: 'Casamento dos Sonhos',
-            date: '2026-08-20T18:00:00.000Z',
-            location: 'Igreja',
-            category: 'Casamento',
-            status: 'active',
-          });
-        }
-        return Promise.resolve(null);
+      const evt1: PartyEvent = {
+        id: 'event-1',
+        title: 'Churrasco da Firma',
+        description: 'Churrasco anual',
+        date: '2026-07-15T12:00:00.000Z',
+        location: 'Sítio',
+        category: 'Aniversário',
+        pixKey: null,
+        status: 'active',
+        createdAt: '2026-07-01T00:00:00.000Z',
+        updatedAt: '2026-07-01T00:00:00.000Z',
+      };
+
+      const evt2: PartyEvent = {
+        id: 'event-2',
+        title: 'Casamento dos Sonhos',
+        description: 'Casamento na praia',
+        date: '2026-08-20T18:00:00.000Z',
+        location: 'Igreja',
+        category: 'Casamento',
+        pixKey: null,
+        status: 'active',
+        createdAt: '2026-08-01T00:00:00.000Z',
+        updatedAt: '2026-08-01T00:00:00.000Z',
+      };
+
+      mockEventService.getEventById.mockImplementation(async (eventId: string) => {
+        if (eventId === 'event-1') return evt1;
+        if (eventId === 'event-2') return evt2;
+        return null;
       });
 
       const events = await service.getAttendedEvents('user-123');
@@ -221,6 +226,8 @@ describe('UserService', () => {
       expect(events[0].id).toBe('event-2');
       expect(events[0].title).toBe('Casamento dos Sonhos');
       expect(events[1].id).toBe('event-1');
+      expect(mockEventService.getEventById).toHaveBeenCalledWith('event-1');
+      expect(mockEventService.getEventById).toHaveBeenCalledWith('event-2');
     });
 
     it('returns empty array when error occurs during fetch', async () => {
@@ -228,28 +235,6 @@ describe('UserService', () => {
 
       const events = await service.getAttendedEvents('user-123');
       expect(events).toEqual([]);
-    });
-  });
-
-  describe('family delegation', () => {
-    it('delegates getFamilyMembers to FamilyService', async () => {
-      const mockMembers = [{ id: 'fam-1', name: 'Lucas', relationship: 'child' as const }];
-      mockFamilyService.getFamilyMembers.mockResolvedValue(mockMembers);
-
-      const result = await service.getFamilyMembers('user-123');
-      expect(mockFamilyService.getFamilyMembers).toHaveBeenCalledWith('user-123');
-      expect(result).toBe(mockMembers);
-    });
-
-    it('delegates addFamilyMember to FamilyService', async () => {
-      const newMember = { name: 'Mariana', relationship: 'spouse' as const };
-      await service.addFamilyMember('user-123', newMember);
-      expect(mockFamilyService.addFamilyMember).toHaveBeenCalledWith('user-123', newMember);
-    });
-
-    it('delegates deleteFamilyMember to FamilyService', async () => {
-      await service.deleteFamilyMember('user-123', 'fam-1');
-      expect(mockFamilyService.deleteFamilyMember).toHaveBeenCalledWith('user-123', 'fam-1');
     });
   });
 });

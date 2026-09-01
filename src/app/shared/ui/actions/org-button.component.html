@@ -11,13 +11,13 @@
     (click)="activate()"
   >
     @if (loading()) {
-      <mat-spinner diameter="18" aria-label="Carregando" />
+      <mat-spinner class="org-button__spinner" diameter="18" aria-label="Carregando" />
     } @else if (imageSrc(); as imageSrc) {
       <img class="org-button__image" [src]="imageSrc" [alt]="imageAlt()" />
     } @else if (icon(); as icon) {
-      <org-icon [name]="icon" size="sm" color="currentColor" />
+      <org-icon class="org-button__icon" [name]="icon" size="sm" color="currentColor" />
     }
-    <span>{{ label() }}</span>
+    <span class="org-button__label">{{ label() }}</span>
   </button>
 } @else if (variant() === 'text') {
   <button
@@ -32,13 +32,13 @@
     (click)="activate()"
   >
     @if (loading()) {
-      <mat-spinner diameter="18" aria-label="Carregando" />
+      <mat-spinner class="org-button__spinner" diameter="18" aria-label="Carregando" />
     } @else if (imageSrc(); as imageSrc) {
       <img class="org-button__image" [src]="imageSrc" [alt]="imageAlt()" />
     } @else if (icon(); as icon) {
-      <org-icon [name]="icon" size="sm" color="currentColor" />
+      <org-icon class="org-button__icon" [name]="icon" size="sm" color="currentColor" />
     }
-    <span>{{ label() }}</span>
+    <span class="org-button__label">{{ label() }}</span>
   </button>
 } @else {
   <button
@@ -54,12 +54,12 @@
     (click)="activate()"
   >
     @if (loading()) {
-      <mat-spinner diameter="18" aria-label="Carregando" />
+      <mat-spinner class="org-button__spinner" diameter="18" aria-label="Carregando" />
     } @else if (imageSrc(); as imageSrc) {
       <img class="org-button__image" [src]="imageSrc" [alt]="imageAlt()" />
     } @else if (icon(); as icon) {
-      <org-icon [name]="icon" size="sm" color="currentColor" />
+      <org-icon class="org-button__icon" [name]="icon" size="sm" color="currentColor" />
     }
-    <span>{{ label() }}</span>
+    <span class="org-button__label">{{ label() }}</span>
   </button>
 }

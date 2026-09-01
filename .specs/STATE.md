@@ -3,10 +3,10 @@
 ## Handoff Snapshot
 
 **Last updated:** 2026-09-01  
-**State:** Feature 22 (`22-dry-solid-docs-and-route-separation`) 100% complete across all 4 phases (T01-T20). DRY models extracted, domain routes decoupled (`/meus-eventos` organizer vs `/admin` Super Admin), and documentation/agent skills fully synchronized.  
-**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), production build green (`npm run build`).  
-**Validation Gate:** Feature 22 tasks complete (20/20 tasks PASS).  
-**Next step:** Execute Feature 23 (`23-linting-and-formatting-toolchain`).  
+**State:** Feature 22 (`22-dry-solid-docs-and-route-separation`) 100% complete and verified by independent Verifier sub-agent (`validation.md` PASS, 25/25 ACs, 3/3 sensor mutants killed). DRY pure utilities created, granular 1-file-per-interface models extracted, domain routes decoupled (`/meus-eventos` organizer vs `/admin` Super Admin), E2E mock setup deduplicated, and documentation/agent skills fully synchronized.  
+**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), 15 E2E test suites (216 tests) green (`npm run test:e2e`), production build green (`npm run build`).  
+**Validation Gate:** Feature 22 PASS (0 errors), Feature 23 Spec/Tasks PASS (0 errors).  
+**Next step:** Approve and execute Feature 23 (`23-linting-and-formatting-toolchain`).  
 
 **Active branches:** `main` (production)  
 **What exists:**
@@ -39,6 +39,7 @@
 - **Feature 10 (`10-e2e-organizer-create-event`)**: Spec written and gate-validated (29 EARS ACs, 0 errors). Covers atomic happy-path E2E tests for all major user journeys.
 - **Feature 11 (`11-visual-screenshot-audit-and-layout-fixes`)**: Spec written and gate-validated (24 EARS ACs, 0 errors). Design written and approved (`design.md`) establishing Mobile-First SCSS architecture, responsive component layouts (Toolbar, Event Editor Stepper & Address Forms, Organizer Dashboard Filter Chips, Profile Family Roster Manager, Event Detail & Modals), WCAG 2.5.5 AA 48px touch targets, and `assertNoHorizontalOverflow` Playwright assertion helper.
 - **Feature 21 (`21-css-design-token-and-component-architecture`)**: Full design token unification in `_semantic.scss` (org-export ready), spacing showcase section, complete purge of legacy purple palette and hardcoded hex values, 0 component-level `!important` occurrences, standardized mobile-first breakpoint mixins (`semantic.tablet`, `semantic.desktop`, `semantic.wide`), smart/dumb refactoring of dialogs and drawers, complete migration of all feature templates to closed `Org*` design system components, and deletion of obsolete component folders. Validated by independent Verifier sub-agent (32/32 ACs PASS, 3/3 sensor mutants killed).
+- **Feature 22 (`22-dry-solid-docs-and-route-separation`)**: Pure shared utility modules in `src/app/core/utils/` (`date`, `sharing`, `id`, `cep`, `relationship`), granular one-file-per-interface models in `src/app/core/models/`, `AuthService.isAuthenticated` and `waitForAuthReady()`, single responsibility in `UserService`, complete route and domain decoupling between `/meus-eventos` (`ORGANIZER_ROUTES`) and `/admin` (`ADMIN_ROUTES` with dedicated `AdminDashboardContainer`), typed `MockDocumentStore` with zero `(window as any)` or `$any` casts, `.agents/skills/` library (`style-guide`, `creating-pages`, `creating-components`, `design-system-usage`), and synchronized docs (`README.md`, `DESIGN.md`, `AGENTS.md`, `STATE.md`). Validated by independent Verifier sub-agent (25/25 ACs PASS, 3/3 sensor mutants killed).
 
 ---
 

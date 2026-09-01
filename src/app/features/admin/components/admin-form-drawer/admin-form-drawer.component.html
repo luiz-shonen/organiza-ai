@@ -1,0 +1,52 @@
+@if (isOpen()) {
+  <div class="admin-form-drawer__overlay" (click)="onClose()" data-testid="admin-drawer-overlay">
+    <div
+      class="admin-form-drawer__surface"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-drawer-title"
+      data-testid="admin-drawer-dialog"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="admin-form-drawer__header">
+        <div>
+          <h2 id="admin-drawer-title" class="admin-form-drawer__title">Novo Administrador</h2>
+          <p class="admin-form-drawer__subtitle">Cadastre o e-mail do usuário para conceder privilégios administrativos.</p>
+        </div>
+        <org-icon-button
+          icon="close"
+          ariaLabel="Fechar painel de cadastro"
+          testId="admin-drawer-close-btn"
+          (pressed)="onClose()"
+        />
+      </header>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="admin-form-drawer__body">
+        <org-text-field
+          label="E-mail do administrador"
+          type="email"
+          placeholder="exemplo@gmail.com"
+          formControlName="email"
+          hint="O usuário deve possuir uma conta Google válida cadastrada."
+        />
+
+        <div class="admin-form-drawer__actions">
+          <org-button
+            type="button"
+            variant="secondary"
+            label="Cancelar"
+            testId="admin-drawer-cancel-btn"
+            (pressed)="onClose()"
+          />
+          <org-button
+            type="submit"
+            variant="primary"
+            [label]="saving() ? 'Cadastrando...' : 'Adicionar Admin'"
+            testId="admin-drawer-submit-btn"
+            [disabled]="form.invalid || saving()"
+          />
+        </div>
+      </form>
+    </div>
+  </div>
+}

@@ -406,10 +406,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `AdminDashboardContainer` created with template, styles, and unit tests
-- [ ] Displays Super Admin header, platform metrics cards, and admin users list
-- [ ] Integrates `AdminFormDrawerComponent` for adding admins
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `AdminDashboardContainer` created with template, styles, and unit tests
+- [x] Displays Super Admin header, platform metrics cards, and admin users list
+- [x] Integrates `AdminFormDrawerComponent` for adding admins
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

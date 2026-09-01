@@ -158,8 +158,8 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 | DEPLOY-09      | P1: PR Preview Deploy            | Execute | Verified |
 | DEPLOY-10      | P1: PR Preview Deploy            | Execute | Verified |
 | DEPLOY-11      | P1: PR Preview Deploy            | Execute | Verified |
-| DEPLOY-12      | P2: Local Deploy Script          | Design  | Pending  |
-| DEPLOY-13      | P2: Local Deploy Script          | Design  | Pending  |
+| DEPLOY-12      | P2: Local Deploy Script          | Execute | Verified |
+| DEPLOY-13      | P2: Local Deploy Script          | Execute | Verified |
 | DEPLOY-14      | P2: CI Pipeline Optimization     | Execute | Verified |
 | DEPLOY-15      | P2: CI Pipeline Optimization     | Execute | Verified |
 | DEPLOY-16      | P1: Firestore Security Rules Fix | Execute | Verified |

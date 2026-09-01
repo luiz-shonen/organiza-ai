@@ -189,8 +189,8 @@ T5 -> T6
 
 **Done when**:
 
-- [ ] `"deploy": "npm run build && npx firebase-tools deploy --only hosting,firestore"` exists in `scripts`
-- [ ] `npm run deploy` is runnable (script resolves without syntax error)
+- [x] `"deploy": "npm run build && firebase deploy --only hosting,firestore"` exists in `scripts`
+- [x] `npm run deploy` is runnable (script resolves without syntax error)
 
 **Tests**: none
 **Gate**: build

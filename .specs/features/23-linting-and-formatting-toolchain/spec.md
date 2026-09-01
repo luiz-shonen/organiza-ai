@@ -203,17 +203,17 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 | Requirement ID | Story | AC# | Status |
 |---|---|---|---|
-| LINT-01 | P1: ESLint | AC-1 | In Tasks (T1, T4, T13) |
-| LINT-02 | P1: ESLint | AC-2 | In Tasks (T1, T4) |
-| LINT-03 | P1: ESLint | AC-3 | In Tasks (T1) |
-| LINT-04 | P1: ESLint | AC-4 | In Tasks (T1) |
-| LINT-05 | P1: ESLint | AC-5 | In Tasks (T1) |
-| LINT-06 | P1: ESLint | AC-6 | In Tasks (T1, T13) |
-| LINT-07 | P1: ESLint | AC-7 | In Tasks (T1) |
+| LINT-01 | P1: ESLint | AC-1 | Implementing (T1, T4, T13) |
+| LINT-02 | P1: ESLint | AC-2 | Implementing (T1, T4) |
+| LINT-03 | P1: ESLint | AC-3 | Implementing (T1) |
+| LINT-04 | P1: ESLint | AC-4 | Implementing (T1) |
+| LINT-05 | P1: ESLint | AC-5 | Implementing (T1) |
+| LINT-06 | P1: ESLint | AC-6 | Implementing (T1, T13) |
+| LINT-07 | P1: ESLint | AC-7 | Implementing (T1) |
 | LINT-08 | P1: ESLint | AC-8 | In Tasks (T4) |
-| LINT-09 | P1: ESLint | AC-9 | In Tasks (T1) |
-| LINT-10 | P1: ESLint | AC-10 | In Tasks (T1) |
-| LINT-11 | P1: ESLint | AC-11 | In Tasks (T1) |
+| LINT-09 | P1: ESLint | AC-9 | Implementing (T1) |
+| LINT-10 | P1: ESLint | AC-10 | Implementing (T1) |
+| LINT-11 | P1: ESLint | AC-11 | Implementing (T1) |
 | LINT-12 | P1: Stylelint | AC-12 | In Tasks (T2, T4, T13) |
 | LINT-13 | P1: Stylelint | AC-13 | In Tasks (T2, T4) |
 | LINT-14 | P1: Stylelint | AC-14 | In Tasks (T2) |

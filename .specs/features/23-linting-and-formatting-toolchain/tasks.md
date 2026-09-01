@@ -90,12 +90,12 @@ T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `eslint.config.mjs` exports flat config with TypeScript, HTML template, test override, and Playwright blocks
-- [ ] `@angular-eslint/prefer-on-push-component-change-detection`, `@angular-eslint/prefer-standalone`, and `@typescript-eslint/no-explicit-any` set to `error` for production code
-- [ ] Test files (`*.spec.ts`, `*.mock.ts`) configure `no-explicit-any: warn`
-- [ ] Playwright E2E files (`e2e/**/*.ts`) configure `eslint-plugin-playwright` rules
-- [ ] Template a11y rules configured at warning level
-- [ ] Gate check passes: `npx eslint --version`
+- [x] `eslint.config.mjs` exports flat config with TypeScript, HTML template, test override, and Playwright blocks
+- [x] `@angular-eslint/prefer-on-push-component-change-detection`, `@angular-eslint/prefer-standalone`, and `@typescript-eslint/no-explicit-any` set to `error` for production code
+- [x] Test files (`*.spec.ts`, `*.mock.ts`) configure `no-explicit-any: warn`
+- [x] Playwright E2E files (`e2e/**/*.ts`) configure `eslint-plugin-playwright` rules
+- [x] Template a11y rules configured at warning level
+- [x] Gate check passes: `npx eslint --version`
 
 **Tests**: none  
 **Gate**: Build  

@@ -6,7 +6,7 @@ import {
   assertGlassmorphism,
   assertFontFamily,
 } from '../helpers/design-tokens.helper';
-import { mockFirebaseRuntimeConfig } from '../helpers/auth-mock.helper';
+import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -26,95 +26,22 @@ const mockSampleEvents = [
 ];
 
 async function setupVisualMockSession(page: Page) {
-  await mockFirebaseRuntimeConfig(page);
-  await page.route('https://securetoken.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        access_token: 'mock-access-token',
-        expires_in: '3600',
-        token_type: 'Bearer',
-        refresh_token: 'mock-refresh-token',
-        id_token: 'mock-id-token',
-        user_id: 'test-visual-uid',
-        project_id: 'organiza-ai-3416f',
-      }),
-    });
-  });
-
-  await page.route('https://identitytoolkit.googleapis.com/**', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        users: [
-          {
-            localId: 'test-visual-uid',
-            email: 'luiz.gmr.dev@gmail.com',
-            emailVerified: true,
-            displayName: 'Luiz Visual Inspector',
-          },
-        ],
-      }),
-    });
-  });
-
-  await page.addInitScript(
-    ({ events }) => {
-      (window as any).__MOCK_DOCUMENTS__ = {
-        events: events || [],
-        'users/test-visual-uid': {
-          displayName: 'Luiz Visual Inspector',
-          email: 'luiz.gmr.dev@gmail.com',
-          phone: '(11) 98888-7777',
-        },
-        'users/test-visual-uid/family': [
-          { id: 'fam-1', name: 'Maria Silva', relationship: 'Esposa' },
-          { id: 'fam-2', name: 'Lucas Silva', relationship: 'Filho(a)' },
-        ],
-      };
-
-      const apiKey = 'test-firebase-api-key';
-      const userValue = {
-        uid: 'test-visual-uid',
-        email: 'luiz.gmr.dev@gmail.com',
-        emailVerified: true,
-        displayName: 'Luiz Visual Inspector',
-        isAnonymous: false,
-        photoURL: null,
-        apiKey,
-        appName: '[DEFAULT]',
-        authDomain: 'organiza-ai-3416f.firebaseapp.com',
-        stsTokenManager: {
-          apiKey,
-          refreshToken: 'mock-refresh-token',
-          accessToken: 'mock-access-token',
-          expirationTime: Date.now() + 36000000,
-        },
-        createdAt: '1700000000000',
-        lastLoginAt: '1700000000000',
-      };
-
-      const req = indexedDB.open('firebaseLocalStorageDb', 1);
-      req.onupgradeneeded = (e: any) => {
-        const db = e.target.result;
-        if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
-          db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
-        }
-      };
-      req.onsuccess = (e: any) => {
-        const db = e.target.result;
-        const tx = db.transaction('firebaseLocalStorage', 'readwrite');
-        const store = tx.objectStore('firebaseLocalStorage');
-        store.put({
-          fbase_key: `firebase:authUser:${apiKey}:[DEFAULT]`,
-          value: userValue,
-        });
-      };
+  await setupMockAuthSession(page, {
+    uid: 'test-visual-uid',
+    email: 'luiz.gmr.dev@gmail.com',
+    displayName: 'Luiz Visual Inspector',
+    events: mockSampleEvents,
+    userProfile: {
+      id: 'test-visual-uid',
+      displayName: 'Luiz Visual Inspector',
+      email: 'luiz.gmr.dev@gmail.com',
+      phone: '(11) 98888-7777',
     },
-    { events: mockSampleEvents },
-  );
+    familyMembers: [
+      { id: 'fam-1', name: 'Maria Silva', relationship: 'Esposa' },
+      { id: 'fam-2', name: 'Lucas Silva', relationship: 'Filho(a)' },
+    ],
+  });
 }
 
 const VISUAL_THEMES = ['light', 'dark'] as const;

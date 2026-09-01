@@ -37,6 +37,11 @@ export class AuthService {
 
   async waitForAuthReady(): Promise<void> {
     await this.auth.authStateReady();
+    if (this.auth.currentUser) {
+      this._currentUser.set(this.auth.currentUser);
+      this._isSuperAdmin.set(this.isSuperAdminEmail(this.auth.currentUser.email));
+    }
+    this._loading.set(false);
   }
 
   constructor() {

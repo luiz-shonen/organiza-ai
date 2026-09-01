@@ -142,9 +142,9 @@ T12 → T13
 - Skill: NONE
 
 **Done when**:
-- [ ] `.prettierignore` excludes build outputs, coverage, and screenshot baselines
-- [ ] `.prettierrc` configured with 100 print width, single quotes, and Angular HTML parser
-- [ ] Gate check passes: `npx prettier --check package.json`
+- [x] `.prettierignore` excludes build outputs, coverage, and screenshot baselines
+- [x] `.prettierrc` configured with 100 print width, single quotes, and Angular HTML parser
+- [x] Gate check passes: `npx prettier --check package.json`
 
 **Tests**: none  
 **Gate**: Quick  

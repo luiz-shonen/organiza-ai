@@ -231,9 +231,9 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | LINT-26        | P1: Style Guide     | AC-26 | In Tasks (T10)              |
 | LINT-27        | P1: Style Guide     | AC-27 | In Tasks (T11)              |
 | LINT-28        | P1: Style Guide     | AC-28 | In Tasks (T8, T9, T10, T11) |
-| LINT-29        | P2: CI Gate         | AC-29 | In Tasks (T7, T13)          |
-| LINT-30        | P2: CI Gate         | AC-30 | In Tasks (T7)               |
-| LINT-31        | P2: CI Gate         | AC-31 | In Tasks (T7, T12)          |
+| LINT-29        | P2: CI Gate         | AC-29 | Implementing (T7, T13)      |
+| LINT-30        | P2: CI Gate         | AC-30 | Implementing (T7)           |
+| LINT-31        | P2: CI Gate         | AC-31 | Implementing (T7, T12)      |
 | LINT-32        | P2: Quality Script  | AC-32 | In Tasks (T12, T13)         |
 | LINT-33        | P2: AI Verification | AC-33 | In Tasks (T8)               |
 | LINT-34        | P2: AI Verification | AC-34 | In Tasks (T8)               |

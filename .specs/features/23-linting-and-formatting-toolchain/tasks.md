@@ -250,10 +250,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `.github/workflows/quality.yml` created executing `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build`
-- [ ] Workflow triggers on pull requests and pushes to `main`
-- [ ] `.github/workflows/e2e.yml` updated with workflow alignment
-- [ ] Gate check passes: `npm run build`
+- [x] `.github/workflows/quality.yml` created executing `lint`, `lint:styles`, `lint:contracts`, `format:check`, and `build`
+- [x] Workflow triggers on pull requests and pushes to `main`
+- [x] `.github/workflows/e2e.yml` updated with workflow alignment
+- [x] Gate check passes: `npm run build`
 
 **Tests**: none  
 **Gate**: Build  

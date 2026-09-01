@@ -118,18 +118,20 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 
 ---
 
-### P2: CI Pipeline Integration
+### P2: CI Pipeline Optimization & Integration
 
-**User Story**: As a developer, I want the deploy workflows to integrate cleanly with the existing CI pipeline so that deployment only happens after all quality gates pass.
+**User Story**: As a developer, I want the CI pipeline to always format-check markdown files while skipping heavy build and E2E jobs for markdown-only changes, and I want CD workflows to integrate cleanly after CI passes.
 
-**Why P2**: Ensures deployment never bypasses existing safety nets.
+**Why P2**: Saves minutes of CI runner time on documentation updates while maintaining 100% format validation across all files.
 
 **Acceptance Criteria**:
 
-1. The existing `ci.yml` quality and E2E jobs SHALL remain unchanged. <!-- DEPLOY-14, ubiquitous -->
-2. WHEN the deploy workflow triggers THEN the system SHALL reuse the same Node.js 22 and `npm ci` setup pattern as the existing CI pipeline. <!-- DEPLOY-15, event-driven -->
+1. WHEN a commit is pushed or PR created THEN the CI pipeline SHALL always execute `npm run format:check` across all files including markdown. <!-- DEPLOY-14, event-driven -->
+2. IF only markdown files (`**/*.md`) are modified in a commit or PR THEN the CI pipeline SHALL skip ESLint, Stylelint, contract linting, Angular build, and Playwright E2E tests. <!-- DEPLOY-15, unwanted-behavior -->
+3. WHEN non-markdown code files are modified THEN the CI pipeline SHALL execute the full quality gate (lint, styles, contracts, format, build) and the downstream Playwright E2E test suite. <!-- DEPLOY-20, event-driven -->
+4. WHEN the CD deploy workflow triggers THEN the system SHALL reuse the same Node.js 22 and `npm ci` setup pattern as the existing CI pipeline. <!-- DEPLOY-21, event-driven -->
 
-**Independent Test**: Verify `ci.yml` is unmodified; verify deploy workflow uses Node.js 22.
+**Independent Test**: Push markdown-only commit → CI runs `format:check` and passes in ~15s, skipping E2E → Push code commit → CI runs full quality + E2E.
 
 ---
 
@@ -158,18 +160,20 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 | DEPLOY-11      | P1: PR Preview Deploy            | Design | Pending |
 | DEPLOY-12      | P2: Local Deploy Script          | Design | Pending |
 | DEPLOY-13      | P2: Local Deploy Script          | Design | Pending |
-| DEPLOY-14      | P2: CI Pipeline Integration      | Design | Pending |
-| DEPLOY-15      | P2: CI Pipeline Integration      | Design | Pending |
+| DEPLOY-14      | P2: CI Pipeline Optimization     | Design | Pending |
+| DEPLOY-15      | P2: CI Pipeline Optimization     | Design | Pending |
 | DEPLOY-16      | P1: Firestore Security Rules Fix | Design | Pending |
 | DEPLOY-17      | P1: Firestore Security Rules Fix | Design | Pending |
 | DEPLOY-18      | P1: Firestore Security Rules Fix | Design | Pending |
 | DEPLOY-19      | P1: Firestore Security Rules Fix | Design | Pending |
+| DEPLOY-20      | P2: CI Pipeline Optimization     | Design | Pending |
+| DEPLOY-21      | P2: CI Pipeline Optimization     | Design | Pending |
 
 **ID format:** `DEPLOY-[NUMBER]`
 
 **Status values:** Pending → In Design → In Tasks → Implementing → Verified
 
-**Coverage:** 19 total, 0 mapped to tasks, 19 unmapped ⚠️
+**Coverage:** 21 total, 0 mapped to tasks, 21 unmapped ⚠️
 
 ---
 
@@ -181,5 +185,5 @@ How we know the feature is successful:
 - [ ] Pull requests show a preview URL comment with a working preview deployment
 - [ ] Firestore security rules cover invitations and family subcollections and pass all rule tests
 - [ ] Firestore security rules are deployed alongside the application on merge to `main`
+- [ ] Markdown-only changes run `format:check` and skip heavy build and E2E jobs
 - [ ] `npm run deploy` works for manual local deployment
-- [ ] The existing CI pipeline (quality + E2E) remains unchanged and fully operational

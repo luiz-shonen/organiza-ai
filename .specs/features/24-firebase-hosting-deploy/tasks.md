@@ -40,15 +40,16 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 Phases are ordered and run sequentially — each phase completes before the next begins, and tasks within a phase execute in order.
 
-### Phase 1: Security Rules & CD Workflows
+### Phase 1: Security Rules & CI/CD Pipelines
 
-T1, T2, T3, and T4 create independent files and security rule fixes. T5 documents all four.
+T1 through T5 create independent files, rule fixes, and workflow enhancements. T6 documents all five.
 
 ```
-T1 -> T5
-T2 -> T5
-T3 -> T5
-T4 -> T5
+T1 -> T6
+T2 -> T6
+T3 -> T6
+T4 -> T6
+T5 -> T6
 ```
 
 ---
@@ -82,14 +83,42 @@ T4 -> T5
 
 ---
 
-### T2: Create Production Deploy Workflow (cd.yml)
+### T2: Configure Smart CI Path Filtering in ci.yml
+
+**What**: Update `.github/workflows/ci.yml` with `dorny/paths-filter@v3` so that `format:check` always runs on every commit, while code linters, build, and E2E tests are conditionally skipped for markdown-only changes.
+**Where**: `.github/workflows/ci.yml`
+**Depends on**: None
+**Reuses**: Existing `ci.yml` structure
+
+**Requirement**: DEPLOY-14, DEPLOY-15, DEPLOY-20
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] `ci.yml` includes `dorny/paths-filter@v3` step detecting non-markdown changes (`code: ['!**/*.md']`)
+- [ ] `format:check` step executes unconditionally on all pushes and PRs
+- [ ] ESLint, Stylelint, contract linting, and Angular build execute only if `steps.filter.outputs.code == 'true'`
+- [ ] `quality` job outputs `has_code_changes: steps.filter.outputs.code`
+- [ ] `e2e` job executes only `if: needs.quality.outputs.has_code_changes == 'true'`
+- [ ] YAML is valid
+
+**Tests**: none
+**Gate**: build
+
+---
+
+### T3: Create Production Deploy Workflow (cd.yml)
 
 **What**: Create `cd.yml` GitHub Actions workflow that deploys the app + Firestore rules to production on CI success.
 **Where**: `.github/workflows/cd.yml`
 **Depends on**: None
 **Reuses**: costuraai `firebase-hosting-merge.yml` pattern; existing `ci.yml` Node.js/npm setup
 
-**Requirement**: DEPLOY-01, DEPLOY-02, DEPLOY-03, DEPLOY-04, DEPLOY-05, DEPLOY-06, DEPLOY-14, DEPLOY-15
+**Requirement**: DEPLOY-01, DEPLOY-02, DEPLOY-03, DEPLOY-04, DEPLOY-05, DEPLOY-06, DEPLOY-21
 
 **Tools**:
 
@@ -113,7 +142,7 @@ T4 -> T5
 
 ---
 
-### T3: Create PR Preview Deploy Workflow (cd-preview.yml)
+### T4: Create PR Preview Deploy Workflow (cd-preview.yml)
 
 **What**: Create `cd-preview.yml` GitHub Actions workflow that deploys to a preview channel on PRs.
 **Where**: `.github/workflows/cd-preview.yml`
@@ -144,7 +173,7 @@ T4 -> T5
 
 ---
 
-### T4: Add Deploy Script to package.json
+### T5: Add Deploy Script to package.json
 
 **What**: Add `"deploy"` npm script for manual local deployment.
 **Where**: `package.json`
@@ -168,14 +197,14 @@ T4 -> T5
 
 ---
 
-### T5: Update Project Documentation (README, AGENTS, GEMINI, STATE)
+### T6: Update Project Documentation (README, AGENTS, GEMINI, STATE)
 
-**What**: Update project documentation to record the CD pipeline, PR preview workflows, Firestore rules coverage, AD-043 decision, and local deploy instructions.
+**What**: Update project documentation to record the CD pipeline, PR preview workflows, smart CI filtering, Firestore rules coverage, AD-043 decision, and local deploy instructions.
 **Where**: `README.md`
-**Depends on**: T1, T2, T3, T4
+**Depends on**: T1, T2, T3, T4, T5
 **Reuses**: Existing README and AGENTS.md structure
 
-**Requirement**: DEPLOY-01, DEPLOY-07, DEPLOY-12
+**Requirement**: DEPLOY-01, DEPLOY-07, DEPLOY-12, DEPLOY-14
 
 **Tools**:
 
@@ -184,7 +213,7 @@ T4 -> T5
 
 **Done when**:
 
-- [ ] `README.md` CI/CD section documents the pipeline (`ci.yml` → `cd.yml`), `cd-preview.yml`, required secrets, and `npm run deploy`
+- [ ] `README.md` CI/CD section documents the pipeline (`ci.yml` → `cd.yml`), `cd-preview.yml`, smart CI filtering, required secrets, and `npm run deploy`
 - [ ] `AGENTS.md` and `GEMINI.md` CI/CD section updated with automated deployment architecture
 - [ ] `.specs/STATE.md` updated with AD-043 (Automated Firebase Hosting CD Pipeline & Firestore Rules Governance)
 - [ ] Build gate passes: `npm run quality`
@@ -198,13 +227,14 @@ T4 -> T5
 
 ```
 Phase 1:
-  T1 -> T5
-  T2 -> T5
-  T3 -> T5
-  T4 -> T5
+  T1 -> T6
+  T2 -> T6
+  T3 -> T6
+  T4 -> T6
+  T5 -> T6
 ```
 
-Single phase, 5 tasks — fits a single inline execution (≤ 8 tasks).
+Single phase, 6 tasks — fits a single inline execution (≤ 8 tasks).
 
 ---
 
@@ -213,22 +243,24 @@ Single phase, 5 tasks — fits a single inline execution (≤ 8 tasks).
 | Task                                  | Scope                  | Status      |
 | ------------------------------------- | ---------------------- | ----------- |
 | T1: Update Firestore security rules   | 2 files (rules + test) | ✅ Granular |
-| T2: Create production deploy workflow | 1 file                 | ✅ Granular |
-| T3: Create PR preview deploy workflow | 1 file                 | ✅ Granular |
-| T4: Add deploy script to package.json | 1 field change         | ✅ Granular |
-| T5: Update README with deploy docs    | 1 file section         | ✅ Granular |
+| T2: Smart CI path filtering in ci.yml | 1 file                 | ✅ Granular |
+| T3: Create production deploy workflow | 1 file                 | ✅ Granular |
+| T4: Create PR preview deploy workflow | 1 file                 | ✅ Granular |
+| T5: Add deploy script to package.json | 1 field change         | ✅ Granular |
+| T6: Update project documentation      | 1 file section         | ✅ Granular |
 
 ---
 
 ## Diagram-Definition Cross-Check
 
-| Task | Depends On (task body) | Diagram Shows              | Status   |
-| ---- | ---------------------- | -------------------------- | -------- |
-| T1   | None                   | None (independent)         | ✅ Match |
-| T2   | None                   | None (independent)         | ✅ Match |
-| T3   | None                   | None (independent)         | ✅ Match |
-| T4   | None                   | None (independent)         | ✅ Match |
-| T5   | T1, T2, T3, T4         | T1→T5, T2→T5, T3→T5, T4→T5 | ✅ Match |
+| Task | Depends On (task body) | Diagram Shows                     | Status   |
+| ---- | ---------------------- | --------------------------------- | -------- |
+| T1   | None                   | None (independent)                | ✅ Match |
+| T2   | None                   | None (independent)                | ✅ Match |
+| T3   | None                   | None (independent)                | ✅ Match |
+| T4   | None                   | None (independent)                | ✅ Match |
+| T5   | None                   | None (independent)                | ✅ Match |
+| T6   | T1, T2, T3, T4, T5     | T1→T6, T2→T6, T3→T6, T4→T6, T5→T6 | ✅ Match |
 
 ---
 
@@ -237,7 +269,8 @@ Single phase, 5 tasks — fits a single inline execution (≤ 8 tasks).
 | Task              | Code Layer Created/Modified | Matrix Requires | Task Says | Status |
 | ----------------- | --------------------------- | --------------- | --------- | ------ |
 | T1: Rules fix     | Firestore Security Rules    | unit            | unit      | ✅ OK  |
-| T2: Merge deploy  | GitHub Actions Workflow     | none            | none      | ✅ OK  |
-| T3: PR preview    | GitHub Actions Workflow     | none            | none      | ✅ OK  |
-| T4: Deploy script | package.json scripts        | none            | none      | ✅ OK  |
-| T5: README docs   | README documentation        | none            | none      | ✅ OK  |
+| T2: Smart CI      | GitHub Actions Workflow     | none            | none      | ✅ OK  |
+| T3: Merge deploy  | GitHub Actions Workflow     | none            | none      | ✅ OK  |
+| T4: PR preview    | GitHub Actions Workflow     | none            | none      | ✅ OK  |
+| T5: Deploy script | package.json scripts        | none            | none      | ✅ OK  |
+| T6: Docs update   | README documentation        | none            | none      | ✅ OK  |

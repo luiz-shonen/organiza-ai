@@ -99,12 +99,12 @@ T5 -> T6
 
 **Done when**:
 
-- [ ] `ci.yml` includes `dorny/paths-filter@v3` step detecting non-markdown changes (`code: ['!**/*.md']`)
-- [ ] `format:check` step executes unconditionally on all pushes and PRs
-- [ ] ESLint, Stylelint, contract linting, and Angular build execute only if `steps.filter.outputs.code == 'true'`
-- [ ] `quality` job outputs `has_code_changes: steps.filter.outputs.code`
-- [ ] `e2e` job executes only `if: needs.quality.outputs.has_code_changes == 'true'`
-- [ ] YAML is valid
+- [x] `ci.yml` includes `dorny/paths-filter@v3` step detecting non-markdown changes (`code: ['!**/*.md']`)
+- [x] `format:check` step executes unconditionally on all pushes and PRs
+- [x] ESLint, Stylelint, contract linting, and Angular build execute only if `steps.filter.outputs.code == 'true'`
+- [x] `quality` job outputs `has_code_changes: steps.filter.outputs.code`
+- [x] `e2e` job executes only `if: needs.quality.outputs.has_code_changes == 'true'`
+- [x] YAML is valid
 
 **Tests**: none
 **Gate**: build

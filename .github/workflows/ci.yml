@@ -11,10 +11,20 @@ jobs:
     name: Code Quality & Build Checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      has_code_changes: ${{ steps.filter.outputs.code }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Check Paths Filter
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - '!**/*.md'
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -25,24 +35,29 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Lint TypeScript & Templates (ESLint)
-        run: npm run lint
-
-      - name: Lint Stylesheets (Stylelint)
-        run: npm run lint:styles
-
-      - name: Validate Design System Contracts
-        run: npm run lint:contracts
-
       - name: Check Code Formatting (Prettier)
         run: npm run format:check
 
+      - name: Lint TypeScript & Templates (ESLint)
+        if: steps.filter.outputs.code == 'true'
+        run: npm run lint
+
+      - name: Lint Stylesheets (Stylelint)
+        if: steps.filter.outputs.code == 'true'
+        run: npm run lint:styles
+
+      - name: Validate Design System Contracts
+        if: steps.filter.outputs.code == 'true'
+        run: npm run lint:contracts
+
       - name: Build Application
+        if: steps.filter.outputs.code == 'true'
         run: npm run build
 
   e2e:
     name: Playwright E2E Tests
     needs: quality
+    if: needs.quality.outputs.has_code_changes == 'true'
     timeout-minutes: 30
     runs-on: ubuntu-latest
 

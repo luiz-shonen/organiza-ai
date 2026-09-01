@@ -160,13 +160,13 @@ Every ambiguity is resolved or recorded here — nothing is left silently unclea
 | DEPLOY-11      | P1: PR Preview Deploy            | Design  | Pending  |
 | DEPLOY-12      | P2: Local Deploy Script          | Design  | Pending  |
 | DEPLOY-13      | P2: Local Deploy Script          | Design  | Pending  |
-| DEPLOY-14      | P2: CI Pipeline Optimization     | Design  | Pending  |
-| DEPLOY-15      | P2: CI Pipeline Optimization     | Design  | Pending  |
+| DEPLOY-14      | P2: CI Pipeline Optimization     | Execute | Verified |
+| DEPLOY-15      | P2: CI Pipeline Optimization     | Execute | Verified |
 | DEPLOY-16      | P1: Firestore Security Rules Fix | Execute | Verified |
 | DEPLOY-17      | P1: Firestore Security Rules Fix | Execute | Verified |
 | DEPLOY-18      | P1: Firestore Security Rules Fix | Execute | Verified |
 | DEPLOY-19      | P1: Firestore Security Rules Fix | Execute | Verified |
-| DEPLOY-20      | P2: CI Pipeline Optimization     | Design  | Pending  |
+| DEPLOY-20      | P2: CI Pipeline Optimization     | Execute | Verified |
 | DEPLOY-21      | P2: CI Pipeline Optimization     | Design  | Pending  |
 
 **ID format:** `DEPLOY-[NUMBER]`

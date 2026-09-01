@@ -10,7 +10,7 @@
 
 1. **`DESIGN.md`** — Colour palette, Glassmorphism rules, typography, spacing, `--org-*` tokens, and mobile-first responsive guidelines.
 2. **`README.md`** — Architecture, routes, services, commands, and test structure.
-3. **`.specs/STATE.md`** — Architectural Decision Log (AD-001..AD-031). If a decision is already logged, apply it without questioning it.
+3. **`.specs/STATE.md`** — Architectural Decision Log (AD-001..AD-042). If a decision is already logged, apply it without questioning it.
 
 ---
 
@@ -22,6 +22,7 @@
 - **Signals** — local state uses `signal()`, `computed()`, `effect()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams converted via `toSignal()` (AD-003).
 - **Signal-Driven Form Inputs** — for reactive modal forms and instant validation, prefer signal state binding (`[value]="sig()"`, `(input)="sig.set($any($event.target).value)"`) or Reactive Forms to avoid `[(ngModel)]` lifecycle synchronization delays.
 - **Smart/Dumb Pattern** — Containers (`*.container.ts`) handle Firebase and state. Presentational (`*.component.ts`) receive `input()` and emit `output()`. Zero business logic inside presentational components (AD-011).
+- **Design System Primitives** — Features exclusively consume 32 closed `Org*` components from `@shared/ui` with zero raw Angular Material tags in feature views (AD-039, AD-041).
 - **Template Separation** — always `templateUrl` + `styleUrl`. Never inline template or styles.
 
 ## 2. Routes & Domains
@@ -32,8 +33,9 @@
 | `/login` | `auth/` | Public |
 | `/evento/:id` | `event-detail/` | Public |
 | `/perfil` | `profile/` | `authGuard` |
-| `/meus-eventos/**` | `organizer/` (via `admin.routes.ts`) | `authGuard` |
-| `/admin/**` | `admin/` | `superAdminGuard` |
+| `/meus-eventos/**` | `organizer/` (via `organizer.routes.ts`) | `authGuard` |
+| `/admin/**` | `admin/` (via `admin.routes.ts`) | `superAdminGuard` |
+| `/design-system` | `design-system/` | `superAdminGuard` |
 
 > `/meus-eventos` = organizer dashboard (any authenticated user). `/admin` = Super Admins only (platform metrics). **Never confuse the two.**
 
@@ -52,12 +54,12 @@ Organizer sub-routes:
 ## 4. Styling, Theming & Mobile-First Responsiveness (AD-031)
 
 - **SCSS + BEM** — no Tailwind, no `!important` (AD-007).
-- **`--org-*` CSS variables** defined in `src/styles.scss`. Use them for colours, spacing, and typography.
+- **`--org-*` CSS variables** defined in `src/styles.scss` (Brand: `#ff4d94` Pink, `#ff8c42` Orange, `#ffc837` Yellow).
 - **Angular Material 22 MDC tokens** — customise via `--mdc-*` and `--mat-sys-*`, never by overriding internal classes (AD-028).
-- **Glassmorphism required on all cards and modals**: `backdrop-filter: blur(24px)`, `background: rgba(255,255,255,0.6)`, 1.5 px gradient border Purple→Orange at 40% opacity.
+- **Glassmorphism required on all cards and modals**: `backdrop-filter: blur(24px)`, `background: var(--org-surface-glass)`, 1px glass ring border.
 - **Plus Jakarta Sans** on all text.
 - **Mobile-First Responsive Layouts**:
-  - Write base styles for mobile ($< 600\text{ px}$ / $< 640\text{ px}$), expanding to multi-column grids via `@media (min-width: 600px)` or `@media (min-width: 640px)`.
+  - Write base styles for mobile ($< 600\text{ px}$), expanding to multi-column grids via `@media (min-width: 600px)` or `@media (min-width: 900px)`.
   - Form grids: `1fr` on mobile, expanding to `2fr 1fr`, `1fr 1fr`, or 3 columns on desktop.
   - Fluid padding: `16px 12px` on mobile $\rightarrow$ `24px 16px` / `32px 16px` on desktop.
   - Horizontal scrolling containers (Stepper headers, filter chips): specify `max-width: 100%`, `overflow-x: auto`, `flex-wrap: nowrap`, and `-webkit-overflow-scrolling: touch`.
@@ -80,19 +82,19 @@ Organizer sub-routes:
 ## 7. Testing
 
 ### Unit Tests (Vitest)
-- 42 test suites, 298 tests.
+- 80 test suites, 446 tests.
 - Every new feature ships with a `.spec.ts` file.
 - Focus on component API: `input()` changes update the template; interactions trigger `output()`.
 - Include accessibility assertions (ARIA, roles).
 
 ### E2E Tests (Playwright)
-- 13 test suites, 146 tests across Desktop Chromium and Mobile Chrome.
+- 15 test suites, 158 tests across Desktop Chromium and Mobile Chrome.
 - **Atomic test rule (AD-030)**: each test sets up its own state (mock session + navigation), asserts exactly one thing (one step, one screen, one behaviour), captures a screenshot, and ends. No test depends on another.
 - To reach Step 2 of the event editor, that test's own `beforeEach` fills and advances Step 1 independently.
 - Mock auth via `addInitScript` (IndexedDB injection). Mock Firestore via `__MOCK_DOCUMENTS__` + `page.route()`.
 - Assert design tokens and layout invariants on happy-path & visual tests: `assertNoHorizontalOverflow(page)`, `backdrop-filter` on surfaces, `--org-primary` on focused inputs, `font-family` on headings, touch targets $\ge 48\text{ px}$.
 - Page Object Models in `e2e/pages/`, Component Harnesses in `e2e/components/`.
-- 47 visual screenshot baselines saved to `e2e/screenshots/`.
+- 60 visual screenshot baselines saved to `e2e/screenshots/`.
 
 ## 8. Spec-Driven Development (AD-013)
 

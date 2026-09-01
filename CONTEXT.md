@@ -31,11 +31,11 @@
 | **Reactivity & State** | Angular Signals | `signal()`, `computed()`, `effect()`, `input()`, `output()`, `model()`. RxJS used only for Firestore streams via `toSignal()` ([AD-003](file:///.specs/STATE.md)). |
 | **Backend & Auth** | Firebase Modular SDK (v12.14+) | Direct SDK usage in core services; `@angular/fire` is intentionally omitted ([AD-004](file:///.specs/STATE.md)). |
 | **UI Components & Tokens** | Angular Material 22 + MDC Tokens | Form fields, dialogs, drawers, and menus themed via `--mdc-*`, `--mat-sys-*`, and `--org-*` tokens ([AD-028](file:///.specs/STATE.md)). |
-| **Design System** | `src/app/shared/ui/` | Internal UI foundation: `[orgSurface]`, `[orgButton]`, `[orgChip]`, `[orgFormField]`, `FeedbackService`, `OrgEmptyStateComponent`. |
+| **Design System** | `src/app/shared/ui/` | Internal UI foundation: 32 closed `Org*` standalone components (`OrgSurfaceComponent`, `OrgButtonComponent`, `OrgTextFieldComponent`, `OrgDataTableComponent`, `OrgMetricCardComponent`, etc.) ([AD-039](file:///.specs/STATE.md), [AD-041](file:///.specs/STATE.md)). |
 | **Styling & Layout** | SCSS + BEM + Custom Properties | Mobile-first SCSS; zero Tailwind ([AD-007](file:///.specs/STATE.md)); 3 canonical breakpoints (600px, 900px, 1200px) ([AD-036](file:///.specs/STATE.md)). |
 | **PWA & Service Worker** | `@angular/service-worker` (NGSW) | Offline asset and data caching configured in `ngsw-config.json` ([AD-010](file:///.specs/STATE.md)). |
-| **Unit Testing** | Vitest 4 + `@angular/build` | 60 test suites, 386+ tests focusing on Component API, Signal reactivity, and a11y. |
-| **E2E Testing** | Playwright 1.62 + `@axe-core/playwright` | Atomic test suite (15 suites) across Desktop Chromium & Mobile Chrome with visual screenshot baselines ([AD-029](file:///.specs/STATE.md), [AD-030](file:///.specs/STATE.md)). |
+| **Unit Testing** | Vitest 4 + `@angular/build` | 80 test suites, 446 tests focusing on Component API, Signal reactivity, and a11y. |
+| **E2E Testing** | Playwright 1.62 + `@axe-core/playwright` | Atomic test suite (15 suites, 158 tests) across Desktop Chromium & Mobile Chrome with 60 visual screenshot baselines ([AD-029](file:///.specs/STATE.md), [AD-030](file:///.specs/STATE.md)). |
 | **Type Safety** | TypeScript 6.0 (Strict Mode) | Zero `any` types; strictly typed DTOs and models in `src/app/core/models/`. |
 
 ---
@@ -204,10 +204,10 @@ organizaai/
 | `/login` | `auth` | `LoginContainer` | Public | Google Sign-in and Email/Password authentication. |
 | `/evento/:id` | `event-detail` | `EventDetailContainer` | Public | Public event view, 1-touch RSVP, Pix split, wishlist item claims. |
 | `/perfil` | `profile` | `ProfileContainer` | `authGuard` | User profile info and personal family roster CRUD. |
-| `/meus-eventos` | `organizer` | `DashboardContainer` | `authGuard` | Organizer dashboard listing owned and collaborated events. |
+| `/meus-eventos` | `organizer` | `DashboardContainer` (via `organizer.routes.ts`) | `authGuard` | Organizer dashboard listing owned and collaborated events. |
 | `/meus-eventos/evento/novo` | `organizer` | `EventEditorContainer` | `authGuard` | 3-step wizard to create a new event. |
 | `/meus-eventos/evento/:id` | `organizer` | `EventEditorContainer` | `authGuard` | 3-step wizard to edit an existing event. |
-| `/admin/**` | `admin` | `DashboardContainer` | `superAdminGuard` | Super Admin platform analytics, system health, and governance. |
+| `/admin` | `admin` | `AdminDashboardContainer` (via `admin.routes.ts`) | `superAdminGuard` | Super Admin platform analytics, system health, and governance. |
 | `/design-system` | `design-system`| `DesignSystemShowcaseContainer`| `superAdminGuard` | Interactive living catalog of all UI foundation primitives. |
 
 > **Critical Rule:** Never confuse `/meus-eventos` (organizer dashboard for any user) with `/admin` (Super Admin governance).
@@ -221,18 +221,16 @@ organizaai/
 - **Semantic Feedback:** Success (`#10B981`), Warning (`#F59E0B`), Danger (`#EF4444`), Info (`#3B82F6`).
 - **Typography:** **Plus Jakarta Sans** across all headings, body, and labels.
 
-### 6.2 Single-Ring Glassmorphism Contract
-To eliminate double outlines, jagged clipping, and visual bloat, all glassmorphic surfaces use `OrgSurfaceDirective` (`[orgSurface]`):
+### 6.2 Glassmorphism Contract
+To eliminate double outlines, jagged clipping, and visual bloat, all glassmorphic surfaces use `<org-surface>`:
 
 ```html
 <!-- Canonical Surface Usage -->
-<mat-card [orgSurface]="'card'">...</mat-card>
-<section [orgSurface]="'panel'">...</section>
-<div [orgSurface]="'hero'">...</div>
+<org-surface>...</org-surface>
 ```
 
 ```scss
-// Single-Ring Glass Contract
+// Glass Contract
 backdrop-filter: blur(24px);
 -webkit-backdrop-filter: blur(24px);
 border: 1px solid var(--org-glass-ring-color);
@@ -247,12 +245,14 @@ All responsive CSS media queries must strictly use these three breakpoints:
 - **Large / Desktop:** `900px - 1199px` (`@media (min-width: 900px)`).
 - **Wide Container:** `≥ 1200px` (`@media (min-width: 1200px)`).
 
-### 6.4 UI Foundation Directives & Components
-- **Surfaces:** `[orgSurface]="'card' | 'panel' | 'hero' | 'drawer' | 'dialog'"`
-- **Actions:** `[orgButton]="'primary' | 'secondary' | 'ghost' | 'danger'"`, `[orgIconButton]`, `[orgChip]`
-- **Forms:** `[orgFormField]`, `[orgFieldLabel]`, `[orgFormGrid]`
-- **Feedback:** `FeedbackService` (snackbars), `OrgBannerComponent`, `OrgEmptyStateComponent`
-- **Navigation:** `AppDrawerService`, `NavigationDrawer`
+### 6.4 UI Foundation Components (32 Primitives in `@shared/ui`)
+- **Layout:** `OrgPageLayoutComponent`, `OrgPageHeaderComponent`, `OrgSectionComponent`, `OrgSurfaceComponent`
+- **Actions:** `OrgButtonComponent`, `OrgIconButtonComponent`, `OrgChipComponent`, `OrgIconComponent`
+- **Forms:** `OrgTextFieldComponent`, `OrgTextareaFieldComponent`, `OrgDateFieldComponent`, `OrgTimeFieldComponent`, `OrgSelectFieldComponent`, `OrgAutocompleteFieldComponent`
+- **Selection:** `OrgToggleComponent`, `OrgCheckboxComponent`, `OrgRadioGroupComponent`
+- **Navigation:** `OrgTabsComponent`, `OrgStepperComponent`, `OrgStepComponent`, `OrgMenuComponent`, `OrgNavigationListComponent`
+- **Data Display:** `OrgMetricCardComponent`, `OrgDataTableComponent`, `OrgBadgeComponent`, `OrgProgressComponent`
+- **Feedback & Overlays:** `OrgConfirmDialogComponent`, `OrgDialogService`, `OrgEmptyStateComponent`, `OrgBannerComponent`, `FeedbackSnackbarComponent`, `FeedbackService`
 
 ---
 
@@ -273,7 +273,7 @@ All responsive CSS media queries must strictly use these three breakpoints:
 
 ---
 
-## 8. Architectural Invariants Registry (AD-001 – AD-037)
+## 8. Architectural Invariants Registry (AD-001 – AD-042)
 
 | ID | Title | Summary & Enforcement Rule |
 |---|---|---|
@@ -290,9 +290,12 @@ All responsive CSS media queries must strictly use these three breakpoints:
 | **AD-028** | Material 3 MDC Tokens | Style form inputs and dialogs via official MDC tokens, not deep internal CSS selectors. |
 | **AD-030** | Atomic E2E Tests | Each Playwright test is standalone (sets up state, asserts 1 thing, takes 1 screenshot). |
 | **AD-031** | Zero Overflow Invariant | Every view must satisfy `scrollWidth <= innerWidth + 1` (`assertNoHorizontalOverflow`). |
-| **AD-034** | Surface as Directive | `OrgSurface` is an attribute directive (`[orgSurface]`), not a DOM wrapper component. |
 | **AD-036** | Canonical Breakpoints | Responsive styling must exclusively use `600px`, `900px`, and `1200px` media queries. |
 | **AD-037** | Design System Showcase | Living showcase route at `/design-system` for interactive token & UI auditing. |
+| **AD-039** | Component-First UI Primitives | 32 closed `Org*` components in `@shared/ui` replace styling directives. |
+| **AD-040** | Unified Design Token Architecture | All `--org-*` tokens consolidated in `_semantic.scss`. |
+| **AD-041** | Zero `!important` & Design System Migration | Feature templates consume `Org*` components exclusively with 0 `!important`. |
+| **AD-042** | Code Quality Toolchain & Style Guide | ESLint 9, Stylelint, Husky pre-commit, and `.agents/skills/` style guides. |
 
 ---
 
@@ -303,7 +306,7 @@ All responsive CSS media queries must strictly use these three breakpoints:
 # Run unit test suite
 npm test -- --watch=false
 ```
-- **Scope:** 60 test suites, 386+ tests.
+- **Scope:** 80 test suites, 446 tests.
 - **Focus:** Component input/output contract verification, Signal reactivity, a11y DOM attributes (ARIA, roles, tabindex), and service mocking via `src/app/testing/mocks/`.
 
 ### 9.2 End-to-End Tests (Playwright)

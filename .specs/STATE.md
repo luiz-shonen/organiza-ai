@@ -2,11 +2,11 @@
 
 ## Handoff Snapshot
 
-**Last updated:** 2026-08-31  
-**State:** Feature 21 (`21-css-design-token-and-component-architecture`) 100% complete, verified by independent Verifier sub-agent (`validation.md` PASS, 32/32 ACs, 3/3 sensor mutants killed). Feature 22 (`22-dry-solid-docs-and-route-separation`) Spec, Design, and Tasks complete and validated. Feature 23 (`23-linting-and-formatting-toolchain`) Spec, Design, and Tasks complete and validated.  
-**Test Suite:** 75 unit test files (404 tests) green (`npm test -- --watch=false`), strict UI contracts 0 violations (`node scripts/validate-ui-contracts.mjs --strict`), production build green (`npm run build`).  
-**Validation Gate:** Feature 21 PASS (0 errors), Feature 22 Spec/Tasks PASS (0 errors), Feature 23 Spec/Tasks PASS (0 errors).  
-**Next step:** Approve and execute Feature 22 or Feature 23.  
+**Last updated:** 2026-09-01  
+**State:** Feature 22 (`22-dry-solid-docs-and-route-separation`) 100% complete across all 4 phases (T01-T20). DRY models extracted, domain routes decoupled (`/meus-eventos` organizer vs `/admin` Super Admin), and documentation/agent skills fully synchronized.  
+**Test Suite:** 80 unit test files (446 tests) green (`npm test -- --watch=false`), production build green (`npm run build`).  
+**Validation Gate:** Feature 22 tasks complete (20/20 tasks PASS).  
+**Next step:** Execute Feature 23 (`23-linting-and-formatting-toolchain`).  
 
 **Active branches:** `main` (production)  
 **What exists:**

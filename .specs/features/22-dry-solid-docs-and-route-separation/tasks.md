@@ -574,10 +574,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `README.md` documents verified test counts (79 unit suites / 426 tests, 15 E2E suites / 158 tests) and 17 core services
-- [ ] `DESIGN.md` serves as exclusive source of truth for design tokens and component catalog
-- [ ] `AGENTS.md`, `CONTEXT.md`, `.gemini/GEMINI.md`, `.claude/CLAUDE.md`, and `STATE.md` aligned with AD-001..AD-041
-- [ ] Gate check passes: `npm run build && npm test -- --watch=false`
+- [x] `README.md` documents verified test counts (79 unit suites / 426 tests, 15 E2E suites / 158 tests) and 17 core services
+- [x] `DESIGN.md` serves as exclusive source of truth for design tokens and component catalog
+- [x] `AGENTS.md`, `CONTEXT.md`, `.gemini/GEMINI.md`, `.claude/CLAUDE.md`, and `STATE.md` aligned with AD-001..AD-041
+- [x] Gate check passes: `npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: build  

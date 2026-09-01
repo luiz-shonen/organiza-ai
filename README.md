@@ -22,8 +22,9 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 | `auth/` | `/login` | Public |
 | `event-detail/` | `/evento/:id` | Public |
 | `profile/` | `/perfil` | `authGuard` |
-| `organizer/` (via `admin.routes.ts`) | `/meus-eventos/**` | `authGuard` |
-| `admin/` | `/admin/**` | `superAdminGuard` |
+| `organizer/` (via `organizer.routes.ts`) | `/meus-eventos/**` | `authGuard` |
+| `admin/` (via `admin.routes.ts`) | `/admin/**` | `superAdminGuard` |
+| `design-system/` | `/design-system` | `superAdminGuard` |
 
 > **Important:** `/meus-eventos` is the organizer dashboard (any authenticated user). `/admin` is exclusively for Super Admins (platform metrics and governance). Never confuse the two.
 
@@ -37,7 +38,7 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 
 ### Core Services (`src/app/core/services/`)
 
-`AuthService` · `EventService` · `GuestService` · `ItemService` · `FamilyService` · `UserService` · `LocationService` (ViaCEP) · `NotificationService` · `ConfettiService` · `ThemeService` · `SeasonalThemeService`
+`AuthService` · `EventService` · `GuestService` · `ItemService` · `FamilyService` · `UserService` · `LocationService` (ViaCEP) · `NotificationService` · `EventNotificationService` · `ConfettiService` · `ThemeService` · `SeasonalThemeService` · `DrawerService` · `HeaderService` · `FirebaseService` · `FirestoreGateway` · `FeedbackService` · `OrgDialogService`
 
 ### Active Architectural Decisions
 
@@ -51,6 +52,7 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 - **Verified RSVP** — no anonymous guests; verified identity (Google/verified e-mail) required (AD-024)
 - **Atomic E2E Test Philosophy** — each test sets up its own state, asserts one step, captures a screenshot (AD-030)
 - **Mobile-First Responsive Layouts & Zero-Overflow Invariant** — fluid single-column stacking on mobile, $\ge 48\text{ px}$ touch targets, automated `assertNoHorizontalOverflow` (AD-031)
+- **Component-First Design System Primitives** — 32 closed `Org*` components in `@shared/ui` with zero raw Material tags in feature views (AD-039, AD-041)
 - **Spec-Driven Development** — TLC Spec-Driven v3.3.0; every feature goes through Specify → (Design) → (Tasks) → Execute → Independent Verification (AD-013)
 
 For the full decision log, read `.specs/STATE.md`.
@@ -61,8 +63,9 @@ For the full decision log, read `.specs/STATE.md`.
 
 Design-token & layout invariants verified in E2E tests:
 - `backdrop-filter: blur(24px)` on cards and modals
-- `--org-primary` (#630ed4 Deep Purple) as primary color
-- `--org-secondary` (#fd762b Vibrant Orange) as action color
+- `--org-primary` (#ff4d94 Vibrant Pink) as primary brand accent
+- `--org-secondary` (#ff8c42 Warm Orange) as action color
+- `--org-tertiary` (#ffc837 Sunny Yellow) as celebration accent
 - `font-family: "Plus Jakarta Sans"` on all text
 - Touch targets $\ge 48\text{ px}$ on all primary CTAs, icon buttons, chips, and dialog actions
 - Zero horizontal overflow (`document.documentElement.scrollWidth <= window.innerWidth + 1`) across all pages
@@ -88,10 +91,10 @@ ng serve                        # http://localhost:4200
 npm run build
 
 # Unit tests (Vitest)
-npm test -- --watch=false       # 298 tests, 42 suites
+npm test -- --watch=false       # 446 tests, 80 suites
 
 # E2E tests (Playwright)
-npm run test:e2e                # 146 tests across Desktop Chromium + Mobile Chrome
+npm run test:e2e                # 158 tests across Desktop Chromium + Mobile Chrome (15 suites)
 npm run test:e2e:ci             # Headless mode for CI
 npm run test:e2e:mobile         # Mobile Chrome only (Pixel 5)
 ```
@@ -104,8 +107,8 @@ e2e/
 ├── helpers/         # auth-mock, firestore-mock, a11y, visual & overflow helpers
 ├── pages/           # Page Object Models (BasePage, HomePage, LoginPage, ...)
 ├── components/      # Component Harnesses (RsvpDialog, ItemList, SharePanel, ...)
-├── specs/           # Test suites (01-home-theming ... 13-organizer-happy-path)
-└── screenshots/     # 47 visual baselines ({milestone}-desktop/mobile.png)
+├── specs/           # Test suites (01-home-theming ... 15-showcase-visual-matrix)
+└── screenshots/     # 60 visual baselines ({milestone}-desktop/mobile.png)
 ```
 
 ### E2E Test Philosophy — Atomic Tests (AD-030)

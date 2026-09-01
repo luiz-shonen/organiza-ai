@@ -88,5 +88,7 @@ export class OrgIconComponent {
   public readonly size = input<OrgIconSize>('md');
   public readonly color = input('var(--org-on-surface-variant)');
   protected readonly materialIcon = computed(() => ORG_ICON_MAP[this.name()]);
-  protected readonly sizeToken = computed(() => ({ sm: '1rem', md: '1.25rem', lg: '1.5rem' })[this.size()]);
+  protected readonly sizeToken = computed(
+    () => ({ sm: '1rem', md: '1.25rem', lg: '1.5rem' })[this.size()],
+  );
 }

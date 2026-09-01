@@ -1,4 +1,24 @@
-.org-menu__trigger { color: var(--org-primary); min-height: 48px; padding-inline: 16px; }
-.org-menu__panel.mat-mdc-menu-panel { backdrop-filter: blur(24px); background: var(--org-glass-bg); border: 1px solid var(--org-outline); border-radius: var(--org-radius-md); box-shadow: var(--org-shadow-lg); min-width: 220px; overflow: hidden; }
-.org-menu__panel .mat-mdc-menu-item { color: var(--org-on-surface); min-height: 48px; }
-.org-menu__panel .mat-mdc-menu-item:hover:not([disabled]) { background: color-mix(in srgb, var(--org-primary) 10%, transparent); }
+.org-menu__trigger {
+  color: var(--org-primary);
+  min-height: 48px;
+  padding-inline: 16px;
+}
+
+.org-menu__panel.mat-mdc-menu-panel {
+  backdrop-filter: blur(24px);
+  background: var(--org-glass-bg);
+  border: 1px solid var(--org-outline);
+  border-radius: var(--org-radius-md);
+  box-shadow: var(--org-shadow-lg);
+  min-width: 220px;
+  overflow: hidden;
+}
+
+.org-menu__panel .mat-mdc-menu-item {
+  color: var(--org-on-surface);
+  min-height: 48px;
+}
+
+.org-menu__panel .mat-mdc-menu-item:hover:not([disabled]) {
+  background: color-mix(in srgb, var(--org-primary) 10%, transparent);
+}

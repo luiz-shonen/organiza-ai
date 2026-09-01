@@ -23,7 +23,9 @@ function normalizeVariant(value: unknown): OrgIconButtonVariant {
 export class OrgIconButtonComponent {
   public readonly ariaLabel = input.required<string>();
   public readonly icon = input.required<OrgIconName>();
-  public readonly variant = input<OrgIconButtonVariant, unknown>('default', { transform: normalizeVariant });
+  public readonly variant = input<OrgIconButtonVariant, unknown>('default', {
+    transform: normalizeVariant,
+  });
   public readonly disabled = input(false);
   public readonly gradient = input(true);
   public readonly testId = input('');

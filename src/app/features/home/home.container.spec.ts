@@ -97,15 +97,18 @@ describe('HomeContainer', () => {
     const cards = fixture.nativeElement.querySelectorAll('.home__card');
     expect(cards.length).toBe(2);
 
-    const titles = Array.from(cards).map(
-      (c) => (c as HTMLElement).querySelector('.home__card-title')?.textContent?.trim(),
+    const titles = Array.from(cards).map((c) =>
+      (c as HTMLElement).querySelector('.home__card-title')?.textContent?.trim(),
     );
     expect(titles).toEqual(['Aniversário de 30 Anos', 'Churrasco da Firma']);
 
-    const descriptions = Array.from(cards).map(
-      (c) => (c as HTMLElement).querySelector('.home__card-description')?.textContent?.trim(),
+    const descriptions = Array.from(cards).map((c) =>
+      (c as HTMLElement).querySelector('.home__card-description')?.textContent?.trim(),
     );
-    expect(descriptions).toEqual(['Venha comemorar comigo!', 'Churrasco de confraternização anual.']);
+    expect(descriptions).toEqual([
+      'Venha comemorar comigo!',
+      'Churrasco de confraternização anual.',
+    ]);
   });
 
   it('should compose event cards and the empty-state action with closed shared components', () => {

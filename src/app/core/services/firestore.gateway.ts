@@ -102,7 +102,10 @@ export class FirestoreGateway {
     };
   }
 
-  async getDocs<T>(path: string, ...queryConstraints: QueryConstraint[]): Promise<(T & { id: string })[]> {
+  async getDocs<T>(
+    path: string,
+    ...queryConstraints: QueryConstraint[]
+  ): Promise<(T & { id: string })[]> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       return [...(window.__MOCK_DOCUMENTS__[path] || [])] as (T & { id: string })[];
     }
@@ -115,7 +118,10 @@ export class FirestoreGateway {
     }));
   }
 
-  async getCollectionGroupDocs<T>(collectionId: string, ...queryConstraints: QueryConstraint[]): Promise<(T & { id: string })[]> {
+  async getCollectionGroupDocs<T>(
+    collectionId: string,
+    ...queryConstraints: QueryConstraint[]
+  ): Promise<(T & { id: string })[]> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       return [...(window.__MOCK_DOCUMENTS__[collectionId] || [])] as (T & { id: string })[];
     }
@@ -128,7 +134,11 @@ export class FirestoreGateway {
     }));
   }
 
-  async setDoc<T extends DocumentData = DocumentData>(path: string, data: Partial<T> | WithFieldValue<T>, options?: SetOptions): Promise<void> {
+  async setDoc<T extends DocumentData = DocumentData>(
+    path: string,
+    data: Partial<T> | WithFieldValue<T>,
+    options?: SetOptions,
+  ): Promise<void> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       const lastSlash = path.lastIndexOf('/');
       const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
@@ -137,9 +147,10 @@ export class FirestoreGateway {
       if (!store[col]) store[col] = [];
       const idx = store[col].findIndex((item) => item.id === id);
       if (idx !== -1) {
-        store[col][idx] = options && 'merge' in options && options.merge
-          ? { ...store[col][idx], ...(data as Record<string, unknown>) }
-          : { id, ...(data as Record<string, unknown>) };
+        store[col][idx] =
+          options && 'merge' in options && options.merge
+            ? { ...store[col][idx], ...(data as Record<string, unknown>) }
+            : { id, ...(data as Record<string, unknown>) };
       } else {
         store[col].push({ id, ...(data as Record<string, unknown>) });
       }
@@ -154,7 +165,10 @@ export class FirestoreGateway {
     }
   }
 
-  async updateDoc<T extends DocumentData = DocumentData>(path: string, data: Partial<T> | UpdateData<T>): Promise<void> {
+  async updateDoc<T extends DocumentData = DocumentData>(
+    path: string,
+    data: Partial<T> | UpdateData<T>,
+  ): Promise<void> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       const lastSlash = path.lastIndexOf('/');
       const col = lastSlash !== -1 ? path.substring(0, lastSlash) : path;
@@ -189,7 +203,10 @@ export class FirestoreGateway {
     await deleteDoc(docRef);
   }
 
-  async addDoc<T extends DocumentData = DocumentData>(path: string, data: T | WithFieldValue<T>): Promise<string> {
+  async addDoc<T extends DocumentData = DocumentData>(
+    path: string,
+    data: T | WithFieldValue<T>,
+  ): Promise<string> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       const store = window.__MOCK_DOCUMENTS__;
       if (!store[path]) store[path] = [];
@@ -203,7 +220,10 @@ export class FirestoreGateway {
     return docRef.id;
   }
 
-  collectionSnapshot<T>(path: string, ...queryConstraints: QueryConstraint[]): Observable<(T & { id: string })[]> {
+  collectionSnapshot<T>(
+    path: string,
+    ...queryConstraints: QueryConstraint[]
+  ): Observable<(T & { id: string })[]> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       return new Observable<(T & { id: string })[]>((subscriber) => {
         const store = window.__MOCK_DOCUMENTS__!;

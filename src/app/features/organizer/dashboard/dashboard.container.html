@@ -59,10 +59,27 @@
         />
         <ng-template #eventActions let-event>
           <div class="dashboard__actions">
-            <org-icon-button icon="edit" [ariaLabel]="'Editar ' + event.title" (pressed)="editEvent(event)" />
-            <org-icon-button icon="share" [ariaLabel]="'Compartilhar ' + event.title + ' no WhatsApp'" (pressed)="shareWhatsApp(event)" />
-            <org-icon-button icon="link" [ariaLabel]="'Copiar link de ' + event.title" (pressed)="copyLink(event)" />
-            <org-icon-button icon="block" variant="danger" [ariaLabel]="'Cancelar ' + event.title" (pressed)="cancelEvent(event)" />
+            <org-icon-button
+              icon="edit"
+              [ariaLabel]="'Editar ' + event.title"
+              (pressed)="editEvent(event)"
+            />
+            <org-icon-button
+              icon="share"
+              [ariaLabel]="'Compartilhar ' + event.title + ' no WhatsApp'"
+              (pressed)="shareWhatsApp(event)"
+            />
+            <org-icon-button
+              icon="link"
+              [ariaLabel]="'Copiar link de ' + event.title"
+              (pressed)="copyLink(event)"
+            />
+            <org-icon-button
+              icon="block"
+              variant="danger"
+              [ariaLabel]="'Cancelar ' + event.title"
+              (pressed)="cancelEvent(event)"
+            />
           </div>
         </ng-template>
       </org-surface>
@@ -80,17 +97,38 @@
           >
             <article class="dashboard__mobile-card-content">
               <header>
-              <h2 class="dashboard__mobile-card-title">{{ event.title }}</h2>
-              <p class="dashboard__mobile-card-subtitle">
-                {{ formatDate(event.date) }} · {{ event.location }}
-              </p>
+                <h2 class="dashboard__mobile-card-title">{{ event.title }}</h2>
+                <p class="dashboard__mobile-card-subtitle">
+                  {{ formatDate(event.date) }} · {{ event.location }}
+                </p>
               </header>
-            <footer class="dashboard__actions">
-              <org-icon-button icon="edit" ariaLabel="Editar" (click)="stopRowClick($event)" (pressed)="editEvent(event)" />
-              <org-icon-button icon="share" ariaLabel="Compartilhar no WhatsApp" (click)="stopRowClick($event)" (pressed)="shareWhatsApp(event)" />
-              <org-icon-button icon="link" ariaLabel="Copiar link" (click)="stopRowClick($event)" (pressed)="copyLink(event)" />
-              <org-icon-button icon="block" variant="danger" ariaLabel="Cancelar" (click)="stopRowClick($event)" (pressed)="cancelEvent(event)" />
-            </footer>
+              <footer class="dashboard__actions">
+                <org-icon-button
+                  icon="edit"
+                  ariaLabel="Editar"
+                  (click)="stopRowClick($event)"
+                  (pressed)="editEvent(event)"
+                />
+                <org-icon-button
+                  icon="share"
+                  ariaLabel="Compartilhar no WhatsApp"
+                  (click)="stopRowClick($event)"
+                  (pressed)="shareWhatsApp(event)"
+                />
+                <org-icon-button
+                  icon="link"
+                  ariaLabel="Copiar link"
+                  (click)="stopRowClick($event)"
+                  (pressed)="copyLink(event)"
+                />
+                <org-icon-button
+                  icon="block"
+                  variant="danger"
+                  ariaLabel="Cancelar"
+                  (click)="stopRowClick($event)"
+                  (pressed)="cancelEvent(event)"
+                />
+              </footer>
             </article>
           </org-surface>
         }
@@ -129,15 +167,15 @@
         @for (i of [1, 2, 3]; track i) {
           <org-surface variant="card" class="dashboard__mobile-card">
             <article class="dashboard__mobile-card-content">
-            <header class="dashboard__mobile-card-header">
-              <div class="skeleton-box dashboard__skeleton-card-title"></div>
-              <div class="skeleton-box dashboard__skeleton-card-subtitle"></div>
-            </header>
-            <footer class="dashboard__mobile-card-actions">
-              <div class="skeleton-box dashboard__skeleton-card-action"></div>
-              <div class="skeleton-box dashboard__skeleton-card-action"></div>
-              <div class="skeleton-box dashboard__skeleton-card-action"></div>
-            </footer>
+              <header class="dashboard__mobile-card-header">
+                <div class="skeleton-box dashboard__skeleton-card-title"></div>
+                <div class="skeleton-box dashboard__skeleton-card-subtitle"></div>
+              </header>
+              <footer class="dashboard__mobile-card-actions">
+                <div class="skeleton-box dashboard__skeleton-card-action"></div>
+                <div class="skeleton-box dashboard__skeleton-card-action"></div>
+                <div class="skeleton-box dashboard__skeleton-card-action"></div>
+              </footer>
             </article>
           </org-surface>
         }

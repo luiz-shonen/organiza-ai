@@ -24,8 +24,8 @@
     <app-item-list-card
       [items]="items()"
       [currentUserId]="currentUserId()"
-      (onClaim)="onClaimItemById($event)"
-      (onUnclaim)="onUnclaimItemById($event)"
+      (claim)="onClaimItemById($event)"
+      (unclaim)="onUnclaimItemById($event)"
     />
 
     @if (event.pixKey) {

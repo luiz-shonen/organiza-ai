@@ -153,9 +153,9 @@ describe('UserService', () => {
       mockGateway.getDoc.mockResolvedValue({ uid: 'user-123' });
       mockGateway.updateDoc.mockRejectedValue(new Error('Update failed'));
 
-      await expect(
-        service.updateProfile('user-123', { displayName: 'Fail' }),
-      ).rejects.toThrow('Update failed');
+      await expect(service.updateProfile('user-123', { displayName: 'Fail' })).rejects.toThrow(
+        'Update failed',
+      );
     });
   });
 
@@ -184,9 +184,7 @@ describe('UserService', () => {
         rsvpEvents: ['event-1'],
       });
 
-      mockGateway.getCollectionGroupDocs.mockResolvedValue([
-        { eventId: 'event-2' },
-      ]);
+      mockGateway.getCollectionGroupDocs.mockResolvedValue([{ eventId: 'event-2' }]);
 
       const evt1: PartyEvent = {
         id: 'event-1',

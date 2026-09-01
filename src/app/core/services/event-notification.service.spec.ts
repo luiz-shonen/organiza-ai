@@ -50,12 +50,12 @@ describe('EventNotificationService', () => {
     const record = await service.notifyGuestsOfEventChange(
       mockEvent,
       'Horário alterado para 19:00',
-      5
+      5,
     );
 
     expect(mockNotificationService.sendLocalNotification).toHaveBeenCalledWith(
       'Alteração no evento: Churrasco da Turma',
-      'O evento foi atualizado: Horário alterado para 19:00'
+      'O evento foi atualizado: Horário alterado para 19:00',
     );
     expect(record.type).toBe('change');
     expect(record.eventId).toBe('evt-123');
@@ -67,7 +67,7 @@ describe('EventNotificationService', () => {
 
     expect(mockNotificationService.sendLocalNotification).toHaveBeenCalledWith(
       'Evento cancelado: Churrasco da Turma',
-      'O evento "Churrasco da Turma" foi cancelado pelo organizador.'
+      'O evento "Churrasco da Turma" foi cancelado pelo organizador.',
     );
     expect(record.type).toBe('cancellation');
     expect(record.eventId).toBe('evt-123');
@@ -89,7 +89,7 @@ describe('EventNotificationService', () => {
     expect(records[0].type).toBe('reminder_7d');
     expect(mockNotificationService.sendLocalNotification).toHaveBeenCalledWith(
       'Faltam 7 dias: Festa de Aniversário',
-      'O evento "Festa de Aniversário" está chegando em 1 semana!'
+      'O evento "Festa de Aniversário" está chegando em 1 semana!',
     );
     expect(service.isReminderSent('evt-7d', 'reminder_7d')).toBe(true);
   });
@@ -109,7 +109,7 @@ describe('EventNotificationService', () => {
     expect(records[0].type).toBe('reminder_1d');
     expect(mockNotificationService.sendLocalNotification).toHaveBeenCalledWith(
       'Falta 1 dia: Jantar Especial',
-      'Seu evento "Jantar Especial" acontece amanhã! Prepare-se.'
+      'Seu evento "Jantar Especial" acontece amanhã! Prepare-se.',
     );
     expect(service.isReminderSent('evt-1d', 'reminder_1d')).toBe(true);
   });

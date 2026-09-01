@@ -1,10 +1,4 @@
-export type FamilyRelationship =
-  | 'spouse'
-  | 'child'
-  | 'parent'
-  | 'sibling'
-  | 'relative'
-  | 'other';
+export type FamilyRelationship = 'spouse' | 'child' | 'parent' | 'sibling' | 'relative' | 'other';
 
 export interface FamilyMember {
   id: string;

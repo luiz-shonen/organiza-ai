@@ -73,7 +73,7 @@ describe('Core Utilities', () => {
         'Aniversário de 30 Anos',
         '15/10/2026',
         'Espaço das Américas',
-        'https://organiza.ai/evento/evt-123'
+        'https://organiza.ai/evento/evt-123',
       );
       expect(url).toContain('https://wa.me/?text=');
       const decoded = decodeURIComponent(url);
@@ -95,7 +95,7 @@ describe('Core Utilities', () => {
       shareWhatsApp('Churrasco', '20/11/2026', 'Clube', 'https://organiza.ai/evento/abc');
       expect(openSpy).toHaveBeenCalledWith(
         expect.stringContaining('https://wa.me/?text='),
-        '_blank'
+        '_blank',
       );
       openSpy.mockRestore();
     });

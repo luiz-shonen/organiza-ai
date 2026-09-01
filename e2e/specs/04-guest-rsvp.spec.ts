@@ -1,5 +1,8 @@
 import { test, expect } from '../fixtures/test.fixture';
-import { assertNoHorizontalOverflow, assertSingleSurfaceRing } from '../helpers/design-tokens.helper';
+import {
+  assertNoHorizontalOverflow,
+  assertSingleSurfaceRing,
+} from '../helpers/design-tokens.helper';
 
 test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', () => {
   test('should render event detail route structure, banner, and countdown timer', async ({
@@ -22,7 +25,11 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     await eventDetailPage.assertLoaded();
 
     // Verify page container or not-found container is rendered
-    const hasEventData = await page.locator('[data-testid="event-detail-page"], app-event-card').first().isVisible().catch(() => false);
+    const hasEventData = await page
+      .locator('[data-testid="event-detail-page"], app-event-card')
+      .first()
+      .isVisible()
+      .catch(() => false);
 
     if (hasEventData) {
       // 1. Verify Event Banner & Hero info
@@ -139,7 +146,7 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
         await expect(splitContainer).toHaveAttribute('role', 'status');
         await expect(splitContainer).toHaveAttribute(
           'aria-label',
-          'Sugestão de contribuição por pessoa'
+          'Sugestão de contribuição por pessoa',
         );
         const splitAmount = eventDetailPage.pixCard.locator('.pix-card__split-amount');
         await expect(splitAmount).toContainText(/R\$|por pessoa/i);

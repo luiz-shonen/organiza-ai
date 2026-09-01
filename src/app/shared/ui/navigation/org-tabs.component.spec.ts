@@ -33,6 +33,10 @@ describe('OrgTabsComponent', () => {
     fixture.componentInstance.selectIndex(1);
     expect(fixture.componentInstance.selectedId()).toBe('guests');
     expect(selectionChange).toHaveBeenCalledWith('guests');
-    expect(fixture.nativeElement.querySelector('mat-tab-group')?.classList.contains('org-tabs--gradient')).toBe(false);
+    expect(
+      fixture.nativeElement
+        .querySelector('mat-tab-group')
+        ?.classList.contains('org-tabs--gradient'),
+    ).toBe(false);
   });
 });

@@ -1,7 +1,26 @@
 <mat-form-field appearance="outline" class="org-time-field">
   <mat-label>{{ label() }}</mat-label>
-  <input matInput inputmode="numeric" maxlength="5" placeholder="HH:mm" [attr.data-testid]="testId() || null" [disabled]="isDisabled()" [required]="required()" [value]="value()" (blur)="markTouched($event)" (input)="updateValue($event)" />
-  <button mat-icon-button matIconSuffix class="org-time-field__trigger" type="button" aria-label="Ajustar horário" [disabled]="isDisabled()" [matMenuTriggerFor]="timeMenu">
+  <input
+    matInput
+    inputmode="numeric"
+    maxlength="5"
+    placeholder="HH:mm"
+    [attr.data-testid]="testId() || null"
+    [disabled]="isDisabled()"
+    [required]="required()"
+    [value]="value()"
+    (blur)="markTouched($event)"
+    (input)="updateValue($event)"
+  />
+  <button
+    mat-icon-button
+    matIconSuffix
+    class="org-time-field__trigger"
+    type="button"
+    aria-label="Ajustar horário"
+    [disabled]="isDisabled()"
+    [matMenuTriggerFor]="timeMenu"
+  >
     <mat-icon>schedule</mat-icon>
   </button>
 </mat-form-field>
@@ -16,10 +35,17 @@
     <span>Adicionar {{ minuteStep() }} min</span>
   </button>
   @for (option of quickOptions(); track option.value) {
-    <button mat-menu-item type="button" [disabled]="isDisabled()" (click)="selectQuickOption(option)">
+    <button
+      mat-menu-item
+      type="button"
+      [disabled]="isDisabled()"
+      (click)="selectQuickOption(option)"
+    >
       <mat-icon>schedule</mat-icon>
       <span>{{ option.label }}</span>
     </button>
   }
 </mat-menu>
-@if (error()) { <p class="org-time-field__error" role="alert">{{ error() }}</p> }
+@if (error()) {
+  <p class="org-time-field__error" role="alert">{{ error() }}</p>
+}

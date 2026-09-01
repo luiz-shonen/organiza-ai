@@ -27,6 +27,7 @@
   --showcase-display: var(--org-font-display);
   --showcase-body: var(--org-font-body);
   --showcase-mono: var(--org-font-mono);
+
   background:
     radial-gradient(circle at 88% 4%, rgb(255 107 91 / 0.22), transparent 26rem),
     radial-gradient(circle at 8% 42%, rgb(79 195 232 / 0.17), transparent 24rem),
@@ -127,7 +128,6 @@
     line-height: 1.65;
     max-width: 620px;
   }
-
 }
 
 .org-ds-section {
@@ -426,7 +426,9 @@
   }
 
   &--error {
-    background: linear-gradient(var(--org-error), var(--org-error)) padding-box, var(--showcase-card-border) border-box;
+    background:
+      linear-gradient(var(--org-error), var(--org-error)) padding-box,
+      var(--showcase-card-border) border-box;
   }
 }
 
@@ -509,7 +511,7 @@
 
   &__icons {
     color: var(--org-primary);
-    font-family: 'Material Icons', 'Material Icons Outlined';
+    font-family: 'Material Icons', 'Material Icons Outlined', sans-serif;
     font-size: 1.75rem;
     letter-spacing: 0.25em;
     margin: auto 0 0;
@@ -679,14 +681,38 @@
   height: 16px;
   transition: width 180ms ease;
 
-  &--2xs { width: var(--org-space-2xs); min-width: 2px; }
-  &--xs { width: var(--org-space-xs); }
-  &--sm { width: var(--org-space-sm); }
-  &--md { width: var(--org-space-md); }
-  &--lg { width: var(--org-space-lg); }
-  &--xl { width: var(--org-space-xl); }
-  &--2xl { width: var(--org-space-2xl); }
-  &--3xl { width: var(--org-space-3xl); }
+  &--2xs {
+    width: var(--org-space-2xs);
+    min-width: 2px;
+  }
+
+  &--xs {
+    width: var(--org-space-xs);
+  }
+
+  &--sm {
+    width: var(--org-space-sm);
+  }
+
+  &--md {
+    width: var(--org-space-md);
+  }
+
+  &--lg {
+    width: var(--org-space-lg);
+  }
+
+  &--xl {
+    width: var(--org-space-xl);
+  }
+
+  &--2xl {
+    width: var(--org-space-2xl);
+  }
+
+  &--3xl {
+    width: var(--org-space-3xl);
+  }
 }
 
 .org-ds-radius-grid {
@@ -715,10 +741,21 @@
   padding: 16px;
   text-align: center;
 
-  &--sm { border-radius: var(--org-radius-sm); }
-  &--md { border-radius: var(--org-radius-md); }
-  &--lg { border-radius: var(--org-radius-lg); }
-  &--full { border-radius: var(--org-radius-full); }
+  &--sm {
+    border-radius: var(--org-radius-sm);
+  }
+
+  &--md {
+    border-radius: var(--org-radius-md);
+  }
+
+  &--lg {
+    border-radius: var(--org-radius-lg);
+  }
+
+  &--full {
+    border-radius: var(--org-radius-full);
+  }
 
   strong {
     font-size: 0.9375rem;
@@ -829,7 +866,6 @@
     letter-spacing: -0.06em;
     line-height: 1;
   }
-
 }
 
 .org-ds-feedback-layout {
@@ -885,7 +921,10 @@
   min-height: 172px;
   padding: 14px;
   text-align: left;
-  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 
   &:hover,
   &:focus-visible {
@@ -895,7 +934,11 @@
 
   &--active {
     background:
-      linear-gradient(color-mix(in srgb, var(--org-primary) 12%, var(--showcase-glass)), color-mix(in srgb, var(--org-primary) 12%, var(--showcase-glass))) padding-box,
+      linear-gradient(
+          color-mix(in srgb, var(--org-primary) 12%, var(--showcase-glass)),
+          color-mix(in srgb, var(--org-primary) 12%, var(--showcase-glass))
+        )
+        padding-box,
       var(--showcase-card-border) border-box;
     box-shadow:
       inset 0 0 0 1px color-mix(in srgb, var(--org-primary) 72%, transparent),

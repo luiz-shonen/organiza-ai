@@ -1,6 +1,10 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
-import { assertFocusedFieldCoherence, assertNoHorizontalOverflow, assertSingleSurfaceRing } from '../helpers/design-tokens.helper';
+import {
+  assertFocusedFieldCoherence,
+  assertNoHorizontalOverflow,
+  assertSingleSurfaceRing,
+} from '../helpers/design-tokens.helper';
 
 const mockFamilyEvent = {
   id: 'test-event-placeholder',
@@ -42,19 +46,27 @@ test.describe('User Profile and Family Roster Management', () => {
     const heading = page.getByRole('heading', { level: 1, name: /meu perfil/i });
     await expect(heading).toBeVisible();
 
-    const subtitle = page.locator('.profile-container__subtitle, .org-page-header__subtitle').first();
+    const subtitle = page
+      .locator('.profile-container__subtitle, .org-page-header__subtitle')
+      .first();
     await expect(subtitle).toBeVisible();
     await expect(subtitle).toContainText(/gerencie suas informações/i);
 
     // Profile info card component should be rendered
     const profileInfoCard = page.locator('app-profile-info-card');
     await expect(profileInfoCard).toBeVisible();
-    await expect(page.locator('#profile-heading, .profile-info-card__title').first()).toContainText('Informações Pessoais');
+    await expect(page.locator('#profile-heading, .profile-info-card__title').first()).toContainText(
+      'Informações Pessoais',
+    );
     await assertSingleSurfaceRing(profileInfoCard.locator('.org-surface'));
 
     // Family roster and attended events sections
     await expect(page.locator('app-family-roster-manager')).toBeVisible();
-    await expect(page.locator('#attended-events-heading, org-section[title*="Eventos"], .profile-event-card').first()).toBeVisible();
+    await expect(
+      page
+        .locator('#attended-events-heading, org-section[title*="Eventos"], .profile-event-card')
+        .first(),
+    ).toBeVisible();
 
     // Interact with display name editing
     const editBtn = page.locator('.profile-info-card__edit-btn').first();
@@ -87,7 +99,9 @@ test.describe('User Profile and Family Roster Management', () => {
     // Verify family roster section
     const familyRosterRoot = page.locator('app-family-roster-manager');
     await expect(familyRosterRoot).toBeVisible();
-    await expect(page.locator('#family-roster-heading, .family-roster__title').first()).toContainText('Minha Família');
+    await expect(
+      page.locator('#family-roster-heading, .family-roster__title').first(),
+    ).toContainText('Minha Família');
     await assertSingleSurfaceRing(familyRosterRoot.locator('.org-surface'));
 
     // Form inputs and add button presence
@@ -117,7 +131,9 @@ test.describe('User Profile and Family Roster Management', () => {
     await familyRoster.addMemberBtn.click();
 
     // Assert first member is listed
-    await expect(familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first()).toBeVisible();
+    await expect(
+      familyRoster.memberCards.filter({ hasText: 'Mariana Silva' }).first(),
+    ).toBeVisible();
 
     // 2. Add second family member: Child using helper method
     await familyRoster.addMember('Lucas Silva', 'child', '(11) 97777-6666');
@@ -141,7 +157,6 @@ test.describe('User Profile and Family Roster Management', () => {
     eventDetailPage,
     rsvpDialog,
     familyRoster,
-    page,
   }) => {
     // Navigate to public event detail page
     await eventDetailPage.goto('/evento/test-event-placeholder');
@@ -151,7 +166,10 @@ test.describe('User Profile and Family Roster Management', () => {
     const hasRsvpBtn = await eventDetailPage.rsvpBtn.isVisible().catch(() => false);
     if (hasRsvpBtn) {
       await eventDetailPage.openRsvpDialog();
-      const isDialogVisible = await rsvpDialog.dialogRoot.first().isVisible({ timeout: 3000 }).catch(() => false);
+      const isDialogVisible = await rsvpDialog.dialogRoot
+        .first()
+        .isVisible({ timeout: 3000 })
+        .catch(() => false);
       if (isDialogVisible) {
         await rsvpDialog.assertVisible();
         await expect(rsvpDialog.dialogRoot.first()).toBeVisible();
@@ -162,7 +180,9 @@ test.describe('User Profile and Family Roster Management', () => {
           await expect(rsvpDialog.familySelector).toBeVisible();
 
           // Expand family selector expansion panel if collapsed
-          const panelHeader = rsvpDialog.familySelector.locator('mat-expansion-panel-header, .family-selector__header');
+          const panelHeader = rsvpDialog.familySelector.locator(
+            'mat-expansion-panel-header, .family-selector__header',
+          );
           if (await panelHeader.isVisible()) {
             const isExpanded = await panelHeader.getAttribute('aria-expanded');
             if (isExpanded !== 'true') {

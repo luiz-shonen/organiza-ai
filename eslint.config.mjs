@@ -59,14 +59,37 @@ export default tseslint.config(
     files: ['src/**/*.spec.ts', 'src/**/*.mock.ts', 'src/app/testing/**/*.ts'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@angular-eslint/prefer-on-push-component-change-detection': 'off',
     },
   },
   {
     files: ['e2e/**/*.ts'],
+    extends: [...tseslint.configs.recommended],
     ...playwright.configs['flat/recommended'],
+    languageOptions: {
+      parser: tseslint.parser,
+    },
     rules: {
       ...playwright.configs['flat/recommended'].rules,
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'playwright/no-standalone-expect': 'off',
       'playwright/no-wait-for-timeout': 'warn',
       'playwright/prefer-web-first-assertions': 'warn',
       'playwright/prefer-to-have-count': 'warn',
@@ -88,6 +111,7 @@ export default tseslint.config(
       '@angular-eslint/template/alt-text': 'warn',
       '@angular-eslint/template/label-has-associated-control': 'warn',
       '@angular-eslint/template/click-events-have-key-events': 'warn',
+      '@angular-eslint/template/interactive-supports-focus': 'warn',
       '@angular-eslint/template/prefer-control-flow': 'error',
     },
   },

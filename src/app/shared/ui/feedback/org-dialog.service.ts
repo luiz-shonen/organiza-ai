@@ -8,6 +8,9 @@ export class OrgDialogService {
   private readonly dialog = inject(MatDialog);
 
   public confirm(data: OrgConfirmDialogData): Observable<boolean> {
-    return this.dialog.open(OrgConfirmDialogComponent, { data, panelClass: 'org-confirm-dialog-panel' }).afterClosed().pipe(map((result) => result === true));
+    return this.dialog
+      .open(OrgConfirmDialogComponent, { data, panelClass: 'org-confirm-dialog-panel' })
+      .afterClosed()
+      .pipe(map((result) => result === true));
   }
 }

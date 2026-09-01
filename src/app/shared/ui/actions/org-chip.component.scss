@@ -1,10 +1,23 @@
-:host { display: inline-flex; }
+:host {
+  display: inline-flex;
+}
 
 .org-chip {
   margin: 0;
 
-  &--gradient.org-chip--primary { --mdc-chip-elevated-container-color: var(--org-primary); }
-  &--gradient.org-chip--accent { --mdc-chip-elevated-container-color: var(--org-accent); }
-  &--success { --mdc-chip-elevated-container-color: var(--org-success); }
-  &--warning { --mdc-chip-elevated-container-color: var(--org-warning); }
+  &--gradient.org-chip--primary {
+    --mdc-chip-elevated-container-color: var(--org-primary);
+  }
+
+  &--gradient.org-chip--accent {
+    --mdc-chip-elevated-container-color: var(--org-accent);
+  }
+
+  &--success {
+    --mdc-chip-elevated-container-color: var(--org-success);
+  }
+
+  &--warning {
+    --mdc-chip-elevated-container-color: var(--org-warning);
+  }
 }

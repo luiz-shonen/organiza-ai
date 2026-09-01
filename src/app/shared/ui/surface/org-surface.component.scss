@@ -8,7 +8,11 @@
   backdrop-filter: var(--org-glass-blur, blur(24px));
   -webkit-backdrop-filter: var(--org-glass-blur, blur(24px));
   background:
-    linear-gradient(var(--org-glass-bg, rgba(255, 255, 255, 0.6)), var(--org-glass-bg, rgba(255, 255, 255, 0.6))) padding-box,
+    linear-gradient(
+        var(--org-glass-bg, rgba(255, 255, 255, 0.6)),
+        var(--org-glass-bg, rgba(255, 255, 255, 0.6))
+      )
+      padding-box,
     var(--org-gradient-border) border-box;
   border: var(--org-glass-ring-width, 1.5px) solid transparent;
   border-radius: var(--org-radius-lg, 1rem);
@@ -16,13 +20,27 @@
   box-sizing: border-box;
   padding: 16px 12px;
   position: relative;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
 
   &--atmosphere {
     background:
-      radial-gradient(circle at 92% 12%, color-mix(in srgb, var(--org-surface-orb-secondary, var(--org-secondary)) 34%, transparent), transparent 12rem),
-      radial-gradient(circle at 8% 100%, color-mix(in srgb, var(--org-surface-orb-primary, var(--org-primary)) 24%, transparent), transparent 18rem),
-      linear-gradient(var(--org-glass-bg, rgba(255, 255, 255, 0.6)), var(--org-glass-bg, rgba(255, 255, 255, 0.6))) padding-box,
+      radial-gradient(
+        circle at 92% 12%,
+        color-mix(in srgb, var(--org-surface-orb-secondary, var(--org-secondary)) 34%, transparent),
+        transparent 12rem
+      ),
+      radial-gradient(
+        circle at 8% 100%,
+        color-mix(in srgb, var(--org-surface-orb-primary, var(--org-primary)) 24%, transparent),
+        transparent 18rem
+      ),
+      linear-gradient(
+          var(--org-glass-bg, rgba(255, 255, 255, 0.6)),
+          var(--org-glass-bg, rgba(255, 255, 255, 0.6))
+        )
+        padding-box,
       var(--org-gradient-border) border-box;
   }
 

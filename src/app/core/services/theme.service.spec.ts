@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { User } from 'firebase/auth';
-import { ThemeService, ThemeMode } from './theme.service';
+import { ThemeService } from './theme.service';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
 import { MockAuthService } from '../../testing/mocks';

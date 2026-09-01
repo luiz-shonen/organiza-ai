@@ -1,5 +1,8 @@
 import { test, expect } from '../fixtures/test.fixture';
-import { assertNoHorizontalOverflow, assertSingleSurfaceRing } from '../helpers/design-tokens.helper';
+import {
+  assertNoHorizontalOverflow,
+  assertSingleSurfaceRing,
+} from '../helpers/design-tokens.helper';
 
 test.describe('Home Theming, Feed and Accessibility', () => {
   test('should render home landmark region and available event cards or empty state', async ({
@@ -18,8 +21,13 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await expect(headerTitle).toBeVisible();
 
     // Wait for either event cards or empty state to appear
-    await expect(homePage.eventCards.first().or(homePage.emptyState)).toBeVisible({ timeout: 10000 });
-    const hasEvents = await homePage.eventCards.first().isVisible().catch(() => false);
+    await expect(homePage.eventCards.first().or(homePage.emptyState)).toBeVisible({
+      timeout: 10000,
+    });
+    const hasEvents = await homePage.eventCards
+      .first()
+      .isVisible()
+      .catch(() => false);
     if (hasEvents) {
       const firstCard = homePage.eventCards.first();
       await expect(firstCard).toBeVisible();

@@ -21,7 +21,12 @@ export class OrgTabsComponent {
   public readonly selectedId = model<string | null>(null);
   public readonly gradient = input(true);
   public readonly selectionChange = output<string>();
-  protected readonly selectedIndex = computed(() => Math.max(0, this.items().findIndex((item) => item.id === this.selectedId())));
+  protected readonly selectedIndex = computed(() =>
+    Math.max(
+      0,
+      this.items().findIndex((item) => item.id === this.selectedId()),
+    ),
+  );
 
   public selectIndex(index: number): void {
     const item = this.items()[index];

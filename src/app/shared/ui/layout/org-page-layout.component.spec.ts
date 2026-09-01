@@ -17,7 +17,7 @@ import { OrgPageLayoutComponent, OrgPageLayoutMaxWidth } from './org-page-layout
   `,
 })
 class PageLayoutTestHostComponent {
-  public invalidMaxWidth: string = 'invalid-size';
+  public invalidMaxWidth: any = 'invalid-size';
   public dynamicMaxWidth = signal<OrgPageLayoutMaxWidth>('narrow');
 }
 
@@ -42,7 +42,9 @@ describe('OrgPageLayoutComponent', () => {
 
   it('projects content into the container', () => {
     const defaultLayout = fixture.nativeElement.querySelector('#default-layout') as HTMLElement;
-    const projected = defaultLayout.querySelector('.org-page-layout__container #projected-content') as HTMLElement;
+    const projected = defaultLayout.querySelector(
+      '.org-page-layout__container #projected-content',
+    ) as HTMLElement;
     expect(projected).toBeTruthy();
     expect(projected.textContent).toBe('Hello World');
   });

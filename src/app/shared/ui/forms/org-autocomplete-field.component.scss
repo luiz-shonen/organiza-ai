@@ -1,6 +1,7 @@
 .org-autocomplete-field {
   display: block;
   width: 100%;
+
   --mdc-outlined-text-field-outline-color: var(--org-outline);
   --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
   --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);
@@ -24,7 +25,11 @@
 
   .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
     --mat-option-selected-state-label-text-color: var(--org-primary);
-    --mat-option-selected-state-layer-color: color-mix(in srgb, var(--org-primary) 14%, transparent);
+    --mat-option-selected-state-layer-color: color-mix(
+      in srgb,
+      var(--org-primary) 14%,
+      transparent
+    );
 
     color: var(--org-primary);
   }

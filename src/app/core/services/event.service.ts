@@ -18,10 +18,11 @@ export class EventService {
   private readonly collectionName = 'events';
 
   listEvents(): Observable<PartyEvent[]> {
-    return this.gateway.collectionSnapshot<Record<string, unknown>>(
-      this.collectionName,
-      this.gateway.orderBy('date', 'asc'),
-    ).pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
+    return this.gateway
+      .collectionSnapshot<
+        Record<string, unknown>
+      >(this.collectionName, this.gateway.orderBy('date', 'asc'))
+      .pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
   }
 
   getUserEvents(uid: string): Observable<PartyEvent[]> {
@@ -29,15 +30,17 @@ export class EventService {
       return of([]);
     }
 
-    const owned$ = this.gateway.collectionSnapshot<Record<string, unknown>>(
-      this.collectionName,
-      this.gateway.where('createdBy', '==', uid),
-    ).pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
+    const owned$ = this.gateway
+      .collectionSnapshot<
+        Record<string, unknown>
+      >(this.collectionName, this.gateway.where('createdBy', '==', uid))
+      .pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
 
-    const collaborated$ = this.gateway.collectionSnapshot<Record<string, unknown>>(
-      this.collectionName,
-      this.gateway.where('collaborators', 'array-contains', uid),
-    ).pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
+    const collaborated$ = this.gateway
+      .collectionSnapshot<
+        Record<string, unknown>
+      >(this.collectionName, this.gateway.where('collaborators', 'array-contains', uid))
+      .pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
 
     return combineLatest([owned$, collaborated$]).pipe(
       map(([owned, collaborated]) => {
@@ -52,9 +55,9 @@ export class EventService {
   }
 
   getEvent(eventId: string): Observable<PartyEvent | null> {
-    return this.gateway.docSnapshot<Record<string, unknown>>(
-      `${this.collectionName}/${eventId}`,
-    ).pipe(map((doc) => (doc ? this.mapEventData(doc) : null)));
+    return this.gateway
+      .docSnapshot<Record<string, unknown>>(`${this.collectionName}/${eventId}`)
+      .pipe(map((doc) => (doc ? this.mapEventData(doc) : null)));
   }
 
   async createEvent(data: PartyEventCreate): Promise<string> {
@@ -72,7 +75,9 @@ export class EventService {
     let previousEvent: PartyEvent | null = null;
 
     try {
-      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(`${this.collectionName}/${eventId}`);
+      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(
+        `${this.collectionName}/${eventId}`,
+      );
       if (docData) {
         previousEvent = this.mapEventData(docData);
       }
@@ -121,7 +126,9 @@ export class EventService {
     let eventToCancel: PartyEvent | null = null;
 
     try {
-      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(`${this.collectionName}/${eventId}`);
+      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(
+        `${this.collectionName}/${eventId}`,
+      );
       if (docData) {
         eventToCancel = this.mapEventData(docData);
       }
@@ -175,20 +182,20 @@ export class EventService {
   }
 
   listPendingInvitations(eventId: string): Observable<EventInvitation[]> {
-    return this.gateway.collectionSnapshot<Record<string, unknown>>(
-      `${this.collectionName}/${eventId}/invitations`,
-    ).pipe(
-      map((docs) =>
-        docs.map((d) => ({
-          id: d.id,
-          eventId: (d['eventId'] as string) ?? eventId,
-          eventTitle: (d['eventTitle'] as string) ?? '',
-          invitedEmail: (d['invitedEmail'] as string) ?? d.id,
-          invitedBy: (d['invitedBy'] as string) ?? '',
-          createdAt: (d['createdAt'] as string) ?? '',
-        })),
-      ),
-    );
+    return this.gateway
+      .collectionSnapshot<Record<string, unknown>>(`${this.collectionName}/${eventId}/invitations`)
+      .pipe(
+        map((docs) =>
+          docs.map((d) => ({
+            id: d.id,
+            eventId: (d['eventId'] as string) ?? eventId,
+            eventTitle: (d['eventTitle'] as string) ?? '',
+            invitedEmail: (d['invitedEmail'] as string) ?? d.id,
+            invitedBy: (d['invitedBy'] as string) ?? '',
+            createdAt: (d['createdAt'] as string) ?? '',
+          })),
+        ),
+      );
   }
 
   async claimPendingInvitations(email: string, uid: string): Promise<void> {
@@ -216,7 +223,9 @@ export class EventService {
 
   async getEventById(eventId: string): Promise<PartyEvent | null> {
     try {
-      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(`${this.collectionName}/${eventId}`);
+      const docData = await this.gateway.getDocWithId<Record<string, unknown>>(
+        `${this.collectionName}/${eventId}`,
+      );
       if (!docData) return null;
       return this.mapEventData(docData);
     } catch {

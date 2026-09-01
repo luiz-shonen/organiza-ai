@@ -407,10 +407,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `npm run quality` passes with 0 errors across all linters, formatters, and contracts
-- [ ] `npm test -- --watch=false` passes (426 unit tests green)
-- [ ] `npm run build` succeeds with zero errors
-- [ ] Gate check passes: `npm run quality && npm run build && npm test -- --watch=false`
+- [x] `npm run quality` passes with 0 errors across all linters, formatters, and contracts
+- [x] `npm test -- --watch=false` passes (446 unit tests green)
+- [x] `npm run build` succeeds with zero errors
+- [x] Gate check passes: `npm run quality && npm run build && npm test -- --watch=false`
 
 **Tests**: none  
 **Gate**: Build  

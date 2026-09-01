@@ -14,30 +14,51 @@ export class SharePanelHarness {
 
   constructor(page: Page, rootLocator?: Locator) {
     this.page = page;
-    this.panelRoot = rootLocator ?? page.getByTestId('share-panel').or(page.locator('app-share-panel, .share-panel, mat-card.share-panel'));
+    this.panelRoot =
+      rootLocator ??
+      page
+        .getByTestId('share-panel')
+        .or(page.locator('app-share-panel, .share-panel, mat-card.share-panel'));
 
-    this.qrCanvas = page.getByTestId('qr-canvas')
+    this.qrCanvas = page
+      .getByTestId('qr-canvas')
       .or(this.panelRoot.locator('canvas'))
       .or(page.locator('canvas.share-panel__qr, canvas[aria-label*="QR Code"], canvas'));
 
-    this.whatsappBtn = page.getByTestId('whatsapp-share-btn')
+    this.whatsappBtn = page
+      .getByTestId('whatsapp-share-btn')
       .or(this.panelRoot.getByRole('button', { name: /WhatsApp/i }))
-      .or(page.locator('button.share-panel__whatsapp-btn, button[aria-label*="WhatsApp"], a[href*="whatsapp"], a[href*="wa.me"], button:has-text("WhatsApp")'));
+      .or(
+        page.locator(
+          'button.share-panel__whatsapp-btn, button[aria-label*="WhatsApp"], a[href*="whatsapp"], a[href*="wa.me"], button:has-text("WhatsApp")',
+        ),
+      );
 
-    this.copyLinkBtn = page.getByTestId('copy-link-btn')
+    this.copyLinkBtn = page
+      .getByTestId('copy-link-btn')
       .or(this.panelRoot.getByRole('button', { name: /Copiar Link/i }))
       .or(page.locator('button[aria-label*="Copiar link"], button:has-text("Copiar Link")'));
 
-    this.inviteEmailInput = page.getByTestId('collaborator-email-input')
+    this.inviteEmailInput = page
+      .getByTestId('collaborator-email-input')
       .or(page.getByTestId('invite-email-input'))
       .or(page.getByLabel(/Email do colaborador/i))
-      .or(page.locator('.collaborator-dialog input[type="email"], input[placeholder*="amigo@exemplo.com"], input[type="email"]'));
+      .or(
+        page.locator(
+          '.collaborator-dialog input[type="email"], input[placeholder*="amigo@exemplo.com"], input[type="email"]',
+        ),
+      );
 
-    this.sendInviteBtn = page.getByTestId('collaborator-invite-submit')
+    this.sendInviteBtn = page
+      .getByTestId('collaborator-invite-submit')
       .or(page.getByTestId('send-invite-btn'))
       .or(page.getByTestId('collaborator-submit-btn'))
       .or(page.getByRole('button', { name: /Enviar convite|Convidar/i }))
-      .or(page.locator('.collaborator-dialog__submit-btn, button[aria-label*="Enviar convite"], button:has-text("Convidar")'));
+      .or(
+        page.locator(
+          '.collaborator-dialog__submit-btn, button[aria-label*="Enviar convite"], button:has-text("Convidar")',
+        ),
+      );
   }
 
   /**
@@ -75,7 +96,8 @@ export class SharePanelHarness {
    */
   async inviteCollaborator(email: string): Promise<void> {
     if (!(await this.inviteEmailInput.isVisible())) {
-      const triggerBtn = this.page.getByTestId('open-collaborators-btn')
+      const triggerBtn = this.page
+        .getByTestId('open-collaborators-btn')
         .or(this.page.locator('.editor__collab-btn, button:has-text("Colaboradores")'));
       if (await triggerBtn.isVisible()) {
         await triggerBtn.click();

@@ -67,7 +67,9 @@ describe('OrgEmptyStateComponent', () => {
     expect(titleEl.textContent?.trim()).toBe('Nenhum evento encontrado');
 
     const descEl = el.querySelector('.org-empty-state__description') as HTMLElement;
-    expect(descEl.textContent?.trim()).toBe('Crie seu primeiro evento para começar a organizar suas festas.');
+    expect(descEl.textContent?.trim()).toBe(
+      'Crie seu primeiro evento para começar a organizar suas festas.',
+    );
 
     const ctaBtn = el.querySelector('.org-empty-state__action #cta-btn') as HTMLElement;
     expect(ctaBtn).toBeTruthy();

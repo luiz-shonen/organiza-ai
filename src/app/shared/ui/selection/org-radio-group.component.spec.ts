@@ -10,7 +10,8 @@ const OPTIONS: readonly OrgRadioOption[] = [
 describe('OrgRadioGroupComponent', () => {
   it('renders typed options and selected model', async () => {
     await TestBed.configureTestingModule({ imports: [OrgRadioGroupComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgRadioGroupComponent> = TestBed.createComponent(OrgRadioGroupComponent);
+    const fixture: ComponentFixture<OrgRadioGroupComponent> =
+      TestBed.createComponent(OrgRadioGroupComponent);
     fixture.componentRef.setInput('label', 'Canal de confirmação');
     fixture.componentRef.setInput('options', OPTIONS);
     fixture.componentRef.setInput('value', 'email');
@@ -24,13 +25,16 @@ describe('OrgRadioGroupComponent', () => {
 
   it('has an explicit empty state and honors disabled groups', async () => {
     await TestBed.configureTestingModule({ imports: [OrgRadioGroupComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgRadioGroupComponent> = TestBed.createComponent(OrgRadioGroupComponent);
+    const fixture: ComponentFixture<OrgRadioGroupComponent> =
+      TestBed.createComponent(OrgRadioGroupComponent);
     fixture.componentRef.setInput('label', 'Canal de confirmação');
     fixture.componentRef.setInput('options', []);
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Nenhuma opção disponível.');
-    expect(fixture.nativeElement.querySelector('.org-radio-group')?.getAttribute('aria-disabled')).toBe('true');
+    expect(
+      fixture.nativeElement.querySelector('.org-radio-group')?.getAttribute('aria-disabled'),
+    ).toBe('true');
   });
 });

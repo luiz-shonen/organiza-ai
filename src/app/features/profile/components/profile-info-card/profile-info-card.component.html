@@ -1,104 +1,108 @@
 <org-surface variant="panel" class="profile-info-card">
-<section class="profile-info-card__content" [class.profile-info-card__content--editing]="isEditing()" aria-labelledby="profile-heading">
+  <section
+    class="profile-info-card__content"
+    [class.profile-info-card__content--editing]="isEditing()"
+    aria-labelledby="profile-heading"
+  >
     <div class="profile-info-card__header" [class.profile-info-card__header--editing]="isEditing()">
-    <div class="profile-info-card__avatar-wrapper">
-      @if (user().photoURL) {
-        <img
-          class="profile-info-card__avatar"
-          [src]="user().photoURL"
-          [alt]="'Foto de perfil de ' + (user().displayName || user().name || 'usuário')"
-        />
-      } @else {
-        <div
-          class="profile-info-card__avatar profile-info-card__avatar--placeholder"
-          role="img"
-          [attr.aria-label]="'Avatar de ' + (user().displayName || user().name || 'usuário')"
-        >
-          <span class="profile-info-card__avatar-letter">{{ userInitial }}</span>
-        </div>
-      }
-    </div>
-
-    <div class="profile-info-card__identity">
-      <h2 id="profile-heading" class="profile-info-card__title">Informações Pessoais</h2>
-      
-      @if (isEditing()) {
-        <form
-          class="profile-info-card__edit-form"
-          (submit)="$event.preventDefault(); saveName()"
-          role="form"
-          aria-label="Editar nome"
-        >
-          <org-text-field
-            class="profile-info-card__form-field"
-            label="Nome completo"
-            placeholder="Seu nome"
-            [value]="editName()"
-            (valueChange)="editName.set($event)"
-            [required]="true"
-            testId="profile-name-input"
-            [error]="editName().trim().length === 0 ? 'O nome não pode ficar em branco' : ''"
+      <div class="profile-info-card__avatar-wrapper">
+        @if (user().photoURL) {
+          <img
+            class="profile-info-card__avatar"
+            [src]="user().photoURL"
+            [alt]="'Foto de perfil de ' + (user().displayName || user().name || 'usuário')"
           />
+        } @else {
+          <div
+            class="profile-info-card__avatar profile-info-card__avatar--placeholder"
+            role="img"
+            [attr.aria-label]="'Avatar de ' + (user().displayName || user().name || 'usuário')"
+          >
+            <span class="profile-info-card__avatar-letter">{{ userInitial }}</span>
+          </div>
+        }
+      </div>
 
-          <div class="profile-info-card__actions">
-            <org-button
-              class="profile-info-card__save-btn"
-              [disabled]="editName().trim().length === 0"
-              label="Salvar"
-              icon="check_circle"
-              type="submit"
-              testId="save-profile-btn"
+      <div class="profile-info-card__identity">
+        <h2 id="profile-heading" class="profile-info-card__title">Informações Pessoais</h2>
+
+        @if (isEditing()) {
+          <form
+            class="profile-info-card__edit-form"
+            (submit)="$event.preventDefault(); saveName()"
+            role="form"
+            aria-label="Editar nome"
+          >
+            <org-text-field
+              class="profile-info-card__form-field"
+              label="Nome completo"
+              placeholder="Seu nome"
+              [value]="editName()"
+              (valueChange)="editName.set($event)"
+              [required]="true"
+              testId="profile-name-input"
+              [error]="editName().trim().length === 0 ? 'O nome não pode ficar em branco' : ''"
             />
-            <org-button
-              class="profile-info-card__cancel-btn"
-              label="Cancelar"
-              icon="close"
-              variant="secondary"
-              [gradient]="false"
-              testId="cancel-profile-btn"
-              (pressed)="cancelEditing()"
+
+            <div class="profile-info-card__actions">
+              <org-button
+                class="profile-info-card__save-btn"
+                [disabled]="editName().trim().length === 0"
+                label="Salvar"
+                icon="check_circle"
+                type="submit"
+                testId="save-profile-btn"
+              />
+              <org-button
+                class="profile-info-card__cancel-btn"
+                label="Cancelar"
+                icon="close"
+                variant="secondary"
+                [gradient]="false"
+                testId="cancel-profile-btn"
+                (pressed)="cancelEditing()"
+              />
+            </div>
+          </form>
+        } @else {
+          <div class="profile-info-card__name-row">
+            <span class="profile-info-card__name">
+              {{ user().displayName || user().name || 'Sem nome cadastrado' }}
+            </span>
+            <org-icon-button
+              variant="primary"
+              class="profile-info-card__edit-btn"
+              ariaLabel="Editar nome de exibição"
+              icon="edit"
+              testId="edit-profile-btn"
+              (pressed)="startEditing()"
+              [attr.aria-expanded]="isEditing()"
             />
           </div>
-        </form>
-      } @else {
-        <div class="profile-info-card__name-row">
-          <span class="profile-info-card__name">
-            {{ user().displayName || user().name || 'Sem nome cadastrado' }}
-          </span>
-          <org-icon-button
-            variant="primary"
-            class="profile-info-card__edit-btn"
-            ariaLabel="Editar nome de exibição"
-            icon="edit"
-            testId="edit-profile-btn"
-            (pressed)="startEditing()"
-            [attr.aria-expanded]="isEditing()"
-          />
+        }
+      </div>
+    </div>
+
+    <div class="profile-info-card__details">
+      <div class="profile-info-card__field">
+        <span class="profile-info-card__field-icon">
+          <org-icon name="mail" size="sm" color="var(--org-primary)" />
+        </span>
+        <div class="profile-info-card__field-content">
+          <span class="profile-info-card__field-label">E-mail</span>
+          <span class="profile-info-card__field-value">{{ user().email || 'Não informado' }}</span>
         </div>
-      }
-    </div>
-  </div>
+      </div>
 
-  <div class="profile-info-card__details">
-    <div class="profile-info-card__field">
-      <span class="profile-info-card__field-icon">
-        <org-icon name="mail" size="sm" color="var(--org-primary)" />
-      </span>
-      <div class="profile-info-card__field-content">
-        <span class="profile-info-card__field-label">E-mail</span>
-        <span class="profile-info-card__field-value">{{ user().email || 'Não informado' }}</span>
+      <div class="profile-info-card__field">
+        <span class="profile-info-card__field-icon">
+          <org-icon name="phone" size="sm" color="var(--org-primary)" />
+        </span>
+        <div class="profile-info-card__field-content">
+          <span class="profile-info-card__field-label">Telefone</span>
+          <span class="profile-info-card__field-value">{{ user().phone || 'Não informado' }}</span>
+        </div>
       </div>
     </div>
-
-    <div class="profile-info-card__field">
-      <span class="profile-info-card__field-icon">
-        <org-icon name="phone" size="sm" color="var(--org-primary)" />
-      </span>
-      <div class="profile-info-card__field-content">
-        <span class="profile-info-card__field-label">Telefone</span>
-        <span class="profile-info-card__field-value">{{ user().phone || 'Não informado' }}</span>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 </org-surface>

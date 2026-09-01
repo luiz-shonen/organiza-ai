@@ -5,11 +5,7 @@ import { signal } from '@angular/core';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { App } from './app';
 import { FirebaseService } from './core/services/firebase.service';
-import {
-  AuthService,
-  GuestSessionService,
-  SeasonalThemeService,
-} from './core/services';
+import { AuthService, GuestSessionService, SeasonalThemeService } from './core/services';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -68,7 +64,11 @@ describe('App', () => {
 
   it('keeps the toolbar limited to navigation and profile controls for super admins', () => {
     const authService = TestBed.inject(AuthService) as any;
-    authService.currentUser = signal({ uid: 'admin-1', email: 'luiz.gmr.dev@gmail.com', isAnonymous: false });
+    authService.currentUser = signal({
+      uid: 'admin-1',
+      email: 'luiz.gmr.dev@gmail.com',
+      isAnonymous: false,
+    });
     authService.isSuperAdmin = signal(true);
 
     const fixture = TestBed.createComponent(App);

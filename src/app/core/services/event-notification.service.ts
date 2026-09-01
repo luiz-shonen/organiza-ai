@@ -1,10 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { NotificationService } from './notification.service';
-import {
-  PartyEvent,
-  EventNotificationRecord,
-  EventNotificationType,
-} from '../models';
+import { PartyEvent, EventNotificationRecord, EventNotificationType } from '../models';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +18,10 @@ export class EventNotificationService {
 
   isReminderSent(eventId: string, type: EventNotificationType): boolean {
     try {
-      return typeof localStorage !== 'undefined' && !!localStorage.getItem(this.getStorageKey(eventId, type));
+      return (
+        typeof localStorage !== 'undefined' &&
+        !!localStorage.getItem(this.getStorageKey(eventId, type))
+      );
     } catch {
       return false;
     }
@@ -41,7 +40,7 @@ export class EventNotificationService {
   async notifyGuestsOfEventChange(
     event: PartyEvent,
     changeSummary: string,
-    recipientCount = 0
+    recipientCount = 0,
   ): Promise<EventNotificationRecord> {
     const title = `Alteração no evento: ${event.title}`;
     const body = `O evento foi atualizado: ${changeSummary}`;
@@ -63,7 +62,7 @@ export class EventNotificationService {
 
   async notifyGuestsOfCancellation(
     event: PartyEvent,
-    recipientCount = 0
+    recipientCount = 0,
   ): Promise<EventNotificationRecord> {
     const title = `Evento cancelado: ${event.title}`;
     const body = `O evento "${event.title}" foi cancelado pelo organizador.`;
@@ -83,7 +82,10 @@ export class EventNotificationService {
     return record;
   }
 
-  evaluateCountdownReminders(events: PartyEvent[], referenceNow = new Date()): EventNotificationRecord[] {
+  evaluateCountdownReminders(
+    events: PartyEvent[],
+    referenceNow = new Date(),
+  ): EventNotificationRecord[] {
     const dispatched: EventNotificationRecord[] = [];
     const nowMs = referenceNow.getTime();
 

@@ -10,44 +10,74 @@
 
   <org-surface variant="card" class="login__card">
     <div class="login__card-content">
-    @if (errorMessage(); as error) {
-      <div class="login__error" data-testid="login-error-alert">
-        <mat-icon>error</mat-icon>
-        {{ error }}
+      @if (errorMessage(); as error) {
+        <div class="login__error" data-testid="login-error-alert">
+          <mat-icon>error</mat-icon>
+          {{ error }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
+        <org-text-field
+          class="login__form-field"
+          label="E-mail"
+          type="email"
+          placeholder="seu@email.com"
+          testId="login-email-input"
+          formControlName="email"
+          [error]="
+            form.controls.email.hasError('required')
+              ? 'E-mail é obrigatório'
+              : form.controls.email.hasError('email')
+                ? 'Digite um e-mail válido'
+                : ''
+          "
+        />
+
+        <org-text-field
+          class="login__form-field"
+          label="Senha"
+          type="password"
+          placeholder="Sua senha"
+          testId="login-password-input"
+          formControlName="password"
+          [passwordVisible]="!hidePassword()"
+          (togglePasswordVisibility)="hidePassword.set(!hidePassword())"
+          [error]="
+            form.controls.password.hasError('required')
+              ? 'Senha é obrigatória'
+              : form.controls.password.hasError('minlength')
+                ? 'Mínimo 6 caracteres'
+                : ''
+          "
+        />
+
+        <org-button
+          type="submit"
+          class="login__submit-btn"
+          data-testid="login-submit-btn"
+          label="Entrar"
+          [disabled]="form.invalid || loading()"
+          [loading]="loading()"
+          [fullWidth]="true"
+        />
+      </form>
+
+      <div class="login__divider">
+        <span class="login__divider-text">OU</span>
       </div>
-    }
-
-    <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
-      <org-text-field class="login__form-field" label="E-mail" type="email" placeholder="seu@email.com" testId="login-email-input" formControlName="email" [error]="form.controls.email.hasError('required') ? 'E-mail é obrigatório' : form.controls.email.hasError('email') ? 'Digite um e-mail válido' : ''" />
-
-      <org-text-field class="login__form-field" label="Senha" type="password" placeholder="Sua senha" testId="login-password-input" formControlName="password" [passwordVisible]="!hidePassword()" (togglePasswordVisibility)="hidePassword.set(!hidePassword())" [error]="form.controls.password.hasError('required') ? 'Senha é obrigatória' : form.controls.password.hasError('minlength') ? 'Mínimo 6 caracteres' : ''" />
 
       <org-button
-        type="submit"
-        class="login__submit-btn"
-        data-testid="login-submit-btn"
-        label="Entrar"
-        [disabled]="form.invalid || loading()"
-        [loading]="loading()"
+        [disabled]="loading()"
+        class="login__google-btn"
+        data-testid="google-login-btn"
+        label="Entrar com Google"
+        variant="secondary"
+        [gradient]="false"
         [fullWidth]="true"
+        imageSrc="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+        (pressed)="loginWithGoogle()"
       />
-    </form>
-
-    <div class="login__divider">
-      <span class="login__divider-text">OU</span>
-    </div>
-
-    <org-button
-      [disabled]="loading()"
-      class="login__google-btn"
-      data-testid="google-login-btn"
-      label="Entrar com Google"
-      variant="secondary"
-      [gradient]="false"
-      [fullWidth]="true"
-      imageSrc="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-      (pressed)="loginWithGoogle()"
-    />
     </div>
   </org-surface>
 </main>

@@ -139,7 +139,9 @@ describe('FamilyRosterManagerComponent', () => {
     component.removeMember.subscribe(removeSpy);
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const removeButtons = compiled.querySelectorAll<HTMLButtonElement>('.family-roster__remove-btn button');
+    const removeButtons = compiled.querySelectorAll<HTMLButtonElement>(
+      '.family-roster__remove-btn button',
+    );
     expect(removeButtons.length).toBe(2);
 
     removeButtons[0].click();

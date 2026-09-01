@@ -24,7 +24,9 @@ export class FamilyService {
           name: data.name ?? '',
           relationship: data.relationship ?? 'other',
           phone: data.phone ?? undefined,
-          createdAt: createdAtDate ? createdAtDate.toISOString() : ((data.createdAt as unknown as string) ?? ''),
+          createdAt: createdAtDate
+            ? createdAtDate.toISOString()
+            : ((data.createdAt as unknown as string) ?? ''),
         };
       });
     } catch (err) {

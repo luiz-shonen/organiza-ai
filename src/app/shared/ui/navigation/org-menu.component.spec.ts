@@ -16,7 +16,9 @@ describe('OrgMenuComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Mais ações');
-    expect(fixture.nativeElement.querySelector('button')?.getAttribute('aria-haspopup')).toBe('menu');
+    expect(fixture.nativeElement.querySelector('button')?.getAttribute('aria-haspopup')).toBe(
+      'menu',
+    );
   });
 
   it('has an explicit empty state and emits selected actions', async () => {

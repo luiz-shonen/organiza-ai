@@ -10,11 +10,15 @@ describe('DesignSystemCodeExampleComponent', () => {
       providers: [provideNoopAnimations()],
     }).compileComponents();
 
-    const fixture: ComponentFixture<DesignSystemCodeExampleComponent> = TestBed.createComponent(DesignSystemCodeExampleComponent);
+    const fixture: ComponentFixture<DesignSystemCodeExampleComponent> = TestBed.createComponent(
+      DesignSystemCodeExampleComponent,
+    );
     fixture.componentRef.setInput('code', '<org-page-layout />');
     fixture.detectChanges();
 
-    const disclosure = (fixture.nativeElement as HTMLElement).querySelector<HTMLDetailsElement>('details');
+    const disclosure = (fixture.nativeElement as HTMLElement).querySelector<HTMLDetailsElement>(
+      'details',
+    );
     const summary = disclosure?.querySelector<HTMLElement>('summary');
 
     expect(disclosure?.open).toBe(false);
@@ -34,11 +38,15 @@ describe('DesignSystemCodeExampleComponent', () => {
       providers: [provideNoopAnimations()],
     }).compileComponents();
 
-    const fixture: ComponentFixture<DesignSystemCodeExampleComponent> = TestBed.createComponent(DesignSystemCodeExampleComponent);
+    const fixture: ComponentFixture<DesignSystemCodeExampleComponent> = TestBed.createComponent(
+      DesignSystemCodeExampleComponent,
+    );
     fixture.componentRef.setInput('code', '<org-page-layout />');
     fixture.detectChanges();
 
-    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button');
+    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'button',
+    );
     button?.click();
     await fixture.whenStable();
     fixture.detectChanges();

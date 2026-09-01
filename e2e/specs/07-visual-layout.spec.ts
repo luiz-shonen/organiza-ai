@@ -1,11 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { Page } from '@playwright/test';
-import {
-  assertNoHorizontalOverflow,
-  assertMinTouchTarget,
-  assertGlassmorphism,
-  assertFontFamily,
-} from '../helpers/design-tokens.helper';
+import { assertNoHorizontalOverflow, assertMinTouchTarget } from '../helpers/design-tokens.helper';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [

@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  signal,
-  computed,
-  OnInit,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -61,7 +54,7 @@ import {
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
 })
-export class DashboardContainer implements OnInit {
+export class DashboardContainer {
   private readonly eventService = inject(EventService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -190,8 +183,6 @@ export class DashboardContainer implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
-
   protected createEvent(): void {
     void this.router.navigate(['/meus-eventos/evento/novo']);
   }
@@ -224,15 +215,15 @@ export class DashboardContainer implements OnInit {
         confirmLabel: 'Cancelar Evento',
       })
       .subscribe(async (result) => {
-      if (result) {
-        try {
-          await this.eventService.cancelEvent(event.id);
-          this.feedback.success('Evento cancelado com sucesso!');
-        } catch {
-          this.feedback.error('Erro ao cancelar evento.');
+        if (result) {
+          try {
+            await this.eventService.cancelEvent(event.id);
+            this.feedback.success('Evento cancelado com sucesso!');
+          } catch {
+            this.feedback.error('Erro ao cancelar evento.');
+          }
         }
-      }
-    });
+      });
   }
 
   async logout(): Promise<void> {

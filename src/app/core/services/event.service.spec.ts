@@ -176,12 +176,15 @@ describe('EventService', () => {
         creatorEmail: 'user@example.com',
       });
 
-      expect(mockGateway.addDoc).toHaveBeenCalledWith('events', expect.objectContaining({
-        title: 'New Birthday',
-        status: 'active',
-        collaborators: [],
-        createdAt: expect.any(String),
-      }));
+      expect(mockGateway.addDoc).toHaveBeenCalledWith(
+        'events',
+        expect.objectContaining({
+          title: 'New Birthday',
+          status: 'active',
+          collaborators: [],
+          createdAt: expect.any(String),
+        }),
+      );
       expect(id).toBe('new-evt-id');
     });
   });
@@ -239,7 +242,9 @@ describe('EventService', () => {
         id: 'evt-1',
         date: '2026-05-01T00:00:00.000Z',
       });
-      mockNotificationService.notifyGuestsOfEventChange.mockRejectedValue(new Error('Push service failed'));
+      mockNotificationService.notifyGuestsOfEventChange.mockRejectedValue(
+        new Error('Push service failed'),
+      );
 
       await expect(
         service.updateEvent('evt-1', { date: '2026-07-01T00:00:00.000Z' }),
@@ -283,17 +288,14 @@ describe('EventService', () => {
     it('inviteCollaborator creates invitation document', async () => {
       await service.inviteCollaborator('evt-1', 'Collab@Test.com', 'My Party', 'Host');
 
-      expect(mockGateway.setDoc).toHaveBeenCalledWith(
-        'events/evt-1/invitations/collab@test.com',
-        {
-          id: 'collab@test.com',
-          eventId: 'evt-1',
-          eventTitle: 'My Party',
-          invitedEmail: 'collab@test.com',
-          invitedBy: 'Host',
-          createdAt: expect.any(String),
-        },
-      );
+      expect(mockGateway.setDoc).toHaveBeenCalledWith('events/evt-1/invitations/collab@test.com', {
+        id: 'collab@test.com',
+        eventId: 'evt-1',
+        eventTitle: 'My Party',
+        invitedEmail: 'collab@test.com',
+        invitedBy: 'Host',
+        createdAt: expect.any(String),
+      });
     });
 
     it('removeCollaborator removes UID using arrayRemove', async () => {
@@ -345,7 +347,9 @@ describe('EventService', () => {
         collaborators: expect.anything(),
         updatedAt: expect.any(String),
       });
-      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/invitations/user@test.com');
+      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith(
+        'events/evt-100/invitations/user@test.com',
+      );
     });
 
     it('claimPendingInvitations returns early if email or uid is empty or no invites found', async () => {

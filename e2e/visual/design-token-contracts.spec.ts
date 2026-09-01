@@ -20,7 +20,10 @@ test('proves the numerical visual contracts on representative geometry', async (
   `);
 
   await assertAppScrollOrigin(page);
-  await assertAnchorVisibleInScrollOwner(page.locator('[data-testid="anchor"]'), page.locator('main.app-content'));
+  await assertAnchorVisibleInScrollOwner(
+    page.locator('[data-testid="anchor"]'),
+    page.locator('main.app-content'),
+  );
   await assertSingleSurfaceRing(page.locator('[data-testid="surface"]'));
   await assertFocusedFieldCoherence(page.locator('[data-testid="field"]'));
   await assertFocusedFieldCoherence(page.locator('[data-testid="org-field"]'));
@@ -29,7 +32,11 @@ test('proves the numerical visual contracts on representative geometry', async (
 
 test('rejects an undersized interactive target in either dimension', async ({ page }) => {
   await page.setContent('<button style="width: 40px; height: 48px">Too narrow</button>');
-  await expect(import('../helpers/design-tokens.helper').then(({ assertMinTouchTarget }) => assertMinTouchTarget(page.getByRole('button')))).rejects.toThrow();
+  await expect(
+    import('../helpers/design-tokens.helper').then(({ assertMinTouchTarget }) =>
+      assertMinTouchTarget(page.getByRole('button')),
+    ),
+  ).rejects.toThrow();
 });
 
 test('permits only sub-pixel rounding within the touch target tolerance', () => {
@@ -46,5 +53,7 @@ test('rejects separately coloured visible outline segments', async ({ page }) =>
     </mat-form-field>
   `);
 
-  await expect(assertFocusedFieldCoherence(page.locator('[data-testid="split-field"]'))).rejects.toThrow();
+  await expect(
+    assertFocusedFieldCoherence(page.locator('[data-testid="split-field"]')),
+  ).rejects.toThrow();
 });

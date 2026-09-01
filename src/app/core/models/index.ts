@@ -16,10 +16,7 @@ export type {
   SeasonalThemeConfig,
 } from './seasonal-theme.model';
 export type { ThemeMode } from './theme.model';
-export type {
-  EventNotificationRecord,
-  EventNotificationType,
-} from './notification.model';
+export type { EventNotificationRecord, EventNotificationType } from './notification.model';
 export type {
   FamilyMember,
   FamilyRelationship,

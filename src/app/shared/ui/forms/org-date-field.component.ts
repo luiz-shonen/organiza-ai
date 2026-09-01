@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, forwardRef, input, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  input,
+  model,
+  signal,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -9,7 +16,13 @@ import { MatInputModule } from '@angular/material/input';
   selector: 'org-date-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => OrgDateFieldComponent), multi: true }],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OrgDateFieldComponent),
+      multi: true,
+    },
+  ],
   templateUrl: './org-date-field.component.html',
   styleUrl: './org-date-field.component.scss',
 })
@@ -26,10 +39,18 @@ export class OrgDateFieldComponent implements ControlValueAccessor {
   private onChange: (value: Date | null) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
-  public writeValue(value: Date | null): void { this.value.set(value); }
-  public registerOnChange(onChange: (value: Date | null) => void): void { this.onChange = onChange; }
-  public registerOnTouched(onTouched: () => void): void { this.onTouched = onTouched; }
-  public setDisabledState(disabled: boolean): void { this.disabledFromControl.set(disabled); }
+  public writeValue(value: Date | null): void {
+    this.value.set(value);
+  }
+  public registerOnChange(onChange: (value: Date | null) => void): void {
+    this.onChange = onChange;
+  }
+  public registerOnTouched(onTouched: () => void): void {
+    this.onTouched = onTouched;
+  }
+  public setDisabledState(disabled: boolean): void {
+    this.disabledFromControl.set(disabled);
+  }
 
   protected updateValue(value: Date | null): void {
     if (!this.disabled() && !this.disabledFromControl()) {
@@ -50,6 +71,8 @@ export class OrgDateFieldComponent implements ControlValueAccessor {
     }
   }
 
-  protected markTouched(): void { this.onTouched(); }
+  protected markTouched(): void {
+    this.onTouched();
+  }
   protected readonly isDisabled = () => this.disabled() || this.disabledFromControl();
 }

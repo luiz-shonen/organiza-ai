@@ -17,7 +17,10 @@ export interface Guest {
   createdAt?: string;
 }
 
-export type GuestCreate = Omit<Guest, 'id' | 'createdAt' | 'uid' | 'isConfirmed' | 'confirmedAt'> & {
+export type GuestCreate = Omit<
+  Guest,
+  'id' | 'createdAt' | 'uid' | 'isConfirmed' | 'confirmedAt'
+> & {
   isConfirmed?: boolean;
   confirmedAt?: string;
 };

@@ -26,10 +26,11 @@ export class GuestService {
   }
 
   listGuests(eventId: string): Observable<Guest[]> {
-    return this.gateway.collectionSnapshot<Omit<Guest, 'id'>>(
-      this.guestsPath(eventId),
-      this.gateway.orderBy('confirmedAt', 'desc'),
-    ).pipe(map((guests) => guests.map((guest) => this.toGuest(guest))));
+    return this.gateway
+      .collectionSnapshot<
+        Omit<Guest, 'id'>
+      >(this.guestsPath(eventId), this.gateway.orderBy('confirmedAt', 'desc'))
+      .pipe(map((guests) => guests.map((guest) => this.toGuest(guest))));
   }
 
   async addGuest(eventId: string, guest: Partial<Guest>): Promise<string> {
@@ -169,7 +170,9 @@ export class GuestService {
   }
 
   async getGuest(eventId: string, guestId: string): Promise<Guest | null> {
-    const docData = await this.gateway.getDocWithId<Omit<Guest, 'id'>>(this.guestDocPath(eventId, guestId));
+    const docData = await this.gateway.getDocWithId<Omit<Guest, 'id'>>(
+      this.guestDocPath(eventId, guestId),
+    );
     if (!docData) return null;
 
     return this.toGuest(docData);

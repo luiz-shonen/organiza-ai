@@ -13,7 +13,9 @@ export class MockAuthService {
     return email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com';
   });
 
-  readonly register = vi.fn((_email: string, _password: string): Promise<void> => Promise.resolve());
+  readonly register = vi.fn(
+    (_email: string, _password: string): Promise<void> => Promise.resolve(),
+  );
   readonly login = vi.fn((_email: string, _password: string): Promise<void> => Promise.resolve());
   readonly logout = vi.fn((): Promise<void> => {
     this.currentUser.set(null);

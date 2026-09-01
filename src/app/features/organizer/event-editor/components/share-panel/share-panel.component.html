@@ -15,16 +15,22 @@
       <div class="share-panel__link">
         <code class="share-panel__url">{{ eventUrl() }}</code>
       </div>
-    <footer class="share-panel__actions">
-      <org-button label="Copiar link" icon="content_copy" variant="secondary" [gradient]="false" (pressed)="copyLink()" />
-      <org-button
-        label="WhatsApp"
-        icon="share"
-        [gradient]="false"
-        class="share-panel__whatsapp-btn"
-        (pressed)="shareWhatsApp()"
-      />
-    </footer>
+      <footer class="share-panel__actions">
+        <org-button
+          label="Copiar link"
+          icon="content_copy"
+          variant="secondary"
+          [gradient]="false"
+          (pressed)="copyLink()"
+        />
+        <org-button
+          label="WhatsApp"
+          icon="share"
+          [gradient]="false"
+          class="share-panel__whatsapp-btn"
+          (pressed)="shareWhatsApp()"
+        />
+      </footer>
     </article>
   </org-surface>
 }

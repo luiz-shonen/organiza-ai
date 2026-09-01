@@ -127,7 +127,9 @@ describe('FamilySelectorComponent', () => {
     fixture.detectChanges();
 
     expect(component['relationshipOptions']).toHaveLength(6);
-    expect((fixture.nativeElement as HTMLElement).querySelector('org-autocomplete-field')).toBeTruthy();
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('org-autocomplete-field'),
+    ).toBeTruthy();
   });
 
   it('should cancel inline form without emitting addInlineMember', () => {

@@ -30,7 +30,7 @@
   }
 
   &__subtitle {
-    margin: 6px 0 0 0;
+    margin: 6px 0 0;
     font-size: 0.875rem;
     color: var(--org-on-surface-variant);
     line-height: 1.5;
@@ -125,7 +125,6 @@
     justify-content: center;
     margin-right: 12px;
     flex-shrink: 0;
-
   }
 
   &__item-info {

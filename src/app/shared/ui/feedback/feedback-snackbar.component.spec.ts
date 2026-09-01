@@ -11,7 +11,9 @@ describe('FeedbackSnackbarComponent', () => {
     document.documentElement.classList.remove('theme-junina');
   });
 
-  async function render(data: FeedbackSnackbarData): Promise<ComponentFixture<FeedbackSnackbarComponent>> {
+  async function render(
+    data: FeedbackSnackbarData,
+  ): Promise<ComponentFixture<FeedbackSnackbarComponent>> {
     await TestBed.configureTestingModule({
       imports: [FeedbackSnackbarComponent],
       providers: [{ provide: MAT_SNACK_BAR_DATA, useValue: data }],
@@ -24,7 +26,9 @@ describe('FeedbackSnackbarComponent', () => {
 
   it('renders a success message in the shared green status structure', async () => {
     const fixture = await render({ variant: 'success', message: 'Nome atualizado com sucesso!' });
-    const snackbar = fixture.nativeElement.querySelector('[data-testid="feedback-snackbar"]') as HTMLElement;
+    const snackbar = fixture.nativeElement.querySelector(
+      '[data-testid="feedback-snackbar"]',
+    ) as HTMLElement;
     const icon = fixture.nativeElement.querySelector('mat-icon') as HTMLElement;
 
     expect(snackbar.classList.contains('feedback-snackbar--success')).toBe(true);
@@ -36,8 +40,13 @@ describe('FeedbackSnackbarComponent', () => {
   it('keeps an error message on the semantic error surface when a seasonal theme is active', async () => {
     document.documentElement.classList.add('theme-junina');
 
-    const fixture = await render({ variant: 'error', message: 'Não foi possível atualizar o nome.' });
-    const snackbar = fixture.nativeElement.querySelector('[data-testid="feedback-snackbar"]') as HTMLElement;
+    const fixture = await render({
+      variant: 'error',
+      message: 'Não foi possível atualizar o nome.',
+    });
+    const snackbar = fixture.nativeElement.querySelector(
+      '[data-testid="feedback-snackbar"]',
+    ) as HTMLElement;
     const icon = fixture.nativeElement.querySelector('mat-icon') as HTMLElement;
 
     expect(snackbar.classList.contains('feedback-snackbar--error')).toBe(true);

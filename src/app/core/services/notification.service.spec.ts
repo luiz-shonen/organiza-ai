@@ -3,7 +3,9 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { NotificationService } from './notification.service';
 
 describe('NotificationService', () => {
-  let notificationConstructorSpy: ReturnType<typeof vi.fn<(title: string, options?: NotificationOptions) => void>>;
+  let notificationConstructorSpy: ReturnType<
+    typeof vi.fn<(title: string, options?: NotificationOptions) => void>
+  >;
 
   beforeEach(() => {
     notificationConstructorSpy = vi.fn();
@@ -16,7 +18,7 @@ describe('NotificationService', () => {
 
   function setupNotificationMock(
     permission: NotificationPermission = 'granted',
-    requestPermissionResult: NotificationPermission = 'granted'
+    requestPermissionResult: NotificationPermission = 'granted',
   ) {
     const mockNotificationClass = class {
       static permission: NotificationPermission = permission;
@@ -51,7 +53,7 @@ describe('NotificationService', () => {
         icon: '/assets/icons/icon-192x192.png',
         badge: '/assets/icons/icon-72x72.png',
         vibrate: [200, 100, 200],
-      })
+      }),
     );
   });
 
@@ -69,7 +71,7 @@ describe('NotificationService', () => {
       expect.objectContaining({
         body: 'Sua presença foi confirmada',
         icon: '/custom/icon.png',
-      })
+      }),
     );
   });
 

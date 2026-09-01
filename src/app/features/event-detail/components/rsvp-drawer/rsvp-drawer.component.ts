@@ -14,18 +14,18 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef,
-} from '@angular/material/dialog';
-import { FamilyMember, GuestCompanion, GuestSession } from '../../../../core/models';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { FamilyMember } from '../../../../core/models';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
-import { OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent } from '../../../../shared/ui';
+import {
+  OrgButtonComponent,
+  OrgIconButtonComponent,
+  OrgTextFieldComponent,
+} from '../../../../shared/ui';
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
@@ -51,7 +51,9 @@ export class RsvpDrawerComponent {
   private readonly legacyData: RsvpDrawerData | null = inject(MAT_DIALOG_DATA, { optional: true });
   private readonly fb = inject(FormBuilder);
 
-  readonly drawerData = input<RsvpDrawerData>(this.legacyData ?? { session: null, familyMembers: [], userId: '' });
+  readonly drawerData = input<RsvpDrawerData>(
+    this.legacyData ?? { session: null, familyMembers: [], userId: '' },
+  );
   readonly submitted = output<RsvpDrawerResult>();
   readonly closed = output<void>();
 
@@ -108,7 +110,9 @@ export class RsvpDrawerComponent {
   }
 
   protected onSelectAllFamily(selectAll: boolean): void {
-    this.selectedFamilyMemberIds.set(selectAll ? this.familyMembers().map((member) => member.id) : []);
+    this.selectedFamilyMemberIds.set(
+      selectAll ? this.familyMembers().map((member) => member.id) : [],
+    );
   }
 
   protected onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): void {

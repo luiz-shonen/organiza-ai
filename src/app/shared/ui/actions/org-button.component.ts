@@ -30,7 +30,9 @@ function normalizeVariant(value: unknown): OrgButtonVariant {
 export class OrgButtonComponent {
   public readonly label = input.required<string>();
   public readonly icon = input<OrgIconName | null>(null);
-  public readonly variant = input<OrgButtonVariant, unknown>('primary', { transform: normalizeVariant });
+  public readonly variant = input<OrgButtonVariant, unknown>('primary', {
+    transform: normalizeVariant,
+  });
   public readonly type = input<OrgButtonType>('button');
   public readonly disabled = input(false);
   public readonly loading = input(false);

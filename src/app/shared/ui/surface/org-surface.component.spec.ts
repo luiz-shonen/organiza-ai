@@ -5,7 +5,8 @@ import { OrgSurfaceComponent } from './org-surface.component';
 describe('OrgSurfaceComponent', () => {
   it('renders one token-driven glass surface ring for the requested variant', async () => {
     await TestBed.configureTestingModule({ imports: [OrgSurfaceComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgSurfaceComponent> = TestBed.createComponent(OrgSurfaceComponent);
+    const fixture: ComponentFixture<OrgSurfaceComponent> =
+      TestBed.createComponent(OrgSurfaceComponent);
     fixture.componentRef.setInput('variant', 'panel');
     fixture.detectChanges();
 
@@ -16,7 +17,8 @@ describe('OrgSurfaceComponent', () => {
 
   it('offers an opt-in atmospheric treatment with configurable orb colors', async () => {
     await TestBed.configureTestingModule({ imports: [OrgSurfaceComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgSurfaceComponent> = TestBed.createComponent(OrgSurfaceComponent);
+    const fixture: ComponentFixture<OrgSurfaceComponent> =
+      TestBed.createComponent(OrgSurfaceComponent);
     fixture.componentRef.setInput('atmosphere', true);
     fixture.componentRef.setInput('atmospherePrimary', '#ff6b5b');
     fixture.detectChanges();

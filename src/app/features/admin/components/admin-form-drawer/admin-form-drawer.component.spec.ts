@@ -35,7 +35,7 @@ describe('AdminFormDrawerComponent', () => {
 
   it('should emit close when close button is clicked', () => {
     const closeSpy = vi.fn();
-    component.close.subscribe(closeSpy);
+    component.closed.subscribe(closeSpy);
 
     fixture.componentRef.setInput('isOpen', true);
     fixture.detectChanges();

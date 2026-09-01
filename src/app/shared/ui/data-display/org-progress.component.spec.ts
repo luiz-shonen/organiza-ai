@@ -5,7 +5,8 @@ import { OrgProgressComponent } from './org-progress.component';
 describe('OrgProgressComponent', () => {
   it('clamps values to 0 and 100 and exposes progress semantics', async () => {
     await TestBed.configureTestingModule({ imports: [OrgProgressComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgProgressComponent> = TestBed.createComponent(OrgProgressComponent);
+    const fixture: ComponentFixture<OrgProgressComponent> =
+      TestBed.createComponent(OrgProgressComponent);
     fixture.componentRef.setInput('value', 145);
     fixture.detectChanges();
 
@@ -19,7 +20,8 @@ describe('OrgProgressComponent', () => {
 
   it('renders semantic variant with gradient opt-out', async () => {
     await TestBed.configureTestingModule({ imports: [OrgProgressComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgProgressComponent> = TestBed.createComponent(OrgProgressComponent);
+    const fixture: ComponentFixture<OrgProgressComponent> =
+      TestBed.createComponent(OrgProgressComponent);
     fixture.componentRef.setInput('value', 67);
     fixture.componentRef.setInput('variant', 'success');
     fixture.componentRef.setInput('gradient', false);

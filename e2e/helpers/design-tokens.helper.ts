@@ -27,7 +27,7 @@ export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
   });
   expect(
     overflow.hasOverflow,
-    `Document has horizontal overflow: scrollWidth (${overflow.scrollWidth}px) exceeds innerWidth (${overflow.innerWidth}px)`
+    `Document has horizontal overflow: scrollWidth (${overflow.scrollWidth}px) exceeds innerWidth (${overflow.innerWidth}px)`,
   ).toBe(false);
 }
 
@@ -69,19 +69,28 @@ export async function assertMinTouchTarget(locator: Locator, minSize = 48): Prom
   }
 }
 
-export async function assertAppScrollOrigin(page: Page, scrollOwnerSelector = 'main.app-content'): Promise<void> {
-  const positions = await page.evaluate((selector) => ({
-    documentTop: document.documentElement.scrollTop,
-    windowTop: window.scrollY,
-    ownerTop: document.querySelector<HTMLElement>(selector)?.scrollTop ?? 0,
-  }), scrollOwnerSelector);
+export async function assertAppScrollOrigin(
+  page: Page,
+  scrollOwnerSelector = 'main.app-content',
+): Promise<void> {
+  const positions = await page.evaluate(
+    (selector) => ({
+      documentTop: document.documentElement.scrollTop,
+      windowTop: window.scrollY,
+      ownerTop: document.querySelector<HTMLElement>(selector)?.scrollTop ?? 0,
+    }),
+    scrollOwnerSelector,
+  );
 
   expect(positions.documentTop).toBeLessThanOrEqual(1);
   expect(positions.windowTop).toBeLessThanOrEqual(1);
   expect(positions.ownerTop).toBeLessThanOrEqual(1);
 }
 
-export async function assertAnchorVisibleInScrollOwner(anchor: Locator, scrollOwner: Locator): Promise<void> {
+export async function assertAnchorVisibleInScrollOwner(
+  anchor: Locator,
+  scrollOwner: Locator,
+): Promise<void> {
   await expect(anchor).toBeVisible();
   const geometry = await Promise.all([anchor.boundingBox(), scrollOwner.boundingBox()]);
   const [anchorBox, ownerBox] = geometry;
@@ -118,11 +127,19 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
     const field = element.closest('mat-form-field');
     if (field) {
       const fieldStyle = window.getComputedStyle(field);
-      const outlineSegments = Array.from(field.querySelectorAll<HTMLElement>('.mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing'));
+      const outlineSegments = Array.from(
+        field.querySelectorAll<HTMLElement>(
+          '.mdc-notched-outline__leading, .mdc-notched-outline__notch, .mdc-notched-outline__trailing',
+        ),
+      );
       return {
         field: true,
-        focusLabel: fieldStyle.getPropertyValue('--mdc-outlined-text-field-focus-label-text-color').trim(),
-        focusOutline: fieldStyle.getPropertyValue('--mdc-outlined-text-field-focus-outline-color').trim(),
+        focusLabel: fieldStyle
+          .getPropertyValue('--mdc-outlined-text-field-focus-label-text-color')
+          .trim(),
+        focusOutline: fieldStyle
+          .getPropertyValue('--mdc-outlined-text-field-focus-outline-color')
+          .trim(),
         primary: fieldStyle.getPropertyValue('--org-primary').trim(),
         segments: outlineSegments.flatMap((segment) => {
           const style = window.getComputedStyle(segment);
@@ -140,8 +157,12 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
     const elemStyle = window.getComputedStyle(element);
     return {
       field: false,
-      backgroundColor: style.backgroundColor !== 'rgba(0, 0, 0, 0)' ? style.backgroundColor : elemStyle.backgroundColor,
-      borderColor: style.borderColor !== 'rgba(0, 0, 0, 0)' ? style.borderColor : elemStyle.borderColor,
+      backgroundColor:
+        style.backgroundColor !== 'rgba(0, 0, 0, 0)'
+          ? style.backgroundColor
+          : elemStyle.backgroundColor,
+      borderColor:
+        style.borderColor !== 'rgba(0, 0, 0, 0)' ? style.borderColor : elemStyle.borderColor,
       color: elemStyle.color || style.color,
     };
   });
@@ -150,7 +171,10 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
     expect(state.focusLabel).toBe(state.primary);
     expect(state.focusOutline).toBe(state.primary);
     const segmentColors = state.segments
-      .filter(([color, width]) => color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent' && parseFloat(width) > 0)
+      .filter(
+        ([color, width]) =>
+          color !== 'rgba(0, 0, 0, 0)' && color !== 'transparent' && parseFloat(width) > 0,
+      )
       .map(([color]) => color);
     expect(new Set(segmentColors).size).toBe(1);
     return;
@@ -162,7 +186,10 @@ export async function assertDrawerInset(drawer: Locator, minSize = 48): Promise<
   const target = drawer.first();
   await expect(target).toBeVisible();
   const box = await target.boundingBox();
-  const viewport = await target.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+  const viewport = await target.evaluate(() => ({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }));
   expect(box).not.toBeNull();
   if (box) {
     expect(box.width).toBeGreaterThanOrEqual(minSize);
@@ -176,7 +203,10 @@ export async function assertDrawerInset(drawer: Locator, minSize = 48): Promise<
 /**
  * Asserts that the element's typography token renders with the expected font family (default 'Plus Jakarta Sans').
  */
-export async function assertFontFamily(locator: Locator, expectedFont = 'Plus Jakarta Sans'): Promise<void> {
+export async function assertFontFamily(
+  locator: Locator,
+  expectedFont = 'Plus Jakarta Sans',
+): Promise<void> {
   const target = locator.first();
   await expect(target).toBeVisible();
   const fontFamily = await target.evaluate((el) => window.getComputedStyle(el).fontFamily);

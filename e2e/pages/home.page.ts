@@ -24,7 +24,10 @@ export class HomePage extends BasePage {
     this.navigationDrawer = page.getByTestId('navigation-drawer');
     this.drawerThemeLight = page.getByTestId('drawer-theme-light');
     this.drawerThemeDark = page.getByTestId('drawer-theme-dark');
-    this.seasonalOverlay = page.getByTestId('seasonal-overlay').or(page.locator('.seasonal-overlay')).first();
+    this.seasonalOverlay = page
+      .getByTestId('seasonal-overlay')
+      .or(page.locator('.seasonal-overlay'))
+      .first();
   }
 
   async assertLoaded(): Promise<void> {

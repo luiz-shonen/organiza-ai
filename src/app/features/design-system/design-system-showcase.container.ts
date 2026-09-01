@@ -1,4 +1,11 @@
-import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import {
   OrgBannerComponent,
   OrgBadgeComponent,
@@ -138,7 +145,11 @@ export class DesignSystemShowcaseContainer {
   ];
   public readonly tabItems: readonly OrgTabItem[] = [
     { id: 'summary', label: 'Resumo', content: 'Uma visão geral do convite e da confirmação.' },
-    { id: 'guests', label: 'Convidados', content: '42 convidados confirmados para esta celebração.' },
+    {
+      id: 'guests',
+      label: 'Convidados',
+      content: '42 convidados confirmados para esta celebração.',
+    },
     { id: 'details', label: 'Detalhes', content: 'Detalhes de data, local e canais de presença.' },
   ];
   public readonly navigationItems: readonly OrgNavigationItem[] = [
@@ -302,20 +313,25 @@ this.dialogService.confirm({
       }
 
       const mobileQuery = window.matchMedia('(max-width: 599px)');
-      const updateOrientation = () => this.stepperOrientation.set(mobileQuery.matches ? 'vertical' : 'horizontal');
+      const updateOrientation = () =>
+        this.stepperOrientation.set(mobileQuery.matches ? 'vertical' : 'horizontal');
       updateOrientation();
       mobileQuery.addEventListener('change', updateOrientation);
       this.destroyRef.onDestroy(() => mobileQuery.removeEventListener('change', updateOrientation));
     });
   }
 
-  public readonly seasonalOptions: ReadonlyArray<{
+  public readonly seasonalOptions: readonly {
     readonly id: SeasonalThemeOption;
     readonly label: string;
     readonly description: string;
-  }> = [
+  }[] = [
     { id: 'default', label: 'Organiza', description: 'Rosa, coral e amarelo.' },
-    { id: 'theme-pascoa', label: 'Páscoa da Ressurreição', description: 'Violeta, aurora e oliveira.' },
+    {
+      id: 'theme-pascoa',
+      label: 'Páscoa da Ressurreição',
+      description: 'Violeta, aurora e oliveira.',
+    },
     { id: 'theme-junina', label: 'Festa Junina', description: 'Brasa, milho e céu de arraial.' },
     { id: 'theme-natal', label: 'Natal de Jesus', description: 'Rubi, pinheiro e dourado.' },
     { id: 'theme-ano-novo', label: 'Ano Novo', description: 'Ouro, prata e céu à meia-noite.' },

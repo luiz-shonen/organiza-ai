@@ -4,19 +4,60 @@
   box-sizing: border-box;
   min-height: 100%;
   max-width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   padding: 16px 12px;
 
   @include semantic.tablet {
     padding: 24px 16px;
   }
 }
-.collaborator-drawer__header { display: flex; min-height: 48px; justify-content: space-between; gap: 12px; }
-.collaborator-drawer__header h2, .collaborator-drawer__header p { margin: 0; }
-.collaborator-drawer__form { display: grid; gap: 12px; margin: 24px 0; }
-.collaborator-drawer input, .collaborator-drawer button { min-height: 48px; min-width: 48px; }
-.collaborator-drawer input { box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid var(--org-outline); border-radius: 12px; background: var(--org-field-fill); color: var(--org-on-surface); }
-.collaborator-drawer section { margin-top: 24px; }
-.collaborator-drawer__chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.collaborator-drawer__pending { display: block; overflow-wrap: anywhere; padding: 8px 0; }
+
+.collaborator-drawer__header {
+  display: flex;
+  min-height: 48px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.collaborator-drawer__header h2,
+.collaborator-drawer__header p {
+  margin: 0;
+}
+
+.collaborator-drawer__form {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.collaborator-drawer input,
+.collaborator-drawer button {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.collaborator-drawer input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--org-outline);
+  border-radius: 12px;
+  background: var(--org-field-fill);
+  color: var(--org-on-surface);
+}
+
+.collaborator-drawer section {
+  margin-top: 24px;
+}
+
+.collaborator-drawer__chip {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collaborator-drawer__pending {
+  display: block;
+  overflow-wrap: anywhere;
+  padding: 8px 0;
+}

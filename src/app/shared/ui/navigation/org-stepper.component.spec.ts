@@ -9,7 +9,10 @@ import { OrgStepperComponent } from './org-stepper.component';
   standalone: true,
   imports: [OrgStepComponent, OrgStepperComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<org-stepper #stepper><org-step label="Informações">Dados básicos</org-step><org-step label="Convidados">Lista de convidados</org-step></org-stepper>`,
+  template: `<org-stepper #stepper
+    ><org-step label="Informações">Dados básicos</org-step
+    ><org-step label="Convidados">Lista de convidados</org-step></org-stepper
+  >`,
 })
 class OrgStepperHostComponent {
   @ViewChild('stepper', { static: true }) public readonly stepper!: OrgStepperComponent;
@@ -17,8 +20,11 @@ class OrgStepperHostComponent {
 
 describe('OrgStepperComponent', () => {
   it('projects closed steps and exposes selected index', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgStepperHostComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgStepperHostComponent> = TestBed.createComponent(OrgStepperHostComponent);
+    await TestBed.configureTestingModule({
+      imports: [OrgStepperHostComponent],
+    }).compileComponents();
+    const fixture: ComponentFixture<OrgStepperHostComponent> =
+      TestBed.createComponent(OrgStepperHostComponent);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Informações');

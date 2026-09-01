@@ -6,9 +6,9 @@
 
 .profile-info-card {
   &__content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 
     &--editing {
       min-width: 0;
@@ -70,7 +70,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--org-on-surface-variant);
-    margin: 0 0 0.25rem 0;
+    margin: 0 0 0.25rem;
   }
 
   &__name-row {
@@ -83,7 +83,7 @@
     font-size: 1.35rem;
     font-weight: 700;
     color: var(--org-on-surface);
-    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   &__edit-form {
@@ -107,7 +107,6 @@
       flex-direction: row;
       align-items: center;
     }
-
   }
 
   &__details {

@@ -4,7 +4,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 export type OrgProgressVariant = 'primary' | 'success' | 'warning';
 
 function clampValue(value: unknown): number {
-  return typeof value === 'number' && Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0;
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.min(100, Math.max(0, value))
+    : 0;
 }
 
 @Component({

@@ -15,90 +15,88 @@
       </div>
     </org-page-header>
 
-  <org-section title="Métricas da Plataforma">
-    <div class="admin-dashboard__metrics-grid">
-      <org-metric-card
-        label="Total de Eventos"
-        [value]="metrics().totalEvents.toString()"
-        description="Eventos registrados na base"
-      />
-      <org-metric-card
-        label="Eventos Ativos"
-        [value]="metrics().activeEvents.toString()"
-        description="Eventos em andamento ou futuros"
-      />
-      <org-metric-card
-        label="Administradores"
-        [value]="metrics().totalAdmins.toString()"
-        description="Admins com acesso ao painel"
-      />
-      <org-metric-card
-        label="Super Admins"
-        [value]="metrics().superAdmins.toString()"
-        description="Acesso total à governança"
-      />
-    </div>
-  </org-section>
+    <org-section title="Métricas da Plataforma">
+      <div class="admin-dashboard__metrics-grid">
+        <org-metric-card
+          label="Total de Eventos"
+          [value]="metrics().totalEvents.toString()"
+          description="Eventos registrados na base"
+        />
+        <org-metric-card
+          label="Eventos Ativos"
+          [value]="metrics().activeEvents.toString()"
+          description="Eventos em andamento ou futuros"
+        />
+        <org-metric-card
+          label="Administradores"
+          [value]="metrics().totalAdmins.toString()"
+          description="Admins com acesso ao painel"
+        />
+        <org-metric-card
+          label="Super Admins"
+          [value]="metrics().superAdmins.toString()"
+          description="Acesso total à governança"
+        />
+      </div>
+    </org-section>
 
-  <org-section
-    title="Administradores do Sistema"
-  >
-    @if (loadingAdmins()) {
-      <org-surface class="admin-dashboard__loading-surface">
-        <div class="admin-dashboard__spinner-wrapper">
-          <mat-spinner diameter="36" />
-          <p>Carregando administradores...</p>
-        </div>
-      </org-surface>
-    } @else if (admins().length === 0) {
-      <org-empty-state
-        icon="info"
-        title="Nenhum administrador cadastrado"
-        description="Utilize o botão 'Novo Admin' para conceder privilégios administrativos a um usuário."
-      />
-    } @else {
-      <org-surface class="admin-dashboard__admins-card">
-        <ul class="admin-dashboard__admin-list" aria-label="Lista de administradores">
-          @for (adminEmail of admins(); track adminEmail) {
-            <li class="admin-dashboard__admin-item" data-testid="admin-user-item">
-              <div class="admin-dashboard__admin-info">
-                <mat-icon class="admin-dashboard__admin-icon" aria-hidden="true">
-                  {{ isSuperAdminUser(adminEmail) ? 'verified_user' : 'admin_panel_settings' }}
-                </mat-icon>
-                <div class="admin-dashboard__admin-details">
-                  <span class="admin-dashboard__admin-email">{{ adminEmail }}</span>
-                  <div class="admin-dashboard__admin-badges">
-                    @if (isSuperAdminUser(adminEmail)) {
-                      <org-badge variant="primary" label="Super Admin" />
-                    } @else {
-                      <org-badge variant="default" label="Admin" />
-                    }
+    <org-section title="Administradores do Sistema">
+      @if (loadingAdmins()) {
+        <org-surface class="admin-dashboard__loading-surface">
+          <div class="admin-dashboard__spinner-wrapper">
+            <mat-spinner diameter="36" />
+            <p>Carregando administradores...</p>
+          </div>
+        </org-surface>
+      } @else if (admins().length === 0) {
+        <org-empty-state
+          icon="info"
+          title="Nenhum administrador cadastrado"
+          description="Utilize o botão 'Novo Admin' para conceder privilégios administrativos a um usuário."
+        />
+      } @else {
+        <org-surface class="admin-dashboard__admins-card">
+          <ul class="admin-dashboard__admin-list" aria-label="Lista de administradores">
+            @for (adminEmail of admins(); track adminEmail) {
+              <li class="admin-dashboard__admin-item" data-testid="admin-user-item">
+                <div class="admin-dashboard__admin-info">
+                  <mat-icon class="admin-dashboard__admin-icon" aria-hidden="true">
+                    {{ isSuperAdminUser(adminEmail) ? 'verified_user' : 'admin_panel_settings' }}
+                  </mat-icon>
+                  <div class="admin-dashboard__admin-details">
+                    <span class="admin-dashboard__admin-email">{{ adminEmail }}</span>
+                    <div class="admin-dashboard__admin-badges">
+                      @if (isSuperAdminUser(adminEmail)) {
+                        <org-badge variant="primary" label="Super Admin" />
+                      } @else {
+                        <org-badge variant="default" label="Admin" />
+                      }
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="admin-dashboard__admin-actions">
-                @if (!isSuperAdminUser(adminEmail)) {
-                  <org-icon-button
-                    icon="delete"
-                    ariaLabel="Remover administrador"
-                    testId="remove-admin-btn"
-                    (pressed)="handleRemoveAdmin(adminEmail)"
-                  />
-                }
-              </div>
-            </li>
-          }
-        </ul>
-      </org-surface>
-    }
-  </org-section>
+                <div class="admin-dashboard__admin-actions">
+                  @if (!isSuperAdminUser(adminEmail)) {
+                    <org-icon-button
+                      icon="delete"
+                      ariaLabel="Remover administrador"
+                      testId="remove-admin-btn"
+                      (pressed)="handleRemoveAdmin(adminEmail)"
+                    />
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        </org-surface>
+      }
+    </org-section>
 
-  <app-admin-form-drawer
-    [isOpen]="isDrawerOpen()"
-    [saving]="savingAdmin()"
-    (save)="handleAddAdmin($event)"
-    (close)="closeDrawer()"
-  />
+    <app-admin-form-drawer
+      [isOpen]="isDrawerOpen()"
+      [saving]="savingAdmin()"
+      (save)="handleAddAdmin($event)"
+      (closed)="closeDrawer()"
+    />
   </div>
 </org-page-layout>

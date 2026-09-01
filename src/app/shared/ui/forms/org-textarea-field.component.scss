@@ -1,8 +1,11 @@
-:host { display: block; }
+:host {
+  display: block;
+}
 
 .org-textarea-field {
   display: block;
   width: 100%;
+
   --mdc-outlined-text-field-outline-color: var(--org-outline);
   --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
   --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);

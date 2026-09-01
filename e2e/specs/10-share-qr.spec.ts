@@ -87,7 +87,9 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     await sharePanel.copyLink();
 
     // Verify snackbar feedback toast
-    const snackbar = page.locator('simple-snack-bar, .mat-mdc-simple-snack-bar, .share-panel__toast');
+    const snackbar = page.locator(
+      'simple-snack-bar, .mat-mdc-simple-snack-bar, .share-panel__toast',
+    );
     const isToastVisible = await snackbar.isVisible({ timeout: 3000 }).catch(() => false);
     if (isToastVisible) {
       await expect(snackbar).toContainText(/copiado|link/i);

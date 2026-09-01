@@ -5,10 +5,10 @@
         <p class="org-ds-topbar__eyebrow">Design system</p>
         <h1 class="org-ds-topbar__title">Convites que dão vontade de confirmar.</h1>
         <p class="org-ds-topbar__copy">
-          Uma direção editorial, tátil e calorosa para validar antes de qualquer migração de componentes.
+          Uma direção editorial, tátil e calorosa para validar antes de qualquer migração de
+          componentes.
         </p>
       </div>
-
     </header>
 
     <section id="overview" class="org-ds-section" aria-labelledby="overview-title">
@@ -24,7 +24,10 @@
             <div>
               <p class="org-ds-hero-card__eyebrow">Prévia de convite</p>
               <h3>Arraiá no jardim</h3>
-              <p>Coral, âmbar e porcelana em uma composição que parece convite — não painel administrativo.</p>
+              <p>
+                Coral, âmbar e porcelana em uma composição que parece convite — não painel
+                administrativo.
+              </p>
             </div>
           </div>
 
@@ -40,7 +43,10 @@
           </div>
         </div>
       </org-surface>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.invitationPreview" />
+      <app-design-system-code-example
+        label="Uso recomendado"
+        [code]="componentExamples.invitationPreview"
+      />
     </section>
 
     <section id="colors" class="org-ds-section" aria-labelledby="colors-title">
@@ -87,7 +93,9 @@
     <section id="typography" class="org-ds-section" aria-labelledby="typography-title">
       <div class="org-ds-section__heading">
         <p class="org-ds-section__eyebrow">03 · tipografia</p>
-        <h2 id="typography-title">Uma voz editorial para títulos, uma interface limpa para o restante.</h2>
+        <h2 id="typography-title">
+          Uma voz editorial para títulos, uma interface limpa para o restante.
+        </h2>
       </div>
 
       <div class="org-ds-typography-grid">
@@ -101,7 +109,9 @@
 
         <article class="org-ds-type-card">
           <span class="org-ds-type-card__eyebrow">Interface</span>
-          <p class="org-ds-type-card__sample org-ds-type-card__sample--body">Organize cada detalhe com clareza e ritmo.</p>
+          <p class="org-ds-type-card__sample org-ds-type-card__sample--body">
+            Organize cada detalhe com clareza e ritmo.
+          </p>
           <strong>Plus Jakarta Sans</strong>
           <small>Texto, ações, formulários e dados. É a fonte padrão de toda a aplicação.</small>
           <code>--org-font-body</code>
@@ -109,21 +119,29 @@
 
         <article class="org-ds-type-card">
           <span class="org-ds-type-card__eyebrow">Código e tokens</span>
-          <p class="org-ds-type-card__sample org-ds-type-card__sample--mono">--org-primary: #ff4d94;</p>
+          <p class="org-ds-type-card__sample org-ds-type-card__sample--mono">
+            --org-primary: #ff4d94;
+          </p>
           <strong>JetBrains Mono</strong>
           <small>Tokens, exemplos de código e rótulos técnicos no catálogo.</small>
           <code>--org-font-mono</code>
         </article>
-
       </div>
 
       <div class="org-ds-type-scale" aria-label="Escala tipográfica">
-        <div><span>Display</span><strong>clamp(36px, 5vw, 72px)</strong><small>600 / 1.03</small></div>
-        <div><span>Heading</span><strong>clamp(26px, 3vw, 40px)</strong><small>600 / 1.12</small></div>
+        <div>
+          <span>Display</span><strong>clamp(36px, 5vw, 72px)</strong><small>600 / 1.03</small>
+        </div>
+        <div>
+          <span>Heading</span><strong>clamp(26px, 3vw, 40px)</strong><small>600 / 1.12</small>
+        </div>
         <div><span>Body</span><strong>16px</strong><small>400–600 / 1.6</small></div>
         <div><span>Label</span><strong>12px</strong><small>800 / 0.12em</small></div>
       </div>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.typography" />
+      <app-design-system-code-example
+        label="Uso recomendado"
+        [code]="componentExamples.typography"
+      />
     </section>
 
     <section id="iconography" class="org-ds-section" aria-labelledby="iconography-title">
@@ -133,12 +151,23 @@
       </div>
 
       <div class="org-ds-icon-grid" aria-label="Exemplos de ícones Material">
-        <article><org-icon name="event" size="lg" /><strong>Evento</strong><code>event</code></article>
-        <article><org-icon name="schedule" size="lg" /><strong>Horário</strong><code>schedule</code></article>
-        <article><org-icon name="share" size="lg" /><strong>Compartilhar</strong><code>share</code></article>
-        <article><org-icon name="info" size="lg" /><strong>Feedback</strong><code>info</code></article>
+        <article>
+          <org-icon name="event" size="lg" /><strong>Evento</strong><code>event</code>
+        </article>
+        <article>
+          <org-icon name="schedule" size="lg" /><strong>Horário</strong><code>schedule</code>
+        </article>
+        <article>
+          <org-icon name="share" size="lg" /><strong>Compartilhar</strong><code>share</code>
+        </article>
+        <article>
+          <org-icon name="info" size="lg" /><strong>Feedback</strong><code>info</code>
+        </article>
       </div>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.iconography" />
+      <app-design-system-code-example
+        label="Uso recomendado"
+        [code]="componentExamples.iconography"
+      />
     </section>
 
     <section id="seasonal-themes" class="org-ds-section" aria-labelledby="seasonal-themes-title">
@@ -156,7 +185,10 @@
             [attr.aria-pressed]="activeSeasonalTheme() === theme.id"
             (click)="setSeasonalTheme(theme.id)"
           >
-            <span class="org-ds-season-card__swatch" [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"></span>
+            <span
+              class="org-ds-season-card__swatch"
+              [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"
+            ></span>
             <strong>{{ theme.label }}</strong>
             <small>{{ theme.description }}</small>
           </button>
@@ -167,14 +199,24 @@
     <section id="tokens" class="org-ds-section" aria-labelledby="tokens-title">
       <div class="org-ds-section__heading">
         <p class="org-ds-section__eyebrow">06 · tokens</p>
-        <h2 id="tokens-title">Valores semânticos que deixam a aplicação personalizável, sem CSS ad hoc.</h2>
+        <h2 id="tokens-title">
+          Valores semânticos que deixam a aplicação personalizável, sem CSS ad hoc.
+        </h2>
       </div>
 
       <div class="org-ds-foundation-grid">
-        <article><span>Cor</span><strong>Marca e estados</strong><code>--org-primary · --org-success</code></article>
-        <article><span>Gradiente</span><strong>Acento opcional</strong><code>--org-gradient-primary</code></article>
-        <article><span>Superfície</span><strong>Vidro e contraste</strong><code>--org-glass-bg</code></article>
-        <article><span>Tipo</span><strong>Funções tipográficas</strong><code>--org-font-body</code></article>
+        <article>
+          <span>Cor</span><strong>Marca e estados</strong><code>--org-primary · --org-success</code>
+        </article>
+        <article>
+          <span>Gradiente</span><strong>Acento opcional</strong><code>--org-gradient-primary</code>
+        </article>
+        <article>
+          <span>Superfície</span><strong>Vidro e contraste</strong><code>--org-glass-bg</code>
+        </article>
+        <article>
+          <span>Tipo</span><strong>Funções tipográficas</strong><code>--org-font-body</code>
+        </article>
       </div>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.tokens" />
     </section>
@@ -182,7 +224,9 @@
     <section id="spacing" class="org-ds-section" aria-labelledby="spacing-title">
       <div class="org-ds-section__heading">
         <p class="org-ds-section__eyebrow">07 · espaçamento e dimensões</p>
-        <h2 id="spacing-title">Escala de espaçamento estandardizada e cantos consistentes para toda a aplicação.</h2>
+        <h2 id="spacing-title">
+          Escala de espaçamento estandardizada e cantos consistentes para toda a aplicação.
+        </h2>
       </div>
 
       <org-surface variant="panel" class="org-ds-panel-card">
@@ -276,16 +320,29 @@
     <section id="foundations" class="org-ds-section" aria-labelledby="foundations-title">
       <div class="org-ds-section__heading">
         <p class="org-ds-section__eyebrow">07 · fundamentos</p>
-        <h2 id="foundations-title">Espaço, cantos, profundidade e movimento ajudam cada tela a respirar.</h2>
+        <h2 id="foundations-title">
+          Espaço, cantos, profundidade e movimento ajudam cada tela a respirar.
+        </h2>
       </div>
 
       <div class="org-ds-foundation-grid">
-        <article><span>Espaço</span><strong>Ritmo em múltiplos de 8</strong><code>8 · 16 · 24 · 32px</code></article>
-        <article><span>Cantos</span><strong>Suave e reconhecível</strong><code>--org-radius-md</code></article>
-        <article><span>Profundidade</span><strong>Glass e sombra</strong><code>--org-glass-shadow</code></article>
-        <article><span>Movimento</span><strong>Transições curtas</strong><code>180ms ease</code></article>
+        <article>
+          <span>Espaço</span><strong>Ritmo em múltiplos de 8</strong><code>8 · 16 · 24 · 32px</code>
+        </article>
+        <article>
+          <span>Cantos</span><strong>Suave e reconhecível</strong><code>--org-radius-md</code>
+        </article>
+        <article>
+          <span>Profundidade</span><strong>Glass e sombra</strong><code>--org-glass-shadow</code>
+        </article>
+        <article>
+          <span>Movimento</span><strong>Transições curtas</strong><code>180ms ease</code>
+        </article>
       </div>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.foundations" />
+      <app-design-system-code-example
+        label="Uso recomendado"
+        [code]="componentExamples.foundations"
+      />
     </section>
 
     <section id="components" class="org-ds-section" aria-labelledby="components-title">
@@ -299,8 +356,16 @@
           <span class="org-ds-documentation-card__eyebrow">Layout</span>
           <h3>Estrutura de página</h3>
           <p>Delimita largura, título, ícone e ações sem repetir a composição em cada feature.</p>
-          <org-page-header title="Meus eventos" subtitle="Uma composição com API previsível." icon="event" [gradient]="true" />
-          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.pageLayout" />
+          <org-page-header
+            title="Meus eventos"
+            subtitle="Uma composição com API previsível."
+            icon="event"
+            [gradient]="true"
+          />
+          <app-design-system-code-example
+            label="Uso recomendado"
+            [code]="componentExamples.pageLayout"
+          />
         </article>
 
         <article class="org-ds-documentation-card">
@@ -311,7 +376,10 @@
             <strong>Lista de convidados</strong>
             <span>Uma superfície com contraste e profundidade compartilhados.</span>
           </org-surface>
-          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.surface" />
+          <app-design-system-code-example
+            label="Uso recomendado"
+            [code]="componentExamples.surface"
+          />
         </article>
 
         <article class="org-ds-documentation-card">
@@ -319,15 +387,25 @@
           <h3>Mensagem contextual</h3>
           <p>Feedback persistente no banner e feedback momentâneo pelo serviço.</p>
           <org-banner variant="info" message="Convites enviados para 42 convidados." />
-          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.feedback" />
+          <app-design-system-code-example
+            label="Uso recomendado"
+            [code]="componentExamples.feedback"
+          />
         </article>
 
         <article class="org-ds-documentation-card">
           <span class="org-ds-documentation-card__eyebrow">Estado vazio</span>
           <h3>Ausência com próxima ação</h3>
           <p>O estado vazio mantém contexto, sem uma tela manual para cada domínio.</p>
-          <org-empty-state icon="event" title="Nenhum evento por aqui" description="Crie o primeiro evento para começar." />
-          <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.emptyState" />
+          <org-empty-state
+            icon="event"
+            title="Nenhum evento por aqui"
+            description="Crie o primeiro evento para começar."
+          />
+          <app-design-system-code-example
+            label="Uso recomendado"
+            [code]="componentExamples.emptyState"
+          />
         </article>
       </div>
     </section>
@@ -352,7 +430,9 @@
     <section id="inputs" class="org-ds-section" aria-labelledby="inputs-title">
       <div class="org-ds-section__heading">
         <p class="org-ds-section__eyebrow">05 · campos</p>
-        <h2 id="inputs-title">Formulários com ritmo, rótulos claros e uma única linguagem visual.</h2>
+        <h2 id="inputs-title">
+          Formulários com ritmo, rótulos claros e uma única linguagem visual.
+        </h2>
       </div>
 
       <org-surface variant="panel" class="org-ds-panel-card">
@@ -360,11 +440,31 @@
           <org-text-field label="Título do evento" [(value)]="eventTitle" />
           <org-select-field label="Formato" [options]="formatOptions" [(value)]="eventFormat" />
           <org-date-field label="Data da celebração" [(value)]="eventDate" />
-          <org-time-field label="Horário de início" [(value)]="eventTime" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />
-          <org-autocomplete-field label="Categoria do evento" [options]="eventCategoryOptions" [(value)]="eventCategory" />
-          <org-textarea-field class="org-ds-form-grid__wide" label="Mensagem de boas-vindas" [rows]="1" hint="Mostre a voz do tema sem perder legibilidade." [maxLength]="160" [(value)]="welcomeMessage" />
+          <org-time-field
+            label="Horário de início"
+            [(value)]="eventTime"
+            [minuteStep]="5"
+            [quickOptions]="timeOptions"
+            min="08:00"
+            max="22:00"
+          />
+          <org-autocomplete-field
+            label="Categoria do evento"
+            [options]="eventCategoryOptions"
+            [(value)]="eventCategory"
+          />
+          <org-textarea-field
+            class="org-ds-form-grid__wide"
+            label="Mensagem de boas-vindas"
+            [rows]="1"
+            hint="Mostre a voz do tema sem perder legibilidade."
+            [maxLength]="160"
+            [(value)]="welcomeMessage"
+          />
         </div>
-        <p class="org-ds-form-guidance">Até três opções, use Select. A partir de quatro, use Autocomplete.</p>
+        <p class="org-ds-form-guidance">
+          Até três opções, use Select. A partir de quatro, use Autocomplete.
+        </p>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.fields" />
     </section>
@@ -378,7 +478,11 @@
       <org-surface variant="panel" class="org-ds-panel-card">
         <div class="org-ds-selection-layout">
           <div>
-            <org-radio-group label="Canais de confirmação" [options]="channelOptions" [(value)]="attendanceChannel" />
+            <org-radio-group
+              label="Canais de confirmação"
+              [options]="channelOptions"
+              [(value)]="attendanceChannel"
+            />
           </div>
           <div>
             <div class="org-ds-selection-layout__stack">
@@ -389,7 +493,12 @@
           <div>
             <p class="org-ds-field-label">Categorias</p>
             <div class="org-ds-selection-layout__chips" aria-label="Categorias de evento">
-              <org-chip label="Celebrativo" variant="accent" [selectable]="true" [selected]="true" />
+              <org-chip
+                label="Celebrativo"
+                variant="accent"
+                [selectable]="true"
+                [selected]="true"
+              />
               <org-chip label="Família" [selectable]="true" [gradient]="false" />
               <org-chip label="Comunidade" [selectable]="true" [gradient]="false" />
             </div>
@@ -397,13 +506,19 @@
           <div>
             <p class="org-ds-field-label">Múltiplas seleções</p>
             <div class="org-ds-selection-layout__stack">
-              <org-checkbox label="Receber respostas por e-mail" [(checked)]="emailResponsesEnabled" />
+              <org-checkbox
+                label="Receber respostas por e-mail"
+                [(checked)]="emailResponsesEnabled"
+              />
               <org-checkbox label="Permitir acompanhante" [(checked)]="companionAllowed" />
             </div>
           </div>
         </div>
       </org-surface>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.selection" />
+      <app-design-system-code-example
+        label="Uso recomendado"
+        [code]="componentExamples.selection"
+      />
     </section>
 
     <section id="navigation" class="org-ds-section" aria-labelledby="navigation-title">
@@ -415,11 +530,18 @@
       <org-surface variant="panel" class="org-ds-panel-card">
         <div class="org-ds-navigation-demo">
           <org-tabs [items]="tabItems" [(selectedId)]="selectedTab" />
-          <org-navigation-list [items]="navigationItems" [activeId]="activeNavigationItem()" (selected)="selectNavigationExample($event)" />
+          <org-navigation-list
+            [items]="navigationItems"
+            [activeId]="activeNavigationItem()"
+            (selected)="selectNavigationExample($event)"
+          />
           <org-menu triggerLabel="Mais ações" [actions]="menuActions" />
         </div>
       </org-surface>
-      <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.navigation" />
+      <app-design-system-code-example
+        label="Uso recomendado"
+        [code]="componentExamples.navigation"
+      />
     </section>
 
     <section id="stepper" class="org-ds-section" aria-labelledby="stepper-title">
@@ -449,7 +571,12 @@
       </div>
 
       <div class="org-ds-data-grid">
-        <org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />
+        <org-metric-card
+          label="Confirmações"
+          value="42"
+          trend="18% nesta semana"
+          [atmosphere]="true"
+        />
         <org-surface variant="card" class="org-ds-metric-card">
           <strong>8 / 12</strong>
           <org-progress [value]="67" ariaLabel="67% dos itens concluídos" />
@@ -477,13 +604,16 @@
           </div>
           <div class="org-ds-control-row">
             <org-button label="Mostrar snackbar" (pressed)="showSuccessExample()" />
-            <org-button label="Mostrar informação" variant="secondary" (pressed)="showInfoExample()" />
+            <org-button
+              label="Mostrar informação"
+              variant="secondary"
+              (pressed)="showInfoExample()"
+            />
             <org-button label="Abrir diálogo" variant="text" (pressed)="openDialogExample()" />
           </div>
         </div>
       </org-surface>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.overlays" />
     </section>
-
   </main>
 </div>

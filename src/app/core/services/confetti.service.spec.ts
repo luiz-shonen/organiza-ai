@@ -24,11 +24,7 @@ describe('ConfettiService', () => {
   });
 
   it('should trigger canvas-confetti bursts with theme colors on fireSuccessConfetti', () => {
-    let rafCallback: FrameRequestCallback | null = null;
-    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb: FrameRequestCallback) => {
-      rafCallback = cb;
-      return 1;
-    });
+    vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(1);
 
     service.fireSuccessConfetti();
 
@@ -38,14 +34,14 @@ describe('ConfettiService', () => {
         particleCount: 5,
         angle: 60,
         colors: ['#ff4d94', '#ff8c42', '#6b4c9a'],
-      })
+      }),
     );
     expect(confetti).toHaveBeenCalledWith(
       expect.objectContaining({
         particleCount: 5,
         angle: 120,
         colors: ['#ff4d94', '#ff8c42', '#6b4c9a'],
-      })
+      }),
     );
   });
 

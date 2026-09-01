@@ -368,10 +368,7 @@ describe('AuthService', () => {
       const cb = mocks.getAuthCallback();
       cb!(superAdminUser);
 
-      mockGateway.getDocs.mockResolvedValue([
-        { id: 'admin1@test.com' },
-        { id: 'admin2@test.com' },
-      ]);
+      mockGateway.getDocs.mockResolvedValue([{ id: 'admin1@test.com' }, { id: 'admin2@test.com' }]);
 
       const list = await service.listAdmins();
       expect(list).toEqual(['admin1@test.com', 'admin2@test.com']);
@@ -395,4 +392,3 @@ describe('AuthService', () => {
     });
   });
 });
-

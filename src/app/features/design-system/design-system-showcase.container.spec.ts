@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { DesignSystemShowcaseContainer, SHOWCASE_SECTIONS } from './design-system-showcase.container';
+import {
+  DesignSystemShowcaseContainer,
+  SHOWCASE_SECTIONS,
+} from './design-system-showcase.container';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
 
 describe('DesignSystemShowcaseContainer', () => {
@@ -73,13 +76,19 @@ describe('DesignSystemShowcaseContainer', () => {
   });
 
   it('documents the select threshold and demonstrates autocomplete with more than three options', () => {
-    const inputs = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('section#inputs');
+    const inputs = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>(
+      'section#inputs',
+    );
     const autocomplete = inputs?.querySelector('org-autocomplete-field');
 
-    expect(inputs?.textContent).toContain('Até três opções, use Select. A partir de quatro, use Autocomplete.');
+    expect(inputs?.textContent).toContain(
+      'Até três opções, use Select. A partir de quatro, use Autocomplete.',
+    );
     expect(autocomplete).toBeTruthy();
     expect(component.eventCategoryOptions).toHaveLength(5);
-    expect(inputs?.querySelector('app-design-system-code-example')?.textContent).toContain('org-autocomplete-field');
+    expect(inputs?.querySelector('app-design-system-code-example')?.textContent).toContain(
+      'org-autocomplete-field',
+    );
   });
 
   it('documents every new public component family with a collapsed recommended usage example', () => {
@@ -87,8 +96,12 @@ describe('DesignSystemShowcaseContainer', () => {
     const examples = Array.from(root.querySelectorAll('app-design-system-code-example'));
 
     expect(examples.length).toBeGreaterThanOrEqual(11);
-    expect(examples.every((example) => example.textContent?.includes('Uso recomendado'))).toBe(true);
-    expect(root.querySelector('section#data-display app-design-system-code-example')?.textContent).toContain('org-data-table');
+    expect(examples.every((example) => example.textContent?.includes('Uso recomendado'))).toBe(
+      true,
+    );
+    expect(
+      root.querySelector('section#data-display app-design-system-code-example')?.textContent,
+    ).toContain('org-data-table');
   });
 
   it('gives every showcase section a stable element id', () => {
@@ -177,7 +190,9 @@ describe('DesignSystemShowcaseContainer', () => {
     component.openDialogExample();
 
     expect(feedbackService.success).toHaveBeenCalledWith('Tema aplicado à prévia com sucesso.');
-    expect(feedbackService.info).toHaveBeenCalledWith('A prévia usa tokens sazonais compartilhados.');
+    expect(feedbackService.info).toHaveBeenCalledWith(
+      'A prévia usa tokens sazonais compartilhados.',
+    );
     expect(dialogService.confirm).toHaveBeenCalledWith({
       title: 'Publicar tema',
       message: 'Confirme a publicação do tema para a prévia.',

@@ -11,12 +11,7 @@ import { OrgSectionComponent } from './org-section.component';
       <p id="minimal-body">Body Content</p>
     </org-section>
 
-    <org-section
-      id="full-section"
-      title="Convidados"
-      icon="group_add"
-      [count]="42"
-    >
+    <org-section id="full-section" title="Convidados" icon="group_add" [count]="42">
       <button orgSectionActions id="action-btn">Adicionar</button>
       <div id="full-body">Roster list</div>
     </org-section>

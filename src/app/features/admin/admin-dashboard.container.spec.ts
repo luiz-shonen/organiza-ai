@@ -63,7 +63,10 @@ describe('AdminDashboardContainer', () => {
     mockAuthService = {
       isSuperAdmin: signal(true),
       currentUser: signal({ uid: 'super-1', email: 'luiz.gmr.dev@gmail.com' } as any),
-      isSuperAdminEmail: vi.fn((email: string | null) => email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com'),
+      isSuperAdminEmail: vi.fn(
+        (email: string | null) =>
+          email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com',
+      ),
       listAdmins: vi.fn().mockResolvedValue(adminList),
       registerAdmin: vi.fn().mockResolvedValue(undefined),
       removeAdmin: vi.fn().mockResolvedValue(undefined),
@@ -154,7 +157,9 @@ describe('AdminDashboardContainer', () => {
   it('should not allow removing super admins', async () => {
     await component.handleRemoveAdmin('luiz.gmr.dev@gmail.com');
 
-    expect(mockFeedback.info).toHaveBeenCalledWith('Super administradores não podem ser removidos.');
+    expect(mockFeedback.info).toHaveBeenCalledWith(
+      'Super administradores não podem ser removidos.',
+    );
     expect(mockAuthService.removeAdmin).not.toHaveBeenCalled();
   });
 

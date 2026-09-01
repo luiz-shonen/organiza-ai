@@ -2,13 +2,13 @@
 
 .navigation-drawer {
   --navigation-drawer-link-color: var(--org-text-secondary);
+
   box-sizing: border-box;
   display: flex;
   min-height: 100%;
   max-width: 100%;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
   padding: 16px 12px;
   color: var(--org-on-surface);
   font-family: var(--org-font-body);

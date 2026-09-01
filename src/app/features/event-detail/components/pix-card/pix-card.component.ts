@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  computed,
-  inject,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { OrgButtonComponent, OrgSurfaceComponent } from '../../../../shared/ui';

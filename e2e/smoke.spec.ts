@@ -1,7 +1,9 @@
 import { test, expect } from './fixtures/test.fixture';
 
 test.describe('Smoke Journey', () => {
-  test('should render the home page with proper titles and landmark regions', async ({ homePage }) => {
+  test('should render the home page with proper titles and landmark regions', async ({
+    homePage,
+  }) => {
     await homePage.goto('/');
     await homePage.assertLoaded();
 

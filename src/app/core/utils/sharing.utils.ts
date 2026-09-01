@@ -9,7 +9,7 @@ export function buildWhatsAppShareUrl(
   title: string,
   date?: string,
   location?: string,
-  url?: string
+  url?: string,
 ): string {
   const parts: string[] = [`🎉 Você está convidado(a) para *${title}*!`];
   if (date || location) {
@@ -29,12 +29,7 @@ export function buildWhatsAppShareUrl(
 /**
  * Opens WhatsApp sharing link in a new window/tab if window is available.
  */
-export function shareWhatsApp(
-  title: string,
-  date?: string,
-  location?: string,
-  url?: string
-): void {
+export function shareWhatsApp(title: string, date?: string, location?: string, url?: string): void {
   if (typeof window === 'undefined') return;
   const shareUrl = buildWhatsAppShareUrl(title, date, location, url);
   window.open(shareUrl, '_blank');

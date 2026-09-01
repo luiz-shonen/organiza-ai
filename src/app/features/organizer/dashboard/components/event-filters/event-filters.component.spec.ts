@@ -55,13 +55,13 @@ describe('EventDashboardFiltersComponent', () => {
     const buttons = element.querySelectorAll<HTMLButtonElement>('button[role="tab"]');
     expect(buttons.length).toBe(4);
 
-    const labels = Array.from(buttons).map(
-      (b) => b.querySelector('.event-filters__label')?.textContent?.trim()
+    const labels = Array.from(buttons).map((b) =>
+      b.querySelector('.event-filters__label')?.textContent?.trim(),
     );
     expect(labels).toEqual(['Todos', 'Em breve', 'Histórico', 'Cancelados']);
 
-    const badges = Array.from(buttons).map(
-      (b) => b.querySelector('.event-filters__badge')?.textContent?.trim()
+    const badges = Array.from(buttons).map((b) =>
+      b.querySelector('.event-filters__badge')?.textContent?.trim(),
     );
     expect(badges).toEqual(['10', '6', '3', '1']);
   });

@@ -13,12 +13,21 @@ export class LoginPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.pageRoot = page.getByTestId('login-page').or(page.locator('main.login'));
-    this.emailInput = page.getByTestId('login-email-input').or(page.getByLabel('E-mail')).or(page.locator('input[formcontrolname="email"]'));
-    this.passwordInput = page.getByTestId('login-password-input').or(page.locator('input[type="password"], input[formcontrolname="password"]'));
+    this.emailInput = page
+      .getByTestId('login-email-input')
+      .or(page.getByLabel('E-mail'))
+      .or(page.locator('input[formcontrolname="email"]'));
+    this.passwordInput = page
+      .getByTestId('login-password-input')
+      .or(page.locator('input[type="password"], input[formcontrolname="password"]'));
     this.submitBtn = page.getByTestId('login-submit-btn').getByRole('button', { name: 'Entrar' });
-    this.googleBtn = page.getByTestId('google-login-btn').getByRole('button', { name: 'Entrar com Google' });
+    this.googleBtn = page
+      .getByTestId('google-login-btn')
+      .getByRole('button', { name: 'Entrar com Google' });
     this.errorAlert = page.getByTestId('login-error-alert').or(page.locator('.login__error'));
-    this.verificationBanner = page.getByTestId('email-verification-banner').or(page.locator('.verification-banner, app-verification-banner'));
+    this.verificationBanner = page
+      .getByTestId('email-verification-banner')
+      .or(page.locator('.verification-banner, app-verification-banner'));
   }
 
   async assertLoaded(): Promise<void> {

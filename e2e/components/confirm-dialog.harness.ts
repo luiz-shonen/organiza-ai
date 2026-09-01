@@ -11,7 +11,11 @@ export class ConfirmDialogHarness {
 
     this.confirmBtn = this.dialogRoot
       .getByTestId('org-confirm-submit')
-      .or(this.dialogRoot.getByRole('button', { name: /confirmar|sim|excluir|cancelar evento|apagar/i }))
+      .or(
+        this.dialogRoot.getByRole('button', {
+          name: /confirmar|sim|excluir|cancelar evento|apagar/i,
+        }),
+      )
       .first();
 
     this.cancelBtn = this.dialogRoot

@@ -27,19 +27,20 @@
 
 ## 2. Routes & Domains
 
-| Route | Domain | Access |
-|---|---|---|
-| `/` | `home/` | Public |
-| `/login` | `auth/` | Public |
-| `/evento/:id` | `event-detail/` | Public |
-| `/perfil` | `profile/` | `authGuard` |
-| `/meus-eventos/**` | `organizer/` (via `organizer.routes.ts`) | `authGuard` |
-| `/admin/**` | `admin/` (via `admin.routes.ts`) | `superAdminGuard` |
-| `/design-system` | `design-system/` | `superAdminGuard` |
+| Route              | Domain                                   | Access            |
+| ------------------ | ---------------------------------------- | ----------------- |
+| `/`                | `home/`                                  | Public            |
+| `/login`           | `auth/`                                  | Public            |
+| `/evento/:id`      | `event-detail/`                          | Public            |
+| `/perfil`          | `profile/`                               | `authGuard`       |
+| `/meus-eventos/**` | `organizer/` (via `organizer.routes.ts`) | `authGuard`       |
+| `/admin/**`        | `admin/` (via `admin.routes.ts`)         | `superAdminGuard` |
+| `/design-system`   | `design-system/`                         | `superAdminGuard` |
 
 > `/meus-eventos` = organizer dashboard (any authenticated user). `/admin` = Super Admins only (platform metrics). **Never confuse the two.**
 
 Organizer sub-routes:
+
 - `/meus-eventos` → `DashboardContainer`
 - `/meus-eventos/evento/novo` → `EventEditorContainer`
 - `/meus-eventos/evento/:id` → `EventEditorContainer`
@@ -82,12 +83,14 @@ Organizer sub-routes:
 ## 7. Testing
 
 ### Unit Tests (Vitest)
+
 - 80 test suites, 446 tests.
 - Every new feature ships with a `.spec.ts` file.
 - Focus on component API: `input()` changes update the template; interactions trigger `output()`.
 - Include accessibility assertions (ARIA, roles).
 
 ### E2E Tests (Playwright)
+
 - 15 test suites, 158 tests across Desktop Chromium and Mobile Chrome.
 - **Atomic test rule (AD-030)**: each test sets up its own state (mock session + navigation), asserts exactly one thing (one step, one screen, one behaviour), captures a screenshot, and ends. No test depends on another.
 - To reach Step 2 of the event editor, that test's own `beforeEach` fills and advances Step 1 independently.
@@ -99,6 +102,7 @@ Organizer sub-routes:
 ## 8. Spec-Driven Development (AD-013)
 
 Every new feature goes through:
+
 1. **Specify** — `spec.md` with User Stories and EARS Acceptance Criteria.
 2. **(Design)** — only when new architecture is needed.
 3. **(Tasks)** — only when there are more than 3 tasks.
@@ -106,4 +110,3 @@ Every new feature goes through:
 5. **Validation** — independent Verifier sub-agent + Discrimination Sensor.
 
 Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.
-

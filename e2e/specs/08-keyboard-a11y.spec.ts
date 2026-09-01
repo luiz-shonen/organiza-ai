@@ -77,7 +77,11 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
 
     const cancelActionBtn = activeCard
       .getByRole('button', { name: /cancelar/i })
-      .or(activeCard.locator('button[aria-label*="Cancelar"], button.mat-warn, button[mattooltip="Cancelar"]'))
+      .or(
+        activeCard.locator(
+          'button[aria-label*="Cancelar"], button.mat-warn, button[mattooltip="Cancelar"]',
+        ),
+      )
       .first();
 
     await cancelActionBtn.click();
@@ -101,7 +105,6 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
 
   test('should activate form controls and buttons via Space and Enter keys on login form', async ({
     loginPage,
-    page,
   }) => {
     await loginPage.goto('/login');
     await loginPage.assertLoaded();

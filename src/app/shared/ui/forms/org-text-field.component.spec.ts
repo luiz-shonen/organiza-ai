@@ -5,7 +5,8 @@ import { OrgTextFieldComponent } from './org-text-field.component';
 describe('OrgTextFieldComponent', () => {
   it('binds label, value and the default text type', async () => {
     await TestBed.configureTestingModule({ imports: [OrgTextFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgTextFieldComponent> = TestBed.createComponent(OrgTextFieldComponent);
+    const fixture: ComponentFixture<OrgTextFieldComponent> =
+      TestBed.createComponent(OrgTextFieldComponent);
     fixture.componentRef.setInput('label', 'Título do evento');
     fixture.componentRef.setInput('value', 'Ceia de Natal');
     fixture.detectChanges();
@@ -18,7 +19,8 @@ describe('OrgTextFieldComponent', () => {
 
   it('models input and shows error semantics without accepting changes while disabled', async () => {
     await TestBed.configureTestingModule({ imports: [OrgTextFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgTextFieldComponent> = TestBed.createComponent(OrgTextFieldComponent);
+    const fixture: ComponentFixture<OrgTextFieldComponent> =
+      TestBed.createComponent(OrgTextFieldComponent);
     fixture.componentRef.setInput('label', 'E-mail');
     fixture.componentRef.setInput('error', 'Informe um e-mail válido.');
     fixture.componentRef.setInput('disabled', true);

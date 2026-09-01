@@ -9,7 +9,7 @@
 export function formatDate(
   dateStr: string,
   locale = 'pt-BR',
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
 ): string {
   if (!dateStr) return '';
   const date = new Date(dateStr);
@@ -42,10 +42,7 @@ export function getMonth(dateStr: string, locale = 'pt-BR'): string {
   if (!dateStr) return '';
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return '';
-  return date
-    .toLocaleDateString(locale, { month: 'short' })
-    .replace('.', '')
-    .toUpperCase();
+  return date.toLocaleDateString(locale, { month: 'short' }).replace('.', '').toUpperCase();
 }
 
 /**

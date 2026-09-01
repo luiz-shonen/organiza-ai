@@ -1,6 +1,4 @@
-export interface MockDocumentStore {
-  [collectionPath: string]: Array<Record<string, unknown> & { id: string }>;
-}
+export type MockDocumentStore = Record<string, (Record<string, unknown> & { id: string })[]>;
 
 declare global {
   interface Window {

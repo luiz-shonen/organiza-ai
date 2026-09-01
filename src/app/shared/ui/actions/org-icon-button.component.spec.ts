@@ -5,7 +5,8 @@ import { OrgIconButtonComponent } from './org-icon-button.component';
 describe('OrgIconButtonComponent', () => {
   it('renders its required accessible label, icon and semantic variant', async () => {
     await TestBed.configureTestingModule({ imports: [OrgIconButtonComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgIconButtonComponent> = TestBed.createComponent(OrgIconButtonComponent);
+    const fixture: ComponentFixture<OrgIconButtonComponent> =
+      TestBed.createComponent(OrgIconButtonComponent);
     fixture.componentRef.setInput('ariaLabel', 'Fechar diálogo');
     fixture.componentRef.setInput('icon', 'close');
     fixture.componentRef.setInput('variant', 'primary');
@@ -23,7 +24,8 @@ describe('OrgIconButtonComponent', () => {
 
   it('falls back to default and blocks emission while disabled', async () => {
     await TestBed.configureTestingModule({ imports: [OrgIconButtonComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgIconButtonComponent> = TestBed.createComponent(OrgIconButtonComponent);
+    const fixture: ComponentFixture<OrgIconButtonComponent> =
+      TestBed.createComponent(OrgIconButtonComponent);
     const pressed = vi.fn();
     fixture.componentInstance.pressed.subscribe(pressed);
     fixture.componentRef.setInput('ariaLabel', 'Abrir menu');

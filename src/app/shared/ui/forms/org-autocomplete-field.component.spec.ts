@@ -36,7 +36,9 @@ describe('OrgAutocompleteFieldComponent', () => {
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    expect(fixture.componentInstance['filteredOptions']().map((option) => option.value)).toEqual(['spouse']);
+    expect(fixture.componentInstance['filteredOptions']().map((option) => option.value)).toEqual([
+      'spouse',
+    ]);
   });
 
   it('models the selected typed value and shows its label', async () => {
@@ -49,7 +51,9 @@ describe('OrgAutocompleteFieldComponent', () => {
 
     expect(fixture.componentInstance.value()).toBe('sibling');
     expect(onChange).toHaveBeenCalledWith('sibling');
-    expect((fixture.nativeElement.querySelector('input') as HTMLInputElement).value).toBe('Irmão(ã)');
+    expect((fixture.nativeElement.querySelector('input') as HTMLInputElement).value).toBe(
+      'Irmão(ã)',
+    );
   });
 
   it('clears the selected model and shows the empty state when the typed query has no match', async () => {

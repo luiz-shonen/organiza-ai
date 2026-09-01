@@ -98,7 +98,9 @@ test.describe('Design System Showcase', () => {
     await expect(page).not.toHaveURL(/\/design-system$/);
   });
 
-  test('renders every public component family as an anchored showcase section', async ({ page }) => {
+  test('renders every public component family as an anchored showcase section', async ({
+    page,
+  }) => {
     await openShowcase(page);
 
     const sectionIds = [
@@ -148,7 +150,9 @@ test.describe('Design System Showcase', () => {
     await assertMinTouchTarget(page.getByRole('button', { name: 'Abrir menu de navegação' }));
   });
 
-  test('groups the catalog and documents each layer with an exact Angular example', async ({ page }) => {
+  test('groups the catalog and documents each layer with an exact Angular example', async ({
+    page,
+  }) => {
     await openShowcase(page);
 
     await page.getByRole('button', { name: 'Abrir menu de navegação' }).click();
@@ -156,17 +160,27 @@ test.describe('Design System Showcase', () => {
     await expect(drawer.getByRole('heading', { name: 'Marca', exact: true })).toBeVisible();
     await expect(drawer.getByRole('heading', { name: 'Fundações', exact: true })).toBeVisible();
     await expect(drawer.getByRole('heading', { name: 'Produto', exact: true })).toBeVisible();
-    await expect(drawer.getByTestId('drawer-design-system-colors')).toHaveAttribute('href', '/design-system#colors');
-    await expect(drawer.getByTestId('drawer-design-system-tokens')).toHaveAttribute('href', '/design-system#tokens');
+    await expect(drawer.getByTestId('drawer-design-system-colors')).toHaveAttribute(
+      'href',
+      '/design-system#colors',
+    );
+    await expect(drawer.getByTestId('drawer-design-system-tokens')).toHaveAttribute(
+      'href',
+      '/design-system#tokens',
+    );
     await page.getByTestId('navigation-drawer-close').click();
 
     for (const id of ['colors', 'typography', 'iconography', 'tokens', 'foundations']) {
-      await expect(page.locator(`section#${id} app-design-system-code-example`)).toContainText('Uso recomendado');
+      await expect(page.locator(`section#${id} app-design-system-code-example`)).toContainText(
+        'Uso recomendado',
+      );
     }
 
     const dataDisplay = page.locator('section#data-display');
     await expect(dataDisplay.locator('org-data-table')).toBeVisible();
-    await expect(dataDisplay.locator('app-design-system-code-example')).toContainText('org-data-table');
+    await expect(dataDisplay.locator('app-design-system-code-example')).toContainText(
+      'org-data-table',
+    );
   });
 
   test('applies each seasonal theme to the complete shared token contract', async ({ page }) => {
@@ -214,16 +228,20 @@ test.describe('Design System Showcase', () => {
     }
   });
 
-  test('uses a 24px glass blur and warm invitation treatment on showcase surfaces', async ({ page }) => {
+  test('uses a 24px glass blur and warm invitation treatment on showcase surfaces', async ({
+    page,
+  }) => {
     await openShowcase(page);
 
-    const treatment = await page.locator('.org-ds-hero-card [data-testid="org-surface"]').evaluate((element) => {
-      const style = getComputedStyle(element);
-      return {
-        backdropFilter: style.backdropFilter,
-        backgroundImage: style.backgroundImage,
-      };
-    });
+    const treatment = await page
+      .locator('.org-ds-hero-card [data-testid="org-surface"]')
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          backdropFilter: style.backdropFilter,
+          backgroundImage: style.backgroundImage,
+        };
+      });
     const buttonBackground = await page
       .locator('.org-ds-hero-card .org-button__control--gradient')
       .evaluate((element) => getComputedStyle(element).backgroundImage);
@@ -247,7 +265,9 @@ test.describe('Design System Showcase', () => {
     const fields = page.locator('section#inputs');
     const input = fields.getByLabel('Categoria do evento');
 
-    await expect(fields).toContainText('Até três opções, use Select. A partir de quatro, use Autocomplete.');
+    await expect(fields).toContainText(
+      'Até três opções, use Select. A partir de quatro, use Autocomplete.',
+    );
     await input.fill('corpor');
     await expect(page.getByRole('option', { name: 'Corporativo' })).toBeVisible();
     await page.getByRole('option', { name: 'Corporativo' }).click();

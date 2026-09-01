@@ -5,9 +5,25 @@ export default {
     'color-no-hex': true,
     'selector-class-pattern':
       '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$',
-    'custom-property-pattern': '^(?:org|mat|mdc|mat-sys|showcase)-[a-z0-9-]+$',
+    'custom-property-pattern': null,
+    'keyframes-name-pattern': null,
     'scss/dollar-variable-pattern': '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$',
     'scss/percent-placeholder-pattern': '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$',
+    'selector-pseudo-element-no-unknown': [
+      true,
+      {
+        ignorePseudoElements: ['ng-deep'],
+      },
+    ],
+    'property-no-vendor-prefix': null,
+    'value-keyword-case': [
+      'lower',
+      {
+        ignoreProperties: ['font', 'font-family'],
+        ignoreKeywords: ['currentColor', 'currentcolor'],
+      },
+    ],
+    'media-feature-range-notation': null,
     'color-function-notation': null,
     'alpha-value-notation': null,
     'color-function-alias-notation': null,

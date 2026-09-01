@@ -1,14 +1,15 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
 import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
-import { OrgAutocompleteFieldComponent, OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../../shared/ui';
+import {
+  OrgAutocompleteFieldComponent,
+  OrgButtonComponent,
+  OrgIconButtonComponent,
+  OrgIconComponent,
+  OrgSurfaceComponent,
+  OrgTextFieldComponent,
+} from '../../../../shared/ui';
 
 export interface AddFamilyMemberPayload {
   name: string;

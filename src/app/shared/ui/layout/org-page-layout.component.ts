@@ -33,7 +33,10 @@ function normalizeMaxWidth(value: unknown): OrgPageLayoutMaxWidth {
 })
 export class OrgPageLayoutComponent {
   /** Maximum content width boundary: narrow (600px), default (960px), wide (1200px), full (100%). */
-  public readonly maxWidth = input<OrgPageLayoutMaxWidth, OrgPageLayoutMaxWidth | string | undefined | null>('default', {
+  public readonly maxWidth = input<
+    OrgPageLayoutMaxWidth,
+    OrgPageLayoutMaxWidth | string | undefined | null
+  >('default', {
     transform: normalizeMaxWidth,
   });
 }

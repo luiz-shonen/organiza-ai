@@ -8,7 +8,9 @@
   <header class="rsvp-drawer__header">
     <div>
       <h2 id="rsvp-drawer-title" class="rsvp-drawer__title">Confirme seus dados</h2>
-      <p class="rsvp-drawer__description">Sua presença principal permanece vinculada à sua conta verificada.</p>
+      <p class="rsvp-drawer__description">
+        Sua presença principal permanece vinculada à sua conta verificada.
+      </p>
     </div>
     <org-icon-button
       ariaLabel="Fechar confirmação"
@@ -20,15 +22,63 @@
 
   <form [formGroup]="form" class="rsvp-drawer__form" id="rsvp-form">
     <div class="rsvp-drawer__content" mat-dialog-content>
-      <org-text-field class="rsvp-drawer__field" label="Seu nome" formControlName="name" [required]="true" testId="rsvp-name-input" [error]="form.controls.name.hasError('required') && form.controls.name.touched ? 'Nome é obrigatório' : ''" />
+      <org-text-field
+        class="rsvp-drawer__field"
+        label="Seu nome"
+        formControlName="name"
+        [required]="true"
+        testId="rsvp-name-input"
+        [error]="
+          form.controls.name.hasError('required') && form.controls.name.touched
+            ? 'Nome é obrigatório'
+            : ''
+        "
+      />
 
-      <org-text-field class="rsvp-drawer__field" label="WhatsApp / Telefone" type="tel" formControlName="phone" [required]="true" testId="rsvp-phone-input" [error]="form.controls.phone.hasError('required') && form.controls.phone.touched ? 'Telefone é obrigatório' : form.controls.phone.hasError('minlength') && form.controls.phone.touched ? 'Mínimo 10 dígitos' : ''" />
+      <org-text-field
+        class="rsvp-drawer__field"
+        label="WhatsApp / Telefone"
+        type="tel"
+        formControlName="phone"
+        [required]="true"
+        testId="rsvp-phone-input"
+        [error]="
+          form.controls.phone.hasError('required') && form.controls.phone.touched
+            ? 'Telefone é obrigatório'
+            : form.controls.phone.hasError('minlength') && form.controls.phone.touched
+              ? 'Mínimo 10 dígitos'
+              : ''
+        "
+      />
 
-      <org-text-field class="rsvp-drawer__field" label="Outros acompanhantes" type="number" hint="De 0 a 10 acompanhantes fora da família" formControlName="companionsCount" testId="rsvp-companions-input" (valueChange)="onCompanionsCountChange($event)" [error]="form.controls.companionsCount.invalid && form.controls.companionsCount.touched ? 'Informe um número entre 0 e 10' : ''" />
+      <org-text-field
+        class="rsvp-drawer__field"
+        label="Outros acompanhantes"
+        type="number"
+        hint="De 0 a 10 acompanhantes fora da família"
+        formControlName="companionsCount"
+        testId="rsvp-companions-input"
+        (valueChange)="onCompanionsCountChange($event)"
+        [error]="
+          form.controls.companionsCount.invalid && form.controls.companionsCount.touched
+            ? 'Informe um número entre 0 e 10'
+            : ''
+        "
+      />
 
       <div formArrayName="companions" class="rsvp-drawer__companions" aria-label="Acompanhantes">
         @for (control of companions.controls; track $index) {
-          <org-text-field class="rsvp-drawer__field" [label]="'Acompanhante ' + ($index + 1)" [formControlName]="$index" [required]="true" [error]="control.hasError('required') && control.touched ? 'Nome do acompanhante é obrigatório' : ''" />
+          <org-text-field
+            class="rsvp-drawer__field"
+            [label]="'Acompanhante ' + ($index + 1)"
+            [formControlName]="$index"
+            [required]="true"
+            [error]="
+              control.hasError('required') && control.touched
+                ? 'Nome do acompanhante é obrigatório'
+                : ''
+            "
+          />
         }
       </div>
 
@@ -52,11 +102,7 @@
         data-testid="rsvp-cancel-btn"
         (pressed)="closeDrawer()"
       />
-      <org-button
-        label="Confirmar"
-        data-testid="rsvp-confirm-btn"
-        (pressed)="submit()"
-      />
+      <org-button label="Confirmar" data-testid="rsvp-confirm-btn" (pressed)="submit()" />
     </footer>
   </form>
 </section>

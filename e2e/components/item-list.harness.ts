@@ -14,7 +14,11 @@ export class ItemListHarness {
   constructor(private readonly pageOrLocator: Page | Locator) {
     this.listRoot = this.pageOrLocator
       .getByTestId('item-list-card')
-      .or(this.pageOrLocator.locator('app-item-list-card, section.item-list-card, [aria-label="Lista de itens do evento"], [aria-label*="itens" i]'));
+      .or(
+        this.pageOrLocator.locator(
+          'app-item-list-card, section.item-list-card, [aria-label="Lista de itens do evento"], [aria-label*="itens" i]',
+        ),
+      );
 
     this.itemCards = this.listRoot
       .getByTestId('item-card')
@@ -32,7 +36,11 @@ export class ItemListHarness {
 
     this.remainingCount = this.listRoot
       .getByTestId('item-remaining-count')
-      .or(this.listRoot.locator('.item-list-card__remaining, .item-list-card__status--available, .item-list-card__status:has-text("Disponível")'));
+      .or(
+        this.listRoot.locator(
+          '.item-list-card__remaining, .item-list-card__status--available, .item-list-card__status:has-text("Disponível")',
+        ),
+      );
   }
 
   /**

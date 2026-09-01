@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { FirebaseService } from './firebase.service';
 
@@ -13,7 +12,10 @@ const { firestoreMocks } = vi.hoisted(() => {
   };
 
   class MockTimestamp {
-    constructor(public seconds: number, public nanoseconds: number) {}
+    constructor(
+      public seconds: number,
+      public nanoseconds: number,
+    ) {}
     toDate() {
       return new Date(this.seconds * 1000);
     }
@@ -233,7 +235,11 @@ describe('FirestoreGateway', () => {
       expect(firestoreMocks.setDoc).toHaveBeenCalledWith('mock-doc-ref', { name: 'Luiz' });
 
       await gateway.setDoc('users/123', { name: 'Luiz' }, { merge: true });
-      expect(firestoreMocks.setDoc).toHaveBeenCalledWith('mock-doc-ref', { name: 'Luiz' }, { merge: true });
+      expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+        'mock-doc-ref',
+        { name: 'Luiz' },
+        { merge: true },
+      );
     });
 
     it('updateDoc delegates to updateDoc', async () => {

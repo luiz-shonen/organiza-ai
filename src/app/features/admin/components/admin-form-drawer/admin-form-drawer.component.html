@@ -1,5 +1,12 @@
 @if (isOpen()) {
-  <div class="admin-form-drawer__overlay" (click)="onClose()" data-testid="admin-drawer-overlay">
+  <div
+    class="admin-form-drawer__overlay"
+    (click)="onClose()"
+    (keydown.escape)="onClose()"
+    tabindex="-1"
+    role="presentation"
+    data-testid="admin-drawer-overlay"
+  >
     <div
       class="admin-form-drawer__surface"
       role="dialog"
@@ -7,11 +14,15 @@
       aria-labelledby="admin-drawer-title"
       data-testid="admin-drawer-dialog"
       (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      tabindex="-1"
     >
       <header class="admin-form-drawer__header">
         <div>
           <h2 id="admin-drawer-title" class="admin-form-drawer__title">Novo Administrador</h2>
-          <p class="admin-form-drawer__subtitle">Cadastre o e-mail do usuário para conceder privilégios administrativos.</p>
+          <p class="admin-form-drawer__subtitle">
+            Cadastre o e-mail do usuário para conceder privilégios administrativos.
+          </p>
         </div>
         <org-icon-button
           icon="close"

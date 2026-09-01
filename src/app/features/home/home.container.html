@@ -1,4 +1,9 @@
-<org-page-layout maxWidth="default" class="home" aria-label="Eventos disponíveis" data-testid="home-page">
+<org-page-layout
+  maxWidth="default"
+  class="home"
+  aria-label="Eventos disponíveis"
+  data-testid="home-page"
+>
   <org-page-header
     title="Eventos: Descubra, Participe e Celebre"
     subtitle="Encontre encontros, festas e momentos especiais. Confirme sua presença e combine itens com facilidade."
@@ -42,45 +47,45 @@
           >
             <org-surface variant="card" [interactive]="true">
               <article class="home__card">
-              <div class="home__card-top">
-                <div class="home__card-badge">
-                  <org-icon name="event" size="sm" color="var(--org-primary)" />
-                  <span>Evento</span>
-                </div>
-                @if (event.date) {
-                  <div class="home__date-badge" aria-label="Data do evento">
-                    <span class="home__date-month">{{ getMonth(event.date) }}</span>
-                    <span class="home__date-day">{{ getDay(event.date) }}</span>
+                <div class="home__card-top">
+                  <div class="home__card-badge">
+                    <org-icon name="event" size="sm" color="var(--org-primary)" />
+                    <span>Evento</span>
                   </div>
-                }
-              </div>
+                  @if (event.date) {
+                    <div class="home__date-badge" aria-label="Data do evento">
+                      <span class="home__date-month">{{ getMonth(event.date) }}</span>
+                      <span class="home__date-day">{{ getDay(event.date) }}</span>
+                    </div>
+                  }
+                </div>
 
-              <div class="home__card-header">
-                <h3 class="home__card-title">{{ event.title }}</h3>
-                <p class="home__card-subtitle">
-                  <org-icon name="schedule" size="sm" color="var(--org-primary)" />
-                  {{ formatDate(event.date) }}
-                </p>
-              </div>
-
-              <div class="home__card-content">
-                @if (event.description) {
-                  <p class="home__card-description">{{ event.description }}</p>
-                }
-                @if (event.location) {
-                  <p class="home__card-location">
-                    <org-icon name="place" size="sm" color="var(--org-primary)" />
-                    <span>{{ event.location }}</span>
+                <div class="home__card-header">
+                  <h3 class="home__card-title">{{ event.title }}</h3>
+                  <p class="home__card-subtitle">
+                    <org-icon name="schedule" size="sm" color="var(--org-primary)" />
+                    {{ formatDate(event.date) }}
                   </p>
-                }
-              </div>
+                </div>
 
-              <div class="home__card-footer">
-                <span class="home__card-cta">
-                  Ver Detalhes
-                  <org-icon name="event" size="sm" color="var(--org-primary)" />
-                </span>
-              </div>
+                <div class="home__card-content">
+                  @if (event.description) {
+                    <p class="home__card-description">{{ event.description }}</p>
+                  }
+                  @if (event.location) {
+                    <p class="home__card-location">
+                      <org-icon name="place" size="sm" color="var(--org-primary)" />
+                      <span>{{ event.location }}</span>
+                    </p>
+                  }
+                </div>
+
+                <div class="home__card-footer">
+                  <span class="home__card-cta">
+                    Ver Detalhes
+                    <org-icon name="event" size="sm" color="var(--org-primary)" />
+                  </span>
+                </div>
               </article>
             </org-surface>
           </a>

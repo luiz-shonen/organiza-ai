@@ -194,8 +194,14 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(eventEditorPage.cepInput).toBeVisible();
       await expect(eventEditorPage.streetInput).toBeVisible();
       await expect(eventEditorPage.numberInput).toBeVisible();
-      const neighborhoodInput = page.locator('org-text-field[formcontrolname="neighborhood"] input, input[formcontrolname="neighborhood"]').first();
-      const cityInput = page.locator('org-text-field[formcontrolname="city"] input, input[formcontrolname="city"]').first();
+      const neighborhoodInput = page
+        .locator(
+          'org-text-field[formcontrolname="neighborhood"] input, input[formcontrolname="neighborhood"]',
+        )
+        .first();
+      const cityInput = page
+        .locator('org-text-field[formcontrolname="city"] input, input[formcontrolname="city"]')
+        .first();
       await expect(neighborhoodInput).toBeVisible();
       await expect(cityInput).toBeVisible();
 
@@ -217,8 +223,14 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Auto-populated fields check
       await expect(eventEditorPage.streetInput).toHaveValue('Avenida Paulista');
-      const neighborhoodInput = page.locator('org-text-field[formcontrolname="neighborhood"] input, input[formcontrolname="neighborhood"]').first();
-      const cityInput = page.locator('org-text-field[formcontrolname="city"] input, input[formcontrolname="city"]').first();
+      const neighborhoodInput = page
+        .locator(
+          'org-text-field[formcontrolname="neighborhood"] input, input[formcontrolname="neighborhood"]',
+        )
+        .first();
+      const cityInput = page
+        .locator('org-text-field[formcontrolname="city"] input, input[formcontrolname="city"]')
+        .first();
       await expect(neighborhoodInput).toHaveValue('Bela Vista');
       await expect(cityInput).toHaveValue('São Paulo/SP');
 
@@ -316,11 +328,19 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.fillCep('01310100', '1000');
 
       // Assert Pix form and key input are visible on Step 3
-      const pixForm = page.locator('#pix-form, form[formgroupname="pix"], .editor__pix-section, .editor__step-panel').first();
+      const pixForm = page
+        .locator('#pix-form, form[formgroupname="pix"], .editor__pix-section, .editor__step-panel')
+        .first();
       await expect(pixForm).toBeVisible();
-      const pixKeyInput = page.locator('org-text-field[formcontrolname="pixKey"] input, input[formcontrolname="pixKey"], [data-testid="event-pix-input"] input').first();
+      const pixKeyInput = page
+        .locator(
+          'org-text-field[formcontrolname="pixKey"] input, input[formcontrolname="pixKey"], [data-testid="event-pix-input"] input',
+        )
+        .first();
       await expect(pixKeyInput).toBeVisible();
-      const pixField = page.locator('org-text-field[formcontrolname="pixKey"], .editor__pix-key-field').first();
+      const pixField = page
+        .locator('org-text-field[formcontrolname="pixKey"], .editor__pix-key-field')
+        .first();
       await expect(pixField).toBeVisible();
 
       const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
@@ -345,8 +365,16 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         }
       }
 
-      const prevBtn = pixForm.locator('org-button[label="Voltar"] button, button[matstepperprevious], button:has-text("Voltar")').first();
-      const saveBtn = pixForm.locator('org-button[data-testid="event-save-btn"] button, [data-testid="event-save-btn"] button, button.editor__save-btn, button:has-text("Salvar"), button:has-text("Criar")').first();
+      const prevBtn = pixForm
+        .locator(
+          'org-button[label="Voltar"] button, button[matstepperprevious], button:has-text("Voltar")',
+        )
+        .first();
+      const saveBtn = pixForm
+        .locator(
+          'org-button[data-testid="event-save-btn"] button, [data-testid="event-save-btn"] button, button.editor__save-btn, button:has-text("Salvar"), button:has-text("Criar")',
+        )
+        .first();
       await assertMinTouchTarget(prevBtn, 48);
       await assertMinTouchTarget(saveBtn, 48);
       await assertNoHorizontalOverflow(page);
@@ -493,7 +521,11 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.fillCep('01310100', '1000');
 
       // Step 3: optionally fill Pix key and click Salvar
-      const pixKeyInput = page.locator('org-text-field[formcontrolname="pixKey"] input, input[formcontrolname="pixKey"], [data-testid="event-pix-input"] input').first();
+      const pixKeyInput = page
+        .locator(
+          'org-text-field[formcontrolname="pixKey"] input, input[formcontrolname="pixKey"], [data-testid="event-pix-input"] input',
+        )
+        .first();
       await expect(pixKeyInput).toBeVisible();
       await pixKeyInput.fill('pix-organiza@teste.com');
 
@@ -501,7 +533,11 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.saveEvent();
 
       // Assert snackbar confirmation appears
-      const snackBar = page.locator('[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]').first();
+      const snackBar = page
+        .locator(
+          '[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]',
+        )
+        .first();
       await expect(snackBar).toBeVisible();
       await expect(snackBar).toContainText(/Evento criado com sucesso/i);
 
@@ -559,7 +595,11 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.saveEvent();
 
       // Assert snackbar confirmation appears
-      const snackBar = page.locator('[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]').first();
+      const snackBar = page
+        .locator(
+          '[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]',
+        )
+        .first();
       await expect(snackBar).toBeVisible();
       await expect(snackBar).toContainText(/Evento atualizado/i);
     });
@@ -576,7 +616,10 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.titleInput.blur();
 
       // Assert error message
-      const titleError = page.locator('mat-error, .org-text-field__error').filter({ hasText: /Título é obrigatório/i }).first();
+      const titleError = page
+        .locator('mat-error, .org-text-field__error')
+        .filter({ hasText: /Título é obrigatório/i })
+        .first();
       await expect(titleError).toBeVisible();
 
       // Assert Next / Step 1 button is disabled
@@ -689,7 +732,13 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await rsvpDialog.assertVisible();
 
       // Assert glassmorphism on the workflow drawer surface actually presented to guests.
-      await assertGlassmorphism(page.locator('.navigation-drawer, .rsvp-drawer, [data-testid="rsvp-drawer"], app-guest-form-dialog, mat-dialog-container').first());
+      await assertGlassmorphism(
+        page
+          .locator(
+            '.navigation-drawer, .rsvp-drawer, [data-testid="rsvp-drawer"], app-guest-form-dialog, mat-dialog-container',
+          )
+          .first(),
+      );
     });
   });
 
@@ -772,7 +821,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.assertLoaded();
 
       // Assert glassmorphism on profile info card
-      const profileCard = page.locator('app-profile-info-card .org-surface, app-profile-info-card').first();
+      const profileCard = page
+        .locator('app-profile-info-card .org-surface, app-profile-info-card')
+        .first();
       await assertGlassmorphism(profileCard);
     });
 
@@ -964,24 +1015,40 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Open collaborators dialog
       const collabBtn = page
-        .locator('.editor__collab-btn, button[aria-label*="colaboradores"], button:has-text("Colaboradores")')
+        .locator(
+          '.editor__collab-btn, button[aria-label*="colaboradores"], button:has-text("Colaboradores")',
+        )
         .first();
       await expect(collabBtn).toBeVisible();
       await collabBtn.click();
 
       // Assert dialog visible
-      const dialog = page.locator('.collaborator-drawer, .collaborator-dialog, mat-dialog-container, [data-testid="collaborator-drawer"]').first();
+      const dialog = page
+        .locator(
+          '.collaborator-drawer, .collaborator-dialog, mat-dialog-container, [data-testid="collaborator-drawer"]',
+        )
+        .first();
       await expect(dialog).toBeVisible();
 
       // Assert email input and invite button
-      const emailInput = dialog.locator('input[type="email"], [data-testid="collaborator-email-input"], org-text-field input').first();
-      const submitBtn = dialog.locator(
-        'button[type="submit"], [data-testid="collaborator-invite-submit"], button.collaborator-dialog__submit-btn, org-button[label*="Convidar"] button',
-      ).first();
+      const emailInput = dialog
+        .locator(
+          'input[type="email"], [data-testid="collaborator-email-input"], org-text-field input',
+        )
+        .first();
+      const submitBtn = dialog
+        .locator(
+          'button[type="submit"], [data-testid="collaborator-invite-submit"], button.collaborator-dialog__submit-btn, org-button[label*="Convidar"] button',
+        )
+        .first();
       await expect(emailInput).toBeVisible();
       await expect(submitBtn).toBeVisible();
 
-      const closeBtn = dialog.locator('button[data-testid="collaborator-drawer-close"], button[aria-label*="Fechar"], button:has-text("Fechar")').first();
+      const closeBtn = dialog
+        .locator(
+          'button[data-testid="collaborator-drawer-close"], button[aria-label*="Fechar"], button:has-text("Fechar")',
+        )
+        .first();
       await assertMinTouchTarget(submitBtn, 48);
       await assertMinTouchTarget(closeBtn, 48);
 
@@ -998,27 +1065,43 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       // Open collaborators dialog
       const collabBtn = page
-        .locator('.editor__collab-btn, button[aria-label*="colaboradores"], button:has-text("Colaboradores")')
+        .locator(
+          '.editor__collab-btn, button[aria-label*="colaboradores"], button:has-text("Colaboradores")',
+        )
         .first();
       await expect(collabBtn).toBeVisible();
       await collabBtn.click();
 
-      const dialog = page.locator('.collaborator-drawer, .collaborator-dialog, mat-dialog-container, [data-testid="collaborator-drawer"]').first();
+      const dialog = page
+        .locator(
+          '.collaborator-drawer, .collaborator-dialog, mat-dialog-container, [data-testid="collaborator-drawer"]',
+        )
+        .first();
       await expect(dialog).toBeVisible();
 
       // Fill email and submit
-      const emailInput = dialog.locator('input[type="email"], [data-testid="collaborator-email-input"], org-text-field input').first();
+      const emailInput = dialog
+        .locator(
+          'input[type="email"], [data-testid="collaborator-email-input"], org-text-field input',
+        )
+        .first();
       await emailInput.fill('amigo@exemplo.com');
       await emailInput.dispatchEvent('input');
 
-      const submitBtn = dialog.locator(
-        'button[type="submit"], [data-testid="collaborator-invite-submit"], button.collaborator-dialog__submit-btn, org-button[label*="Convidar"] button',
-      ).first();
+      const submitBtn = dialog
+        .locator(
+          'button[type="submit"], [data-testid="collaborator-invite-submit"], button.collaborator-dialog__submit-btn, org-button[label*="Convidar"] button',
+        )
+        .first();
       await expect(submitBtn).toBeEnabled();
       await submitBtn.click();
 
       // Assert snackbar confirmation
-      const snackBar = page.locator('[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]').first();
+      const snackBar = page
+        .locator(
+          '[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]',
+        )
+        .first();
       await expect(snackBar).toBeVisible();
       await expect(snackBar).toContainText(/Convite enviado para amigo@exemplo\.com/i);
     });

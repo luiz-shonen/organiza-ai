@@ -35,10 +35,7 @@ describe('GuestSessionService', () => {
   function createService(platform: 'browser' | 'server' = 'browser'): GuestSessionService {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      providers: [
-        GuestSessionService,
-        { provide: PLATFORM_ID, useValue: platform },
-      ],
+      providers: [GuestSessionService, { provide: PLATFORM_ID, useValue: platform }],
     });
     return TestBed.inject(GuestSessionService);
   }
@@ -80,7 +77,7 @@ describe('GuestSessionService', () => {
     expect(service.guestPhone()).toBe('11999998888');
     expect(localStorage.setItem).toHaveBeenCalledWith(
       'organizaai_guest_session',
-      JSON.stringify(mockSession)
+      JSON.stringify(mockSession),
     );
   });
 

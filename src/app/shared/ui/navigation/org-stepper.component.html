@@ -8,7 +8,11 @@
   (selectionChange)="updateSelection($event.selectedIndex)"
 >
   @for (step of steps(); track step.label()) {
-    <mat-step [editable]="!step.disabled()" [label]="step.label()" [stepControl]="step.materialStepControl()">
+    <mat-step
+      [editable]="!step.disabled()"
+      [label]="step.label()"
+      [stepControl]="step.materialStepControl()"
+    >
       <ng-container [ngTemplateOutlet]="step.content()" />
     </mat-step>
   }

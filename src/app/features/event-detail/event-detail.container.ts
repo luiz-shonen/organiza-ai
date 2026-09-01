@@ -22,7 +22,12 @@ import {
   DrawerService,
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest, type RsvpDrawerResult } from '../../core/models';
-import { FeedbackService, OrgDialogService, OrgEmptyStateComponent, OrgPageLayoutComponent } from '../../shared/ui';
+import {
+  FeedbackService,
+  OrgDialogService,
+  OrgEmptyStateComponent,
+  OrgPageLayoutComponent,
+} from '../../shared/ui';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
@@ -161,34 +166,40 @@ export class EventDetailContainer implements OnInit {
           trigger: event?.currentTarget as HTMLElement | undefined,
           data: { session: { name, phone }, familyMembers, userId: user.uid },
           onComplete: async (result: RsvpDrawerResult) => {
-          this.rsvpLoading.set(true);
-          try {
-            await this.guestService.batchConfirmRsvp(
-              this.id(),
-              {
-                uid: user.uid,
+            this.rsvpLoading.set(true);
+            try {
+              await this.guestService.batchConfirmRsvp(
+                this.id(),
+                {
+                  uid: user.uid,
+                  name: result.name || name,
+                  email,
+                  phone: result.phone || phone,
+                  photoUrl,
+                  companions: result.companions,
+                },
+                result.selectedFamilyMembers ?? [],
+              );
+
+              this.guestSession.saveSession({
                 name: result.name || name,
-                email,
                 phone: result.phone || phone,
-                photoUrl,
-                companions: result.companions,
-              },
-              result.selectedFamilyMembers ?? [],
-            );
+              });
+              this.userService
+                .upsertProfile(user.uid, {
+                  name: result.name || name,
+                  phone: result.phone || phone,
+                })
+                .catch(console.error);
 
-            this.guestSession.saveSession({ name: result.name || name, phone: result.phone || phone });
-            this.userService
-              .upsertProfile(user.uid, { name: result.name || name, phone: result.phone || phone })
-              .catch(console.error);
-
-            this.confetti.fireSuccessConfetti();
-            this.feedback.success('Presença confirmada!');
-          } catch (err) {
-            console.error(err);
-            this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
-          } finally {
-            this.rsvpLoading.set(false);
-          }
+              this.confetti.fireSuccessConfetti();
+              this.feedback.success('Presença confirmada!');
+            } catch (err) {
+              console.error(err);
+              this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
+            } finally {
+              this.rsvpLoading.set(false);
+            }
           },
         });
         return;
@@ -210,32 +221,35 @@ export class EventDetailContainer implements OnInit {
         confirmLabel: 'Sim, cancelar',
       })
       .subscribe(async (result) => {
-      if (result) {
-        this.rsvpLoading.set(true);
-        try {
-          const user = this.authService.currentUser();
-          const session = this.guestSession.session();
-          const targetUid = user && !user.isAnonymous ? user.uid : undefined;
+        if (result) {
+          this.rsvpLoading.set(true);
+          try {
+            const user = this.authService.currentUser();
+            const session = this.guestSession.session();
+            const targetUid = user && !user.isAnonymous ? user.uid : undefined;
 
-          if (targetUid) {
-            await this.guestService.cancelRsvp(this.id(), targetUid, targetUid);
-          } else if (session?.phone) {
-            const existingGuest = await this.guestService.getGuestByPhone(this.id(), session.phone);
-            if (existingGuest) {
-              await this.guestService.cancelRsvp(this.id(), existingGuest.id, session.phone);
+            if (targetUid) {
+              await this.guestService.cancelRsvp(this.id(), targetUid, targetUid);
+            } else if (session?.phone) {
+              const existingGuest = await this.guestService.getGuestByPhone(
+                this.id(),
+                session.phone,
+              );
+              if (existingGuest) {
+                await this.guestService.cancelRsvp(this.id(), existingGuest.id, session.phone);
+              }
             }
-          }
 
-          this.guestSession.clearSession();
-          this.feedback.success('Sua presença foi cancelada.');
-        } catch (err: unknown) {
-          console.error(err);
-          this.feedback.error('Erro ao cancelar presença.');
-        } finally {
-          this.rsvpLoading.set(false);
+            this.guestSession.clearSession();
+            this.feedback.success('Sua presença foi cancelada.');
+          } catch (err: unknown) {
+            console.error(err);
+            this.feedback.error('Erro ao cancelar presença.');
+          } finally {
+            this.rsvpLoading.set(false);
+          }
         }
-      }
-    });
+      });
   }
 
   protected async onClaimItemById(itemId: string): Promise<void> {

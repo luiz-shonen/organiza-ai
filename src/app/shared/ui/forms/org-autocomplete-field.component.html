@@ -13,9 +13,15 @@
     (blur)="markTouched()"
     (input)="updateQuery($event)"
   />
-  <mat-autocomplete #optionsPanel="matAutocomplete" panelClass="org-autocomplete-field__panel" (optionSelected)="selectOption($event.option.value)">
+  <mat-autocomplete
+    #optionsPanel="matAutocomplete"
+    panelClass="org-autocomplete-field__panel"
+    (optionSelected)="selectOption($event.option.value)"
+  >
     @for (option of filteredOptions(); track option.value) {
-      <mat-option [disabled]="option.disabled ?? false" [value]="option.value">{{ option.label }}</mat-option>
+      <mat-option [disabled]="option.disabled ?? false" [value]="option.value">{{
+        option.label
+      }}</mat-option>
     } @empty {
       <mat-option disabled>Nenhuma opção encontrada.</mat-option>
     }

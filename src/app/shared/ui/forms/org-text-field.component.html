@@ -25,7 +25,9 @@
       [attr.aria-label]="passwordVisible() ? 'Ocultar senha' : 'Mostrar senha'"
       (click)="requestPasswordVisibilityToggle()"
     >
-      <mat-icon aria-hidden="true">{{ passwordVisible() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      <mat-icon aria-hidden="true">{{
+        passwordVisible() ? 'visibility_off' : 'visibility'
+      }}</mat-icon>
     </button>
   } @else if (suffixIcon(); as suffixIcon) {
     <mat-icon matSuffix aria-hidden="true">{{ suffixIcon }}</mat-icon>

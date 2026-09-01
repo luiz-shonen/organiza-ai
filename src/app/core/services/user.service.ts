@@ -1,11 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventService } from './event.service';
-import type {
-  UserProfile,
-  PartyEvent,
-  ThemeMode,
-} from '../models';
+import type { UserProfile, PartyEvent, ThemeMode } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -29,15 +25,17 @@ export class UserService {
         uid,
         email: (data['email'] as string | null) ?? null,
         displayName:
-          (data['displayName'] as string | null) ??
-          (data['name'] as string | null) ??
-          null,
+          (data['displayName'] as string | null) ?? (data['name'] as string | null) ?? null,
         photoURL: (data['photoURL'] as string | null) ?? null,
         name: (data['name'] as string | undefined) ?? (data['displayName'] as string | undefined),
         phone: data['phone'] as string | undefined,
         themePref: data['themePref'] as ThemeMode | undefined,
-        createdAt: createdAtDate ? createdAtDate.toISOString() : ((data['createdAt'] as string) ?? ''),
-        updatedAt: updatedAtDate ? updatedAtDate.toISOString() : ((data['updatedAt'] as string) ?? ''),
+        createdAt: createdAtDate
+          ? createdAtDate.toISOString()
+          : ((data['createdAt'] as string) ?? ''),
+        updatedAt: updatedAtDate
+          ? updatedAtDate.toISOString()
+          : ((data['updatedAt'] as string) ?? ''),
       };
     } catch {
       return null;

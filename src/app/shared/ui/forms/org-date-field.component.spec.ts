@@ -5,7 +5,8 @@ import { OrgDateFieldComponent } from './org-date-field.component';
 describe('OrgDateFieldComponent', () => {
   it('renders the shared outlined date field contract', async () => {
     await TestBed.configureTestingModule({ imports: [OrgDateFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgDateFieldComponent> = TestBed.createComponent(OrgDateFieldComponent);
+    const fixture: ComponentFixture<OrgDateFieldComponent> =
+      TestBed.createComponent(OrgDateFieldComponent);
     fixture.componentRef.setInput('label', 'Data da celebração');
     fixture.detectChanges();
 

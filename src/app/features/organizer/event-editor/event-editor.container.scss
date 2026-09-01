@@ -197,7 +197,6 @@
     @include semantic.tablet {
       padding: 32px 28px;
     }
-
   }
 
   &__category-field {
@@ -240,7 +239,7 @@
     font-size: 1.1rem;
     font-weight: 700;
     color: var(--mat-sys-primary);
-    margin: 8px 0 0 0;
+    margin: 8px 0 0;
     border-bottom: 1px solid rgba(var(--mat-sys-primary-rgb), 0.1);
     padding-bottom: 4px;
   }
@@ -479,6 +478,7 @@
       background-color: var(--org-surface);
       color: var(--org-text-primary);
     }
+
     td {
       color: var(--org-text-primary);
       border-bottom: 1px solid var(--org-border);

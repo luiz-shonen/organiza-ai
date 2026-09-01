@@ -28,10 +28,7 @@ describe('LoginContainer', () => {
 
     await TestBed.configureTestingModule({
       imports: [LoginContainer, NoopAnimationsModule],
-      providers: [
-        provideRouter([]),
-        { provide: AuthService, useValue: mockAuthService },
-      ],
+      providers: [provideRouter([]), { provide: AuthService, useValue: mockAuthService }],
     }).compileComponents();
 
     router = TestBed.inject(Router);

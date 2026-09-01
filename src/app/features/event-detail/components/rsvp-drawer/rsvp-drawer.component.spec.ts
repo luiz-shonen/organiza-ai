@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RsvpDrawerComponent } from './rsvp-drawer.component';
 
 describe('RsvpDrawerComponent', () => {
-  let component: RsvpDrawerComponent;
   let fixture: ComponentFixture<RsvpDrawerComponent>;
   let close: ReturnType<typeof vi.fn>;
 
@@ -16,17 +15,21 @@ describe('RsvpDrawerComponent', () => {
       providers: [
         provideNoopAnimations(),
         { provide: MatDialogRef, useValue: { close } },
-        { provide: MAT_DIALOG_DATA, useValue: { session: { name: 'Carlos', phone: '11999998888' } } },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: { session: { name: 'Carlos', phone: '11999998888' } },
+        },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RsvpDrawerComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('reveals exactly the requested ordered companion fields with accessible labels', () => {
-    const countInput = fixture.nativeElement.querySelector('[data-testid="rsvp-companions-input"]') as HTMLInputElement;
+    const countInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-companions-input"]',
+    ) as HTMLInputElement;
     countInput.value = '3';
     countInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -38,7 +41,9 @@ describe('RsvpDrawerComponent', () => {
   });
 
   it('prevents submission and identifies a blank revealed companion', () => {
-    const countInput = fixture.nativeElement.querySelector('[data-testid="rsvp-companions-input"]') as HTMLInputElement;
+    const countInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-companions-input"]',
+    ) as HTMLInputElement;
     countInput.value = '1';
     countInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
@@ -51,25 +56,33 @@ describe('RsvpDrawerComponent', () => {
   });
 
   it('returns ordered named companions and selected family members only when valid', () => {
-    const countInput = fixture.nativeElement.querySelector('[data-testid="rsvp-companions-input"]') as HTMLInputElement;
+    const countInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-companions-input"]',
+    ) as HTMLInputElement;
     countInput.value = '2';
     countInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
-    const inputs = fixture.nativeElement.querySelectorAll('[formarrayname="companions"] input') as NodeListOf<HTMLInputElement>;
+    const inputs = fixture.nativeElement.querySelectorAll(
+      '[formarrayname="companions"] input',
+    ) as NodeListOf<HTMLInputElement>;
     inputs[0].value = ' Ana ';
     inputs[0].dispatchEvent(new Event('input'));
     inputs[1].value = 'Bia';
     inputs[1].dispatchEvent(new Event('input'));
     fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
 
-    expect(close).toHaveBeenCalledWith(expect.objectContaining({
-      companions: [{ name: 'Ana' }, { name: 'Bia' }],
-    }));
+    expect(close).toHaveBeenCalledWith(
+      expect.objectContaining({
+        companions: [{ name: 'Ana' }, { name: 'Bia' }],
+      }),
+    );
   });
 
   it('rejects a companion count greater than ten', () => {
-    const countInput = fixture.nativeElement.querySelector('[data-testid="rsvp-companions-input"]') as HTMLInputElement;
+    const countInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-companions-input"]',
+    ) as HTMLInputElement;
     countInput.value = '11';
     countInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();

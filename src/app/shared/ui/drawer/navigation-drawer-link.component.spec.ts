@@ -11,7 +11,9 @@ describe('NavigationDrawerLinkComponent', () => {
       providers: [provideNoopAnimations(), provideRouter([])],
     }).compileComponents();
 
-    const fixture: ComponentFixture<NavigationDrawerLinkComponent> = TestBed.createComponent(NavigationDrawerLinkComponent);
+    const fixture: ComponentFixture<NavigationDrawerLinkComponent> = TestBed.createComponent(
+      NavigationDrawerLinkComponent,
+    );
     fixture.componentRef.setInput('route', '/meus-eventos');
     fixture.componentRef.setInput('icon', 'calendar_month');
     fixture.componentRef.setInput('label', 'Meus eventos');

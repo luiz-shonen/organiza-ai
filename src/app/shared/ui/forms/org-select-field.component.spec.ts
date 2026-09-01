@@ -9,8 +9,11 @@ const OPTIONS: readonly OrgSelectOption[] = [
 
 describe('OrgSelectFieldComponent', () => {
   it('renders typed options and the selected model value', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgSelectFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgSelectFieldComponent> = TestBed.createComponent(OrgSelectFieldComponent);
+    await TestBed.configureTestingModule({
+      imports: [OrgSelectFieldComponent],
+    }).compileComponents();
+    const fixture: ComponentFixture<OrgSelectFieldComponent> =
+      TestBed.createComponent(OrgSelectFieldComponent);
     fixture.componentRef.setInput('label', 'Formato');
     fixture.componentRef.setInput('options', OPTIONS);
     fixture.componentRef.setInput('value', 'online');
@@ -18,14 +21,17 @@ describe('OrgSelectFieldComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('Formato');
     expect(fixture.componentInstance.value()).toBe('online');
-    expect((fixture.nativeElement.querySelector('mat-select') as HTMLElement).getAttribute('panelclass')).toBe(
-      'org-select-field__panel',
-    );
+    expect(
+      (fixture.nativeElement.querySelector('mat-select') as HTMLElement).getAttribute('panelclass'),
+    ).toBe('org-select-field__panel');
   });
 
   it('uses a safe empty state and blocks selection while disabled', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgSelectFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgSelectFieldComponent> = TestBed.createComponent(OrgSelectFieldComponent);
+    await TestBed.configureTestingModule({
+      imports: [OrgSelectFieldComponent],
+    }).compileComponents();
+    const fixture: ComponentFixture<OrgSelectFieldComponent> =
+      TestBed.createComponent(OrgSelectFieldComponent);
     fixture.componentRef.setInput('label', 'Formato');
     fixture.componentRef.setInput('options', []);
     fixture.componentRef.setInput('disabled', true);

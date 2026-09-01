@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { of } from 'rxjs';
 import { GuestService } from './guest.service';
 import { FirestoreGateway } from './firestore.gateway';
@@ -138,7 +138,9 @@ describe('GuestService', () => {
 
       expect(mockGateway.runBatch).toHaveBeenCalled();
       expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/guests/guest-123');
-      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/guests/user-123_fam-1');
+      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123_fam-1',
+      );
     });
 
     it('atomically deletes guest document and resets all claimed items for UID', async () => {
@@ -149,8 +151,12 @@ describe('GuestService', () => {
 
       expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/guests/user-123');
       expect(mockGateway.batchOps.update).toHaveBeenCalledTimes(2);
-      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100/items/item-1', { claimedBy: null });
-      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100/items/item-2', { claimedBy: null });
+      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100/items/item-1', {
+        claimedBy: null,
+      });
+      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100/items/item-2', {
+        claimedBy: null,
+      });
     });
 
     it('rejects and rolls back if batch commit fails', async () => {

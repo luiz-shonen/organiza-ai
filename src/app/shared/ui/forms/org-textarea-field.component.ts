@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef, input, model, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  forwardRef,
+  input,
+  model,
+  signal,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -7,7 +15,13 @@ import { MatInputModule } from '@angular/material/input';
   selector: 'org-textarea-field',
   standalone: true,
   imports: [MatFormFieldModule, MatInputModule],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => OrgTextareaFieldComponent), multi: true }],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OrgTextareaFieldComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-textarea-field.component.html',
   styleUrl: './org-textarea-field.component.scss',
@@ -28,10 +42,18 @@ export class OrgTextareaFieldComponent implements ControlValueAccessor {
   private onChange: (value: string) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
-  public writeValue(value: string | null): void { this.value.set(value ?? ''); }
-  public registerOnChange(onChange: (value: string) => void): void { this.onChange = onChange; }
-  public registerOnTouched(onTouched: () => void): void { this.onTouched = onTouched; }
-  public setDisabledState(disabled: boolean): void { this.disabledFromControl.set(disabled); }
+  public writeValue(value: string | null): void {
+    this.value.set(value ?? '');
+  }
+  public registerOnChange(onChange: (value: string) => void): void {
+    this.onChange = onChange;
+  }
+  public registerOnTouched(onTouched: () => void): void {
+    this.onTouched = onTouched;
+  }
+  public setDisabledState(disabled: boolean): void {
+    this.disabledFromControl.set(disabled);
+  }
 
   protected updateValue(event: Event): void {
     if (!this.disabled() && !this.disabledFromControl()) {
@@ -41,7 +63,9 @@ export class OrgTextareaFieldComponent implements ControlValueAccessor {
     }
   }
 
-  protected markTouched(): void { this.onTouched(); }
+  protected markTouched(): void {
+    this.onTouched();
+  }
   protected readonly isDisabled = () => this.disabled() || this.disabledFromControl();
   protected readonly characterCount = computed(() => this.value().length);
   protected readonly counterLabel = computed(() => {

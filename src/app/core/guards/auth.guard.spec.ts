@@ -14,7 +14,6 @@ import { User } from 'firebase/auth';
 
 describe('authGuard', () => {
   let currentUserSignal: WritableSignal<User | null>;
-  let router: Router;
   let waitForAuthReadyMock: ReturnType<typeof vi.fn>;
 
   const mockRoute = {} as ActivatedRouteSnapshot;
@@ -36,12 +35,14 @@ describe('authGuard', () => {
     TestBed.configureTestingModule({
       providers: [provideRouter([]), { provide: AuthService, useValue: authServiceMock }],
     });
-
-    router = TestBed.inject(Router);
   });
 
   it('permits access (returns true) when user is authenticated', async () => {
-    currentUserSignal.set({ uid: 'user-123', email: 'organizer@test.com', isAnonymous: false } as User);
+    currentUserSignal.set({
+      uid: 'user-123',
+      email: 'organizer@test.com',
+      isAnonymous: false,
+    } as User);
 
     const result = await TestBed.runInInjectionContext(() => authGuard(mockRoute, mockState));
 
@@ -79,7 +80,7 @@ describe('authGuard', () => {
             authReadyResolved = true;
             resolve();
           };
-        })
+        }),
     );
 
     currentUserSignal.set({ uid: 'user-123', isAnonymous: false } as User);

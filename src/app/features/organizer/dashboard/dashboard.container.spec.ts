@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { Router, provideRouter } from '@angular/router';
+import { provideRouter } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { BehaviorSubject } from 'rxjs';
@@ -169,14 +169,16 @@ describe('DashboardContainer', () => {
         expect.objectContaining({ id: 'evt-1' }),
         expect.objectContaining({ id: 'evt-2' }),
         expect.objectContaining({ id: 'evt-3' }),
-      ])
+      ]),
     );
   });
 
   it('should render elements with standardized data-testid attributes', () => {
     const dashboardSection = fixture.nativeElement.querySelector('[data-testid="dashboard-page"]');
     const createBtn = fixture.nativeElement.querySelector('[data-testid="create-event-btn"]');
-    const eventCards = fixture.nativeElement.querySelectorAll('[data-testid="organizer-event-card"]');
+    const eventCards = fixture.nativeElement.querySelectorAll(
+      '[data-testid="organizer-event-card"]',
+    );
 
     expect(dashboardSection).toBeTruthy();
     expect(createBtn).toBeTruthy();

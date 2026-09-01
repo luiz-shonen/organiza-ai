@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, forwardRef, input, model, signal, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  forwardRef,
+  input,
+  model,
+  signal,
+  ViewEncapsulation,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +25,13 @@ function normalizeSearchText(value: string): string {
   selector: 'org-autocomplete-field',
   standalone: true,
   imports: [MatAutocompleteModule, MatFormFieldModule, MatInputModule],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => OrgAutocompleteFieldComponent), multi: true }],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OrgAutocompleteFieldComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The Material option panel belongs to the CDK overlay. Its stable panel class
   // keeps the overlay rules owned by this closed component.
@@ -54,9 +69,15 @@ export class OrgAutocompleteFieldComponent implements ControlValueAccessor {
     this.query.set(this.options().find((option) => option.value === value)?.label ?? '');
   }
 
-  public registerOnChange(onChange: (value: string | null) => void): void { this.onChange = onChange; }
-  public registerOnTouched(onTouched: () => void): void { this.onTouched = onTouched; }
-  public setDisabledState(disabled: boolean): void { this.disabledFromControl.set(disabled); }
+  public registerOnChange(onChange: (value: string | null) => void): void {
+    this.onChange = onChange;
+  }
+  public registerOnTouched(onTouched: () => void): void {
+    this.onTouched = onTouched;
+  }
+  public setDisabledState(disabled: boolean): void {
+    this.disabledFromControl.set(disabled);
+  }
 
   protected updateQuery(event: Event): void {
     if (this.isDisabled()) {
@@ -82,5 +103,7 @@ export class OrgAutocompleteFieldComponent implements ControlValueAccessor {
     this.onChange(option.value);
   }
 
-  protected markTouched(): void { this.onTouched(); }
+  protected markTouched(): void {
+    this.onTouched();
+  }
 }

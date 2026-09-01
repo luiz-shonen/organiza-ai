@@ -1,6 +1,9 @@
 @use '../../../../shared/ui/tokens/semantic' as semantic;
 
-:host { display: block; height: 100%; }
+:host {
+  display: block;
+  height: 100%;
+}
 
 .rsvp-drawer {
   display: flex;
@@ -9,21 +12,77 @@
   max-width: 100%;
   overflow: hidden;
 
-  &__header, &__actions { display: flex; align-items: center; padding: 16px 12px; }
-  &__header { justify-content: space-between; gap: 12px; }
-  &__title { margin: 0; font-size: 1.35rem; color: var(--org-text-primary); }
-  &__description { margin: 4px 0 0; color: var(--org-text-secondary); font-size: .875rem; }
-  &__form { display: flex; flex: 1; min-height: 0; flex-direction: column; }
-  &__content { flex: 1; max-width: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 8px 12px; }
-  &__field { display: block; width: 100%; }
-  &__companions { display: flex; flex-direction: column; gap: 4px; }
-  &__family { margin-top: 8px; }
-  &__actions { gap: 8px; justify-content: flex-end; }
+  &__header,
+  &__actions {
+    display: flex;
+    align-items: center;
+    padding: 16px 12px;
+  }
 
-  button { min-height: 48px; }
+  &__header {
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.35rem;
+    color: var(--org-text-primary);
+  }
+
+  &__description {
+    margin: 4px 0 0;
+    color: var(--org-text-secondary);
+    font-size: 0.875rem;
+  }
+
+  &__form {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  &__content {
+    flex: 1;
+    max-width: 100%;
+    overflow: hidden auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 12px;
+  }
+
+  &__field {
+    display: block;
+    width: 100%;
+  }
+
+  &__companions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__family {
+    margin-top: 8px;
+  }
+
+  &__actions {
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  button {
+    min-height: 48px;
+  }
 
   @include semantic.tablet {
-    &__header, &__actions { padding: 20px 24px; }
-    &__content { padding: 12px 24px; }
+    &__header,
+    &__actions {
+      padding: 20px 24px;
+    }
+
+    &__content {
+      padding: 12px 24px;
+    }
   }
 }

@@ -22,9 +22,13 @@
   gap: 8px;
   padding: 0 20px;
   text-decoration: none;
-  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 
-  &:hover:not(:disabled):not([aria-disabled='true']) {
+  &:hover:not(:disabled, [aria-disabled='true']) {
     transform: translateY(-1px);
   }
 
@@ -37,6 +41,7 @@
   &--primary {
     --mdc-filled-button-container-color: var(--org-primary);
     --mdc-filled-button-label-text-color: var(--org-on-primary);
+
     background: var(--org-gradient-primary);
     color: var(--org-on-primary);
   }
@@ -44,6 +49,7 @@
   &--secondary {
     --mdc-outlined-button-label-text-color: var(--org-primary);
     --mdc-outlined-button-outline-color: var(--org-primary);
+
     background: color-mix(in srgb, var(--org-surface) 80%, transparent);
     border-color: color-mix(in srgb, var(--org-primary) 45%, transparent);
     color: var(--org-primary);
@@ -52,6 +58,7 @@
   &--danger {
     --mdc-filled-button-container-color: var(--org-error);
     --mdc-filled-button-label-text-color: var(--org-on-error);
+
     background: var(--org-error);
     color: var(--org-on-error);
   }
@@ -122,5 +129,3 @@
     --chip-selected-bg: var(--org-secondary);
   }
 }
-
-

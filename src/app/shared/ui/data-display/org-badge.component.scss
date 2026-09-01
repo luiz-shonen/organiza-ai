@@ -1,8 +1,44 @@
-:host { display: inline-flex; }
-.org-badge { align-items: center; border-radius: var(--org-radius-pill); display: inline-flex; font-size: .75rem; font-weight: 700; gap: 4px; min-height: 24px; padding: 2px 8px; }
-.org-badge--default { background: var(--org-surface-variant); color: var(--org-on-surface-variant); }
-.org-badge--primary { background: var(--org-primary); color: var(--org-on-primary); }
-.org-badge--success { background: var(--org-success); color: var(--org-on-success); }
-.org-badge--warning { background: var(--org-warning); color: var(--org-on-warning); }
-.org-badge--danger { background: var(--org-danger); color: var(--org-on-danger); }
-.org-badge--gradient { background: var(--org-gradient-primary); color: var(--org-on-primary); }
+:host {
+  display: inline-flex;
+}
+
+.org-badge {
+  align-items: center;
+  border-radius: var(--org-radius-pill);
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 700;
+  gap: 4px;
+  min-height: 24px;
+  padding: 2px 8px;
+}
+
+.org-badge--default {
+  background: var(--org-surface-variant);
+  color: var(--org-on-surface-variant);
+}
+
+.org-badge--primary {
+  background: var(--org-primary);
+  color: var(--org-on-primary);
+}
+
+.org-badge--success {
+  background: var(--org-success);
+  color: var(--org-on-success);
+}
+
+.org-badge--warning {
+  background: var(--org-warning);
+  color: var(--org-on-warning);
+}
+
+.org-badge--danger {
+  background: var(--org-danger);
+  color: var(--org-on-danger);
+}
+
+.org-badge--gradient {
+  background: var(--org-gradient-primary);
+  color: var(--org-on-primary);
+}

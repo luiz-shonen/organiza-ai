@@ -31,7 +31,6 @@
     inset: -100px; // Oversize to allow smooth panning without clipping
     width: calc(100% + 200px);
     height: calc(100% + 200px);
-
     background-image: 
       /* 6 Garlands */
       url('/seasonal/junina-garland.svg'),
@@ -48,7 +47,6 @@
       url('/seasonal/junina-lantern.svg'),
       /* 2 Bonfires */ url('/seasonal/junina-bonfire.svg'),
       url('/seasonal/junina-bonfire.svg');
-
     background-size: 
       /* Garlands - varying widths and heights for parallax feel */
       1000px 35px,
@@ -65,7 +63,6 @@
       55px 110px,
       /* Bonfires */ 140px 160px,
       140px 160px;
-
     background-position: 
       /* Garlands distributed across Y axis (Top half only) */
       0 5%,
@@ -82,7 +79,6 @@
       65% 35%,
       /* Bonfires in bottom corners */ left 150px bottom 120px,
       right 150px bottom 120px;
-
     background-repeat: 
       /* Garlands repeat horizontally (6 lines) */
       repeat-x,
@@ -99,7 +95,6 @@
       no-repeat,
       /* Bonfires do not repeat */ no-repeat,
       no-repeat;
-
     animation: panSeasonalTheme 60s linear infinite;
   }
 
@@ -161,36 +156,43 @@
       left: 6%;
       animation-duration: 12s;
     }
+
     &--2 {
       left: 18%;
       animation-duration: 15s;
       animation-delay: 2s;
     }
+
     &--3 {
       left: 30%;
       animation-duration: 10s;
       animation-delay: 4s;
     }
+
     &--4 {
       left: 44%;
       animation-duration: 14s;
       animation-delay: 1s;
     }
+
     &--5 {
       left: 56%;
       animation-duration: 11s;
       animation-delay: 5s;
     }
+
     &--6 {
       left: 68%;
       animation-duration: 13s;
       animation-delay: 3s;
     }
+
     &--7 {
       left: 80%;
       animation-duration: 16s;
       animation-delay: 0.5s;
     }
+
     &--8 {
       left: 90%;
       animation-duration: 12s;
@@ -260,6 +262,7 @@
       width: 5px;
       height: 5px;
     }
+
     &--2 {
       left: 35%;
       bottom: 30%;
@@ -267,6 +270,7 @@
       height: 4px;
       animation-delay: 1.2s;
     }
+
     &--3 {
       left: 50%;
       bottom: 50%;
@@ -274,6 +278,7 @@
       height: 6px;
       animation-delay: 0.6s;
     }
+
     &--4 {
       left: 65%;
       bottom: 35%;
@@ -281,6 +286,7 @@
       height: 5px;
       animation-delay: 2s;
     }
+
     &--5 {
       left: 80%;
       bottom: 45%;
@@ -288,6 +294,7 @@
       height: 4px;
       animation-delay: 0.8s;
     }
+
     &--6 {
       left: 25%;
       bottom: 55%;
@@ -295,6 +302,7 @@
       height: 6px;
       animation-delay: 3s;
     }
+
     &--7 {
       left: 55%;
       bottom: 25%;
@@ -302,6 +310,7 @@
       height: 3px;
       animation-delay: 1.5s;
     }
+
     &--8 {
       left: 75%;
       bottom: 60%;
@@ -322,24 +331,28 @@
       width: 85px;
       height: 85px;
     }
+
     &--ny2 {
       top: 15%;
       right: 12%;
       width: 100px;
       height: 100px;
     }
+
     &--ny3 {
       top: 5%;
       left: 40%;
       width: 70px;
       height: 70px;
     }
+
     &--ny4 {
       top: 25%;
       left: 25%;
       width: 60px;
       height: 60px;
     }
+
     &--ny5 {
       top: 20%;
       right: 30%;
@@ -356,12 +369,15 @@
     transform: translateY(-20px) rotate(0deg);
     opacity: 0;
   }
+
   10% {
     opacity: 0.7;
   }
+
   90% {
     opacity: 0.5;
   }
+
   100% {
     transform: translateY(100vh) translateX(30px) rotate(360deg);
     opacity: 0;
@@ -373,12 +389,15 @@
     transform: translateY(0) scale(1);
     opacity: 0;
   }
+
   10% {
     opacity: 0.8;
   }
+
   80% {
     opacity: 0.4;
   }
+
   100% {
     transform: translateY(-180px) scale(0.2);
     opacity: 0;
@@ -403,6 +422,7 @@
       left 150px bottom 120px,
       right 150px bottom 120px; /* Bonfires fixed */
   }
+
   100% {
     /* Different X panning speeds for parallax effect */
     background-position:

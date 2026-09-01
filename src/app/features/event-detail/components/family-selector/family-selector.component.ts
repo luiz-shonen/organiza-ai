@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -57,7 +50,8 @@ export class FamilySelectorComponent {
   protected readonly inlinePhone = signal<string>('');
 
   protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
-  protected readonly relationshipAutocompleteOptions: readonly OrgSelectOption[] = this.relationshipOptions;
+  protected readonly relationshipAutocompleteOptions: readonly OrgSelectOption[] =
+    this.relationshipOptions;
 
   protected readonly allSelected = computed(() => {
     const list = this.members();

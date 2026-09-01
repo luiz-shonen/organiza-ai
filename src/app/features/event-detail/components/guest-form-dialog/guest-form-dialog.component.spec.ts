@@ -2,10 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  GuestFormDialogComponent,
-  GuestFormDialogData,
-} from './guest-form-dialog.component';
+import { GuestFormDialogComponent, GuestFormDialogData } from './guest-form-dialog.component';
 import { FamilyMember } from '../../../../core/models';
 
 describe('GuestFormDialogComponent', () => {

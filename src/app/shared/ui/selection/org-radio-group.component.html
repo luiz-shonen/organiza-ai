@@ -3,7 +3,9 @@
   @if (options().length > 0) {
     <mat-radio-group [disabled]="disabled()" [value]="value()" (change)="updateValue($event.value)">
       @for (option of options(); track option.value) {
-        <mat-radio-button [disabled]="option.disabled ?? false" [value]="option.value">{{ option.label }}</mat-radio-button>
+        <mat-radio-button [disabled]="option.disabled ?? false" [value]="option.value">{{
+          option.label
+        }}</mat-radio-button>
       }
     </mat-radio-group>
   } @else {

@@ -15,7 +15,6 @@ import {
   DrawerService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
-import { MatDialog } from '@angular/material/dialog';
 import { MatStepper } from '@angular/material/stepper';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { By } from '@angular/platform-browser';
@@ -32,7 +31,7 @@ describe('EventEditorContainer', () => {
   let component: EventEditorContainer;
   let fixture: ComponentFixture<EventEditorContainer>;
 
-  let mockCurrentUserSignal = signal<{ uid: string; email: string } | null>({
+  const mockCurrentUserSignal = signal<{ uid: string; email: string } | null>({
     uid: 'owner-uid',
     email: 'owner@test.com',
   });
@@ -84,10 +83,6 @@ describe('EventEditorContainer', () => {
     info: ReturnType<typeof vi.fn>;
   };
 
-  let mockDialog: {
-    open: ReturnType<typeof vi.fn>;
-  };
-
   beforeEach(async () => {
     mockCurrentUserSignal.set({ uid: 'owner-uid', email: 'owner@test.com' });
 
@@ -113,10 +108,6 @@ describe('EventEditorContainer', () => {
       success: vi.fn(),
       error: vi.fn(),
       info: vi.fn(),
-    };
-
-    mockDialog = {
-      open: vi.fn(),
     };
 
     await TestBed.configureTestingModule({

@@ -2,7 +2,10 @@ import { test, expect } from '../fixtures/test.fixture';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 test.describe('Authentication Guards and Form Validation', () => {
-  test('should redirect unauthenticated access from protected routes to login', async ({ page, loginPage }) => {
+  test('should redirect unauthenticated access from protected routes to login', async ({
+    page,
+    loginPage,
+  }) => {
     // Attempt to access /meus-eventos without authentication
     await page.goto('/meus-eventos');
     await expect(page).toHaveURL(/\/login/);
@@ -14,7 +17,10 @@ test.describe('Authentication Guards and Form Validation', () => {
     await loginPage.assertLoaded();
   });
 
-  test('should redirect an anonymous RSVP session away from organizer routes', async ({ page, loginPage }) => {
+  test('should redirect an anonymous RSVP session away from organizer routes', async ({
+    page,
+    loginPage,
+  }) => {
     await setupMockAuthSession(page, {
       uid: 'anonymous-rsvp-route-uid',
       isAnonymous: true,
@@ -26,7 +32,10 @@ test.describe('Authentication Guards and Form Validation', () => {
     await loginPage.assertLoaded();
   });
 
-  test('should display inline validation errors when submitting invalid email and password', async ({ page, loginPage }) => {
+  test('should display inline validation errors when submitting invalid email and password', async ({
+    page,
+    loginPage,
+  }) => {
     await loginPage.goto('/login');
     await loginPage.assertLoaded();
 
@@ -41,8 +50,12 @@ test.describe('Authentication Guards and Form Validation', () => {
     await expect(loginPage.submitBtn).toBeDisabled();
 
     // Inline error messages should be displayed
-    const emailError = page.getByRole('alert').filter({ hasText: /Digite um e-mail válido|E-mail é obrigatório/i });
-    const passwordError = page.getByRole('alert').filter({ hasText: /Mínimo 6 caracteres|Senha é obrigatória/i });
+    const emailError = page
+      .getByRole('alert')
+      .filter({ hasText: /Digite um e-mail válido|E-mail é obrigatório/i });
+    const passwordError = page
+      .getByRole('alert')
+      .filter({ hasText: /Mínimo 6 caracteres|Senha é obrigatória/i });
 
     await expect(emailError).toBeVisible();
     await expect(emailError).toContainText('Digite um e-mail válido');

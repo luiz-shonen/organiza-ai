@@ -35,7 +35,9 @@ describe('RsvpCardComponent', () => {
       const subtitle = compiled.querySelector('.rsvp-card__subtitle');
       expect(subtitle?.textContent).toContain('5 pessoa(s) confirmada(s)');
 
-      const confirmBtn = compiled.querySelector('.rsvp-card__confirm-btn button') as HTMLButtonElement;
+      const confirmBtn = compiled.querySelector(
+        '.rsvp-card__confirm-btn button',
+      ) as HTMLButtonElement;
       expect(confirmBtn).toBeTruthy();
       expect(confirmBtn.textContent).toContain('Confirmar Presença');
     });

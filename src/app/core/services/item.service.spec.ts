@@ -41,7 +41,10 @@ describe('ItemService', () => {
       emitted = items;
     });
 
-    expect(mockGateway.collectionSnapshot).toHaveBeenCalledWith('events/evt-100/items', expect.anything());
+    expect(mockGateway.collectionSnapshot).toHaveBeenCalledWith(
+      'events/evt-100/items',
+      expect.anything(),
+    );
     expect(emitted).toEqual(mockItems);
   });
 

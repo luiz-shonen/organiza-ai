@@ -4,7 +4,6 @@
 @use './app/shared/ui/forms/org-field-label';
 @use './app/shared/ui/actions/org-actions';
 @use './app/shared/ui/layout/org-form-grid';
-
 @include semantic.apply;
 
 html {
@@ -61,6 +60,7 @@ html {
   // Tema Dark
   &.dark {
     color-scheme: dark;
+
     @include mat.theme(
       (
         color: (
@@ -85,7 +85,6 @@ html {
     --mat-sys-on-tertiary: var(--org-on-tertiary);
     --mat-sys-tertiary-container: var(--org-tertiary-container);
     --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
-
     --mat-sys-background: var(--org-background-dark);
     --mat-sys-on-background: var(--org-on-background-dark);
     --mat-sys-surface: var(--org-surface-dark);
@@ -118,7 +117,7 @@ mat-icon:not(.org-icon),
 .material-icons:not(.org-icon),
 .material-icons-outlined:not(.org-icon),
 .material-symbols-outlined:not(.org-icon) {
-  font-family: 'Material Icons', 'Material Icons Outlined' !important;
+  font-family: 'Material Icons', 'Material Icons Outlined', sans-serif !important;
   font-weight: normal !important;
   font-style: normal !important;
   line-height: 1 !important;
@@ -129,17 +128,17 @@ mat-icon:not(.org-icon),
   justify-content: center !important;
   vertical-align: middle !important;
   white-space: nowrap !important;
-  word-wrap: normal !important;
+  overflow-wrap: normal !important;
   direction: ltr !important;
   -webkit-font-smoothing: antialiased !important;
 }
 
 /* Clear Disabled Button State & Cursor Indication */
-button:not(.org-button):not(.org-icon-button):disabled,
-button:not(.org-button):not(.org-icon-button)[disabled],
-.mat-mdc-button-disabled:not(.org-button):not(.org-icon-button),
-.mat-mdc-button-base:not(.org-button):not(.org-icon-button):disabled,
-.mat-mdc-button-base:not(.org-button):not(.org-icon-button)[disabled] {
+button:not(.org-button, .org-icon-button):disabled,
+button:not(.org-button, .org-icon-button)[disabled],
+.mat-mdc-button-disabled:not(.org-button, .org-icon-button),
+.mat-mdc-button-base:not(.org-button, .org-icon-button):disabled,
+.mat-mdc-button-base:not(.org-button, .org-icon-button)[disabled] {
   cursor: not-allowed !important;
   pointer-events: auto !important;
   opacity: 0.55 !important;
@@ -226,6 +225,7 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   100% {
     opacity: 0.7;
   }
+
   50% {
     opacity: 0.35;
   }
@@ -246,6 +246,7 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   background-color: var(--mat-sys-background);
   pointer-events: none;
 }
+
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -253,6 +254,7 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   opacity: 0.4;
   animation: float 20s infinite alternate ease-in-out;
 }
+
 .blob-1 {
   top: -10%;
   left: -10%;
@@ -260,6 +262,7 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   height: 50vw;
   background: var(--mat-sys-primary-container);
 }
+
 .blob-2 {
   bottom: -20%;
   right: -10%;
@@ -268,6 +271,7 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   background: var(--mat-sys-secondary-container);
   animation-delay: -5s;
 }
+
 .blob-3 {
   top: 40%;
   left: 30%;
@@ -282,9 +286,11 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   0% {
     transform: translate(0, 0) scale(1);
   }
+
   50% {
     transform: translate(5%, 10%) scale(1.05);
   }
+
   100% {
     transform: translate(-5%, -5%) scale(0.95);
   }
@@ -327,7 +333,13 @@ button:not(.org-button):not(.org-icon-button)[disabled],
 }
 
 /* Angular Material Button Theme Integration & Master Icon Alignment System */
-.mat-mdc-button-base:not(.org-button):not(.org-icon-button):not(.navigation-drawer__route):not(.navigation-drawer__theme-option):not(.navigation-drawer__logout) {
+.mat-mdc-button-base:not(
+  .org-button,
+  .org-icon-button,
+  .navigation-drawer__route,
+  .navigation-drawer__theme-option,
+  .navigation-drawer__logout
+) {
   position: relative !important;
   overflow: hidden !important;
   border-radius: 28px !important;
@@ -367,7 +379,14 @@ button:not(.org-button):not(.org-icon-button)[disabled],
 }
 
 /* Icon margin exclusively for text buttons with leading icons */
-.mat-mdc-button-base:not(.org-button):not(.org-icon-button):not(.mat-mdc-icon-button):not(.navigation-drawer__route):not(.navigation-drawer__theme-option):not(.navigation-drawer__logout) {
+.mat-mdc-button-base:not(
+  .org-button,
+  .org-icon-button,
+  .mat-mdc-icon-button,
+  .navigation-drawer__route,
+  .navigation-drawer__theme-option,
+  .navigation-drawer__logout
+) {
   mat-icon,
   .mat-icon,
   .material-icons,
@@ -436,15 +455,15 @@ button:not(.org-button):not(.org-icon-button)[disabled],
   }
 }
 
-.mat-mdc-unelevated-button:not([color='accent']):not([color='warn']),
-.mat-mdc-flat-button:not([color='accent']):not([color='warn']),
+.mat-mdc-unelevated-button:not([color='accent'], [color='warn']),
+.mat-mdc-flat-button:not([color='accent'], [color='warn']),
 button.btn-primary-org {
   background: var(--org-gradient-primary) !important;
-  color: #ffffff !important;
+  color: #fff !important;
   font-weight: 700 !important;
   box-shadow:
     inset 0 0 0 1.5px rgba(255, 255, 255, 0.3),
-    0px 10px 20px color-mix(in srgb, var(--org-primary) 30%, transparent) !important;
+    0 10px 20px color-mix(in srgb, var(--org-primary) 30%, transparent) !important;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease !important;
@@ -453,7 +472,7 @@ button.btn-primary-org {
     transform: translateY(-1px) scale(1.02) !important;
     box-shadow:
       inset 0 0 0 1.5px rgba(255, 255, 255, 0.4),
-      0px 14px 28px color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
+      0 14px 28px color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
   }
 
   &:active:not(:disabled) {
@@ -494,9 +513,9 @@ button.btn-primary-org {
   -webkit-box-decoration-break: clone;
 }
 
-*:not(mat-icon):not(.mat-icon):not(.material-icons):not(.material-symbols-outlined),
-*::before:not(mat-icon):not(.mat-icon),
-*::after:not(mat-icon):not(.mat-icon),
+*:not(mat-icon, .mat-icon, .material-icons, .material-symbols-outlined),
+*::before:not(mat-icon, .mat-icon),
+*::after:not(mat-icon, .mat-icon),
 body,
 input,
 textarea,
@@ -526,10 +545,12 @@ input[type='time'] {
   background-size: 200% auto;
   animation: gradientMove 2s ease infinite alternate;
 }
+
 @keyframes gradientMove {
   0% {
     background-position: 0% 50%;
   }
+
   100% {
     background-position: 100% 50%;
   }
@@ -542,31 +563,37 @@ input[type='time'] {
     --chip-color: #d35400;
     --chip-selected-bg: #e67e22;
   }
+
   &.cat-casamento {
     --chip-bg: #fce1ed;
     --chip-color: #8e44ad;
     --chip-selected-bg: #9b59b6;
   }
+
   &.cat-festa {
     --chip-bg: #ffb380;
     --chip-color: #c0392b;
     --chip-selected-bg: #e74c3c;
   }
+
   &.cat-churrasco {
     --chip-bg: #d5dbdb;
     --chip-color: #2c3e50;
     --chip-selected-bg: #34495e;
   }
+
   &.cat-happy {
     --chip-bg: #aed6f1;
     --chip-color: #2980b9;
     --chip-selected-bg: #3498db;
   }
+
   &.cat-formatura {
     --chip-bg: #d2b4de;
     --chip-color: #4a235a;
     --chip-selected-bg: #8e44ad;
   }
+
   &.cat-outros {
     --chip-bg: #e5e7e9;
     --chip-color: #7f8c8d;
@@ -615,7 +642,7 @@ input[type='time'] {
       .mat-mdc-chip-action-label,
       span,
       mat-icon {
-        color: #ffffff !important;
+        color: #fff !important;
       }
     }
   }

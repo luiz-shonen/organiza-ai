@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, forwardRef, input, model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  input,
+  model,
+  output,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,7 +14,15 @@ import { MatInputModule } from '@angular/material/input';
 
 export type OrgTextFieldType = 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
 
-const VALID_TYPES: ReadonlySet<OrgTextFieldType> = new Set(['email', 'number', 'password', 'search', 'tel', 'text', 'url']);
+const VALID_TYPES: ReadonlySet<OrgTextFieldType> = new Set([
+  'email',
+  'number',
+  'password',
+  'search',
+  'tel',
+  'text',
+  'url',
+]);
 
 function normalizeType(value: unknown): OrgTextFieldType {
   return typeof value === 'string' && VALID_TYPES.has(value as OrgTextFieldType)
@@ -19,7 +34,13 @@ function normalizeType(value: unknown): OrgTextFieldType {
   selector: 'org-text-field',
   standalone: true,
   imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => OrgTextFieldComponent), multi: true }],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OrgTextFieldComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-text-field.component.html',
   styleUrl: './org-text-field.component.scss',
@@ -52,12 +73,24 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
     }
   }
 
-  public writeValue(value: string | null): void { this.value.set(value ?? ''); }
-  public registerOnChange(fn: (value: string) => void): void { this.onChange = fn; }
-  public registerOnTouched(fn: () => void): void { this.onTouched = fn; }
-  public setDisabledState(disabled: boolean): void { this.disabledState = disabled; }
+  public writeValue(value: string | null): void {
+    this.value.set(value ?? '');
+  }
+  public registerOnChange(fn: (value: string) => void): void {
+    this.onChange = fn;
+  }
+  public registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+  public setDisabledState(disabled: boolean): void {
+    this.disabledState = disabled;
+  }
 
-  protected markTouched(): void { this.onTouched(); }
-  protected requestPasswordVisibilityToggle(): void { this.togglePasswordVisibility.emit(); }
+  protected markTouched(): void {
+    this.onTouched();
+  }
+  protected requestPasswordVisibilityToggle(): void {
+    this.togglePasswordVisibility.emit();
+  }
   protected disabledState = false;
 }

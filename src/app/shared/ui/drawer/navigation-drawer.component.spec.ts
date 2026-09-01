@@ -60,7 +60,9 @@ describe('NavigationDrawerComponent', () => {
     fixture.detectChanges();
 
     const root = fixture.nativeElement as HTMLElement;
-    const overview = root.querySelector<HTMLAnchorElement>('[data-testid="drawer-design-system-overview"]');
+    const overview = root.querySelector<HTMLAnchorElement>(
+      '[data-testid="drawer-design-system-overview"]',
+    );
 
     expect(overview?.getAttribute('href')).toBe('/design-system#overview');
     expect(overview?.getAttribute('aria-current')).toBe('location');

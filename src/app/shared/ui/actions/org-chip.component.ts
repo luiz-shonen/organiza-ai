@@ -3,7 +3,13 @@ import { MatChipsModule } from '@angular/material/chips';
 
 export type OrgChipVariant = 'default' | 'primary' | 'success' | 'warning' | 'accent';
 
-const VALID_VARIANTS: ReadonlySet<OrgChipVariant> = new Set(['default', 'primary', 'success', 'warning', 'accent']);
+const VALID_VARIANTS: ReadonlySet<OrgChipVariant> = new Set([
+  'default',
+  'primary',
+  'success',
+  'warning',
+  'accent',
+]);
 
 function normalizeVariant(value: unknown): OrgChipVariant {
   return typeof value === 'string' && VALID_VARIANTS.has(value as OrgChipVariant)
@@ -21,7 +27,9 @@ function normalizeVariant(value: unknown): OrgChipVariant {
 })
 export class OrgChipComponent {
   public readonly label = input.required<string>();
-  public readonly variant = input<OrgChipVariant, unknown>('default', { transform: normalizeVariant });
+  public readonly variant = input<OrgChipVariant, unknown>('default', {
+    transform: normalizeVariant,
+  });
   public readonly selectable = input(false);
   public readonly selected = input(false);
   public readonly disabled = input(false);

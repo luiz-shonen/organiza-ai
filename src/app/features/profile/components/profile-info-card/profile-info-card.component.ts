@@ -1,13 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-  signal,
-  effect,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal, effect } from '@angular/core';
 import type { UserProfile } from '../../../../core/models';
-import { OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../../shared/ui';
+import {
+  OrgButtonComponent,
+  OrgIconButtonComponent,
+  OrgIconComponent,
+  OrgSurfaceComponent,
+  OrgTextFieldComponent,
+} from '../../../../shared/ui';
 
 @Component({
   selector: 'app-profile-info-card',

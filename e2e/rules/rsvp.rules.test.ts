@@ -6,7 +6,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { deleteDoc, doc, setDoc, writeBatch } from 'firebase/firestore';
+import { doc, setDoc, writeBatch } from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 const projectId = 'organizaai-rsvp-rules';
@@ -43,6 +43,7 @@ beforeAll(async () => {
     },
   });
 });
+
 afterEach(async () => {
   await testEnvironment.clearFirestore();
 });
@@ -77,9 +78,7 @@ describe('verified RSVP Firestore rules contract', () => {
     const db = testEnvironment.authenticatedContext('verified-user').firestore();
     const { companionsCount: _companionsCount, ...missingCount } = primaryGuest('verified-user');
 
-    await assertFails(
-      setDoc(doc(db, 'events/event-1/guests/verified-user'), missingCount),
-    );
+    await assertFails(setDoc(doc(db, 'events/event-1/guests/verified-user'), missingCount));
   });
 
   it('allows one atomic batch with a named primary RSVP and linked family record', async () => {
@@ -127,7 +126,9 @@ describe('verified RSVP Firestore rules contract', () => {
     await assertSucceeds(batch.commit());
 
     await testEnvironment.withSecurityRulesDisabled(async (context) => {
-      await expect(context.firestore().collection('events/event-1/guests').get()).resolves.toMatchObject({
+      await expect(
+        context.firestore().collection('events/event-1/guests').get(),
+      ).resolves.toMatchObject({
         empty: true,
       });
     });

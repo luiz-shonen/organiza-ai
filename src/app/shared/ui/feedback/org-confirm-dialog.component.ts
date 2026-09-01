@@ -16,8 +16,13 @@ export type { OrgConfirmDialogData };
 })
 export class OrgConfirmDialogComponent {
   public readonly data = inject<OrgConfirmDialogData>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject<MatDialogRef<OrgConfirmDialogComponent, boolean>>(MatDialogRef);
+  private readonly dialogRef =
+    inject<MatDialogRef<OrgConfirmDialogComponent, boolean>>(MatDialogRef);
 
-  protected cancel(): void { this.dialogRef.close(false); }
-  protected confirm(): void { this.dialogRef.close(true); }
+  protected cancel(): void {
+    this.dialogRef.close(false);
+  }
+  protected confirm(): void {
+    this.dialogRef.close(true);
+  }
 }

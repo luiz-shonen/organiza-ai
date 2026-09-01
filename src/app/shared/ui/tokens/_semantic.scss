@@ -47,11 +47,11 @@ $radius-full: 9999px;
   :root {
     // Canonical Brand Triple from Logo (Vibrant Pink, Orange, Yellow)
     --org-primary: #ff4d94;
-    --org-on-primary: #ffffff;
+    --org-on-primary: #fff;
     --org-primary-container: #ff80b3;
     --org-on-primary-container: #3d001a;
     --org-secondary: #ff8c42;
-    --org-on-secondary: #ffffff;
+    --org-on-secondary: #fff;
     --org-secondary-container: #ffb380;
     --org-on-secondary-container: #3d1400;
     --org-tertiary: #ffc837;
@@ -61,19 +61,19 @@ $radius-full: 9999px;
 
     // Status & Functional Tokens
     --org-error: #ba1a1a;
-    --org-on-error: #ffffff;
+    --org-on-error: #fff;
     --org-error-container: #ffdad6;
     --org-on-error-container: #93000a;
     --org-danger: #ef4444;
-    --org-on-danger: #ffffff;
+    --org-on-danger: #fff;
     --org-warning: #f59e0b;
-    --org-on-warning: #000000;
+    --org-on-warning: #000;
     --org-success: #176b35;
-    --org-on-success: #ffffff;
+    --org-on-success: #fff;
     --org-success-container: #d8f3dc;
     --org-on-success-container: #0d3d1d;
     --org-info: #155eef;
-    --org-on-info: #ffffff;
+    --org-on-info: #fff;
     --org-info-container: #dbe8ff;
     --org-on-info-container: #002b75;
 
@@ -84,7 +84,6 @@ $radius-full: 9999px;
     --org-on-surface-variant: #4f3d46;
     --org-border: rgba(133, 115, 123, 0.2);
     --org-primary-light: #fce1ed;
-
     --org-background-light: #fff8f8;
     --org-on-background-light: #2a101f;
     --org-surface-light: #fff8f8;
@@ -93,7 +92,6 @@ $radius-full: 9999px;
     --org-on-surface-variant-light: #4f3d46;
     --org-outline-light: #85737b;
     --org-outline-variant-light: #d8c2cb;
-
     --org-background-dark: #241c31;
     --org-on-background-dark: #fdecf2;
     --org-surface-dark: #241c31;
@@ -108,7 +106,7 @@ $radius-full: 9999px;
     --org-text-secondary: #4f3d46;
     --org-text-muted: #85737b;
     --org-font-body: 'Plus Jakarta Sans', sans-serif;
-    --org-font-display: 'Fraunces', Georgia, serif;
+    --org-font-display: 'Fraunces', georgia, serif;
     --org-font-mono: 'JetBrains Mono', monospace;
     --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
     --org-type-display-line-height: 1.03;
@@ -153,9 +151,12 @@ $radius-full: 9999px;
       inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2),
       0 8px 32px rgba(35, 16, 67, 0.08);
     --org-shadow-lg: var(--org-glass-shadow);
-
     --org-gradient-primary: linear-gradient(135deg, #ff4d94 0%, #ff8c42 50%, #ffc837 100%);
-    --org-gradient-border: linear-gradient(135deg, rgba(255, 77, 148, 0.4), rgba(255, 140, 66, 0.4));
+    --org-gradient-border: linear-gradient(
+      135deg,
+      rgba(255, 77, 148, 0.4),
+      rgba(255, 140, 66, 0.4)
+    );
     --org-gradient-border-focus: var(--org-gradient-primary);
     --org-gradient-invitation: linear-gradient(135deg, #ff6b5b 0%, #ffb648 100%);
     --org-gradient-dusk: linear-gradient(160deg, #2b1f45 0%, #5b3a8c 55%, #ff6b5b 130%);
@@ -193,12 +194,16 @@ $radius-full: 9999px;
 
   html.theme-junina {
     --org-primary: #ff5722;
-    --org-on-primary: #ffffff;
+    --org-on-primary: #fff;
     --org-primary-container: #ff8a65;
     --org-secondary: #ff8c42;
     --org-tertiary: #ffb300;
     --org-gradient-primary: linear-gradient(135deg, #ff5722 0%, #ff8c42 50%, #ffb300 100%);
-    --org-gradient-border: linear-gradient(135deg, rgba(255, 87, 34, 0.56), rgba(255, 179, 0, 0.48));
+    --org-gradient-border: linear-gradient(
+      135deg,
+      rgba(255, 87, 34, 0.56),
+      rgba(255, 179, 0, 0.48)
+    );
     --org-canvas-start: #fff6df;
     --org-canvas-end: #e8f3ff;
     --org-glass-ring-color: rgba(255, 87, 34, 0.28);
@@ -206,12 +211,16 @@ $radius-full: 9999px;
 
   html.theme-natal {
     --org-primary: #b84555;
-    --org-on-primary: #ffffff;
+    --org-on-primary: #fff;
     --org-primary-container: #f1c6c9;
     --org-secondary: #d77a61;
     --org-tertiary: #deb36a;
     --org-gradient-primary: linear-gradient(135deg, #b84555 0%, #d77a61 50%, #deb36a 100%);
-    --org-gradient-border: linear-gradient(135deg, rgba(184, 69, 85, 0.58), rgba(222, 179, 106, 0.52));
+    --org-gradient-border: linear-gradient(
+      135deg,
+      rgba(184, 69, 85, 0.58),
+      rgba(222, 179, 106, 0.52)
+    );
     --org-canvas-start: #fff5f1;
     --org-canvas-end: #eef8ef;
     --org-glass-ring-color: rgba(211, 47, 47, 0.28);
@@ -219,12 +228,16 @@ $radius-full: 9999px;
 
   html.theme-pascoa {
     --org-primary: #7552a8;
-    --org-on-primary: #ffffff;
+    --org-on-primary: #fff;
     --org-primary-container: #e4d5f4;
     --org-secondary: #d2a060;
     --org-tertiary: #f4d58e;
     --org-gradient-primary: linear-gradient(135deg, #7552a8 0%, #d2a060 52%, #f4d58e 100%);
-    --org-gradient-border: linear-gradient(135deg, rgba(117, 82, 168, 0.54), rgba(244, 213, 142, 0.5));
+    --org-gradient-border: linear-gradient(
+      135deg,
+      rgba(117, 82, 168, 0.54),
+      rgba(244, 213, 142, 0.5)
+    );
     --org-canvas-start: #faf6ff;
     --org-canvas-end: #f9f3df;
     --org-glass-ring-color: rgba(109, 59, 167, 0.26);
@@ -232,15 +245,18 @@ $radius-full: 9999px;
 
   html.theme-ano-novo {
     --org-primary: #b88a33;
-    --org-on-primary: #ffffff;
+    --org-on-primary: #fff;
     --org-primary-container: #f2dfad;
     --org-secondary: #ead9a5;
     --org-tertiary: #8293b5;
     --org-gradient-primary: linear-gradient(135deg, #b88a33 0%, #ead9a5 50%, #8293b5 100%);
-    --org-gradient-border: linear-gradient(135deg, rgba(184, 138, 51, 0.54), rgba(130, 147, 181, 0.48));
+    --org-gradient-border: linear-gradient(
+      135deg,
+      rgba(184, 138, 51, 0.54),
+      rgba(130, 147, 181, 0.48)
+    );
     --org-canvas-start: #fffbed;
     --org-canvas-end: #edf1fa;
     --org-glass-ring-color: rgba(178, 122, 16, 0.28);
   }
 }
-

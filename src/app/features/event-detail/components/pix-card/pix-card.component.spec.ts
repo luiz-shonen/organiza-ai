@@ -100,7 +100,9 @@ describe('PixCardComponent', () => {
       component.copyPix.subscribe(copyPixSpy);
       component.copied.subscribe(copiedSpy);
 
-      const copyBtn = fixture.nativeElement.querySelector('.pix-card__copy-btn button') as HTMLButtonElement;
+      const copyBtn = fixture.nativeElement.querySelector(
+        '.pix-card__copy-btn button',
+      ) as HTMLButtonElement;
       expect(copyBtn).toBeTruthy();
       copyBtn.click();
 

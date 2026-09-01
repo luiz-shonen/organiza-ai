@@ -24,7 +24,7 @@ export class NavigationDrawerComponent {
 
   readonly themeChange = output<ThemeMode>();
   readonly logout = output<void>();
-  readonly close = output<void>();
+  readonly closed = output<void>();
 
   protected readonly designSystemNavigationGroups = DESIGN_SYSTEM_NAVIGATION_GROUPS;
 

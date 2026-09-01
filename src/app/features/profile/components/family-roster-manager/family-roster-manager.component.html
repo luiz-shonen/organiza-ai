@@ -1,22 +1,47 @@
 <org-surface variant="panel" class="family-roster">
   <section class="family-roster__content" aria-labelledby="family-roster-heading">
-  <header class="family-roster__header">
-    <div class="family-roster__header-title-wrap">
-      <org-icon name="group_add" size="lg" color="var(--org-primary)" />
-      <h2 id="family-roster-heading" class="family-roster__title">Minha Família</h2>
-    </div>
-    <p class="family-roster__subtitle">
-      Cadastre os membros da sua família para confirmar presença em grupo com apenas 1 clique nos eventos.
-    </p>
-  </header>
+    <header class="family-roster__header">
+      <div class="family-roster__header-title-wrap">
+        <org-icon name="group_add" size="lg" color="var(--org-primary)" />
+        <h2 id="family-roster-heading" class="family-roster__title">Minha Família</h2>
+      </div>
+      <p class="family-roster__subtitle">
+        Cadastre os membros da sua família para confirmar presença em grupo com apenas 1 clique nos
+        eventos.
+      </p>
+    </header>
 
-    <form class="family-roster__form" (ngSubmit)="onAddSubmit()" aria-label="Formulário para adicionar familiar">
+    <form
+      class="family-roster__form"
+      (ngSubmit)="onAddSubmit()"
+      aria-label="Formulário para adicionar familiar"
+    >
       <div class="family-roster__form-grid">
-        <org-text-field class="family-roster__field" label="Nome do familiar" placeholder="Ex: Lucas" [value]="newName()" (valueChange)="newName.set($event)" [required]="true" />
+        <org-text-field
+          class="family-roster__field"
+          label="Nome do familiar"
+          placeholder="Ex: Lucas"
+          [value]="newName()"
+          (valueChange)="newName.set($event)"
+          [required]="true"
+        />
 
-        <org-autocomplete-field class="family-roster__field" label="Parentesco" [options]="relationshipOptions" [value]="newRelationship()" (valueChange)="setRelationship($event)" />
+        <org-autocomplete-field
+          class="family-roster__field"
+          label="Parentesco"
+          [options]="relationshipOptions"
+          [value]="newRelationship()"
+          (valueChange)="setRelationship($event)"
+        />
 
-        <org-text-field class="family-roster__field" label="Telefone / WhatsApp (opcional)" type="tel" placeholder="(11) 99999-9999" [value]="newPhone()" (valueChange)="newPhone.set($event)" />
+        <org-text-field
+          class="family-roster__field"
+          label="Telefone / WhatsApp (opcional)"
+          type="tel"
+          placeholder="(11) 99999-9999"
+          [value]="newPhone()"
+          (valueChange)="newPhone.set($event)"
+        />
       </div>
 
       <div class="family-roster__form-actions">
@@ -37,7 +62,9 @@
         <div class="family-roster__empty" role="status">
           <org-icon name="group_add" size="lg" color="var(--org-on-surface-variant)" />
           <p class="family-roster__empty-text">Nenhum membro da família cadastrado ainda.</p>
-          <span class="family-roster__empty-hint">Use o formulário acima para cadastrar cônjuge, filhos ou parentes.</span>
+          <span class="family-roster__empty-hint"
+            >Use o formulário acima para cadastrar cônjuge, filhos ou parentes.</span
+          >
         </div>
       } @else {
         <ul class="family-roster__list" role="list" aria-label="Lista de familiares cadastrados">
@@ -50,7 +77,9 @@
               <div class="family-roster__item-info">
                 <div class="family-roster__item-name-wrap">
                   <span class="family-roster__item-name">{{ member.name }}</span>
-                  <span class="family-roster__item-badge">{{ getRelationshipLabel(member.relationship) }}</span>
+                  <span class="family-roster__item-badge">{{
+                    getRelationshipLabel(member.relationship)
+                  }}</span>
                 </div>
                 @if (member.phone) {
                   <span class="family-roster__item-phone">

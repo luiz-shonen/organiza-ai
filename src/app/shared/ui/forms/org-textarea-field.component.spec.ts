@@ -4,8 +4,11 @@ import { OrgTextareaFieldComponent } from './org-textarea-field.component';
 
 describe('OrgTextareaFieldComponent', () => {
   it('renders label, rows and the model value', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgTextareaFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgTextareaFieldComponent> = TestBed.createComponent(OrgTextareaFieldComponent);
+    await TestBed.configureTestingModule({
+      imports: [OrgTextareaFieldComponent],
+    }).compileComponents();
+    const fixture: ComponentFixture<OrgTextareaFieldComponent> =
+      TestBed.createComponent(OrgTextareaFieldComponent);
     fixture.componentRef.setInput('label', 'Mensagem');
     fixture.componentRef.setInput('rows', 4);
     fixture.componentRef.setInput('value', 'Seja bem-vindo!');
@@ -18,8 +21,11 @@ describe('OrgTextareaFieldComponent', () => {
   });
 
   it('uses an empty value by default and prevents model changes while disabled', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgTextareaFieldComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgTextareaFieldComponent> = TestBed.createComponent(OrgTextareaFieldComponent);
+    await TestBed.configureTestingModule({
+      imports: [OrgTextareaFieldComponent],
+    }).compileComponents();
+    const fixture: ComponentFixture<OrgTextareaFieldComponent> =
+      TestBed.createComponent(OrgTextareaFieldComponent);
     fixture.componentRef.setInput('label', 'Mensagem');
     fixture.componentRef.setInput('disabled', true);
     fixture.componentRef.setInput('error', 'Mensagem obrigatória.');
@@ -36,11 +42,15 @@ describe('OrgTextareaFieldComponent', () => {
   });
 
   it('supports reactive-form values and touch state', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgTextareaFieldComponent] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [OrgTextareaFieldComponent],
+    }).compileComponents();
     const fixture = TestBed.createComponent(OrgTextareaFieldComponent);
     const touched = { value: false };
     fixture.componentRef.setInput('label', 'Mensagem');
-    fixture.componentInstance.registerOnTouched(() => { touched.value = true; });
+    fixture.componentInstance.registerOnTouched(() => {
+      touched.value = true;
+    });
     fixture.componentInstance.writeValue('Mensagem inicial');
     fixture.detectChanges();
 
@@ -52,7 +62,9 @@ describe('OrgTextareaFieldComponent', () => {
   });
 
   it('renders an optional character counter and native bounds', async () => {
-    await TestBed.configureTestingModule({ imports: [OrgTextareaFieldComponent] }).compileComponents();
+    await TestBed.configureTestingModule({
+      imports: [OrgTextareaFieldComponent],
+    }).compileComponents();
     const fixture = TestBed.createComponent(OrgTextareaFieldComponent);
     fixture.componentRef.setInput('label', 'Mensagem');
     fixture.componentRef.setInput('value', 'Olá');

@@ -8,59 +8,65 @@
   <div class="item-list-card__list">
     @for (item of items(); track item.id) {
       <org-surface variant="card">
-        <article class="item-list-card__item" [class.item-list-card__item--claimed]="item.claimedBy">
-        <div class="item-list-card__item-info">
-          <!-- Status Avatar -->
-          @if (item.claimedBy) {
-            <div class="item-list-card__avatar item-list-card__avatar--claimed">
-              <mat-icon aria-hidden="true">person</mat-icon>
-            </div>
-          } @else {
-            <div class="item-list-card__avatar item-list-card__avatar--available">
-              <mat-icon aria-hidden="true">shopping_cart</mat-icon>
-            </div>
-          }
+        <article
+          class="item-list-card__item"
+          [class.item-list-card__item--claimed]="item.claimedBy"
+        >
+          <div class="item-list-card__item-info">
+            <!-- Status Avatar -->
+            @if (item.claimedBy) {
+              <div class="item-list-card__avatar item-list-card__avatar--claimed">
+                <mat-icon aria-hidden="true">person</mat-icon>
+              </div>
+            } @else {
+              <div class="item-list-card__avatar item-list-card__avatar--available">
+                <mat-icon aria-hidden="true">shopping_cart</mat-icon>
+              </div>
+            }
 
-          <div class="item-list-card__details">
-            <p class="item-list-card__name" [class.item-list-card__name--claimed]="item.claimedBy">
-              {{ item.name }}
-            </p>
-            <p
-              class="item-list-card__status"
-              [class.item-list-card__status--claimed]="item.claimedBy"
-            >
-              {{ item.claimedBy ? 'Levado por ' + item.claimedBy.name : 'Disponível' }}
-            </p>
+            <div class="item-list-card__details">
+              <p
+                class="item-list-card__name"
+                [class.item-list-card__name--claimed]="item.claimedBy"
+              >
+                {{ item.name }}
+              </p>
+              <p
+                class="item-list-card__status"
+                [class.item-list-card__status--claimed]="item.claimedBy"
+              >
+                {{ item.claimedBy ? 'Levado por ' + item.claimedBy.name : 'Disponível' }}
+              </p>
+            </div>
           </div>
-        </div>
 
-        <!-- Actions -->
-        <div class="item-list-card__actions">
-          @if (!item.claimedBy) {
-            <org-button
-              [disabled]="!currentUserId()"
-              class="item-list-card__claim-btn"
-              label="Eu levo"
-              variant="secondary"
-              [gradient]="false"
-              (pressed)="onClaim.emit(item.id!)"
-            />
-          } @else if (
-            item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()
-          ) {
-            <org-button
-              class="item-list-card__unclaim-btn"
-              label="Desistir"
-              variant="danger"
-              [gradient]="false"
-              (pressed)="onUnclaim.emit(item.id!)"
-            />
-          } @else {
-            <div class="item-list-card__check-icon" aria-label="Item já atribuído">
-              <mat-icon aria-hidden="true">check_circle</mat-icon>
-            </div>
-          }
-        </div>
+          <!-- Actions -->
+          <div class="item-list-card__actions">
+            @if (!item.claimedBy) {
+              <org-button
+                [disabled]="!currentUserId()"
+                class="item-list-card__claim-btn"
+                label="Eu levo"
+                variant="secondary"
+                [gradient]="false"
+                (pressed)="claim.emit(item.id!)"
+              />
+            } @else if (
+              item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()
+            ) {
+              <org-button
+                class="item-list-card__unclaim-btn"
+                label="Desistir"
+                variant="danger"
+                [gradient]="false"
+                (pressed)="unclaim.emit(item.id!)"
+              />
+            } @else {
+              <div class="item-list-card__check-icon" aria-label="Item já atribuído">
+                <mat-icon aria-hidden="true">check_circle</mat-icon>
+              </div>
+            }
+          </div>
         </article>
       </org-surface>
     } @empty {

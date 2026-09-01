@@ -41,7 +41,6 @@ import {
   OrgIconButtonComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
-  OrgSectionComponent,
   OrgStepComponent,
   OrgStepperComponent,
   OrgSurfaceComponent,

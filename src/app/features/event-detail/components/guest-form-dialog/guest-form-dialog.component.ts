@@ -1,20 +1,8 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogModule,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import {
-  GuestSession,
-  FamilyMember,
-} from '../../../../core/models';
+import { GuestSession, FamilyMember } from '../../../../core/models';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
@@ -51,7 +39,9 @@ export interface GuestFormDialogResult {
 })
 export class GuestFormDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<GuestFormDialogComponent>);
-  private readonly data: GuestFormDialogData = inject(MAT_DIALOG_DATA, { optional: true }) ?? { session: null };
+  private readonly data: GuestFormDialogData = inject(MAT_DIALOG_DATA, { optional: true }) ?? {
+    session: null,
+  };
   private readonly fb = inject(FormBuilder);
 
   readonly familyMembers = signal<FamilyMember[]>(this.data.familyMembers ?? []);

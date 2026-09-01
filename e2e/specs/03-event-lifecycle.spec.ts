@@ -128,11 +128,9 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await eventEditorPage.assertLoaded();
 
     // Verify stepper step labels are rendered
-    await expect(page.locator('.mat-step-header, .mat-step-label, .editor__step-progress-title, org-step')).toContainText([
-      'Informações',
-      'Endereço',
-      'Pix',
-    ]);
+    await expect(
+      page.locator('.mat-step-header, .mat-step-label, .editor__step-progress-title, org-step'),
+    ).toContainText(['Informações', 'Endereço', 'Pix']);
 
     if ((page.viewportSize()?.width ?? 0) < 600) {
       const stepProgress = page.getByTestId('event-step-progress');
@@ -144,13 +142,19 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Touch and blur title input without value to trigger validation
     await eventEditorPage.titleInput.focus();
     await eventEditorPage.titleInput.blur();
-    const titleError = page.locator('mat-error, .org-text-field__error').filter({ hasText: /Título é obrigatório/i }).first();
+    const titleError = page
+      .locator('mat-error, .org-text-field__error')
+      .filter({ hasText: /Título é obrigatório/i })
+      .first();
     await expect(titleError).toBeVisible();
 
     // Touch and blur date input without value to trigger validation
     await eventEditorPage.dateInput.focus();
     await eventEditorPage.dateInput.blur();
-    const dateError = page.locator('mat-error, .org-date-field__error, .org-text-field__error, [role="alert"]').filter({ hasText: /Data é obrigatória/i }).first();
+    const dateError = page
+      .locator('mat-error, .org-date-field__error, .org-text-field__error, [role="alert"]')
+      .filter({ hasText: /Data é obrigatória/i })
+      .first();
     await expect(dateError).toBeVisible();
 
     // Next step button should remain disabled when form is invalid
@@ -210,7 +214,11 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(confirmDialog.dialogRoot).toBeHidden();
 
     // Feedback snackbar confirmation
-    const snackBar = page.locator('[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]').first();
+    const snackBar = page
+      .locator(
+        '[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]',
+      )
+      .first();
     await expect(snackBar).toContainText(/Evento cancelado com sucesso/i);
   });
 });

@@ -2,12 +2,13 @@
 
 > **Version:** 2.0.0 (Consolidated)  
 > **Status:** Production / Living Architecture  
-> **Showcase Route:** `/design-system` *(Guarded by `superAdminGuard`)*  
-> **Audience:** Core Developers, UX Designers, Feature Architects  
+> **Showcase Route:** `/design-system` _(Guarded by `superAdminGuard`)_  
+> **Audience:** Core Developers, UX Designers, Feature Architects
 
 ---
 
 ## Table of Contents
+
 1. [Brand Identity & Festive Narrative](#1-brand-identity--festive-narrative)
 2. [Color Palette & Semantic Tokens](#2-color-palette--semantic-tokens)
 3. [Typography Hierarchy](#3-typography-hierarchy)
@@ -32,6 +33,7 @@
 Organiza AI is built on the **Modern Festive Planner** narrative: transforming event organization from a tedious administrative chore into a vibrant, communal celebration.
 
 ### Aesthetic Pillars
+
 - **Vibrant Modernism:** Punchy primary accents, joyful animations, and celebratory confetti.
 - **Glassmorphism:** Multi-layered depth via single-ring translucent backdrops with hardware-accelerated blur.
 - **Bubbly Geometric Shapes:** Unapologetically rounded corners ($12\text{px}$ to $24\text{px}$, pill badges).
@@ -42,21 +44,23 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 ## 2. Color Palette & Semantic Tokens
 
 ### 2.1 Canonical Brand Triple
-| Token | CSS Variable | Hex | Usage |
-| :--- | :--- | :--- | :--- |
-| **Pink** | `--org-brand-pink` / `--org-primary` | `#FF4D94` | Primary brand accent, primary CTA, hero gradients, active highlights |
-| **Orange** | `--org-brand-orange` / `--org-secondary` | `#FF8C42` | Secondary accent, gradient mid-point, decorative highlights |
-| **Yellow** | `--org-brand-yellow` / `--org-tertiary` | `#FFC837` | Warm festive accents, countdown badges, highlights |
+
+| Token      | CSS Variable                             | Hex       | Usage                                                                |
+| :--------- | :--------------------------------------- | :-------- | :------------------------------------------------------------------- |
+| **Pink**   | `--org-brand-pink` / `--org-primary`     | `#FF4D94` | Primary brand accent, primary CTA, hero gradients, active highlights |
+| **Orange** | `--org-brand-orange` / `--org-secondary` | `#FF8C42` | Secondary accent, gradient mid-point, decorative highlights          |
+| **Yellow** | `--org-brand-yellow` / `--org-tertiary`  | `#FFC837` | Warm festive accents, countdown badges, highlights                   |
 
 ### 2.2 Semantic Colors (Light & Dark Mode)
+
 ```scss
 // Light Theme Defaults
---org-surface: #FFF8F8;
+--org-surface: #fff8f8;
 --org-surface-card: rgba(255, 255, 255, 0.72);
 --org-surface-glass: rgba(255, 255, 255, 0.45);
 --org-surface-panel: rgba(255, 255, 255, 0.85);
---org-on-surface: #2A101F;
---org-on-surface-variant: #4A4455;
+--org-on-surface: #2a101f;
+--org-on-surface-variant: #4a4455;
 --org-glass-ring-color: rgba(255, 77, 148, 0.18);
 --org-glass-border-width: 1px;
 
@@ -65,12 +69,13 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 --org-surface-card: rgba(30, 15, 38, 0.75);
 --org-surface-glass: rgba(25, 10, 32, 0.55);
 --org-surface-panel: rgba(38, 20, 48, 0.85);
---org-on-surface: #F8EDF6;
---org-on-surface-variant: #D4C5D6;
+--org-on-surface: #f8edf6;
+--org-on-surface-variant: #d4c5d6;
 --org-glass-ring-color: rgba(255, 77, 148, 0.28);
 ```
 
 ### 2.3 Status & Functional Tokens
+
 - **Success:** `--org-success: #10B981`, `--org-on-success: #FFFFFF`
 - **Warning:** `--org-warning: #F59E0B`, `--org-on-warning: #000000`
 - **Danger / Error:** `--org-danger: #EF4444`, `--org-on-danger: #FFFFFF`
@@ -86,39 +91,43 @@ is reserved for editorial display headings and hero calls. **JetBrains Mono** is
 reserved for tokens, code examples, and technical labels in the catalog. Do not
 use a fourth family or a feature-local fallback.
 
-| Role | CSS variable | Intended use |
-| :--- | :--- | :--- |
-| **Interface** | `--org-font-body` | Text, actions, fields, navigation, tables, and metrics |
-| **Display** | `--org-font-display` | Hero titles, page displays, and editorial calls |
-| **Mono** | `--org-font-mono` | Tokens, source examples, and technical annotations |
+| Role          | CSS variable         | Intended use                                           |
+| :------------ | :------------------- | :----------------------------------------------------- |
+| **Interface** | `--org-font-body`    | Text, actions, fields, navigation, tables, and metrics |
+| **Display**   | `--org-font-display` | Hero titles, page displays, and editorial calls        |
+| **Mono**      | `--org-font-mono`    | Tokens, source examples, and technical annotations     |
 
-| Level | Size | Weight | Line Height | Letter Spacing | CSS Class |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Display Large** | `clamp(36px, 5vw, 72px)` | 600 (SemiBold) | 1.03 | `-0.02em` | `--org-type-display-size` |
-| **Headline Medium** | `clamp(26px, 3vw, 40px)` | 600 (SemiBold) | 1.12 | `-0.01em` | `--org-type-heading-size` |
-| **Headline Small** | `24px` | 700 (Bold) | 1.3 | `normal` | `.org-headline-sm` |
-| **Title Medium** | `20px` | 600 (SemiBold) | 1.4 | `normal` | `.org-title-md` |
-| **Body Large** | `18px` | 500 (Medium) | 1.6 | `normal` | `.org-body-lg` |
-| **Body Medium** | `16px` | 400 (Regular) | 1.6 | `normal` | `.org-body-md` |
-| **Body Small** | `14px` | 400 (Regular) | 1.5 | `normal` | `.org-body-sm` |
-| **Label Bold** | `14px` | 700 (Bold) | 1.2 | `0.05em` | `.org-label-bold` |
-| **Label Small** | `12px` | 600 (SemiBold) | 1.2 | `0.04em` | `.org-label-sm` |
+| Level               | Size                     | Weight         | Line Height | Letter Spacing | CSS Class                 |
+| :------------------ | :----------------------- | :------------- | :---------- | :------------- | :------------------------ |
+| **Display Large**   | `clamp(36px, 5vw, 72px)` | 600 (SemiBold) | 1.03        | `-0.02em`      | `--org-type-display-size` |
+| **Headline Medium** | `clamp(26px, 3vw, 40px)` | 600 (SemiBold) | 1.12        | `-0.01em`      | `--org-type-heading-size` |
+| **Headline Small**  | `24px`                   | 700 (Bold)     | 1.3         | `normal`       | `.org-headline-sm`        |
+| **Title Medium**    | `20px`                   | 600 (SemiBold) | 1.4         | `normal`       | `.org-title-md`           |
+| **Body Large**      | `18px`                   | 500 (Medium)   | 1.6         | `normal`       | `.org-body-lg`            |
+| **Body Medium**     | `16px`                   | 400 (Regular)  | 1.6         | `normal`       | `.org-body-md`            |
+| **Body Small**      | `14px`                   | 400 (Regular)  | 1.5         | `normal`       | `.org-body-sm`            |
+| **Label Bold**      | `14px`                   | 700 (Bold)     | 1.2         | `0.05em`       | `.org-label-bold`         |
+| **Label Small**     | `12px`                   | 600 (SemiBold) | 1.2         | `0.04em`       | `.org-label-sm`           |
 
 ---
 
 ## 4. Spacing, Breakpoints & Glassmorphism
 
 ### 4.1 Standardized Breakpoints
+
 - **Mobile (`< 600px`):** Single-column fluid stacking, `12px-16px` container padding, touch targets $\ge 48\text{px}$.
 - **Tablet (`600px - 899px`):** 2-column grids, `20px-24px` padding, hybrid navigation.
 - **Desktop (`900px - 1199px`):** Multi-column grids, sticky sidebar navigation, `24px-32px` padding.
 - **Wide (`≥ 1200px`):** Max content constraint ($1200\text{px}$ default, $840\text{px}$ compact), `32px-40px` padding.
 
 ### 4.2 Spacing Scale
+
 - `2xs: 2px` | `xs: 4px` | `sm: 8px` | `md: 16px` | `lg: 24px` | `xl: 32px` | `2xl: 48px` | `3xl: 64px`
 
 ### 4.3 Single-Ring Glassmorphism Standard
+
 To prevent visual artifacts, multiple overlapping borders, or nested outlines, all glass surfaces adhere to the **Single-Ring Contract**:
+
 ```scss
 // Applied via [orgSurface]
 backdrop-filter: blur(24px);
@@ -138,6 +147,7 @@ Features must use the typed `OrgIcon` API rather than placing raw Material icon
 markup or a feature-local SVG in templates.
 
 ### Supported Canonical Icons (23 Names)
+
 1. `event` — Calendar / Event
 2. `schedule` — Time / Clock
 3. `place` — Location pin
@@ -301,6 +311,7 @@ Não usar em novo código. As diretivas de compatibilidade foram removidas: `Org
 ## 7. Seasonal Theming Architecture
 
 The application supports dynamic seasonal overrides on top of the base theme via root class tokens:
+
 - `.theme-padrao`: Standard Vibrant Festive theme.
 - `.theme-junina`: Warm amber, straw, and festive checkered warmth (`#FF9F1C`).
 - `.theme-natal`: Holiday ruby red and evergreen accents (`#E63946`, `#2A9D8F`).
@@ -327,16 +338,18 @@ The application supports dynamic seasonal overrides on top of the base theme via
 ## 9. DOs and DON'Ts
 
 ### DO
--  Import UI components from `@shared/ui`.
--  Use `<org-surface>` for card, panel, drawer, dialog, and hero containers.
--  Use `--org-*` semantic tokens rather than hardcoded hex values in stylesheets.
--  Test layouts with both Light and Dark themes and across $320\text{px}$, $600\text{px}$, and $1200\text{px}$ viewports.
--  Use `FeedbackService` for user notifications and alerts.
+
+- Import UI components from `@shared/ui`.
+- Use `<org-surface>` for card, panel, drawer, dialog, and hero containers.
+- Use `--org-*` semantic tokens rather than hardcoded hex values in stylesheets.
+- Test layouts with both Light and Dark themes and across $320\text{px}$, $600\text{px}$, and $1200\text{px}$ viewports.
+- Use `FeedbackService` for user notifications and alerts.
 
 ### DON'T
--  Do NOT write custom `.mat-mdc-*` CSS overrides in feature components.
--  Do NOT nest multiple glassmorphic borders creating double rings.
--  Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
--  Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.
--  Do NOT use `ChangeDetectionStrategy.Default`.
--  Do NOT introduce a new feature-local directive as a styling API when a standalone component can own the contract.
+
+- Do NOT write custom `.mat-mdc-*` CSS overrides in feature components.
+- Do NOT nest multiple glassmorphic borders creating double rings.
+- Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
+- Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.
+- Do NOT use `ChangeDetectionStrategy.Default`.
+- Do NOT introduce a new feature-local directive as a styling API when a standalone component can own the contract.

@@ -5,17 +5,21 @@
       <div>
         <h2 class="pix-card__title">Rachadinha via Pix</h2>
         <p class="pix-card__subtitle">
-      @if (pixType()) {
-        Tipo: {{ pixType() }}
-      } @else {
-        Contribua com o evento!
-      }
+          @if (pixType()) {
+            Tipo: {{ pixType() }}
+          } @else {
+            Contribua com o evento!
+          }
         </p>
       </div>
     </header>
 
     @if (formattedSuggestedSplit(); as split) {
-      <div class="pix-card__split-container" role="status" aria-label="Sugestão de contribuição por pessoa">
+      <div
+        class="pix-card__split-container"
+        role="status"
+        aria-label="Sugestão de contribuição por pessoa"
+      >
         <span class="pix-card__split-label">Sugestão de contribuição:</span>
         <span class="pix-card__split-amount">{{ split }} por pessoa</span>
       </div>
@@ -29,13 +33,13 @@
 
     <footer class="pix-card__actions">
       <org-button
-      class="pix-card__copy-btn"
-      [disabled]="!pixKey()"
-      label="Copiar chave Pix"
-      icon="content_copy"
-      [fullWidth]="true"
-      (pressed)="copyToClipboard()"
-      data-testid="copy-pix-btn"
+        class="pix-card__copy-btn"
+        [disabled]="!pixKey()"
+        label="Copiar chave Pix"
+        icon="content_copy"
+        [fullWidth]="true"
+        (pressed)="copyToClipboard()"
+        data-testid="copy-pix-btn"
       />
     </footer>
   </article>

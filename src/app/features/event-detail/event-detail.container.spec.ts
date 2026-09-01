@@ -71,7 +71,12 @@ describe('EventDetailContainer', () => {
     confirm: ReturnType<typeof vi.fn>;
   };
   let mockDrawerService: { open: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
-  let rsvpResult: { name: string; phone: string; companions: never[]; selectedFamilyMembers: FamilyMember[] };
+  let rsvpResult: {
+    name: string;
+    phone: string;
+    companions: never[];
+    selectedFamilyMembers: FamilyMember[];
+  };
 
   const mockEvent: PartyEvent = {
     id: 'evt-123',
@@ -172,7 +177,9 @@ describe('EventDetailContainer', () => {
       confirm: vi.fn().mockReturnValue(of(true)),
     };
     mockDrawerService = {
-      open: vi.fn((request: { onComplete?: (result: typeof rsvpResult) => void }) => request.onComplete?.(rsvpResult)),
+      open: vi.fn((request: { onComplete?: (result: typeof rsvpResult) => void }) =>
+        request.onComplete?.(rsvpResult),
+      ),
       close: vi.fn(),
     };
 
@@ -289,7 +296,12 @@ describe('EventDetailContainer', () => {
       ];
       mockFamilyService.getFamilyMembers.mockResolvedValue(mockFamily);
 
-      rsvpResult = { name: 'Lucas Dev', phone: '11999998888', companions: [], selectedFamilyMembers: mockFamily };
+      rsvpResult = {
+        name: 'Lucas Dev',
+        phone: '11999998888',
+        companions: [],
+        selectedFamilyMembers: mockFamily,
+      };
 
       currentUserSignal.set({
         uid: 'usr-1',

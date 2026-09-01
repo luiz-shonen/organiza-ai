@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+  input,
+  output,
+} from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 
 export interface OrgMenuAction {

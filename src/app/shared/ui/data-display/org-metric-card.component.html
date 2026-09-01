@@ -2,7 +2,11 @@
   <article class="org-metric-card" [class.org-metric-card--gradient]="gradient()">
     <p class="org-metric-card__label">{{ label() }}</p>
     <strong class="org-metric-card__value">{{ value() }}</strong>
-    @if (trend()) { <span class="org-metric-card__trend">{{ trend() }}</span> }
-    @if (description()) { <p class="org-metric-card__description">{{ description() }}</p> }
+    @if (trend()) {
+      <span class="org-metric-card__trend">{{ trend() }}</span>
+    }
+    @if (description()) {
+      <p class="org-metric-card__description">{{ description() }}</p>
+    }
   </article>
 </org-surface>

@@ -19,29 +19,82 @@ export class EventEditorPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.pageRoot = page.getByTestId('event-editor-page').or(page.locator('section.editor')).first();
-    this.titleInput = page.getByTestId('event-title-input').or(page.locator('input[formcontrolname="title"]')).first();
-    this.dateInput = page.getByTestId('event-date-input').or(page.locator('input[formcontrolname="date"]')).first();
-    this.timeInput = page.getByTestId('event-time-input').or(page.locator('input[formcontrolname="time"]')).first();
-    this.descriptionInput = page.getByTestId('event-description-input').or(page.locator('textarea[formcontrolname="description"]')).first();
-    this.cepInput = page.getByTestId('event-cep-input').or(page.locator('input[formcontrolname="cep"]')).first();
-    this.streetInput = page.getByTestId('event-street-input').or(page.locator('input[formcontrolname="address"]')).first();
-    this.numberInput = page.getByTestId('event-number-input').or(page.locator('input[formcontrolname="number"]')).first();
-    this.saveBtn = page.getByTestId('event-save-btn').locator('button').or(page.locator('.editor__save-btn button, button[data-testid="event-save-btn"], button[aria-label="Salvar evento"], button:has-text("Salvar"), button:has-text("Criar Evento")')).first();
-    this.cancelEventBtn = page.getByTestId('event-cancel-btn').or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]')).first();
-    this.nextStepBtns = page.locator('org-button[label="Próximo"] button, [data-testid="stepper-next-btn"] button, button:has-text("Próximo")');
-    this.itemNameInput = page.getByTestId('item-name-input').or(page.locator('.editor__item-name-field input')).first();
-    this.itemQtyInput = page.getByTestId('item-qty-input').or(page.locator('.editor__item-qty-field input')).first();
-    this.addItemBtn = page.getByTestId('add-item-btn').or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]')).first();
+    this.pageRoot = page
+      .getByTestId('event-editor-page')
+      .or(page.locator('section.editor'))
+      .first();
+    this.titleInput = page
+      .getByTestId('event-title-input')
+      .or(page.locator('input[formcontrolname="title"]'))
+      .first();
+    this.dateInput = page
+      .getByTestId('event-date-input')
+      .or(page.locator('input[formcontrolname="date"]'))
+      .first();
+    this.timeInput = page
+      .getByTestId('event-time-input')
+      .or(page.locator('input[formcontrolname="time"]'))
+      .first();
+    this.descriptionInput = page
+      .getByTestId('event-description-input')
+      .or(page.locator('textarea[formcontrolname="description"]'))
+      .first();
+    this.cepInput = page
+      .getByTestId('event-cep-input')
+      .or(page.locator('input[formcontrolname="cep"]'))
+      .first();
+    this.streetInput = page
+      .getByTestId('event-street-input')
+      .or(page.locator('input[formcontrolname="address"]'))
+      .first();
+    this.numberInput = page
+      .getByTestId('event-number-input')
+      .or(page.locator('input[formcontrolname="number"]'))
+      .first();
+    this.saveBtn = page
+      .getByTestId('event-save-btn')
+      .locator('button')
+      .or(
+        page.locator(
+          '.editor__save-btn button, button[data-testid="event-save-btn"], button[aria-label="Salvar evento"], button:has-text("Salvar"), button:has-text("Criar Evento")',
+        ),
+      )
+      .first();
+    this.cancelEventBtn = page
+      .getByTestId('event-cancel-btn')
+      .or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]'))
+      .first();
+    this.nextStepBtns = page.locator(
+      'org-button[label="Próximo"] button, [data-testid="stepper-next-btn"] button, button:has-text("Próximo")',
+    );
+    this.itemNameInput = page
+      .getByTestId('item-name-input')
+      .or(page.locator('.editor__item-name-field input'))
+      .first();
+    this.itemQtyInput = page
+      .getByTestId('item-qty-input')
+      .or(page.locator('.editor__item-qty-field input'))
+      .first();
+    this.addItemBtn = page
+      .getByTestId('add-item-btn')
+      .or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]'))
+      .first();
   }
 
   async assertLoaded(): Promise<void> {
     await expect(this.pageRoot).toBeVisible();
   }
 
-  async fillBasicInfo(title: string, date: string, description: string, time: string = '19:00'): Promise<void> {
+  async fillBasicInfo(
+    title: string,
+    date: string,
+    description: string,
+    time: string = '19:00',
+  ): Promise<void> {
     await this.titleInput.fill(title);
-    const categoryChip = this.page.locator('.editor__category-options org-chip, org-chip, mat-chip-option').first();
+    const categoryChip = this.page
+      .locator('.editor__category-options org-chip, org-chip, mat-chip-option')
+      .first();
     if (await categoryChip.isVisible()) {
       await categoryChip.click();
     }
@@ -59,7 +112,13 @@ export class EventEditorPage extends BasePage {
     await nextBtn.click();
   }
 
-  async fillAddress(address: { cep: string; street?: string; number?: string; neighborhood?: string; city?: string }): Promise<void> {
+  async fillAddress(address: {
+    cep: string;
+    street?: string;
+    number?: string;
+    neighborhood?: string;
+    city?: string;
+  }): Promise<void> {
     if (address.cep) {
       await this.cepInput.fill(address.cep);
     }
@@ -85,7 +144,7 @@ export class EventEditorPage extends BasePage {
     await saveButton.click();
   }
 
-  async addWishlistItem(name: string, _category: string = 'Geral', quantity: number = 1): Promise<void> {
+  async addWishlistItem(name: string, _category = 'Geral', quantity = 1): Promise<void> {
     await this.itemNameInput.fill(name);
     await this.itemQtyInput.fill(quantity.toString());
     await this.addItemBtn.click();

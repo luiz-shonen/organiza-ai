@@ -64,7 +64,9 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertMinTouchTarget(loginPage.submitBtn);
     await assertMinTouchTarget(loginPage.googleBtn);
 
-    const loginCard = page.locator('.login__card [data-testid="org-surface"], .login__card .org-surface').first();
+    const loginCard = page
+      .locator('.login__card [data-testid="org-surface"], .login__card .org-surface')
+      .first();
     await assertGlassmorphism(loginCard);
 
     await assertNoHorizontalOverflow(page);
@@ -93,7 +95,9 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await eventEditorPage.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
 
-    const stepperCard = page.locator('mat-card[orgSurface], .editor__card, .org-surface, [data-testid="org-surface"]').first();
+    const stepperCard = page
+      .locator('mat-card[orgSurface], .editor__card, .org-surface, [data-testid="org-surface"]')
+      .first();
     await assertGlassmorphism(stepperCard);
 
     await assertNoHorizontalOverflow(page);
@@ -107,7 +111,11 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await profilePage.goto('/perfil');
     await profilePage.assertLoaded();
 
-    const profileCard = page.locator('app-profile-info-card .org-surface, app-profile-info-card [data-testid="org-surface"], app-profile-info-card [orgSurface]').first();
+    const profileCard = page
+      .locator(
+        'app-profile-info-card .org-surface, app-profile-info-card [data-testid="org-surface"], app-profile-info-card [orgSurface]',
+      )
+      .first();
     await assertGlassmorphism(profileCard);
     await assertSingleSurfaceRing(profileCard);
 
@@ -127,12 +135,16 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertFontFamily(showcaseTitle, 'Fraunces');
 
     // Verify specimen card glassmorphism and single ring
-    const firstSpecimen = page.locator('.org-ds-hero-card [data-testid="org-surface"], section [data-testid="org-surface"]').first();
+    const firstSpecimen = page
+      .locator('.org-ds-hero-card [data-testid="org-surface"], section [data-testid="org-surface"]')
+      .first();
     await assertGlassmorphism(firstSpecimen);
     await assertSingleSurfaceRing(firstSpecimen);
 
     // Verify interactive button touch targets in canvas
-    const primaryButton = page.locator('section#buttons .org-button__control, section#buttons org-button button').first();
+    const primaryButton = page
+      .locator('section#buttons .org-button__control, section#buttons org-button button')
+      .first();
     await assertMinTouchTarget(primaryButton);
 
     await assertNoHorizontalOverflow(page);

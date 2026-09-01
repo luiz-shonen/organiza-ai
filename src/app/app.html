@@ -22,7 +22,7 @@
             [isDesignSystemNavigation]="currentUrl().startsWith('/design-system')"
             (themeChange)="themeService.setMode($event)"
             (logout)="logout()"
-            (close)="drawerService.close()"
+            (closed)="drawerService.close()"
           />
         }
         @case ('rsvp') {
@@ -33,7 +33,11 @@
           />
         }
         @case ('collaborator') {
-          <app-collaborator-drawer [drawerData]="request.data" (action)="dispatchCollaboratorAction($event)" (closed)="drawerService.close()" />
+          <app-collaborator-drawer
+            [drawerData]="request.data"
+            (action)="dispatchCollaboratorAction($event)"
+            (closed)="drawerService.close()"
+          />
         }
       }
     }

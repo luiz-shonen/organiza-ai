@@ -13,7 +13,6 @@ import { superAdminGuard } from './super-admin.guard';
 
 describe('superAdminGuard', () => {
   let isSuperAdminSignal: WritableSignal<boolean>;
-  let router: Router;
   let waitForAuthReadyMock: ReturnType<typeof vi.fn>;
 
   const mockRoute = {} as ActivatedRouteSnapshot;
@@ -31,8 +30,6 @@ describe('superAdminGuard', () => {
     TestBed.configureTestingModule({
       providers: [provideRouter([]), { provide: AuthService, useValue: authServiceMock }],
     });
-
-    router = TestBed.inject(Router);
   });
 
   it('allows access (returns true) when isSuperAdmin() is true', async () => {
@@ -74,7 +71,7 @@ describe('superAdminGuard', () => {
             authReadyResolved = true;
             resolve();
           };
-        })
+        }),
     );
 
     isSuperAdminSignal.set(true);

@@ -194,7 +194,9 @@ describe('ProfileContainer', () => {
 
     await component.onUpdateName('Novo Nome');
 
-    expect(mockFeedback.error).toHaveBeenCalledWith('Não foi possível atualizar o nome. Tente novamente.');
+    expect(mockFeedback.error).toHaveBeenCalledWith(
+      'Não foi possível atualizar o nome. Tente novamente.',
+    );
   });
 
   it('should add a family member and update list with success snackbar', async () => {

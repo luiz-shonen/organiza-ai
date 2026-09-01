@@ -11,11 +11,7 @@ describe('LocationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        LocationService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [LocationService, provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(LocationService);

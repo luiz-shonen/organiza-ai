@@ -38,7 +38,7 @@
     flex-direction: column;
     align-items: center;
     gap: var(--org-spacing-3, 12px);
-    color: var(--org-text-secondary, #64748b);
+    color: var(--org-on-surface-variant);
     font-size: var(--org-font-size-sm, 0.875rem);
   }
 
@@ -53,7 +53,6 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    divide-y: 1px solid var(--org-border-subtle, rgba(255, 255, 255, 0.1));
   }
 
   &__admin-item {
@@ -61,7 +60,7 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--org-spacing-4, 16px) var(--org-spacing-5, 20px);
-    border-bottom: 1px solid var(--org-border-subtle, rgba(226, 232, 240, 0.6));
+    border-bottom: 1px solid var(--org-outline-variant);
     transition: background-color 0.2s ease;
 
     &:last-child {
@@ -69,7 +68,7 @@
     }
 
     &:hover {
-      background-color: var(--org-surface-hover, rgba(255, 255, 255, 0.05));
+      background-color: var(--org-surface-variant);
     }
   }
 
@@ -80,7 +79,7 @@
   }
 
   &__admin-icon {
-    color: var(--org-primary, #ff4d94);
+    color: var(--org-primary);
     font-size: 24px;
     width: 24px;
     height: 24px;
@@ -95,7 +94,7 @@
   &__admin-email {
     font-size: var(--org-font-size-base, 1rem);
     font-weight: 600;
-    color: var(--org-text-primary, #0f172a);
+    color: var(--org-on-surface);
     word-break: break-all;
   }
 

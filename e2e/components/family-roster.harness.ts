@@ -12,13 +12,17 @@ export class FamilyRosterHarness {
 
   constructor(
     private readonly page: Page,
-    rootLocator?: Locator
+    rootLocator?: Locator,
   ) {
     this.rosterRoot = (rootLocator ?? page.locator(':root'))
       .getByTestId('family-roster')
       .or(page.getByTestId('family-roster-manager'))
       .or(page.getByTestId('family-selector'))
-      .or(page.locator('app-family-roster-manager, .family-roster, app-family-selector, .family-selector'));
+      .or(
+        page.locator(
+          'app-family-roster-manager, .family-roster, app-family-selector, .family-selector',
+        ),
+      );
 
     const searchScope = rootLocator ?? this.rosterRoot;
 
@@ -33,8 +37,8 @@ export class FamilyRosterHarness {
       .or(searchScope.getByLabel(/nome/i))
       .or(
         searchScope.locator(
-          '.family-roster__field input, input[name="familyName"], input[name="inlineMemberName"], input[placeholder*="Lucas"], input[placeholder*="Pedro"], input[formcontrolname="name"]'
-        )
+          '.family-roster__field input, input[name="familyName"], input[name="inlineMemberName"], input[placeholder*="Lucas"], input[placeholder*="Pedro"], input[formcontrolname="name"]',
+        ),
       )
       .first();
 
@@ -44,8 +48,8 @@ export class FamilyRosterHarness {
       .or(searchScope.getByLabel(/parentesco/i))
       .or(
         searchScope.locator(
-          '.org-autocomplete-field input, mat-select[name="familyRelationship"], mat-select[name="inlineMemberRelationship"], mat-select'
-        )
+          '.org-autocomplete-field input, mat-select[name="familyRelationship"], mat-select[name="inlineMemberRelationship"], mat-select',
+        ),
       )
       .first();
 
@@ -54,7 +58,11 @@ export class FamilyRosterHarness {
       .locator('input')
       .or(searchScope.getByTestId('family-member-phone-input'))
       .or(searchScope.getByLabel(/telefone|whatsapp/i))
-      .or(searchScope.locator('.family-roster__field input[type="tel"], input[name="familyPhone"], input[type="tel"]'))
+      .or(
+        searchScope.locator(
+          '.family-roster__field input[type="tel"], input[name="familyPhone"], input[type="tel"]',
+        ),
+      )
       .first();
 
     this.addMemberBtn = searchScope
@@ -62,8 +70,8 @@ export class FamilyRosterHarness {
       .locator('button')
       .or(
         searchScope.locator(
-          '.family-roster__add-btn button, .family-selector__inline-actions button[type="submit"], button:has-text("Adicionar"), button:has-text("Adicionar Familiar"), button:has-text("Adicionar e Selecionar"), [aria-label*="Adicionar familiar"], [aria-label*="Salvar e selecionar"]'
-        )
+          '.family-roster__add-btn button, .family-selector__inline-actions button[type="submit"], button:has-text("Adicionar"), button:has-text("Adicionar Familiar"), button:has-text("Adicionar e Selecionar"), [aria-label*="Adicionar familiar"], [aria-label*="Salvar e selecionar"]',
+        ),
       )
       .first();
 
@@ -72,20 +80,24 @@ export class FamilyRosterHarness {
       .locator('button')
       .or(
         searchScope.locator(
-          '.family-roster__remove-btn button, button[aria-label*="Remover"], button:has(mat-icon:has-text("delete")), button:has(mat-icon:has-text("delete_outline")), [data-testid="delete-family-member-btn"]'
-        )
+          '.family-roster__remove-btn button, button[aria-label*="Remover"], button:has(mat-icon:has-text("delete")), button:has(mat-icon:has-text("delete_outline")), [data-testid="delete-family-member-btn"]',
+        ),
       );
 
     this.selectAllCheckbox = searchScope
       .getByTestId('select-all-family-checkbox')
       .or(searchScope.getByLabel(/selecionar todos/i))
-      .or(searchScope.locator('.family-selector__select-all, mat-checkbox:has-text("Selecionar Todos")'))
+      .or(
+        searchScope.locator(
+          '.family-selector__select-all, mat-checkbox:has-text("Selecionar Todos")',
+        ),
+      )
       .first();
   }
 
   async addMember(name: string, relationship?: string, phone?: string): Promise<void> {
     const inlineToggleBtn = this.page.locator(
-      '.family-selector__inline-toggle-btn, button:has-text("+ Novo Membro")'
+      '.family-selector__inline-toggle-btn, button:has-text("+ Novo Membro")',
     );
     if (await inlineToggleBtn.isVisible()) {
       await inlineToggleBtn.click();

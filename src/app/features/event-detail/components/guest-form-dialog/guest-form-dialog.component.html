@@ -6,11 +6,42 @@
 
   <mat-dialog-content class="guest-dialog__content">
     <form [formGroup]="form" class="guest-dialog__form" id="guest-form">
-      <org-text-field class="guest-dialog__field" label="Seu nome" placeholder="Ex: Maria Silva" formControlName="name" testId="rsvp-name-input" [required]="true" [error]="form.controls.name.hasError('required') ? 'Nome é obrigatório' : ''" />
+      <org-text-field
+        class="guest-dialog__field"
+        label="Seu nome"
+        placeholder="Ex: Maria Silva"
+        formControlName="name"
+        testId="rsvp-name-input"
+        [required]="true"
+        [error]="form.controls.name.hasError('required') ? 'Nome é obrigatório' : ''"
+      />
 
-      <org-text-field class="guest-dialog__field" label="WhatsApp / Telefone" type="tel" placeholder="(11) 99999-9999" formControlName="phone" testId="rsvp-phone-input" [required]="true" [error]="form.controls.phone.hasError('required') ? 'Telefone é obrigatório' : form.controls.phone.hasError('minlength') ? 'Mínimo 10 dígitos' : ''" />
+      <org-text-field
+        class="guest-dialog__field"
+        label="WhatsApp / Telefone"
+        type="tel"
+        placeholder="(11) 99999-9999"
+        formControlName="phone"
+        testId="rsvp-phone-input"
+        [required]="true"
+        [error]="
+          form.controls.phone.hasError('required')
+            ? 'Telefone é obrigatório'
+            : form.controls.phone.hasError('minlength')
+              ? 'Mínimo 10 dígitos'
+              : ''
+        "
+      />
 
-      <org-text-field class="guest-dialog__field" label="Outros acompanhantes" type="number" placeholder="0" hint="Amigos ou acompanhantes fora da família" formControlName="companionsCount" testId="rsvp-companions-input" />
+      <org-text-field
+        class="guest-dialog__field"
+        label="Outros acompanhantes"
+        type="number"
+        placeholder="0"
+        hint="Amigos ou acompanhantes fora da família"
+        formControlName="companionsCount"
+        testId="rsvp-companions-input"
+      />
 
       <div class="guest-dialog__family-section" data-testid="family-selector">
         <app-family-selector

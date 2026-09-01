@@ -22,10 +22,7 @@
       </div>
     </div>
   } @else {
-    <org-page-header
-      [title]="isEditing() ? 'Editar Evento' : 'Novo Evento'"
-      icon="edit"
-    >
+    <org-page-header [title]="isEditing() ? 'Editar Evento' : 'Novo Evento'" icon="edit">
       <div orgPageHeaderActions class="editor__header-actions-slot">
         <org-button
           label="Voltar"
@@ -120,14 +117,23 @@
                     label="Título do Evento"
                     placeholder="Ex: Festa Junina 2026"
                     [required]="true"
-                    [error]="basicInfoForm.controls.title.hasError('required') && basicInfoForm.controls.title.touched ? 'Título é obrigatório' : ''"
+                    [error]="
+                      basicInfoForm.controls.title.hasError('required') &&
+                      basicInfoForm.controls.title.touched
+                        ? 'Título é obrigatório'
+                        : ''
+                    "
                     formControlName="title"
                     testId="event-title-input"
                   />
 
                   <div class="editor__category-field">
                     <mat-label class="editor__category-label">Categoria do Evento</mat-label>
-                    <div class="editor__category-options" role="group" aria-label="Categoria do Evento">
+                    <div
+                      class="editor__category-options"
+                      role="group"
+                      aria-label="Categoria do Evento"
+                    >
                       @for (cat of categories; track cat.name) {
                         <org-chip
                           [label]="cat.name"
@@ -151,7 +157,12 @@
                     placeholder="Descreva o evento..."
                     [rows]="4"
                     [required]="true"
-                    [error]="basicInfoForm.controls.description.hasError('required') && basicInfoForm.controls.description.touched ? 'Descrição é obrigatória' : ''"
+                    [error]="
+                      basicInfoForm.controls.description.hasError('required') &&
+                      basicInfoForm.controls.description.touched
+                        ? 'Descrição é obrigatória'
+                        : ''
+                    "
                     formControlName="description"
                     testId="event-description-input"
                   />
@@ -162,7 +173,16 @@
                       label="Data do Evento"
                       [min]="minDate"
                       [required]="true"
-                      [error]="basicInfoForm.controls.date.hasError('required') && basicInfoForm.controls.date.touched ? 'Data é obrigatória' : basicInfoForm.controls.date.hasError('matDatepickerMin') ? 'Data não pode ser no passado' : basicInfoForm.controls.date.hasError('matDatepickerParse') ? 'Data inválida' : ''"
+                      [error]="
+                        basicInfoForm.controls.date.hasError('required') &&
+                        basicInfoForm.controls.date.touched
+                          ? 'Data é obrigatória'
+                          : basicInfoForm.controls.date.hasError('matDatepickerMin')
+                            ? 'Data não pode ser no passado'
+                            : basicInfoForm.controls.date.hasError('matDatepickerParse')
+                              ? 'Data inválida'
+                              : ''
+                      "
                       formControlName="date"
                       testId="event-date-input"
                     />
@@ -171,7 +191,12 @@
                       class="editor__time-field org-input"
                       label="Hora"
                       [required]="true"
-                      [error]="basicInfoForm.controls.time.hasError('required') && basicInfoForm.controls.time.touched ? 'Hora é obrigatória' : ''"
+                      [error]="
+                        basicInfoForm.controls.time.hasError('required') &&
+                        basicInfoForm.controls.time.touched
+                          ? 'Hora é obrigatória'
+                          : ''
+                      "
                       formControlName="time"
                       testId="event-time-input"
                     />
@@ -199,7 +224,12 @@
                       label="CEP"
                       placeholder="00000-000"
                       [required]="true"
-                      [error]="addressForm.controls.cep.hasError('required') && addressForm.controls.cep.touched ? 'CEP é obrigatório' : ''"
+                      [error]="
+                        addressForm.controls.cep.hasError('required') &&
+                        addressForm.controls.cep.touched
+                          ? 'CEP é obrigatório'
+                          : ''
+                      "
                       formControlName="cep"
                       testId="event-cep-input"
                       (valueChange)="formatCep($event)"
@@ -210,7 +240,12 @@
                       label="Número"
                       placeholder="Ex: 123"
                       [required]="true"
-                      [error]="addressForm.controls.number.hasError('required') && addressForm.controls.number.touched ? 'Número é obrigatório' : ''"
+                      [error]="
+                        addressForm.controls.number.hasError('required') &&
+                        addressForm.controls.number.touched
+                          ? 'Número é obrigatório'
+                          : ''
+                      "
                       formControlName="number"
                       testId="event-number-input"
                     />
@@ -225,7 +260,12 @@
                       suffixIcon="lock"
                       [readOnly]="true"
                       [required]="true"
-                      [error]="addressForm.controls.address.hasError('required') && addressForm.controls.address.touched ? 'Endereço é obrigatório' : ''"
+                      [error]="
+                        addressForm.controls.address.hasError('required') &&
+                        addressForm.controls.address.touched
+                          ? 'Endereço é obrigatório'
+                          : ''
+                      "
                       formControlName="address"
                       testId="event-street-input"
                     />
@@ -239,7 +279,12 @@
                       suffixIcon="lock"
                       [readOnly]="true"
                       [required]="true"
-                      [error]="addressForm.controls.neighborhood.hasError('required') && addressForm.controls.neighborhood.touched ? 'Bairro é obrigatório' : ''"
+                      [error]="
+                        addressForm.controls.neighborhood.hasError('required') &&
+                        addressForm.controls.neighborhood.touched
+                          ? 'Bairro é obrigatório'
+                          : ''
+                      "
                       formControlName="neighborhood"
                     />
 
@@ -250,7 +295,12 @@
                       suffixIcon="lock"
                       [readOnly]="true"
                       [required]="true"
-                      [error]="addressForm.controls.city.hasError('required') && addressForm.controls.city.touched ? 'Cidade/UF é obrigatória' : ''"
+                      [error]="
+                        addressForm.controls.city.hasError('required') &&
+                        addressForm.controls.city.touched
+                          ? 'Cidade/UF é obrigatória'
+                          : ''
+                      "
                       formControlName="city"
                     />
                   </div>

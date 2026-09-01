@@ -47,13 +47,13 @@ describe('ItemListCardComponent', () => {
 
     expect(component).toBeTruthy();
     const compiled = fixture.nativeElement as HTMLElement;
-    const names = Array.from(compiled.querySelectorAll('.item-list-card__name')).map(
-      (el) => el.textContent?.trim(),
+    const names = Array.from(compiled.querySelectorAll('.item-list-card__name')).map((el) =>
+      el.textContent?.trim(),
     );
     expect(names).toEqual(['Refrigerante 2L', 'Bolo de Chocolate', 'Salgadinhos']);
 
-    const statuses = Array.from(compiled.querySelectorAll('.item-list-card__status')).map(
-      (el) => el.textContent?.trim(),
+    const statuses = Array.from(compiled.querySelectorAll('.item-list-card__status')).map((el) =>
+      el.textContent?.trim(),
     );
     expect(statuses).toContain('Disponível');
     expect(statuses).toContain('Levado por Lucas');
@@ -66,7 +66,7 @@ describe('ItemListCardComponent', () => {
     fixture.detectChanges();
 
     const claimSpy = vi.fn();
-    component.onClaim.subscribe(claimSpy);
+    component.claim.subscribe(claimSpy);
 
     const claimBtn = fixture.nativeElement.querySelector(
       '.item-list-card__claim-btn button',
@@ -83,7 +83,7 @@ describe('ItemListCardComponent', () => {
     fixture.detectChanges();
 
     const unclaimSpy = vi.fn();
-    component.onUnclaim.subscribe(unclaimSpy);
+    component.unclaim.subscribe(unclaimSpy);
 
     const unclaimBtn = fixture.nativeElement.querySelector(
       '.item-list-card__unclaim-btn button',
@@ -100,7 +100,7 @@ describe('ItemListCardComponent', () => {
     fixture.detectChanges();
 
     const unclaimSpy = vi.fn();
-    component.onUnclaim.subscribe(unclaimSpy);
+    component.unclaim.subscribe(unclaimSpy);
 
     const unclaimBtn = fixture.nativeElement.querySelector(
       '.item-list-card__unclaim-btn button',

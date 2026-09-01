@@ -40,11 +40,11 @@ export class DesignSystemShowcasePage extends BasePage {
     const link = this.page.locator(`.org-ds-sidebar__nav-link`).filter({
       has: this.page.locator(`text=${sectionId}`),
     });
-    if (await link.count() > 0) {
+    if ((await link.count()) > 0) {
       await link.first().click();
     } else {
       const btn = this.page.locator(`button[aria-label*="${sectionId}"]`);
-      if (await btn.count() > 0) {
+      if ((await btn.count()) > 0) {
         await btn.first().click();
       }
     }
@@ -57,7 +57,10 @@ export class DesignSystemShowcasePage extends BasePage {
   async chooseSeasonalTheme(themeLabel: string): Promise<void> {
     await this.seasonalSelect.scrollIntoViewIfNeeded();
     await this.seasonalSelect.click();
-    const option = this.page.locator('.cdk-overlay-pane mat-option').filter({ hasText: themeLabel }).first();
+    const option = this.page
+      .locator('.cdk-overlay-pane mat-option')
+      .filter({ hasText: themeLabel })
+      .first();
     await expect(option).toBeVisible();
     await option.click();
     await expect(this.page.locator('.cdk-overlay-pane mat-option')).toHaveCount(0);

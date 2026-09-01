@@ -5,7 +5,8 @@ import { OrgMetricCardComponent } from './org-metric-card.component';
 describe('OrgMetricCardComponent', () => {
   it('renders label, value, description and trend on a semantic surface', async () => {
     await TestBed.configureTestingModule({ imports: [OrgMetricCardComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgMetricCardComponent> = TestBed.createComponent(OrgMetricCardComponent);
+    const fixture: ComponentFixture<OrgMetricCardComponent> =
+      TestBed.createComponent(OrgMetricCardComponent);
     fixture.componentRef.setInput('label', 'Confirmações');
     fixture.componentRef.setInput('value', '42');
     fixture.componentRef.setInput('description', 'nesta semana');
@@ -20,14 +21,23 @@ describe('OrgMetricCardComponent', () => {
 
   it('exposes atmosphere and gradient opt-out as typed component inputs', async () => {
     await TestBed.configureTestingModule({ imports: [OrgMetricCardComponent] }).compileComponents();
-    const fixture: ComponentFixture<OrgMetricCardComponent> = TestBed.createComponent(OrgMetricCardComponent);
+    const fixture: ComponentFixture<OrgMetricCardComponent> =
+      TestBed.createComponent(OrgMetricCardComponent);
     fixture.componentRef.setInput('label', 'Convites');
     fixture.componentRef.setInput('value', '6');
     fixture.componentRef.setInput('atmosphere', true);
     fixture.componentRef.setInput('gradient', false);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('.org-surface')?.classList.contains('org-surface--atmosphere')).toBe(true);
-    expect(fixture.nativeElement.querySelector('.org-metric-card')?.classList.contains('org-metric-card--gradient')).toBe(false);
+    expect(
+      fixture.nativeElement
+        .querySelector('.org-surface')
+        ?.classList.contains('org-surface--atmosphere'),
+    ).toBe(true);
+    expect(
+      fixture.nativeElement
+        .querySelector('.org-metric-card')
+        ?.classList.contains('org-metric-card--gradient'),
+    ).toBe(false);
   });
 });

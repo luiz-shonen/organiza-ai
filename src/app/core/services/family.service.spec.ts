@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FamilyService } from './family.service';
 import { FirestoreGateway } from './firestore.gateway';
 import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
@@ -57,10 +57,7 @@ describe('FamilyService', () => {
 
       const result = await service.getFamilyMembers('user-123');
 
-      expect(mockGateway.getDocs).toHaveBeenCalledWith(
-        'users/user-123/family',
-        expect.anything(),
-      );
+      expect(mockGateway.getDocs).toHaveBeenCalledWith('users/user-123/family', expect.anything());
       expect(result).toHaveLength(2);
       expect(result[0]).toEqual({
         id: 'fam-1',

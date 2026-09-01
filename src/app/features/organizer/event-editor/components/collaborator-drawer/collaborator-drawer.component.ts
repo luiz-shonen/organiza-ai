@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import type { CollaboratorDrawerRequestData, CollaboratorDrawerResult } from '../../../../../core/models';
+import type {
+  CollaboratorDrawerRequestData,
+  CollaboratorDrawerResult,
+} from '../../../../../core/models';
 import { OrgButtonComponent, OrgIconButtonComponent } from '../../../../../shared/ui';
 
 @Component({

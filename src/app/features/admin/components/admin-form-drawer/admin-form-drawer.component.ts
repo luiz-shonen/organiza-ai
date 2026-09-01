@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   OrgButtonComponent,
@@ -15,12 +9,7 @@ import {
 @Component({
   selector: 'app-admin-form-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    OrgButtonComponent,
-    OrgIconButtonComponent,
-    OrgTextFieldComponent,
-  ],
+  imports: [ReactiveFormsModule, OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   templateUrl: './admin-form-drawer.component.html',
   styleUrl: './admin-form-drawer.component.scss',
 })
@@ -31,7 +20,7 @@ export class AdminFormDrawerComponent {
   readonly saving = input(false);
 
   readonly save = output<string>();
-  readonly close = output<void>();
+  readonly closed = output<void>();
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -52,6 +41,6 @@ export class AdminFormDrawerComponent {
 
   protected onClose(): void {
     this.form.reset();
-    this.close.emit();
+    this.closed.emit();
   }
 }

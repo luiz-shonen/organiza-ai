@@ -76,10 +76,22 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
   });
 
   await page.addInitScript(
-    ({ uid, email, displayName, emailVerified, isAnonymous, apiKey, events, userProfile, familyMembers }) => {
+    ({
+      uid,
+      email,
+      displayName,
+      emailVerified,
+      isAnonymous,
+      apiKey,
+      events,
+      userProfile,
+      familyMembers,
+    }) => {
       const mockDocs: Record<string, any> = {
         events: events || [],
-        users: userProfile ? [userProfile] : [{ id: uid, email, displayName, phone: '(11) 99999-9999' }],
+        users: userProfile
+          ? [userProfile]
+          : [{ id: uid, email, displayName, phone: '(11) 99999-9999' }],
         family: familyMembers || [],
         [`users/${uid}`]: userProfile || { id: uid, email, displayName, phone: '(11) 99999-9999' },
         [`users/${uid}/family`]: familyMembers || [],
@@ -142,6 +154,6 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
       events: options.events || [],
       userProfile: options.userProfile,
       familyMembers: options.familyMembers || [],
-    }
+    },
   );
 }

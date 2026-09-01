@@ -59,9 +59,11 @@ export function createMockFirestoreGateway(): MockFirestoreGateway {
     addDoc: vi.fn().mockResolvedValue('mock-new-doc-id'),
     collectionSnapshot: vi.fn().mockReturnValue(of([])),
     docSnapshot: vi.fn().mockReturnValue(of(null)),
-    runBatch: vi.fn().mockImplementation(async (fn: (batch: FirestoreBatchOperations) => void | Promise<void>) => {
-      await fn(batchOps as any);
-    }),
+    runBatch: vi
+      .fn()
+      .mockImplementation(async (fn: (batch: FirestoreBatchOperations) => void | Promise<void>) => {
+        await fn(batchOps as any);
+      }),
     batchOps,
   };
 

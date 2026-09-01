@@ -1,4 +1,8 @@
-<section class="navigation-drawer" aria-labelledby="navigation-drawer-title" data-testid="navigation-drawer">
+<section
+  class="navigation-drawer"
+  aria-labelledby="navigation-drawer-title"
+  data-testid="navigation-drawer"
+>
   <header class="navigation-drawer__header">
     <div class="navigation-drawer__title-group">
       <span class="navigation-drawer__eyebrow">Organiza AI</span>
@@ -10,7 +14,7 @@
       class="navigation-drawer__close"
       aria-label="Fechar menu de navegação"
       data-testid="navigation-drawer-close"
-      (click)="close.emit()"
+      (click)="closed.emit()"
     >
       <mat-icon aria-hidden="true">close</mat-icon>
     </button>
@@ -19,9 +23,15 @@
   @if (isAuthenticated()) {
     <section class="navigation-drawer__identity" aria-label="Perfil conectado">
       @if (photoUrl()) {
-        <img [src]="photoUrl()" [alt]="'Avatar de ' + displayName()" class="navigation-drawer__avatar" />
+        <img
+          [src]="photoUrl()"
+          [alt]="'Avatar de ' + displayName()"
+          class="navigation-drawer__avatar"
+        />
       } @else {
-        <mat-icon class="navigation-drawer__avatar-icon" aria-hidden="true">account_circle</mat-icon>
+        <mat-icon class="navigation-drawer__avatar-icon" aria-hidden="true"
+          >account_circle</mat-icon
+        >
       }
       <div>
         <p class="navigation-drawer__name">{{ displayName() || 'Meu perfil' }}</p>
@@ -35,8 +45,13 @@
   <nav class="navigation-drawer__navigation" aria-label="Navegação principal">
     @if (isDesignSystemNavigation()) {
       @for (group of designSystemNavigationGroups; track group.id) {
-        <section class="navigation-drawer__group" [attr.aria-labelledby]="'drawer-group-' + group.id">
-          <h3 [id]="'drawer-group-' + group.id" class="navigation-drawer__group-title">{{ group.label }}</h3>
+        <section
+          class="navigation-drawer__group"
+          [attr.aria-labelledby]="'drawer-group-' + group.id"
+        >
+          <h3 [id]="'drawer-group-' + group.id" class="navigation-drawer__group-title">
+            {{ group.label }}
+          </h3>
           <div class="navigation-drawer__group-links">
             @for (section of group.items; track section.id) {
               <app-navigation-drawer-link
@@ -44,26 +59,71 @@
                 [icon]="section.icon"
                 [label]="section.label"
                 [testId]="'drawer-design-system-' + section.id"
-                [active]="activeRoute().endsWith('#' + section.id) || (section.id === 'overview' && !activeRoute().includes('#'))"
+                [active]="
+                  activeRoute().endsWith('#' + section.id) ||
+                  (section.id === 'overview' && !activeRoute().includes('#'))
+                "
                 currentValue="location"
-                (selected)="close.emit()"
+                (selected)="closed.emit()"
               />
             }
           </div>
         </section>
       }
     } @else {
-      <app-navigation-drawer-link [route]="'/'" icon="home" label="Início" testId="drawer-home" [active]="activeRoute() === '/'" (selected)="close.emit()" />
+      <app-navigation-drawer-link
+        [route]="'/'"
+        icon="home"
+        label="Início"
+        testId="drawer-home"
+        [active]="activeRoute() === '/'"
+        (selected)="closed.emit()"
+      />
 
       @if (isAuthenticated()) {
-        <app-navigation-drawer-link [route]="'/meus-eventos'" icon="calendar_month" label="Meus eventos" testId="drawer-my-events" [active]="activeRoute().startsWith('/meus-eventos')" (selected)="close.emit()" />
-        <app-navigation-drawer-link [route]="'/perfil'" icon="person" label="Meu perfil" testId="drawer-profile" [active]="activeRoute() === '/perfil'" (selected)="close.emit()" />
+        <app-navigation-drawer-link
+          [route]="'/meus-eventos'"
+          icon="calendar_month"
+          label="Meus eventos"
+          testId="drawer-my-events"
+          [active]="activeRoute().startsWith('/meus-eventos')"
+          (selected)="closed.emit()"
+        />
+        <app-navigation-drawer-link
+          [route]="'/perfil'"
+          icon="person"
+          label="Meu perfil"
+          testId="drawer-profile"
+          [active]="activeRoute() === '/perfil'"
+          (selected)="closed.emit()"
+        />
         @if (isSuperAdmin()) {
-          <app-navigation-drawer-link [route]="'/admin'" icon="admin_panel_settings" label="Painel administrativo" testId="drawer-admin" [active]="activeRoute().startsWith('/admin')" (selected)="close.emit()" />
-          <app-navigation-drawer-link [route]="'/design-system'" icon="palette" label="Design System" testId="drawer-design-system" [active]="activeRoute().startsWith('/design-system')" (selected)="close.emit()" />
+          <app-navigation-drawer-link
+            [route]="'/admin'"
+            icon="admin_panel_settings"
+            label="Painel administrativo"
+            testId="drawer-admin"
+            [active]="activeRoute().startsWith('/admin')"
+            (selected)="closed.emit()"
+          />
+          <app-navigation-drawer-link
+            [route]="'/design-system'"
+            icon="palette"
+            label="Design System"
+            testId="drawer-design-system"
+            [active]="activeRoute().startsWith('/design-system')"
+            (selected)="closed.emit()"
+          />
         }
       } @else {
-        <app-navigation-drawer-link [route]="'/login'" icon="login" label="Entrar" testId="drawer-login" [active]="activeRoute() === '/login'" (selected)="close.emit()" />
+        <app-navigation-drawer-link
+          [route]="'/login'"
+          icon="login"
+          label="Entrar"
+          testId="drawer-login"
+          [active]="activeRoute() === '/login'"
+          (selected)="closed.emit()"
+        />
       }
     }
   </nav>
@@ -71,9 +131,33 @@
   <section class="navigation-drawer__theme" aria-labelledby="drawer-theme-title">
     <h3 id="drawer-theme-title" class="navigation-drawer__section-title">Tema</h3>
     <div class="navigation-drawer__theme-options" role="group" aria-label="Selecionar tema">
-      <app-navigation-drawer-link [route]="activeRoute()" icon="light_mode" label="Claro" testId="drawer-theme-light" [active]="themeMode() === 'light'" currentValue="true" (selected)="onThemeChange('light')" />
-      <app-navigation-drawer-link [route]="activeRoute()" icon="dark_mode" label="Escuro" testId="drawer-theme-dark" [active]="themeMode() === 'dark'" currentValue="true" (selected)="onThemeChange('dark')" />
-      <app-navigation-drawer-link [route]="activeRoute()" icon="brightness_auto" label="Sistema" testId="drawer-theme-system" [active]="themeMode() === 'system'" currentValue="true" (selected)="onThemeChange('system')" />
+      <app-navigation-drawer-link
+        [route]="activeRoute()"
+        icon="light_mode"
+        label="Claro"
+        testId="drawer-theme-light"
+        [active]="themeMode() === 'light'"
+        currentValue="true"
+        (selected)="onThemeChange('light')"
+      />
+      <app-navigation-drawer-link
+        [route]="activeRoute()"
+        icon="dark_mode"
+        label="Escuro"
+        testId="drawer-theme-dark"
+        [active]="themeMode() === 'dark'"
+        currentValue="true"
+        (selected)="onThemeChange('dark')"
+      />
+      <app-navigation-drawer-link
+        [route]="activeRoute()"
+        icon="brightness_auto"
+        label="Sistema"
+        testId="drawer-theme-system"
+        [active]="themeMode() === 'system'"
+        currentValue="true"
+        (selected)="onThemeChange('system')"
+      />
     </div>
   </section>
 

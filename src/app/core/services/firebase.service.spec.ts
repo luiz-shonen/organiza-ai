@@ -1,9 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { FirebaseService } from './firebase.service';
-import * as firebaseApp from 'firebase/app';
-import * as firebaseAuth from 'firebase/auth';
-import * as firebaseFirestore from 'firebase/firestore';
 
 describe('FirebaseService', () => {
   let service: FirebaseService;

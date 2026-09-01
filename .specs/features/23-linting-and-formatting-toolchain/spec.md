@@ -6,14 +6,14 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Goals
 
-- [ ] Comprehensive ESLint config covering TypeScript, Angular templates, unit tests, and Playwright E2E tests (including `no-wait-for-timeout`, web-first assertions, and `data-testid` conventions)
-- [ ] Strict Stylelint config enforcing BEM, `!important` prohibition, design token usage, duplicate class prevention across components, and color token validation against `DESIGN.md` as error-level rules
-- [ ] Prettier formatting all file types (`.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md`) enforced on commit
-- [ ] Commit message format enforced via commitlint (Conventional Commits)
-- [ ] CI quality gate (`quality.yml`) runs BEFORE Playwright E2E and blocks PRs on violations, including Design System contract validation
-- [ ] `.agents/` skills folder with style guide, smart/dumb component recipes, page creation guides, and design system usage reference
-- [ ] Company-wide style guide documentation exportable and mirrored in `DESIGN.md` and `/design-system`
-- [ ] AI agent verification: all linters pass clean after any AI-generated change
+- [x] Comprehensive ESLint config covering TypeScript, Angular templates, unit tests, and Playwright E2E tests (including `no-wait-for-timeout`, web-first assertions, and `data-testid` conventions)
+- [x] Strict Stylelint config enforcing BEM, `!important` prohibition, design token usage, duplicate class prevention across components, and color token validation against `DESIGN.md` as error-level rules
+- [x] Prettier formatting all file types (`.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md`) enforced on commit
+- [x] Commit message format enforced via commitlint (Conventional Commits)
+- [x] CI quality gate (`quality.yml`) runs BEFORE Playwright E2E and blocks PRs on violations, including Design System contract validation
+- [x] `.agents/` skills folder with style guide, smart/dumb component recipes, page creation guides, and design system usage reference
+- [x] Company-wide style guide documentation exportable and mirrored in `DESIGN.md` and `/design-system`
+- [x] AI agent verification: all linters pass clean after any AI-generated change
 
 ## Out of Scope
 
@@ -201,42 +201,42 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Requirement Traceability
 
-| Requirement ID | Story               | AC#   | Status                          |
-| -------------- | ------------------- | ----- | ------------------------------- |
-| LINT-01        | P1: ESLint          | AC-1  | Implementing (T1, T4, T13)      |
-| LINT-02        | P1: ESLint          | AC-2  | Implementing (T1, T4)           |
-| LINT-03        | P1: ESLint          | AC-3  | Implementing (T1)               |
-| LINT-04        | P1: ESLint          | AC-4  | Implementing (T1)               |
-| LINT-05        | P1: ESLint          | AC-5  | Implementing (T1)               |
-| LINT-06        | P1: ESLint          | AC-6  | Implementing (T1, T13)          |
-| LINT-07        | P1: ESLint          | AC-7  | Implementing (T1)               |
-| LINT-08        | P1: ESLint          | AC-8  | Implementing (T4)               |
-| LINT-09        | P1: ESLint          | AC-9  | Implementing (T1)               |
-| LINT-10        | P1: ESLint          | AC-10 | Implementing (T1)               |
-| LINT-11        | P1: ESLint          | AC-11 | Implementing (T1)               |
-| LINT-12        | P1: Stylelint       | AC-12 | Implementing (T2, T4, T13)      |
-| LINT-13        | P1: Stylelint       | AC-13 | Implementing (T2, T4)           |
-| LINT-14        | P1: Stylelint       | AC-14 | Implementing (T2)               |
-| LINT-15        | P1: Stylelint       | AC-15 | Implementing (T2)               |
-| LINT-16        | P1: Stylelint       | AC-16 | Implementing (T2)               |
-| LINT-17        | P1: Stylelint       | AC-17 | Implementing (T2)               |
-| LINT-18        | P1: Prettier        | AC-18 | Implementing (T3, T4, T13)      |
-| LINT-19        | P1: Prettier        | AC-19 | Implementing (T3, T4)           |
-| LINT-20        | P1: Prettier        | AC-20 | Implementing (T3)               |
-| LINT-21        | P1: Git Hooks       | AC-21 | Implementing (T6)               |
-| LINT-22        | P1: Git Hooks       | AC-22 | Implementing (T5)               |
-| LINT-23        | P1: Git Hooks       | AC-23 | Implementing (T6)               |
-| LINT-24        | P1: Style Guide     | AC-24 | Implementing (T8)               |
-| LINT-25        | P1: Style Guide     | AC-25 | Implementing (T9)               |
-| LINT-26        | P1: Style Guide     | AC-26 | Implementing (T10)              |
-| LINT-27        | P1: Style Guide     | AC-27 | Implementing (T11)              |
-| LINT-28        | P1: Style Guide     | AC-28 | Implementing (T8, T9, T10, T11) |
-| LINT-29        | P2: CI Gate         | AC-29 | Implementing (T7, T13)          |
-| LINT-30        | P2: CI Gate         | AC-30 | Implementing (T7)               |
-| LINT-31        | P2: CI Gate         | AC-31 | Implementing (T7, T12)          |
-| LINT-32        | P2: Quality Script  | AC-32 | Implementing (T12, T13)         |
-| LINT-33        | P2: AI Verification | AC-33 | Implementing (T8)               |
-| LINT-34        | P2: AI Verification | AC-34 | Implementing (T8)               |
+| Requirement ID | Story               | AC#   | Status   |
+| -------------- | ------------------- | ----- | -------- |
+| LINT-01        | P1: ESLint          | AC-1  | Verified |
+| LINT-02        | P1: ESLint          | AC-2  | Verified |
+| LINT-03        | P1: ESLint          | AC-3  | Verified |
+| LINT-04        | P1: ESLint          | AC-4  | Verified |
+| LINT-05        | P1: ESLint          | AC-5  | Verified |
+| LINT-06        | P1: ESLint          | AC-6  | Verified |
+| LINT-07        | P1: ESLint          | AC-7  | Verified |
+| LINT-08        | P1: ESLint          | AC-8  | Verified |
+| LINT-09        | P1: ESLint          | AC-9  | Verified |
+| LINT-10        | P1: ESLint          | AC-10 | Verified |
+| LINT-11        | P1: ESLint          | AC-11 | Verified |
+| LINT-12        | P1: Stylelint       | AC-12 | Verified |
+| LINT-13        | P1: Stylelint       | AC-13 | Verified |
+| LINT-14        | P1: Stylelint       | AC-14 | Verified |
+| LINT-15        | P1: Stylelint       | AC-15 | Verified |
+| LINT-16        | P1: Stylelint       | AC-16 | Verified |
+| LINT-17        | P1: Stylelint       | AC-17 | Verified |
+| LINT-18        | P1: Prettier        | AC-18 | Verified |
+| LINT-19        | P1: Prettier        | AC-19 | Verified |
+| LINT-20        | P1: Prettier        | AC-20 | Verified |
+| LINT-21        | P1: Git Hooks       | AC-21 | Verified |
+| LINT-22        | P1: Git Hooks       | AC-22 | Verified |
+| LINT-23        | P1: Git Hooks       | AC-23 | Verified |
+| LINT-24        | P1: Style Guide     | AC-24 | Verified |
+| LINT-25        | P1: Style Guide     | AC-25 | Verified |
+| LINT-26        | P1: Style Guide     | AC-26 | Verified |
+| LINT-27        | P1: Style Guide     | AC-27 | Verified |
+| LINT-28        | P1: Style Guide     | AC-28 | Verified |
+| LINT-29        | P2: CI Gate         | AC-29 | Verified |
+| LINT-30        | P2: CI Gate         | AC-30 | Verified |
+| LINT-31        | P2: CI Gate         | AC-31 | Verified |
+| LINT-32        | P2: Quality Script  | AC-32 | Verified |
+| LINT-33        | P2: AI Verification | AC-33 | Verified |
+| LINT-34        | P2: AI Verification | AC-34 | Verified |
 
 **ID format:** `LINT-[NUMBER]`
 
@@ -248,13 +248,13 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 
 ## Success Criteria
 
-- [ ] `npm run lint` executes against TS, HTML, spec, and E2E files with zero config errors
-- [ ] `npm run lint:styles` executes with `color-no-hex`, `declaration-no-important`, and BEM enforcement
-- [ ] `npm run format:check` covers `.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md` files
-- [ ] `git commit` with bad message format is rejected by commitlint
-- [ ] `git commit` with staged unformatted file triggers auto-fix via lint-staged
-- [ ] `npm run quality` chains lint + lint:styles + lint:contracts + format:check
-- [ ] `quality.yml` CI workflow runs on PRs and blocks E2E if it fails
-- [ ] `.agents/skills/` contains 4 actionable SKILL.md files with smart/dumb recipes and code examples
-- [ ] `docs/STYLE_GUIDE.md` is populated for company-wide style guide export
-- [ ] Each SKILL.md references `tdd`, `bem-css`, and `tlc-spec-driven` skills
+- [x] `npm run lint` executes against TS, HTML, spec, and E2E files with zero config errors
+- [x] `npm run lint:styles` executes with `color-no-hex`, `declaration-no-important`, and BEM enforcement
+- [x] `npm run format:check` covers `.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md` files
+- [x] `git commit` with bad message format is rejected by commitlint
+- [x] `git commit` with staged unformatted file triggers auto-fix via lint-staged
+- [x] `npm run quality` chains lint + lint:styles + lint:contracts + format:check
+- [x] `quality.yml` CI workflow runs on PRs and blocks E2E if it fails
+- [x] `.agents/skills/` contains 4 actionable SKILL.md files with smart/dumb recipes and code examples
+- [x] `docs/STYLE_GUIDE.md` is populated for company-wide style guide export
+- [x] Each SKILL.md references `tdd`, `bem-css`, and `tlc-spec-driven` skills

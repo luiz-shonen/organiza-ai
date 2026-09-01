@@ -65,7 +65,9 @@ describe('ProfileInfoCardComponent', () => {
     fixture.componentRef.setInput('user', userWithPhoto);
     fixture.detectChanges();
 
-    const img: HTMLImageElement | null = fixture.nativeElement.querySelector('img.profile-info-card__avatar');
+    const img: HTMLImageElement | null = fixture.nativeElement.querySelector(
+      'img.profile-info-card__avatar',
+    );
     expect(img).toBeTruthy();
     expect(img?.src).toContain('https://example.com/avatar.jpg');
   });
@@ -73,7 +75,9 @@ describe('ProfileInfoCardComponent', () => {
   it('should toggle inline editing mode when edit button is clicked', () => {
     expect(component.isEditing()).toBe(false);
 
-    const editBtn: HTMLButtonElement | null = fixture.nativeElement.querySelector('.profile-info-card__edit-btn button');
+    const editBtn: HTMLButtonElement | null = fixture.nativeElement.querySelector(
+      '.profile-info-card__edit-btn button',
+    );
     editBtn?.click();
     fixture.detectChanges();
 

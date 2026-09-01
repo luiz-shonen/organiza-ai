@@ -14,10 +14,7 @@
     @if (userProfile(); as profile) {
       <div class="profile-container__content">
         <section class="profile-container__section" aria-label="Dados do perfil">
-          <app-profile-info-card
-            [user]="profile"
-            (updateName)="onUpdateName($event)"
-          />
+          <app-profile-info-card [user]="profile" (updateName)="onUpdateName($event)" />
         </section>
 
         <section class="profile-container__section" aria-labelledby="family-roster-heading">
@@ -50,43 +47,57 @@
               />
             </org-empty-state>
           } @else {
-            <div class="profile-container__events-grid" role="list" aria-label="Lista de eventos confirmados">
+            <div
+              class="profile-container__events-grid"
+              role="list"
+              aria-label="Lista de eventos confirmados"
+            >
               @for (event of attendedEvents(); track event.id) {
-                <org-surface variant="card" role="listitem" [attr.aria-labelledby]="'event-title-' + event.id">
+                <org-surface
+                  variant="card"
+                  role="listitem"
+                  [attr.aria-labelledby]="'event-title-' + event.id"
+                >
                   <article class="profile-event-card">
-                  <div class="profile-event-card__header">
-                    <span class="profile-event-card__category">{{ event.category || 'Evento' }}</span>
-                    @if (event.status === 'cancelled') {
-                      <span class="profile-event-card__badge profile-event-card__badge--cancelled">Cancelado</span>
-                    } @else {
-                      <span class="profile-event-card__badge profile-event-card__badge--confirmed">Confirmado</span>
-                    }
-                  </div>
-
-                  <h3 [id]="'event-title-' + event.id" class="profile-event-card__title">
-                    {{ event.title }}
-                  </h3>
-
-                  <div class="profile-event-card__meta">
-                    <div class="profile-event-card__meta-item">
-                      <org-icon name="schedule" size="sm" color="var(--org-primary)" />
-                      <span>{{ event.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+                    <div class="profile-event-card__header">
+                      <span class="profile-event-card__category">{{
+                        event.category || 'Evento'
+                      }}</span>
+                      @if (event.status === 'cancelled') {
+                        <span class="profile-event-card__badge profile-event-card__badge--cancelled"
+                          >Cancelado</span
+                        >
+                      } @else {
+                        <span class="profile-event-card__badge profile-event-card__badge--confirmed"
+                          >Confirmado</span
+                        >
+                      }
                     </div>
-                    <div class="profile-event-card__meta-item">
-                      <org-icon name="place" size="sm" color="var(--org-primary)" />
-                      <span>{{ event.location }}</span>
-                    </div>
-                  </div>
 
-                  <div class="profile-event-card__actions">
-                    <org-button
-                      class="profile-event-card__btn"
-                      label="Acessar evento"
-                      icon="event"
-                      variant="secondary"
-                      (pressed)="viewEvent(event.id)"
-                    />
-                  </div>
+                    <h3 [id]="'event-title-' + event.id" class="profile-event-card__title">
+                      {{ event.title }}
+                    </h3>
+
+                    <div class="profile-event-card__meta">
+                      <div class="profile-event-card__meta-item">
+                        <org-icon name="schedule" size="sm" color="var(--org-primary)" />
+                        <span>{{ event.date | date: 'dd/MM/yyyy HH:mm' }}</span>
+                      </div>
+                      <div class="profile-event-card__meta-item">
+                        <org-icon name="place" size="sm" color="var(--org-primary)" />
+                        <span>{{ event.location }}</span>
+                      </div>
+                    </div>
+
+                    <div class="profile-event-card__actions">
+                      <org-button
+                        class="profile-event-card__btn"
+                        label="Acessar evento"
+                        icon="event"
+                        variant="secondary"
+                        (pressed)="viewEvent(event.id)"
+                      />
+                    </div>
                   </article>
                 </org-surface>
               }

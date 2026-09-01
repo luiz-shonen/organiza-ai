@@ -61,10 +61,7 @@ export class AdminDashboardContainer implements OnInit {
   private readonly events$ = this.eventService.listEvents();
   readonly events = toSignal(this.events$, { initialValue: [] as PartyEvent[] });
 
-  readonly superAdminEmails = [
-    'luiz.gmr.dev@gmail.com',
-    'jessica.calm.dev@gmail.com',
-  ] as const;
+  readonly superAdminEmails = ['luiz.gmr.dev@gmail.com', 'jessica.calm.dev@gmail.com'] as const;
 
   readonly metrics = computed(() => {
     const evts: PartyEvent[] = this.events() ?? [];

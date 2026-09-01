@@ -214,12 +214,12 @@ The project has zero automated code quality enforcement. No ESLint, no Stylelint
 | LINT-09 | P1: ESLint | AC-9 | Implementing (T1) |
 | LINT-10 | P1: ESLint | AC-10 | Implementing (T1) |
 | LINT-11 | P1: ESLint | AC-11 | Implementing (T1) |
-| LINT-12 | P1: Stylelint | AC-12 | In Tasks (T2, T4, T13) |
-| LINT-13 | P1: Stylelint | AC-13 | In Tasks (T2, T4) |
-| LINT-14 | P1: Stylelint | AC-14 | In Tasks (T2) |
-| LINT-15 | P1: Stylelint | AC-15 | In Tasks (T2) |
-| LINT-16 | P1: Stylelint | AC-16 | In Tasks (T2) |
-| LINT-17 | P1: Stylelint | AC-17 | In Tasks (T2) |
+| LINT-12 | P1: Stylelint | AC-12 | Implementing (T2, T4, T13) |
+| LINT-13 | P1: Stylelint | AC-13 | Implementing (T2, T4) |
+| LINT-14 | P1: Stylelint | AC-14 | Implementing (T2) |
+| LINT-15 | P1: Stylelint | AC-15 | Implementing (T2) |
+| LINT-16 | P1: Stylelint | AC-16 | Implementing (T2) |
+| LINT-17 | P1: Stylelint | AC-17 | Implementing (T2) |
 | LINT-18 | P1: Prettier | AC-18 | In Tasks (T3, T4, T13) |
 | LINT-19 | P1: Prettier | AC-19 | In Tasks (T3, T4) |
 | LINT-20 | P1: Prettier | AC-20 | In Tasks (T3) |

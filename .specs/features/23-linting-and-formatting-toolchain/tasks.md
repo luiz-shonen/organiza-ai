@@ -116,12 +116,12 @@ T12 → T13
 - Skill: `bem-css`
 
 **Done when**:
-- [ ] `stylelint.config.mjs` created with `stylelint-config-standard-scss`
-- [ ] `declaration-no-important` set to `true` for component stylesheets
-- [ ] `color-no-hex` set to `true` with allowlist for `#fff`, `#000`, and `#ffffff`
-- [ ] `selector-class-pattern` set to strict BEM regex: `^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$`
-- [ ] `custom-property-pattern` allows `--org-`, `--mat-`, `--mdc-`, `--mat-sys-`, and `--showcase-`
-- [ ] Gate check passes: `npx stylelint --version`
+- [x] `stylelint.config.mjs` created with `stylelint-config-standard-scss`
+- [x] `declaration-no-important` set to `true` for component stylesheets
+- [x] `color-no-hex` set to `true` with allowlist for `#fff`, `#000`, and `#ffffff`
+- [x] `selector-class-pattern` set to strict BEM regex: `^[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:__[a-z0-9]+(?:-[a-z0-9]+)*)?(?:--[a-z0-9]+(?:-[a-z0-9]+)*)?$`
+- [x] `custom-property-pattern` allows `--org-`, `--mat-`, `--mdc-`, `--mat-sys-`, and `--showcase-`
+- [x] Gate check passes: `npx stylelint --version`
 
 **Tests**: none  
 **Gate**: Build  

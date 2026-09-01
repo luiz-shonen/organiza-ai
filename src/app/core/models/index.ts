@@ -24,10 +24,12 @@ export type {
   FamilyMember,
   FamilyRelationship,
   FamilyMemberCreate,
+  RelationshipOption,
 } from './family.model';
 export type { FirestoreBatchOperations } from './firestore-gateway.models';
 export type {
   ConfirmDialogData,
+  OrgConfirmDialogData,
   GuestFormDialogData,
   GuestFormDialogResult,
   BatchPrimaryGuestInput,
@@ -43,3 +45,12 @@ export type {
   RsvpDrawerRequestData,
   RsvpDrawerResult,
 } from './drawer.model';
+export type { ViaCepResponse } from './via-cep-response.model';
+export type {
+  DesignSystemNavigationItem,
+  DesignSystemNavigationGroup,
+} from './design-system-navigation.model';
+export {
+  DESIGN_SYSTEM_NAVIGATION_GROUPS,
+  DESIGN_SYSTEM_SECTIONS,
+} from './design-system-navigation.model';

@@ -1,13 +1,9 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { OrgConfirmDialogData } from '../../../core/models';
 import { OrgButtonComponent } from '../actions/org-button.component';
 
-export interface OrgConfirmDialogData {
-  readonly title: string;
-  readonly message: string;
-  readonly confirmLabel?: string;
-  readonly cancelLabel?: string;
-}
+export type { OrgConfirmDialogData };
 
 @Component({
   selector: 'org-confirm-dialog',

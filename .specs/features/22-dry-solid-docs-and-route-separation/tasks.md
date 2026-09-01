@@ -209,10 +209,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] `src/app/core/models/index.ts` exports all consolidated models
-- [ ] Components (`OrgConfirmDialogComponent`, `FamilySelectorComponent`, etc.) import models from `@core/models`
-- [ ] Zero duplicate interface declarations exist across models, services, and components
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] `src/app/core/models/index.ts` exports all consolidated models
+- [x] Components (`OrgConfirmDialogComponent`, `FamilySelectorComponent`, etc.) import models from `@core/models`
+- [x] Zero duplicate interface declarations exist across models, services, and components
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

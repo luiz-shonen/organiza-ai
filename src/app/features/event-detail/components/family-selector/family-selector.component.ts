@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
+import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
@@ -22,11 +23,6 @@ export interface InlineFamilyMemberPayload {
   name: string;
   relationship: FamilyRelationship;
   phone?: string;
-}
-
-export interface RelationshipOption {
-  value: FamilyRelationship;
-  label: string;
 }
 
 @Component({
@@ -60,14 +56,7 @@ export class FamilySelectorComponent {
   protected readonly inlineRelationship = signal<FamilyRelationship>('child');
   protected readonly inlinePhone = signal<string>('');
 
-  protected readonly relationshipOptions: RelationshipOption[] = [
-    { value: 'spouse', label: 'Cônjuge' },
-    { value: 'child', label: 'Filho(a)' },
-    { value: 'parent', label: 'Pai/Mãe' },
-    { value: 'sibling', label: 'Irmão(ã)' },
-    { value: 'relative', label: 'Parente' },
-    { value: 'other', label: 'Outro' },
-  ];
+  protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
   protected readonly relationshipAutocompleteOptions: readonly OrgSelectOption[] = this.relationshipOptions;
 
   protected readonly allSelected = computed(() => {
@@ -89,8 +78,7 @@ export class FamilySelectorComponent {
   });
 
   protected getRelationshipLabel(value: FamilyRelationship): string {
-    const option = this.relationshipOptions.find((opt) => opt.value === value);
-    return option ? option.label : value;
+    return getRelationshipLabel(value);
   }
 
   protected isMemberSelected(memberId: string): boolean {

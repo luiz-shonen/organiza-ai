@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Clipboard } from '@angular/cdk/clipboard';
 import QRCode from 'qrcode';
 import { FeedbackService, OrgButtonComponent, OrgSurfaceComponent } from '../../../../../shared/ui';
+import { shareWhatsApp } from '../../../../../core/utils';
 
 @Component({
   selector: 'app-share-panel',
@@ -49,8 +50,6 @@ export class SharePanelComponent {
 
   protected shareWhatsApp(): void {
     const title = this.eventTitle() || 'nosso evento';
-    const text = `🎉 Você está convidado(a) para *${title}*!\n\nConfirme sua presença e veja o que levar:\n${this.eventUrl()}`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+    shareWhatsApp(title, undefined, undefined, this.eventUrl());
   }
 }

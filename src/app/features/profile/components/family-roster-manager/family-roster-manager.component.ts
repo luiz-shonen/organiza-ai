@@ -7,17 +7,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
+import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
 import { OrgAutocompleteFieldComponent, OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent, OrgSurfaceComponent, OrgTextFieldComponent } from '../../../../shared/ui';
 
 export interface AddFamilyMemberPayload {
   name: string;
   relationship: FamilyRelationship;
   phone?: string;
-}
-
-export interface RelationshipOption {
-  value: FamilyRelationship;
-  label: string;
 }
 
 @Component({
@@ -46,18 +42,10 @@ export class FamilyRosterManagerComponent {
   protected readonly newRelationship = signal<FamilyRelationship>('child');
   protected readonly newPhone = signal<string>('');
 
-  protected readonly relationshipOptions: RelationshipOption[] = [
-    { value: 'spouse', label: 'Cônjuge' },
-    { value: 'child', label: 'Filho(a)' },
-    { value: 'parent', label: 'Pai/Mãe' },
-    { value: 'sibling', label: 'Irmão(ã)' },
-    { value: 'relative', label: 'Parente' },
-    { value: 'other', label: 'Outro' },
-  ];
+  protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
 
   protected getRelationshipLabel(value: FamilyRelationship): string {
-    const option = this.relationshipOptions.find((opt) => opt.value === value);
-    return option ? option.label : value;
+    return getRelationshipLabel(value);
   }
 
   protected setRelationship(value: string | null): void {

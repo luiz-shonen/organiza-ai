@@ -13,6 +13,8 @@ import {
   OrgSurfaceComponent,
 } from '../../shared/ui';
 
+import { formatDate, getDay, getMonth } from '../../core/utils';
+
 @Component({
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,9 +39,7 @@ export class HomeContainer {
   protected readonly events = toSignal(this.eventService.listEvents());
 
   protected formatDate(dateStr: string): string {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR', {
+    return formatDate(dateStr, 'pt-BR', {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -48,16 +48,11 @@ export class HomeContainer {
   }
 
   protected getDay(dateStr: string): string {
-    if (!dateStr) return '';
-    return new Date(dateStr).getDate().toString().padStart(2, '0');
+    return getDay(dateStr);
   }
 
   protected getMonth(dateStr: string): string {
-    if (!dateStr) return '';
-    return new Date(dateStr)
-      .toLocaleDateString('pt-BR', { month: 'short' })
-      .replace('.', '')
-      .toUpperCase();
+    return getMonth(dateStr);
   }
 
   protected navigateToEvent(eventId: string, event?: Event): void {

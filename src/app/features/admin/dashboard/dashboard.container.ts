@@ -21,6 +21,7 @@ import {
   NotificationService,
   EventNotificationService,
 } from '../../../core/services';
+import { formatDate, shareWhatsApp } from '../../../core/utils';
 import { PartyEvent } from '../../../core/models';
 import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 import {
@@ -246,9 +247,7 @@ export class DashboardContainer implements OnInit {
 
   protected shareWhatsApp(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
-    const text = `🎉 Você está convidado(a) para *${event.title}*!\n\n📅 ${this.formatDate(event.date)}\n📍 ${event.location}\n\nConfirme sua presença e veja o que levar:\n${url}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(whatsappUrl, '_blank');
+    shareWhatsApp(event.title, this.formatDate(event.date), event.location, url);
   }
 
   protected copyLink(event: PartyEvent): void {
@@ -258,12 +257,6 @@ export class DashboardContainer implements OnInit {
   }
 
   protected formatDate(dateStr: string): string {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+    return formatDate(dateStr);
   }
 }

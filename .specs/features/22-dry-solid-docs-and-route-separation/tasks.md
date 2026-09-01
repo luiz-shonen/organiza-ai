@@ -155,10 +155,10 @@ T21 -> T22 -> T23 -> T24 -> T25
 - Skill: NONE
 
 **Done when**:
-- [ ] Local duplicate `formatDate`, `getDay`, `getMonth` removed and replaced by `@core/utils`
-- [ ] Local duplicate `shareWhatsApp`, `copyLink` removed and replaced by `@core/utils`
-- [ ] Local duplicate `formatCep` removed and replaced by `@core/utils`
-- [ ] Gate check passes: `npm test -- --watch=false`
+- [x] Local duplicate `formatDate`, `getDay`, `getMonth` removed and replaced by `@core/utils`
+- [x] Local duplicate `shareWhatsApp`, `copyLink` removed and replaced by `@core/utils`
+- [x] Local duplicate `formatCep` removed and replaced by `@core/utils`
+- [x] Gate check passes: `npm test -- --watch=false`
 
 **Tests**: unit  
 **Gate**: quick  

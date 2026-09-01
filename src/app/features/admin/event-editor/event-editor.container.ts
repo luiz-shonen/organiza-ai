@@ -29,6 +29,7 @@ import {
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { formatCep } from '../../../core/utils';
 import { PartyItem, Guest, PartyEvent } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
@@ -425,10 +426,7 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected formatCep(value: string): void {
-    let formattedValue = value.replace(/\D/g, '');
-    if (formattedValue.length > 5) {
-      formattedValue = formattedValue.substring(0, 5) + '-' + formattedValue.substring(5, 8);
-    }
+    const formattedValue = formatCep(value);
     if (formattedValue !== value) {
       this.addressForm.controls.cep.setValue(formattedValue);
     }

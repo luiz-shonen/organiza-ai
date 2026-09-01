@@ -303,10 +303,10 @@ T12 → T13
 
 **Done when**:
 
-- [ ] `.agents/skills/creating-pages/SKILL.md` created with step-by-step recipes
-- [ ] References `tlc-spec-driven` and `tdd` methodology skills by name
-- [ ] Covers container creation, route registration, guards, and dumb child wiring
-- [ ] Gate check passes: `npm run format:check`
+- [x] `.agents/skills/creating-pages/SKILL.md` created with step-by-step recipes
+- [x] References `tlc-spec-driven` and `tdd` methodology skills by name
+- [x] Covers container creation, route registration, guards, and dumb child wiring
+- [x] Gate check passes: `npm run format:check`
 
 **Tests**: none  
 **Gate**: Quick  

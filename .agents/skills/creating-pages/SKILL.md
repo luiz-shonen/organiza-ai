@@ -10,6 +10,7 @@ This skill provides step-by-step instructions for creating routed Smart Containe
 ## Core Methodologies
 
 All page authoring must adhere to:
+
 - **`tlc-spec-driven`**: Specify user stories and acceptance criteria before implementation; build with atomic Conventional Commits.
 - **`tdd`**: Write unit tests (`.container.spec.ts`) covering initialization, service delegation, state transitions, and error handling.
 - **`bem-css`**: Style pages using strict BEM SCSS with `--org-*` design tokens, responsive layouts, and zero horizontal overflow.
@@ -19,6 +20,7 @@ All page authoring must adhere to:
 ## 1. Page File Architecture
 
 Every routed page lives under its domain feature directory (`src/app/features/[domain]/`) and consists of 4 co-located files:
+
 ```
 src/app/features/[domain]/[page-name]/
 ├── [page-name].container.ts        # Smart Container Component
@@ -32,6 +34,7 @@ src/app/features/[domain]/[page-name]/
 ## 2. Step-by-Step Container Recipe
 
 ### Step 1: TypeScript Smart Container (`.container.ts`)
+
 ```typescript
 import {
   ChangeDetectionStrategy,
@@ -88,7 +91,7 @@ export class MyFeaturePageContainer implements OnInit {
 
   // 4. Computed State
   readonly activeEvents = computed(() =>
-    (this.events() ?? []).filter((e) => e.status !== 'cancelled')
+    (this.events() ?? []).filter((e) => e.status !== 'cancelled'),
   );
 
   ngOnInit(): void {
@@ -104,7 +107,9 @@ export class MyFeaturePageContainer implements OnInit {
 ```
 
 ### Step 2: Semantic HTML Template (`.container.html`)
+
 Always wrap the container with `<org-page-layout>` and structure with `<org-page-header>` and `<org-section>`:
+
 ```html
 <org-page-layout maxWidth="wide">
   <div class="my-feature-page" data-testid="my-feature-page">
@@ -128,24 +133,24 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
     <!-- Sections for Logical Grouping -->
     <org-section title="Eventos Ativos" [count]="activeEvents().length">
       @if (loading()) {
-        <org-surface class="my-feature-page__loading">
-          <p>Carregando eventos...</p>
-        </org-surface>
+      <org-surface class="my-feature-page__loading">
+        <p>Carregando eventos...</p>
+      </org-surface>
       } @else if (activeEvents().length === 0) {
-        <org-empty-state
-          icon="event"
-          title="Nenhum evento ativo"
-          description="Clique em 'Criar Evento' para organizar sua primeira festa."
-        />
+      <org-empty-state
+        icon="event"
+        title="Nenhum evento ativo"
+        description="Clique em 'Criar Evento' para organizar sua primeira festa."
+      />
       } @else {
-        <div class="my-feature-page__grid">
-          @for (event of activeEvents(); track event.id) {
-            <org-surface class="my-feature-page__card">
-              <h3>{{ event.title }}</h3>
-              <p>{{ event.location }}</p>
-            </org-surface>
-          }
-        </div>
+      <div class="my-feature-page__grid">
+        @for (event of activeEvents(); track event.id) {
+        <org-surface class="my-feature-page__card">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.location }}</p>
+        </org-surface>
+        }
+      </div>
       }
     </org-section>
   </div>
@@ -153,6 +158,7 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
 ```
 
 ### Step 3: BEM Scoped Styles (`.container.scss`)
+
 ```scss
 .my-feature-page {
   display: flex;
@@ -188,6 +194,7 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
 ```
 
 ### Step 4: Unit Test Suite (`.container.spec.ts`)
+
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
@@ -240,6 +247,7 @@ describe('MyFeaturePageContainer', () => {
 ## 3. Route Registration & Guard Wiring
 
 ### Organizer Route (`src/app/features/organizer/organizer.routes.ts`)
+
 ```typescript
 export const ORGANIZER_ROUTES: Routes = [
   {
@@ -256,6 +264,7 @@ export const ORGANIZER_ROUTES: Routes = [
 ```
 
 ### Root Registration (`src/app/app.routes.ts`)
+
 ```typescript
 export const routes: Routes = [
   {
@@ -267,8 +276,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [superAdminGuard],
-    loadChildren: () =>
-      import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+    loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
 ];
 ```

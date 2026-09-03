@@ -173,6 +173,26 @@ background-clip: padding-box;
 box-shadow: 0 8px 32px 0 rgba(255, 77, 148, 0.08);
 ```
 
+### 4.4 Standardized Elevation & Box Shadows
+
+All box shadows must use standardized tokens. Hardcoded pixel/color shadows in component stylesheets are strictly forbidden and enforced by `npm run lint:contracts`:
+
+- `--org-shadow-xs`: `0 1px 2px rgba(0, 0, 0, 0.05)` (Subtle pill, badges, chip elements)
+- `--org-shadow-sm`: `0 2px 6px rgba(0, 0, 0, 0.08)` (Cards, small popups, subtle elevations)
+- `--org-shadow-md`: `0 4px 12px rgba(0, 0, 0, 0.12)` (Hover lifts, active chips, dialogs)
+- `--org-shadow-lg`: `var(--org-glass-shadow)` (Menus, modal sheets, drawer surfaces)
+- `--org-shadow-text`: `0 2px 8px rgba(0, 0, 0, 0.4)` (Hero text, overlay titles)
+
+### 4.5 Standardized Border Radii
+
+- `--org-radius-xs`: `0.375rem` (6px) — Micro controls, links
+- `--org-radius-sm`: `0.75rem` (12px) — Badges, small inputs
+- `--org-radius-md`: `1rem` (16px) — Cards, text fields, menu containers
+- `--org-radius-lg`: `1.25rem` (20px) — Dialogs, bottom sheets
+- `--org-radius-xl`: `1.75rem` (28px) — Large modal containers
+- `--org-radius-pill`: `9999px` — Badges, filter chips, pill buttons
+- `--org-radius-circle`: `50%` — Avatars, circular icon action badges
+
 ---
 
 ## 5. Canonical Iconography

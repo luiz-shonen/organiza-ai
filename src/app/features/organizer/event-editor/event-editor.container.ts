@@ -26,7 +26,7 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { formatCep } from '../../../core/utils';
-import { PartyItem, Guest, PartyEvent } from '../../../core/models';
+import { PartyItem, Guest, PartyEvent, EVENT_CATEGORIES } from '../../../core/models';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
@@ -110,15 +110,7 @@ export class EventEditorContainer implements OnInit {
     'Endereço do evento',
     'Pagamento por Pix',
   ] as const;
-  protected readonly categories = [
-    { name: 'Aniversário', class: 'cat-aniversario' },
-    { name: 'Casamento', class: 'cat-casamento' },
-    { name: 'Festa Junina', class: 'cat-festa' },
-    { name: 'Churrasco', class: 'cat-churrasco' },
-    { name: 'Happy Hour', class: 'cat-happy' },
-    { name: 'Formatura', class: 'cat-formatura' },
-    { name: 'Outros', class: 'cat-outros' },
-  ];
+  protected readonly categories = EVENT_CATEGORIES;
 
   public readonly isOwner = computed(() => {
     if (!this.isEditing()) return true;

@@ -17,10 +17,10 @@
   }
 
   &__tag {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 9999px;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-bold);
+    padding: var(--org-space-xs) 12px;
+    border-radius: var(--org-radius-pill);
     color: var(--org-primary);
     background-color: var(--org-primary-container);
   }
@@ -51,7 +51,7 @@
   &__avatar {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: var(--org-radius-circle);
     display: flex;
     align-items: center;
     justify-content: center;

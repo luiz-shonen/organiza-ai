@@ -120,7 +120,7 @@ Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.
 ## 9. Code Quality, Linters & CI Toolchain (AD-042, AD-044) — Mandatory
 
 - **Unified Quality Gate**: Run `npm run quality` before committing or completing tasks. It executes ESLint, Stylelint, Design System contract validation (`npm run lint:contracts`), and Prettier format check.
-- **Strict UI Contracts**: `scripts/validate-ui-contracts.mjs` enforces zero raw Material tags (`<mat-icon>`, `<mat-button>`, `<mat-chip>`), zero direct Material module imports outside `@shared/ui`, zero `.mat-` classes in feature SCSS, and zero undeclared glass styles.
+- **Strict UI Contracts**: `scripts/validate-ui-contracts.mjs` enforces zero raw Material tags (`<mat-icon>`, `<mat-button>`, `<mat-chip>`), zero direct Material module imports outside `@shared/ui`, zero `.mat-` classes in feature SCSS, zero undeclared glass styles, zero raw `box-shadow` declarations (mandatory `var(--org-shadow-*)` or `var(--org-glass-shadow)`), and zero hardcoded `border-radius` values (mandatory `var(--org-radius-*)`).
 - **Production Build Gate**: `npm run build` must succeed with zero TypeScript or template errors.
 - **ESLint Flat Config (`eslint.config.mjs`)**:
   - `@typescript-eslint/no-explicit-any: error` in production code (`warn` only in `*.spec.ts` / `*.mock.ts`).

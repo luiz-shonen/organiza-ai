@@ -156,11 +156,20 @@ describe('DesignSystemShowcaseContainer', () => {
     }
 
     const radiusCards = spacingSection?.querySelectorAll('.org-ds-radius-card');
-    expect(radiusCards?.length).toBe(4);
+    expect(radiusCards?.length).toBe(6);
+    expect(spacingSection?.textContent).toContain('--org-radius-xs');
     expect(spacingSection?.textContent).toContain('--org-radius-sm');
     expect(spacingSection?.textContent).toContain('--org-radius-md');
     expect(spacingSection?.textContent).toContain('--org-radius-lg');
-    expect(spacingSection?.textContent).toContain('--org-radius-full');
+    expect(spacingSection?.textContent).toContain('--org-radius-xl');
+    expect(spacingSection?.textContent).toContain('--org-radius-pill');
+
+    const shadowCards = spacingSection?.querySelectorAll('.org-ds-shadow-card');
+    expect(shadowCards?.length).toBe(4);
+    expect(spacingSection?.textContent).toContain('--org-shadow-xs');
+    expect(spacingSection?.textContent).toContain('--org-shadow-sm');
+    expect(spacingSection?.textContent).toContain('--org-shadow-md');
+    expect(spacingSection?.textContent).toContain('--org-shadow-lg');
   });
 
   it('applies a single selected seasonal class to the document root', () => {

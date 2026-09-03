@@ -34,7 +34,7 @@
   &__avatar {
     width: 4.5rem;
     height: 4.5rem;
-    border-radius: 50%;
+    border-radius: var(--org-radius-circle);
     object-fit: cover;
     border: 2px solid var(--org-primary);
 

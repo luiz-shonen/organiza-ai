@@ -7,7 +7,7 @@
   &__panel {
     background: var(--org-surface);
     border: 1px solid var(--org-border);
-    border-radius: 16px;
+    border-radius: var(--org-radius-md);
     box-shadow: none;
     overflow: hidden;
   }
@@ -19,8 +19,8 @@
   &__title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 600;
+    gap: var(--org-space-sm);
+    font-weight: var(--org-font-weight-semibold);
     font-size: 0.9375rem;
     color: var(--org-text-primary);
   }
@@ -42,12 +42,12 @@
 
   &__badge {
     display: inline-block;
-    padding: 2px 8px;
-    font-size: 0.75rem;
-    font-weight: 700;
+    padding: 2px var(--org-space-sm);
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-bold);
     background: var(--org-primary-light);
     color: var(--org-primary);
-    border-radius: 12px;
+    border-radius: var(--org-radius-sm);
   }
 
   &__content {
@@ -99,9 +99,9 @@
 
   &__member-badge {
     font-size: 0.6875rem;
-    font-weight: 600;
+    font-weight: var(--org-font-weight-semibold);
     padding: 1px 6px;
-    border-radius: 8px;
+    border-radius: var(--org-radius-xs);
     background: var(--org-primary-light);
     color: var(--org-primary);
     text-transform: uppercase;
@@ -111,7 +111,7 @@
     padding: 12px 0;
     text-align: center;
     color: var(--org-text-secondary);
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
 
     &-text {
       margin: 0;
@@ -126,7 +126,7 @@
 
   &__inline-toggle-btn {
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: var(--org-font-weight-semibold);
     display: flex;
     align-items: center;
     gap: 4px;
@@ -135,7 +135,7 @@
   &__inline-form {
     background: var(--org-surface);
     border: 1px solid var(--org-border);
-    border-radius: 12px;
+    border-radius: var(--org-radius-sm);
     padding: 12px;
     display: flex;
     flex-direction: column;

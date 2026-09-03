@@ -3,6 +3,7 @@ import { BasePage } from './base.page';
 
 export class EventEditorPage extends BasePage {
   readonly pageRoot: Locator;
+  readonly categoryChips: Locator;
   readonly titleInput: Locator;
   readonly dateInput: Locator;
   readonly timeInput: Locator;
@@ -23,6 +24,7 @@ export class EventEditorPage extends BasePage {
       .getByTestId('event-editor-page')
       .or(page.locator('section.editor'))
       .first();
+    this.categoryChips = page.locator('.editor__category-options org-chip');
     this.titleInput = page
       .getByTestId('event-title-input')
       .or(page.locator('input[formcontrolname="title"]'))

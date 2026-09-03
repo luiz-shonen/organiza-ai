@@ -1,19 +1,43 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { OrgIconComponent, OrgIconName } from '../actions/org-icon.component';
 
-export type OrgBadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger';
+export type OrgBadgeVariant =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'aniversario'
+  | 'casamento'
+  | 'festa'
+  | 'churrasco'
+  | 'happy'
+  | 'formatura'
+  | 'outros';
+
 const VALID_VARIANTS: ReadonlySet<OrgBadgeVariant> = new Set([
   'default',
   'primary',
+  'secondary',
   'success',
   'warning',
   'danger',
+  'aniversario',
+  'casamento',
+  'festa',
+  'churrasco',
+  'happy',
+  'formatura',
+  'outros',
 ]);
 
 function normalizeVariant(value: unknown): OrgBadgeVariant {
-  return typeof value === 'string' && VALID_VARIANTS.has(value as OrgBadgeVariant)
-    ? (value as OrgBadgeVariant)
-    : 'default';
+  if (typeof value !== 'string') return 'default';
+  const cleaned = value.startsWith('cat-')
+    ? (value.slice(4) as OrgBadgeVariant)
+    : (value as OrgBadgeVariant);
+  return VALID_VARIANTS.has(cleaned) ? cleaned : 'default';
 }
 
 @Component({

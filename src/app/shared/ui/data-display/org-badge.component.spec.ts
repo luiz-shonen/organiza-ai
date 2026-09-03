@@ -17,16 +17,26 @@ describe('OrgBadgeComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('check_circle');
   });
 
-  it('falls back to default and allows no gradient treatment', async () => {
+  it('supports category variants and normalizes cat- prefix', async () => {
     await TestBed.configureTestingModule({ imports: [OrgBadgeComponent] }).compileComponents();
     const fixture: ComponentFixture<OrgBadgeComponent> = TestBed.createComponent(OrgBadgeComponent);
-    fixture.componentRef.setInput('label', '6');
-    fixture.componentRef.setInput('variant', 'other' as never);
-    fixture.componentRef.setInput('gradient', false);
+    fixture.componentRef.setInput('label', 'Festa Junina');
+    fixture.componentRef.setInput('variant', 'cat-festa' as never);
     fixture.detectChanges();
 
     const badge = fixture.nativeElement.querySelector('.org-badge') as HTMLElement;
-    expect(badge.classList.contains('org-badge--default')).toBe(true);
-    expect(badge.classList.contains('org-badge--gradient')).toBe(false);
+    expect(badge.textContent).toContain('Festa Junina');
+    expect(badge.classList.contains('org-badge--festa')).toBe(true);
+  });
+
+  it('supports secondary variant', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgBadgeComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgBadgeComponent> = TestBed.createComponent(OrgBadgeComponent);
+    fixture.componentRef.setInput('label', 'Secundário');
+    fixture.componentRef.setInput('variant', 'secondary');
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('.org-badge') as HTMLElement;
+    expect(badge.classList.contains('org-badge--secondary')).toBe(true);
   });
 });

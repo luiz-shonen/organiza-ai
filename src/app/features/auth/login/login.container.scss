@@ -12,7 +12,7 @@
   /* Vibrant Modernism Liquid Glass Orbs */
   &__orb {
     position: absolute;
-    border-radius: 50%;
+    border-radius: var(--org-radius-circle);
     filter: blur(140px);
     opacity: 0.25;
     pointer-events: none;
@@ -84,17 +84,17 @@
 
   &__tabs {
     display: flex;
-    padding: var(--org-space-xs, 4px);
+    padding: var(--org-space-xs);
     background-color: var(--org-surface-variant);
-    border-radius: var(--org-radius-sm, 8px);
+    border-radius: var(--org-radius-sm);
   }
 
   &__tab {
     flex: 1;
     padding: 10px 14px;
-    border-radius: var(--org-radius-sm, 8px);
+    border-radius: var(--org-radius-sm);
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface-variant);
     text-align: center;
     background: transparent;
@@ -104,8 +104,8 @@
 
     &--active {
       background-color: var(--org-surface);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-      font-weight: 700;
+      box-shadow: var(--org-shadow-md);
+      font-weight: var(--org-font-weight-bold);
       color: var(--org-primary);
     }
   }
@@ -113,14 +113,14 @@
   &__error {
     display: flex;
     align-items: center;
-    gap: var(--org-space-sm, 10px);
+    gap: var(--org-space-sm);
     padding: 12px 16px;
-    border-radius: 12px;
+    border-radius: var(--org-radius-sm);
     background: rgba(186, 26, 26, 0.12);
     border: 1px solid rgba(186, 26, 26, 0.3);
     color: var(--org-error);
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-semibold);
 
     mat-icon {
       color: var(--org-error);

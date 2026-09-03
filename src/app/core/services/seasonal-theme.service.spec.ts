@@ -37,6 +37,18 @@ describe('SeasonalThemeService', () => {
     expect(service.config().isOverride).toBe(true);
   });
 
+  it('should override theme when event category is Festa Junina', () => {
+    service.evaluateEventTheme(null, null, 'Festa Junina');
+    expect(service.config().activeTheme).toBe('junina');
+    expect(service.config().isOverride).toBe(true);
+  });
+
+  it('should override theme when event category is Natal', () => {
+    service.evaluateEventTheme(null, null, 'Natal');
+    expect(service.config().activeTheme).toBe('natal');
+    expect(service.config().isOverride).toBe(true);
+  });
+
   it('should reset to auto seasonal theme', () => {
     service.evaluateEventTheme(null, 'Natal 2026');
     expect(service.config().isOverride).toBe(true);

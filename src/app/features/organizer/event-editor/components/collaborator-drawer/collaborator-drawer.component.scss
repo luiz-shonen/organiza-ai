@@ -53,7 +53,7 @@
     align-items: center;
     background: color-mix(in srgb, var(--org-surface) 70%, transparent);
     border: 1px solid var(--org-border);
-    border-radius: var(--org-radius-full, 9999px);
+    border-radius: var(--org-radius-pill);
     color: var(--org-on-surface);
     cursor: pointer;
     display: inline-flex;

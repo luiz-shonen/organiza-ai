@@ -54,4 +54,32 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(element.querySelectorAll('.glass-card')).toHaveLength(0);
     expect(element.querySelectorAll('org-icon')).not.toHaveLength(0);
   });
+
+  it('should render event category badge with correct label and category class', () => {
+    const customEvent: PartyEvent = {
+      ...mockEvent,
+      category: 'Churrasco',
+    };
+    fixture.componentRef.setInput('event', customEvent);
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('.event-card__category-badge');
+    expect(badge).toBeTruthy();
+    expect(badge.textContent.trim()).toBe('Churrasco');
+    expect(badge.classList.contains('cat-churrasco')).toBe(true);
+  });
+
+  it('should fallback to default category text and class when category is missing', () => {
+    const noCatEvent: PartyEvent = {
+      ...mockEvent,
+      category: undefined,
+    };
+    fixture.componentRef.setInput('event', noCatEvent);
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('.event-card__category-badge');
+    expect(badge).toBeTruthy();
+    expect(badge.textContent.trim()).toBe('Festa & Celebração');
+    expect(badge.classList.contains('cat-outros')).toBe(true);
+  });
 });

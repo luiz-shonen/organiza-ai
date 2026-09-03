@@ -2,9 +2,17 @@
   class="org-badge"
   [class.org-badge--default]="variant() === 'default'"
   [class.org-badge--primary]="variant() === 'primary'"
+  [class.org-badge--secondary]="variant() === 'secondary'"
   [class.org-badge--success]="variant() === 'success'"
   [class.org-badge--warning]="variant() === 'warning'"
   [class.org-badge--danger]="variant() === 'danger'"
+  [class.org-badge--aniversario]="variant() === 'aniversario'"
+  [class.org-badge--casamento]="variant() === 'casamento'"
+  [class.org-badge--festa]="variant() === 'festa'"
+  [class.org-badge--churrasco]="variant() === 'churrasco'"
+  [class.org-badge--happy]="variant() === 'happy'"
+  [class.org-badge--formatura]="variant() === 'formatura'"
+  [class.org-badge--outros]="variant() === 'outros'"
   [class.org-badge--gradient]="gradient()"
 >
   @if (icon(); as badgeIcon) {

@@ -6,11 +6,16 @@
   align-items: center;
   border-radius: var(--org-radius-pill);
   display: inline-flex;
-  font-size: 0.75rem;
-  font-weight: 700;
-  gap: 4px;
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-bold);
+  gap: var(--org-space-xs);
   min-height: 24px;
-  padding: 2px 8px;
+  padding: var(--org-space-2xs) var(--org-space-sm);
+  letter-spacing: var(--org-letter-spacing-wide);
+  box-shadow: var(--org-shadow-xs);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .org-badge--default {
@@ -21,6 +26,11 @@
 .org-badge--primary {
   background: var(--org-primary);
   color: var(--org-on-primary);
+}
+
+.org-badge--secondary {
+  background: var(--org-secondary-container);
+  color: var(--org-on-secondary-container);
 }
 
 .org-badge--success {
@@ -36,6 +46,48 @@
 .org-badge--danger {
   background: var(--org-danger);
   color: var(--org-on-danger);
+}
+
+.org-badge--aniversario,
+:host(.cat-aniversario) .org-badge {
+  background: var(--org-cat-aniversario-bg);
+  color: var(--org-cat-aniversario-color);
+}
+
+.org-badge--casamento,
+:host(.cat-casamento) .org-badge {
+  background: var(--org-cat-casamento-bg);
+  color: var(--org-cat-casamento-color);
+}
+
+.org-badge--festa,
+:host(.cat-festa) .org-badge {
+  background: var(--org-cat-festa-bg);
+  color: var(--org-cat-festa-color);
+}
+
+.org-badge--churrasco,
+:host(.cat-churrasco) .org-badge {
+  background: var(--org-cat-churrasco-bg);
+  color: var(--org-cat-churrasco-color);
+}
+
+.org-badge--happy,
+:host(.cat-happy) .org-badge {
+  background: var(--org-cat-happy-bg);
+  color: var(--org-cat-happy-color);
+}
+
+.org-badge--formatura,
+:host(.cat-formatura) .org-badge {
+  background: var(--org-cat-formatura-bg);
+  color: var(--org-cat-formatura-color);
+}
+
+.org-badge--outros,
+:host(.cat-outros) .org-badge {
+  background: var(--org-cat-outros-bg);
+  color: var(--org-cat-outros-color);
 }
 
 .org-badge--gradient {

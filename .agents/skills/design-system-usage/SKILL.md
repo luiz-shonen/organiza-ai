@@ -116,12 +116,12 @@ All UI components and features consuming the design system must follow:
 
 ### Data Display
 
-| Component                | Selector            | Purpose                           | Key Inputs / Outputs                                                                       |
-| ------------------------ | ------------------- | --------------------------------- | ------------------------------------------------------------------------------------------ |
-| `OrgMetricCardComponent` | `<org-metric-card>` | KPI statistic card                | `label`, `value`, `description`, `trend`                                                   |
-| `OrgDataTableComponent`  | `<org-data-table>`  | Tabular data display with columns | `columns`: `OrgDataColumn<T>[]`, `data`: `T[]`                                             |
-| `OrgBadgeComponent`      | `<org-badge>`       | Status and count pill badge       | `label`, `variant`: `'default'` \| `'primary'` \| `'success'` \| `'warning'` \| `'danger'` |
-| `OrgProgressComponent`   | `<org-progress>`    | Progress indicator                | `value`, `variant`: `'linear'` \| `'circular'`                                             |
+| Component                | Selector            | Purpose                               | Key Inputs / Outputs                                                                                                                                                                                                      |
+| ------------------------ | ------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OrgMetricCardComponent` | `<org-metric-card>` | KPI statistic card                    | `label`, `value`, `description`, `trend`                                                                                                                                                                                  |
+| `OrgDataTableComponent`  | `<org-data-table>`  | Tabular data display with columns     | `columns`: `OrgDataColumn<T>[]`, `data`: `T[]`                                                                                                                                                                            |
+| `OrgBadgeComponent`      | `<org-badge>`       | Status, category and count pill badge | `label`, `variant`: `'default'` \| `'primary'` \| `'secondary'` \| `'success'` \| `'warning'` \| `'danger'` \| `'aniversario'` \| `'casamento'` \| `'festa'` \| `'churrasco'` \| `'happy'` \| `'formatura'` \| `'outros'` |
+| `OrgProgressComponent`   | `<org-progress>`    | Progress indicator                    | `value`, `variant`: `'linear'` \| `'circular'`                                                                                                                                                                            |
 
 ```html
 <org-metric-card label="Total de Convidados" value="48" description="32 confirmados" />

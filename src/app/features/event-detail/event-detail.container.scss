@@ -26,35 +26,35 @@
   &__skeleton-hero {
     height: 240px;
     width: 100%;
-    border-radius: 20px;
-    margin-bottom: 16px;
+    border-radius: var(--org-radius-lg);
+    margin-bottom: var(--org-space-md);
 
     @include semantic.tablet {
       height: 300px;
-      border-radius: 24px;
+      border-radius: var(--org-radius-xl);
     }
   }
 
   &__skeleton-card {
     height: 160px;
     width: 100%;
-    border-radius: 16px;
-    margin-bottom: 16px;
+    border-radius: var(--org-radius-md);
+    margin-bottom: var(--org-space-md);
   }
 
   &__section {
-    margin-top: 32px;
+    margin-top: var(--org-space-xl);
   }
 
   &__section-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 0 16px;
+    font-size: var(--org-font-size-2xl);
+    font-weight: var(--org-font-weight-bold);
+    margin: 0 0 var(--org-space-md);
   }
 
   &__confirmed-card {
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: var(--org-radius-md);
+    padding: var(--org-space-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,7 +62,7 @@
   }
 
   &__confirmed-title {
-    font-weight: 700;
+    font-weight: var(--org-font-weight-bold);
     font-size: 1.125rem;
     margin: 0 0 8px;
     color: var(--org-text-primary);
@@ -75,12 +75,12 @@
   }
 
   &__cancel-btn {
-    padding: 8px 20px;
-    border-radius: 9999px;
+    padding: var(--org-space-sm) 20px;
+    border-radius: var(--org-radius-pill);
     border: 1px solid var(--org-error);
     color: var(--org-error);
-    font-weight: 700;
-    font-size: 0.875rem;
+    font-weight: var(--org-font-weight-bold);
+    font-size: var(--org-font-size-sm);
     background: transparent;
     cursor: pointer;
     transition:

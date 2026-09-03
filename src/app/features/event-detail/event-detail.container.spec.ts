@@ -217,6 +217,7 @@ describe('EventDetailContainer', () => {
     expect(mockSeasonalThemeService.evaluateEventTheme).toHaveBeenCalledWith(
       mockEvent.date,
       mockEvent.title,
+      mockEvent.category,
     );
   });
 

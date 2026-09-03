@@ -9,11 +9,11 @@
     position: relative;
     width: 100%;
     height: 280px;
-    border-radius: 20px;
+    border-radius: var(--org-radius-lg);
 
     @include semantic.tablet {
       height: 300px;
-      border-radius: 24px;
+      border-radius: var(--org-radius-xl);
     }
   }
 
@@ -30,6 +30,42 @@
     inset: 0;
     background: var(--org-gradient-primary);
     opacity: 0.8;
+  }
+
+  &.cat-aniversario &__hero-fallback {
+    background: linear-gradient(
+      135deg,
+      var(--org-cat-aniversario-color) 0%,
+      var(--org-primary) 100%
+    );
+  }
+
+  &.cat-casamento &__hero-fallback {
+    background: linear-gradient(135deg, var(--org-cat-casamento-color) 0%, var(--org-primary) 100%);
+  }
+
+  &.cat-festa &__hero-fallback {
+    background: var(--org-gradient-primary);
+  }
+
+  &.cat-churrasco &__hero-fallback {
+    background: linear-gradient(
+      135deg,
+      var(--org-cat-churrasco-color) 0%,
+      var(--org-secondary) 100%
+    );
+  }
+
+  &.cat-happy &__hero-fallback {
+    background: linear-gradient(135deg, var(--org-cat-happy-color) 0%, var(--org-primary) 100%);
+  }
+
+  &.cat-formatura &__hero-fallback {
+    background: linear-gradient(135deg, var(--org-cat-formatura-color) 0%, var(--org-primary) 100%);
+  }
+
+  :host-context(html[class*='theme-']) &__hero-fallback {
+    background: var(--org-gradient-primary);
   }
 
   &__hero-img {
@@ -51,45 +87,37 @@
 
   &__hero-info {
     position: absolute;
-    bottom: 32px;
-    left: 16px;
-    right: 16px;
+    bottom: var(--org-space-xl);
+    left: var(--org-space-md);
+    right: var(--org-space-md);
 
     @include semantic.tablet {
-      bottom: 28px;
-      left: 24px;
-      right: 24px;
+      bottom: var(--org-space-lg);
+      left: var(--org-space-lg);
+      right: var(--org-space-lg);
     }
   }
 
   &__category-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background-color: var(--org-secondary-container);
-    color: var(--org-on-secondary-container);
-    border-radius: 9999px;
-    font-weight: 700;
-    font-size: 0.75rem;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--org-space-sm);
   }
 
   &__title {
     font-family: var(--org-font-body);
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: var(--org-font-size-2xl);
+    font-weight: var(--org-font-weight-extrabold);
     color: var(--org-on-primary);
-    line-height: 1.15;
+    line-height: var(--org-line-height-tight);
     margin: 0;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    text-shadow: var(--org-shadow-text);
 
     @include semantic.tablet {
-      font-size: 2rem;
+      font-size: var(--org-font-size-3xl);
     }
   }
 
   &__details-wrapper {
-    margin-top: -24px;
+    margin-top: calc(-1 * var(--org-space-lg));
     position: relative;
     z-index: 20;
   }
@@ -101,21 +129,21 @@
   &__details-content {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--org-space-md);
   }
 
   &__detail-row {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--org-space-md);
 
     &--link {
       text-decoration: none;
       color: inherit;
-      border-radius: 12px;
-      padding: 8px;
-      margin: -8px;
-      transition: background-color 0.2s;
+      border-radius: var(--org-radius-sm);
+      padding: var(--org-space-sm);
+      margin: calc(-1 * var(--org-space-sm));
+      transition: background-color 0.2s ease;
 
       &:hover {
         background-color: var(--org-surface-variant);
@@ -124,9 +152,9 @@
   }
 
   &__date-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: var(--org-space-2xl);
+    height: var(--org-space-2xl);
+    border-radius: var(--org-radius-circle);
     background-color: var(--org-primary-container);
     color: var(--org-primary);
     display: flex;
@@ -137,42 +165,42 @@
   }
 
   &__date-month {
-    font-size: 0.625rem;
+    font-size: var(--org-font-size-2xs);
     text-transform: uppercase;
-    font-weight: 700;
-    line-height: 1;
+    font-weight: var(--org-font-weight-bold);
+    line-height: var(--org-line-height-none);
   }
 
   &__date-day {
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1;
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-bold);
+    line-height: var(--org-line-height-none);
   }
 
   &__date-full {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-lg);
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface);
     margin: 0;
     text-transform: capitalize;
   }
 
   &__date-sub {
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
     margin: 0;
   }
 
   &__divider {
     border: 0;
-    border-top: 1px solid rgba(123, 116, 135, 0.2);
-    margin: 4px 0;
+    border-top: 1px solid var(--org-border);
+    margin: var(--org-space-xs) 0;
   }
 
   &__location-icon-badge {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: var(--org-space-2xl);
+    height: var(--org-space-2xl);
+    border-radius: var(--org-radius-circle);
     background-color: var(--org-secondary-container);
     display: flex;
     align-items: center;
@@ -181,27 +209,27 @@
   }
 
   &__location-title {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-lg);
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface);
     margin: 0;
   }
 
   &__location-desc {
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
     margin: 0;
   }
 
   &__host-section {
-    margin-top: 32px;
+    margin-top: var(--org-space-xl);
   }
 
   &__host-label {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface-variant);
-    margin: 0 0 8px;
+    margin: 0 0 var(--org-space-sm);
   }
 
   &__host-info {
@@ -211,9 +239,9 @@
   }
 
   &__host-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    width: var(--org-space-2xl);
+    height: var(--org-space-2xl);
+    border-radius: var(--org-radius-circle);
     border: 2px solid var(--org-primary-container);
     display: flex;
     align-items: center;
@@ -221,14 +249,14 @@
   }
 
   &__host-name {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-lg);
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface);
     margin: 0;
   }
 
   &__host-sub {
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
     margin: 0;
   }

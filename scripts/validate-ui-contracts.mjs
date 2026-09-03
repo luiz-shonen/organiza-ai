@@ -17,9 +17,10 @@ const RAW_MATERIAL_BUTTON_ATTR = /\bmat-(?:raised-button|flat-button|stroked-but
 const RAW_MATERIAL_MODULE = /\bMat(?:Icon|Chip|Chips|Button)Module\b/;
 const MATERIAL_SELECTOR = /\.(?:mat|mdc)-[\w-]+/;
 // Reading a Material semantic variable is not an ownership violation. Declaring
-// one in a feature stylesheet is: that changes a component it does not own.
 const MATERIAL_TOKEN = /(?:^|[;{]\s*)--(?:mdc|mat)-[\w-]+\s*:/m;
 const FEATURE_GLASS_RULE = /(?:-webkit-)?backdrop-filter\s*:/;
+const FEATURE_RAW_BOX_SHADOW = /box-shadow\s*:\s*(?!\s*(?:none|inherit|initial|unset|var\(--org-shadow|var\(--org-glass-shadow|var\(--showcase-shadow))\s*[^;]+;/;
+const FEATURE_RAW_BORDER_RADIUS = /border-radius\s*:\s*(?!\s*(?:none|inherit|initial|unset|0|var\(--org-radius-|var\(--mdc-|var\(--mat-|var\(--showcase-))\s*[^;]+;/;
 const COMPONENT_EXPORT = /export\s+\{\s*(Org\w+Component)\s*\}/g;
 const DIRECTIVE_EXPORT = /export\s+\{\s*(Org\w+Directive)\s*\}/g;
 const CODE_PRIORITY = new Map([
@@ -31,6 +32,8 @@ const CODE_PRIORITY = new Map([
   ['feature-material-selector', 5],
   ['feature-material-token', 6],
   ['feature-glass-rule', 7],
+  ['feature-raw-box-shadow', 8],
+  ['feature-raw-border-radius', 9],
 ]);
 
 /** @typedef {{ code: string, file: string, line: number, message: string }} UiContractViolation */
@@ -205,6 +208,32 @@ export async function scanUiContracts(root) {
             source,
             FEATURE_GLASS_RULE,
             'Use OrgSurface ou o componente Org proprietário para o tratamento de vidro.',
+          ),
+        );
+      }
+
+      if (FEATURE_RAW_BOX_SHADOW.test(source) && !filePath.includes('design-system-showcase')) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-raw-box-shadow',
+            filePath,
+            source,
+            FEATURE_RAW_BOX_SHADOW,
+            'Use tokens padronizados (`var(--org-shadow-*)` ou `var(--org-glass-shadow)`) em vez de box-shadow manual.',
+          ),
+        );
+      }
+
+      if (FEATURE_RAW_BORDER_RADIUS.test(source) && !filePath.includes('design-system-showcase')) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-raw-border-radius',
+            filePath,
+            source,
+            FEATURE_RAW_BORDER_RADIUS,
+            'Use tokens padronizados (`var(--org-radius-*)`) em vez de border-radius manual.',
           ),
         );
       }

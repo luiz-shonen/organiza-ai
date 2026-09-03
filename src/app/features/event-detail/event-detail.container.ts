@@ -121,7 +121,7 @@ export class EventDetailContainer implements OnInit {
       next: (event) => {
         this.event.set(event);
         if (event) {
-          this.seasonalThemeService.evaluateEventTheme(event.date, event.title);
+          this.seasonalThemeService.evaluateEventTheme(event.date, event.title, event.category);
         }
         this.loading.set(false);
       },

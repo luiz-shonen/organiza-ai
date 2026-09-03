@@ -274,4 +274,27 @@ test.describe('Design System Showcase', () => {
 
     await expect(input).toHaveValue('Corporativo');
   });
+
+  test('renders standardized radius, shadow tokens, chips and badges showcase', async ({
+    page,
+  }) => {
+    await openShowcase(page);
+
+    const tokensSection = page.locator('section#spacing');
+    await expect(tokensSection).toContainText('--org-radius-xs');
+    await expect(tokensSection).toContainText('--org-radius-pill');
+    await expect(tokensSection).toContainText('--org-shadow-xs');
+    await expect(tokensSection).toContainText('--org-shadow-lg');
+
+    const dataDisplay = page.locator('section#data-display');
+    await expect(dataDisplay.locator('.org-ds-badge-showcase-grid')).toBeVisible();
+    await expect(
+      dataDisplay.locator('org-badge').filter({ hasText: 'Festa Junina' }),
+    ).toBeVisible();
+    await expect(dataDisplay.locator('org-badge').filter({ hasText: 'Aniversário' })).toBeVisible();
+
+    const selection = page.locator('section#selection');
+    await expect(selection.locator('org-chip.cat-aniversario')).toBeVisible();
+    await expect(selection.locator('org-chip.cat-festa')).toBeVisible();
+  });
 });

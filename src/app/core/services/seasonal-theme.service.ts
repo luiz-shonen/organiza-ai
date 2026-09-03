@@ -118,17 +118,38 @@ export class SeasonalThemeService {
   }
 
   /**
-   * Evaluates event date or title to override the active theme when inspecting a specific event.
+   * Evaluates event date, title, or category to override the active theme when inspecting a specific event.
    */
-  public evaluateEventTheme(eventDate?: Date | string | null, eventTitle?: string | null): void {
-    if (!eventDate && !eventTitle) {
+  public evaluateEventTheme(
+    eventDate?: Date | string | null,
+    eventTitle?: string | null,
+    eventCategory?: string | null,
+  ): void {
+    if (!eventDate && !eventTitle && !eventCategory) {
       this.detectSeasonalTheme();
       return;
     }
 
-    // 1. Check title keywords first
+    // 1. Check category first (explicit event category, e.g. "Festa Junina")
+    if (eventCategory) {
+      const categoryLower = eventCategory.toLowerCase().trim();
+      const matchedCategoryRule = this.rules().find(
+        (rule) =>
+          rule.keywords.some((kw) => categoryLower.includes(kw)) ||
+          rule.id === categoryLower ||
+          rule.name.toLowerCase().includes(categoryLower),
+      );
+      if (matchedCategoryRule) {
+        this.activeThemeId.set(matchedCategoryRule.id);
+        this.activeThemeName.set(`${matchedCategoryRule.name} (Evento)`);
+        this.isOverride.set(true);
+        return;
+      }
+    }
+
+    // 2. Check title keywords
     if (eventTitle) {
-      const titleLower = eventTitle.toLowerCase();
+      const titleLower = eventTitle.toLowerCase().trim();
       const matchedKeywordRule = this.rules().find((rule) =>
         rule.keywords.some((kw) => titleLower.includes(kw)),
       );

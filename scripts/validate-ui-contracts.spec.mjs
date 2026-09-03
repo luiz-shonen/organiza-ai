@@ -27,7 +27,12 @@ test('rejects legacy UI directive consumers, raw material usages, and feature-ow
       '<button orgButton="primary">Salvar</button>\n<mat-icon>star</mat-icon>\n<button mat-button>Clique</button>',
     'src/app/features/demo/demo.component.scss': `
       .mat-mdc-button { color: pink; }
-      .demo { --mdc-outlined-text-field-outline-color: pink; backdrop-filter: blur(8px); }
+      .demo {
+        --mdc-outlined-text-field-outline-color: pink;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 9999px;
+      }
     `,
   });
 
@@ -44,6 +49,8 @@ test('rejects legacy UI directive consumers, raw material usages, and feature-ow
       'feature-material-selector',
       'feature-material-token',
       'feature-glass-rule',
+      'feature-raw-box-shadow',
+      'feature-raw-border-radius',
     ]);
   } finally {
     await rm(root, { recursive: true, force: true });

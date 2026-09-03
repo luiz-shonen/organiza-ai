@@ -4,7 +4,9 @@ export type {
   PartyEventUpdate,
   AddressDetails,
   PixType,
+  EventCategoryOption,
 } from './event.model';
+export { EVENT_CATEGORIES, getCategoryClass } from './event.model';
 export type { EventInvitation } from './invitation.model';
 export type { Guest, GuestCompanion, GuestCreate, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';

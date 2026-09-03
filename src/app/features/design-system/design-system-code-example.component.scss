@@ -5,7 +5,7 @@
 .org-ds-code-example {
   background: var(--org-surface-container);
   border: 1px solid var(--org-outline);
-  border-radius: 16px;
+  border-radius: var(--org-radius-md);
   color: var(--org-on-surface);
   overflow: hidden;
 
@@ -16,7 +16,7 @@
     display: flex;
     font-family: var(--org-font-mono);
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: var(--org-font-weight-bold);
     justify-content: space-between;
     letter-spacing: 0.08em;
     min-height: 48px;

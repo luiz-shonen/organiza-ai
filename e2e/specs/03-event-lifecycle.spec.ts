@@ -221,4 +221,41 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       .first();
     await expect(snackBar).toContainText(/Evento cancelado com sucesso/i);
   });
+
+  test('should render category chips with distinct semantic classes and update selection in editor', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+
+    // Verify all 7 event category chips exist
+    await expect(eventEditorPage.categoryChips).toHaveCount(7);
+
+    // Verify distinct category classes are present on the chips
+    const chipClasses = [
+      'cat-aniversario',
+      'cat-casamento',
+      'cat-festa',
+      'cat-churrasco',
+      'cat-happy',
+      'cat-formatura',
+      'cat-outros',
+    ];
+    for (const cls of chipClasses) {
+      const chip = page.locator(`.editor__category-options org-chip.${cls}`);
+      await expect(chip).toBeVisible();
+    }
+
+    // Select Churrasco chip
+    const churrascoChip = page.locator('.editor__category-options org-chip.cat-churrasco');
+    await churrascoChip.click();
+    await expect(churrascoChip.locator('mat-chip-option')).toHaveClass(/mat-mdc-chip-selected/);
+
+    // Select Festa Junina chip
+    const festaChip = page.locator('.editor__category-options org-chip.cat-festa');
+    await festaChip.click();
+    await expect(festaChip.locator('mat-chip-option')).toHaveClass(/mat-mdc-chip-selected/);
+    await expect(churrascoChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);
+  });
 });

@@ -12,9 +12,11 @@ export class EventDetailPage extends BasePage {
   readonly countdownSection: Locator;
   readonly locationSection: Locator;
   readonly rsvpStatusCard: Locator;
+  readonly categoryBadge: Locator;
 
   constructor(page: Page) {
     super(page);
+    this.categoryBadge = page.locator('.event-card__category-badge');
     this.pageRoot = page
       .getByTestId('event-detail-page')
       .or(page.locator('main.event-detail, app-event-detail, .event-hero, org-empty-state'));

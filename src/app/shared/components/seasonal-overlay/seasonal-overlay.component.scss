@@ -252,7 +252,7 @@
   &__particle {
     position: absolute;
     display: block;
-    border-radius: 50%;
+    border-radius: var(--org-radius-circle);
     background: var(--org-color-gold);
     animation: particleAscend 6s ease-out infinite;
 

@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--org-radius-circle);
     width: 40px;
     height: 40px;
     font-size: 24px;
@@ -40,15 +40,15 @@
   }
 
   &__qr {
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: var(--org-radius-sm);
+    box-shadow: var(--org-shadow-sm);
   }
 
   &__link {
-    padding: 8px 12px;
+    padding: var(--org-space-sm) 12px;
     background: var(--org-surface-container);
-    border-radius: 8px;
-    margin-top: 8px;
+    border-radius: var(--org-radius-xs);
+    margin-top: var(--org-space-sm);
     text-align: center;
   }
 

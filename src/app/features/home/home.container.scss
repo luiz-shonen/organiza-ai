@@ -45,13 +45,13 @@
     align-items: center;
     gap: 4px;
     padding: 4px 10px;
-    border-radius: 12px;
+    border-radius: var(--org-radius-sm);
     background: rgba(255, 77, 148, 0.12);
     color: var(--org-primary);
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-bold);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--org-letter-spacing-wider);
   }
 
   &__date-badge {
@@ -61,7 +61,7 @@
     justify-content: center;
     background: linear-gradient(135deg, rgba(255, 77, 148, 0.15), rgba(255, 140, 66, 0.15));
     border: 1px solid rgba(255, 77, 148, 0.3);
-    border-radius: 12px;
+    border-radius: var(--org-radius-sm);
     padding: 4px 10px;
     min-width: 44px;
     text-align: center;
@@ -69,7 +69,7 @@
 
   &__date-month {
     font-size: 0.6875rem;
-    font-weight: 800;
+    font-weight: var(--org-font-weight-extrabold);
     color: var(--org-primary);
     text-transform: uppercase;
     line-height: 1;

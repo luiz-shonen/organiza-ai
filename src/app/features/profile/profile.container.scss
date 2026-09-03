@@ -95,7 +95,7 @@
     padding: 3rem 1.5rem;
     background: var(--org-surface-variant);
     border: 1px dashed var(--org-outline-variant);
-    border-radius: 1.25rem;
+    border-radius: var(--org-radius-lg);
   }
 
   &__empty-icon {
@@ -141,7 +141,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--org-shadow-md);
   }
 
   &__header {
@@ -151,18 +151,18 @@
   }
 
   &__category {
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-bold);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: var(--org-letter-spacing-wider);
     color: var(--org-primary);
   }
 
   &__badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.2rem 0.6rem;
-    border-radius: 1rem;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-semibold);
+    padding: var(--org-space-2xs) var(--org-space-sm);
+    border-radius: var(--org-radius-pill);
 
     &--confirmed {
       background: rgba(34, 197, 94, 0.15);

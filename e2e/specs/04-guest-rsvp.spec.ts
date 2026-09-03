@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/test.fixture';
+import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertSingleSurfaceRing,
@@ -226,5 +227,43 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     } else {
       await expect(eventDetailPage.pageRoot.first()).toBeVisible();
     }
+  });
+
+  test('should render dynamic category badge matching event category tokens and activate seasonal theme overlay', async ({
+    page,
+    eventDetailPage,
+  }) => {
+    // Setup mock event with Festa Junina category
+    await setupMockAuthSession(page, {
+      uid: 'guest-viewer-uid',
+      displayName: 'Guest Viewer',
+      events: [
+        {
+          id: 'event-junina-e2e',
+          title: 'Grande Arraiá da Família',
+          category: 'Festa Junina',
+          description: 'Muita comida típica e alegria junina.',
+          date: '2026-10-15T19:00:00.000Z',
+          location: 'Praça Central, 100',
+          status: 'active',
+          createdBy: 'organizer-uid',
+          collaborators: [],
+          createdAt: '2026-08-01T00:00:00.000Z',
+          updatedAt: '2026-08-01T00:00:00.000Z',
+        },
+      ],
+    });
+
+    await page.goto('/evento/event-junina-e2e');
+    await eventDetailPage.assertLoaded();
+
+    // 1. Assert category badge text and semantic class
+    await expect(eventDetailPage.categoryBadge).toBeVisible();
+    await expect(eventDetailPage.categoryBadge).toHaveText('Festa Junina');
+    await expect(eventDetailPage.categoryBadge).toHaveClass(/cat-festa/);
+
+    // 2. Assert seasonal overlay activates with junina decorations and HTML class
+    await expect(page.locator('.seasonal-overlay__junina')).toBeVisible();
+    await expect(page.locator('html')).toHaveClass(/theme-junina/);
   });
 });

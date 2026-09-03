@@ -121,7 +121,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--org-radius-circle);
     width: 40px;
     height: 40px;
     font-size: 24px;
@@ -165,7 +165,7 @@
   }
 
   &__step-progress-segment {
-    border-radius: 999px;
+    border-radius: var(--org-radius-pill);
     background: var(--mat-sys-surface-container-high);
 
     &--complete,
@@ -324,12 +324,12 @@
     align-items: center;
     background: color-mix(in srgb, var(--org-surface) 60%, transparent);
     border: 1px solid var(--org-border);
-    border-radius: var(--org-radius-sm, 12px);
+    border-radius: var(--org-radius-sm);
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
-    margin-bottom: var(--org-space-xs, 6px);
-    padding: var(--org-space-sm, 8px) var(--org-space-md, 14px);
+    margin-bottom: var(--org-space-xs);
+    padding: var(--org-space-sm) var(--org-space-md);
     transition: background-color 160ms ease;
 
     &:hover {

@@ -292,6 +292,11 @@
 
         <h3 class="org-ds-subsection-title">Raio de borda (--org-radius-*)</h3>
         <div class="org-ds-radius-grid" aria-label="Amostras de raio de borda">
+          <div class="org-ds-radius-card org-ds-radius-card--xs">
+            <strong>Micro</strong>
+            <code>--org-radius-xs</code>
+            <small>0.375rem (6px)</small>
+          </div>
           <div class="org-ds-radius-card org-ds-radius-card--sm">
             <strong>Small</strong>
             <code>--org-radius-sm</code>
@@ -307,10 +312,39 @@
             <code>--org-radius-lg</code>
             <small>1.25rem (20px)</small>
           </div>
-          <div class="org-ds-radius-card org-ds-radius-card--full">
-            <strong>Full</strong>
-            <code>--org-radius-full</code>
-            <small>9999px (Pill)</small>
+          <div class="org-ds-radius-card org-ds-radius-card--xl">
+            <strong>Extra Large</strong>
+            <code>--org-radius-xl</code>
+            <small>1.75rem (28px)</small>
+          </div>
+          <div class="org-ds-radius-card org-ds-radius-card--pill">
+            <strong>Pill</strong>
+            <code>--org-radius-pill</code>
+            <small>9999px</small>
+          </div>
+        </div>
+
+        <h3 class="org-ds-subsection-title">Elevações & Sombras (--org-shadow-*)</h3>
+        <div class="org-ds-shadow-grid" aria-label="Amostras de sombras e elevações">
+          <div class="org-ds-shadow-card org-ds-shadow-card--xs">
+            <strong>Micro</strong>
+            <code>--org-shadow-xs</code>
+            <small>Badges & Chips</small>
+          </div>
+          <div class="org-ds-shadow-card org-ds-shadow-card--sm">
+            <strong>Small</strong>
+            <code>--org-shadow-sm</code>
+            <small>Cards Sutis</small>
+          </div>
+          <div class="org-ds-shadow-card org-ds-shadow-card--md">
+            <strong>Medium</strong>
+            <code>--org-shadow-md</code>
+            <small>Hover Lifts & Abas</small>
+          </div>
+          <div class="org-ds-shadow-card org-ds-shadow-card--lg">
+            <strong>Large</strong>
+            <code>--org-shadow-lg</code>
+            <small>Drawers & Modais</small>
           </div>
         </div>
       </org-surface>
@@ -635,6 +669,24 @@
         </org-surface>
         <org-metric-card label="Convites" value="6" description="aguardando resposta" />
       </div>
+
+      <h3 class="org-ds-subsection-title">Badges de Status & Categorias (&lt;org-badge&gt;)</h3>
+      <div class="org-ds-badge-showcase-grid" aria-label="Variantes de OrgBadge">
+        <org-badge label="Default" variant="default" [gradient]="false" />
+        <org-badge label="Primary" variant="primary" />
+        <org-badge label="Secondary" variant="secondary" [gradient]="false" />
+        <org-badge label="Success" variant="success" [gradient]="false" />
+        <org-badge label="Warning" variant="warning" [gradient]="false" />
+        <org-badge label="Danger" variant="danger" [gradient]="false" />
+        <org-badge label="Aniversário" variant="aniversario" [gradient]="false" />
+        <org-badge label="Casamento" variant="casamento" [gradient]="false" />
+        <org-badge label="Festa Junina" variant="festa" [gradient]="false" />
+        <org-badge label="Churrasco" variant="churrasco" [gradient]="false" />
+        <org-badge label="Happy Hour" variant="happy" [gradient]="false" />
+        <org-badge label="Formatura" variant="formatura" [gradient]="false" />
+        <org-badge label="Outros" variant="outros" [gradient]="false" />
+      </div>
+
       <org-surface variant="card" class="org-ds-table-card">
         <org-data-table [rows]="eventRows" [columns]="eventColumns" ariaLabel="Eventos recentes" />
       </org-surface>

@@ -194,8 +194,8 @@ function getGitDiff() {
   return diff;
 }
 
-function findRelevantSpec(diffContent, branch, title, body) {
-  const specsDir = resolve(process.cwd(), '.specs/features');
+export function findRelevantSpec(diffContent, branch, title, body, customSpecsDir = null) {
+  const specsDir = customSpecsDir || resolve(process.cwd(), '.specs/features');
   if (!existsSync(specsDir)) return null;
 
   const features = readdirSync(specsDir, { withFileTypes: true })
@@ -243,7 +243,7 @@ function findRelevantSpec(diffContent, branch, title, body) {
 // PROMPT BUILDERS
 // ==========================================
 
-function buildSystemPrompt(relevantSpec) {
+export function buildSystemPrompt(relevantSpec) {
   const specSection = relevantSpec
     ? `#### 📑 Conformidade com a Spec: \`${relevantSpec.id}\`
 - [ ] / [x] Critérios de Aceitação da Spec atendidos pelo diff
@@ -294,7 +294,7 @@ Destaque também pontos fortes e boas práticas adotadas.]
 `;
 }
 
-function buildUserPrompt(diff, relevantSpec) {
+export function buildUserPrompt(diff, relevantSpec) {
   let prompt = `
 Aqui está o git diff do Pull Request para análise:
 
@@ -531,4 +531,6 @@ async function main() {
   }
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}

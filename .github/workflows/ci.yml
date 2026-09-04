@@ -50,6 +50,10 @@ jobs:
         if: steps.filter.outputs.code == 'true'
         run: npm run lint:contracts
 
+      - name: Run Script Unit Tests
+        if: steps.filter.outputs.code == 'true'
+        run: npm run test:scripts
+
       - name: Build Application
         if: steps.filter.outputs.code == 'true'
         run: npm run build

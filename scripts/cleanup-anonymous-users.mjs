@@ -17,13 +17,27 @@ const PROJECT_ID =
 const TEMP_EXPORT_FILE = '/tmp/organiza_auth_cleanup.json';
 
 // Protected emails that must NEVER be deleted
-const PROTECTED_EMAILS = new Set([
+export const PROTECTED_EMAILS = new Set([
   'luiz.gmr.dev@gmail.com',
   'jessica.calm.dev@gmail.com',
   'admin@organiza-ai.com',
   'admin@salaomaria.com',
   'test-organizer@example.com',
 ]);
+
+export function isAnonymousUser(user, protectedEmails = PROTECTED_EMAILS) {
+  if (user.email && protectedEmails.has(user.email.toLowerCase())) {
+    return false;
+  }
+  const hasProvider = Array.isArray(user.providerUserInfo) && user.providerUserInfo.length > 0;
+  const hasEmail = Boolean(user.email && user.email.trim().length > 0);
+  const hasPhone = Boolean(user.phoneNumber && user.phoneNumber.trim().length > 0);
+  return !hasProvider && !hasEmail && !hasPhone;
+}
+
+export function filterAnonymousUsers(accounts, protectedEmails = PROTECTED_EMAILS) {
+  return accounts.filter((u) => isAnonymousUser(u, protectedEmails));
+}
 
 function getFirebaseAccessToken() {
   const configPath = join(homedir(), '.config/configstore/firebase-tools.json');
@@ -96,15 +110,7 @@ async function main() {
   console.log(`📊 Total de contas no Firebase Auth: ${accounts.length}`);
 
   // 2. Identify anonymous users
-  const anonymousUsers = accounts.filter((u) => {
-    if (u.email && PROTECTED_EMAILS.has(u.email.toLowerCase())) {
-      return false;
-    }
-    const hasProvider = Array.isArray(u.providerUserInfo) && u.providerUserInfo.length > 0;
-    const hasEmail = Boolean(u.email && u.email.trim().length > 0);
-    const hasPhone = Boolean(u.phoneNumber && u.phoneNumber.trim().length > 0);
-    return !hasProvider && !hasEmail && !hasPhone;
-  });
+  const anonymousUsers = filterAnonymousUsers(accounts);
 
   const legitimateUsers = accounts.length - anonymousUsers.length;
   console.log(`🛡️ Contas legítimas/protegidas identificadas: ${legitimateUsers}`);
@@ -146,4 +152,6 @@ async function main() {
   }
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}

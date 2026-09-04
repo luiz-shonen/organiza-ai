@@ -111,6 +111,9 @@ npm run test:rules              # 31 rules tests across 6 suites against Firesto
 npm run test:e2e                # 158 tests across Desktop Chromium + Mobile Chrome (15 suites)
 npm run test:e2e:ci             # Headless mode for CI
 npm run test:e2e:mobile         # Mobile Chrome only (Pixel 5)
+
+# Pull Requests & CI Automation
+npm run pr:create               # Push branch and open Pull Request with personal GitHub token
 ```
 
 ## E2E Tests — Structure

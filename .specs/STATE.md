@@ -433,3 +433,12 @@
 **Decision:** (1) Introduced canonical semantic category tokens (`--org-cat-*-bg`, `--org-cat-*-color`) in `_semantic.scss` and container tokens (`--org-primary-container`, `--org-secondary-container`) to ensure crisp contrast across Light and Dark themes for all event categories; (2) Expanded `scripts/validate-ui-contracts.mjs` with strict template and module contract rules (`feature-raw-material-tag`, `feature-raw-material-button-attr`, `feature-raw-material-module-import`) prohibiting raw Angular Material elements (`<mat-icon>`, `<button mat-button>`, `<mat-chip>`) or direct module imports across features and the app shell; (3) Migrated all application icons to `<org-icon>` backed by the typed `OrgIconName` union (45 canonical icons).  
 **Rationale:** Eliminates manual/unregulated CSS overrides, ensures category color visibility in dark mode, and enforces closed design system encapsulation automatically on every pre-commit and CI quality run.  
 **Status:** In force.
+
+---
+
+### AD-045 — Automated AI Code Review Gatekeeper & Multi-Account PR Workflow
+
+**Date:** 2026-09-04  
+**Decision:** (1) Implemented `scripts/create-pr.mjs` (`npm run pr:create`) to push feature branches and open Pull Requests via GitHub CLI (`gh`) using an explicit personal token (`GH_TOKEN` from `.env.local`), avoiding user session conflicts on corporate machines without storing secrets in git; (2) Added post-CI AI Code Review step (`gemini-review` in `.github/workflows/ci.yml`) executed via Google Gemini Flash models with graceful fallback (`gemini-3.8-flash` down to `gemini-3.5-flash`), chained after `quality` (linters, contracts, build) and `e2e` (Playwright) gates pass; (3) The AI review engine (`scripts/gemini-pr-review.mjs`) automatically discovers matching feature specifications in `.specs/features/` and cross-references PR diffs against `spec.md` acceptance criteria, domain workflows from `CONTEXT.md`, and architecture constraints from `AGENTS.md` and `DESIGN.md`; (4) Supported on-demand re-reviews via `/review` or `/gemini review` comments in `.github/workflows/gemini-review-comment.yml`.  
+**Rationale:** Eliminates manual architectural policing, ensures strict spec traceability and EARS acceptance criteria compliance before merge, prevents token usage on broken builds/tests, and provides frictionless multi-account GitHub workflows on developer workstations.  
+**Status:** In force.

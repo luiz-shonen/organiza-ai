@@ -4,11 +4,12 @@
  * Organiza AI — Gemini PR Code Reviewer
  *
  * Runs code review on the Pull Request diff using Google Gemini,
- * strictly verifying compliance with AGENTS.md, DESIGN.md, and Angular 22 architecture.
+ * strictly verifying compliance with AGENTS.md, DESIGN.md, CONTEXT.md,
+ * and relevant feature specifications in .specs/features/.
  */
 
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // 1. Load local env if available
@@ -64,14 +65,31 @@ function runGit(cmd) {
   }
 }
 
-// 2. Obtain Git Diff
+// 2. Extract PR metadata (branch, title, description)
+let prTitle = process.env.PR_TITLE || '';
+let prBody = process.env.PR_BODY || '';
+let headBranch = '';
+
+if (process.env.GITHUB_EVENT_PATH && existsSync(process.env.GITHUB_EVENT_PATH)) {
+  try {
+    const eventData = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+    prTitle = eventData.pull_request?.title || eventData.issue?.title || prTitle;
+    prBody = eventData.pull_request?.body || eventData.comment?.body || prBody;
+    headBranch = eventData.pull_request?.head?.ref || '';
+  } catch {}
+}
+
+if (!headBranch) {
+  headBranch = runGit('git rev-parse --abbrev-ref HEAD');
+}
+
+// 3. Obtain Git Diff
 console.log(`🔍 Obtendo diff entre ${BASE_SHA} e ${HEAD_SHA}...`);
 let diff = runGit(
   `git diff ${BASE_SHA}...${HEAD_SHA} -- . ':!package-lock.json' ':!*.png' ':!*.jpg' ':!*.jpeg' ':!*.svg' ':!*.webp' ':!*.ico' ':!e2e/screenshots'`
 );
 
 if (!diff || diff.trim().length === 0) {
-  // Fallback to direct diff
   diff = runGit(
     `git diff ${BASE_SHA}..${HEAD_SHA} -- . ':!package-lock.json' ':!*.png' ':!*.jpg' ':!*.jpeg' ':!*.svg' ':!*.webp' ':!*.ico' ':!e2e/screenshots'`
   );
@@ -88,22 +106,78 @@ if (diff.length > 250000) {
   diff = diff.slice(0, 250000) + '\n\n... [diff truncado por tamanho] ...';
 }
 
-// 3. Read AGENTS.md and DESIGN.md guidelines
+// 4. Read AGENTS.md, DESIGN.md, and CONTEXT.md
 let agentsMd = '';
 let designMd = '';
+let contextMd = '';
 try {
   if (existsSync('AGENTS.md')) agentsMd = readFileSync('AGENTS.md', 'utf8');
   if (existsSync('DESIGN.md')) designMd = readFileSync('DESIGN.md', 'utf8');
+  if (existsSync('CONTEXT.md')) contextMd = readFileSync('CONTEXT.md', 'utf8');
 } catch (e) {
   console.warn('Aviso: Não foi possível ler arquivos de documentação:', e.message);
 }
 
-// 4. Construct Prompt
-const systemInstruction = `
-Você é o Senior Angular Architect do projeto Organiza AI (Angular 22+, Firebase Modular SDK, SCSS BEM, Glassmorphism).
-Sua missão é realizar um Code Review minucioso e rigoroso do Pull Request, garantindo que NENHUMA regra arquitetural ou de acessibilidade seja violada.
+// 5. Discover relevant feature specification in .specs/features/
+function findRelevantSpec(diffContent, branch, title, body) {
+  const specsDir = resolve(process.cwd(), '.specs/features');
+  if (!existsSync(specsDir)) return null;
 
-REGRAS MANDATÓRIAS DO PROJETO (AGENTS.md e DESIGN.md):
+  const features = readdirSync(specsDir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+
+  // A. Check if diff explicitly touches files in a spec directory
+  for (const feature of features) {
+    if (diffContent.includes(`.specs/features/${feature}`)) {
+      const specPath = resolve(specsDir, feature, 'spec.md');
+      if (existsSync(specPath)) {
+        return { id: feature, path: specPath, content: readFileSync(specPath, 'utf8') };
+      }
+    }
+  }
+
+  // B. Check branch name, PR title, and PR body against spec names/numbers
+  const combined = [branch, title, body].filter(Boolean).join(' ').toLowerCase();
+  for (const feature of features) {
+    const num = feature.match(/^(\d+)/)?.[1];
+    const cleanName = feature.replace(/^\d+-/, '').toLowerCase();
+
+    const isMatch =
+      (num &&
+        (combined.includes(`spec ${num}`) ||
+          combined.includes(`spec #${num}`) ||
+          combined.includes(`feature/${num}`) ||
+          combined.includes(`feat/${num}`) ||
+          combined.includes(`feat-${num}`) ||
+          combined.includes(`feature-${num}`))) ||
+      combined.includes(feature.toLowerCase()) ||
+      (cleanName.length > 6 && combined.includes(cleanName));
+
+    if (isMatch) {
+      const specPath = resolve(specsDir, feature, 'spec.md');
+      if (existsSync(specPath)) {
+        return { id: feature, path: specPath, content: readFileSync(specPath, 'utf8') };
+      }
+    }
+  }
+
+  return null;
+}
+
+const relevantSpec = findRelevantSpec(diff, headBranch, prTitle, prBody);
+if (relevantSpec) {
+  console.log(`📑 Especificação relevante detectada: \x1b[36m${relevantSpec.id}\x1b[0m`);
+} else {
+  console.log('ℹ️ Nenhuma especificação de feature específica vinculada identificada.');
+}
+
+// 6. Construct Prompt
+const systemInstruction = `
+Você é o Senior Angular Architect e Tech Lead do projeto Organiza AI (Angular 22+, Firebase Modular SDK, SCSS BEM, Glassmorphism).
+Sua missão é realizar um Code Review minucioso e rigoroso do Pull Request, avaliando tanto a integridade técnica/arquitetural quanto o alinhamento com as regras de negócio e especificações de produto.
+
+DIRETRIZES TÉCNICAS E ARQUITETURAIS MANDATÓRIAS (AGENTS.md & DESIGN.md):
 1. Standalone Components Only — NgModules são terminantemente proibidos (AD-001).
 2. OnPush Change Detection — Obrigatório em 100% dos componentes, sem exceção (AD-002).
 3. Modern Control Flow — Usar exclusivamente @if, @for, @switch. Proibido *ngIf e *ngFor.
@@ -113,6 +187,13 @@ REGRAS MANDATÓRIAS DO PROJETO (AGENTS.md e DESIGN.md):
 7. Acessibilidade (WCAG 2.1 AA) — HTML semântico, atributos ARIA, alvos de toque primários >= 48px.
 8. TypeScript Estrito — Proibido uso de "any". Tipos e interfaces explícitos.
 9. Smart/Dumb Pattern — *.container.ts para estado e Firebase; *.component.ts para apresentação pura (inputs/outputs, zero business logic) (AD-011).
+
+DOMÍNIO E REGRAS DE NEGÓCIO (CONTEXT.md):
+- Verified RSVP: Presença exige identidade Google ou usuário autenticado; zero convidados anônimos no Firestore.
+- Personal Family Roster: Convidados primários gerenciam membros da família com vínculo e cancelamento em cascata.
+- Smart Rachadinha: Rateio transparente de custos por convidado com cópia de chave Pix em 1 clique.
+- Co-Hosting & RBAC: Proprietário do evento vs colaboradores (gerenciamento compartilhado).
+- Celebração & Atmosfera: Cores vibrantes (#ff4d94, #ff8c42, #ffc837), confetes e temas sazonais automáticos por categoria de evento.
 
 FORMATO DA SUA RESPOSTA (em Português pt-BR):
 <!-- organiza-ai-gemini-review -->
@@ -129,24 +210,44 @@ FORMATO DA SUA RESPOSTA (em Português pt-BR):
 - [ ] / [x] **Acessibilidade (WCAG 2.1 AA)**: Touch targets >= 48px, ARIA e semântica
 - [ ] / [x] **TypeScript Strict**: Tipagem estrita com zero "any"
 
+${
+  relevantSpec
+    ? `#### 📑 Conformidade com a Spec: \`${relevantSpec.id}\`
+- [ ] / [x] Critérios de Aceitação da Spec atendidos pelo diff
+[Comentário breve sobre como a implementação atende ou desvia dos requisitos da especificação]`
+    : ''
+}
+
 #### 🔍 Resumo das Alterações
-[Resumo conciso do que foi implementado/alterado no PR]
+[Resumo conciso do que foi implementado/alterado no PR e seu impacto no sistema]
 
 #### 💡 Análise Detalhada e Feedback
-[Pontos fortes e, se houver violações ou sugestões de melhoria, aponte o arquivo, trecho de código e sugestão corrigida]
+[Pontos fortes encontrados e, se houver violações ou sugestões de melhoria técnica ou de negócio, aponte o arquivo, trecho de código e sugestão corrigida]
 `;
 
-const userPrompt = `
+let userPrompt = `
 Aqui está o git diff do Pull Request para análise:
 
 \`\`\`diff
 ${diff}
 \`\`\`
+`;
 
+if (relevantSpec) {
+  userPrompt += `
+Abaixo está o conteúdo da especificação da feature (.specs/features/${relevantSpec.id}/spec.md) para você validar se os critérios de aceitação foram atendidos:
+
+\`\`\`markdown
+${relevantSpec.content.slice(0, 40000)}
+\`\`\`
+`;
+}
+
+userPrompt += `
 Por favor, faça o code review completo seguindo estritamente as instruções acima.
 `;
 
-// 5. Call Gemini API with Fallback
+// 7. Call Gemini API with Fallback
 async function callGemini() {
   let lastError = null;
 
@@ -198,7 +299,7 @@ async function callGemini() {
   throw lastError || new Error('Nenhum modelo Gemini respondeu.');
 }
 
-// 6. Post Review to GitHub PR
+// 8. Post Review to GitHub PR
 async function postToGitHub(reviewContent) {
   if (isDryRun) {
     console.log('\n--- REVIEW GERADO PELO GEMINI (MODO LOCAL / DRY-RUN) ---\n');
@@ -217,7 +318,6 @@ async function postToGitHub(reviewContent) {
 
   const commentsUrl = `https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments`;
 
-  // Fetch existing comments to see if we should update or create
   let existingCommentId = null;
   try {
     const listRes = await fetch(commentsUrl, { headers });

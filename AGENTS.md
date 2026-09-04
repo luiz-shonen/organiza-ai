@@ -134,8 +134,10 @@ Specs live in `.specs/features/[feature]/`. Decisions live in `.specs/STATE.md`.
   - `color-no-hex: true` (all colors must use `--org-*` tokens, with allowlist for `#fff`/`#000`/`#ffffff`).
 - **Prettier**: Formats `.ts`, `.html`, `.scss`, `.json`, `.yml`, `.md` files.
 - **Git Hooks**: Husky pre-commit (`lint-staged` auto-formatting) and commit-msg (`commitlint` enforcing Conventional Commits).
-- **CI/CD & Automated Deployment**:
-  - **CI Pipeline (`.github/workflows/ci.yml`)**: Smart path filtering with `dorny/paths-filter@v3` (always executes `format:check`, bypasses heavy linters/build/E2E on markdown-only changes), running `quality` first, and `e2e` downstream with `needs: quality`.
+- **CI/CD, Multi-Account PRs & AI Code Review (AD-043, AD-045)**:
+  - **Isolated PR Creation**: `npm run pr:create` pushes the current branch and opens a Pull Request using local `GH_TOKEN` from `.env.local` to prevent account conflicts on corporate machines.
+  - **CI Pipeline (`.github/workflows/ci.yml`)**: Smart path filtering with `dorny/paths-filter@v3` (always executes `format:check`, bypasses heavy linters/build/E2E on markdown-only changes), running `quality` first, `e2e` downstream with `needs: quality`, and `gemini-review` with `needs: [quality, e2e]`.
+  - **Gemini AI Review Gatekeeper (`scripts/gemini-pr-review.mjs`)**: Automated architectural, domain, and spec compliance review using Gemini Flash with model fallback (`gemini-3.8-flash` down to `gemini-3.5-flash`), cross-referencing `AGENTS.md`, `DESIGN.md`, `CONTEXT.md`, and matching `.specs/features/` acceptance criteria. Runs only after `quality` and `e2e` succeed. Supports on-demand triggers via `/review` comment (`.github/workflows/gemini-review-comment.yml`).
   - **Production CD (`.github/workflows/cd.yml`)**: Chained via `workflow_run` on CI success on `main`, injects `public/runtime-config.js` with `FIREBASE_API_KEY`, deploys Firestore security rules and indexes, and deploys hosting to the `live` channel (`FirebaseExtended/action-hosting-deploy@v0`).
   - **PR Preview CD (`.github/workflows/cd-preview.yml`)**: Deploys hosting preview channels for pull requests from the origin repository.
   - **Local Deployment**: `"deploy": "npm run build && firebase deploy --only hosting,firestore"`.

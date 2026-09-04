@@ -12,7 +12,8 @@ import { readFileSync, existsSync, unlinkSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const PROJECT_ID = 'organiza-ai-3416f';
+const PROJECT_ID =
+  process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || 'organiza-ai-3416f';
 const TEMP_EXPORT_FILE = '/tmp/organiza_auth_cleanup.json';
 
 // Protected emails that must NEVER be deleted
@@ -21,7 +22,7 @@ const PROTECTED_EMAILS = new Set([
   'jessica.calm.dev@gmail.com',
   'admin@organiza-ai.com',
   'admin@salaomaria.com',
-  'test-organizer@example.com'
+  'test-organizer@example.com',
 ]);
 
 function getFirebaseAccessToken() {
@@ -43,9 +44,9 @@ async function deleteUser(uid, accessToken) {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ localId: uid })
+    body: JSON.stringify({ localId: uid }),
   });
 
   if (!res.ok) {
@@ -59,7 +60,9 @@ async function main() {
 
   const token = getFirebaseAccessToken();
   if (!token) {
-    console.error('❌ Erro: Token de acesso do Firebase CLI não encontrado em ~/.config/configstore/firebase-tools.json.');
+    console.error(
+      '❌ Erro: Token de acesso do Firebase CLI não encontrado em ~/.config/configstore/firebase-tools.json.',
+    );
     console.error('Execute "npx firebase login" para autenticar.');
     process.exit(1);
   }
@@ -68,7 +71,7 @@ async function main() {
   console.log('📥 Exportando contas do Firebase Auth...');
   try {
     execSync(`npx firebase auth:export ${TEMP_EXPORT_FILE} --project ${PROJECT_ID} --format json`, {
-      stdio: 'pipe'
+      stdio: 'pipe',
     });
   } catch (err) {
     console.error('❌ Erro ao exportar usuários do Firebase:', err.message);
@@ -130,7 +133,9 @@ async function main() {
     });
 
     await Promise.all(promises);
-    process.stdout.write(`\r🚀 Removidos: ${deletedCount}/${anonymousUsers.length} contas anônimas...`);
+    process.stdout.write(
+      `\r🚀 Removidos: ${deletedCount}/${anonymousUsers.length} contas anônimas...`,
+    );
   }
 
   console.log('\n');

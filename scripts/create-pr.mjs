@@ -22,7 +22,10 @@ function loadEnv() {
         const trimmed = line.trim();
         if (!trimmed || trimmed.startsWith('#')) continue;
         const [key, ...rest] = trimmed.split('=');
-        const val = rest.join('=').trim().replace(/^['"]|['"]$/g, '');
+        const val = rest
+          .join('=')
+          .trim()
+          .replace(/^['"]|['"]$/g, '');
         if (key && val && !process.env[key.trim()]) {
           process.env[key.trim()] = val;
         }
@@ -40,7 +43,7 @@ function run(cmd, envOverrides = {}) {
   return execSync(cmd, {
     encoding: 'utf8',
     stdio: ['pipe', 'pipe', 'pipe'],
-    env: { ...process.env, ...envOverrides }
+    env: { ...process.env, ...envOverrides },
   }).trim();
 }
 
@@ -49,7 +52,9 @@ try {
   const currentBranch = run('git rev-parse --abbrev-ref HEAD');
   if (['main', 'master'].includes(currentBranch)) {
     console.error('❌ Erro: Você está na branch principal (' + currentBranch + ').');
-    console.error('Crie uma feature branch antes de abrir um PR (ex: git checkout -b feat/minha-feature).');
+    console.error(
+      'Crie uma feature branch antes de abrir um PR (ex: git checkout -b feat/minha-feature).',
+    );
     process.exit(1);
   }
 
@@ -96,7 +101,7 @@ try {
       if (extraArgs.length > 0) {
         prArgs.push(...extraArgs);
       }
-      
+
       const prUrl = run(`gh ${prArgs.join(' ')}`, ghEnv);
       console.log(`\n🎉 Pull Request criado com sucesso!`);
       console.log(`🔗 \x1b[32m${prUrl}\x1b[0m\n`);

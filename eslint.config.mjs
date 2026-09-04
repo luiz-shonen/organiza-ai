@@ -3,6 +3,7 @@ import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
 import playwright from 'eslint-plugin-playwright';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import globals from 'globals';
 
 export default tseslint.config(
   {
@@ -15,6 +16,28 @@ export default tseslint.config(
       'graphify-out/**',
       '**/*.min.*',
     ],
+  },
+  {
+    files: ['scripts/**/*.mjs', '*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      'no-undef': 'error',
+      'no-console': 'off',
+    },
   },
   {
     files: ['src/**/*.ts'],
@@ -103,10 +126,7 @@ export default tseslint.config(
   },
   {
     files: ['src/**/*.html'],
-    extends: [
-      ...angular.configs.templateRecommended,
-      ...angular.configs.templateAccessibility,
-    ],
+    extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {
       '@angular-eslint/template/alt-text': 'warn',
       '@angular-eslint/template/label-has-associated-control': 'warn',

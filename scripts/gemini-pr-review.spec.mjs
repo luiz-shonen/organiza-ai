@@ -170,10 +170,13 @@ test('gemini-pr-review: parseIssueProposal returns null when section is absent o
   );
 });
 
-test('gemini-pr-review: OUT_OF_SCOPE_SPEC_GUIDELINES includes TLC EARS and prompt instructions', () => {
+test('gemini-pr-review: OUT_OF_SCOPE_SPEC_GUIDELINES includes TLC EARS, reference files and prompt instructions', () => {
   assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Visão Geral e Importância'));
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Arquivos de Referência'));
   assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Limites de Escopo'));
   assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Critérios de Aceitação (Notação EARS'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Prompt Pronto para Antigravity Agent'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('tlc-spec-driven'));
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Prompt Pronto para o Agente'));
+  assert.ok(
+    OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Quero apenas a fase Specify da skill tlc-spec-driven'),
+  );
 });

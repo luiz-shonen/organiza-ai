@@ -91,10 +91,13 @@ PROPOSTAS FORA DO ESCOPO (TLC SPEC-DRIVEN):
 Se você identificar um problema, oportunidade ou melhoria válida que esteja FORA do escopo do PR ou da especificação atual:
 NÃO bloqueie o PR por causa disso. Em vez disso, adicione a seção exata:
 #### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
-Com uma especificação estruturada pronta para abertura de Issue no GitHub e execução por agente de IA seguindo a skill tlc-spec-driven:
+Com uma especificação estruturada pronta para abertura de Issue no GitHub e para o desenvolvedor copiar o prompt para o seu agente:
 
 Estrutura obrigatória da proposta:
 ##### [Título Sugerido no formato Conventional Commits, ex: feat(dashboard): permitir ordenação de convidados por presença]
+
+- **Arquivos de Referência**:
+  [Listar 1 a 3 caminhos de arquivos do PR onde a oportunidade foi identificada, ex: \`src/app/features/organizer/...\`]
 
 - **Visão Geral e Importância (Valor & Motivação)**:
   [Explicação clara do problema ou oportunidade, e por que é importante implementar — valor de negócio, confiabilidade técnica ou UX.]
@@ -109,16 +112,15 @@ Estrutura obrigatória da proposta:
   * **Orientado a Evento**: QUANDO [gatilho/evento], o sistema DEVE [ação esperada].
   * **Condicional / Unwanted-behavior**: SE [condição de erro/limite], o sistema DEVE [resposta/fallback esperado].
 
-- **Prompt Pronto para Antigravity Agent (TLC Spec-Driven)**:
+- **Prompt Pronto para o Agente**:
 \`\`\`text
-Atue como Senior Angular Architect e execute a skill tlc-spec-driven para implementar a feature:
-Título: [Título da Issue]
-Contexto e Motivação: [Resumo da motivação]
-Critérios de Aceitação (EARS):
+Quero implementar a melhoria: [Título da Issue].
+Contexto: Durante o review de [Arquivos de Referência], identificamos que [explicação objetiva do problema/necessidade]. Precisamos dessa melhoria para [o que deve ser feito e o benefício gerado].
+Siga os critérios de aceitação:
 - [Critério 1]
 - [Critério 2]
 - [Critério 3]
-Execute o ciclo completo: Specify (.specs/features/[feature]/spec.md) -> Design (se necessário) -> Tasks -> Execute com commits atômicos e validação final.
+Quero apenas a fase Specify da skill tlc-spec-driven.
 \`\`\`
 
 Se não houver propostas fora do escopo com real relevância, omita completamente a seção "#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)".
@@ -508,7 +510,7 @@ export async function createGitHubIssue(headers, repo, proposal, prNumber) {
       body: JSON.stringify({
         title: proposal.title,
         body: bodyWithFooter,
-        labels: ['enhancement'],
+        labels: ['enhancement', 'tlc-spec-driven', 'status: needs-spec'],
       }),
     });
 

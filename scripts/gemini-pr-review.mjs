@@ -89,15 +89,39 @@ Classifique todos os apontamentos ou débitos encontrados rigorosamente de acord
 export const OUT_OF_SCOPE_SPEC_GUIDELINES = `
 PROPOSTAS FORA DO ESCOPO (TLC SPEC-DRIVEN):
 Se você identificar um problema, oportunidade ou melhoria válida que esteja FORA do escopo do PR ou da especificação atual:
-NÃO bloqueie o PR por causa disso. Em vez disso, adicione a seção "#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)" com uma especificação pronta para ser copiada para uma Issue do GitHub, estruturada com:
-- **Título Sugerido**: (formato Conventional Commits, ex: feat(dashboard): ...)
-- **Contexto e Problema Identificado**: Descrição clara da oportunidade.
-- **Escopo**: O que deve e o que NÃO deve ser incluído.
-- **Critérios de Aceitação em notação EARS**:
-  * Ubíquos: O sistema deve...
-  * Orientados a Evento: QUANDO [evento/ação], o sistema deve...
-  * Condicionais: SE [condição/estado], o sistema deve...
-Se não houver propostas fora do escopo, omita esta seção.
+NÃO bloqueie o PR por causa disso. Em vez disso, adicione a seção exata:
+#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+Com uma especificação estruturada pronta para abertura de Issue no GitHub e execução por agente de IA seguindo a skill tlc-spec-driven:
+
+Estrutura obrigatória da proposta:
+##### [Título Sugerido no formato Conventional Commits, ex: feat(dashboard): permitir ordenação de convidados por presença]
+
+- **Visão Geral e Importância (Valor & Motivação)**:
+  [Explicação clara do problema ou oportunidade, e por que é importante implementar — valor de negócio, confiabilidade técnica ou UX.]
+
+- **Limites de Escopo**:
+  - **No Escopo**: [O que deve ser contemplado nesta issue]
+  - **Fora do Escopo**: [O que NÃO deve ser incluído para evitar scope creep]
+
+- **Critérios de Aceitação (Notação EARS - Easy Approach to Requirements Syntax)**:
+  Cada critério DEVE conter a palavra "DEVE" ou "SHALL":
+  * **Ubíquo (Invariante)**: O sistema DEVE [comportamento contínuo/invariante].
+  * **Orientado a Evento**: QUANDO [gatilho/evento], o sistema DEVE [ação esperada].
+  * **Condicional / Unwanted-behavior**: SE [condição de erro/limite], o sistema DEVE [resposta/fallback esperado].
+
+- **Prompt Pronto para Antigravity Agent (TLC Spec-Driven)**:
+\`\`\`text
+Atue como Senior Angular Architect e execute a skill tlc-spec-driven para implementar a feature:
+Título: [Título da Issue]
+Contexto e Motivação: [Resumo da motivação]
+Critérios de Aceitação (EARS):
+- [Critério 1]
+- [Critério 2]
+- [Critério 3]
+Execute o ciclo completo: Specify (.specs/features/[feature]/spec.md) -> Design (se necessário) -> Tasks -> Execute com commits atômicos e validação final.
+\`\`\`
+
+Se não houver propostas fora do escopo com real relevância, omita completamente a seção "#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)".
 `;
 
 // ==========================================
@@ -428,6 +452,82 @@ async function deletePRComment(headers, repo, commentId) {
 }
 
 // ==========================================
+// TLC SPEC-DRIVEN ISSUE BUILDER
+// ==========================================
+
+export function parseIssueProposal(reviewMarkdown) {
+  if (!reviewMarkdown || typeof reviewMarkdown !== 'string') return null;
+
+  const marker = '#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)';
+  const markerIdx = reviewMarkdown.indexOf(marker);
+  if (markerIdx === -1) return null;
+
+  const sectionContent = reviewMarkdown.slice(markerIdx + marker.length).trim();
+  if (!sectionContent) return null;
+
+  // Title can be in `##### <title>` or `**Título Sugerido**: <title>` or `**Título**: <title>`
+  const titleMatch =
+    sectionContent.match(/^#####\s+(.+)$/m) ||
+    sectionContent.match(/\*\*Título(?:\s+Sugerido)?\*\*:\s*(.+)$/m);
+
+  const rawTitle = titleMatch ? titleMatch[1].trim() : 'Melhoria fora do escopo (TLC Spec-Driven)';
+  const title = rawTitle.replace(/^[`'"]|[`'"]$/g, '').trim();
+
+  return {
+    title,
+    body: sectionContent,
+  };
+}
+
+export async function createGitHubIssue(headers, repo, proposal, prNumber) {
+  try {
+    // Check for existing open or closed issues with the exact title to prevent duplicates
+    const listUrl = `https://api.github.com/repos/${repo}/issues?state=all&per_page=100`;
+    const listRes = await fetch(listUrl, { headers });
+    if (listRes.ok) {
+      const existingIssues = await listRes.json();
+      const existing = existingIssues.find(
+        (issue) =>
+          !issue.pull_request &&
+          issue.title.trim().toLowerCase() === proposal.title.trim().toLowerCase(),
+      );
+      if (existing) {
+        console.log(
+          `ℹ️ Issue já existente para esta proposta (#${existing.number}): ${existing.html_url}`,
+        );
+        return { number: existing.number, url: existing.html_url, created: false };
+      }
+    }
+
+    // Create the new issue
+    const createUrl = `https://api.github.com/repos/${repo}/issues`;
+    const bodyWithFooter = `${proposal.body}\n\n---\n*Criada automaticamente a partir da revisão do PR #${prNumber}*`;
+    const createRes = await fetch(createUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        title: proposal.title,
+        body: bodyWithFooter,
+        labels: ['enhancement'],
+      }),
+    });
+
+    if (!createRes.ok) {
+      const errorText = await createRes.text();
+      console.warn(`⚠️ Não foi possível criar issue no GitHub (${createRes.status}):`, errorText);
+      return null;
+    }
+
+    const created = await createRes.json();
+    console.log(`🚀 Issue criada com sucesso no GitHub (#${created.number}): ${created.html_url}`);
+    return { number: created.number, url: created.html_url, created: true };
+  } catch (err) {
+    console.warn('⚠️ Erro ao criar issue no GitHub:', err.message);
+    return null;
+  }
+}
+
+// ==========================================
 // MAIN ENTRYPOINT
 // ==========================================
 
@@ -503,7 +603,40 @@ async function main() {
     // Call Gemini API to generate the code review
     const systemPrompt = buildSystemPrompt(relevantSpec);
     const userPrompt = buildUserPrompt(diff, relevantSpec);
-    const reviewMarkdown = await callGemini(systemPrompt, userPrompt);
+    let reviewMarkdown = await callGemini(systemPrompt, userPrompt);
+
+    // Process out-of-scope TLC Spec-Driven issue proposal if suggested by Gemini
+    const issueProposal = parseIssueProposal(reviewMarkdown);
+    if (issueProposal) {
+      if (isDryRun) {
+        console.log(`\n💡 [Dry-run] Proposta de Issue detectada: "${issueProposal.title}"`);
+      } else if (PR_NUMBER && GITHUB_TOKEN) {
+        console.log(
+          `💡 Proposta de Issue detectada: "${issueProposal.title}". Verificando / criando no GitHub...`,
+        );
+        const issueResult = await createGitHubIssue(
+          headers,
+          GITHUB_REPOSITORY,
+          issueProposal,
+          PR_NUMBER,
+        );
+        if (issueResult) {
+          const statusText = issueResult.created
+            ? 'Issue criada automaticamente no GitHub'
+            : 'Issue vinculada no GitHub';
+          const issueRefBadge = `\n\n> 📌 **${statusText}**: [#${issueResult.number} — ${issueProposal.title}](${issueResult.url})\n`;
+          reviewMarkdown = reviewMarkdown.replace(
+            '#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)',
+            `#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)${issueRefBadge}`,
+          );
+        }
+      }
+    }
+
+    const reviewFooter = `\n\n---\n💡 *Dica: Esta revisão automática ocorre na criação do PR. Para reavaliar novos commits, comente \`/review\` no PR.*`;
+    if (!reviewMarkdown.includes('💡 *Dica: Esta revisão automática ocorre')) {
+      reviewMarkdown += reviewFooter;
+    }
 
     // Output or publish to GitHub
     if (isDryRun) {

@@ -14,6 +14,7 @@ import {
   ARCHITECTURAL_GUIDELINES,
   TAXONOMY_GUIDELINES,
   OUT_OF_SCOPE_SPEC_GUIDELINES,
+  parseIssueProposal,
 } from './gemini-pr-review.mjs';
 
 async function createTempSpecsDir(specs) {
@@ -116,4 +117,63 @@ test('gemini-pr-review: buildUserPrompt embeds diff and spec content', () => {
   assert.ok(userPromptWithSpec.includes(diffSnippet));
   assert.ok(userPromptWithSpec.includes('.specs/features/04-guest-rsvp/spec.md'));
   assert.ok(userPromptWithSpec.includes('Acceptance criteria in EARS format.'));
+});
+
+test('gemini-pr-review: parseIssueProposal parses structured TLC proposals', () => {
+  const reviewWithH5 = `
+### 🤖 Organiza AI — Code Review pelo Gemini
+#### 🎯 Veredito
+🟢 **Aprovado**
+
+#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+##### feat(event-editor): exportar lista de convidados em PDF
+
+- **Visão Geral e Importância (Valor & Motivação)**:
+  Organizadores precisam imprimir a lista de convidados para controle na portaria.
+
+- **Limites de Escopo**:
+  - **No Escopo**: Botão de exportação para PDF.
+  - **Fora do Escopo**: Envio automático por WhatsApp.
+
+- **Critérios de Aceitação (EARS)**:
+  * QUANDO o usuário clicar em "Exportar PDF", o sistema DEVE baixar o documento formatado.
+
+- **Prompt Pronto para Antigravity Agent (TLC Spec-Driven)**:
+\`\`\`text
+Atue como Senior Angular Architect e execute a skill tlc-spec-driven...
+\`\`\`
+`;
+
+  const parsed = parseIssueProposal(reviewWithH5);
+  assert.ok(parsed);
+  assert.equal(parsed.title, 'feat(event-editor): exportar lista de convidados em PDF');
+  assert.ok(parsed.body.includes('Visão Geral e Importância'));
+  assert.ok(parsed.body.includes('QUANDO o usuário clicar em "Exportar PDF"'));
+
+  const reviewWithField = `
+#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+**Título Sugerido**: refactor(signals): migrar formulário para signal-forms
+- Conteúdo da proposta
+`;
+  const parsedField = parseIssueProposal(reviewWithField);
+  assert.ok(parsedField);
+  assert.equal(parsedField.title, 'refactor(signals): migrar formulário para signal-forms');
+});
+
+test('gemini-pr-review: parseIssueProposal returns null when section is absent or empty', () => {
+  assert.equal(parseIssueProposal(null), null);
+  assert.equal(parseIssueProposal(''), null);
+  assert.equal(parseIssueProposal('### Review sem propostas fora do escopo'), null);
+  assert.equal(
+    parseIssueProposal('#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)\n   \n'),
+    null,
+  );
+});
+
+test('gemini-pr-review: OUT_OF_SCOPE_SPEC_GUIDELINES includes TLC EARS and prompt instructions', () => {
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Visão Geral e Importância'));
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Limites de Escopo'));
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Critérios de Aceitação (Notação EARS'));
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Prompt Pronto para Antigravity Agent'));
+  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('tlc-spec-driven'));
 });

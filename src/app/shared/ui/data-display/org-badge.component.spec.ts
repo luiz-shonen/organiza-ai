@@ -39,4 +39,15 @@ describe('OrgBadgeComponent', () => {
     const badge = fixture.nativeElement.querySelector('.org-badge') as HTMLElement;
     expect(badge.classList.contains('org-badge--secondary')).toBe(true);
   });
+
+  it('falls back to default variant when given an unknown variant', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgBadgeComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgBadgeComponent> = TestBed.createComponent(OrgBadgeComponent);
+    fixture.componentRef.setInput('label', 'Desconhecido');
+    fixture.componentRef.setInput('variant', 'invalid-variant' as never);
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('.org-badge') as HTMLElement;
+    expect(badge.classList.contains('org-badge--default')).toBe(true);
+  });
 });

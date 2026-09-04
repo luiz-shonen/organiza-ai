@@ -11,16 +11,20 @@ const LEGACY_DIRECTIVES = [
   'OrgFormGridDirective',
 ];
 
-const LEGACY_SELECTOR = /\[(?:orgSurface|orgFormGrid)\]|\borg(?:Button|IconButton|Chip|FormField|FieldLabel)\b/;
+const LEGACY_SELECTOR =
+  /\[(?:orgSurface|orgFormGrid)\]|\borg(?:Button|IconButton|Chip|FormField|FieldLabel)\b/;
 const RAW_MATERIAL_TAG = /<mat-(?:icon|chip|chips|button)\b/;
-const RAW_MATERIAL_BUTTON_ATTR = /\bmat-(?:raised-button|flat-button|stroked-button|icon-button|fab|mini-fab|button)\b/;
+const RAW_MATERIAL_BUTTON_ATTR =
+  /\bmat-(?:raised-button|flat-button|stroked-button|icon-button|fab|mini-fab|button)\b/;
 const RAW_MATERIAL_MODULE = /\bMat(?:Icon|Chip|Chips|Button)Module\b/;
 const MATERIAL_SELECTOR = /\.(?:mat|mdc)-[\w-]+/;
 // Reading a Material semantic variable is not an ownership violation. Declaring
 const MATERIAL_TOKEN = /(?:^|[;{]\s*)--(?:mdc|mat)-[\w-]+\s*:/m;
 const FEATURE_GLASS_RULE = /(?:-webkit-)?backdrop-filter\s*:/;
-const FEATURE_RAW_BOX_SHADOW = /box-shadow\s*:\s*(?!\s*(?:none|inherit|initial|unset|var\(--org-shadow|var\(--org-glass-shadow|var\(--showcase-shadow))\s*[^;]+;/;
-const FEATURE_RAW_BORDER_RADIUS = /border-radius\s*:\s*(?!\s*(?:none|inherit|initial|unset|0|var\(--org-radius-|var\(--mdc-|var\(--mat-|var\(--showcase-))\s*[^;]+;/;
+const FEATURE_RAW_BOX_SHADOW =
+  /box-shadow\s*:\s*(?!\s*(?:none|inherit|initial|unset|var\(--org-shadow|var\(--org-glass-shadow|var\(--showcase-shadow))\s*[^;]+;/;
+const FEATURE_RAW_BORDER_RADIUS =
+  /border-radius\s*:\s*(?!\s*(?:none|inherit|initial|unset|0|var\(--org-radius-|var\(--mdc-|var\(--mat-|var\(--showcase-))\s*[^;]+;/;
 const COMPONENT_EXPORT = /export\s+\{\s*(Org\w+Component)\s*\}/g;
 const DIRECTIVE_EXPORT = /export\s+\{\s*(Org\w+Directive)\s*\}/g;
 const CODE_PRIORITY = new Map([
@@ -70,7 +74,10 @@ function findLine(source, expression) {
 }
 
 function isSharedUi(filePath) {
-  return filePath.endsWith('/app.scss') || (filePath.split('/').includes('shared') && filePath.split('/').includes('ui'));
+  return (
+    filePath.endsWith('/app.scss') ||
+    (filePath.split('/').includes('shared') && filePath.split('/').includes('ui'))
+  );
 }
 
 function makeViolation(root, code, filePath, source, expression, message) {
@@ -257,7 +264,10 @@ export async function scanUiContracts(root) {
 export async function scanDocumentationContract(root) {
   const indexPath = resolve(root, 'src', 'app', 'shared', 'ui', 'index.ts');
   const designPath = resolve(root, 'DESIGN.md');
-  const [indexSource, designSource] = await Promise.all([readFile(indexPath, 'utf8'), readFile(designPath, 'utf8')]);
+  const [indexSource, designSource] = await Promise.all([
+    readFile(indexPath, 'utf8'),
+    readFile(designPath, 'utf8'),
+  ]);
   const componentExports = [...indexSource.matchAll(COMPONENT_EXPORT)].map((match) => match[1]);
   const directiveExports = [...indexSource.matchAll(DIRECTIVE_EXPORT)].map((match) => match[1]);
   const violations = [];
@@ -274,14 +284,20 @@ export async function scanDocumentationContract(root) {
     }
   }
 
-  const legacySection = designSource.match(/## APIs legadas de compatibilidade([\s\S]*?)(?=\n## |$)/);
+  const legacySection = designSource.match(
+    /## APIs legadas de compatibilidade([\s\S]*?)(?=\n## |$)/,
+  );
   const documentsLegacy = legacySection && legacySection[1].includes('Não usar em novo');
-  if (!documentsLegacy || directiveExports.some((directive) => !legacySection?.[1].includes(directive))) {
+  if (
+    !documentsLegacy ||
+    directiveExports.some((directive) => !legacySection?.[1].includes(directive))
+  ) {
     violations.push({
       code: 'documentation-legacy-directive',
       file: 'DESIGN.md',
       line: 1,
-      message: 'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
+      message:
+        'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
     });
   }
 

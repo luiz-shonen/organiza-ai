@@ -20,6 +20,7 @@
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
     "quality": "npm run lint && npm run lint:styles && npm run lint:contracts && npm run format:check",
+    "pr:create": "node scripts/create-pr.mjs",
     "prepare": "husky"
   },
   "private": true,

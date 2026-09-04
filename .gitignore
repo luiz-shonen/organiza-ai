@@ -49,5 +49,12 @@ firebase-debug.log
 .DS_Store
 Thumbs.db
 
+# Local Environment & Secrets
+.env
+.env.local
+.env.*
+!.env.example
+
 # Graphify
 graphify-out/
+

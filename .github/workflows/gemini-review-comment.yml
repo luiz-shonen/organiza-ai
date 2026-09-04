@@ -1,0 +1,47 @@
+name: Gemini PR Review (On Demand)
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  comment-review:
+    name: On-Demand Gemini Review
+    if: github.event.issue.pull_request && (contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/gemini review'))
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Fetch PR Metadata
+        id: pr-meta
+        run: |
+          PR_DATA=$(gh pr view ${{ github.event.issue.number }} --json baseRefOid,headRefOid)
+          echo "base_sha=$(echo "$PR_DATA" | jq -r .baseRefOid)" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(echo "$PR_DATA" | jq -r .headRefOid)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.pr-meta.outputs.head_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Gemini Code Review
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          BASE_SHA: ${{ steps.pr-meta.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.pr-meta.outputs.head_sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/gemini-pr-review.mjs

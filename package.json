@@ -19,9 +19,10 @@
     "lint:contracts": "node scripts/validate-ui-contracts.mjs --strict",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
     "format:write": "prettier --write \"src/**/*.{ts,html,scss,json}\" \"*.{yml,yaml,md,json}\" \"e2e/**/*.ts\"",
-    "quality": "npm run lint && npm run lint:styles && npm run lint:contracts && npm run format:check",
+    "quality": "npm run lint && npm run lint:e2e && npm run lint:styles && npm run lint:contracts && npm run format:check",
     "pr:create": "node scripts/create-pr.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:e2e": "eslint \"e2e/**/*.ts\" \"scripts/*.mjs\" --max-warnings 0"
   },
   "private": true,
   "packageManager": "npm@11.9.0",

@@ -1,26 +1,39 @@
 @use '@angular/material' as mat;
 @use './app/shared/ui/tokens/semantic' as semantic;
-@use './app/shared/ui/forms/org-form-field';
-@use './app/shared/ui/forms/org-field-label';
-@use './app/shared/ui/actions/org-actions';
-@use './app/shared/ui/layout/org-form-grid';
+@use './app/shared/ui/overlays/org-overlays' as overlays;
+@use './app/shared/ui/typography/org-text';
 @include semantic.apply;
+
+// Material reads its system tokens from the semantic layer, so a theme or
+// seasonal swap of --org-* reaches every Material component without overrides.
+@mixin material-bridge() {
+  --mat-sys-primary: var(--org-primary);
+  --mat-sys-on-primary: var(--org-on-primary);
+  --mat-sys-primary-container: var(--org-primary-container);
+  --mat-sys-on-primary-container: var(--org-on-primary-container);
+  --mat-sys-secondary: var(--org-secondary);
+  --mat-sys-on-secondary: var(--org-on-secondary);
+  --mat-sys-secondary-container: var(--org-secondary-container);
+  --mat-sys-on-secondary-container: var(--org-on-secondary-container);
+  --mat-sys-tertiary: var(--org-tertiary);
+  --mat-sys-on-tertiary: var(--org-on-tertiary);
+  --mat-sys-tertiary-container: var(--org-tertiary-container);
+  --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
+  --mat-sys-background: var(--org-surface);
+  --mat-sys-on-background: var(--org-on-surface);
+  --mat-sys-surface: var(--org-surface);
+  --mat-sys-on-surface: var(--org-on-surface);
+  --mat-sys-surface-variant: var(--org-surface-variant);
+  --mat-sys-on-surface-variant: var(--org-on-surface-variant);
+  --mat-sys-outline: var(--org-outline);
+  --mat-sys-outline-variant: var(--org-outline-variant);
+}
 
 html {
   height: 100%;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 
-  /* Global rounding overrides for Material 3 */
-  --mdc-shape-small: 16px;
-  --mdc-shape-medium: 24px;
-  --mdc-shape-large: 32px;
-  --mdc-outlined-text-field-container-shape: 16px;
-  --mdc-filled-text-field-container-shape: 16px;
-  --mdc-dialog-container-shape: 28px;
-  --mat-menu-container-shape: 16px;
-
-  // Tema Light (Padrão)
   @include mat.theme(
     (
       color: (
@@ -32,32 +45,9 @@ html {
       density: 0,
     )
   );
+  @include material-bridge;
+  @include overlays.tokens;
 
-  // Superfícies e Cores do Tema Light
-  &:not(.dark) {
-    --mat-sys-primary: var(--org-primary);
-    --mat-sys-on-primary: var(--org-on-primary);
-    --mat-sys-primary-container: var(--org-primary-container);
-    --mat-sys-on-primary-container: var(--org-on-primary-container);
-    --mat-sys-secondary: var(--org-secondary);
-    --mat-sys-on-secondary: var(--org-on-secondary);
-    --mat-sys-secondary-container: var(--org-secondary-container);
-    --mat-sys-on-secondary-container: var(--org-on-secondary-container);
-    --mat-sys-tertiary: var(--org-tertiary);
-    --mat-sys-on-tertiary: var(--org-on-tertiary);
-    --mat-sys-tertiary-container: var(--org-tertiary-container);
-    --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
-    --mat-sys-background: var(--org-background-light);
-    --mat-sys-on-background: var(--org-on-background-light);
-    --mat-sys-surface: var(--org-surface-light);
-    --mat-sys-on-surface: var(--org-on-surface-light);
-    --mat-sys-surface-variant: var(--org-surface-variant-light);
-    --mat-sys-on-surface-variant: var(--org-on-surface-variant-light);
-    --mat-sys-outline: var(--org-outline-light);
-    --mat-sys-outline-variant: var(--org-outline-variant-light);
-  }
-
-  // Tema Dark
   &.dark {
     color-scheme: dark;
 
@@ -71,38 +61,25 @@ html {
         typography: 'Plus Jakarta Sans',
       )
     );
-
-    // Superfícies e Cores do Tema Dark
-    --mat-sys-primary: var(--org-primary);
-    --mat-sys-on-primary: var(--org-on-primary);
-    --mat-sys-primary-container: var(--org-primary-container);
-    --mat-sys-on-primary-container: var(--org-on-primary-container);
-    --mat-sys-secondary: var(--org-secondary);
-    --mat-sys-on-secondary: var(--org-on-secondary);
-    --mat-sys-secondary-container: var(--org-secondary-container);
-    --mat-sys-on-secondary-container: var(--org-on-secondary-container);
-    --mat-sys-tertiary: var(--org-tertiary);
-    --mat-sys-on-tertiary: var(--org-on-tertiary);
-    --mat-sys-tertiary-container: var(--org-tertiary-container);
-    --mat-sys-on-tertiary-container: var(--org-on-tertiary-container);
-    --mat-sys-background: var(--org-background-dark);
-    --mat-sys-on-background: var(--org-on-background-dark);
-    --mat-sys-surface: var(--org-surface-dark);
-    --mat-sys-on-surface: var(--org-on-surface-dark);
-    --mat-sys-surface-variant: var(--org-surface-variant-dark);
-    --mat-sys-on-surface-variant: var(--org-on-surface-variant-dark);
-    --mat-sys-outline: var(--org-outline-dark);
-    --mat-sys-outline-variant: var(--org-outline-variant-dark);
+    @include material-bridge;
   }
 }
 
 body {
   color-scheme: light;
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  background-color: var(--org-surface);
+  color: var(--org-on-surface);
   font: var(--mat-sys-body-medium);
+  font-family: var(--org-font-body);
   margin: 0;
   height: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
 }
 
 button,
@@ -110,544 +87,4 @@ a,
 .mat-mdc-button-base,
 .mat-mdc-standard-chip {
   touch-action: manipulation;
-}
-
-mat-icon:not(.org-icon),
-.mat-icon:not(.org-icon),
-.material-icons:not(.org-icon),
-.material-icons-outlined:not(.org-icon),
-.material-symbols-outlined:not(.org-icon) {
-  font-family: 'Material Icons', 'Material Icons Outlined', sans-serif !important;
-  font-weight: normal !important;
-  font-style: normal !important;
-  line-height: 1 !important;
-  letter-spacing: normal !important;
-  text-transform: none !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  vertical-align: middle !important;
-  white-space: nowrap !important;
-  overflow-wrap: normal !important;
-  direction: ltr !important;
-  -webkit-font-smoothing: antialiased !important;
-}
-
-/* Clear Disabled Button State & Cursor Indication */
-button:not(.org-button, .org-icon-button):disabled,
-button:not(.org-button, .org-icon-button)[disabled],
-.mat-mdc-button-disabled:not(.org-button, .org-icon-button),
-.mat-mdc-button-base:not(.org-button, .org-icon-button):disabled,
-.mat-mdc-button-base:not(.org-button, .org-icon-button)[disabled] {
-  cursor: not-allowed !important;
-  pointer-events: auto !important;
-  opacity: 0.55 !important;
-  box-shadow: none !important;
-  transform: none !important;
-
-  &::before {
-    display: none !important;
-  }
-}
-
-// ──────────────────────────────────────────────
-// Global utility classes
-// ──────────────────────────────────────────────
-
-.container {
-  width: 100%;
-  max-width: 960px;
-  margin-inline: auto;
-  padding-inline: 16px;
-}
-
-.container--narrow {
-  max-width: 600px;
-}
-
-.container--wide {
-  max-width: 1200px;
-}
-
-// ──────────────────────────────────────────────
-// Scrollbar styling
-// ──────────────────────────────────────────────
-
-// ──────────────────────────────────────────────
-// Snackbar custom styling
-// ──────────────────────────────────────────────
-
-.mat-mdc-snack-bar-container:not(.org-feedback-snackbar) {
-  --mdc-snackbar-container-color: var(--mat-sys-inverse-surface);
-  --mdc-snackbar-supporting-text-color: var(--mat-sys-inverse-on-surface);
-}
-
-.mat-mdc-snack-bar-container.org-feedback-snackbar,
-.org-feedback-snackbar .mat-mdc-snack-bar-container {
-  --mdc-snackbar-container-color: transparent;
-  --mdc-snackbar-supporting-text-color: inherit;
-  --mat-snack-bar-button-color: currentColor;
-  --mat-snack-bar-container-color: transparent;
-  --mat-snack-bar-container-elevation-shadow: none;
-  --mat-snack-bar-supporting-text-color: inherit;
-  --mdc-snackbar-container-elevation-shadow: none;
-
-  box-shadow: none;
-  padding: 0;
-
-  .mdc-snackbar__surface,
-  .mat-mdc-snackbar-surface,
-  .mat-mdc-snack-bar-label {
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-  }
-}
-
-// ──────────────────────────────────────────────
-// Skeleton loaders
-// ──────────────────────────────────────────────
-
-.skeleton-box {
-  border-radius: 0.5rem;
-  background-color: var(--mat-sys-surface-container-highest);
-  opacity: 0.7;
-  animation: skeletonPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  display: block;
-
-  &--circle {
-    border-radius: 50% !important;
-  }
-}
-
-@keyframes skeletonPulse {
-  0%,
-  100% {
-    opacity: 0.7;
-  }
-
-  50% {
-    opacity: 0.35;
-  }
-}
-
-// ──────────────────────────────────────────────
-// Stitch Design System: Global Decorators
-// ──────────────────────────────────────────────
-
-.bg-blobs {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  overflow: hidden;
-  background-color: var(--mat-sys-background);
-  pointer-events: none;
-}
-
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.4;
-  animation: float 20s infinite alternate ease-in-out;
-}
-
-.blob-1 {
-  top: -10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: var(--mat-sys-primary-container);
-}
-
-.blob-2 {
-  bottom: -20%;
-  right: -10%;
-  width: 60vw;
-  height: 60vw;
-  background: var(--mat-sys-secondary-container);
-  animation-delay: -5s;
-}
-
-.blob-3 {
-  top: 40%;
-  left: 30%;
-  width: 40vw;
-  height: 40vw;
-  background: var(--mat-sys-tertiary-container);
-  opacity: 0.2;
-  animation-duration: 25s;
-}
-
-@keyframes float {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  50% {
-    transform: translate(5%, 10%) scale(1.05);
-  }
-
-  100% {
-    transform: translate(-5%, -5%) scale(0.95);
-  }
-}
-
-.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
-  background: rgba(15, 10, 20, 0.5) !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
-}
-
-.mat-mdc-dialog-container .mdc-dialog__surface {
-  background: rgb(255 255 255 / 0.84) !important;
-  backdrop-filter: var(--org-glass-blur) !important;
-  -webkit-backdrop-filter: var(--org-glass-blur) !important;
-  box-shadow: var(--org-glass-shadow);
-  border: 0;
-
-  .dark & {
-    background: #241c31 !important;
-  }
-}
-
-.org-material-button--gradient-outline {
-  background:
-    linear-gradient(var(--org-glass-bg), var(--org-glass-bg)) padding-box,
-    var(--org-gradient-border) border-box;
-  border: 1px solid transparent !important;
-}
-
-.mat-mdc-menu-panel.org-ds-menu-panel {
-  --mat-menu-container-color: transparent;
-
-  backdrop-filter: var(--org-glass-blur);
-  -webkit-backdrop-filter: var(--org-glass-blur);
-  background:
-    linear-gradient(var(--org-glass-bg), var(--org-glass-bg)) padding-box,
-    var(--org-gradient-border) border-box;
-  border: 1px solid transparent;
-}
-
-/* Angular Material Button Theme Integration & Master Icon Alignment System */
-.mat-mdc-button-base:not(
-  .org-button,
-  .org-icon-button,
-  .navigation-drawer__route,
-  .navigation-drawer__theme-option,
-  .navigation-drawer__logout
-) {
-  position: relative !important;
-  overflow: hidden !important;
-  border-radius: 28px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  vertical-align: middle !important;
-
-  .mdc-button__label {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    line-height: 1 !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-
-  mat-icon,
-  .mat-icon,
-  .material-icons,
-  .material-symbols-outlined {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 20px !important;
-    width: 20px !important;
-    height: 20px !important;
-    line-height: 1 !important;
-    vertical-align: middle !important;
-    flex-shrink: 0 !important;
-  }
-
-  .mat-ripple,
-  .mat-mdc-button-ripple {
-    border-radius: inherit !important;
-  }
-}
-
-/* Icon margin exclusively for text buttons with leading icons */
-.mat-mdc-button-base:not(
-  .org-button,
-  .org-icon-button,
-  .mat-mdc-icon-button,
-  .navigation-drawer__route,
-  .navigation-drawer__theme-option,
-  .navigation-drawer__logout
-) {
-  mat-icon,
-  .mat-icon,
-  .material-icons,
-  .material-symbols-outlined {
-    margin-right: 8px !important;
-  }
-}
-
-/* Fix for Angular Material visually hidden accessibility elements breaking out of clip due to flex overrides */
-.cdk-visually-hidden {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-/* Icon-only buttons: 100% centered, zero margins */
-.mat-mdc-icon-button:not(.org-icon-button) {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 !important;
-
-  mat-icon,
-  .mat-icon,
-  .material-icons,
-  .material-symbols-outlined {
-    margin: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    line-height: 1 !important;
-    vertical-align: middle !important;
-  }
-}
-
-/* Organiza AI Master mat-drawer & mat-sidenav Container System */
-.app-sidenav-container {
-  min-height: 100dvh;
-  background: transparent !important;
-}
-
-.app-sidenav-drawer {
-  width: 352px !important;
-  max-width: 90vw !important;
-  background: var(--org-glass-bg) !important;
-  backdrop-filter: var(--org-glass-blur) !important;
-  -webkit-backdrop-filter: var(--org-glass-blur) !important;
-  border: none !important;
-  border-left: 1px solid color-mix(in srgb, var(--org-primary) 24%, transparent) !important;
-  border-radius: 24px 0 0 24px !important;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15) !important;
-
-  .dark & {
-    border-left-color: color-mix(in srgb, var(--org-primary) 32%, transparent) !important;
-    color: var(--mat-sys-on-surface) !important;
-  }
-}
-
-.app-sidenav-drawer.app-sidenav-drawer--navigation {
-  border-left: 0 !important;
-  border-right: 1px solid color-mix(in srgb, var(--org-primary) 24%, transparent) !important;
-  border-radius: 0 24px 24px 0 !important;
-  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.15) !important;
-
-  .dark & {
-    border-right-color: color-mix(in srgb, var(--org-primary) 32%, transparent) !important;
-  }
-}
-
-.mat-mdc-unelevated-button:not([color='accent'], [color='warn']),
-.mat-mdc-flat-button:not([color='accent'], [color='warn']),
-button.btn-primary-org {
-  background: var(--org-gradient-primary) !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  box-shadow:
-    inset 0 0 0 1.5px rgba(255, 255, 255, 0.3),
-    0 10px 20px color-mix(in srgb, var(--org-primary) 30%, transparent) !important;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease !important;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px) scale(1.02) !important;
-    box-shadow:
-      inset 0 0 0 1.5px rgba(255, 255, 255, 0.4),
-      0 14px 28px color-mix(in srgb, var(--org-primary) 45%, transparent) !important;
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.98) !important;
-  }
-}
-
-/* Master Drawer / BottomSheet Panel System */
-.app-drawer-panel .mdc-dialog__surface,
-.mat-bottom-sheet-container,
-.mat-mdc-bottom-sheet-container {
-  background: rgba(255, 255, 255, 0.88) !important;
-  backdrop-filter: blur(28px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  border-top-left-radius: 24px !important;
-  border-top-right-radius: 24px !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.22) !important;
-
-  .dark & {
-    background: rgba(29, 27, 32, 0.9) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-    color: var(--mat-sys-on-surface) !important;
-  }
-}
-
-.org-gradient-text {
-  display: inline-block; /* ou inline com box-decoration-break */
-  background-image: linear-gradient(to right, var(--mat-sys-on-background), var(--mat-sys-primary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-
-  /* Evita corte de caracteres com descenders/acentos */
-  padding-bottom: 0.5em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
-
-*:not(mat-icon, .mat-icon, .material-icons, .material-symbols-outlined),
-*::before:not(mat-icon, .mat-icon),
-*::after:not(mat-icon, .mat-icon),
-body,
-input,
-textarea,
-select,
-button:not(mat-icon),
-.mat-mdc-button-base:not(mat-icon),
-.mat-mdc-input-element,
-.mat-mdc-form-field:not(mat-icon),
-.mat-mdc-floating-label,
-.mat-mdc-select-value,
-.mat-mdc-option,
-.mat-mdc-chip,
-.mat-mdc-card-title,
-.mat-mdc-card-subtitle,
-.mat-mdc-card-content {
-  font-family: 'Plus Jakarta Sans', sans-serif !important;
-}
-
-input[type='time'] {
-  padding: 8px 0;
-  line-height: normal;
-  align-items: center;
-  height: auto;
-}
-
-.animated-gradient {
-  background-size: 200% auto;
-  animation: gradientMove 2s ease infinite alternate;
-}
-
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-// Global Category Chips
-.org-chip,
-org-chip {
-  &.cat-aniversario,
-  .cat-aniversario {
-    --chip-bg: var(--org-cat-aniversario-bg);
-    --chip-color: var(--org-cat-aniversario-color);
-    --chip-selected-bg: var(--org-cat-aniversario-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-
-  &.cat-casamento,
-  .cat-casamento {
-    --chip-bg: var(--org-cat-casamento-bg);
-    --chip-color: var(--org-cat-casamento-color);
-    --chip-selected-bg: var(--org-cat-casamento-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-
-  &.cat-festa,
-  .cat-festa {
-    --chip-bg: var(--org-cat-festa-bg);
-    --chip-color: var(--org-cat-festa-color);
-    --chip-selected-bg: var(--org-cat-festa-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-
-  &.cat-churrasco,
-  .cat-churrasco {
-    --chip-bg: var(--org-cat-churrasco-bg);
-    --chip-color: var(--org-cat-churrasco-color);
-    --chip-selected-bg: var(--org-cat-churrasco-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-
-  &.cat-happy,
-  .cat-happy {
-    --chip-bg: var(--org-cat-happy-bg);
-    --chip-color: var(--org-cat-happy-color);
-    --chip-selected-bg: var(--org-cat-happy-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-
-  &.cat-formatura,
-  .cat-formatura {
-    --chip-bg: var(--org-cat-formatura-bg);
-    --chip-color: var(--org-cat-formatura-color);
-    --chip-selected-bg: var(--org-cat-formatura-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-
-  &.cat-outros,
-  .cat-outros {
-    --chip-bg: var(--org-cat-outros-bg);
-    --chip-color: var(--org-cat-outros-color);
-    --chip-selected-bg: var(--org-cat-outros-color);
-    --chip-selected-color: var(--org-on-primary);
-  }
-}
-
-/* Global Overlay System: Menu, Select & Autocomplete Panels (Solid surface, zero text bleed) */
-.mat-mdc-menu-panel,
-.mat-mdc-select-panel,
-.mat-mdc-autocomplete-panel {
-  background: var(--org-surface) !important;
-  border: 1px solid var(--org-outline) !important;
-  border-radius: var(--org-radius-md, 16px) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  overflow: hidden !important;
-
-  .mat-mdc-option {
-    color: var(--org-on-surface) !important;
-    min-height: 48px !important;
-
-    &:hover:not(.mdc-list-item--disabled) {
-      background: color-mix(in srgb, var(--org-primary) 10%, transparent) !important;
-    }
-
-    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-      background: color-mix(in srgb, var(--org-primary) 20%, transparent) !important;
-      color: var(--org-primary) !important;
-
-      .mdc-list-item__primary-text {
-        color: var(--org-primary) !important;
-      }
-
-      .mat-pseudo-checkbox-checked {
-        background: var(--org-primary) !important;
-        border-color: var(--org-primary) !important;
-      }
-    }
-  }
 }

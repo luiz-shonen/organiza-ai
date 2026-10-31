@@ -32,21 +32,21 @@
   }
 
   &__title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--mat-sys-on-surface);
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-bold);
+    color: var(--org-on-surface);
     margin: 0;
-    letter-spacing: -0.01em;
+    letter-spacing: var(--org-letter-spacing-snug);
 
     @include semantic.tablet {
-      font-size: 1.5rem;
+      font-size: var(--org-font-size-2xl);
     }
   }
 
   &__count-badge {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: var(--mat-sys-primary);
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-extrabold);
+    color: var(--org-primary);
     background: rgba(255, 77, 148, 0.12);
     padding: 2px 8px;
     border-radius: 9999px;

@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  forwardRef,
-  input,
-  model,
-  ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, input, model } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,7 +23,6 @@ export interface OrgSelectOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The option panel is rendered in Angular Material's overlay container. Scope this
   // component's stable panel class globally, instead of leaking a generic Material override.
-  encapsulation: ViewEncapsulation.None,
   templateUrl: './org-select-field.component.html',
   styleUrl: './org-select-field.component.scss',
 })

@@ -1,0 +1,23 @@
+<mat-expansion-panel
+  class="org-expansion-panel"
+  [expanded]="expanded()"
+  [attr.aria-label]="ariaLabel()"
+  (opened)="expanded.set(true)"
+  (closed)="expanded.set(false)"
+>
+  <mat-expansion-panel-header class="org-expansion-panel__header">
+    <mat-panel-title class="org-expansion-panel__title">
+      @if (icon(); as icon) {
+        <org-icon [name]="icon" color="var(--org-primary)" />
+      }
+      <span>{{ heading() }}</span>
+    </mat-panel-title>
+    <mat-panel-description class="org-expansion-panel__summary">
+      <ng-content select="[orgExpansionSummary]" />
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <div class="org-expansion-panel__content">
+    <ng-content />
+  </div>
+</mat-expansion-panel>

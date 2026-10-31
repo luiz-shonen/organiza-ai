@@ -6,7 +6,6 @@ import {
   input,
   model,
   signal,
-  ViewEncapsulation,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -35,7 +34,6 @@ function normalizeSearchText(value: string): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The Material option panel belongs to the CDK overlay. Its stable panel class
   // keeps the overlay rules owned by this closed component.
-  encapsulation: ViewEncapsulation.None,
   templateUrl: './org-autocomplete-field.component.html',
   styleUrl: './org-autocomplete-field.component.scss',
 })

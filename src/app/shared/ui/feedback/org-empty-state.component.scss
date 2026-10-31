@@ -25,18 +25,18 @@
   }
 
   &__title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--mat-sys-on-surface);
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-bold);
+    color: var(--org-on-surface);
     margin: 0 0 8px;
-    line-height: 1.3;
+    line-height: var(--org-line-height-snug);
   }
 
   &__description {
-    font-size: 0.9375rem;
-    color: var(--mat-sys-on-surface-variant);
+    font-size: var(--org-font-size-md);
+    color: var(--org-on-surface-variant);
     margin: 0 0 20px;
-    line-height: 1.5;
+    line-height: var(--org-line-height-normal);
     max-width: 380px;
   }
 

@@ -1,0 +1,84 @@
+@use '@angular/material' as mat;
+
+// Overlays render inside the CDK container, outside every component host, so
+// their appearance is configured once through Material's token API.
+@mixin tokens() {
+  @include mat.dialog-overrides(
+    (
+      container-color: var(--org-dialog-bg),
+      container-elevation-shadow: var(--org-glass-shadow),
+    )
+  );
+  @include mat.menu-overrides(
+    (
+      container-color: var(--org-surface),
+      container-shape: var(--org-radius-md),
+      container-elevation-shadow: var(--org-shadow-overlay),
+    )
+  );
+  @include mat.select-overrides(
+    (
+      panel-background-color: var(--org-surface),
+      container-elevation-shadow: var(--org-shadow-overlay),
+    )
+  );
+  @include mat.autocomplete-overrides(
+    (
+      background-color: var(--org-surface),
+      container-shape: var(--org-radius-md),
+      container-elevation-shadow: var(--org-shadow-overlay),
+    )
+  );
+  @include mat.option-overrides(
+    (
+      label-text-color: var(--org-on-surface),
+      hover-state-layer-color: var(--org-state-hover),
+      selected-state-layer-color: var(--org-state-selected),
+      selected-state-label-text-color: var(--org-primary),
+    )
+  );
+  @include mat.pseudo-checkbox-overrides(
+    (
+      full-selected-icon-color: var(--org-primary),
+      minimal-selected-checkmark-color: var(--org-primary),
+    )
+  );
+}
+
+.cdk-overlay-backdrop.cdk-overlay-dark-backdrop {
+  background: var(--org-scrim);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.mat-mdc-dialog-container .mat-mdc-dialog-surface {
+  backdrop-filter: var(--org-glass-blur);
+  -webkit-backdrop-filter: var(--org-glass-blur);
+  border: 0;
+}
+
+.cdk-overlay-pane .mat-mdc-select-panel {
+  border-radius: var(--org-radius-md);
+}
+
+.cdk-overlay-pane :is(.mat-mdc-menu-panel, .mat-mdc-select-panel, .mat-mdc-autocomplete-panel) {
+  overflow: hidden;
+}
+
+.mat-mdc-snack-bar-container.org-feedback-snackbar,
+.org-feedback-snackbar .mat-mdc-snack-bar-container {
+  --mat-snack-bar-button-color: currentColor;
+  --mat-snack-bar-container-color: transparent;
+  --mat-snack-bar-supporting-text-color: inherit;
+
+  box-shadow: none;
+  padding: 0;
+
+  .mdc-snackbar__surface,
+  .mat-mdc-snackbar-surface,
+  .mat-mdc-snack-bar-label {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+}

@@ -1,0 +1,40 @@
+:host {
+  display: block;
+}
+
+.org-expansion-panel {
+  --mat-expansion-container-background-color: var(--org-surface);
+  --mat-expansion-container-shape: var(--org-radius-md);
+  --mat-expansion-container-elevation-shadow: none;
+  --mat-expansion-header-description-color: var(--org-on-surface-variant);
+
+  border: 1px solid var(--org-outline-variant);
+  overflow: hidden;
+}
+
+.org-expansion-panel__header {
+  padding: 0 var(--org-space-md);
+}
+
+.org-expansion-panel__title {
+  align-items: center;
+  color: var(--org-on-surface);
+  display: flex;
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  gap: var(--org-space-sm);
+}
+
+.org-expansion-panel__summary {
+  align-items: center;
+  display: flex;
+  font-size: var(--org-font-size-sm);
+  justify-content: flex-end;
+}
+
+.org-expansion-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: var(--org-space-sm);
+}

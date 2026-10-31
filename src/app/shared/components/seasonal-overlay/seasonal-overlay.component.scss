@@ -8,11 +8,7 @@
   pointer-events: none;
   z-index: 0; // Sits right behind the glassmorphism layout
   overflow: hidden;
-  opacity: 0.15; // Atmospheric watermark for SVGs
-
-  .dark & {
-    opacity: 0.12; // High enough to survive heavy glass blur
-  }
+  opacity: var(--org-seasonal-overlay-opacity);
 
   &__junina,
   &__natal,

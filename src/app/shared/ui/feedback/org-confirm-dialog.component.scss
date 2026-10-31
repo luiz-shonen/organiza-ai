@@ -13,13 +13,13 @@
 }
 
 .org-confirm-dialog__title {
-  font-size: 1.5rem;
-  font-weight: 750;
+  font-size: var(--org-font-size-2xl);
+  font-weight: var(--org-font-weight-extrabold);
 }
 
 .org-confirm-dialog__message {
   color: var(--org-on-surface-variant);
-  line-height: 1.5;
+  line-height: var(--org-line-height-normal);
 }
 
 .org-confirm-dialog__actions {

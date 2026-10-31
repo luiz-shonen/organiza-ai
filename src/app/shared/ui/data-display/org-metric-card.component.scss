@@ -20,11 +20,11 @@
 
 .org-metric-card__value {
   color: var(--org-on-surface);
-  font-size: 2rem;
-  line-height: 1;
+  font-size: var(--org-font-size-3xl);
+  line-height: var(--org-line-height-none);
 }
 
 .org-metric-card__trend {
   color: var(--org-on-surface-variant);
-  font-weight: 600;
+  font-weight: var(--org-font-weight-semibold);
 }

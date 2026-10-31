@@ -49,9 +49,10 @@ describe('App', () => {
   });
 
   it('renders the accessible navigation trigger when a user is authenticated', () => {
-    const authService = TestBed.inject(AuthService) as any;
-    authService.currentUser = signal({ uid: 'user-1', email: 'user@test.com', isAnonymous: false });
-    authService.isSuperAdmin = signal(false);
+    Object.assign(TestBed.inject(AuthService), {
+      currentUser: signal({ uid: 'user-1', email: 'user@test.com', isAnonymous: false }),
+      isSuperAdmin: signal(false),
+    });
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
@@ -63,13 +64,10 @@ describe('App', () => {
   });
 
   it('keeps the toolbar limited to navigation and profile controls for super admins', () => {
-    const authService = TestBed.inject(AuthService) as any;
-    authService.currentUser = signal({
-      uid: 'admin-1',
-      email: 'luiz.gmr.dev@gmail.com',
-      isAnonymous: false,
+    Object.assign(TestBed.inject(AuthService), {
+      currentUser: signal({ uid: 'admin-1', email: 'luiz.gmr.dev@gmail.com', isAnonymous: false }),
+      isSuperAdmin: signal(true),
     });
-    authService.isSuperAdmin = signal(true);
 
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();

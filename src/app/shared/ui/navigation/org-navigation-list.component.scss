@@ -21,8 +21,8 @@
   text-align: start;
   text-decoration: none;
   transition:
-    background-color 160ms ease,
-    color 160ms ease;
+    background-color var(--org-motion-fast) var(--org-motion-ease),
+    color var(--org-motion-fast) var(--org-motion-ease);
   width: 100%;
 }
 
@@ -34,7 +34,7 @@
 .org-navigation-list__item--active {
   background: color-mix(in srgb, var(--org-primary) 16%, transparent);
   color: var(--org-primary);
-  font-weight: 700;
+  font-weight: var(--org-font-weight-bold);
 }
 
 .org-navigation-list__empty {

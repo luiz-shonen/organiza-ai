@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.org-loading-state {
+  align-items: center;
+  color: var(--org-on-surface-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+  justify-content: center;
+  padding: var(--org-space-3xl) var(--org-space-md);
+}
+
+.org-loading-state__label {
+  font: var(--org-text-body);
+  margin: 0;
+}

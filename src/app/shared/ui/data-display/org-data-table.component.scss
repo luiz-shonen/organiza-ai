@@ -13,24 +13,24 @@
 
   th.mat-mdc-header-cell {
     background: transparent;
-    border-bottom: 1px solid var(--org-border);
+    border-bottom: 1px solid var(--org-outline-variant);
     color: var(--org-on-surface-variant);
     font-family: var(--org-font-body);
-    font-size: 0.8125rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-bold);
     padding: var(--org-space-md, 16px);
   }
 
   td.mat-mdc-cell {
-    border-bottom: 1px solid var(--org-border);
+    border-bottom: 1px solid var(--org-outline-variant);
     color: var(--org-on-surface);
     font-family: var(--org-font-body);
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     padding: var(--org-space-sm, 12px) var(--org-space-md, 16px);
   }
 
   tr.mat-mdc-row {
-    transition: background-color 160ms ease;
+    transition: background-color var(--org-motion-fast) var(--org-motion-ease);
 
     &:hover {
       background: color-mix(in srgb, var(--org-primary) 6%, transparent);

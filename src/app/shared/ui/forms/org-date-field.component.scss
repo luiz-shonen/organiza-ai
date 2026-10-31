@@ -1,8 +1,12 @@
+@use 'field';
+
 :host {
   display: block;
 }
 
 .org-date-field {
+  @include field.outlined-tokens;
+
   display: block;
   width: 100%;
 }

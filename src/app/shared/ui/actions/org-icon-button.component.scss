@@ -3,19 +3,28 @@
 }
 
 .org-icon-button__control {
+  --mat-icon-button-icon-size: var(--org-icon-size-md);
+
   align-items: center;
-  border-radius: var(--org-radius-full, 9999px);
+  border-radius: var(--org-radius-full);
   display: inline-flex;
   justify-content: center;
-  min-height: var(--org-space-2xl, 48px);
-  min-width: var(--org-space-2xl, 48px);
+  min-height: var(--org-space-2xl);
+  min-width: var(--org-space-2xl);
+  padding: 0;
   transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+    background-color var(--org-motion-fast) var(--org-motion-var(--org-motion-ease)),
+    color var(--org-motion-fast) var(--org-motion-var(--org-motion-ease)),
+    transform var(--org-motion-fast) var(--org-motion-var(--org-motion-ease));
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: auto;
+  }
 
   &:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--org-primary) 10%, transparent);
+    background: var(--org-state-hover);
     transform: scale(1.05);
   }
 

@@ -1,7 +1,7 @@
 @use '../tokens/semantic' as semantic;
 
 .navigation-drawer {
-  --navigation-drawer-link-color: var(--org-text-secondary);
+  --navigation-drawer-link-color: var(--org-on-surface-variant);
 
   box-sizing: border-box;
   display: flex;
@@ -33,13 +33,13 @@
   &__eyebrow,
   &__email {
     color: var(--org-on-surface-variant);
-    font-size: 0.75rem;
+    font-size: var(--org-font-size-xs);
   }
 
   &__eyebrow {
     display: block;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-weight: var(--org-font-weight-bold);
+    letter-spacing: var(--org-letter-spacing-label);
     text-transform: uppercase;
   }
 
@@ -51,7 +51,7 @@
   }
 
   &__title {
-    font-size: 1.5rem;
+    font-size: var(--org-font-size-2xl);
   }
 
   &__close,
@@ -81,11 +81,11 @@
 
   &__avatar-icon {
     color: var(--org-primary);
-    font-size: 40px;
+    font-size: var(--org-icon-size-xl);
   }
 
   &__name {
-    font-weight: 700;
+    font-weight: var(--org-font-weight-bold);
   }
 
   &__navigation,
@@ -108,9 +108,9 @@
   &__group-title {
     color: var(--org-on-surface-variant);
     font-family: var(--org-font-mono);
-    font-size: 0.6875rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-extrabold);
+    letter-spacing: var(--org-letter-spacing-label);
     margin: 0 0 8px;
     text-transform: uppercase;
   }
@@ -122,18 +122,18 @@
     color: var(--org-error);
     display: flex;
     font-family: var(--org-font-body);
-    font-size: 0.875rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-bold);
     gap: var(--org-space-md, 12px);
     justify-content: flex-start;
     min-height: var(--org-space-2xl, 48px);
     padding: 0 var(--org-space-md, 12px);
     text-align: left;
     transition:
-      background-color 180ms ease,
-      box-shadow 180ms ease,
-      color 180ms ease,
-      transform 180ms ease;
+      background-color var(--org-motion-fast) var(--org-motion-ease),
+      box-shadow var(--org-motion-fast) var(--org-motion-ease),
+      color var(--org-motion-fast) var(--org-motion-ease),
+      transform var(--org-motion-fast) var(--org-motion-ease);
     width: 100%;
 
     &:hover {
@@ -154,15 +154,11 @@
 
   &__section-title {
     margin-bottom: 8px;
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
   }
 
   &__footer {
     margin-top: auto;
     padding-top: 24px;
   }
-}
-
-:host-context(.dark) .navigation-drawer {
-  --navigation-drawer-link-color: var(--org-text-secondary);
 }

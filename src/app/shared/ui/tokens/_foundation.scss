@@ -1,0 +1,99 @@
+// Foundation scales: the only place where raw sizes, weights and durations live.
+// Components and features read these through var(--org-*) and never restate a literal.
+
+@mixin apply() {
+  :root {
+    // Font families
+    --org-font-body: 'Plus Jakarta Sans', sans-serif;
+    --org-font-display: 'Fraunces', georgia, serif;
+    --org-font-mono: 'JetBrains Mono', monospace;
+
+    // Font sizes
+    --org-font-size-2xs: 0.625rem;
+    --org-font-size-xs: 0.75rem;
+    --org-font-size-sm: 0.875rem;
+    --org-font-size-md: 1rem;
+    --org-font-size-lg: 1.125rem;
+    --org-font-size-xl: 1.25rem;
+    --org-font-size-2xl: 1.5rem;
+    --org-font-size-3xl: 2rem;
+    --org-font-size-4xl: 2.5rem;
+    --org-font-size-display: clamp(2.25rem, 5vw, 4.5rem);
+    --org-font-size-heading: clamp(1.625rem, 3vw, 2.5rem);
+
+    // Font weights
+    --org-font-weight-regular: 400;
+    --org-font-weight-medium: 500;
+    --org-font-weight-semibold: 600;
+    --org-font-weight-bold: 700;
+    --org-font-weight-extrabold: 800;
+
+    // Line heights
+    --org-line-height-none: 1;
+    --org-line-height-tight: 1.15;
+    --org-line-height-snug: 1.3;
+    --org-line-height-normal: 1.5;
+    --org-line-height-relaxed: 1.6;
+    --org-line-height-display: 1.03;
+    --org-line-height-heading: 1.12;
+
+    // Letter spacing
+    --org-letter-spacing-tight: -0.02em;
+    --org-letter-spacing-snug: -0.01em;
+    --org-letter-spacing-wide: 0.04em;
+    --org-letter-spacing-label: 0.12em;
+
+    // Composite text styles for the `font` shorthand. Prettier wraps these after the
+    // size/line-height slash, which the SCSS operator rule misreads as division.
+    /* stylelint-disable scss/operator-no-newline-after */
+    --org-text-display: var(--org-font-weight-extrabold) var(--org-font-size-display) /
+      var(--org-line-height-display) var(--org-font-display);
+    --org-text-heading: var(--org-font-weight-extrabold) var(--org-font-size-heading) /
+      var(--org-line-height-heading) var(--org-font-body);
+    --org-text-title: var(--org-font-weight-bold) var(--org-font-size-lg) /
+      var(--org-line-height-snug) var(--org-font-body);
+    --org-text-body: var(--org-font-weight-regular) var(--org-font-size-md) /
+      var(--org-line-height-relaxed) var(--org-font-body);
+    --org-text-body-sm: var(--org-font-weight-regular) var(--org-font-size-sm) /
+      var(--org-line-height-normal) var(--org-font-body);
+    --org-text-label: var(--org-font-weight-extrabold) var(--org-font-size-xs) /
+      var(--org-line-height-none) var(--org-font-body);
+    /* stylelint-enable scss/operator-no-newline-after */
+
+    // Spacing
+    --org-space-2xs: 2px;
+    --org-space-xs: 4px;
+    --org-space-sm: 8px;
+    --org-space-md: 16px;
+    --org-space-lg: 24px;
+    --org-space-xl: 32px;
+    --org-space-2xl: 48px;
+    --org-space-3xl: 64px;
+
+    // Radii
+    --org-radius-xs: 0.375rem;
+    --org-radius-sm: 0.75rem;
+    --org-radius-md: 1rem;
+    --org-radius-lg: 1.25rem;
+    --org-radius-xl: 1.75rem;
+    --org-radius-full: 9999px;
+    --org-radius-circle: 50%;
+
+    // Icon sizes
+    --org-icon-size-sm: 1rem;
+    --org-icon-size-md: 1.25rem;
+    --org-icon-size-lg: 1.5rem;
+    --org-icon-size-xl: 2.5rem;
+
+    // Motion
+    --org-motion-fast: 160ms;
+    --org-motion-base: 200ms;
+    --org-motion-slow: 320ms;
+    --org-motion-ease: ease;
+    --org-motion-ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Glass recipe (theme-independent part)
+    --org-glass-blur: blur(24px);
+    --org-glass-ring-width: 1.5px;
+  }
+}

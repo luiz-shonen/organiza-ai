@@ -19,7 +19,7 @@ describe('OrgIconComponent', () => {
     expect(icon.textContent?.trim()).toBe(ORG_ICON_MAP.check_circle);
     expect(icon.getAttribute('aria-hidden')).toBe('true');
     expect(icon.classList.contains('org-icon--lg')).toBe(true);
-    expect(icon.style.getPropertyValue('--org-icon-size')).toBe('1.5rem');
+    expect(icon.style.getPropertyValue('--org-icon-size')).toBe('var(--org-icon-size-lg)');
     expect(icon.style.getPropertyValue('--org-icon-color')).toBe('var(--org-on-surface-variant)');
   });
 });

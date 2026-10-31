@@ -4,7 +4,7 @@
 
 .org-badge {
   align-items: center;
-  border-radius: var(--org-radius-pill);
+  border-radius: var(--org-radius-full);
   display: inline-flex;
   font-size: var(--org-font-size-xs);
   font-weight: var(--org-font-weight-bold);
@@ -14,8 +14,8 @@
   letter-spacing: var(--org-letter-spacing-wide);
   box-shadow: var(--org-shadow-xs);
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+    background-color var(--org-motion-base) var(--org-motion-ease),
+    color var(--org-motion-base) var(--org-motion-ease);
 }
 
 .org-badge--default {
@@ -44,8 +44,8 @@
 }
 
 .org-badge--danger {
-  background: var(--org-danger);
-  color: var(--org-on-danger);
+  background: var(--org-error);
+  color: var(--org-on-error);
 }
 
 .org-badge--aniversario,

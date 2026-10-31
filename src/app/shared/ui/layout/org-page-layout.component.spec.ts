@@ -17,7 +17,7 @@ import { OrgPageLayoutComponent, OrgPageLayoutMaxWidth } from './org-page-layout
   `,
 })
 class PageLayoutTestHostComponent {
-  public invalidMaxWidth: any = 'invalid-size';
+  public invalidMaxWidth = 'invalid-size';
   public dynamicMaxWidth = signal<OrgPageLayoutMaxWidth>('narrow');
 }
 

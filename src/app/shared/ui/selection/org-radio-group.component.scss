@@ -9,7 +9,7 @@
 
 .org-radio-group__label {
   color: var(--org-on-surface);
-  font-weight: 600;
+  font-weight: var(--org-font-weight-semibold);
   margin: 0;
 }
 
@@ -27,8 +27,4 @@ mat-radio-button {
   align-items: center;
   display: inline-flex;
   min-height: 48px;
-
-  --mdc-radio-selected-focus-icon-color: var(--org-primary);
-  --mdc-radio-selected-hover-icon-color: var(--org-primary);
-  --mdc-radio-selected-icon-color: var(--org-primary);
 }

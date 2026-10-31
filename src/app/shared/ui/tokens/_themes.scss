@@ -1,0 +1,67 @@
+@use 'sass:map';
+
+// Seasonal themes only swap the brand roles. Adding a theme means adding one
+// entry here plus its id in SeasonalThemeService; nothing else changes.
+$seasonal-themes: (
+  'junina': (
+    primary: #ff5722,
+    primary-container: #ff8a65,
+    secondary: #ff8c42,
+    tertiary: #ffb300,
+    gradient-border: linear-gradient(135deg, rgba(255, 87, 34, 0.56), rgba(255, 179, 0, 0.48)),
+    canvas: #fff6df,
+    ring: rgba(255, 87, 34, 0.28),
+  ),
+  'natal': (
+    primary: #b84555,
+    primary-container: #f1c6c9,
+    secondary: #d77a61,
+    tertiary: #deb36a,
+    gradient-border: linear-gradient(135deg, rgba(184, 69, 85, 0.58), rgba(222, 179, 106, 0.52)),
+    canvas: #fff5f1,
+    ring: rgba(211, 47, 47, 0.28),
+  ),
+  'pascoa': (
+    primary: #7552a8,
+    primary-container: #e4d5f4,
+    secondary: #d2a060,
+    tertiary: #f4d58e,
+    gradient-border: linear-gradient(135deg, rgba(117, 82, 168, 0.54), rgba(244, 213, 142, 0.5)),
+    canvas: #faf6ff,
+    ring: rgba(109, 59, 167, 0.26),
+  ),
+  'ano-novo': (
+    primary: #b88a33,
+    primary-container: #f2dfad,
+    secondary: #ead9a5,
+    tertiary: #8293b5,
+    gradient-border: linear-gradient(135deg, rgba(184, 138, 51, 0.54), rgba(130, 147, 181, 0.48)),
+    canvas: #fffbed,
+    ring: rgba(178, 122, 16, 0.28),
+  ),
+);
+
+@mixin apply() {
+  @each $name, $theme in $seasonal-themes {
+    $primary: map.get($theme, primary);
+    $secondary: map.get($theme, secondary);
+    $tertiary: map.get($theme, tertiary);
+
+    html.theme-#{$name} {
+      --org-primary: #{$primary};
+      --org-on-primary: #fff;
+      --org-primary-container: #{map.get($theme, primary-container)};
+      --org-secondary: #{$secondary};
+      --org-tertiary: #{$tertiary};
+      --org-gradient-primary: linear-gradient(
+        135deg,
+        #{$primary} 0%,
+        #{$secondary} 50%,
+        #{$tertiary} 100%
+      );
+      --org-gradient-border: #{map.get($theme, gradient-border)};
+      --org-canvas: #{map.get($theme, canvas)};
+      --org-glass-ring-color: #{map.get($theme, ring)};
+    }
+  }
+}

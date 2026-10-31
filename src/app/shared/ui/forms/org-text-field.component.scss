@@ -1,18 +1,18 @@
+@use 'field';
+
 :host {
   display: block;
 }
 
 .org-text-field {
+  @include field.outlined-tokens;
+
   display: block;
   width: 100%;
-
-  --mdc-outlined-text-field-outline-color: var(--org-outline);
-  --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
-  --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);
 }
 
 .org-text-field__error {
-  color: var(--org-danger);
-  font-size: 0.75rem;
+  color: var(--org-error);
+  font-size: var(--org-font-size-xs);
   margin: -16px 0 0;
 }

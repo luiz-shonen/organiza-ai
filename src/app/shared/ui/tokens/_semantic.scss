@@ -1,23 +1,10 @@
+@use 'foundation';
+@use 'themes';
+
 // Canonical Responsive Breakpoints (AD-036)
 $breakpoint-sm: 600px;
 $breakpoint-md: 900px;
 $breakpoint-lg: 1200px;
-
-// Standard Spacing Scale (AD-031, DESIGN.md §4.2)
-$space-2xs: 2px;
-$space-xs: 4px;
-$space-sm: 8px;
-$space-md: 16px;
-$space-lg: 24px;
-$space-xl: 32px;
-$space-2xl: 48px;
-$space-3xl: 64px;
-
-// Border Radius Tokens
-$radius-sm: 0.75rem;
-$radius-md: 1rem;
-$radius-lg: 1.25rem;
-$radius-full: 9999px;
 
 @mixin mobile {
   @media (max-width: #{$breakpoint-sm - 1px}) {
@@ -43,9 +30,13 @@ $radius-full: 9999px;
   }
 }
 
+// Semantic roles. Light values live on :root; html.dark and the seasonal
+// themes only redefine roles, so components never need a theme selector.
 @mixin apply() {
+  @include foundation.apply;
+
   :root {
-    // Canonical Brand Triple from Logo (Vibrant Pink, Orange, Yellow)
+    // Brand (logo triple)
     --org-primary: #ff4d94;
     --org-on-primary: #fff;
     --org-primary-container: #ff80b3;
@@ -59,13 +50,11 @@ $radius-full: 9999px;
     --org-tertiary-container: #ffe499;
     --org-on-tertiary-container: #332600;
 
-    // Status & Functional Tokens
+    // Status
     --org-error: #ba1a1a;
     --org-on-error: #fff;
     --org-error-container: #ffdad6;
     --org-on-error-container: #93000a;
-    --org-danger: #ef4444;
-    --org-on-danger: #fff;
     --org-warning: #f59e0b;
     --org-on-warning: #000;
     --org-success: #176b35;
@@ -77,114 +66,44 @@ $radius-full: 9999px;
     --org-info-container: #dbe8ff;
     --org-on-info-container: #002b75;
 
-    // Surfaces & Outlines
+    // Surfaces, text and outlines (Material 3 vocabulary)
+    --org-canvas: #fff7fb;
     --org-surface: #fff8f8;
-    --org-on-surface: #2a101f;
+    --org-surface-container-low: #fff0f4;
+    --org-surface-container: #fce8ef;
+    --org-surface-container-high: #f8dde8;
     --org-surface-variant: #fce1ed;
+    --org-on-surface: #2a101f;
     --org-on-surface-variant: #4f3d46;
-    --org-border: rgba(133, 115, 123, 0.2);
-    --org-primary-light: #fce1ed;
-    --org-background-light: #fff8f8;
-    --org-on-background-light: #2a101f;
-    --org-surface-light: #fff8f8;
-    --org-on-surface-light: #2a101f;
-    --org-surface-variant-light: #fce1ed;
-    --org-on-surface-variant-light: #4f3d46;
-    --org-outline-light: #85737b;
-    --org-outline-variant-light: #d8c2cb;
-    --org-background-dark: #241c31;
-    --org-on-background-dark: #fdecf2;
-    --org-surface-dark: #241c31;
-    --org-on-surface-dark: #fdecf2;
-    --org-surface-variant-dark: #4f3d46;
-    --org-on-surface-variant-dark: #d8c2cb;
-    --org-outline-dark: #a08c95;
-    --org-outline-variant-dark: #4f3d46;
+    --org-on-surface-muted: #85737b;
+    --org-outline: #85737b;
+    --org-outline-variant: #d8c2cb;
 
-    // Typography Scale & Tokens (DESIGN.md §3)
-    --org-text-primary: #2a101f;
-    --org-text-secondary: #4f3d46;
-    --org-text-muted: #85737b;
-    --org-font-body: 'Plus Jakarta Sans', sans-serif;
-    --org-font-display: 'Fraunces', georgia, serif;
-    --org-font-mono: 'JetBrains Mono', monospace;
+    // Interaction states
+    --org-state-hover: color-mix(in srgb, var(--org-primary) 10%, transparent);
+    --org-state-selected: color-mix(in srgb, var(--org-primary) 20%, transparent);
+    --org-scrim: rgb(15 10 20 / 0.5);
 
-    // Font Sizes
-    --org-font-size-2xs: 0.625rem;
-    --org-font-size-xs: 0.75rem;
-    --org-font-size-sm: 0.875rem;
-    --org-font-size-md: 1rem;
-    --org-font-size-lg: 1.125rem;
-    --org-font-size-xl: 1.25rem;
-    --org-font-size-2xl: 1.5rem;
-    --org-font-size-3xl: 2rem;
-    --org-font-size-4xl: 2.5rem;
+    // App chrome (toolbar, drawers, dialogs)
+    --org-chrome-tint: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
+    --org-chrome-edge: color-mix(in srgb, var(--org-primary) 24%, transparent);
+    --org-chrome-shadow: rgba(0, 0, 0, 0.15);
+    --org-dialog-bg: rgb(255 255 255 / 0.84);
 
-    // Font Weights
-    --org-font-weight-regular: 400;
-    --org-font-weight-medium: 500;
-    --org-font-weight-semibold: 600;
-    --org-font-weight-bold: 700;
-    --org-font-weight-extrabold: 800;
+    // Feedback text on glass (snackbars)
+    --org-feedback-success-ink: #0d3d1d;
+    --org-feedback-error-ink: #93000a;
+    --org-feedback-info-ink: #002b75;
+    --org-seasonal-overlay-opacity: 0.15;
+    --org-glass-edge: rgba(255, 255, 255, 0.65);
 
-    // Line Heights
-    --org-line-height-none: 1;
-    --org-line-height-tight: 1.15;
-    --org-line-height-snug: 1.3;
-    --org-line-height-normal: 1.5;
-    --org-line-height-relaxed: 1.6;
-
-    // Letter Spacing / Tracking
-    --org-letter-spacing-tight: -0.02em;
-    --org-letter-spacing-snug: -0.01em;
-    --org-letter-spacing-normal: 0em;
-    --org-letter-spacing-wide: 0.02em;
-    --org-letter-spacing-wider: 0.04em;
-    --org-letter-spacing-widest: 0.12em;
-
-    // Heading & Display Sizing Shorthands
-    --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
-    --org-type-display-line-height: 1.03;
-    --org-type-heading-size: clamp(1.625rem, 3vw, 2.5rem);
-    --org-type-heading-line-height: 1.12;
-    --org-type-title-size: 1.25rem;
-    --org-type-body-size: 1rem;
-    --org-type-body-line-height: 1.6;
-    --org-type-label-size: 0.75rem;
-    --org-type-label-tracking: 0.12em;
-
-    // Standardized Spacing Scale (DESIGN.md §4.2)
-    --org-space-2xs: 2px;
-    --org-space-xs: 4px;
-    --org-space-sm: 8px;
-    --org-space-md: 16px;
-    --org-space-lg: 24px;
-    --org-space-xl: 32px;
-    --org-space-2xl: 48px;
-    --org-space-3xl: 64px;
-
-    // Border Radius Tokens
-    --org-radius-xs: 0.375rem;
-    --org-radius-sm: 0.75rem;
-    --org-radius-md: 1rem;
-    --org-radius-lg: 1.25rem;
-    --org-radius-xl: 1.75rem;
-    --org-radius-pill: 9999px;
-    --org-radius-full: 9999px;
-    --org-radius-circle: 50%;
-
-    // Form Field Tokens
+    // Form fields
     --org-field-fill: rgba(255, 248, 248, 0.88);
     --org-field-text: #2a101f;
-    --org-field-label: #4f3d46;
-    --org-field-outline: #85737b;
-    --org-field-disabled-outline: rgba(133, 115, 123, 0.38);
 
-    // Glassmorphism, Shadows & Gradients
+    // Glass, elevation and gradients
     --org-glass-bg: rgba(255, 255, 255, 0.65);
     --org-glass-bg-strong: rgba(255, 255, 255, 0.8);
-    --org-glass-blur: blur(24px);
-    --org-glass-ring-width: 1.5px;
     --org-glass-ring-color: rgba(255, 77, 148, 0.28);
     --org-glass-shadow:
       inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2),
@@ -193,6 +112,13 @@ $radius-full: 9999px;
     --org-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
     --org-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
     --org-shadow-lg: var(--org-glass-shadow);
+    --org-shadow-overlay: 0 16px 40px rgba(0, 0, 0, 0.32);
+    --org-shadow-primary:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.3),
+      0 10px 20px color-mix(in srgb, var(--org-primary) 30%, transparent);
+    --org-shadow-primary-hover:
+      inset 0 0 0 1.5px rgba(255, 255, 255, 0.4),
+      0 14px 28px color-mix(in srgb, var(--org-primary) 45%, transparent);
     --org-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.4);
     --org-gradient-primary: linear-gradient(135deg, #ff4d94 0%, #ff8c42 50%, #ffc837 100%);
     --org-gradient-border: linear-gradient(
@@ -200,8 +126,6 @@ $radius-full: 9999px;
       rgba(255, 77, 148, 0.4),
       rgba(255, 140, 66, 0.4)
     );
-    --org-gradient-border-focus: var(--org-gradient-primary);
-    --org-gradient-invitation: linear-gradient(135deg, #ff6b5b 0%, #ffb648 100%);
     --org-gradient-dusk: linear-gradient(160deg, #2b1f45 0%, #5b3a8c 55%, #ff6b5b 130%);
     --org-gradient-confirmation: linear-gradient(135deg, #4fc3e8 0%, #3ddc97 100%);
     --org-gradient-ring: conic-gradient(from 0deg, #ff6b5b, #ffb648, #4fc3e8, #5b3a8c, #ff6b5b);
@@ -211,10 +135,8 @@ $radius-full: 9999px;
     --org-gradient-theme-ano-novo: linear-gradient(135deg, #b88a33, #ead9a5 50%, #8293b5);
     --org-brand-whatsapp: #25d366;
     --org-color-gold: #ffd700;
-    --org-canvas-start: #fff7fb;
-    --org-canvas-end: #fff1e4;
 
-    // Category Chip Tokens
+    // Event categories
     --org-cat-aniversario-bg: #ffe499;
     --org-cat-aniversario-color: #d35400;
     --org-cat-casamento-bg: #fce1ed;
@@ -232,36 +154,40 @@ $radius-full: 9999px;
   }
 
   html.dark {
-    --org-surface: #241c31;
-    --org-on-surface: #fdecf2;
-    --org-surface-variant: #4f3d46;
-    --org-on-surface-variant: #d8c2cb;
     --org-primary-container: #5c183b;
     --org-on-primary-container: #ffd8e6;
     --org-secondary-container: #5a2c14;
     --org-on-secondary-container: #ffdcc2;
     --org-tertiary-container: #4e3900;
     --org-on-tertiary-container: #ffe088;
-    --org-text-primary: #fdecf2;
-    --org-text-secondary: #d8c2cb;
-    --org-text-muted: #a08c95;
-    --org-border: rgba(216, 194, 203, 0.2);
-    --org-primary-light: rgba(255, 77, 148, 0.2);
+    --org-canvas: #241c31;
+    --org-surface: #241c31;
+    --org-surface-container-low: #2b2238;
+    --org-surface-container: #31273f;
+    --org-surface-container-high: #3a2e49;
+    --org-surface-variant: #4f3d46;
+    --org-on-surface: #fdecf2;
+    --org-on-surface-variant: #d8c2cb;
+    --org-on-surface-muted: #a08c95;
+    --org-outline: #a08c95;
+    --org-outline-variant: #4f3d46;
+    --org-field-fill: rgba(79, 61, 70, 0.88);
+    --org-field-text: #fdecf2;
+    --org-chrome-tint: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
+    --org-chrome-edge: color-mix(in srgb, var(--org-primary) 32%, transparent);
+    --org-dialog-bg: #241c31;
+    --org-feedback-success-ink: #fdecf2;
+    --org-feedback-error-ink: #fdecf2;
+    --org-feedback-info-ink: #fdecf2;
+    --org-seasonal-overlay-opacity: 0.12;
+    --org-glass-edge: rgba(255, 255, 255, 0.14);
     --org-glass-bg: rgb(43 31 69 / 0.62);
     --org-glass-bg-strong: rgb(43 31 69 / 0.8);
     --org-glass-shadow: 0 8px 24px hsl(265deg 60% 4% / 0.3);
     --org-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
     --org-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
     --org-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --org-shadow-lg: var(--org-glass-shadow);
     --org-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.7);
-    --org-field-fill: rgba(79, 61, 70, 0.88);
-    --org-field-text: #fdecf2;
-    --org-field-label: #d8c2cb;
-    --org-field-outline: #d8c2cb;
-    --org-field-disabled-outline: rgba(216, 194, 203, 0.38);
-
-    // Category Chip Tokens (Dark Mode)
     --org-cat-aniversario-bg: #4a3800;
     --org-cat-aniversario-color: #ffd566;
     --org-cat-casamento-bg: #471b3c;
@@ -278,71 +204,5 @@ $radius-full: 9999px;
     --org-cat-outros-color: #a0aec0;
   }
 
-  html.theme-junina {
-    --org-primary: #ff5722;
-    --org-on-primary: #fff;
-    --org-primary-container: #ff8a65;
-    --org-secondary: #ff8c42;
-    --org-tertiary: #ffb300;
-    --org-gradient-primary: linear-gradient(135deg, #ff5722 0%, #ff8c42 50%, #ffb300 100%);
-    --org-gradient-border: linear-gradient(
-      135deg,
-      rgba(255, 87, 34, 0.56),
-      rgba(255, 179, 0, 0.48)
-    );
-    --org-canvas-start: #fff6df;
-    --org-canvas-end: #e8f3ff;
-    --org-glass-ring-color: rgba(255, 87, 34, 0.28);
-  }
-
-  html.theme-natal {
-    --org-primary: #b84555;
-    --org-on-primary: #fff;
-    --org-primary-container: #f1c6c9;
-    --org-secondary: #d77a61;
-    --org-tertiary: #deb36a;
-    --org-gradient-primary: linear-gradient(135deg, #b84555 0%, #d77a61 50%, #deb36a 100%);
-    --org-gradient-border: linear-gradient(
-      135deg,
-      rgba(184, 69, 85, 0.58),
-      rgba(222, 179, 106, 0.52)
-    );
-    --org-canvas-start: #fff5f1;
-    --org-canvas-end: #eef8ef;
-    --org-glass-ring-color: rgba(211, 47, 47, 0.28);
-  }
-
-  html.theme-pascoa {
-    --org-primary: #7552a8;
-    --org-on-primary: #fff;
-    --org-primary-container: #e4d5f4;
-    --org-secondary: #d2a060;
-    --org-tertiary: #f4d58e;
-    --org-gradient-primary: linear-gradient(135deg, #7552a8 0%, #d2a060 52%, #f4d58e 100%);
-    --org-gradient-border: linear-gradient(
-      135deg,
-      rgba(117, 82, 168, 0.54),
-      rgba(244, 213, 142, 0.5)
-    );
-    --org-canvas-start: #faf6ff;
-    --org-canvas-end: #f9f3df;
-    --org-glass-ring-color: rgba(109, 59, 167, 0.26);
-  }
-
-  html.theme-ano-novo {
-    --org-primary: #b88a33;
-    --org-on-primary: #fff;
-    --org-primary-container: #f2dfad;
-    --org-secondary: #ead9a5;
-    --org-tertiary: #8293b5;
-    --org-gradient-primary: linear-gradient(135deg, #b88a33 0%, #ead9a5 50%, #8293b5 100%);
-    --org-gradient-border: linear-gradient(
-      135deg,
-      rgba(184, 138, 51, 0.54),
-      rgba(130, 147, 181, 0.48)
-    );
-    --org-canvas-start: #fffbed;
-    --org-canvas-end: #edf1fa;
-    --org-glass-ring-color: rgba(178, 122, 16, 0.28);
-  }
+  @include themes.apply;
 }

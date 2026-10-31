@@ -1,0 +1,6 @@
+// Shared outlined-field tokens for every Org* form control that wraps mat-form-field.
+@mixin outlined-tokens() {
+  --mat-form-field-outlined-outline-color: var(--org-outline);
+  --mat-form-field-outlined-focus-outline-color: var(--org-primary);
+  --mat-form-field-outlined-focus-label-text-color: var(--org-primary);
+}

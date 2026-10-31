@@ -1,0 +1,17 @@
+<header class="org-card-header">
+  <span
+    class="org-card-header__badge"
+    [class]="'org-card-header__badge org-card-header__badge--' + tone()"
+  >
+    <org-icon [name]="icon()" size="lg" color="currentColor" />
+  </span>
+  <div class="org-card-header__text">
+    <h2 class="org-card-header__heading">{{ heading() }}</h2>
+    @if (subheading(); as subheading) {
+      <p class="org-card-header__subheading">{{ subheading }}</p>
+    }
+  </div>
+  <div class="org-card-header__action">
+    <ng-content select="[orgCardHeaderAction]" />
+  </div>
+</header>

@@ -45,27 +45,23 @@
   }
 
   &__title {
-    font-size: 1.75rem;
-    font-weight: 800;
-    line-height: 1.2;
-    color: var(--mat-sys-on-surface);
+    font-size: var(--org-font-size-heading);
+    font-weight: var(--org-font-weight-extrabold);
+    line-height: var(--org-line-height-tight);
+    color: var(--org-on-surface);
     margin: 0;
-    letter-spacing: -0.02em;
-
-    @include semantic.tablet {
-      font-size: 2.25rem;
-    }
+    letter-spacing: var(--org-letter-spacing-tight);
   }
 
   &__subtitle {
-    font-size: 0.9375rem;
-    color: var(--mat-sys-on-surface-variant);
+    font-size: var(--org-font-size-md);
+    color: var(--org-on-surface-variant);
     margin: 0;
-    line-height: 1.5;
+    line-height: var(--org-line-height-normal);
     max-width: 600px;
 
     @include semantic.tablet {
-      font-size: 1.0625rem;
+      font-size: var(--org-font-size-md);
     }
   }
 

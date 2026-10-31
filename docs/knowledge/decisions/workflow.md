@@ -3,12 +3,13 @@ type: decision
 title: Development workflow
 status: active
 date: 2026-10-31
-supersedes: [AD-012, AD-013, AD-042, AD-043]
+supersedes: [AD-012, AD-013, AD-042, AD-043, AD-045]
 enforced_by:
   - package.json#scripts.quality
   - .husky/commit-msg
   - .github/workflows/ci.yml
   - .github/workflows/cd.yml
+  - .github/workflows/gemini-review-comment.yml
 related: [testing.md]
 ---
 
@@ -27,5 +28,8 @@ Spec-Driven Development (spec.md → design.md → tasks.md → validation.md pe
 ## Toolchain
 
 - Conventional Commits (commitlint); Husky runs lint-staged on pre-commit.
-- CI (`ci.yml`) runs `quality` then E2E; markdown-only changes skip the heavy jobs.
+- `npm run quality` also runs the repository script tests (`npm run test:scripts`).
+- `npm run pr:create` pushes the branch and opens the PR with the personal `GH_TOKEN` from `.env.local`, so a corporate `gh` login is never used.
+- CI (`ci.yml`) runs `quality`, then E2E, then `gemini-review` (`scripts/gemini-pr-review.mjs`); markdown-only changes skip the heavy jobs.
+- The Gemini review runs once when the PR is opened and again only on a `/review` (or `/gemini review`) comment. It ranks findings P1 (blocker) / P2 (debt) / P3 (nit) and turns out-of-scope ideas into GitHub issues. With SDD retired there are no `.specs/features/` to match, so it reviews against AGENTS.md, DESIGN.md and this knowledge base.
 - CD (`cd.yml`) deploys hosting and Firestore rules/indexes after CI passes on `main`; `cd-preview.yml` deploys PR previews.

@@ -50,6 +50,10 @@ jobs:
         if: steps.filter.outputs.code == 'true'
         run: npm run lint:contracts
 
+      - name: Run Script Unit Tests
+        if: steps.filter.outputs.code == 'true'
+        run: npm run test:scripts
+
       - name: Build Application
         if: steps.filter.outputs.code == 'true'
         run: npm run build
@@ -107,7 +111,7 @@ jobs:
   gemini-review:
     name: Gemini Code Review
     needs: [quality, e2e]
-    if: github.event_name == 'pull_request' && !cancelled() && needs.quality.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped')
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' && !cancelled() && needs.quality.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped')
     timeout-minutes: 10
     runs-on: ubuntu-latest
     permissions:

@@ -20,9 +20,11 @@ Angular 22 + Angular Material 22 + Firebase app for organising events (pt-BR UI)
 ## Before you finish
 
 ```bash
-npm run quality   # ESLint, Stylelint, UI contracts, Prettier
+npm run quality   # ESLint (src, scripts, e2e), Stylelint, UI contracts, script tests, Prettier
 npm test
 npm run build
 ```
+
+Open pull requests with `npm run pr:create` (uses the personal `GH_TOKEN` from `.env.local`). CI runs a Gemini review after `quality` and `e2e` pass; see `docs/knowledge/decisions/workflow.md`.
 
 Behaviour changes ship with a test. If you learned something non-obvious, add or update one file in `docs/knowledge/`; if a script can check it, add the check and reference it in `enforced_by`.

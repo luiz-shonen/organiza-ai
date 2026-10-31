@@ -11,7 +11,7 @@ This skill provides step-by-step instructions for authoring pure presentational 
 
 All component authoring must adhere to:
 
-- **`tlc-spec-driven`**: Ensure component contracts (inputs/outputs/models) are specified before implementation; commit changes with atomic Conventional Commits.
+- **Test-first** ([workflow](../../../docs/knowledge/decisions/workflow.md)): state the goal and an observable acceptance check, write the test that proves it, then implement; commit with Conventional Commits.
 - **`tdd`**: Author component unit tests (`.component.spec.ts`) testing input rendering, output emissions, disabled behavior, and accessibility.
 - **`bem-css`**: Style components using strict BEM SCSS, `--org-*` custom properties, and glassmorphism styling.
 

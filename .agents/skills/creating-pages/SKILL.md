@@ -11,7 +11,7 @@ This skill provides step-by-step instructions for creating routed Smart Containe
 
 All page authoring must adhere to:
 
-- **`tlc-spec-driven`**: Specify user stories and acceptance criteria before implementation; build with atomic Conventional Commits.
+- **Test-first** ([workflow](../../../docs/knowledge/decisions/workflow.md)): state the goal and an observable acceptance check, write the test that proves it, then implement; commit with Conventional Commits.
 - **`tdd`**: Write unit tests (`.container.spec.ts`) covering initialization, service delegation, state transitions, and error handling.
 - **`bem-css`**: Style pages using strict BEM SCSS with `--org-*` design tokens, responsive layouts, and zero horizontal overflow.
 

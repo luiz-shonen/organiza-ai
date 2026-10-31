@@ -11,7 +11,7 @@ This guide documents the complete suite of 32 `Org*` design system components an
 
 All UI components and features consuming the design system must follow:
 
-- **`tlc-spec-driven`**: Implement requirements using testable EARS acceptance criteria and atomic Conventional Commits.
+- **Test-first** ([workflow](../../../docs/knowledge/decisions/workflow.md)): state the goal and an observable acceptance check, write the test that proves it, then implement; commit with Conventional Commits.
 - **`tdd`**: Write unit tests asserting component rendering, accessibility attributes, and user interaction outputs.
 - **`bem-css`**: Style custom feature wrappers with BEM SCSS using `--org-*` custom properties.
 

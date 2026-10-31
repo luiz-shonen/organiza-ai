@@ -10,7 +10,8 @@ import {
   GENERATION_CONFIG,
   ARCHITECTURAL_GUIDELINES,
   TAXONOMY_GUIDELINES,
-  OUT_OF_SCOPE_SPEC_GUIDELINES,
+  ISSUE_PROPOSAL_MARKER,
+  OUT_OF_SCOPE_ISSUE_GUIDELINES,
   parseIssueProposal,
 } from './gemini-pr-review.mjs';
 
@@ -23,7 +24,7 @@ test('gemini-pr-review: constants and markers are properly defined', () => {
   assert.deepEqual(GENERATION_CONFIG, { thinkingConfig: { thinkingLevel: 'high' } });
   assert.ok(ARCHITECTURAL_GUIDELINES.includes('OnPush'));
   assert.ok(TAXONOMY_GUIDELINES.includes('P1 (Crítico / Bloqueante)'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('EARS'));
+  assert.equal(ISSUE_PROPOSAL_MARKER, '#### 🚀 Proposta para Nova Issue');
 });
 
 test('gemini-pr-review: buildSystemPrompt includes architectural rules and priority taxonomy', () => {
@@ -32,7 +33,8 @@ test('gemini-pr-review: buildSystemPrompt includes architectural rules and prior
   assert.ok(prompt.includes('P1 (Crítico / Bloqueante)'));
   assert.ok(prompt.includes('P2 (Importante / Débito Técnico)'));
   assert.ok(prompt.includes('P3 (Sugestão / Menor / Nitpick)'));
-  assert.ok(prompt.includes('Proposta para Nova Issue (TLC Spec-Driven)'));
+  assert.ok(prompt.includes(ISSUE_PROPOSAL_MARKER));
+  assert.ok(!/TLC|Spec-Driven|EARS/.test(prompt));
   assert.ok(!prompt.includes('Conformidade com a Spec:'));
 });
 
@@ -50,39 +52,30 @@ test('gemini-pr-review: buildUserPrompt embeds the PR goal and the diff', () => 
   assert.ok(withoutMetadata.includes('(sem descrição)'));
 });
 
-test('gemini-pr-review: parseIssueProposal parses structured TLC proposals', () => {
+test('gemini-pr-review: parseIssueProposal parses a test-first issue proposal', () => {
   const reviewWithH5 = `
 ### 🤖 Organiza AI — Code Review pelo Gemini
 #### 🎯 Veredito
 🟢 **Aprovado**
 
-#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+#### 🚀 Proposta para Nova Issue
 ##### feat(event-editor): exportar lista de convidados em PDF
 
-- **Visão Geral e Importância (Valor & Motivação)**:
-  Organizadores precisam imprimir a lista de convidados para controle na portaria.
-
-- **Limites de Escopo**:
-  - **No Escopo**: Botão de exportação para PDF.
-  - **Fora do Escopo**: Envio automático por WhatsApp.
-
-- **Critérios de Aceitação (EARS)**:
-  * QUANDO o usuário clicar em "Exportar PDF", o sistema DEVE baixar o documento formatado.
-
-- **Prompt Pronto para Antigravity Agent (TLC Spec-Driven)**:
-\`\`\`text
-Atue como Senior Angular Architect e execute a skill tlc-spec-driven...
-\`\`\`
+- **Arquivos de referência**: \`src/app/features/organizer/event-editor/components/event-guests-card\`
+- **Problema**: Organizadores precisam imprimir a lista de convidados para a portaria.
+- **Objetivo**: Baixar a lista confirmada em PDF.
+- **Critério de aceite**: Ao clicar em "Exportar PDF", o arquivo baixado lista todos os confirmados.
+- **Teste que prova**: E2E que clica em "Exportar PDF" e verifica o download.
 `;
 
   const parsed = parseIssueProposal(reviewWithH5);
   assert.ok(parsed);
   assert.equal(parsed.title, 'feat(event-editor): exportar lista de convidados em PDF');
-  assert.ok(parsed.body.includes('Visão Geral e Importância'));
-  assert.ok(parsed.body.includes('QUANDO o usuário clicar em "Exportar PDF"'));
+  assert.ok(parsed.body.includes('Teste que prova'));
+  assert.ok(parsed.body.includes('Ao clicar em "Exportar PDF"'));
 
   const reviewWithField = `
-#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+#### 🚀 Proposta para Nova Issue
 **Título Sugerido**: refactor(signals): migrar formulário para signal-forms
 - Conteúdo da proposta
 `;
@@ -95,19 +88,20 @@ test('gemini-pr-review: parseIssueProposal returns null when section is absent o
   assert.equal(parseIssueProposal(null), null);
   assert.equal(parseIssueProposal(''), null);
   assert.equal(parseIssueProposal('### Review sem propostas fora do escopo'), null);
-  assert.equal(
-    parseIssueProposal('#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)\n   \n'),
-    null,
-  );
+  assert.equal(parseIssueProposal('#### 🚀 Proposta para Nova Issue\n   \n'), null);
 });
 
-test('gemini-pr-review: OUT_OF_SCOPE_SPEC_GUIDELINES includes TLC EARS, reference files and prompt instructions', () => {
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Visão Geral e Importância'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Arquivos de Referência'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Limites de Escopo'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Critérios de Aceitação (Notação EARS'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Prompt Pronto para o Agente'));
-  assert.ok(
-    OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Quero apenas a fase Specify da skill tlc-spec-driven'),
-  );
+test('gemini-pr-review: OUT_OF_SCOPE_ISSUE_GUIDELINES asks for a goal, an acceptance check and its test', () => {
+  for (const field of [
+    'Arquivos de referência',
+    'Problema',
+    'Objetivo',
+    'Critério de aceite',
+    'Teste que prova',
+    'Prompt para o agente',
+  ]) {
+    assert.ok(OUT_OF_SCOPE_ISSUE_GUIDELINES.includes(field), field);
+  }
+  assert.ok(OUT_OF_SCOPE_ISSUE_GUIDELINES.includes('Comece pelo teste que prova o critério'));
+  assert.ok(!/TLC|Spec-Driven|EARS|tlc-spec/.test(OUT_OF_SCOPE_ISSUE_GUIDELINES));
 });

@@ -62,7 +62,8 @@ test('permits component-owned appearance rules and a clean feature consumer', as
     'src/app/shared/ui/actions/org-button.component.scss': `
       .org-button { --mdc-filled-button-container-color: var(--org-primary); }
     `,
-    'src/app/features/demo/demo.component.ts': "import { OrgButtonComponent } from '../../shared/ui';",
+    'src/app/features/demo/demo.component.ts':
+      "import { OrgButtonComponent } from '../../shared/ui';",
     'src/app/features/demo/demo.component.html': '<org-button label="Salvar" />',
     'src/app/features/demo/demo.component.scss': '.demo { display: grid; gap: 16px; }',
   });
@@ -89,7 +90,8 @@ test('requires every closed public component to have recommended documentation a
         code: 'documentation-legacy-directive',
         file: 'DESIGN.md',
         line: 1,
-        message: 'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
+        message:
+          'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
       },
     ]);
   } finally {

@@ -38,6 +38,7 @@
 | **Unit Testing**           | Vitest 4 + `@angular/build`              | 80 test suites, 446 tests focusing on Component API, Signal reactivity, and a11y.                                                                                                                                                                                      |
 | **E2E Testing**            | Playwright 1.62 + `@axe-core/playwright` | Atomic test suite (15 suites, 158 tests) across Desktop Chromium & Mobile Chrome with 60 visual screenshot baselines ([AD-029](file:///.specs/STATE.md), [AD-030](file:///.specs/STATE.md)).                                                                           |
 | **Type Safety**            | TypeScript 6.0 (Strict Mode)             | Zero `any` types; strictly typed DTOs and models in `src/app/core/models/`.                                                                                                                                                                                            |
+| **AI Review & CI Gate**    | Google Gemini Flash + GitHub Actions     | Automated PR code review verifying `AGENTS.md`, `DESIGN.md`, `CONTEXT.md`, and feature specs after quality + E2E pass ([AD-045](file:///.specs/STATE.md)).                                                                                                             |
 
 ---
 
@@ -289,27 +290,30 @@ All responsive CSS media queries must strictly use these three breakpoints:
 
 ## 8. Architectural Invariants Registry (AD-001 – AD-042)
 
-| ID         | Title                                       | Summary & Enforcement Rule                                                                      |
-| ---------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **AD-001** | Standalone Only                             | No `NgModule`s allowed. All components, directives, and pipes are `standalone: true`.           |
-| **AD-002** | OnPush Everywhere                           | `ChangeDetectionStrategy.OnPush` is mandatory on every single component.                        |
-| **AD-003** | Signals for State                           | Use `signal()`, `computed()`, `input()`, `output()`. RxJS only for Firestore streams.           |
-| **AD-004** | Direct Firebase SDK                         | Use `firebase/firestore`, `firebase/auth` directly. Never install `@angular/fire`.              |
-| **AD-005** | Super Admin Whitelist                       | Global platform governance restricted to designated super admin emails.                         |
-| **AD-007** | Pure SCSS + BEM                             | Tailwind CSS is permanently removed. No `!important` overrides. Use `--org-*` tokens.           |
-| **AD-010** | Angular NGSW PWA                            | PWA support via `@angular/service-worker` with `ngsw-config.json` caching rules.                |
-| **AD-011** | Smart/Dumb Pattern                          | Containers (`*.container.ts`) manage data; Presentational (`*.component.ts`) receive `input()`. |
-| **AD-016** | Open Registration                           | Any authenticated user can create and manage events.                                            |
-| **AD-024** | Verified RSVP Identity                      | 1-touch verified Google OAuth identity required; anonymous guest RSVP is deprecated.            |
-| **AD-028** | Material 3 MDC Tokens                       | Style form inputs and dialogs via official MDC tokens, not deep internal CSS selectors.         |
-| **AD-030** | Atomic E2E Tests                            | Each Playwright test is standalone (sets up state, asserts 1 thing, takes 1 screenshot).        |
-| **AD-031** | Zero Overflow Invariant                     | Every view must satisfy `scrollWidth <= innerWidth + 1` (`assertNoHorizontalOverflow`).         |
-| **AD-036** | Canonical Breakpoints                       | Responsive styling must exclusively use `600px`, `900px`, and `1200px` media queries.           |
-| **AD-037** | Design System Showcase                      | Living showcase route at `/design-system` for interactive token & UI auditing.                  |
-| **AD-039** | Component-First UI Primitives               | 32 closed `Org*` components in `@shared/ui` replace styling directives.                         |
-| **AD-040** | Unified Design Token Architecture           | All `--org-*` tokens consolidated in `_semantic.scss`.                                          |
-| **AD-041** | Zero `!important` & Design System Migration | Feature templates consume `Org*` components exclusively with 0 `!important`.                    |
-| **AD-042** | Code Quality Toolchain & Style Guide        | ESLint 9, Stylelint, Husky pre-commit, and `.agents/skills/` style guides.                      |
+| ID         | Title                                       | Summary & Enforcement Rule                                                                        |
+| ---------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **AD-001** | Standalone Only                             | No `NgModule`s allowed. All components, directives, and pipes are `standalone: true`.             |
+| **AD-002** | OnPush Everywhere                           | `ChangeDetectionStrategy.OnPush` is mandatory on every single component.                          |
+| **AD-003** | Signals for State                           | Use `signal()`, `computed()`, `input()`, `output()`. RxJS only for Firestore streams.             |
+| **AD-004** | Direct Firebase SDK                         | Use `firebase/firestore`, `firebase/auth` directly. Never install `@angular/fire`.                |
+| **AD-005** | Super Admin Whitelist                       | Global platform governance restricted to designated super admin emails.                           |
+| **AD-007** | Pure SCSS + BEM                             | Tailwind CSS is permanently removed. No `!important` overrides. Use `--org-*` tokens.             |
+| **AD-010** | Angular NGSW PWA                            | PWA support via `@angular/service-worker` with `ngsw-config.json` caching rules.                  |
+| **AD-011** | Smart/Dumb Pattern                          | Containers (`*.container.ts`) manage data; Presentational (`*.component.ts`) receive `input()`.   |
+| **AD-016** | Open Registration                           | Any authenticated user can create and manage events.                                              |
+| **AD-024** | Verified RSVP Identity                      | 1-touch verified Google OAuth identity required; anonymous guest RSVP is deprecated.              |
+| **AD-028** | Material 3 MDC Tokens                       | Style form inputs and dialogs via official MDC tokens, not deep internal CSS selectors.           |
+| **AD-030** | Atomic E2E Tests                            | Each Playwright test is standalone (sets up state, asserts 1 thing, takes 1 screenshot).          |
+| **AD-031** | Zero Overflow Invariant                     | Every view must satisfy `scrollWidth <= innerWidth + 1` (`assertNoHorizontalOverflow`).           |
+| **AD-036** | Canonical Breakpoints                       | Responsive styling must exclusively use `600px`, `900px`, and `1200px` media queries.             |
+| **AD-037** | Design System Showcase                      | Living showcase route at `/design-system` for interactive token & UI auditing.                    |
+| **AD-039** | Component-First UI Primitives               | 32 closed `Org*` components in `@shared/ui` replace styling directives.                           |
+| **AD-040** | Unified Design Token Architecture           | All `--org-*` tokens consolidated in `_semantic.scss`.                                            |
+| **AD-041** | Zero `!important` & Design System Migration | Feature templates consume `Org*` components exclusively with 0 `!important`.                      |
+| **AD-042** | Code Quality Toolchain & Style Guide        | ESLint 9, Stylelint, Husky pre-commit, and `.agents/skills/` style guides.                        |
+| **AD-043** | Automated Firebase Hosting CD Pipeline      | Production deploy on main, PR preview channels, and Firestore security rules governance.          |
+| **AD-044** | Design Token Category Harmonization & Gate  | Semantic category tokens, 32 closed primitives, and strict template UI contract validation.       |
+| **AD-045** | AI Code Review Gatekeeper & Multi-Account   | Post-CI Gemini code review with spec awareness, model fallback, and isolated `npm run pr:create`. |
 
 ---
 
@@ -363,6 +367,9 @@ npm run test:e2e
 
 # Run Firestore security rules unit tests
 npm run test:rules
+
+# Push branch and open Pull Request with personal GitHub token
+npm run pr:create
 ```
 
 ### 10.2 Commit Message Standard (Conventional Commits)

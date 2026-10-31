@@ -44,4 +44,5 @@ jobs:
           BASE_SHA: ${{ steps.pr-meta.outputs.base_sha }}
           HEAD_SHA: ${{ steps.pr-meta.outputs.head_sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          IS_ON_DEMAND: 'true'
         run: node scripts/gemini-pr-review.mjs

@@ -163,18 +163,18 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
 .my-feature-page {
   display: flex;
   flex-direction: column;
-  gap: var(--org-spacing-6, 24px);
+  gap: var(--org-space-lg);
 
   &__header-actions {
     display: flex;
     align-items: center;
-    gap: var(--org-spacing-3, 12px);
+    gap: 12px;
   }
 
   &__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--org-spacing-4, 16px);
+    gap: var(--org-space-md);
 
     @media (min-width: 600px) {
       grid-template-columns: repeat(2, 1fr);
@@ -188,7 +188,7 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
   &__card {
     display: flex;
     flex-direction: column;
-    gap: var(--org-spacing-2, 8px);
+    gap: var(--org-space-sm);
   }
 }
 ```

@@ -4,8 +4,7 @@
  * Organiza AI — Gemini PR Code Reviewer
  *
  * Automates pull request code reviews using Google Gemini.
- * Evaluates compliance with AGENTS.md, DESIGN.md, docs/knowledge/,
- * and relevant feature specifications in .specs/features/.
+ * Evaluates compliance with AGENTS.md, DESIGN.md and docs/knowledge/.
  *
  * Rules:
  * - Automatic review runs only once per PR (on initial creation or first run).
@@ -16,7 +15,7 @@
  */
 
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // ==========================================
@@ -31,7 +30,6 @@ export const DEFAULT_BASE_SHA = 'origin/main';
 export const DEFAULT_HEAD_SHA = 'HEAD';
 
 export const MAX_DIFF_CHAR_LIMIT = 250_000;
-export const MAX_SPEC_CHAR_LIMIT = 40_000;
 
 export const DIFF_EXCLUDES = [
   ':!package-lock.json',
@@ -44,13 +42,14 @@ export const DIFF_EXCLUDES = [
   ':!e2e/screenshots',
 ];
 
-export const FALLBACK_MODELS = [
-  'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'gemini-3.6-flash',
-  'gemini-flash-latest',
-  'gemini-3.5-flash',
-];
+// gemini-3.8-flash is the current stable Flash; the alias keeps reviews running
+// if 3.8 is retired before this list is updated. GEMINI_MODEL overrides both.
+export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-flash-latest'];
+
+// Gemini 3+ reason best with the default sampling, so only the thinking level is set.
+export const GENERATION_CONFIG = {
+  thinkingConfig: { thinkingLevel: 'high' },
+};
 
 export const NOTICE_COMMENT_BODY = `${NOTICE_COMMENT_MARKER}
 > ℹ️ **Este PR já possui uma revisão inicial do Gemini.**
@@ -177,24 +176,18 @@ function runGit(cmd) {
 function getPRMetadata() {
   let prTitle = process.env.PR_TITLE || '';
   let prBody = process.env.PR_BODY || '';
-  let headBranch = '';
 
   if (process.env.GITHUB_EVENT_PATH && existsSync(process.env.GITHUB_EVENT_PATH)) {
     try {
       const eventData = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
       prTitle = eventData.pull_request?.title || eventData.issue?.title || prTitle;
-      prBody = eventData.pull_request?.body || eventData.comment?.body || prBody;
-      headBranch = eventData.pull_request?.head?.ref || '';
+      prBody = eventData.pull_request?.body || eventData.issue?.body || prBody;
     } catch {
       // Ignore JSON parse errors in event payload
     }
   }
 
-  if (!headBranch) {
-    headBranch = runGit('git rev-parse --abbrev-ref HEAD');
-  }
-
-  return { prTitle, prBody, headBranch };
+  return { prTitle, prBody };
 }
 
 function getGitDiff() {
@@ -220,65 +213,14 @@ function getGitDiff() {
   return diff;
 }
 
-export function findRelevantSpec(diffContent, branch, title, body, customSpecsDir = null) {
-  const specsDir = customSpecsDir || resolve(process.cwd(), '.specs/features');
-  if (!existsSync(specsDir)) return null;
-
-  const features = readdirSync(specsDir, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
-
-  // A. Check if diff explicitly touches files in a spec directory
-  for (const feature of features) {
-    if (diffContent.includes(`.specs/features/${feature}`)) {
-      const specPath = resolve(specsDir, feature, 'spec.md');
-      if (existsSync(specPath)) {
-        return { id: feature, path: specPath, content: readFileSync(specPath, 'utf8') };
-      }
-    }
-  }
-
-  // B. Check branch name, PR title, and PR body against spec names/numbers
-  const combined = [branch, title, body].filter(Boolean).join(' ').toLowerCase();
-  for (const feature of features) {
-    const num = feature.match(/^(\d+)/)?.[1];
-    const cleanName = feature.replace(/^\d+-/, '').toLowerCase();
-
-    const isMatch =
-      (num &&
-        (combined.includes(`spec ${num}`) ||
-          combined.includes(`spec #${num}`) ||
-          combined.includes(`feature/${num}`) ||
-          combined.includes(`feat/${num}`) ||
-          combined.includes(`feat-${num}`) ||
-          combined.includes(`feature-${num}`))) ||
-      combined.includes(feature.toLowerCase()) ||
-      (cleanName.length > 6 && combined.includes(cleanName));
-
-    if (isMatch) {
-      const specPath = resolve(specsDir, feature, 'spec.md');
-      if (existsSync(specPath)) {
-        return { id: feature, path: specPath, content: readFileSync(specPath, 'utf8') };
-      }
-    }
-  }
-
-  return null;
-}
 // ==========================================
 // PROMPT BUILDERS
 // ==========================================
 
-export function buildSystemPrompt(relevantSpec) {
-  const specSection = relevantSpec
-    ? `#### 📑 Conformidade com a Spec: \`${relevantSpec.id}\`
-- [ ] / [x] Critérios de Aceitação da Spec atendidos pelo diff
-[Comentário objetivo sobre o alinhamento com a especificação]`
-    : '';
-
+export function buildSystemPrompt() {
   return `
 Você é o Senior Angular Architect e Tech Lead do projeto Organiza AI (Angular 22+, Firebase Modular SDK, SCSS BEM, Glassmorphism).
-Sua missão é realizar um Code Review minucioso e rigoroso do Pull Request, avaliando tanto a integridade técnica/arquitetural quanto o alinhamento com as regras de negócio e especificações de produto.
+Sua missão é realizar um Code Review minucioso e rigoroso do Pull Request, avaliando tanto a integridade técnica/arquitetural quanto o alinhamento com as regras de negócio.
 
 ${ARCHITECTURAL_GUIDELINES}
 
@@ -303,8 +245,6 @@ ${REVIEW_COMMENT_MARKER}
 - [ ] / [x] **Acessibilidade (WCAG 2.1 AA)**: Touch targets >= 48px, ARIA e semântica
 - [ ] / [x] **TypeScript Strict**: Tipagem estrita com zero "any"
 
-${specSection}
-
 #### 🔍 Resumo das Alterações
 [Resumo conciso do que foi implementado/alterado no PR e seu impacto no sistema]
 
@@ -320,30 +260,22 @@ Destaque também pontos fortes e boas práticas adotadas.]
 `;
 }
 
-export function buildUserPrompt(diff, relevantSpec) {
-  let prompt = `
+/** The PR description states the goal and acceptance check (docs/knowledge/decisions/workflow.md). */
+export function buildUserPrompt(diff, pr = { title: '', body: '' }) {
+  return `
+Título do Pull Request: ${pr.title || '(sem título)'}
+
+Descrição do Pull Request (objetivo e critério de aceite):
+${pr.body?.trim() || '(sem descrição)'}
+
 Aqui está o git diff do Pull Request para análise:
 
 \`\`\`diff
 ${diff}
 \`\`\`
-`;
 
-  if (relevantSpec) {
-    prompt += `
-Abaixo está o conteúdo da especificação da feature (.specs/features/${relevantSpec.id}/spec.md) para você validar se os critérios de aceitação foram atendidos:
-
-\`\`\`markdown
-${relevantSpec.content.slice(0, MAX_SPEC_CHAR_LIMIT)}
-\`\`\`
-`;
-  }
-
-  prompt += `
 Por favor, realize o code review completo e rigoroso, aplicando a taxonomia P1/P2/P3 e estruturando propostas fora do escopo no formato TLC Spec-Driven quando oportuno.
 `;
-
-  return prompt;
 }
 
 // ==========================================
@@ -371,10 +303,7 @@ async function callGemini(systemInstruction, userPrompt) {
               parts: [{ text: userPrompt }],
             },
           ],
-          generationConfig: {
-            temperature: 0.2,
-            topP: 0.8,
-          },
+          generationConfig: GENERATION_CONFIG,
         }),
       });
 
@@ -540,19 +469,12 @@ async function main() {
       process.exit(1);
     }
 
-    const { prTitle, prBody, headBranch } = getPRMetadata();
+    const { prTitle, prBody } = getPRMetadata();
     const diff = getGitDiff();
 
     if (!diff) {
       console.log('ℹ️ Nenhuma alteração de código encontrada no diff.');
       process.exit(0);
-    }
-
-    const relevantSpec = findRelevantSpec(diff, headBranch, prTitle, prBody);
-    if (relevantSpec) {
-      console.log(`📑 Especificação relevante detectada: \x1b[36m${relevantSpec.id}\x1b[0m`);
-    } else {
-      console.log('ℹ️ Nenhuma especificação de feature específica vinculada identificada.');
     }
 
     const headers = {
@@ -603,8 +525,8 @@ async function main() {
     }
 
     // Call Gemini API to generate the code review
-    const systemPrompt = buildSystemPrompt(relevantSpec);
-    const userPrompt = buildUserPrompt(diff, relevantSpec);
+    const systemPrompt = buildSystemPrompt();
+    const userPrompt = buildUserPrompt(diff, { title: prTitle, body: prBody });
     let reviewMarkdown = await callGemini(systemPrompt, userPrompt);
 
     // Process out-of-scope TLC Spec-Driven issue proposal if suggested by Gemini

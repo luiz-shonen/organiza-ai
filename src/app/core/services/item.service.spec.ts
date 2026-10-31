@@ -36,7 +36,7 @@ describe('ItemService', () => {
     const mockItems = [{ id: 'item-1', name: 'Bolo', quantity: 1, claimedBy: null }];
     mockGateway.collectionSnapshot.mockReturnValue(of(mockItems));
 
-    let emitted: any[] = [];
+    let emitted: unknown[] = [];
     service.listItems('evt-100').subscribe((items) => {
       emitted = items;
     });

@@ -71,7 +71,7 @@ describe('HomeContainer', () => {
   it('should show loading indicator while events are loading (undefined)', () => {
     fixture.detectChanges();
 
-    const loadingEl = fixture.nativeElement.querySelector('.home__loading');
+    const loadingEl = fixture.nativeElement.querySelector('org-loading-state');
     expect(loadingEl).toBeTruthy();
     expect(loadingEl.textContent).toContain('Carregando eventos...');
   });
@@ -157,11 +157,11 @@ describe('HomeContainer', () => {
   });
 
   it('should format date string correctly with pt-BR locale', () => {
-    const formatted = (component as any).formatDate('2026-10-15T18:00:00.000Z');
+    const formatted = component['formatDate']('2026-10-15T18:00:00.000Z');
     expect(formatted).toBeTruthy();
     expect(formatted).toContain('2026');
 
-    const emptyFormatted = (component as any).formatDate('');
+    const emptyFormatted = component['formatDate']('');
     expect(emptyFormatted).toBe('');
   });
 });

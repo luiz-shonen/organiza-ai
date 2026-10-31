@@ -46,9 +46,9 @@ describe('FamilySelectorComponent', () => {
     fixture.componentRef.setInput('selectedIds', ['fam-1']);
     fixture.detectChanges();
 
-    expect((component as any).selectedCount()).toBe(1);
-    expect((component as any).allSelected()).toBe(false);
-    expect((component as any).indeterminate()).toBe(true);
+    expect(component['selectedCount']()).toBe(1);
+    expect(component['allSelected']()).toBe(false);
+    expect(component['indeterminate']()).toBe(true);
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.textContent).toContain('1 selecionado(s)');
@@ -59,9 +59,9 @@ describe('FamilySelectorComponent', () => {
     fixture.componentRef.setInput('selectedIds', ['fam-1', 'fam-2']);
     fixture.detectChanges();
 
-    expect((component as any).allSelected()).toBe(true);
-    expect((component as any).indeterminate()).toBe(false);
-    expect((component as any).selectedCount()).toBe(2);
+    expect(component['allSelected']()).toBe(true);
+    expect(component['indeterminate']()).toBe(false);
+    expect(component['selectedCount']()).toBe(2);
   });
 
   it('should emit toggleMember when a member checkbox is changed', () => {
@@ -72,7 +72,7 @@ describe('FamilySelectorComponent', () => {
     const toggleSpy = vi.fn();
     component.toggleMember.subscribe(toggleSpy);
 
-    (component as any).onToggleMember('fam-1');
+    component['onToggleMember']('fam-1');
 
     expect(toggleSpy).toHaveBeenCalledWith('fam-1');
   });
@@ -85,7 +85,7 @@ describe('FamilySelectorComponent', () => {
     const selectAllSpy = vi.fn();
     component.selectAll.subscribe(selectAllSpy);
 
-    (component as any).onSelectAllChange(true);
+    component['onSelectAllChange'](true);
 
     expect(selectAllSpy).toHaveBeenCalledWith(true);
   });
@@ -99,23 +99,23 @@ describe('FamilySelectorComponent', () => {
     component.addInlineMember.subscribe(addInlineSpy);
 
     // Open inline form
-    (component as any).onToggleInlineForm();
-    expect((component as any).showInlineForm()).toBe(true);
+    component['onToggleInlineForm']();
+    expect(component['showInlineForm']()).toBe(true);
 
     // Set values
-    (component as any).inlineName.set('Pedro Silva');
+    component['inlineName'].set('Pedro Silva');
     component['setInlineRelationship']('sibling');
-    (component as any).inlinePhone.set('11966665555');
+    component['inlinePhone'].set('11966665555');
 
-    (component as any).onSubmitInline();
+    component['onSubmitInline']();
 
     expect(addInlineSpy).toHaveBeenCalledWith({
       name: 'Pedro Silva',
       relationship: 'sibling',
       phone: '11966665555',
     });
-    expect((component as any).showInlineForm()).toBe(false);
-    expect((component as any).inlineName()).toBe('');
+    expect(component['showInlineForm']()).toBe(false);
+    expect(component['inlineName']()).toBe('');
   });
 
   it('should compose the six relationship choices with the shared autocomplete field', () => {
@@ -139,13 +139,13 @@ describe('FamilySelectorComponent', () => {
     const addInlineSpy = vi.fn();
     component.addInlineMember.subscribe(addInlineSpy);
 
-    (component as any).onToggleInlineForm();
-    (component as any).inlineName.set('Draft Name');
-    (component as any).onCancelInlineForm();
+    component['onToggleInlineForm']();
+    component['inlineName'].set('Draft Name');
+    component['onCancelInlineForm']();
 
     expect(addInlineSpy).not.toHaveBeenCalled();
-    expect((component as any).showInlineForm()).toBe(false);
-    expect((component as any).inlineName()).toBe('');
+    expect(component['showInlineForm']()).toBe(false);
+    expect(component['inlineName']()).toBe('');
   });
 
   it('should not emit addInlineMember if name is empty', () => {
@@ -155,8 +155,8 @@ describe('FamilySelectorComponent', () => {
     const addInlineSpy = vi.fn();
     component.addInlineMember.subscribe(addInlineSpy);
 
-    (component as any).inlineName.set('   ');
-    (component as any).onSubmitInline();
+    component['inlineName'].set('   ');
+    component['onSubmitInline']();
 
     expect(addInlineSpy).not.toHaveBeenCalled();
   });

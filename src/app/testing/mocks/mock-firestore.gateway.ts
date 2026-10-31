@@ -1,12 +1,11 @@
-import { vi } from 'vitest';
+import { vi, type Mock } from 'vitest';
 import { of } from 'rxjs';
 import { FirestoreBatchOperations } from '../../core/models';
 
-export interface MockFirestoreBatchOps {
-  set: ReturnType<typeof vi.fn>;
-  update: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-}
+export type MockFirestoreBatchOps = {
+  [K in keyof FirestoreBatchOperations]: Mock<FirestoreBatchOperations[K]> &
+    FirestoreBatchOperations[K];
+};
 
 export interface MockFirestoreGateway {
   where: ReturnType<typeof vi.fn>;
@@ -32,9 +31,9 @@ export interface MockFirestoreGateway {
 
 export function createMockFirestoreGateway(): MockFirestoreGateway {
   const batchOps: MockFirestoreBatchOps = {
-    set: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
+    set: vi.fn<FirestoreBatchOperations['set']>(),
+    update: vi.fn<FirestoreBatchOperations['update']>(),
+    delete: vi.fn<FirestoreBatchOperations['delete']>(),
   };
 
   const mock: MockFirestoreGateway = {
@@ -44,9 +43,11 @@ export function createMockFirestoreGateway(): MockFirestoreGateway {
     arrayUnion: vi.fn((...elements) => ({ type: 'arrayUnion', elements })),
     arrayRemove: vi.fn((...elements) => ({ type: 'arrayRemove', elements })),
     serverTimestamp: vi.fn(() => ({ type: 'serverTimestamp' })),
-    timestampToDate: vi.fn((t: any) => {
+    timestampToDate: vi.fn((t: unknown) => {
       if (t instanceof Date) return t;
-      if (t && typeof t === 'object' && 'seconds' in t) return new Date(t.seconds * 1000);
+      if (t && typeof t === 'object' && 'seconds' in t) {
+        return new Date(Number(t.seconds) * 1000);
+      }
       return null;
     }),
     getDoc: vi.fn().mockResolvedValue(null),
@@ -62,7 +63,7 @@ export function createMockFirestoreGateway(): MockFirestoreGateway {
     runBatch: vi
       .fn()
       .mockImplementation(async (fn: (batch: FirestoreBatchOperations) => void | Promise<void>) => {
-        await fn(batchOps as any);
+        await fn(batchOps);
       }),
     batchOps,
   };

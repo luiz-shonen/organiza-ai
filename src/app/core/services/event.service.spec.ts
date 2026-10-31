@@ -5,6 +5,7 @@ import { EventService } from './event.service';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
 import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
+import type { EventInvitation, PartyEvent } from '../models';
 
 describe('EventService', () => {
   let service: EventService;
@@ -54,20 +55,20 @@ describe('EventService', () => {
       ];
       mockGateway.collectionSnapshot.mockReturnValue(of(mockDocs));
 
-      let result: any = null;
+      let result = null as PartyEvent[] | null;
       service.listEvents().subscribe((events) => {
         result = events;
       });
 
       expect(result).toHaveLength(1);
-      expect(result[0].title).toBe('Festa 1');
+      expect(result?.[0].title).toBe('Festa 1');
       expect(mockGateway.collectionSnapshot).toHaveBeenCalledWith('events', expect.anything());
     });
   });
 
   describe('getUserEvents', () => {
     it('returns empty array when uid is not provided', () => {
-      let result: any = null;
+      let result: unknown = null;
       service.getUserEvents('').subscribe((events) => {
         result = events;
       });
@@ -87,7 +88,7 @@ describe('EventService', () => {
       mockGateway.collectionSnapshot.mockReturnValueOnce(of(owned));
       mockGateway.collectionSnapshot.mockReturnValueOnce(of(collaborated));
 
-      let result: any[] = [];
+      let result: PartyEvent[] = [];
       service.getUserEvents('user-123').subscribe((events) => {
         result = events;
       });
@@ -105,19 +106,19 @@ describe('EventService', () => {
         of({ id: 'evt-1', title: 'Single Event', date: '2026-10-01T00:00:00.000Z' }),
       );
 
-      let result: any = null;
+      let result = null as PartyEvent | null;
       service.getEvent('evt-1').subscribe((event) => {
         result = event;
       });
 
-      expect(result.id).toBe('evt-1');
-      expect(result.title).toBe('Single Event');
+      expect(result?.id).toBe('evt-1');
+      expect(result?.title).toBe('Single Event');
     });
 
     it('returns null when document does not exist', () => {
       mockGateway.docSnapshot.mockReturnValue(of(null));
 
-      let result: any = undefined;
+      let result: unknown = undefined;
       service.getEvent('evt-none').subscribe((event) => {
         result = event;
       });
@@ -322,13 +323,13 @@ describe('EventService', () => {
         ]),
       );
 
-      let result: any = null;
+      let result = null as EventInvitation[] | null;
       service.listPendingInvitations('evt-1').subscribe((invites) => {
         result = invites;
       });
 
       expect(result).toHaveLength(1);
-      expect(result[0].invitedEmail).toBe('invited@test.com');
+      expect(result?.[0].invitedEmail).toBe('invited@test.com');
     });
 
     it('claimPendingInvitations finds invitations and claims them via batch', async () => {

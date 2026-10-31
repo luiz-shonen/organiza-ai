@@ -44,14 +44,14 @@
       justify-content: center;
       background: var(--org-primary-container);
       color: var(--org-on-primary-container);
-      font-size: 1.75rem;
-      font-weight: 700;
+      font-size: var(--org-font-size-2xl);
+      font-weight: var(--org-font-weight-bold);
       border: 2px solid var(--org-primary);
     }
   }
 
   &__avatar-letter {
-    line-height: 1;
+    line-height: var(--org-line-height-none);
   }
 
   &__identity {
@@ -65,10 +65,10 @@
   }
 
   &__title {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: var(--org-letter-spacing-wide);
     color: var(--org-on-surface-variant);
     margin: 0 0 0.25rem;
   }
@@ -80,8 +80,8 @@
   }
 
   &__name {
-    font-size: 1.35rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-bold);
     color: var(--org-on-surface);
     overflow-wrap: break-word;
   }
@@ -114,7 +114,6 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--org-outline-variant);
   }
 
   &__field {
@@ -138,16 +137,16 @@
   }
 
   &__field-label {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--org-letter-spacing-wide);
     color: var(--org-on-surface-variant);
   }
 
   &__field-value {
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: var(--org-font-size-md);
+    font-weight: var(--org-font-weight-medium);
     color: var(--org-on-surface);
     overflow: hidden;
     text-overflow: ellipsis;

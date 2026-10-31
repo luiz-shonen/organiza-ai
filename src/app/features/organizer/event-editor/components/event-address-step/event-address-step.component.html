@@ -1,0 +1,99 @@
+@let addressForm = form();
+<form [formGroup]="addressForm" class="event-step" id="address-form">
+  <h3 class="event-step__title">Endereço</h3>
+  <div class="event-step__row event-step__row--halves">
+    <org-text-field
+      label="CEP"
+      placeholder="00000-000"
+      [required]="true"
+      [error]="
+        addressForm.controls.cep.hasError('required') && addressForm.controls.cep.touched
+          ? 'CEP é obrigatório'
+          : ''
+      "
+      formControlName="cep"
+      testId="event-cep-input"
+      (valueChange)="cepInput.emit($event)"
+    />
+
+    <org-text-field
+      label="Número"
+      placeholder="Ex: 123"
+      [required]="true"
+      [error]="
+        addressForm.controls.number.hasError('required') && addressForm.controls.number.touched
+          ? 'Número é obrigatório'
+          : ''
+      "
+      formControlName="number"
+      testId="event-number-input"
+    />
+  </div>
+
+  <org-text-field
+    class="event-step__locked"
+    label="Endereço"
+    placeholder="Ex: Rua das Festas"
+    prefixIcon="location_on"
+    suffixIcon="lock"
+    [readOnly]="true"
+    [required]="true"
+    [error]="
+      addressForm.controls.address.hasError('required') && addressForm.controls.address.touched
+        ? 'Endereço é obrigatório'
+        : ''
+    "
+    formControlName="address"
+    testId="event-street-input"
+  />
+
+  <div class="event-step__row event-step__row--wide-narrow">
+    <org-text-field
+      class="event-step__locked"
+      label="Bairro"
+      placeholder="Ex: Centro"
+      suffixIcon="lock"
+      [readOnly]="true"
+      [required]="true"
+      [error]="
+        addressForm.controls.neighborhood.hasError('required') &&
+        addressForm.controls.neighborhood.touched
+          ? 'Bairro é obrigatório'
+          : ''
+      "
+      formControlName="neighborhood"
+    />
+
+    <org-text-field
+      class="event-step__locked"
+      label="Cidade/UF"
+      placeholder="Ex: São Paulo/SP"
+      suffixIcon="lock"
+      [readOnly]="true"
+      [required]="true"
+      [error]="
+        addressForm.controls.city.hasError('required') && addressForm.controls.city.touched
+          ? 'Cidade/UF é obrigatória'
+          : ''
+      "
+      formControlName="city"
+    />
+  </div>
+
+  <div class="event-step__actions">
+    <org-button
+      label="Voltar"
+      icon="arrow_back"
+      variant="text"
+      [gradient]="false"
+      (pressed)="back.emit()"
+    />
+    <org-button
+      label="Próximo"
+      icon="send"
+      testId="stepper-next-btn"
+      [disabled]="addressForm.invalid"
+      (pressed)="next.emit()"
+    />
+  </div>
+</form>

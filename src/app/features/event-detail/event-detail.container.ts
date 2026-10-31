@@ -8,7 +8,6 @@ import {
   OnInit,
   DestroyRef,
 } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   EventService,
   GuestSessionService,
@@ -23,6 +22,7 @@ import {
 } from '../../core/services';
 import { PartyEvent, PartyItem, Guest, type RsvpDrawerResult } from '../../core/models';
 import {
+  OrgSkeletonComponent,
   FeedbackService,
   OrgDialogService,
   OrgEmptyStateComponent,
@@ -38,7 +38,7 @@ import { PixCardComponent } from './components/pix-card/pix-card.component';
   selector: 'app-event-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatProgressSpinnerModule,
+    OrgSkeletonComponent,
     OrgPageLayoutComponent,
     OrgEmptyStateComponent,
     EventCardComponent,
@@ -282,9 +282,5 @@ export class EventDetailContainer implements OnInit {
     } catch {
       this.feedback.error('Erro ao liberar item. Tente novamente.');
     }
-  }
-
-  protected onPixCopied(): void {
-    this.feedback.success('Chave Pix copiada!', { duration: 2000 });
   }
 }

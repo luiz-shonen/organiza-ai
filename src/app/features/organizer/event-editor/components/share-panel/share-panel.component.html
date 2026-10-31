@@ -1,13 +1,12 @@
 @if (eventUrl()) {
   <org-surface variant="card">
     <article class="share-panel">
-      <header class="share-panel__header">
-        <org-icon name="qr_code_2" class="share-panel__icon" aria-hidden="true" />
-        <div>
-          <h2 class="share-panel__title">Compartilhar</h2>
-          <p class="share-panel__subtitle">Convide seus amigos!</p>
-        </div>
-      </header>
+      <org-card-header
+        icon="qr_code_2"
+        tone="tertiary"
+        heading="Compartilhar"
+        subheading="Convide seus amigos!"
+      />
       <div class="share-panel__qr-container">
         <canvas #qrCanvas class="share-panel__qr" aria-label="QR Code do evento"></canvas>
       </div>
@@ -16,12 +15,12 @@
         <code class="share-panel__url">{{ eventUrl() }}</code>
       </div>
       <footer class="share-panel__actions">
-        <org-button
+        <org-copy-button
           label="Copiar link"
-          icon="content_copy"
+          copiedMessage="Link copiado!"
           variant="secondary"
           [gradient]="false"
-          (pressed)="copyLink()"
+          [value]="eventUrl()"
         />
         <org-button
           label="WhatsApp"

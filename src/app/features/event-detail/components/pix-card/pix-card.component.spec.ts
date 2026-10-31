@@ -3,6 +3,7 @@ import { ComponentRef } from '@angular/core';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { PixCardComponent } from './pix-card.component';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { FeedbackService } from '../../../../shared/ui';
 
 describe('PixCardComponent', () => {
   let component: PixCardComponent;
@@ -24,6 +25,7 @@ describe('PixCardComponent', () => {
           provide: Clipboard,
           useValue: mockClipboard,
         },
+        { provide: FeedbackService, useValue: { success: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -90,15 +92,10 @@ describe('PixCardComponent', () => {
     });
   });
 
-  describe('copyPix interaction', () => {
-    it('copies pixKey to clipboard and emits copyPix and copied events', () => {
+  describe('copy interaction', () => {
+    it('copies pixKey to clipboard through the shared copy button', () => {
       componentRef.setInput('pixKey', 'minha-chave-pix-123');
       fixture.detectChanges();
-
-      const copyPixSpy = vi.fn();
-      const copiedSpy = vi.fn();
-      component.copyPix.subscribe(copyPixSpy);
-      component.copied.subscribe(copiedSpy);
 
       const copyBtn = fixture.nativeElement.querySelector(
         '.pix-card__copy-btn button',
@@ -107,8 +104,6 @@ describe('PixCardComponent', () => {
       copyBtn.click();
 
       expect(mockClipboard.copy).toHaveBeenCalledWith('minha-chave-pix-123');
-      expect(copyPixSpy).toHaveBeenCalledWith('minha-chave-pix-123');
-      expect(copiedSpy).toHaveBeenCalled();
     });
   });
 });

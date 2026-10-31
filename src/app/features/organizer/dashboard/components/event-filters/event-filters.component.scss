@@ -6,9 +6,7 @@
   padding: var(--org-space-xs);
   max-width: 100%;
   box-sizing: border-box;
-  background: var(--org-surface-container);
-  border: 1px solid var(--org-outline-variant);
-  border-radius: var(--org-radius-pill);
+  border-radius: var(--org-radius-full);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -27,7 +25,7 @@
     gap: var(--org-space-sm);
     padding: var(--org-space-sm) var(--org-space-md);
     border: none;
-    border-radius: var(--org-radius-pill);
+    border-radius: var(--org-radius-full);
     background: transparent;
     color: var(--org-on-surface-variant);
     font-family: inherit;
@@ -35,7 +33,7 @@
     font-weight: var(--org-font-weight-semibold);
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--org-motion-base) var(--org-motion-ease-emphasized);
     outline: none;
 
     &:hover:not(&--active) {
@@ -69,10 +67,10 @@
     font-size: var(--org-font-size-xs);
     font-weight: var(--org-font-weight-bold);
     line-height: var(--org-line-height-none);
-    border-radius: var(--org-radius-pill);
+    border-radius: var(--org-radius-full);
     background: rgba(0, 0, 0, 0.08);
     color: currentColor;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--org-motion-base) var(--org-motion-ease);
 
     &--active {
       background: rgba(255, 255, 255, 0.28);

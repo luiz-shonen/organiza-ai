@@ -30,7 +30,7 @@ describe('SharePanelComponent', () => {
 
     qrToCanvasSpy = vi
       .spyOn(QRCode, 'toCanvas')
-      .mockImplementation((() => Promise.resolve({})) as any);
+      .mockImplementation((() => Promise.resolve()) as unknown as typeof QRCode.toCanvas);
     windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     await TestBed.configureTestingModule({
@@ -85,7 +85,10 @@ describe('SharePanelComponent', () => {
     componentRef.setInput('eventUrl', 'https://organiza.ai/events/evt-123');
     fixture.detectChanges();
 
-    (component as any).copyLink();
+    const copyButton = Array.from(
+      fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
+    ).find((button) => button.textContent?.includes('Copiar link'));
+    copyButton?.click();
 
     expect(mockClipboard.copy).toHaveBeenCalledWith('https://organiza.ai/events/evt-123');
     expect(mockFeedback.success).toHaveBeenCalledWith('Link copiado!', { duration: 2000 });
@@ -96,7 +99,7 @@ describe('SharePanelComponent', () => {
     componentRef.setInput('eventTitle', 'Churrasco da Turma');
     fixture.detectChanges();
 
-    (component as any).shareWhatsApp();
+    component['shareWhatsApp']();
 
     const expectedText = `🎉 Você está convidado(a) para *Churrasco da Turma*!\n\nConfirme sua presença e veja o que levar:\nhttps://organiza.ai/events/evt-123`;
     const expectedUrl = `https://wa.me/?text=${encodeURIComponent(expectedText)}`;
@@ -109,7 +112,7 @@ describe('SharePanelComponent', () => {
     componentRef.setInput('eventTitle', '');
     fixture.detectChanges();
 
-    (component as any).shareWhatsApp();
+    component['shareWhatsApp']();
 
     const expectedText = `🎉 Você está convidado(a) para *nosso evento*!\n\nConfirme sua presença e veja o que levar:\nhttps://organiza.ai/events/evt-123`;
     const expectedUrl = `https://wa.me/?text=${encodeURIComponent(expectedText)}`;

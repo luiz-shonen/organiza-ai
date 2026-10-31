@@ -1,8 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { effect } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -14,7 +11,7 @@ import {
 } from '../../../core/services';
 import { formatDate, shareWhatsApp } from '../../../core/utils';
 import { PartyEvent } from '../../../core/models';
-import { FeedbackService, OrgDialogService } from '../../../shared/ui';
+import { OrgSkeletonComponent, FeedbackService, OrgDialogService } from '../../../shared/ui';
 import {
   EventDashboardFiltersComponent,
   EventStatusFilter,
@@ -36,9 +33,7 @@ import {
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatMenuModule,
+    OrgSkeletonComponent,
     EventDashboardFiltersComponent,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,

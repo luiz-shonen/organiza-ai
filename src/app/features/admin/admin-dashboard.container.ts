@@ -7,11 +7,11 @@ import {
   signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../core/services/auth.service';
 import { EventService } from '../../core/services/event.service';
 import { PartyEvent } from '../../core/models/event.model';
 import {
+  OrgLoadingStateComponent,
   FeedbackService,
   OrgBadgeComponent,
   OrgButtonComponent,
@@ -31,7 +31,7 @@ import { AdminFormDrawerComponent } from './components/admin-form-drawer/admin-f
   selector: 'app-admin-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatProgressSpinnerModule,
+    OrgLoadingStateComponent,
     OrgBadgeComponent,
     OrgButtonComponent,
     OrgEmptyStateComponent,

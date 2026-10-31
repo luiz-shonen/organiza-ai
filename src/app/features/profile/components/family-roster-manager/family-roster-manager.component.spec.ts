@@ -87,11 +87,11 @@ describe('FamilyRosterManagerComponent', () => {
     component.addMember.subscribe(addSpy);
 
     // Simulate entering form values
-    (component as any).newName.set('Carlos Silva');
-    (component as any).newRelationship.set('parent');
-    (component as any).newPhone.set('11977775555');
+    component['newName'].set('Carlos Silva');
+    component['newRelationship'].set('parent');
+    component['newPhone'].set('11977775555');
 
-    (component as any).onAddSubmit();
+    component['onAddSubmit']();
 
     expect(addSpy).toHaveBeenCalledWith({
       name: 'Carlos Silva',
@@ -99,9 +99,9 @@ describe('FamilyRosterManagerComponent', () => {
       phone: '11977775555',
     });
 
-    expect((component as any).newName()).toBe('');
-    expect((component as any).newRelationship()).toBe('child');
-    expect((component as any).newPhone()).toBe('');
+    expect(component['newName']()).toBe('');
+    expect(component['newRelationship']()).toBe('child');
+    expect(component['newPhone']()).toBe('');
   });
 
   it('should preserve the selected relationship value from the autocomplete field', () => {
@@ -125,8 +125,8 @@ describe('FamilyRosterManagerComponent', () => {
     const addSpy = vi.fn();
     component.addMember.subscribe(addSpy);
 
-    (component as any).newName.set('   ');
-    (component as any).onAddSubmit();
+    component['newName'].set('   ');
+    component['onAddSubmit']();
 
     expect(addSpy).not.toHaveBeenCalled();
   });

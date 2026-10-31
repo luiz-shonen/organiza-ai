@@ -25,22 +25,6 @@
     }
   }
 
-  &__loading-surface {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding: var(--org-space-xl, 32px);
-  }
-
-  &__spinner-wrapper {
-    align-items: center;
-    color: var(--org-on-surface-variant);
-    display: flex;
-    flex-direction: column;
-    font-size: 0.875rem;
-    gap: var(--org-space-md, 12px);
-  }
-
   &__admins-card {
     overflow: hidden;
     padding: 0;
@@ -56,12 +40,12 @@
 
   &__admin-item {
     align-items: center;
-    border-bottom: 1px solid var(--org-border);
+    border-bottom: 1px solid var(--org-outline-variant);
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     padding: var(--org-space-md, 16px) var(--org-space-lg, 20px);
-    transition: background-color 160ms ease;
+    transition: background-color var(--org-motion-fast) var(--org-motion-ease);
 
     &:last-child {
       border-bottom: none;
@@ -80,9 +64,9 @@
 
   &__admin-icon {
     color: var(--org-primary);
-    font-size: 24px;
-    height: 24px;
-    width: 24px;
+    font-size: var(--org-icon-size-lg);
+    height: var(--org-icon-size-lg);
+    width: var(--org-icon-size-lg);
   }
 
   &__admin-details {
@@ -93,8 +77,8 @@
 
   &__admin-email {
     color: var(--org-on-surface);
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-md);
+    font-weight: var(--org-font-weight-semibold);
     word-break: break-all;
   }
 

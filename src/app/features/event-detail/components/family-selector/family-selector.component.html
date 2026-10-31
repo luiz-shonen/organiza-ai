@@ -1,118 +1,108 @@
 <div class="family-selector">
-  <mat-expansion-panel
-    class="family-selector__panel"
-    [expanded]="isExpanded()"
-    (opened)="isExpanded.set(true)"
-    (closed)="isExpanded.set(false)"
-    aria-label="Opções para adicionar familiares ao evento"
+  <org-expansion-panel
+    heading="Adicionar Família?"
+    icon="diversity_3"
+    ariaLabel="Opções para adicionar familiares ao evento"
+    [(expanded)]="isExpanded"
   >
-    <mat-expansion-panel-header class="family-selector__header">
-      <mat-panel-title class="family-selector__title">
-        <org-icon name="diversity_3" class="family-selector__icon" aria-hidden="true" />
-        <span>Adicionar Família?</span>
-      </mat-panel-title>
-      <mat-panel-description class="family-selector__description">
-        @if (selectedCount() > 0) {
-          <span class="family-selector__badge">{{ selectedCount() }} selecionado(s)</span>
-        } @else {
-          <span>Nenhum selecionado</span>
-        }
-      </mat-panel-description>
-    </mat-expansion-panel-header>
-
-    <div class="family-selector__content">
-      @if (members().length > 0) {
-        <div class="family-selector__select-all-wrap">
-          <org-checkbox
-            class="family-selector__select-all"
-            [checked]="allSelected()"
-            [indeterminate]="indeterminate()"
-            (checkedChange)="onSelectAllChange($event)"
-            ariaLabel="Selecionar todos os familiares"
-          >
-            <span class="family-selector__select-all-label">Selecionar Todos</span>
-          </org-checkbox>
-        </div>
-
-        <ul class="family-selector__list" role="list" aria-label="Lista de familiares para seleção">
-          @for (member of members(); track member.id) {
-            <li class="family-selector__item" role="listitem">
-              <org-checkbox
-                class="family-selector__checkbox"
-                [checked]="isMemberSelected(member.id)"
-                (checkedChange)="onToggleMember(member.id)"
-                [ariaLabel]="'Confirmar presença para ' + member.name"
-              >
-                <div class="family-selector__member-info">
-                  <span class="family-selector__member-name">{{ member.name }}</span>
-                  <span class="family-selector__member-badge">{{
-                    getRelationshipLabel(member.relationship)
-                  }}</span>
-                </div>
-              </org-checkbox>
-            </li>
-          }
-        </ul>
+    <span orgExpansionSummary>
+      @if (selectedCount() > 0) {
+        <span class="family-selector__badge">{{ selectedCount() }} selecionado(s)</span>
       } @else {
-        <div class="family-selector__empty" role="status">
-          <p class="family-selector__empty-text">Nenhum familiar cadastrado no seu perfil.</p>
-        </div>
+        Nenhum selecionado
       }
+    </span>
+    @if (members().length > 0) {
+      <div class="family-selector__select-all-wrap">
+        <org-checkbox
+          class="family-selector__select-all"
+          [checked]="allSelected()"
+          [indeterminate]="indeterminate()"
+          (checkedChange)="onSelectAllChange($event)"
+          ariaLabel="Selecionar todos os familiares"
+        >
+          <span class="family-selector__select-all-label">Selecionar Todos</span>
+        </org-checkbox>
+      </div>
 
-      @if (!showInlineForm()) {
-        <div class="family-selector__inline-toggle-wrap">
-          <org-button
-            class="family-selector__inline-toggle-btn"
-            label="Novo membro"
-            icon="group_add"
-            variant="text"
-            [gradient]="false"
-            (pressed)="onToggleInlineForm()"
+      <ul class="family-selector__list" role="list" aria-label="Lista de familiares para seleção">
+        @for (member of members(); track member.id) {
+          <li class="family-selector__item" role="listitem">
+            <org-checkbox
+              class="family-selector__checkbox"
+              [checked]="isMemberSelected(member.id)"
+              (checkedChange)="onToggleMember(member.id)"
+              [ariaLabel]="'Confirmar presença para ' + member.name"
+            >
+              <div class="family-selector__member-info">
+                <span class="family-selector__member-name">{{ member.name }}</span>
+                <span class="family-selector__member-badge">{{
+                  getRelationshipLabel(member.relationship)
+                }}</span>
+              </div>
+            </org-checkbox>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="family-selector__empty" role="status">
+        <p class="family-selector__empty-text">Nenhum familiar cadastrado no seu perfil.</p>
+      </div>
+    }
+
+    @if (!showInlineForm()) {
+      <div class="family-selector__inline-toggle-wrap">
+        <org-button
+          class="family-selector__inline-toggle-btn"
+          label="Novo membro"
+          icon="group_add"
+          variant="text"
+          [gradient]="false"
+          (pressed)="onToggleInlineForm()"
+        />
+      </div>
+    } @else {
+      <form
+        class="family-selector__inline-form"
+        (ngSubmit)="onSubmitInline()"
+        aria-label="Formulário rápido para adicionar novo familiar"
+      >
+        <h4 class="family-selector__inline-title">Novo Familiar</h4>
+
+        <div class="family-selector__inline-grid">
+          <org-text-field
+            class="family-selector__inline-field"
+            label="Nome"
+            placeholder="Ex: Pedro"
+            [required]="true"
+            [(value)]="inlineName"
+          />
+
+          <org-autocomplete-field
+            class="family-selector__inline-field"
+            label="Parentesco"
+            [options]="relationshipAutocompleteOptions"
+            [value]="inlineRelationship()"
+            [required]="true"
+            (valueChange)="setInlineRelationship($event)"
           />
         </div>
-      } @else {
-        <form
-          class="family-selector__inline-form"
-          (ngSubmit)="onSubmitInline()"
-          aria-label="Formulário rápido para adicionar novo familiar"
-        >
-          <h4 class="family-selector__inline-title">Novo Familiar</h4>
 
-          <div class="family-selector__inline-grid">
-            <org-text-field
-              class="family-selector__inline-field"
-              label="Nome"
-              placeholder="Ex: Pedro"
-              [required]="true"
-              [(value)]="inlineName"
-            />
-
-            <org-autocomplete-field
-              class="family-selector__inline-field"
-              label="Parentesco"
-              [options]="relationshipAutocompleteOptions"
-              [value]="inlineRelationship()"
-              [required]="true"
-              (valueChange)="setInlineRelationship($event)"
-            />
-          </div>
-
-          <div class="family-selector__inline-actions">
-            <org-button
-              label="Cancelar"
-              variant="text"
-              [gradient]="false"
-              (pressed)="onCancelInlineForm()"
-            />
-            <org-button
-              label="Adicionar e selecionar"
-              type="submit"
-              [disabled]="!inlineName().trim() || isAddingInline()"
-              [loading]="isAddingInline()"
-            />
-          </div>
-        </form>
-      }
-    </div>
-  </mat-expansion-panel>
+        <div class="family-selector__inline-actions">
+          <org-button
+            label="Cancelar"
+            variant="text"
+            [gradient]="false"
+            (pressed)="onCancelInlineForm()"
+          />
+          <org-button
+            label="Adicionar e selecionar"
+            type="submit"
+            [disabled]="!inlineName().trim() || isAddingInline()"
+            [loading]="isAddingInline()"
+          />
+        </div>
+      </form>
+    }
+  </org-expansion-panel>
 </div>

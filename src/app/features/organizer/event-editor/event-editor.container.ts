@@ -9,12 +9,7 @@ import {
   DestroyRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FormBuilder, Validators } from '@angular/forms';
 import {
   EventService,
   ItemService,
@@ -26,24 +21,24 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { formatCep } from '../../../core/utils';
-import { PartyItem, Guest, PartyEvent, EVENT_CATEGORIES } from '../../../core/models';
+import { EVENT_CATEGORIES, Guest, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
+import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
+import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
+import { EventGuestsCardComponent } from './components/event-guests-card/event-guests-card.component';
+import { EventItemsCardComponent } from './components/event-items-card/event-items-card.component';
+import { EventPixStepComponent } from './components/event-pix-step/event-pix-step.component';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
   OrgBannerComponent,
   OrgButtonComponent,
-  OrgChipComponent,
-  OrgDateFieldComponent,
-  OrgIconComponent,
-  OrgIconButtonComponent,
+  OrgCardHeaderComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
+  OrgSkeletonComponent,
   OrgStepComponent,
   OrgStepperComponent,
   OrgSurfaceComponent,
-  OrgTextFieldComponent,
-  OrgTextareaFieldComponent,
-  OrgTimeFieldComponent,
 } from '../../../shared/ui';
 import { DrawerService } from '../../../core/services/drawer.service';
 
@@ -51,26 +46,20 @@ import { DrawerService } from '../../../core/services/drawer.service';
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ReactiveFormsModule,
-    MatProgressSpinnerModule,
-    MatDividerModule,
-    MatTooltipModule,
-    MatAutocompleteModule,
-    MatDialogModule,
+    EventAddressStepComponent,
+    EventBasicInfoStepComponent,
+    EventGuestsCardComponent,
+    EventItemsCardComponent,
+    EventPixStepComponent,
     OrgBannerComponent,
     OrgButtonComponent,
-    OrgChipComponent,
-    OrgDateFieldComponent,
-    OrgIconComponent,
-    OrgIconButtonComponent,
-    OrgPageLayoutComponent,
+    OrgCardHeaderComponent,
     OrgPageHeaderComponent,
-    OrgSurfaceComponent,
+    OrgPageLayoutComponent,
+    OrgSkeletonComponent,
     OrgStepComponent,
     OrgStepperComponent,
-    OrgTextFieldComponent,
-    OrgTextareaFieldComponent,
-    OrgTimeFieldComponent,
+    OrgSurfaceComponent,
     SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
@@ -89,7 +78,6 @@ export class EventEditorContainer implements OnInit {
   private readonly drawerService = inject(DrawerService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
-  private readonly dialog = inject(MatDialog);
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -101,8 +89,6 @@ export class EventEditorContainer implements OnInit {
   protected readonly currentEvent = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
   protected readonly guests = signal<Guest[]>([]);
-  protected readonly newItemName = signal('');
-  protected readonly newItemQuantity = signal(1);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
   protected readonly stepLabels = [
@@ -348,25 +334,15 @@ export class EventEditorContainer implements OnInit {
     });
   }
 
-  protected async addItem(): Promise<void> {
-    const name = this.newItemName().trim();
-    const quantity = this.newItemQuantity();
+  protected async addItem(item: NewPartyItem): Promise<void> {
     const eventId = this.id();
-
-    if (!name || !eventId) return;
+    if (!eventId) return;
 
     try {
-      await this.itemService.addItem(eventId, { name, quantity });
-      this.newItemName.set('');
-      this.newItemQuantity.set(1);
+      await this.itemService.addItem(eventId, item);
     } catch {
       this.feedback.error('Erro ao adicionar item.');
     }
-  }
-
-  protected setNewItemQuantity(value: string): void {
-    const quantity = Number(value);
-    this.newItemQuantity.set(Number.isInteger(quantity) && quantity > 0 ? quantity : 1);
   }
 
   protected async removeItem(item: PartyItem): Promise<void> {
@@ -415,18 +391,5 @@ export class EventEditorContainer implements OnInit {
     if (formattedValue !== value) {
       this.addressForm.controls.cep.setValue(formattedValue);
     }
-  }
-
-  protected nextStep(stepper: OrgStepperComponent): void {
-    stepper.next();
-  }
-
-  protected previousStep(stepper: OrgStepperComponent): void {
-    stepper.previous();
-  }
-
-  protected selectCategory(category: string): void {
-    this.basicInfoForm.controls.category.setValue(category);
-    this.basicInfoForm.controls.category.markAsTouched();
   }
 }

@@ -6,10 +6,7 @@
   />
 
   @if (loading()) {
-    <div class="profile-container__loading" role="status" aria-live="polite">
-      <mat-spinner diameter="48"></mat-spinner>
-      <span class="profile-container__loading-text">Carregando perfil...</span>
-    </div>
+    <org-loading-state label="Carregando perfil..." />
   } @else {
     @if (userProfile(); as profile) {
       <div class="profile-container__content">

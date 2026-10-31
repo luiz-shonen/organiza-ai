@@ -62,7 +62,7 @@ describe('AdminDashboardContainer', () => {
   beforeEach(async () => {
     mockAuthService = {
       isSuperAdmin: signal(true),
-      currentUser: signal({ uid: 'super-1', email: 'luiz.gmr.dev@gmail.com' } as any),
+      currentUser: signal({ uid: 'super-1', email: 'luiz.gmr.dev@gmail.com' }),
       isSuperAdminEmail: vi.fn(
         (email: string | null) =>
           email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com',

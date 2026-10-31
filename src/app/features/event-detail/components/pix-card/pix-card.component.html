@@ -1,18 +1,11 @@
 <org-surface variant="card" data-testid="pix-card">
   <article class="pix-card">
-    <header class="pix-card__header">
-      <org-icon name="pix" class="pix-card__icon" aria-hidden="true" />
-      <div>
-        <h2 class="pix-card__title">Rachadinha via Pix</h2>
-        <p class="pix-card__subtitle">
-          @if (pixType()) {
-            Tipo: {{ pixType() }}
-          } @else {
-            Contribua com o evento!
-          }
-        </p>
-      </div>
-    </header>
+    <org-card-header
+      icon="pix"
+      tone="primary"
+      heading="Rachadinha via Pix"
+      [subheading]="pixType() ? 'Tipo: ' + pixType() : 'Contribua com o evento!'"
+    />
 
     @if (formattedSuggestedSplit(); as split) {
       <div
@@ -32,13 +25,12 @@
     }
 
     <footer class="pix-card__actions">
-      <org-button
+      <org-copy-button
         class="pix-card__copy-btn"
-        [disabled]="!pixKey()"
         label="Copiar chave Pix"
-        icon="content_copy"
+        copiedMessage="Chave Pix copiada!"
+        [value]="pixKey()"
         [fullWidth]="true"
-        (pressed)="copyToClipboard()"
         data-testid="copy-pix-btn"
       />
     </footer>

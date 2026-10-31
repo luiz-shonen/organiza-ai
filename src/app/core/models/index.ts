@@ -7,6 +7,12 @@ export type {
   EventCategoryOption,
 } from './event.model';
 export { EVENT_CATEGORIES, getCategoryClass } from './event.model';
+export type {
+  EventAddressForm,
+  EventBasicInfoForm,
+  EventPixForm,
+  NewPartyItem,
+} from './event-editor-form.model';
 export type { EventInvitation } from './invitation.model';
 export type { Guest, GuestCompanion, GuestCreate, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';
@@ -29,8 +35,6 @@ export type { FirestoreBatchOperations } from './firestore-gateway.models';
 export type {
   ConfirmDialogData,
   OrgConfirmDialogData,
-  GuestFormDialogData,
-  GuestFormDialogResult,
   BatchPrimaryGuestInput,
 } from './dialog.model';
 export type {
@@ -53,3 +57,8 @@ export {
   DESIGN_SYSTEM_NAVIGATION_GROUPS,
   DESIGN_SYSTEM_SECTIONS,
 } from './design-system-navigation.model';
+export type {
+  DesignSystemFoundationExamples,
+  SeasonalThemeChoice,
+  SeasonalThemeOption,
+} from './design-system-showcase.model';

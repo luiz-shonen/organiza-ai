@@ -21,14 +21,14 @@
 
   &__title {
     color: var(--org-on-surface);
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-extrabold);
     margin: 0 0 var(--org-space-2xs, 4px);
   }
 
   &__subtitle {
     color: var(--org-on-surface-variant);
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     margin: 0;
   }
 
@@ -43,8 +43,8 @@
 
     h3 {
       color: var(--org-on-surface);
-      font-size: 0.9375rem;
-      font-weight: 700;
+      font-size: var(--org-font-size-md);
+      font-weight: var(--org-font-weight-bold);
       margin: 0 0 var(--org-space-sm, 8px);
     }
   }
@@ -52,8 +52,8 @@
   &__chip {
     align-items: center;
     background: color-mix(in srgb, var(--org-surface) 70%, transparent);
-    border: 1px solid var(--org-border);
-    border-radius: var(--org-radius-pill);
+    border: 1px solid var(--org-outline-variant);
+    border-radius: var(--org-radius-full);
     color: var(--org-on-surface);
     cursor: pointer;
     display: inline-flex;
@@ -75,7 +75,7 @@
   &__pending {
     color: var(--org-on-surface-variant);
     display: block;
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     overflow-wrap: anywhere;
     padding: var(--org-space-xs, 4px) 0;
   }

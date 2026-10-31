@@ -1,0 +1,32 @@
+<org-surface variant="card">
+  <org-card-header
+    icon="group"
+    heading="Lista de Convidados"
+    [subheading]="guests().length + ' confirmados'"
+  />
+
+  <div class="guests-card__actions no-print">
+    <org-button
+      class="guests-card__action"
+      label="Excel"
+      icon="download"
+      variant="secondary"
+      [disabled]="guests().length === 0"
+      (pressed)="exportCsv.emit()"
+    />
+    <org-button
+      class="guests-card__action"
+      label="Imprimir"
+      icon="print"
+      variant="secondary"
+      [disabled]="guests().length === 0"
+      (pressed)="print.emit()"
+    />
+  </div>
+
+  @if (guests().length > 0) {
+    <org-data-table [rows]="guests()" [columns]="columns" ariaLabel="Convidados confirmados" />
+  } @else {
+    <p class="guests-card__empty no-print">Nenhum convidado confirmou presença ainda.</p>
+  }
+</org-surface>

@@ -4,68 +4,25 @@
   width: 100%;
   margin: 12px 0;
 
-  &__panel {
-    background: var(--org-surface);
-    border: 1px solid var(--org-border);
-    border-radius: var(--org-radius-md);
-    box-shadow: none;
-    overflow: hidden;
-  }
-
-  &__header {
-    padding: 0 16px;
-  }
-
-  &__title {
-    display: flex;
-    align-items: center;
-    gap: var(--org-space-sm);
-    font-weight: var(--org-font-weight-semibold);
-    font-size: 0.9375rem;
-    color: var(--org-text-primary);
-  }
-
-  &__icon {
-    color: var(--org-primary);
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-
-  &__description {
-    font-size: 0.8125rem;
-    color: var(--org-text-secondary);
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-
   &__badge {
     display: inline-block;
     padding: 2px var(--org-space-sm);
     font-size: var(--org-font-size-xs);
     font-weight: var(--org-font-weight-bold);
-    background: var(--org-primary-light);
+    background: var(--org-state-selected);
     color: var(--org-primary);
     border-radius: var(--org-radius-sm);
   }
 
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 8px;
-  }
-
   &__select-all-wrap {
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--org-border);
+    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__select-all-label {
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: var(--org-text-primary);
+    font-weight: var(--org-font-weight-semibold);
+    font-size: var(--org-font-size-sm);
+    color: var(--org-on-surface);
   }
 
   &__list {
@@ -92,17 +49,17 @@
   }
 
   &__member-name {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--org-text-primary);
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-medium);
+    color: var(--org-on-surface);
   }
 
   &__member-badge {
-    font-size: 0.6875rem;
+    font-size: var(--org-font-size-xs);
     font-weight: var(--org-font-weight-semibold);
     padding: 1px 6px;
     border-radius: var(--org-radius-xs);
-    background: var(--org-primary-light);
+    background: var(--org-state-selected);
     color: var(--org-primary);
     text-transform: uppercase;
   }
@@ -110,7 +67,7 @@
   &__empty {
     padding: 12px 0;
     text-align: center;
-    color: var(--org-text-secondary);
+    color: var(--org-on-surface-variant);
     font-size: var(--org-font-size-sm);
 
     &-text {
@@ -125,7 +82,7 @@
   }
 
   &__inline-toggle-btn {
-    font-size: 0.8125rem;
+    font-size: var(--org-font-size-sm);
     font-weight: var(--org-font-weight-semibold);
     display: flex;
     align-items: center;
@@ -134,7 +91,7 @@
 
   &__inline-form {
     background: var(--org-surface);
-    border: 1px solid var(--org-border);
+    border: 1px solid var(--org-outline-variant);
     border-radius: var(--org-radius-sm);
     padding: 12px;
     display: flex;
@@ -145,9 +102,9 @@
 
   &__inline-title {
     margin: 0 0 4px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--org-text-primary);
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-semibold);
+    color: var(--org-on-surface);
   }
 
   &__inline-grid {

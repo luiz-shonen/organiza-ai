@@ -3,9 +3,8 @@
 .dashboard {
   &__user-email {
     padding: 8px 16px;
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
-    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__table-wrapper {
@@ -26,8 +25,6 @@
       display: grid;
       grid-template-columns: 2fr 1fr 1.5fr 150px;
       padding: 16px 24px;
-      border-bottom: 1px solid var(--org-outline-variant);
-      background-color: var(--org-surface-container-low);
     }
 
     &__header-title {
@@ -55,7 +52,6 @@
       grid-template-columns: 2fr 1fr 1.5fr 150px;
       padding: 12px 24px;
       align-items: center;
-      border-bottom: 1px solid var(--org-outline-variant);
 
       &:last-child {
         border-bottom: none;
@@ -145,7 +141,7 @@
   &__clickable-row,
   &__clickable-card {
     cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--org-motion-base) var(--org-motion-ease-emphasized);
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.04);
@@ -166,7 +162,7 @@
     padding: 16px 20px;
     margin-bottom: 24px;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform var(--org-motion-base) var(--org-motion-ease);
 
     &:hover {
       transform: translateY(-2px);
@@ -181,15 +177,15 @@
 
   &__alert-icon {
     color: var(--org-primary);
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
+    font-size: var(--org-icon-size-lg);
+    width: var(--org-icon-size-lg);
+    height: var(--org-icon-size-lg);
     flex-shrink: 0;
   }
 
   &__alert-text {
-    font-size: 0.95rem;
-    color: var(--mat-sys-on-surface);
+    font-size: var(--org-font-size-md);
+    color: var(--org-on-surface);
 
     strong {
       color: var(--org-primary);
@@ -197,17 +193,17 @@
     }
 
     span {
-      color: var(--mat-sys-on-surface-variant);
+      color: var(--org-on-surface-variant);
       margin-left: 6px;
-      font-size: 0.85rem;
+      font-size: var(--org-font-size-sm);
     }
   }
 
   &__alert-arrow {
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-icon-size-sm);
+    width: var(--org-icon-size-sm);
+    height: var(--org-icon-size-sm);
   }
 
   &__actions {

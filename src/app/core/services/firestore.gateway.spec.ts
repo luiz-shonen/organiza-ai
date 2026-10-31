@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import type { Firestore } from 'firebase/firestore';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { FirestoreGateway } from './firestore.gateway';
 import { FirebaseService } from './firebase.service';
@@ -37,10 +38,10 @@ const { firestoreMocks } = vi.hoisted(() => {
     query: vi.fn(),
     where: vi.fn(),
     limit: vi.fn(),
-    writeBatch: vi.fn(() => batch),
+    writeBatch: vi.fn((..._args: unknown[]) => batch),
     arrayUnion: vi.fn((...args: unknown[]) => ({ _type: 'arrayUnion', args })),
     arrayRemove: vi.fn((...args: unknown[]) => ({ _type: 'arrayRemove', args })),
-    serverTimestamp: vi.fn(() => ({ _type: 'serverTimestamp' })),
+    serverTimestamp: vi.fn((..._args: unknown[]) => ({ _type: 'serverTimestamp' })),
     Timestamp: MockTimestamp,
   };
 
@@ -50,65 +51,65 @@ const { firestoreMocks } = vi.hoisted(() => {
 vi.mock('firebase/firestore', () => ({
   initializeFirestore: vi.fn(),
   getFirestore: vi.fn(),
-  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
-  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
-  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
-  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
-  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
-  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
-  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
-  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
-  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
-  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
-  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
-  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
-  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
-  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
-  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
-  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
-  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
-  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
+  collection: (...args: unknown[]) => firestoreMocks.collection(...args),
+  collectionGroup: (...args: unknown[]) => firestoreMocks.collectionGroup(...args),
+  doc: (...args: unknown[]) => firestoreMocks.doc(...args),
+  addDoc: (...args: unknown[]) => firestoreMocks.addDoc(...args),
+  setDoc: (...args: unknown[]) => firestoreMocks.setDoc(...args),
+  getDoc: (...args: unknown[]) => firestoreMocks.getDoc(...args),
+  updateDoc: (...args: unknown[]) => firestoreMocks.updateDoc(...args),
+  deleteDoc: (...args: unknown[]) => firestoreMocks.deleteDoc(...args),
+  onSnapshot: (...args: unknown[]) => firestoreMocks.onSnapshot(...args),
+  orderBy: (...args: unknown[]) => firestoreMocks.orderBy(...args),
+  query: (...args: unknown[]) => firestoreMocks.query(...args),
+  where: (...args: unknown[]) => firestoreMocks.where(...args),
+  limit: (...args: unknown[]) => firestoreMocks.limit(...args),
+  getDocs: (...args: unknown[]) => firestoreMocks.getDocs(...args),
+  writeBatch: (...args: unknown[]) => firestoreMocks.writeBatch(...args),
+  arrayUnion: (...args: unknown[]) => firestoreMocks.arrayUnion(...args),
+  arrayRemove: (...args: unknown[]) => firestoreMocks.arrayRemove(...args),
+  serverTimestamp: (...args: unknown[]) => firestoreMocks.serverTimestamp(...args),
   Timestamp: firestoreMocks.Timestamp,
 }));
 
 vi.mock('@firebase/firestore', () => ({
   initializeFirestore: vi.fn(),
   getFirestore: vi.fn(),
-  collection: (...args: any[]) => (firestoreMocks.collection as any)(...args),
-  collectionGroup: (...args: any[]) => (firestoreMocks.collectionGroup as any)(...args),
-  doc: (...args: any[]) => (firestoreMocks.doc as any)(...args),
-  addDoc: (...args: any[]) => (firestoreMocks.addDoc as any)(...args),
-  setDoc: (...args: any[]) => (firestoreMocks.setDoc as any)(...args),
-  getDoc: (...args: any[]) => (firestoreMocks.getDoc as any)(...args),
-  updateDoc: (...args: any[]) => (firestoreMocks.updateDoc as any)(...args),
-  deleteDoc: (...args: any[]) => (firestoreMocks.deleteDoc as any)(...args),
-  onSnapshot: (...args: any[]) => (firestoreMocks.onSnapshot as any)(...args),
-  orderBy: (...args: any[]) => (firestoreMocks.orderBy as any)(...args),
-  query: (...args: any[]) => (firestoreMocks.query as any)(...args),
-  where: (...args: any[]) => (firestoreMocks.where as any)(...args),
-  limit: (...args: any[]) => (firestoreMocks.limit as any)(...args),
-  getDocs: (...args: any[]) => (firestoreMocks.getDocs as any)(...args),
-  writeBatch: (...args: any[]) => (firestoreMocks.writeBatch as any)(...args),
-  arrayUnion: (...args: any[]) => (firestoreMocks.arrayUnion as any)(...args),
-  arrayRemove: (...args: any[]) => (firestoreMocks.arrayRemove as any)(...args),
-  serverTimestamp: (...args: any[]) => (firestoreMocks.serverTimestamp as any)(...args),
+  collection: (...args: unknown[]) => firestoreMocks.collection(...args),
+  collectionGroup: (...args: unknown[]) => firestoreMocks.collectionGroup(...args),
+  doc: (...args: unknown[]) => firestoreMocks.doc(...args),
+  addDoc: (...args: unknown[]) => firestoreMocks.addDoc(...args),
+  setDoc: (...args: unknown[]) => firestoreMocks.setDoc(...args),
+  getDoc: (...args: unknown[]) => firestoreMocks.getDoc(...args),
+  updateDoc: (...args: unknown[]) => firestoreMocks.updateDoc(...args),
+  deleteDoc: (...args: unknown[]) => firestoreMocks.deleteDoc(...args),
+  onSnapshot: (...args: unknown[]) => firestoreMocks.onSnapshot(...args),
+  orderBy: (...args: unknown[]) => firestoreMocks.orderBy(...args),
+  query: (...args: unknown[]) => firestoreMocks.query(...args),
+  where: (...args: unknown[]) => firestoreMocks.where(...args),
+  limit: (...args: unknown[]) => firestoreMocks.limit(...args),
+  getDocs: (...args: unknown[]) => firestoreMocks.getDocs(...args),
+  writeBatch: (...args: unknown[]) => firestoreMocks.writeBatch(...args),
+  arrayUnion: (...args: unknown[]) => firestoreMocks.arrayUnion(...args),
+  arrayRemove: (...args: unknown[]) => firestoreMocks.arrayRemove(...args),
+  serverTimestamp: (...args: unknown[]) => firestoreMocks.serverTimestamp(...args),
   Timestamp: firestoreMocks.Timestamp,
 }));
 
 describe('FirestoreGateway', () => {
   let gateway: FirestoreGateway;
-  const mockFirestore = {} as any;
+  const mockFirestore = {} as Firestore;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    firestoreMocks.doc.mockReturnValue('mock-doc-ref' as any);
-    firestoreMocks.collection.mockReturnValue('mock-col-ref' as any);
-    firestoreMocks.collectionGroup.mockReturnValue('mock-group-ref' as any);
-    firestoreMocks.query.mockReturnValue('mock-query-ref' as any);
-    firestoreMocks.where.mockReturnValue('mock-where-constraint' as any);
-    firestoreMocks.orderBy.mockReturnValue('mock-orderby-constraint' as any);
-    firestoreMocks.limit.mockReturnValue('mock-limit-constraint' as any);
-    firestoreMocks.writeBatch.mockReturnValue(firestoreMocks.batch as any);
+    firestoreMocks.doc.mockReturnValue('mock-doc-ref');
+    firestoreMocks.collection.mockReturnValue('mock-col-ref');
+    firestoreMocks.collectionGroup.mockReturnValue('mock-group-ref');
+    firestoreMocks.query.mockReturnValue('mock-query-ref');
+    firestoreMocks.where.mockReturnValue('mock-where-constraint');
+    firestoreMocks.orderBy.mockReturnValue('mock-orderby-constraint');
+    firestoreMocks.limit.mockReturnValue('mock-limit-constraint');
+    firestoreMocks.writeBatch.mockReturnValue(firestoreMocks.batch);
 
     TestBed.configureTestingModule({
       providers: [
@@ -169,7 +170,7 @@ describe('FirestoreGateway', () => {
 
   describe('CRUD operations', () => {
     it('getDoc returns null when document does not exist', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({ exists: () => false } as any);
+      firestoreMocks.getDoc.mockResolvedValue({ exists: () => false });
 
       const result = await gateway.getDoc('users/123');
       expect(firestoreMocks.doc).toHaveBeenCalledWith(mockFirestore, 'users/123');
@@ -180,14 +181,14 @@ describe('FirestoreGateway', () => {
       firestoreMocks.getDoc.mockResolvedValue({
         exists: () => true,
         data: () => ({ name: 'Luiz' }),
-      } as any);
+      });
 
       const result = await gateway.getDoc<{ name: string }>('users/123');
       expect(result).toEqual({ name: 'Luiz' });
     });
 
     it('getDocWithId returns null when document does not exist', async () => {
-      firestoreMocks.getDoc.mockResolvedValue({ exists: () => false } as any);
+      firestoreMocks.getDoc.mockResolvedValue({ exists: () => false });
 
       const result = await gateway.getDocWithId('users/123');
       expect(result).toBeNull();
@@ -198,7 +199,7 @@ describe('FirestoreGateway', () => {
         id: '123',
         exists: () => true,
         data: () => ({ name: 'Luiz' }),
-      } as any);
+      });
 
       const result = await gateway.getDocWithId<{ name: string }>('users/123');
       expect(result).toEqual({ id: '123', name: 'Luiz' });
@@ -210,7 +211,7 @@ describe('FirestoreGateway', () => {
           { id: '1', data: () => ({ title: 'Event 1' }) },
           { id: '2', data: () => ({ title: 'Event 2' }) },
         ],
-      } as any);
+      });
 
       const result = await gateway.getDocs<{ title: string }>('events');
       expect(firestoreMocks.collection).toHaveBeenCalledWith(mockFirestore, 'events');
@@ -223,7 +224,7 @@ describe('FirestoreGateway', () => {
     it('getCollectionGroupDocs executes collectionGroup query and returns mapped array', async () => {
       firestoreMocks.getDocs.mockResolvedValue({
         docs: [{ id: 'g1', data: () => ({ name: 'Guest 1' }) }],
-      } as any);
+      });
 
       const result = await gateway.getCollectionGroupDocs<{ name: string }>('guests');
       expect(firestoreMocks.collectionGroup).toHaveBeenCalledWith(mockFirestore, 'guests');
@@ -253,7 +254,7 @@ describe('FirestoreGateway', () => {
     });
 
     it('addDoc creates document and returns its id', async () => {
-      firestoreMocks.addDoc.mockResolvedValue({ id: 'new-id-999' } as any);
+      firestoreMocks.addDoc.mockResolvedValue({ id: 'new-id-999' });
 
       const id = await gateway.addDoc('events', { title: 'Party' });
       expect(firestoreMocks.addDoc).toHaveBeenCalledWith('mock-col-ref', { title: 'Party' });
@@ -263,13 +264,15 @@ describe('FirestoreGateway', () => {
 
   describe('snapshots', () => {
     it('collectionSnapshot emits mapped documents on change', () => {
-      let snapshotCallback: (snap: any) => void = () => {};
-      firestoreMocks.onSnapshot.mockImplementation((_query: any, cb: any) => {
-        snapshotCallback = cb;
-        return () => {};
-      });
+      let snapshotCallback: (snap: unknown) => void = () => {};
+      firestoreMocks.onSnapshot.mockImplementation(
+        (_query: unknown, cb: (snap: unknown) => void) => {
+          snapshotCallback = cb;
+          return () => {};
+        },
+      );
 
-      let emitted: any[] = [];
+      let emitted: unknown[] = [];
       gateway.collectionSnapshot('events').subscribe((data) => {
         emitted = data;
       });
@@ -282,13 +285,13 @@ describe('FirestoreGateway', () => {
     });
 
     it('docSnapshot emits document or null on change', () => {
-      let snapshotCallback: (snap: any) => void = () => {};
-      firestoreMocks.onSnapshot.mockImplementation((_ref: any, cb: any) => {
+      let snapshotCallback: (snap: unknown) => void = () => {};
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, cb: (snap: unknown) => void) => {
         snapshotCallback = cb;
         return () => {};
       });
 
-      let emitted: any = undefined;
+      let emitted: unknown = undefined;
       gateway.docSnapshot('events/evt-1').subscribe((data) => {
         emitted = data;
       });

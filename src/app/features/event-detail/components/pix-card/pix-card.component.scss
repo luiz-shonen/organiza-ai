@@ -2,38 +2,6 @@
   display: grid;
   gap: 16px;
 
-  &__header {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-  }
-
-  &__title,
-  &__subtitle {
-    margin: 0;
-  }
-
-  &__title {
-    font: var(--org-typography-title-medium);
-  }
-
-  &__subtitle {
-    color: var(--org-on-surface-variant);
-    margin-top: 2px;
-  }
-
-  &__icon {
-    background-color: var(--org-primary);
-    color: var(--org-on-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--org-radius-circle);
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-  }
-
   &__split-container {
     display: flex;
     flex-direction: column;
@@ -41,19 +9,19 @@
     margin-top: 12px;
     padding: 12px 16px;
     background: var(--org-surface-variant);
-    border: 1px solid var(--org-border);
+    border: 1px solid var(--org-outline-variant);
     border-radius: var(--org-radius-xs);
     text-align: center;
   }
 
   &__split-label {
-    font-size: 0.85rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
-    font-weight: 500;
+    font-weight: var(--org-font-weight-medium);
   }
 
   &__split-amount {
-    font-size: 1.15rem;
+    font-size: var(--org-font-size-lg);
     font-weight: var(--org-font-weight-bold);
     color: var(--org-primary);
   }
@@ -61,13 +29,12 @@
   &__key-container {
     margin-top: 12px;
     padding: 12px 16px;
-    background-color: var(--org-surface-container);
     border-radius: var(--org-radius-xs);
     text-align: center;
   }
 
   &__key {
-    font-size: 0.95rem;
+    font-size: var(--org-font-size-md);
     font-family: var(--org-font-mono);
     word-break: break-all;
     color: var(--org-on-surface);

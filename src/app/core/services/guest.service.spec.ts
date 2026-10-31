@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { of } from 'rxjs';
 import { GuestService } from './guest.service';
 import { FirestoreGateway } from './firestore.gateway';
-import { FamilyMember } from '../models';
+import { FamilyMember, Guest } from '../models';
 import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
 
 describe('GuestService', () => {
@@ -201,13 +201,13 @@ describe('GuestService', () => {
 
       mockGateway.collectionSnapshot.mockReturnValue(of(mockGuests));
 
-      let result: any = null;
+      let result = null as Guest[] | null;
       service.listGuests('evt-100').subscribe((guests) => {
         result = guests;
       });
 
       expect(result).toHaveLength(1);
-      expect(result[0].name).toBe('Ana');
+      expect(result?.[0].name).toBe('Ana');
     });
 
     it('keeps a legacy count when a stored guest has no companion names', async () => {

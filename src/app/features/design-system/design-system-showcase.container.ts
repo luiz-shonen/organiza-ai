@@ -17,7 +17,6 @@ import {
   OrgDataTableComponent,
   OrgDialogService,
   OrgEmptyStateComponent,
-  OrgIconComponent,
   OrgIconButtonComponent,
   OrgMenuComponent,
   OrgMetricCardComponent,
@@ -47,14 +46,9 @@ import {
   DESIGN_SYSTEM_SECTIONS,
   type DesignSystemNavigationItem,
 } from '../../core/models/design-system-navigation.model';
+import type { SeasonalThemeChoice, SeasonalThemeOption } from '../../core/models';
 import { DesignSystemCodeExampleComponent } from './design-system-code-example.component';
-
-export type SeasonalThemeOption =
-  | 'default'
-  | 'theme-junina'
-  | 'theme-natal'
-  | 'theme-pascoa'
-  | 'theme-ano-novo';
+import { DesignSystemFoundationsComponent } from './design-system-foundations.component';
 
 export type ShowcaseSection = DesignSystemNavigationItem;
 
@@ -78,7 +72,6 @@ interface ShowcaseEventRow {
     OrgDateFieldComponent,
     OrgDataTableComponent,
     OrgEmptyStateComponent,
-    OrgIconComponent,
     OrgIconButtonComponent,
     OrgMenuComponent,
     OrgMetricCardComponent,
@@ -96,6 +89,7 @@ interface ShowcaseEventRow {
     OrgTextareaFieldComponent,
     OrgToggleComponent,
     DesignSystemCodeExampleComponent,
+    DesignSystemFoundationsComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './design-system-showcase.container.html',
@@ -217,21 +211,21 @@ export class DesignSystemShowcaseContainer {
   --org-font-body: 'Plus Jakarta Sans', sans-serif;
   --org-font-display: 'Fraunces', Georgia, serif;
   --org-font-mono: 'JetBrains Mono', monospace;
-  --org-type-display-size: clamp(2.25rem, 5vw, 4.5rem);
-  --org-type-body-size: 1rem;
-  --org-type-body-line-height: 1.6;
+  --org-font-size-display: clamp(2.25rem, 5vw, 4.5rem);
+  --org-font-size-md: 1rem;
+  --org-line-height-relaxed: 1.6;
 }
 
 /* Títulos editoriais no catálogo e em chamadas de produto. */
 .org-page-header__title {
   font-family: var(--org-font-display);
-  font-size: var(--org-type-display-size);
-  line-height: var(--org-type-display-line-height);
+  font-size: var(--org-font-size-display);
+  line-height: var(--org-line-height-display);
 }
 
-/* Texto de interface, campos e ações. */
-.org-button, .org-form-field {
-  font-family: var(--org-font-body);
+/* Estilos compostos para o atalho font (título de card, corpo, rótulo). */
+.org-card-header__heading {
+  font: var(--org-text-title);
 }
 
 /* Código e tokens. */
@@ -324,11 +318,7 @@ this.dialogService.confirm({
     });
   }
 
-  public readonly seasonalOptions: readonly {
-    readonly id: SeasonalThemeOption;
-    readonly label: string;
-    readonly description: string;
-  }[] = [
+  public readonly seasonalOptions: readonly SeasonalThemeChoice[] = [
     { id: 'default', label: 'Organiza', description: 'Rosa, coral e amarelo.' },
     {
       id: 'theme-pascoa',

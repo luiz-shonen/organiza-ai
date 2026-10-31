@@ -54,8 +54,8 @@ describe('AdminFormDrawerComponent', () => {
     fixture.componentRef.setInput('isOpen', true);
     fixture.detectChanges();
 
-    (component as any).form.controls.email.setValue('newadmin@example.com');
-    (component as any).onSubmit();
+    component['form'].controls.email.setValue('newadmin@example.com');
+    component['onSubmit']();
 
     expect(saveSpy).toHaveBeenCalledWith('newadmin@example.com');
   });
@@ -67,8 +67,8 @@ describe('AdminFormDrawerComponent', () => {
     fixture.componentRef.setInput('isOpen', true);
     fixture.detectChanges();
 
-    (component as any).form.controls.email.setValue('invalid-email');
-    (component as any).onSubmit();
+    component['form'].controls.email.setValue('invalid-email');
+    component['onSubmit']();
 
     expect(saveSpy).not.toHaveBeenCalled();
   });

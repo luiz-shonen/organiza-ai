@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService, UserService, FamilyService } from '../../core/services';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import {
+  OrgLoadingStateComponent,
   FeedbackService,
   OrgButtonComponent,
   OrgEmptyStateComponent,
@@ -24,9 +24,9 @@ import {
   selector: 'app-profile-container',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    OrgLoadingStateComponent,
     CommonModule,
     DatePipe,
-    MatProgressSpinnerModule,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
     OrgSectionComponent,

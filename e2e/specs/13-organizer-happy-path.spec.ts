@@ -7,6 +7,12 @@ import {
   assertFocusedFieldCoherence,
   assertNoHorizontalOverflow,
 } from '../helpers/design-tokens.helper';
+import {
+  assertInlineInset,
+  assertStepperLayout,
+  assertSurfaceBlockPadding,
+  assertWithinViewport,
+} from '../helpers/layout.helper';
 
 const mockHappyPathEvent = {
   id: 'happy-event-1',
@@ -217,6 +223,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
     test('[E2E-06] should auto-populate address via ViaCEP mock when typing 8-digit CEP and enable Próximo', async ({
       page,
       eventEditorPage,
+      isMobile,
     }) => {
       // Type 8-digit CEP
       await eventEditorPage.cepInput.fill('01310100');
@@ -241,7 +248,6 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const step2NextBtn = eventEditorPage.nextStepBtns.nth(1);
       await expect(step2NextBtn).toBeEnabled();
 
-      const viewportWidth = page.viewportSize()?.width ?? 0;
       const editorRegions = [
         page.locator('.editor__card, org-surface').first(),
         page.locator('.editor__title, h2, h1').first(),
@@ -251,25 +257,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         step2NextBtn,
       ];
       for (const region of editorRegions) {
-        const regionBox = await region.boundingBox();
-        expect(regionBox).not.toBeNull();
-        if (regionBox) {
-          expect(regionBox.x).toBeGreaterThanOrEqual(12);
-          expect(regionBox.x + regionBox.width).toBeLessThanOrEqual(viewportWidth - 12);
-        }
+        await assertWithinViewport(page, region, 12);
       }
-      const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
-      const stepProgress = page.getByTestId('event-step-progress');
-      if ((page.viewportSize()?.width ?? 0) < 600) {
-        await expect(stepProgress).toBeVisible();
-        await expect(stepProgress).toContainText('Etapa 2 de 3');
-        await expect(stepProgress).toContainText('Endereço do evento');
-        await expect(stepProgress.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '2');
-        await expect(stepperHeader).toHaveCSS('display', 'none');
-      } else {
-        await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
-        await expect(stepperHeader).toHaveCSS('flex-wrap', 'nowrap');
-      }
+      await assertStepperLayout(page, { isMobile, step: 2, label: 'Endereço do evento' });
       await assertNoHorizontalOverflow(page);
 
       const appContent = page.locator('main.app-content');
@@ -293,6 +283,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
     test('[E2E-07] should display Pix key and wishlist item inputs', async ({
       page,
       eventEditorPage,
+      isMobile,
     }) => {
       await setupMockAuthSession(page, {
         uid: 'test-user-uid',
@@ -343,27 +334,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         .first();
       await expect(pixField).toBeVisible();
 
-      const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
-      const stepProgress = page.getByTestId('event-step-progress');
-      if ((page.viewportSize()?.width ?? 0) < 600) {
-        await expect(stepProgress).toBeVisible();
-        await expect(stepProgress).toContainText('Etapa 3 de 3');
-        await expect(stepProgress).toContainText('Pagamento por Pix');
-        await expect(stepProgress.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '3');
-        await expect(stepperHeader).toHaveCSS('display', 'none');
-      } else {
-        await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
-        const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');
-        await expect(activeHeader).toBeVisible();
-        const activeHeaderBox = await activeHeader.boundingBox();
-        expect(activeHeaderBox).not.toBeNull();
-        if (activeHeaderBox) {
-          expect(activeHeaderBox.x).toBeGreaterThanOrEqual(0);
-          expect(activeHeaderBox.x + activeHeaderBox.width).toBeLessThanOrEqual(
-            (page.viewportSize()?.width ?? 0) + 1,
-          );
-        }
-      }
+      await assertStepperLayout(page, { isMobile, step: 3, label: 'Pagamento por Pix' });
 
       const prevBtn = pixForm
         .locator(
@@ -401,7 +372,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.addWishlistItem('Docinhos Gourmet', 'Comida', 20);
 
       // Verify item rendered in list
-      const itemsList = page.locator('.editor__items, ul.editor__items');
+      const itemsList = page.getByTestId('item-list');
       await expect(itemsList).toBeVisible();
       await expect(itemsList).toContainText('Docinhos Gourmet');
     });
@@ -421,7 +392,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.assertLoaded();
 
       // Existing item 'Bolo de Chocolate' is visible
-      const itemsList = page.locator('.editor__items, ul.editor__items');
+      const itemsList = page.getByTestId('item-list');
       await expect(itemsList).toContainText('Bolo de Chocolate');
 
       // Add second item
@@ -463,14 +434,14 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await page.goto('/meus-eventos/evento/happy-event-1');
       await eventEditorPage.assertLoaded();
 
-      const itemsList = page.locator('.editor__items, ul.editor__items');
+      const itemsList = page.getByTestId('item-list');
       await expect(itemsList).toContainText('Bolo de Chocolate');
       await expect(itemsList).toContainText('Refrigerante 2L');
 
       // Delete first item
       const removeBtn = page
         .locator('button[aria-label="Remover Bolo de Chocolate"]')
-        .or(page.locator('.editor__item button').first());
+        .or(page.getByTestId('item-list').locator('li button').first());
       await removeBtn.click();
 
       // Verify removed item is gone, remaining item still present
@@ -845,6 +816,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
     test('[E2E-24] should edit and update user display name in profile card', async ({
       page,
       profilePage,
+      isMobile,
     }) => {
       await setupMockAuthSession(page, {
         uid: 'test-user-uid',
@@ -868,30 +840,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       const profileSurface = page.locator('app-profile-info-card .org-surface').first();
       const editField = page.locator('.profile-info-card__form-field').first();
-      const surfacePadding = await profileSurface.evaluate((surface) => {
-        const style = window.getComputedStyle(surface);
-        return {
-          bottom: style.paddingBottom,
-          top: style.paddingTop,
-        };
-      });
-      const isMobile = (page.viewportSize()?.width ?? 0) < 600;
-      expect(parseInt(surfacePadding.top, 10)).toBeGreaterThanOrEqual(isMobile ? 16 : 24);
-      expect(parseInt(surfacePadding.bottom, 10)).toBeGreaterThanOrEqual(isMobile ? 16 : 24);
-
-      const surfaceBox = await profileSurface.boundingBox();
-      const fieldBox = await editField.boundingBox();
-      expect(surfaceBox).not.toBeNull();
-      expect(fieldBox).not.toBeNull();
-      if (surfaceBox && fieldBox) {
-        const expectedInlineInset = isMobile ? 12 : 16;
-        const leftInset = fieldBox.x - surfaceBox.x;
-        const rightInset = surfaceBox.x + surfaceBox.width - (fieldBox.x + fieldBox.width);
-        expect(leftInset).toBeGreaterThanOrEqual(expectedInlineInset - 2);
-        expect(leftInset).toBeLessThanOrEqual(expectedInlineInset + 6);
-        expect(rightInset).toBeGreaterThanOrEqual(expectedInlineInset - 2);
-        expect(rightInset).toBeLessThanOrEqual(expectedInlineInset + 6);
-      }
+      await assertSurfaceBlockPadding(profileSurface, isMobile);
+      await assertInlineInset(profileSurface, editField, isMobile);
 
       // Enter new name and submit
       await expect(profilePage.nameInput).toBeVisible();

@@ -12,27 +12,15 @@ export class ItemListHarness {
   readonly remainingCount: Locator;
 
   constructor(private readonly pageOrLocator: Page | Locator) {
-    this.listRoot = this.pageOrLocator
-      .getByTestId('item-list-card')
-      .or(
-        this.pageOrLocator.locator(
-          'app-item-list-card, section.item-list-card, [aria-label="Lista de itens do evento"], [aria-label*="itens" i]',
-        ),
-      );
+    this.listRoot = this.pageOrLocator.getByTestId('item-list-card');
 
     this.itemCards = this.listRoot
       .getByTestId('item-card')
       .or(this.listRoot.locator('.item-list-card__item, .glass-card.item-list-card__item'));
 
-    this.claimBtns = this.listRoot
-      .getByTestId('claim-item-btn')
-      .or(this.listRoot.getByRole('button', { name: /levar item|eu levo/i }))
-      .or(this.listRoot.locator('.item-list-card__claim-btn, button:has-text("Eu Levo")'));
+    this.claimBtns = this.listRoot.getByRole('button', { name: /eu levo/i });
 
-    this.unclaimBtns = this.listRoot
-      .getByTestId('unclaim-item-btn')
-      .or(this.listRoot.getByRole('button', { name: /desistir de levar|desistir/i }))
-      .or(this.listRoot.locator('.item-list-card__unclaim-btn, button:has-text("Desistir")'));
+    this.unclaimBtns = this.listRoot.getByRole('button', { name: /desistir/i });
 
     this.remainingCount = this.listRoot
       .getByTestId('item-remaining-count')

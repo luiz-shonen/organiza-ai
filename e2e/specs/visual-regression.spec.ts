@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/test.fixture';
+import type { Page } from '@playwright/test';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
@@ -23,7 +24,7 @@ const mockEvent = {
   updatedAt: new Date().toISOString(),
 };
 
-async function setupSuperAdminSession(page: any): Promise<void> {
+async function setupSuperAdminSession(page: Page): Promise<void> {
   await setupMockAuthSession(page, {
     uid: 'superadmin-visual-uid',
     email: 'luiz.gmr.dev@gmail.com',

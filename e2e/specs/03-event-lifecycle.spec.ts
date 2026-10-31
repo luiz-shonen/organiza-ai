@@ -120,6 +120,18 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(eventEditorPage.nextStepBtns.filter({ visible: true }).first()).toBeEnabled();
   });
 
+  test.describe('below 600px', () => {
+    // The compact "Etapa N de 3" indicator only exists on narrow screens.
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test('should show the compact step progress', async ({ page, eventEditorPage }) => {
+      await page.goto('/meus-eventos/evento/novo');
+      await eventEditorPage.assertLoaded();
+
+      await expect(page.getByTestId('event-step-progress')).toContainText('Etapa 1 de 3');
+    });
+  });
+
   test('should render event editor steps and validate required title and date', async ({
     page,
     eventEditorPage,
@@ -131,13 +143,6 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(
       page.locator('.mat-step-header, .mat-step-label, .editor__step-progress-title, org-step'),
     ).toContainText(['Informações', 'Endereço', 'Pix']);
-
-    if ((page.viewportSize()?.width ?? 0) < 600) {
-      const stepProgress = page.getByTestId('event-step-progress');
-      if (await stepProgress.isVisible()) {
-        await expect(stepProgress).toContainText('Etapa 1 de 3');
-      }
-    }
 
     // Touch and blur title input without value to trigger validation
     await eventEditorPage.titleInput.focus();
@@ -222,7 +227,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(snackBar).toContainText(/Evento cancelado com sucesso/i);
   });
 
-  test('should render category chips with distinct semantic classes and update selection in editor', async ({
+  test('should render every category chip and keep a single selection in editor', async ({
     page,
     eventEditorPage,
   }) => {
@@ -232,28 +237,26 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Verify all 7 event category chips exist
     await expect(eventEditorPage.categoryChips).toHaveCount(7);
 
-    // Verify distinct category classes are present on the chips
-    const chipClasses = [
-      'cat-aniversario',
-      'cat-casamento',
-      'cat-festa',
-      'cat-churrasco',
-      'cat-happy',
-      'cat-formatura',
-      'cat-outros',
+    const categoryLabels = [
+      'Aniversário',
+      'Casamento',
+      'Festa Junina',
+      'Churrasco',
+      'Happy Hour',
+      'Formatura',
+      'Outros',
     ];
-    for (const cls of chipClasses) {
-      const chip = page.locator(`.editor__category-options org-chip.${cls}`);
-      await expect(chip).toBeVisible();
+    for (const label of categoryLabels) {
+      await expect(eventEditorPage.categoryChips.filter({ hasText: label })).toBeVisible();
     }
 
     // Select Churrasco chip
-    const churrascoChip = page.locator('.editor__category-options org-chip.cat-churrasco');
+    const churrascoChip = eventEditorPage.categoryChips.filter({ hasText: 'Churrasco' });
     await churrascoChip.click();
     await expect(churrascoChip.locator('mat-chip-option')).toHaveClass(/mat-mdc-chip-selected/);
 
     // Select Festa Junina chip
-    const festaChip = page.locator('.editor__category-options org-chip.cat-festa');
+    const festaChip = eventEditorPage.categoryChips.filter({ hasText: 'Festa Junina' });
     await festaChip.click();
     await expect(festaChip.locator('mat-chip-option')).toHaveClass(/mat-mdc-chip-selected/);
     await expect(churrascoChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);

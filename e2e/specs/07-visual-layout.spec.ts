@@ -1,7 +1,8 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { Page } from '@playwright/test';
 import { assertNoHorizontalOverflow, assertMinTouchTarget } from '../helpers/design-tokens.helper';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { buildGuestEvent } from '../fixtures/mock-events';
+import { mockFirestoreDocuments, setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -41,6 +42,12 @@ async function setupVisualMockSession(page: Page) {
 
 const VISUAL_THEMES = ['light', 'dark'] as const;
 
+/** Expected `<html>` class list per theme: dark mode adds `dark`, light mode must not. */
+const THEME_ROOT_CLASS: Record<(typeof VISUAL_THEMES)[number], RegExp> = {
+  light: /^(?!.*\bdark\b)/,
+  dark: /\bdark\b/,
+};
+
 test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
   for (const visualTheme of VISUAL_THEMES) {
     test.describe(`${visualTheme} theme`, () => {
@@ -52,17 +59,12 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         homePage,
         page,
       }) => {
+        await mockFirestoreDocuments(page, { events: mockSampleEvents });
         await homePage.goto('/');
         await homePage.assertLoaded();
 
-        // Verify zero horizontal overflow on Home
         await assertNoHorizontalOverflow(page);
-
-        if (visualTheme === 'dark') {
-          await expect(page.locator('html')).toHaveClass(/dark/);
-        } else {
-          await expect(page.locator('html')).not.toHaveClass(/dark/);
-        }
+        await expect(page.locator('html')).toHaveClass(THEME_ROOT_CLASS[visualTheme]);
 
         await homePage.captureScreenshot('01-home');
       });
@@ -103,11 +105,8 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         await assertMinTouchTarget(dashboardPage.createEventBtn, 48);
 
         // Verify filter chips have proper accessible layout and touch target
-        const chipCount = await dashboardPage.filterChips.count();
-        expect(chipCount).toBeGreaterThanOrEqual(1);
-        if (chipCount > 0) {
-          await assertMinTouchTarget(dashboardPage.filterChips.first(), 48);
-        }
+        await expect(dashboardPage.filterChips.first()).toBeVisible();
+        await assertMinTouchTarget(dashboardPage.filterChips.first(), 48);
 
         // Capture Dashboard Baseline
         await dashboardPage.captureScreenshot('04-organizer-dashboard');
@@ -166,20 +165,11 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
       test('should capture Event Detail and RSVP dialog layout with glassmorphic modal', async ({
         eventDetailPage,
         rsvpDialog,
-        homePage,
         page,
       }) => {
-        await homePage.goto('/');
-        await homePage.assertLoaded();
-
-        const cardCount = await homePage.eventCards.count();
-        if (cardCount > 0) {
-          await homePage.clickEventCard(0);
-          await page.waitForURL(/\/evento\/.+/);
-        } else {
-          await eventDetailPage.goto('/evento/placeholder-event');
-        }
-
+        const event = buildGuestEvent();
+        await setupMockAuthSession(page, { uid: 'visual-guest-uid', events: [event] });
+        await eventDetailPage.goto(`/evento/${event.id}`);
         await eventDetailPage.assertLoaded();
 
         // Verify zero horizontal overflow on Event Detail
@@ -188,24 +178,10 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         // Capture Event Detail View
         await eventDetailPage.captureScreenshot('06-event-detail');
 
-        // Open RSVP Dialog if button available
-        const hasRsvpBtn = await eventDetailPage.rsvpBtn.isVisible().catch(() => false);
-        if (hasRsvpBtn) {
-          await eventDetailPage.openRsvpDialog();
-          const dialogVisible = await rsvpDialog.dialogRoot
-            .first()
-            .isVisible({ timeout: 3000 })
-            .catch(() => false);
-          if (dialogVisible) {
-            await rsvpDialog.assertVisible();
-
-            // Verify zero horizontal overflow on RSVP Dialog
-            await assertNoHorizontalOverflow(page);
-
-            // Capture RSVP Dialog Modal Baseline
-            await eventDetailPage.captureScreenshot('07-rsvp-dialog-modal');
-          }
-        }
+        await eventDetailPage.openRsvpDialog();
+        await rsvpDialog.assertVisible();
+        await assertNoHorizontalOverflow(page);
+        await eventDetailPage.captureScreenshot('07-rsvp-dialog-modal');
       });
 
       test('should capture User Profile with personal info and Family Roster Manager', async ({

@@ -71,16 +71,20 @@ export class SharePanelHarness {
   /**
    * Gets the href or target URL of the WhatsApp share button.
    */
-  async getWhatsAppHref(): Promise<string | null> {
-    const href = await this.whatsappBtn.getAttribute('href');
-    if (href) {
-      return href;
-    }
-    const dataHref = await this.whatsappBtn.getAttribute('data-href');
-    if (dataHref) {
-      return dataHref;
-    }
-    return null;
+  /** Clicks the WhatsApp button and returns the URL the app tried to open (window.open is stubbed). */
+  async captureWhatsAppShareUrl(): Promise<string> {
+    await this.page.evaluate(() => {
+      const opened: string[] = [];
+      Object.assign(window, { __openedUrls: opened });
+      window.open = (url?: string | URL) => {
+        opened.push(String(url));
+        return null;
+      };
+    });
+    await this.whatsappBtn.first().click();
+    return this.page.evaluate(
+      () => (window as unknown as { __openedUrls: string[] }).__openedUrls[0] ?? '',
+    );
   }
 
   /**

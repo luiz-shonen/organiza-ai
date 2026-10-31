@@ -118,14 +118,8 @@ test.describe('User Profile and Family Roster Management', () => {
     // 1. Add first family member: Spouse
     await familyRoster.nameInput.fill('Mariana Silva');
     await familyRoster.relationshipSelect.click();
-    const spouseOption = page.locator('mat-option').filter({ hasText: 'Cônjuge' }).first();
-    if (await spouseOption.isVisible()) {
-      await spouseOption.click();
-    }
-
-    if (await familyRoster.phoneInput.isVisible()) {
-      await familyRoster.phoneInput.fill('(11) 98888-7777');
-    }
+    await page.getByRole('option', { name: 'Cônjuge' }).click();
+    await familyRoster.phoneInput.fill('(11) 98888-7777');
 
     await expect(familyRoster.addMemberBtn).toBeEnabled();
     await familyRoster.addMemberBtn.click();
@@ -158,59 +152,27 @@ test.describe('User Profile and Family Roster Management', () => {
     rsvpDialog,
     familyRoster,
   }) => {
-    // Navigate to public event detail page
     await eventDetailPage.goto('/evento/test-event-placeholder');
     await eventDetailPage.assertLoaded();
 
-    // Open RSVP Dialog if available on test event
-    const hasRsvpBtn = await eventDetailPage.rsvpBtn.isVisible().catch(() => false);
-    if (hasRsvpBtn) {
-      await eventDetailPage.openRsvpDialog();
-      const isDialogVisible = await rsvpDialog.dialogRoot
-        .first()
-        .isVisible({ timeout: 3000 })
-        .catch(() => false);
-      if (isDialogVisible) {
-        await rsvpDialog.assertVisible();
-        await expect(rsvpDialog.dialogRoot.first()).toBeVisible();
+    await eventDetailPage.openRsvpDialog();
+    await rsvpDialog.assertVisible();
+    await expect(rsvpDialog.familySelector).toBeVisible();
 
-        // Family selector section presence inside RSVP dialog
-        const hasFamilySelector = await rsvpDialog.familySelector.isVisible().catch(() => false);
-        if (hasFamilySelector) {
-          await expect(rsvpDialog.familySelector).toBeVisible();
+    // The family selector starts collapsed; expanding it reveals "Selecionar Todos".
+    const panelHeader = rsvpDialog.familySelector.locator('mat-expansion-panel-header');
+    await expect(panelHeader).toHaveAttribute('aria-expanded', 'false');
+    await panelHeader.click();
+    await expect(panelHeader).toHaveAttribute('aria-expanded', 'true');
 
-          // Expand family selector expansion panel if collapsed
-          const panelHeader = rsvpDialog.familySelector.locator(
-            'mat-expansion-panel-header, .family-selector__header',
-          );
-          if (await panelHeader.isVisible()) {
-            const isExpanded = await panelHeader.getAttribute('aria-expanded');
-            if (isExpanded !== 'true') {
-              await panelHeader.click();
-            }
-          }
+    await familyRoster.selectAllCheckbox.first().click();
+    const badge = rsvpDialog.familySelector.locator('.family-selector__badge');
+    await expect(badge).toContainText(/1 selecionado/i);
 
-          // Check if select all or inline form are available
-          const selectAllCheckbox = familyRoster.selectAllCheckbox.first();
-          if (await selectAllCheckbox.isVisible()) {
-            await selectAllCheckbox.click();
-            const badge = rsvpDialog.familySelector.locator('.family-selector__badge');
-            await expect(badge).toBeVisible();
-            await expect(badge).toContainText(/selecionado/i);
-          }
-        }
+    await rsvpDialog.nameInput.fill('Carlos Alberto Silva');
+    await rsvpDialog.phoneInput.fill('11999998888');
 
-        // Verify main RSVP form inputs
-        if (await rsvpDialog.nameInput.isVisible()) {
-          await rsvpDialog.nameInput.fill('Carlos Alberto Silva');
-        }
-        if (await rsvpDialog.phoneInput.isVisible()) {
-          await rsvpDialog.phoneInput.fill('11999998888');
-        }
-
-        await rsvpDialog.cancel();
-        await rsvpDialog.assertHidden();
-      }
-    }
+    await rsvpDialog.cancel();
+    await rsvpDialog.assertHidden();
   });
 });

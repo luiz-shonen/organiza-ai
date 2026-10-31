@@ -1,48 +1,42 @@
 import { test, expect } from '../fixtures/test.fixture';
+import { buildGuestEvent } from '../fixtures/mock-events';
+import { mockFirestoreDocuments } from '../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertSingleSurfaceRing,
 } from '../helpers/design-tokens.helper';
 
 test.describe('Home Theming, Feed and Accessibility', () => {
-  test('should render home landmark region and available event cards or empty state', async ({
+  test('should render home landmark region and navigable event cards', async ({
     homePage,
     page,
   }) => {
+    await mockFirestoreDocuments(page, { events: [buildGuestEvent()] });
     await homePage.goto('/');
     await homePage.assertLoaded();
 
-    // Semantic landmark assertion
     await expect(homePage.pageRoot).toBeVisible();
     await expect(homePage.pageRoot).toHaveAttribute('aria-label', 'Eventos disponíveis');
+    await expect(page.getByRole('heading', { level: 1, name: /eventos/i })).toBeVisible();
 
-    // Page header title
-    const headerTitle = page.getByRole('heading', { level: 1, name: /eventos/i });
-    await expect(headerTitle).toBeVisible();
+    const firstCard = homePage.eventCards.first();
+    await expect(firstCard).toBeVisible();
+    await expect(firstCard).toHaveAttribute('role', 'link');
+    await expect(firstCard).toHaveAttribute('tabindex', '0');
+    await assertSingleSurfaceRing(firstCard.locator('.org-surface'));
+    await assertNoHorizontalOverflow(page);
 
-    // Wait for either event cards or empty state to appear
-    await expect(homePage.eventCards.first().or(homePage.emptyState)).toBeVisible({
-      timeout: 10000,
-    });
-    const hasEvents = await homePage.eventCards
-      .first()
-      .isVisible()
-      .catch(() => false);
-    if (hasEvents) {
-      const firstCard = homePage.eventCards.first();
-      await expect(firstCard).toBeVisible();
-      await expect(firstCard).toHaveAttribute('role', 'link');
-      await expect(firstCard).toHaveAttribute('tabindex', '0');
-      await assertSingleSurfaceRing(firstCard.locator('.org-surface'));
+    await homePage.clickEventCard(0);
+    await expect(page).toHaveURL(/\/evento\/.+/);
+  });
 
-      // Verify card click navigation
-      await homePage.clickEventCard(0);
-      await page.waitForURL(/\/evento\/.+/);
-      await expect(page).toHaveURL(/\/evento\/.+/);
-    } else {
-      await expect(homePage.emptyState).toBeVisible();
-      await assertSingleSurfaceRing(homePage.emptyState.locator('.org-surface'));
-    }
+  test('should render the empty state when there are no events', async ({ homePage, page }) => {
+    await mockFirestoreDocuments(page, { events: [] });
+    await homePage.goto('/');
+    await homePage.assertLoaded();
+
+    await expect(homePage.emptyState).toBeVisible();
+    await assertSingleSurfaceRing(homePage.emptyState.locator('.org-surface'));
     await assertNoHorizontalOverflow(page);
   });
 

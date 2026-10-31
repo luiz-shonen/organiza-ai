@@ -12,6 +12,7 @@ import { SharePanelHarness } from '../components/share-panel.harness';
 import { FamilyRosterHarness } from '../components/family-roster.harness';
 import { ConfirmDialogHarness } from '../components/confirm-dialog.harness';
 import AxeBuilder from '@axe-core/playwright';
+import { mockFirestoreDocuments } from '../helpers/auth-mock.helper';
 
 export type AppFixtures = {
   homePage: HomePage;
@@ -27,9 +28,19 @@ export type AppFixtures = {
   familyRoster: FamilyRosterHarness;
   confirmDialog: ConfirmDialogHarness;
   makeAxeBuilder: () => AxeBuilder;
+  isolatedFirestore: void;
 };
 
 export const test = base.extend<AppFixtures>({
+  // Every test starts on an empty in-memory Firestore, so no test can read the
+  // real project. Tests that need data install their own documents afterwards.
+  isolatedFirestore: [
+    async ({ page }, use) => {
+      await mockFirestoreDocuments(page);
+      await use();
+    },
+    { auto: true },
+  ],
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
   },

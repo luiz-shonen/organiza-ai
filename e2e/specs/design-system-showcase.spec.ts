@@ -16,8 +16,7 @@ interface SeasonalTokenExpectation {
   readonly secondary: string;
   readonly tertiary: string;
   readonly gradientFragment: string;
-  readonly canvasStart: string;
-  readonly canvasEnd: string;
+  readonly canvas: string;
   readonly ringColor: string;
 }
 
@@ -29,8 +28,7 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
     secondary: '#d2a060',
     tertiary: '#f4d58e',
     gradientFragment: '#7552a8',
-    canvasStart: '#faf6ff',
-    canvasEnd: '#f9f3df',
+    canvas: '#faf6ff',
     ringColor: 'rgba(109, 59, 167, 0.26)',
   },
   {
@@ -40,8 +38,7 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
     secondary: '#ff8c42',
     tertiary: '#ffb300',
     gradientFragment: '#ff5722',
-    canvasStart: '#fff6df',
-    canvasEnd: '#e8f3ff',
+    canvas: '#fff6df',
     ringColor: 'rgba(255, 87, 34, 0.28)',
   },
   {
@@ -51,8 +48,7 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
     secondary: '#d77a61',
     tertiary: '#deb36a',
     gradientFragment: '#b84555',
-    canvasStart: '#fff5f1',
-    canvasEnd: '#eef8ef',
+    canvas: '#fff5f1',
     ringColor: 'rgba(211, 47, 47, 0.28)',
   },
   {
@@ -62,8 +58,7 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
     secondary: '#ead9a5',
     tertiary: '#8293b5',
     gradientFragment: '#b88a33',
-    canvasStart: '#fffbed',
-    canvasEnd: '#edf1fa',
+    canvas: '#fffbed',
     ringColor: 'rgba(178, 122, 16, 0.28)',
   },
 ];
@@ -197,8 +192,7 @@ test.describe('Design System Showcase', () => {
           secondary: style.getPropertyValue('--org-secondary').trim(),
           tertiary: style.getPropertyValue('--org-tertiary').trim(),
           gradient: style.getPropertyValue('--org-gradient-primary').trim(),
-          canvasStart: style.getPropertyValue('--org-canvas-start').trim(),
-          canvasEnd: style.getPropertyValue('--org-canvas-end').trim(),
+          canvas: style.getPropertyValue('--org-canvas').trim(),
           ringColor: style.getPropertyValue('--org-glass-ring-color').trim(),
         };
       });
@@ -207,25 +201,24 @@ test.describe('Design System Showcase', () => {
       expect(tokens.secondary).toBe(theme.secondary);
       expect(tokens.tertiary).toBe(theme.tertiary);
       expect(tokens.gradient).toContain(theme.gradientFragment);
-      expect(tokens.canvasStart).toBe(theme.canvasStart);
-      expect(tokens.canvasEnd).toBe(theme.canvasEnd);
+      expect(tokens.canvas).toBe(theme.canvas);
       expect(tokens.ringColor).toBe(theme.ringColor);
     }
   });
 
   test('toggles the shared application color mode without leaving the route', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('theme_mode', 'light'));
     await openShowcase(page);
     const html = page.locator('html');
-    const wasDark = await html.evaluate((element) => element.classList.contains('dark'));
+    await expect(html).not.toHaveClass(/dark/);
 
     await page.getByRole('button', { name: 'Abrir menu de navegação' }).click();
-    await page.getByTestId(wasDark ? 'drawer-theme-light' : 'drawer-theme-dark').click();
+    await page.getByTestId('drawer-theme-dark').click();
+    await expect(html).toHaveClass(/dark/);
 
-    if (wasDark) {
-      await expect(html).not.toHaveClass(/dark/);
-    } else {
-      await expect(html).toHaveClass(/dark/);
-    }
+    await page.getByTestId('drawer-theme-light').click();
+    await expect(html).not.toHaveClass(/dark/);
+    await expect(page).toHaveURL(/\/design-system/);
   });
 
   test('uses a 24px glass blur and warm invitation treatment on showcase surfaces', async ({
@@ -282,7 +275,7 @@ test.describe('Design System Showcase', () => {
 
     const tokensSection = page.locator('section#spacing');
     await expect(tokensSection).toContainText('--org-radius-xs');
-    await expect(tokensSection).toContainText('--org-radius-pill');
+    await expect(tokensSection).toContainText('--org-radius-full');
     await expect(tokensSection).toContainText('--org-shadow-xs');
     await expect(tokensSection).toContainText('--org-shadow-lg');
 

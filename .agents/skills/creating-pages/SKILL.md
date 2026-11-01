@@ -160,6 +160,8 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
 ### Step 3: BEM Scoped Styles (`.container.scss`)
 
 ```scss
+@use '../../../shared/ui/tokens/semantic' as semantic;
+
 .my-feature-page {
   display: flex;
   flex-direction: column;
@@ -168,7 +170,7 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
   &__header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--org-space-sm);
   }
 
   &__grid {
@@ -176,11 +178,11 @@ Always wrap the container with `<org-page-layout>` and structure with `<org-page
     grid-template-columns: 1fr;
     gap: var(--org-space-md);
 
-    @media (min-width: 600px) {
+    @include semantic.tablet {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    @media (min-width: 960px) {
+    @include semantic.desktop {
       grid-template-columns: repeat(3, 1fr);
     }
   }

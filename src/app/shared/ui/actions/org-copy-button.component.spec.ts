@@ -7,11 +7,12 @@ import { OrgCopyButtonComponent } from './org-copy-button.component';
 describe('OrgCopyButtonComponent', () => {
   let fixture: ComponentFixture<OrgCopyButtonComponent>;
   const clipboard = { copy: vi.fn().mockReturnValue(true) };
-  const feedback = { success: vi.fn() };
+  const feedback = { success: vi.fn(), error: vi.fn() };
 
   beforeEach(() => {
-    clipboard.copy.mockClear();
+    clipboard.copy.mockReset().mockReturnValue(true);
     feedback.success.mockClear();
+    feedback.error.mockClear();
     TestBed.configureTestingModule({
       providers: [
         { provide: Clipboard, useValue: clipboard },
@@ -33,6 +34,21 @@ describe('OrgCopyButtonComponent', () => {
     expect(clipboard.copy).toHaveBeenCalledWith('minha-chave-pix-123');
     expect(feedback.success).toHaveBeenCalledWith('Chave Pix copiada!', { duration: 2000 });
     expect(copied).toHaveBeenCalledWith('minha-chave-pix-123');
+  });
+
+  it('reports a failed copy instead of confirming it', () => {
+    clipboard.copy.mockReturnValue(false);
+    const copied = vi.fn();
+    fixture.componentInstance.copied.subscribe(copied);
+
+    (fixture.nativeElement.querySelector('button') as HTMLButtonElement).click();
+
+    expect(feedback.error).toHaveBeenCalledWith(
+      'Não foi possível copiar. Selecione o texto e copie manualmente.',
+      { duration: 4000 },
+    );
+    expect(feedback.success).not.toHaveBeenCalled();
+    expect(copied).not.toHaveBeenCalled();
   });
 
   it('is disabled when there is nothing to copy', () => {

@@ -110,11 +110,11 @@ export class ItemCardComponent {
 .item-card {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--org-space-sm);
   padding: var(--org-space-md);
   transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
+    transform var(--org-motion-base) var(--org-motion-ease),
+    border-color var(--org-motion-base) var(--org-motion-ease);
 
   &__header {
     display: flex;
@@ -140,7 +140,7 @@ export class ItemCardComponent {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: var(--org-space-sm);
     margin-top: auto;
     padding-top: var(--org-space-sm);
     border-top: 1px solid var(--org-outline-variant);
@@ -152,7 +152,7 @@ export class ItemCardComponent {
   }
 
   &--claimed {
-    border-color: var(--org-primary, #ff4d94);
+    border-color: var(--org-primary);
   }
 }
 ```

@@ -22,7 +22,7 @@ describe('SharePanelComponent', () => {
 
   beforeEach(async () => {
     mockClipboard = {
-      copy: vi.fn(),
+      copy: vi.fn().mockReturnValue(true),
     };
     mockFeedback = {
       success: vi.fn(),

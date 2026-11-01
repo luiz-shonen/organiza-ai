@@ -19,8 +19,8 @@ All UI components and features consuming the design system must follow:
 
 ## 1. Design System Foundations
 
-- **Brand Colors**: Vibrant Modernism palette with Primary (`#ff4d94`), Secondary (`#ff8c42`), and Accent (`#ffc837`).
-- **Glassmorphism**: Glass surfaces with `backdrop-filter: blur(24px)`, `background: var(--org-surface-glass)`, and subtle gradient borders.
+- **Brand Colors**: `--org-primary` (#ff4d94), `--org-secondary` (#ff8c42) and `--org-tertiary` (#ffc837); always use the tokens, never the hex values.
+- **Glassmorphism**: Owned by DS surfaces (`org-surface`, drawers, dialogs) through `--org-glass-bg`, `--org-glass-blur` and the gradient ring; features never write `backdrop-filter`.
 - **Strict Encapsulation**: Feature containers and dumb components must never use raw unstyled Material tags when a canonical `Org*` component exists.
 
 ---

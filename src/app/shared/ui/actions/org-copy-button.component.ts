@@ -22,6 +22,10 @@ export class OrgCopyButtonComponent {
   public readonly value = input.required<string | null>();
   public readonly label = input('Copiar');
   public readonly copiedMessage = input('Copiado!');
+  /** Shown when the browser refuses clipboard access (e.g. in-app webviews). */
+  public readonly failedMessage = input(
+    'Não foi possível copiar. Selecione o texto e copie manualmente.',
+  );
   public readonly variant = input<OrgButtonVariant>('primary');
   public readonly gradient = input(true);
   public readonly fullWidth = input(false);
@@ -33,7 +37,11 @@ export class OrgCopyButtonComponent {
       return;
     }
 
-    this.clipboard.copy(value);
+    if (!this.clipboard.copy(value)) {
+      this.feedback.error(this.failedMessage(), { duration: 4000 });
+      return;
+    }
+
     this.feedback.success(this.copiedMessage(), { duration: 2000 });
     this.copied.emit(value);
   }

@@ -241,7 +241,7 @@ Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha
 
 ### OrgCopyButtonComponent
 
-Uso recomendado: `<org-copy-button label="Copiar link" copiedMessage="Link copiado!" [value]="eventUrl()" />`; it owns the clipboard and the confirmation toast so presentational components stay service-free.
+Uso recomendado: `<org-copy-button label="Copiar link" copiedMessage="Link copiado!" [value]="eventUrl()" />`; it owns the clipboard and the confirmation toast so presentational components stay service-free. When the browser refuses clipboard access (in-app webviews), it shows `failedMessage` as an error toast and does not emit `copied`.
 
 ### OrgLoadingStateComponent
 

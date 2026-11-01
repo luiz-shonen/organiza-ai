@@ -1,0 +1,22 @@
+:host {
+  animation: org-skeleton-pulse 1.5s var(--org-motion-ease-emphasized) infinite;
+  background-color: var(--org-surface-container-high);
+  border-radius: var(--org-radius-xs);
+  display: block;
+  opacity: 0.7;
+}
+
+:host(.org-skeleton--circle) {
+  border-radius: var(--org-radius-circle);
+}
+
+@keyframes org-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}

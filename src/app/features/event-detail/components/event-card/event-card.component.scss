@@ -143,7 +143,7 @@
       border-radius: var(--org-radius-sm);
       padding: var(--org-space-sm);
       margin: calc(-1 * var(--org-space-sm));
-      transition: background-color 0.2s ease;
+      transition: background-color var(--org-motion-base) var(--org-motion-ease);
 
       &:hover {
         background-color: var(--org-surface-variant);
@@ -193,7 +193,7 @@
 
   &__divider {
     border: 0;
-    border-top: 1px solid var(--org-border);
+    border-top: 1px solid var(--org-outline-variant);
     margin: var(--org-space-xs) 0;
   }
 

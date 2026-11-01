@@ -41,40 +41,40 @@ describe('LoginContainer', () => {
 
   it('should create component and initialize form with default values', () => {
     expect(component).toBeTruthy();
-    expect((component as any).form.valid).toBe(false);
-    expect((component as any).loading()).toBe(false);
-    expect((component as any).errorMessage()).toBe('');
-    expect((component as any).hidePassword()).toBe(true);
+    expect(component['form'].valid).toBe(false);
+    expect(component['loading']()).toBe(false);
+    expect(component['errorMessage']()).toBe('');
+    expect(component['hidePassword']()).toBe(true);
   });
 
   it('should toggle password visibility signal', () => {
-    expect((component as any).hidePassword()).toBe(true);
-    (component as any).hidePassword.set(false);
-    expect((component as any).hidePassword()).toBe(false);
+    expect(component['hidePassword']()).toBe(true);
+    component['hidePassword'].set(false);
+    expect(component['hidePassword']()).toBe(false);
   });
 
   it('should log in and navigate to "/meus-eventos" for regular user', async () => {
     mockAuthService.isAdmin.set(false);
-    (component as any).form.setValue({
+    component['form'].setValue({
       email: 'user@example.com',
       password: 'password123',
     });
 
-    await (component as any).submit();
+    await component['submit']();
 
     expect(mockAuthService.login).toHaveBeenCalledWith('user@example.com', 'password123');
     expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
-    expect((component as any).loading()).toBe(false);
+    expect(component['loading']()).toBe(false);
   });
 
   it('should keep Super Admin password login on the organizer dashboard', async () => {
     mockAuthService.isAdmin.set(true);
-    (component as any).form.setValue({
+    component['form'].setValue({
       email: 'admin@example.com',
       password: 'password123',
     });
 
-    await (component as any).submit();
+    await component['submit']();
 
     expect(mockAuthService.login).toHaveBeenCalledWith('admin@example.com', 'password123');
     expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
@@ -83,12 +83,12 @@ describe('LoginContainer', () => {
   it('should attempt automatic registration when login throws user-not-found', async () => {
     mockAuthService.login.mockRejectedValueOnce(new Error('auth/user-not-found'));
     mockAuthService.isAdmin.set(false);
-    (component as any).form.setValue({
+    component['form'].setValue({
       email: 'newuser@example.com',
       password: 'password123',
     });
 
-    await (component as any).submit();
+    await component['submit']();
 
     expect(mockAuthService.register).toHaveBeenCalledWith('newuser@example.com', 'password123');
     expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
@@ -97,50 +97,50 @@ describe('LoginContainer', () => {
   it('should handle registration errors when fallback registration fails', async () => {
     mockAuthService.login.mockRejectedValueOnce(new Error('invalid-credential'));
     mockAuthService.register.mockRejectedValueOnce(new Error('weak-password'));
-    (component as any).form.setValue({
+    component['form'].setValue({
       email: 'user@example.com',
       password: '123456',
     });
 
-    await (component as any).submit();
+    await component['submit']();
 
-    expect((component as any).errorMessage()).toBe('A senha deve ter pelo menos 6 caracteres.');
+    expect(component['errorMessage']()).toBe('A senha deve ter pelo menos 6 caracteres.');
   });
 
   it('should handle wrong password login error', async () => {
     mockAuthService.login.mockRejectedValueOnce(new Error('wrong-password'));
-    (component as any).form.setValue({
+    component['form'].setValue({
       email: 'user@example.com',
       password: 'wrongpassword',
     });
 
-    await (component as any).submit();
+    await component['submit']();
 
-    expect((component as any).errorMessage()).toBe('E-mail ou senha incorretos.');
+    expect(component['errorMessage']()).toBe('E-mail ou senha incorretos.');
   });
 
   it('should login with Google and redirect successfully', async () => {
     mockAuthService.isAdmin.set(false);
-    await (component as any).loginWithGoogle();
+    await component['loginWithGoogle']();
 
     expect(mockAuthService.loginWithGoogle).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
-    expect((component as any).loading()).toBe(false);
+    expect(component['loading']()).toBe(false);
   });
 
   it('should handle Google login error with NOT_ADMIN message', async () => {
     mockAuthService.loginWithGoogle.mockRejectedValueOnce(new Error('NOT_ADMIN'));
-    await (component as any).loginWithGoogle();
+    await component['loginWithGoogle']();
 
-    expect((component as any).errorMessage()).toBe('Acesso Negado: Seu e-mail não tem permissão.');
-    expect((component as any).loading()).toBe(false);
+    expect(component['errorMessage']()).toBe('Acesso Negado: Seu e-mail não tem permissão.');
+    expect(component['loading']()).toBe(false);
   });
 
   it('should handle generic Google login error', async () => {
     mockAuthService.loginWithGoogle.mockRejectedValueOnce(new Error('Popup closed'));
-    await (component as any).loginWithGoogle();
+    await component['loginWithGoogle']();
 
-    expect((component as any).errorMessage()).toBe('Falha ao autenticar com o Google.');
-    expect((component as any).loading()).toBe(false);
+    expect(component['errorMessage']()).toBe('Falha ao autenticar com o Google.');
+    expect(component['loading']()).toBe(false);
   });
 });

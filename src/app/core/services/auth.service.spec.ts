@@ -58,10 +58,11 @@ describe('AuthService', () => {
   let service: AuthService;
   let mockGateway: MockFirestoreGateway;
 
-  const mockAuth = {
+  const mockAuthState = {
     currentUser: null as User | null,
     authStateReady: vi.fn().mockResolvedValue(undefined),
-  } as unknown as Auth;
+  };
+  const mockAuth = mockAuthState as unknown as Auth;
 
   const superAdminUser = {
     uid: 'super-admin-uid',
@@ -82,8 +83,8 @@ describe('AuthService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGateway = createMockFirestoreGateway();
-    (mockAuth as any).currentUser = null;
-    (mockAuth.authStateReady as any).mockResolvedValue(undefined);
+    mockAuthState.currentUser = null;
+    mockAuthState.authStateReady.mockResolvedValue(undefined);
     mocks.setAuthCallback(null);
 
     TestBed.configureTestingModule({
@@ -278,7 +279,7 @@ describe('AuthService', () => {
 
   describe('sendVerificationEmail', () => {
     it('dispatches sendEmailVerification when auth.currentUser is present', async () => {
-      (mockAuth as any).currentUser = regularUser;
+      mockAuthState.currentUser = regularUser;
       mocks.mockSendEmailVerification.mockResolvedValue(undefined);
 
       await service.sendVerificationEmail();
@@ -287,7 +288,7 @@ describe('AuthService', () => {
     });
 
     it('does nothing when auth.currentUser is null', async () => {
-      (mockAuth as any).currentUser = null;
+      mockAuthState.currentUser = null;
 
       await service.sendVerificationEmail();
 
@@ -320,9 +321,9 @@ describe('AuthService', () => {
         email: null,
       } as unknown as User;
 
-      (mockAuth as any).currentUser = null;
+      mockAuthState.currentUser = null;
       mocks.mockSignInAnonymously.mockImplementation(async () => {
-        (mockAuth as any).currentUser = anonUser;
+        mockAuthState.currentUser = anonUser;
         return { user: anonUser } as UserCredential;
       });
 
@@ -335,7 +336,7 @@ describe('AuthService', () => {
     });
 
     it('does not call signInAnonymously if already logged in', async () => {
-      (mockAuth as any).currentUser = regularUser;
+      mockAuthState.currentUser = regularUser;
 
       await service.loginAnonymously();
 

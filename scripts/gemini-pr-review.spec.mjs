@@ -1,157 +1,81 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import test from 'node:test';
 import {
-  findRelevantSpec,
   buildSystemPrompt,
   buildUserPrompt,
   REVIEW_COMMENT_MARKER,
   NOTICE_COMMENT_MARKER,
   NOTICE_COMMENT_BODY,
   FALLBACK_MODELS,
+  GENERATION_CONFIG,
   ARCHITECTURAL_GUIDELINES,
   TAXONOMY_GUIDELINES,
-  OUT_OF_SCOPE_SPEC_GUIDELINES,
+  ISSUE_PROPOSAL_MARKER,
+  OUT_OF_SCOPE_ISSUE_GUIDELINES,
   parseIssueProposal,
 } from './gemini-pr-review.mjs';
-
-async function createTempSpecsDir(specs) {
-  const root = await mkdtemp(join(tmpdir(), 'organiza-specs-'));
-  for (const [featureName, specContent] of Object.entries(specs)) {
-    const featureDir = join(root, featureName);
-    await mkdir(featureDir, { recursive: true });
-    await writeFile(join(featureDir, 'spec.md'), specContent, 'utf8');
-  }
-  return root;
-}
 
 test('gemini-pr-review: constants and markers are properly defined', () => {
   assert.equal(REVIEW_COMMENT_MARKER, '<!-- organiza-ai-gemini-review -->');
   assert.equal(NOTICE_COMMENT_MARKER, '<!-- organiza-ai-gemini-review-notice -->');
   assert.ok(NOTICE_COMMENT_BODY.includes(NOTICE_COMMENT_MARKER));
   assert.ok(NOTICE_COMMENT_BODY.includes('/review'));
-  assert.ok(FALLBACK_MODELS.includes('gemini-3.8-flash'));
-  assert.ok(FALLBACK_MODELS.includes('gemini-3.5-flash'));
+  assert.deepEqual(FALLBACK_MODELS, ['gemini-3.8-flash', 'gemini-flash-latest']);
+  assert.deepEqual(GENERATION_CONFIG, { thinkingConfig: { thinkingLevel: 'high' } });
   assert.ok(ARCHITECTURAL_GUIDELINES.includes('OnPush'));
   assert.ok(TAXONOMY_GUIDELINES.includes('P1 (Crítico / Bloqueante)'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('EARS'));
+  assert.equal(ISSUE_PROPOSAL_MARKER, '#### 🚀 Proposta para Nova Issue');
 });
 
-test('gemini-pr-review: findRelevantSpec detects spec from diff path', async () => {
-  const specsDir = await createTempSpecsDir({
-    '01-home-theming': '# Spec 01: Home Theming',
-    '02-auth-guards': '# Spec 02: Auth Guards',
-  });
-
-  try {
-    const diff =
-      'diff --git a/.specs/features/01-home-theming/spec.md b/.specs/features/01-home-theming/spec.md';
-    const result = findRelevantSpec(diff, 'feat/unrelated', 'Some Title', 'Some Body', specsDir);
-
-    assert.ok(result);
-    assert.equal(result.id, '01-home-theming');
-    assert.equal(result.content, '# Spec 01: Home Theming');
-  } finally {
-    await rm(specsDir, { recursive: true, force: true });
-  }
+test('gemini-pr-review: buildSystemPrompt includes architectural rules and priority taxonomy', () => {
+  const prompt = buildSystemPrompt();
+  assert.ok(prompt.includes(REVIEW_COMMENT_MARKER));
+  assert.ok(prompt.includes('P1 (Crítico / Bloqueante)'));
+  assert.ok(prompt.includes('P2 (Importante / Débito Técnico)'));
+  assert.ok(prompt.includes('P3 (Sugestão / Menor / Nitpick)'));
+  assert.ok(prompt.includes(ISSUE_PROPOSAL_MARKER));
+  assert.ok(!/TLC|Spec-Driven|EARS/.test(prompt));
+  assert.ok(!prompt.includes('Conformidade com a Spec:'));
 });
 
-test('gemini-pr-review: findRelevantSpec detects spec from branch name or PR title', async () => {
-  const specsDir = await createTempSpecsDir({
-    '03-event-lifecycle': '# Spec 03: Event Lifecycle',
-  });
-
-  try {
-    const matchByBranch = findRelevantSpec('', 'feature/03-event-lifecycle', '', '', specsDir);
-    assert.ok(matchByBranch);
-    assert.equal(matchByBranch.id, '03-event-lifecycle');
-
-    const matchByTitle = findRelevantSpec(
-      '',
-      'feat/xyz',
-      'feat(core): implement spec 03 criteria',
-      '',
-      specsDir,
-    );
-    assert.ok(matchByTitle);
-    assert.equal(matchByTitle.id, '03-event-lifecycle');
-
-    const noMatch = findRelevantSpec(
-      '',
-      'feat/unrelated',
-      'refactor: minor cleanups',
-      '',
-      specsDir,
-    );
-    assert.equal(noMatch, null);
-  } finally {
-    await rm(specsDir, { recursive: true, force: true });
-  }
-});
-
-test('gemini-pr-review: buildSystemPrompt includes architectural rules, priority taxonomy, and spec section', () => {
-  const promptWithoutSpec = buildSystemPrompt(null);
-  assert.ok(promptWithoutSpec.includes(REVIEW_COMMENT_MARKER));
-  assert.ok(promptWithoutSpec.includes('P1 (Crítico / Bloqueante)'));
-  assert.ok(promptWithoutSpec.includes('P2 (Importante / Débito Técnico)'));
-  assert.ok(promptWithoutSpec.includes('P3 (Sugestão / Menor / Nitpick)'));
-  assert.ok(promptWithoutSpec.includes('Proposta para Nova Issue (TLC Spec-Driven)'));
-  assert.ok(!promptWithoutSpec.includes('Conformidade com a Spec:'));
-
-  const promptWithSpec = buildSystemPrompt({ id: '04-guest-rsvp' });
-  assert.ok(promptWithSpec.includes('Conformidade com a Spec: `04-guest-rsvp`'));
-});
-
-test('gemini-pr-review: buildUserPrompt embeds diff and spec content', () => {
+test('gemini-pr-review: buildUserPrompt embeds the PR goal and the diff', () => {
   const diffSnippet = '+ const isReady = signal(true);';
-  const userPromptNoSpec = buildUserPrompt(diffSnippet, null);
-  assert.ok(userPromptNoSpec.includes(diffSnippet));
-  assert.ok(!userPromptNoSpec.includes('Abaixo está o conteúdo da especificação'));
-
-  const userPromptWithSpec = buildUserPrompt(diffSnippet, {
-    id: '04-guest-rsvp',
-    content: '### User Story 1\nAcceptance criteria in EARS format.',
+  const prompt = buildUserPrompt(diffSnippet, {
+    title: 'feat(rsvp): confirm family members in one tap',
+    body: 'Acceptance: selecting "Selecionar Todos" confirms every member.',
   });
-  assert.ok(userPromptWithSpec.includes(diffSnippet));
-  assert.ok(userPromptWithSpec.includes('.specs/features/04-guest-rsvp/spec.md'));
-  assert.ok(userPromptWithSpec.includes('Acceptance criteria in EARS format.'));
+  assert.ok(prompt.includes(diffSnippet));
+  assert.ok(prompt.includes('feat(rsvp): confirm family members in one tap'));
+  assert.ok(prompt.includes('Selecionar Todos'));
+
+  const withoutMetadata = buildUserPrompt(diffSnippet);
+  assert.ok(withoutMetadata.includes('(sem descrição)'));
 });
 
-test('gemini-pr-review: parseIssueProposal parses structured TLC proposals', () => {
+test('gemini-pr-review: parseIssueProposal parses a test-first issue proposal', () => {
   const reviewWithH5 = `
 ### 🤖 Organiza AI — Code Review pelo Gemini
 #### 🎯 Veredito
 🟢 **Aprovado**
 
-#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+#### 🚀 Proposta para Nova Issue
 ##### feat(event-editor): exportar lista de convidados em PDF
 
-- **Visão Geral e Importância (Valor & Motivação)**:
-  Organizadores precisam imprimir a lista de convidados para controle na portaria.
-
-- **Limites de Escopo**:
-  - **No Escopo**: Botão de exportação para PDF.
-  - **Fora do Escopo**: Envio automático por WhatsApp.
-
-- **Critérios de Aceitação (EARS)**:
-  * QUANDO o usuário clicar em "Exportar PDF", o sistema DEVE baixar o documento formatado.
-
-- **Prompt Pronto para Antigravity Agent (TLC Spec-Driven)**:
-\`\`\`text
-Atue como Senior Angular Architect e execute a skill tlc-spec-driven...
-\`\`\`
+- **Arquivos de referência**: \`src/app/features/organizer/event-editor/components/event-guests-card\`
+- **Problema**: Organizadores precisam imprimir a lista de convidados para a portaria.
+- **Objetivo**: Baixar a lista confirmada em PDF.
+- **Critério de aceite**: Ao clicar em "Exportar PDF", o arquivo baixado lista todos os confirmados.
+- **Teste que prova**: E2E que clica em "Exportar PDF" e verifica o download.
 `;
 
   const parsed = parseIssueProposal(reviewWithH5);
   assert.ok(parsed);
   assert.equal(parsed.title, 'feat(event-editor): exportar lista de convidados em PDF');
-  assert.ok(parsed.body.includes('Visão Geral e Importância'));
-  assert.ok(parsed.body.includes('QUANDO o usuário clicar em "Exportar PDF"'));
+  assert.ok(parsed.body.includes('Teste que prova'));
+  assert.ok(parsed.body.includes('Ao clicar em "Exportar PDF"'));
 
   const reviewWithField = `
-#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
+#### 🚀 Proposta para Nova Issue
 **Título Sugerido**: refactor(signals): migrar formulário para signal-forms
 - Conteúdo da proposta
 `;
@@ -164,19 +88,20 @@ test('gemini-pr-review: parseIssueProposal returns null when section is absent o
   assert.equal(parseIssueProposal(null), null);
   assert.equal(parseIssueProposal(''), null);
   assert.equal(parseIssueProposal('### Review sem propostas fora do escopo'), null);
-  assert.equal(
-    parseIssueProposal('#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)\n   \n'),
-    null,
-  );
+  assert.equal(parseIssueProposal('#### 🚀 Proposta para Nova Issue\n   \n'), null);
 });
 
-test('gemini-pr-review: OUT_OF_SCOPE_SPEC_GUIDELINES includes TLC EARS, reference files and prompt instructions', () => {
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Visão Geral e Importância'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Arquivos de Referência'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Limites de Escopo'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Critérios de Aceitação (Notação EARS'));
-  assert.ok(OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Prompt Pronto para o Agente'));
-  assert.ok(
-    OUT_OF_SCOPE_SPEC_GUIDELINES.includes('Quero apenas a fase Specify da skill tlc-spec-driven'),
-  );
+test('gemini-pr-review: OUT_OF_SCOPE_ISSUE_GUIDELINES asks for a goal, an acceptance check and its test', () => {
+  for (const field of [
+    'Arquivos de referência',
+    'Problema',
+    'Objetivo',
+    'Critério de aceite',
+    'Teste que prova',
+    'Prompt para o agente',
+  ]) {
+    assert.ok(OUT_OF_SCOPE_ISSUE_GUIDELINES.includes(field), field);
+  }
+  assert.ok(OUT_OF_SCOPE_ISSUE_GUIDELINES.includes('Comece pelo teste que prova o critério'));
+  assert.ok(!/TLC|Spec-Driven|EARS|tlc-spec/.test(OUT_OF_SCOPE_ISSUE_GUIDELINES));
 });

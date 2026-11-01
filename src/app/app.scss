@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @use './shared/ui/tokens/semantic' as semantic;
 
 :host {
@@ -9,8 +10,96 @@
 .app-sidenav-container {
   flex: 1;
   height: 100%;
+  min-height: 100dvh;
   width: 100%;
   background: transparent;
+}
+
+.app-sidenav-drawer {
+  @include mat.sidenav-overrides(
+    (
+      container-background-color: var(--org-glass-bg),
+      container-text-color: var(--org-on-surface),
+      container-width: 352px,
+      container-shape: 24px,
+      container-elevation-shadow: -8px 0 32px var(--org-chrome-shadow),
+    )
+  );
+
+  max-width: 90vw;
+  backdrop-filter: var(--org-glass-blur);
+  -webkit-backdrop-filter: var(--org-glass-blur);
+  border: none;
+  border-left: 1px solid var(--org-chrome-edge);
+
+  &--navigation {
+    @include mat.sidenav-overrides(
+      (
+        container-elevation-shadow: 8px 0 32px var(--org-chrome-shadow),
+      )
+    );
+
+    border-left: 0;
+    border-right: 1px solid var(--org-chrome-edge);
+  }
+}
+
+.bg-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--org-surface);
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: var(--org-radius-circle);
+  filter: blur(100px);
+  opacity: 0.4;
+  animation: float 20s infinite alternate ease-in-out;
+
+  &--1 {
+    top: -10%;
+    left: -10%;
+    width: 50vw;
+    height: 50vw;
+    background: var(--org-primary-container);
+  }
+
+  &--2 {
+    bottom: -20%;
+    right: -10%;
+    width: 60vw;
+    height: 60vw;
+    background: var(--org-secondary-container);
+    animation-delay: -5s;
+  }
+
+  &--3 {
+    top: 40%;
+    left: 30%;
+    width: 40vw;
+    height: 40vw;
+    background: var(--org-tertiary-container);
+    opacity: 0.2;
+    animation-duration: 25s;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(5%, 10%) scale(1.05);
+  }
+
+  100% {
+    transform: translate(-5%, -5%) scale(0.95);
+  }
 }
 
 .app-toolbar {
@@ -19,20 +108,15 @@
   z-index: 1000;
   padding: 0 8px;
   min-height: 56px;
-  background: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
+  background: var(--org-chrome-tint);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  color: var(--mat-sys-on-surface);
-  border-bottom: 1px solid rgba(255, 77, 148, 0.15);
+  color: var(--org-on-surface);
+  border-bottom: 1px solid var(--org-chrome-edge);
 
   @include semantic.tablet {
     padding: 0 16px;
     min-height: 64px;
-  }
-
-  .dark & {
-    background: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
-    border-bottom-color: rgba(255, 77, 148, 0.25);
   }
 
   &__back-btn {
@@ -42,11 +126,11 @@
   }
 
   &__dynamic-title {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-bold);
     margin: 0;
-    color: var(--mat-sys-primary);
-    background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-secondary));
+    color: var(--org-primary);
+    background: linear-gradient(135deg, var(--org-primary), var(--org-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -144,9 +228,9 @@
 
   &__user-info {
     padding: 16px;
-    font-size: 0.875rem;
-    color: var(--mat-sys-on-surface-variant);
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    font-size: var(--org-font-size-sm);
+    color: var(--org-on-surface-variant);
+    border-bottom: 1px solid var(--org-outline-variant);
   }
 }
 
@@ -158,9 +242,9 @@
 
 .app-toolbar__user-email {
   padding: 12px 16px;
-  font-size: 0.875rem;
-  color: var(--mat-sys-on-surface-variant);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: var(--org-font-size-sm);
+  color: var(--org-on-surface-variant);
+  border-bottom: 1px solid var(--org-outline-variant);
 }
 
 .app-toolbar__menu-btn {
@@ -169,19 +253,19 @@
 }
 
 .app-offline-banner {
-  background-color: var(--mat-sys-error-container);
-  color: var(--mat-sys-on-error-container);
+  background-color: var(--org-error-container);
+  color: var(--org-on-error-container);
   padding: 8px 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-medium);
 
   mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: var(--org-icon-size-md);
+    width: var(--org-icon-size-md);
+    height: var(--org-icon-size-md);
   }
 }
 

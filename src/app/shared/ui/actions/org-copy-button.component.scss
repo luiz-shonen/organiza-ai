@@ -1,0 +1,4 @@
+// The wrapper is layout-transparent; the inner org-button owns sizing.
+:host {
+  display: contents;
+}

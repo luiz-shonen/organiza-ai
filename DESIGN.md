@@ -10,18 +10,11 @@
 ## Table of Contents
 
 1. [Brand Identity & Festive Narrative](#1-brand-identity--festive-narrative)
-2. [Color Palette & Semantic Tokens](#2-color-palette--semantic-tokens)
-3. [Typography Hierarchy](#3-typography-hierarchy)
-4. [Spacing, Breakpoints & Glassmorphism](#4-spacing-breakpoints--glassmorphism)
+2. [Tokens](#2-tokens)
+3. [Typography](#3-typography)
+4. [Breakpoints, Glass and Elevation](#4-breakpoints-glass-and-elevation)
 5. [Canonical Iconography](#5-canonical-iconography)
 6. [Component Families & Public APIs](#6-component-families--public-apis)
-   - [Surfaces (`orgSurface`)](#61-surfaces-orgsurface)
-   - [Buttons & Links (`orgButton`)](#62-buttons--links-orgbutton)
-   - [Chips & Badges (`orgChip`)](#63-chips--badges-orgchip)
-   - [Forms & Fields (`orgFormField`, `orgFieldLabel`)](#64-forms--fields-orgformfield-orgfieldlabel)
-   - [Layout Primitives (`org-page-layout`, `org-page-header`, `org-section`, `orgFormGrid`)](#65-layout-primitives)
-   - [Feedback & Alerts (`org-empty-state`, `org-banner`, `FeedbackService`)](#66-feedback--alerts)
-   - [Navigation (`app-navigation-drawer`)](#67-navigation)
 7. [Seasonal Theming Architecture](#7-seasonal-theming-architecture)
 8. [Architectural Principles & Quality Standards](#8-architectural-principles--quality-standards)
 9. [DOs and DON'Ts](#9-dos-and-donts)
@@ -41,159 +34,37 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 
 ---
 
-## 2. Color Palette & Semantic Tokens
+## 2. Tokens
 
-### 2.1 Canonical Brand Triple
+The source of truth is `src/app/shared/ui/tokens/`; this section only names the families. Rules and rationale: [docs/knowledge/decisions/tokens-and-theming.md](docs/knowledge/decisions/tokens-and-theming.md).
 
-| Token      | CSS Variable                             | Hex       | Usage                                                                |
-| :--------- | :--------------------------------------- | :-------- | :------------------------------------------------------------------- |
-| **Pink**   | `--org-brand-pink` / `--org-primary`     | `#FF4D94` | Primary brand accent, primary CTA, hero gradients, active highlights |
-| **Orange** | `--org-brand-orange` / `--org-secondary` | `#FF8C42` | Secondary accent, gradient mid-point, decorative highlights          |
-| **Yellow** | `--org-brand-yellow` / `--org-tertiary`  | `#FFC837` | Warm festive accents, countdown badges, highlights                   |
+| Family            | Tokens                                                                                                                  | File                                                                                           |
+| :---------------- | :---------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------------------------------------- | ------- | ------ | ------------------ |
+| Brand             | `--org-primary` (#FF4D94), `--org-secondary` (#FF8C42), `--org-tertiary` (#FFC837) and their `on-` / `-container` pairs | `_semantic.scss`                                                                               |
+| Status            | `--org-error`, `--org-warning`, `--org-success`, `--org-info` (+ `on-` / `-container`)                                  | `_semantic.scss`                                                                               |
+| Surfaces & text   | `--org-canvas`, `--org-surface`, `--org-surface-container-low                                                           | -                                                                                              | high`, `--org-surface-variant`, `--org-on-surface`, `--org-on-surface-variant`, `--org-on-surface-muted` | `_semantic.scss`          |
+| Lines             | `--org-outline`, `--org-outline-variant`                                                                                | `_semantic.scss`                                                                               |
+| States            | `--org-state-hover`, `--org-state-selected`, `--org-scrim`                                                              | `_semantic.scss`                                                                               |
+| Glass & elevation | `--org-glass-bg                                                                                                         | -strong`, `--org-glass-blur`, `--org-glass-ring-color`, `--org-glass-shadow`, `--org-shadow-xs | sm                                                                                                       | md                        | lg                                                                                                                | overlay | primary` | `_semantic.scss` / `_foundation.scss` |
+| Gradients         | `--org-gradient-primary`, `--org-gradient-border`, `--org-gradient-theme-*`                                             | `_semantic.scss`                                                                               |
+| Categories        | `--org-cat-<categoria>-bg                                                                                               | color`                                                                                         | `_semantic.scss`                                                                                         |
+| Typography        | `--org-font-body                                                                                                        | display                                                                                        | mono`, `--org-font-size-2xs…4xl                                                                          | heading                   | display`, `--org-font-weight-_`, `--org-line-height-_`, `--org-letter-spacing-\*`, composites `--org-text-display | heading | title    | body                                  | body-sm | label` | `_foundation.scss` |
+| Spacing           | `--org-space-2xs` (2px) … `--org-space-3xl` (64px)                                                                      | `_foundation.scss`                                                                             |
+| Radius            | `--org-radius-xs                                                                                                        | sm                                                                                             | md                                                                                                       | lg                        | xl                                                                                                                | full    | circle`  | `_foundation.scss`                    |
+| Icons             | `--org-icon-size-sm                                                                                                     | md                                                                                             | lg                                                                                                       | xl` (16 / 20 / 24 / 40px) | `_foundation.scss`                                                                                                |
+| Motion            | `--org-motion-fast                                                                                                      | base                                                                                           | slow`, `--org-motion-ease                                                                                | ease-emphasized`          | `_foundation.scss`                                                                                                |
 
-### 2.2 Semantic Colors (Light & Dark Mode)
+Dark mode redefines the semantic roles on `html.dark`; seasonal themes (`html.theme-*`) are generated from the `$seasonal-themes` map in `_themes.scss`.
 
-```scss
-// Light Theme Defaults
---org-surface: #fff8f8;
---org-surface-card: rgba(255, 255, 255, 0.72);
---org-surface-glass: rgba(255, 255, 255, 0.45);
---org-surface-panel: rgba(255, 255, 255, 0.85);
---org-on-surface: #2a101f;
---org-on-surface-variant: #4a4455;
---org-primary-container: rgba(255, 77, 148, 0.12);
---org-secondary-container: rgba(255, 140, 66, 0.14);
---org-glass-ring-color: rgba(255, 77, 148, 0.18);
---org-glass-border-width: 1px;
+## 3. Typography
 
-// Category Chip Semantic Tokens (Light)
---org-cat-aniversario-bg: rgba(255, 77, 148, 0.12);
---org-cat-aniversario-color: #d81b60;
---org-cat-casamento-bg: rgba(156, 39, 176, 0.12);
---org-cat-casamento-color: #8e24aa;
---org-cat-festa-bg: rgba(255, 140, 66, 0.14);
---org-cat-festa-color: #e65100;
---org-cat-churrasco-bg: rgba(244, 67, 54, 0.12);
---org-cat-churrasco-color: #c62828;
---org-cat-happy-bg: rgba(255, 200, 55, 0.18);
---org-cat-happy-color: #b78103;
---org-cat-formatura-bg: rgba(33, 150, 243, 0.12);
---org-cat-formatura-color: #1565c0;
---org-cat-outros-bg: rgba(158, 158, 158, 0.14);
---org-cat-outros-color: #616161;
+Plus Jakarta Sans for all UI text, Fraunces for display headings in the catalog, JetBrains Mono for code. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
 
-// Dark Theme Overrides (.dark)
---org-surface: #120816;
---org-surface-card: rgba(30, 15, 38, 0.75);
---org-surface-glass: rgba(25, 10, 32, 0.55);
---org-surface-panel: rgba(38, 20, 48, 0.85);
---org-on-surface: #f8edf6;
---org-on-surface-variant: #d4c5d6;
---org-primary-container: rgba(255, 77, 148, 0.22);
---org-secondary-container: rgba(255, 140, 66, 0.24);
---org-glass-ring-color: rgba(255, 77, 148, 0.28);
+## 4. Breakpoints, Glass and Elevation
 
-// Category Chip Semantic Tokens (Dark)
---org-cat-aniversario-bg: rgba(255, 77, 148, 0.22);
---org-cat-aniversario-color: #ff80ab;
---org-cat-casamento-bg: rgba(186, 104, 200, 0.22);
---org-cat-casamento-color: #ce93d8;
---org-cat-festa-bg: rgba(255, 140, 66, 0.22);
---org-cat-festa-color: #ffb74d;
---org-cat-churrasco-bg: rgba(239, 83, 80, 0.22);
---org-cat-churrasco-color: #ef9a9a;
---org-cat-happy-bg: rgba(255, 200, 55, 0.22);
---org-cat-happy-color: #ffe082;
---org-cat-formatura-bg: rgba(66, 165, 245, 0.22);
---org-cat-formatura-color: #90caf9;
---org-cat-outros-bg: rgba(189, 189, 189, 0.22);
---org-cat-outros-color: #e0e0e0;
-```
-
-### 2.3 Status & Functional Tokens
-
-- **Success:** `--org-success: #10B981`, `--org-on-success: #FFFFFF`
-- **Warning:** `--org-warning: #F59E0B`, `--org-on-warning: #000000`
-- **Danger / Error:** `--org-danger: #EF4444`, `--org-on-danger: #FFFFFF`
-- **Info:** `--org-info: #3B82F6`, `--org-on-info: #FFFFFF`
-
----
-
-## 3. Typography Hierarchy
-
-The design system has three explicit type roles. **Plus Jakarta Sans** is the
-default for every interactive and informational interface element. **Fraunces**
-is reserved for editorial display headings and hero calls. **JetBrains Mono** is
-reserved for tokens, code examples, and technical labels in the catalog. Do not
-use a fourth family or a feature-local fallback.
-
-| Role          | CSS variable         | Intended use                                           |
-| :------------ | :------------------- | :----------------------------------------------------- |
-| **Interface** | `--org-font-body`    | Text, actions, fields, navigation, tables, and metrics |
-| **Display**   | `--org-font-display` | Hero titles, page displays, and editorial calls        |
-| **Mono**      | `--org-font-mono`    | Tokens, source examples, and technical annotations     |
-
-| Level               | Size                     | Weight         | Line Height | Letter Spacing | CSS Class                 |
-| :------------------ | :----------------------- | :------------- | :---------- | :------------- | :------------------------ |
-| **Display Large**   | `clamp(36px, 5vw, 72px)` | 600 (SemiBold) | 1.03        | `-0.02em`      | `--org-type-display-size` |
-| **Headline Medium** | `clamp(26px, 3vw, 40px)` | 600 (SemiBold) | 1.12        | `-0.01em`      | `--org-type-heading-size` |
-| **Headline Small**  | `24px`                   | 700 (Bold)     | 1.3         | `normal`       | `.org-headline-sm`        |
-| **Title Medium**    | `20px`                   | 600 (SemiBold) | 1.4         | `normal`       | `.org-title-md`           |
-| **Body Large**      | `18px`                   | 500 (Medium)   | 1.6         | `normal`       | `.org-body-lg`            |
-| **Body Medium**     | `16px`                   | 400 (Regular)  | 1.6         | `normal`       | `.org-body-md`            |
-| **Body Small**      | `14px`                   | 400 (Regular)  | 1.5         | `normal`       | `.org-body-sm`            |
-| **Label Bold**      | `14px`                   | 700 (Bold)     | 1.2         | `0.05em`       | `.org-label-bold`         |
-| **Label Small**     | `12px`                   | 600 (SemiBold) | 1.2         | `0.04em`       | `.org-label-sm`           |
-
----
-
-## 4. Spacing, Breakpoints & Glassmorphism
-
-### 4.1 Standardized Breakpoints
-
-- **Mobile (`< 600px`):** Single-column fluid stacking, `12px-16px` container padding, touch targets $\ge 48\text{px}$.
-- **Tablet (`600px - 899px`):** 2-column grids, `20px-24px` padding, hybrid navigation.
-- **Desktop (`900px - 1199px`):** Multi-column grids, sticky sidebar navigation, `24px-32px` padding.
-- **Wide (`≥ 1200px`):** Max content constraint ($1200\text{px}$ default, $840\text{px}$ compact), `32px-40px` padding.
-
-### 4.2 Spacing Scale
-
-- `2xs: 2px` | `xs: 4px` | `sm: 8px` | `md: 16px` | `lg: 24px` | `xl: 32px` | `2xl: 48px` | `3xl: 64px`
-
-### 4.3 Single-Ring Glassmorphism Standard
-
-To prevent visual artifacts, multiple overlapping borders, or nested outlines, all glass surfaces adhere to the **Single-Ring Contract**:
-
-```scss
-// Applied via [orgSurface]
-backdrop-filter: blur(24px);
--webkit-backdrop-filter: blur(24px);
-border: 1px solid var(--org-glass-ring-color);
-background-clip: padding-box;
-box-shadow: 0 8px 32px 0 rgba(255, 77, 148, 0.08);
-```
-
-### 4.4 Standardized Elevation & Box Shadows
-
-All box shadows must use standardized tokens. Hardcoded pixel/color shadows in component stylesheets are strictly forbidden and enforced by `npm run lint:contracts`:
-
-- `--org-shadow-xs`: `0 1px 2px rgba(0, 0, 0, 0.05)` (Subtle pill, badges, chip elements)
-- `--org-shadow-sm`: `0 2px 6px rgba(0, 0, 0, 0.08)` (Cards, small popups, subtle elevations)
-- `--org-shadow-md`: `0 4px 12px rgba(0, 0, 0, 0.12)` (Hover lifts, active chips, dialogs)
-- `--org-shadow-lg`: `var(--org-glass-shadow)` (Menus, modal sheets, drawer surfaces)
-- `--org-shadow-text`: `0 2px 8px rgba(0, 0, 0, 0.4)` (Hero text, overlay titles)
-
-### 4.5 Standardized Border Radii
-
-- `--org-radius-xs`: `0.375rem` (6px) — Micro controls, links
-- `--org-radius-sm`: `0.75rem` (12px) — Badges, small inputs
-- `--org-radius-md`: `1rem` (16px) — Cards, text fields, menu containers
-- `--org-radius-lg`: `1.25rem` (20px) — Dialogs, bottom sheets
-- `--org-radius-xl`: `1.75rem` (28px) — Large modal containers
-- `--org-radius-pill`: `9999px` — Badges, filter chips, pill buttons
-- `--org-radius-circle`: `50%` — Avatars, circular icon action badges
-
----
+- Breakpoints (mixins in `_semantic.scss`): `semantic.mobile` (< 600px), `semantic.tablet` (≥ 600px), `semantic.desktop` (≥ 900px), `semantic.wide` (≥ 1200px).
+- Glass (`backdrop-filter: var(--org-glass-blur)` + 1.5px gradient ring) belongs to DS surfaces only: `org-surface`, drawers, dialogs, snackbars.
+- Elevation through `--org-shadow-*` / `--org-glass-shadow`; radius through `--org-radius-*`.
 
 ## 5. Canonical Iconography
 
@@ -364,6 +235,26 @@ Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, c
 
 Uso recomendado: `<org-empty-state icon="event" title="Nenhum evento" description="Crie o primeiro evento para começar." />`.
 
+### OrgCardHeaderComponent
+
+Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card; tones are `primary`, `primary-soft` (default), `tertiary` and `success`.
+
+### OrgCopyButtonComponent
+
+Uso recomendado: `<org-copy-button label="Copiar link" copiedMessage="Link copiado!" [value]="eventUrl()" />`; it owns the clipboard and the confirmation toast so presentational components stay service-free. When the browser refuses clipboard access (in-app webviews), it shows `failedMessage` as an error toast and does not emit `copied`.
+
+### OrgLoadingStateComponent
+
+Uso recomendado: `<org-loading-state label="Carregando eventos..." />` for any region that waits on data; it renders the spinner and the announced message, so features never import `MatProgressSpinner`.
+
+### OrgSkeletonComponent
+
+Uso recomendado: `<org-skeleton class="dashboard__skeleton-title" />` (or `shape="circle"`) as a placeholder; the feature class only sets width and height, the pulse and colour belong to the component.
+
+### OrgExpansionPanelComponent
+
+Uso recomendado: `<org-expansion-panel heading="Adicionar Família?" icon="diversity_3" [(expanded)]="open"><span orgExpansionSummary>2 selecionados</span>…</org-expansion-panel>` for collapsible sections.
+
 ### FeedbackSnackbarComponent
 
 Uso recomendado: inject `FeedbackService` and call `success`, `info`, `warning`, or `error`; the snackbar component is service-owned rather than placed in feature templates.
@@ -384,13 +275,17 @@ Não usar em novo código. As diretivas de compatibilidade foram removidas: `Org
 
 ## 7. Seasonal Theming Architecture
 
-The application supports dynamic seasonal overrides on top of the base theme via root class tokens:
+`SeasonalThemeService` adds one class to `<html>`; each class only swaps the brand roles (`--org-primary`, `--org-secondary`, `--org-tertiary`, gradients, canvas and glass ring). Values live in the `$seasonal-themes` map in `src/app/shared/ui/tokens/_themes.scss`:
 
-- `.theme-padrao`: Standard Vibrant Festive theme.
-- `.theme-junina`: Warm amber, straw, and festive checkered warmth (`#FF9F1C`).
-- `.theme-natal`: Holiday ruby red and evergreen accents (`#E63946`, `#2A9D8F`).
-- `.theme-pascoa`: Soft pastel lilac, spring green, and blush tones (`#A8DADC`).
-- `.theme-ano-novo`: Celebratory gold and silver champagne shimmer (`#D4AF37`).
+| Class             | Primary | Secondary | Tertiary |
+| :---------------- | :------ | :-------- | :------- |
+| (none) — padrão   | #FF4D94 | #FF8C42   | #FFC837  |
+| `.theme-junina`   | #FF5722 | #FF8C42   | #FFB300  |
+| `.theme-natal`    | #B84555 | #D77A61   | #DEB36A  |
+| `.theme-pascoa`   | #7552A8 | #D2A060   | #F4D58E  |
+| `.theme-ano-novo` | #B88A33 | #EAD9A5   | #8293B5  |
+
+To add a theme, add one entry to the map and its id to the service.
 
 ---
 
@@ -423,7 +318,8 @@ The application supports dynamic seasonal overrides on top of the base theme via
 ### DON'T
 
 - Do NOT write custom `.mat-mdc-*` CSS overrides in feature components.
-- Do NOT use raw `<mat-icon>`, `<mat-chip>`, `<button mat-button>` or import `MatIconModule`, `MatButtonModule`, `MatChipsModule` in features.
+- Do NOT use any `<mat-*>` tag or import anything from `@angular/material` in features; add an `Org*` primitive instead.
+- Do NOT use `!important`, `--mdc-*` tokens, `.dark` selectors or literal font sizes/weights/durations; use `--org-*` tokens.
 - Do NOT nest multiple glassmorphic borders creating double rings.
 - Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
 - Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.

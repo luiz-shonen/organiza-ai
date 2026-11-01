@@ -21,8 +21,8 @@
   padding: 16px 12px;
   position: relative;
   transition:
-    transform 180ms ease,
-    box-shadow 180ms ease;
+    transform var(--org-motion-fast) var(--org-motion-ease),
+    box-shadow var(--org-motion-fast) var(--org-motion-ease);
 
   &--atmosphere {
     background:

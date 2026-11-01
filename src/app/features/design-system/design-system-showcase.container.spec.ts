@@ -162,7 +162,7 @@ describe('DesignSystemShowcaseContainer', () => {
     expect(spacingSection?.textContent).toContain('--org-radius-md');
     expect(spacingSection?.textContent).toContain('--org-radius-lg');
     expect(spacingSection?.textContent).toContain('--org-radius-xl');
-    expect(spacingSection?.textContent).toContain('--org-radius-pill');
+    expect(spacingSection?.textContent).toContain('--org-radius-full');
 
     const shadowCards = spacingSection?.querySelectorAll('.org-ds-shadow-card');
     expect(shadowCards?.length).toBe(4);

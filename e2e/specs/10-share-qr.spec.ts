@@ -1,5 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { getBoundingBox } from '../helpers/layout.helper';
 
 const mockShareEvent = {
   id: 'event-qr-share-123',
@@ -44,12 +45,9 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     await expect(qrCanvas).toHaveAttribute('aria-label', /QR Code/i);
 
     // 2. Verify canvas dimensions are rendered (> 50px width and height)
-    const box = await qrCanvas.boundingBox();
-    expect(box).not.toBeNull();
-    if (box) {
-      expect(box.width).toBeGreaterThanOrEqual(50);
-      expect(box.height).toBeGreaterThanOrEqual(50);
-    }
+    const box = await getBoundingBox(qrCanvas);
+    expect(box.width).toBeGreaterThanOrEqual(50);
+    expect(box.height).toBeGreaterThanOrEqual(50);
   });
 
   test('should generate WhatsApp share URL schema with event metadata and deep link', async ({
@@ -67,10 +65,9 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     await expect(whatsappBtn).toBeVisible();
 
     // Verify WhatsApp URI schema target or text encoding
-    const href = await sharePanel.getWhatsAppHref();
-    if (href) {
-      expect(href).toMatch(/api\.whatsapp\.com\/send|wa\.me/);
-    }
+    const shareUrl = await sharePanel.captureWhatsAppShareUrl();
+    expect(shareUrl).toMatch(/api\.whatsapp\.com\/send|wa\.me/);
+    expect(decodeURIComponent(shareUrl)).toContain('Churrasco de Aniversário 2026');
   });
 
   test('should copy event deep link to clipboard with user feedback confirmation', async ({
@@ -87,12 +84,6 @@ test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
     await sharePanel.copyLink();
 
     // Verify snackbar feedback toast
-    const snackbar = page.locator(
-      'simple-snack-bar, .mat-mdc-simple-snack-bar, .share-panel__toast',
-    );
-    const isToastVisible = await snackbar.isVisible({ timeout: 3000 }).catch(() => false);
-    if (isToastVisible) {
-      await expect(snackbar).toContainText(/copiado|link/i);
-    }
+    await expect(page.locator('org-feedback-snackbar')).toContainText('Link copiado!');
   });
 });

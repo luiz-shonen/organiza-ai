@@ -11,7 +11,7 @@ This guide documents the complete suite of 32 `Org*` design system components an
 
 All UI components and features consuming the design system must follow:
 
-- **`tlc-spec-driven`**: Implement requirements using testable EARS acceptance criteria and atomic Conventional Commits.
+- **Test-first** ([workflow](../../../docs/knowledge/decisions/workflow.md)): state the goal and an observable acceptance check, write the test that proves it, then implement; commit with Conventional Commits.
 - **`tdd`**: Write unit tests asserting component rendering, accessibility attributes, and user interaction outputs.
 - **`bem-css`**: Style custom feature wrappers with BEM SCSS using `--org-*` custom properties.
 
@@ -19,8 +19,8 @@ All UI components and features consuming the design system must follow:
 
 ## 1. Design System Foundations
 
-- **Brand Colors**: Vibrant Modernism palette with Primary (`#ff4d94`), Secondary (`#ff8c42`), and Accent (`#ffc837`).
-- **Glassmorphism**: Glass surfaces with `backdrop-filter: blur(24px)`, `background: var(--org-surface-glass)`, and subtle gradient borders.
+- **Brand Colors**: `--org-primary` (#ff4d94), `--org-secondary` (#ff8c42) and `--org-tertiary` (#ffc837); always use the tokens, never the hex values.
+- **Glassmorphism**: Owned by DS surfaces (`org-surface`, drawers, dialogs) through `--org-glass-bg`, `--org-glass-blur` and the gradient ring; features never write `backdrop-filter`.
 - **Strict Encapsulation**: Feature containers and dumb components must never use raw unstyled Material tags when a canonical `Org*` component exists.
 
 ---

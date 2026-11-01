@@ -200,10 +200,7 @@ describe('EventEditorContainer', () => {
     });
 
     it('should allow collaborator to add and delete items', async () => {
-      component['newItemName'].set('Refrigerante');
-      component['newItemQuantity'].set(3);
-
-      await component['addItem']();
+      await component['addItem']({ name: 'Refrigerante', quantity: 3 });
 
       expect(mockItemService.addItem).toHaveBeenCalledWith('evt-123', {
         name: 'Refrigerante',

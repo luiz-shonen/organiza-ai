@@ -3,7 +3,11 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { scanDocumentationContract, scanUiContracts } from './validate-ui-contracts.mjs';
+import {
+  scanDocumentationContract,
+  scanStyleConsistency,
+  scanUiContracts,
+} from './validate-ui-contracts.mjs';
 
 async function createFixture(files) {
   const root = await mkdtemp(join(tmpdir(), 'organiza-ui-contracts-'));
@@ -94,6 +98,57 @@ test('requires every closed public component to have recommended documentation a
           'Documente diretivas de compatibilidade como legadas e direcione novos usos ao componente fechado.',
       },
     ]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('rejects undefined tokens, literal typography and motion, dark selectors and dead mdc tokens', async () => {
+  const root = await createFixture({
+    'src/app/shared/ui/tokens/_semantic.scss': ':root { --org-primary: #ff4d94; }',
+    'src/app/features/demo/demo.component.scss': `
+      .demo {
+        color: var(--org-missing);
+        font-size: 14px;
+        transition: color 160ms ease;
+        --mdc-outlined-text-field-outline-color: red;
+        outline-color: var(--org-motion-var(--org-primary));
+        .dark & { color: var(--org-primary); }
+      }
+    `,
+  });
+
+  try {
+    const codes = (await scanStyleConsistency(root)).map((violation) => violation.code);
+    assert.deepEqual(codes, [
+      'undefined-token',
+      'raw-typography',
+      'raw-motion',
+      'dark-mode-selector',
+      'dead-mdc-token',
+      'malformed-token-reference',
+    ]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('accepts token-based styles, optional hooks with fallbacks and literals inside tokens', async () => {
+  const root = await createFixture({
+    'src/app/shared/ui/tokens/_foundation.scss':
+      ':root { --org-font-size-sm: 0.875rem; --org-motion-fast: 160ms; --org-motion-ease: ease; }',
+    'src/app/features/demo/demo.component.scss': `
+      .demo {
+        width: var(--org-hook-width, 100%);
+        font-size: var(--org-font-size-sm);
+        line-height: normal;
+        transition: color var(--org-motion-fast) var(--org-motion-ease);
+      }
+    `,
+  });
+
+  try {
+    assert.deepEqual(await scanStyleConsistency(root), []);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

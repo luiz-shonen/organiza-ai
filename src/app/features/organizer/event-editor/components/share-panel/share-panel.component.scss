@@ -2,37 +2,6 @@
   display: grid;
   gap: 16px;
 
-  &__header {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-  }
-
-  &__title,
-  &__subtitle {
-    margin: 0;
-  }
-
-  &__title {
-    font: var(--org-typography-title-medium);
-  }
-
-  &__subtitle {
-    color: var(--org-on-surface-variant);
-  }
-
-  &__icon {
-    background-color: var(--org-tertiary-container);
-    color: var(--org-on-tertiary-container);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--org-radius-circle);
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-  }
-
   &__qr-container {
     display: flex;
     justify-content: center;
@@ -46,14 +15,13 @@
 
   &__link {
     padding: var(--org-space-sm) 12px;
-    background: var(--org-surface-container);
     border-radius: var(--org-radius-xs);
     margin-top: var(--org-space-sm);
     text-align: center;
   }
 
   &__url {
-    font-size: 0.8rem;
+    font-size: var(--org-font-size-xs);
     word-break: break-all;
     color: var(--org-on-surface-variant);
   }

@@ -11,18 +11,18 @@
   color: var(--navigation-drawer-link-color, var(--org-on-surface-variant));
   display: flex;
   font-family: var(--org-font-body);
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-bold);
   gap: 12px;
   min-height: 48px;
   padding: 0 12px;
   text-align: left;
   text-decoration: none;
   transition:
-    background-color 180ms ease,
-    box-shadow 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
+    background-color var(--org-motion-fast) var(--org-motion-ease),
+    box-shadow var(--org-motion-fast) var(--org-motion-ease),
+    color var(--org-motion-fast) var(--org-motion-ease),
+    transform var(--org-motion-fast) var(--org-motion-ease);
   width: 100%;
 
   &:hover {

@@ -2,62 +2,25 @@
   display: grid;
   gap: 16px;
 
-  &__header {
-    align-items: center;
-    display: flex;
-    gap: 12px;
-  }
-
-  &__title,
-  &__subtitle {
-    margin: 0;
-  }
-
-  &__title {
-    font: var(--org-typography-title-medium);
-  }
-
-  &__subtitle {
-    color: var(--org-on-surface-variant);
-    margin-top: 2px;
-  }
-
-  &__icon {
-    background-color: var(--org-tertiary-container);
-    color: var(--org-on-tertiary-container);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--org-radius-circle);
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-
-    &--confirmed {
-      background-color: rgba(76, 175, 80, 0.15);
-      color: var(--org-success);
-    }
-  }
-
   &__status {
     display: flex;
     align-items: center;
     gap: 8px;
     margin: 8px 0 4px;
-    font-size: 1rem;
+    font-size: var(--org-font-size-md);
     color: var(--org-on-surface);
   }
 
   &__check {
     color: var(--org-success);
-    font-size: 22px;
-    width: 22px;
-    height: 22px;
+    font-size: var(--org-icon-size-lg);
+    width: var(--org-icon-size-lg);
+    height: var(--org-icon-size-lg);
     flex-shrink: 0;
   }
 
   &__hint {
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
     margin: 4px 0 0 30px;
   }
@@ -65,7 +28,7 @@
   &__prompt {
     margin: 8px 0 0;
     color: var(--org-on-surface-variant);
-    line-height: 1.5;
+    line-height: var(--org-line-height-normal);
   }
 
   &__actions {

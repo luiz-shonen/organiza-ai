@@ -1,0 +1,97 @@
+@let basicInfoForm = form();
+<form [formGroup]="basicInfoForm" class="event-step" id="basic-info-form">
+  <org-text-field
+    label="Título do Evento"
+    placeholder="Ex: Festa Junina 2026"
+    [required]="true"
+    [error]="
+      basicInfoForm.controls.title.hasError('required') && basicInfoForm.controls.title.touched
+        ? 'Título é obrigatório'
+        : ''
+    "
+    formControlName="title"
+    testId="event-title-input"
+  />
+
+  <div class="event-step__category">
+    <span class="event-step__category-label">Categoria do Evento</span>
+    <div
+      class="event-step__category-options"
+      role="group"
+      aria-label="Categoria do Evento"
+      data-testid="category-options"
+    >
+      @for (cat of categories(); track cat.name) {
+        <org-chip
+          [label]="cat.name"
+          [selectable]="true"
+          [selected]="basicInfoForm.controls.category.value === cat.name"
+          (selectionChange)="selectCategory(cat.name)"
+        />
+      }
+    </div>
+    @if (
+      basicInfoForm.controls.category.hasError('required') &&
+      basicInfoForm.controls.category.touched
+    ) {
+      <span class="event-step__error" role="alert">Selecione uma categoria</span>
+    }
+  </div>
+
+  <org-textarea-field
+    label="Descrição"
+    placeholder="Descreva o evento..."
+    [rows]="4"
+    [required]="true"
+    [maxLength]="500"
+    [error]="
+      basicInfoForm.controls.description.hasError('required') &&
+      basicInfoForm.controls.description.touched
+        ? 'Descrição é obrigatória'
+        : ''
+    "
+    formControlName="description"
+    testId="event-description-input"
+  />
+
+  <div class="event-step__row event-step__row--wide-narrow">
+    <org-date-field
+      label="Data do Evento"
+      [min]="minDate()"
+      [required]="true"
+      [error]="
+        basicInfoForm.controls.date.hasError('required') && basicInfoForm.controls.date.touched
+          ? 'Data é obrigatória'
+          : basicInfoForm.controls.date.hasError('matDatepickerMin')
+            ? 'Data não pode ser no passado'
+            : basicInfoForm.controls.date.hasError('matDatepickerParse')
+              ? 'Data inválida'
+              : ''
+      "
+      formControlName="date"
+      testId="event-date-input"
+    />
+
+    <org-time-field
+      label="Hora"
+      [required]="true"
+      [error]="
+        basicInfoForm.controls.time.hasError('required') && basicInfoForm.controls.time.touched
+          ? 'Hora é obrigatória'
+          : ''
+      "
+      formControlName="time"
+      testId="event-time-input"
+    />
+  </div>
+
+  <div class="event-step__actions">
+    <org-button
+      label="Próximo"
+      icon="send"
+      testId="stepper-next-btn"
+      [disabled]="basicInfoForm.invalid"
+      (pressed)="next.emit()"
+    />
+  </div>
+</form>

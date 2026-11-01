@@ -1,9 +1,9 @@
 @if (loading()) {
   <org-page-layout maxWidth="default">
     <div class="event-detail__loading" aria-hidden="true">
-      <div class="skeleton-box event-detail__skeleton-hero"></div>
-      <div class="skeleton-box event-detail__skeleton-card"></div>
-      <div class="skeleton-box event-detail__skeleton-card"></div>
+      <org-skeleton class="event-detail__skeleton-hero" />
+      <org-skeleton class="event-detail__skeleton-card" />
+      <org-skeleton class="event-detail__skeleton-card" />
     </div>
   </org-page-layout>
 } @else if (event(); as event) {
@@ -36,7 +36,6 @@
           [pixType]="event.pixType"
           [estimatedBudget]="event.estimatedBudget ?? null"
           [guestCount]="guestCount()"
-          (copyPix)="onPixCopied()"
         />
       </section>
     }

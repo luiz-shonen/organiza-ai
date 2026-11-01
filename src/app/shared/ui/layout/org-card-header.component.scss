@@ -1,0 +1,60 @@
+:host {
+  display: block;
+}
+
+.org-card-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.org-card-header__badge {
+  align-items: center;
+  border-radius: var(--org-radius-circle);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: var(--org-icon-size-xl);
+  justify-content: center;
+  width: var(--org-icon-size-xl);
+
+  &--primary {
+    background-color: var(--org-primary);
+    color: var(--org-on-primary);
+  }
+
+  &--primary-soft {
+    background-color: var(--org-primary-container);
+    color: var(--org-on-primary-container);
+  }
+
+  &--tertiary {
+    background-color: var(--org-tertiary-container);
+    color: var(--org-on-tertiary-container);
+  }
+
+  &--success {
+    background-color: color-mix(in srgb, var(--org-success) 15%, transparent);
+    color: var(--org-success);
+  }
+}
+
+.org-card-header__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.org-card-header__heading {
+  color: var(--org-on-surface);
+  font: var(--org-text-title);
+  margin: 0;
+}
+
+.org-card-header__subheading {
+  color: var(--org-on-surface-variant);
+  font: var(--org-text-body-sm);
+  margin: var(--org-space-2xs) 0 0;
+}
+
+.org-card-header__action:empty {
+  display: none;
+}

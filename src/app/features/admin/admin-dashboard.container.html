@@ -42,11 +42,8 @@
 
     <org-section title="Administradores do Sistema">
       @if (loadingAdmins()) {
-        <org-surface class="admin-dashboard__loading-surface">
-          <div class="admin-dashboard__spinner-wrapper">
-            <mat-spinner diameter="36" />
-            <p>Carregando administradores...</p>
-          </div>
+        <org-surface>
+          <org-loading-state label="Carregando administradores..." />
         </org-surface>
       } @else if (admins().length === 0) {
         <org-empty-state

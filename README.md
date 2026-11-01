@@ -42,24 +42,9 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 
 `AuthService` · `EventService` · `GuestService` · `ItemService` · `FamilyService` · `UserService` · `LocationService` (ViaCEP) · `NotificationService` · `EventNotificationService` · `ConfettiService` · `ThemeService` · `SeasonalThemeService` · `DrawerService` · `HeaderService` · `FirebaseService` · `FirestoreGateway` · `FeedbackService` · `OrgDialogService`
 
-### Active Architectural Decisions
+### Architectural Decisions
 
-- **Standalone Components Only** — NgModules are forbidden (AD-001)
-- **OnPush Change Detection** — mandatory on every component (AD-002)
-- **Signals for local state** — RxJS only for Firestore streams via `toSignal()` (AD-003)
-- **Firebase Modular SDK directly** — no `@angular/fire` (AD-004)
-- **Smart/Dumb Pattern** — Containers handle Firebase/state; Presentational receive `input()` and emit `output()` (AD-011)
-- **SCSS + BEM + MDC tokens** — no Tailwind, no `!important` (AD-007, AD-028)
-- **Open registration** — any authenticated Google user can create events (AD-016)
-- **Verified RSVP** — no anonymous guests; verified identity (Google/verified e-mail) required (AD-024)
-- **Atomic E2E Test Philosophy** — each test sets up its own state, asserts one step, captures a screenshot (AD-030)
-- **Mobile-First Responsive Layouts & Zero-Overflow Invariant** — fluid single-column stacking on mobile, $\ge 48\text{ px}$ touch targets, automated `assertNoHorizontalOverflow` (AD-031)
-- **Component-First Design System Primitives** — 32 closed `Org*` components in `@shared/ui` with zero raw Material tags in feature views (AD-039, AD-041, AD-044)
-- **Comprehensive Code Quality Toolchain** — ESLint Flat Config, Stylelint BEM/Tokens, Prettier, Husky, commitlint, and fail-fast CI quality gate (AD-042, AD-044)
-- **Automated Firebase Hosting CD Pipeline** — Chained GitHub Actions deployments with path filtering and Firestore rules verification (AD-043)
-- **Spec-Driven Development** — TLC Spec-Driven v3.3.0; every feature goes through Specify → (Design) → (Tasks) → Execute → Independent Verification (AD-013)
-
-For the full decision log, read `.specs/STATE.md`.
+Decisions and known gotchas live in [`docs/knowledge/`](docs/knowledge/index.md), one concept per file in Open Knowledge Format. Each rule lists the script or test that enforces it (`enforced_by`). The retired Spec-Driven Development specs are preserved in git under the tag `archive/sdd`.
 
 ## Design System
 
@@ -129,7 +114,7 @@ e2e/
 └── screenshots/     # 60 visual baselines ({milestone}-desktop/mobile.png)
 ```
 
-### E2E Test Philosophy — Atomic Tests (AD-030)
+### E2E Test Philosophy — Atomic Tests
 
 Each test is **atomic**: it sets up its own state via mock session + navigation, asserts exactly one thing (one step, one screen, one behaviour), captures a screenshot, and ends. No test depends on the result of another.
 

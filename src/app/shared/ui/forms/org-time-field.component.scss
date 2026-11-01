@@ -1,17 +1,24 @@
+@use 'field';
+
 :host {
   display: block;
 }
 
 .org-time-field {
+  @include field.outlined-tokens;
+
   display: block;
   width: 100%;
-
-  --mdc-outlined-text-field-outline-color: var(--org-outline);
-  --mdc-outlined-text-field-focus-outline-color: var(--org-primary);
-  --mdc-outlined-text-field-focus-label-text-color: var(--org-primary);
 }
 
 .org-time-field__trigger {
   color: var(--org-primary);
   margin-inline-end: 4px;
+}
+
+.org-time-field input[type='time'] {
+  align-items: center;
+  height: auto;
+  line-height: normal;
+  padding: var(--org-space-sm) 0;
 }

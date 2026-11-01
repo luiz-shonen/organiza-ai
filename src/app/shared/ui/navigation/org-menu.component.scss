@@ -9,15 +9,15 @@
   color: var(--org-primary);
   display: inline-flex;
   font-family: var(--org-font-body);
-  font-weight: 700;
+  font-weight: var(--org-font-weight-bold);
   gap: var(--org-space-sm, 8px);
   justify-content: center;
   min-height: var(--org-space-2xl, 48px);
   padding-inline: var(--org-space-md, 16px);
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease;
+    background-color var(--org-motion-fast) var(--org-motion-ease),
+    border-color var(--org-motion-fast) var(--org-motion-ease),
+    transform var(--org-motion-fast) var(--org-motion-ease);
 
   &:hover {
     background: color-mix(in srgb, var(--org-primary) 12%, transparent);
@@ -28,7 +28,6 @@
 
 .org-menu__panel.mat-mdc-menu-panel {
   background: var(--org-surface);
-  border: 1px solid var(--org-outline);
   border-radius: var(--org-radius-md, 16px);
   box-shadow: var(--org-shadow-lg);
   min-width: 220px;

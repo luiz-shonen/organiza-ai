@@ -1,0 +1,29 @@
+<form [formGroup]="form()" class="event-step" id="pix-form">
+  <h3 class="event-step__title">Pagamento (Pix)</h3>
+  <org-text-field
+    label="Chave Pix (opcional)"
+    placeholder="CPF, e-mail ou chave aleatória"
+    prefixIcon="pix"
+    hint="Deixe em branco se não quiser rachadinha"
+    formControlName="pixKey"
+  />
+
+  <div class="event-step__actions">
+    <org-button label="Voltar" icon="arrow_back" variant="secondary" (pressed)="back.emit()" />
+    @if (canSave()) {
+      <org-button
+        [label]="isEditing() ? 'Salvar' : 'Criar Evento'"
+        icon="save"
+        [disabled]="!complete() || saving()"
+        [loading]="saving()"
+        (pressed)="save.emit()"
+        testId="event-save-btn"
+      />
+    } @else {
+      <p class="event-step__locked-note">
+        <org-icon name="lock" size="sm" />
+        Apenas o organizador principal pode salvar alterações principais.
+      </p>
+    }
+  </div>
+</form>

@@ -13,7 +13,7 @@ test('proves the numerical visual contracts on representative geometry', async (
     <main class="app-content" style="height: 180px; overflow:auto">
       <section data-testid="surface" style="border: 1.5px solid transparent; border-radius: 16px; background: linear-gradient(white, white) padding-box, linear-gradient(90deg, purple, orange) border-box; height: 60px">Surface</section>
     <input data-testid="field" style="border: 2px solid rgb(99, 14, 212); color: rgb(35, 16, 67); background: rgb(255, 255, 255)" />
-    <mat-form-field style="--org-primary: #630ed4; --mdc-outlined-text-field-focus-label-text-color: var(--org-primary); --mdc-outlined-text-field-focus-outline-color: var(--org-primary)"><div class="mat-mdc-text-field-wrapper"><input data-testid="org-field" /><span class="mdc-notched-outline__leading" style="border: 1px solid #630ed4"></span><span class="mdc-notched-outline__notch" style="border-top: 1px solid transparent; border-right: 1px solid #630ed4; border-bottom: 1px solid #630ed4; border-left: 1px solid #630ed4"></span><span class="mdc-notched-outline__trailing" style="border: 1px solid #630ed4"></span></div></mat-form-field>
+    <mat-form-field style="--org-primary: #630ed4; --mat-form-field-outlined-focus-label-text-color: var(--org-primary); --mat-form-field-outlined-focus-outline-color: var(--org-primary)"><div class="mat-mdc-text-field-wrapper"><input data-testid="org-field" /><span class="mdc-notched-outline__leading" style="border: 1px solid #630ed4"></span><span class="mdc-notched-outline__notch" style="border-top: 1px solid transparent; border-right: 1px solid #630ed4; border-bottom: 1px solid #630ed4; border-left: 1px solid #630ed4"></span><span class="mdc-notched-outline__trailing" style="border: 1px solid #630ed4"></span></div></mat-form-field>
       <div data-testid="anchor" style="height: 48px">Anchor</div>
     </main>
     <aside data-testid="drawer" style="position: fixed; inset: 0 0 0 auto; width: 280px; min-height: 48px">Drawer</aside>
@@ -46,7 +46,7 @@ test('permits only sub-pixel rounding within the touch target tolerance', () => 
 
 test('rejects separately coloured visible outline segments', async ({ page }) => {
   await page.setContent(`
-    <mat-form-field style="--org-primary: #630ed4; --mdc-outlined-text-field-focus-label-text-color: var(--org-primary); --mdc-outlined-text-field-focus-outline-color: var(--org-primary)">
+    <mat-form-field style="--org-primary: #630ed4; --mat-form-field-outlined-focus-label-text-color: var(--org-primary); --mat-form-field-outlined-focus-outline-color: var(--org-primary)">
       <input data-testid="split-field" />
       <span class="mdc-notched-outline__leading" style="border: 1px solid #630ed4"></span>
       <span class="mdc-notched-outline__trailing" style="border: 1px solid #fd762b"></span>

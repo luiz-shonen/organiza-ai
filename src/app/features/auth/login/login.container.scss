@@ -63,8 +63,8 @@
 
   &__subtitle {
     color: var(--org-on-surface-variant);
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: var(--org-font-size-md);
+    font-weight: var(--org-font-weight-medium);
     margin: 0;
     text-align: center;
   }
@@ -93,14 +93,14 @@
     flex: 1;
     padding: 10px 14px;
     border-radius: var(--org-radius-sm);
-    font-size: 0.9rem;
+    font-size: var(--org-font-size-sm);
     font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface-variant);
     text-align: center;
     background: transparent;
     border: 0;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--org-motion-base) var(--org-motion-ease);
 
     &--active {
       background-color: var(--org-surface);
@@ -142,15 +142,14 @@
     align-items: center;
     text-align: center;
     color: var(--org-on-surface-variant);
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-xs);
+    font-weight: var(--org-font-weight-bold);
     margin: var(--org-space-xs, 4px) 0;
 
     &::before,
     &::after {
       content: '';
       flex: 1;
-      border-bottom: 1px solid var(--org-outline-variant);
     }
 
     &::before {

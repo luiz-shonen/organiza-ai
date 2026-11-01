@@ -32,7 +32,7 @@ describe('RsvpCardComponent', () => {
 
     it('renders unconfirmed CTA button and attendee count', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const subtitle = compiled.querySelector('.rsvp-card__subtitle');
+      const subtitle = compiled.querySelector('.org-card-header__subheading');
       expect(subtitle?.textContent).toContain('5 pessoa(s) confirmada(s)');
 
       const confirmBtn = compiled.querySelector(
@@ -65,7 +65,7 @@ describe('RsvpCardComponent', () => {
 
     it('renders confirmed status message and guest name', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const title = compiled.querySelector('.rsvp-card__title');
+      const title = compiled.querySelector('.org-card-header__heading');
       expect(title?.textContent).toContain('Você está na lista!');
 
       const status = compiled.querySelector('.rsvp-card__status');

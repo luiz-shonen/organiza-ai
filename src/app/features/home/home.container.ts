@@ -1,9 +1,9 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EventService } from '../../core/services';
 import {
+  OrgLoadingStateComponent,
   OrgButtonComponent,
   OrgEmptyStateComponent,
   OrgIconComponent,
@@ -19,8 +19,8 @@ import { formatDate, getDay, getMonth } from '../../core/utils';
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    OrgLoadingStateComponent,
     RouterLink,
-    MatProgressSpinnerModule,
     OrgButtonComponent,
     OrgIconComponent,
     OrgSurfaceComponent,

@@ -4,7 +4,7 @@ import { OrganizerDashboardPage } from '../pages/organizer-dashboard.page';
 import { EventEditorPage } from '../pages/event-editor.page';
 import { HomePage } from '../pages/home.page';
 import { EventDetailPage } from '../pages/event-detail.page';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { readStoredAuthUser, setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const sharedEventData = {
   id: 'event-sync-1',
@@ -98,39 +98,9 @@ test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
     await guestDetail.assertLoaded();
 
     // Verify both contexts operate independently without session interference
-    const hostUser = await hostPage.evaluate(() => {
-      return new Promise<any>((resolve) => {
-        const req = indexedDB.open('firebaseLocalStorageDb', 1);
-        req.onsuccess = (e: any) => {
-          const db = e.target.result;
-          const tx = db.transaction('firebaseLocalStorage', 'readonly');
-          const store = tx.objectStore('firebaseLocalStorage');
-          const getReq = store.getAll();
-          getReq.onsuccess = () => {
-            resolve(getReq.result?.[0]?.value);
-          };
-          getReq.onerror = () => resolve(null);
-        };
-        req.onerror = () => resolve(null);
-      });
-    });
+    const hostUser = await readStoredAuthUser(hostPage);
 
-    const guestUser = await guestPage.evaluate(() => {
-      return new Promise<any>((resolve) => {
-        const req = indexedDB.open('firebaseLocalStorageDb', 1);
-        req.onsuccess = (e: any) => {
-          const db = e.target.result;
-          const tx = db.transaction('firebaseLocalStorage', 'readonly');
-          const store = tx.objectStore('firebaseLocalStorage');
-          const getReq = store.getAll();
-          getReq.onsuccess = () => {
-            resolve(getReq.result?.[0]?.value);
-          };
-          getReq.onerror = () => resolve(null);
-        };
-        req.onerror = () => resolve(null);
-      });
-    });
+    const guestUser = await readStoredAuthUser(guestPage);
 
     expect(hostUser?.email).toBe('host@organiza.ai');
     expect(guestUser?.email).toBe('guest@organiza.ai');
@@ -149,16 +119,7 @@ test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
     await hostDetail.assertLoaded();
     await guestDetail.assertLoaded();
 
-    // Verify Guest sees RSVP CTA button
-    const isGuestRsvpVisible = await guestDetail.rsvpBtn.isVisible().catch(() => false);
-    if (isGuestRsvpVisible) {
-      await expect(guestDetail.rsvpBtn).toBeVisible();
-    }
-
-    // Verify Host sees event details and countdown or copy action
-    const isHostCountdownVisible = await hostDetail.countdownTimer.isVisible().catch(() => false);
-    if (isHostCountdownVisible) {
-      await expect(hostDetail.countdownTimer).toBeVisible();
-    }
+    await expect(guestDetail.rsvpBtn).toBeVisible();
+    await expect(hostDetail.countdownTimer).toBeVisible();
   });
 });

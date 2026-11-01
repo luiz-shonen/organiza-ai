@@ -1,5 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { Page } from '@playwright/test';
+import { buildGuestEvent } from '../fixtures/mock-events';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
@@ -133,38 +134,19 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
   test('should support keyboard focus and modal interaction on RSVP dialog', async ({
     eventDetailPage,
     rsvpDialog,
-    homePage,
     page,
   }) => {
-    await homePage.goto('/');
-    await homePage.assertLoaded();
-
-    const cardCount = await homePage.eventCards.count();
-    if (cardCount > 0) {
-      await homePage.clickEventCard(0);
-      await page.waitForURL(/\/evento\/.+/);
-    } else {
-      await eventDetailPage.goto('/evento/placeholder-event');
-    }
-
+    const event = buildGuestEvent();
+    await setupMockAuthSession(page, { uid: 'a11y-guest-uid', events: [event] });
+    await eventDetailPage.goto(`/evento/${event.id}`);
     await eventDetailPage.assertLoaded();
 
-    const hasRsvpBtn = await eventDetailPage.rsvpBtn.isVisible().catch(() => false);
-    if (hasRsvpBtn) {
-      await eventDetailPage.rsvpBtn.focus();
-      await expect(eventDetailPage.rsvpBtn).toBeFocused();
-      await page.keyboard.press('Enter');
+    await eventDetailPage.rsvpBtn.focus();
+    await expect(eventDetailPage.rsvpBtn).toBeFocused();
+    await page.keyboard.press('Enter');
 
-      const dialogVisible = await rsvpDialog.dialogRoot
-        .first()
-        .isVisible({ timeout: 3000 })
-        .catch(() => false);
-
-      if (dialogVisible) {
-        await rsvpDialog.assertVisible();
-        await rsvpDialog.assertFocusTrapped();
-        await rsvpDialog.dismissViaEscape();
-      }
-    }
+    await rsvpDialog.assertVisible();
+    await rsvpDialog.assertFocusTrapped();
+    await rsvpDialog.dismissViaEscape();
   });
 });

@@ -135,10 +135,10 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
       return {
         field: true,
         focusLabel: fieldStyle
-          .getPropertyValue('--mdc-outlined-text-field-focus-label-text-color')
+          .getPropertyValue('--mat-form-field-outlined-focus-label-text-color')
           .trim(),
         focusOutline: fieldStyle
-          .getPropertyValue('--mdc-outlined-text-field-focus-outline-color')
+          .getPropertyValue('--mat-form-field-outlined-focus-outline-color')
           .trim(),
         primary: fieldStyle.getPropertyValue('--org-primary').trim(),
         segments: outlineSegments.flatMap((segment) => {

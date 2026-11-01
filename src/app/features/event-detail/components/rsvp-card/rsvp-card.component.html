@@ -1,19 +1,11 @@
 <org-surface variant="card">
   <article class="rsvp-card">
-    <header class="rsvp-card__header">
-      <org-icon
-        [name]="isConfirmed() ? 'verified' : 'how_to_reg'"
-        class="rsvp-card__icon"
-        [class.rsvp-card__icon--confirmed]="isConfirmed()"
-        aria-hidden="true"
-      />
-      <div>
-        <h2 class="rsvp-card__title">
-          {{ isConfirmed() ? 'Você está na lista! 🎉' : 'Confirme sua Presença' }}
-        </h2>
-        <p class="rsvp-card__subtitle">{{ guestCount() }} pessoa(s) confirmada(s)</p>
-      </div>
-    </header>
+    <org-card-header
+      [icon]="isConfirmed() ? 'verified' : 'how_to_reg'"
+      [tone]="isConfirmed() ? 'success' : 'tertiary'"
+      [heading]="isConfirmed() ? 'Você está na lista! 🎉' : 'Confirme sua Presença'"
+      [subheading]="guestCount() + ' pessoa(s) confirmada(s)'"
+    />
 
     @if (isConfirmed()) {
       <div class="rsvp-card__confirmed-content">

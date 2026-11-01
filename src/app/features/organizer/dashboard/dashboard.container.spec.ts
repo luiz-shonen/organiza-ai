@@ -86,7 +86,7 @@ describe('DashboardContainer', () => {
 
     mockAuthService = {
       isSuperAdmin: signal(false),
-      currentUser: signal({ uid: 'user-1', email: 'test@example.com' } as any),
+      currentUser: signal({ uid: 'user-1', email: 'test@example.com' }),
       logout: vi.fn().mockResolvedValue(undefined),
     };
 
@@ -186,7 +186,7 @@ describe('DashboardContainer', () => {
   });
 
   it('publishes the shared success feedback after copying a public event link', () => {
-    (component as any).copyLink(sampleEvents[0]);
+    component['copyLink'](sampleEvents[0]);
 
     expect(mockFeedback.success).toHaveBeenCalledWith('Link copiado!', { duration: 2000 });
   });

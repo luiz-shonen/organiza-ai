@@ -11,8 +11,8 @@
   }
 
   &__title {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-2xl);
+    font-weight: var(--org-font-weight-bold);
     margin: 0;
   }
 
@@ -20,7 +20,7 @@
     font-size: var(--org-font-size-xs);
     font-weight: var(--org-font-weight-bold);
     padding: var(--org-space-xs) 12px;
-    border-radius: var(--org-radius-pill);
+    border-radius: var(--org-radius-full);
     color: var(--org-primary);
     background-color: var(--org-primary-container);
   }
@@ -35,7 +35,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--org-motion-base) var(--org-motion-ease);
 
     &--claimed {
       opacity: 0.85;
@@ -59,11 +59,9 @@
 
     &--claimed {
       background-color: var(--org-surface);
-      color: var(--org-outline);
     }
 
     &--available {
-      background-color: var(--org-surface-container-high);
       color: var(--org-secondary);
     }
   }
@@ -74,26 +72,21 @@
   }
 
   &__name {
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: var(--org-font-size-lg);
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface);
     margin: 0;
 
     &--claimed {
       text-decoration: line-through;
-      color: var(--org-outline);
     }
   }
 
   &__status {
-    font-size: 0.875rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-bold);
     color: var(--org-secondary);
     margin: 0;
-
-    &--claimed {
-      color: var(--org-outline);
-    }
   }
 
   &__actions {
@@ -114,6 +107,6 @@
     padding: 24px;
     text-align: center;
     color: var(--org-on-surface-variant);
-    font-weight: 500;
+    font-weight: var(--org-font-weight-medium);
   }
 }

@@ -14,7 +14,6 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FamilyMember } from '../../../../core/models';
 import {
   FamilySelectorComponent,
@@ -37,7 +36,6 @@ const trimmedRequired: ValidatorFn = (control) =>
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     FamilySelectorComponent,
     OrgButtonComponent,
     OrgIconButtonComponent,
@@ -47,23 +45,19 @@ const trimmedRequired: ValidatorFn = (control) =>
   styleUrl: './rsvp-drawer.component.scss',
 })
 export class RsvpDrawerComponent {
-  private readonly dialogRef = inject(MatDialogRef<RsvpDrawerComponent>, { optional: true });
-  private readonly legacyData: RsvpDrawerData | null = inject(MAT_DIALOG_DATA, { optional: true });
   private readonly fb = inject(FormBuilder);
 
-  readonly drawerData = input<RsvpDrawerData>(
-    this.legacyData ?? { session: null, familyMembers: [], userId: '' },
-  );
+  readonly drawerData = input<RsvpDrawerData>({ session: null, familyMembers: [], userId: '' });
   readonly submitted = output<RsvpDrawerResult>();
   readonly closed = output<void>();
 
-  readonly familyMembers = signal<FamilyMember[]>(this.legacyData?.familyMembers ?? []);
+  readonly familyMembers = signal<FamilyMember[]>([]);
   readonly selectedFamilyMemberIds = signal<string[]>([]);
   readonly isAddingInline = signal<boolean>(false);
 
   protected readonly form = this.fb.nonNullable.group({
-    name: [this.legacyData?.session?.name ?? '', [Validators.required]],
-    phone: [this.legacyData?.session?.phone ?? '', [Validators.required, Validators.minLength(10)]],
+    name: ['', [Validators.required]],
+    phone: ['', [Validators.required, Validators.minLength(10)]],
     companionsCount: [0, [Validators.min(0), Validators.max(10)]],
     companions: this.fb.nonNullable.array<string>([]),
   });
@@ -142,18 +136,10 @@ export class RsvpDrawerComponent {
         this.selectedFamilyMemberIds().includes(member.id),
       ),
     };
-    if (this.dialogRef) {
-      this.dialogRef.close(result);
-    } else {
-      this.submitted.emit(result);
-    }
+    this.submitted.emit(result);
   }
 
   protected closeDrawer(): void {
-    if (this.dialogRef) {
-      this.dialogRef.close();
-    } else {
-      this.closed.emit();
-    }
+    this.closed.emit();
   }
 }

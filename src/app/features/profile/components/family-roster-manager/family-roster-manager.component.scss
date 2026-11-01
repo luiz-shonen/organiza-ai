@@ -13,7 +13,6 @@
     flex-direction: column;
     align-items: flex-start;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__header-title-wrap {
@@ -24,16 +23,16 @@
 
   &__title {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: var(--org-font-size-xl);
+    font-weight: var(--org-font-weight-bold);
     color: var(--org-on-surface);
   }
 
   &__subtitle {
     margin: 6px 0 0;
-    font-size: 0.875rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
-    line-height: 1.5;
+    line-height: var(--org-line-height-normal);
   }
 
   &__form {
@@ -80,7 +79,6 @@
     justify-content: center;
     padding: 32px 16px;
     text-align: center;
-    border: 1px dashed var(--org-outline-variant);
     border-radius: var(--org-radius-md);
     color: var(--org-on-surface-variant);
     gap: 0.5rem;
@@ -88,13 +86,13 @@
 
   &__empty-text {
     margin: 0;
-    font-weight: 600;
+    font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface);
   }
 
   &__empty-hint {
     margin-top: 4px;
-    font-size: 0.8125rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
   }
 
@@ -112,7 +110,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--org-outline-variant);
   }
 
   &__item-avatar {
@@ -144,18 +141,18 @@
 
   &__item-name {
     font-weight: var(--org-font-weight-semibold);
-    font-size: 0.9375rem;
+    font-size: var(--org-font-size-md);
     color: var(--org-on-surface);
   }
 
   &__item-badge {
     display: inline-block;
     padding: 2px 8px;
-    font-size: 0.6875rem;
+    font-size: var(--org-font-size-xs);
     font-weight: var(--org-font-weight-bold);
     border-radius: var(--org-radius-sm);
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: var(--org-letter-spacing-wide);
     background: var(--org-primary-container);
     color: var(--org-on-primary-container);
   }
@@ -164,7 +161,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.8125rem;
+    font-size: var(--org-font-size-sm);
     color: var(--org-on-surface-variant);
   }
 

@@ -32,9 +32,7 @@ export class EventDetailPage extends BasePage {
           '.rsvp-card button, org-button[label*="Confirmar"] button, button:has-text("Confirmar"), button:has-text("Presença")',
         ),
       );
-    this.pixCard = page
-      .getByTestId('pix-card')
-      .or(page.locator('app-pix-card, app-pix-payment-card, .pix-card'));
+    this.pixCard = page.getByTestId('pix-card');
     this.copyPixBtn = page
       .getByTestId('copy-pix-btn')
       .locator('button')

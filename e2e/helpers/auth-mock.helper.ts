@@ -1,16 +1,30 @@
 import { Page } from '@playwright/test';
 
-export interface MockUserSessionOptions {
+/** A Firestore document as the app's mock gateway reads it from `window.__MOCK_DOCUMENTS__`. */
+export type MockDocument = { id: string } & Record<string, unknown>;
+
+/** An event plus its sub-collections, flattened into `events/{id}/items|guests` by the helper. */
+export type MockEvent = MockDocument & {
+  items?: MockDocument[];
+  guests?: MockDocument[];
+};
+
+export interface MockDocumentsOptions {
+  events?: MockEvent[];
+  userProfile?: MockDocument;
+  familyMembers?: MockDocument[];
+}
+
+export interface MockUserSessionOptions extends MockDocumentsOptions {
   uid?: string;
   email?: string;
   displayName?: string;
   isAnonymous?: boolean;
   emailVerified?: boolean;
   isSuperAdmin?: boolean;
-  events?: any[];
-  userProfile?: any;
-  familyMembers?: any[];
 }
+
+type MockDocumentStore = Record<string, MockDocument[] | MockDocument>;
 
 const TEST_FIREBASE_API_KEY = 'test-firebase-api-key';
 
@@ -29,6 +43,64 @@ export async function mockFirebaseRuntimeConfig(page: Page): Promise<void> {
   });
 }
 
+function buildMockDocumentStore(
+  uid: string,
+  defaultProfile: MockDocument,
+  options: MockDocumentsOptions,
+): MockDocumentStore {
+  const events = options.events ?? [];
+  const profile = options.userProfile ?? defaultProfile;
+  const store: MockDocumentStore = {
+    events: events.map(({ items: _items, guests: _guests, ...event }) => event),
+    users: [profile],
+    family: options.familyMembers ?? [],
+    [`users/${uid}`]: profile,
+    [`users/${uid}/family`]: options.familyMembers ?? [],
+  };
+
+  for (const event of events) {
+    store[`events/${event.id}/items`] = [...(event.items ?? [])];
+    store[`events/${event.id}/guests`] = [...(event.guests ?? [])];
+  }
+
+  return store;
+}
+
+/**
+ * Serves every Firestore read from in-memory documents, so a test never reaches
+ * the real project. Use it for anonymous visits; `setupMockAuthSession` calls it too.
+ */
+export async function mockFirestoreDocuments(
+  page: Page,
+  options: MockDocumentsOptions = {},
+  uid = 'anonymous-visitor',
+): Promise<void> {
+  await mockFirebaseRuntimeConfig(page);
+  const store = buildMockDocumentStore(uid, { id: uid }, options);
+  await page.addInitScript((documents) => {
+    Object.assign(window, { __MOCK_DOCUMENTS__: documents });
+  }, store);
+}
+
+/** Reads the Firebase user persisted in IndexedDB for this page's browser context. */
+export async function readStoredAuthUser(page: Page): Promise<{ email?: string } | null> {
+  return page.evaluate(
+    () =>
+      new Promise<{ email?: string } | null>((resolve) => {
+        const req = indexedDB.open('firebaseLocalStorageDb', 1);
+        req.onsuccess = () => {
+          const getAll = req.result
+            .transaction('firebaseLocalStorage', 'readonly')
+            .objectStore('firebaseLocalStorage')
+            .getAll();
+          getAll.onsuccess = () => resolve(getAll.result?.[0]?.value ?? null);
+          getAll.onerror = () => resolve(null);
+        };
+        req.onerror = () => resolve(null);
+      }),
+  );
+}
+
 export async function setupMockAuthSession(page: Page, options: MockUserSessionOptions = {}) {
   const uid = options.uid || 'test-user-uid';
   const email = options.email || 'luiz.gmr.dev@gmail.com';
@@ -36,11 +108,6 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
   const emailVerified = options.emailVerified !== undefined ? options.emailVerified : true;
   const isAnonymous = options.isAnonymous ?? false;
   const apiKey = TEST_FIREBASE_API_KEY;
-
-  // The application loads its Firebase key from runtime-config.js. Keep the
-  // browser-only Auth instance and the IndexedDB record on the same test key
-  // instead of coupling E2E tests to a developer's runtime configuration.
-  await mockFirebaseRuntimeConfig(page);
 
   await page.route('https://securetoken.googleapis.com/**', async (route) => {
     await route.fulfill({
@@ -75,38 +142,22 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
     });
   });
 
+  await mockFirestoreDocuments(
+    page,
+    {
+      ...options,
+      userProfile: options.userProfile ?? {
+        id: uid,
+        email,
+        displayName,
+        phone: '(11) 99999-9999',
+      },
+    },
+    uid,
+  );
+
   await page.addInitScript(
-    ({
-      uid,
-      email,
-      displayName,
-      emailVerified,
-      isAnonymous,
-      apiKey,
-      events,
-      userProfile,
-      familyMembers,
-    }) => {
-      const mockDocs: Record<string, any> = {
-        events: events || [],
-        users: userProfile
-          ? [userProfile]
-          : [{ id: uid, email, displayName, phone: '(11) 99999-9999' }],
-        family: familyMembers || [],
-        [`users/${uid}`]: userProfile || { id: uid, email, displayName, phone: '(11) 99999-9999' },
-        [`users/${uid}/family`]: familyMembers || [],
-      };
-
-      if (events && Array.isArray(events)) {
-        events.forEach((ev: any) => {
-          if (ev.id && ev.items && Array.isArray(ev.items)) {
-            mockDocs[`events/${ev.id}/items`] = [...ev.items];
-          }
-        });
-      }
-
-      (window as any).__MOCK_DOCUMENTS__ = mockDocs;
-
+    ({ uid, email, displayName, emailVerified, isAnonymous, apiKey }) => {
       const userValue = {
         uid,
         email,
@@ -128,32 +179,20 @@ export async function setupMockAuthSession(page: Page, options: MockUserSessionO
       };
 
       const req = indexedDB.open('firebaseLocalStorageDb', 1);
-      req.onupgradeneeded = (e: any) => {
-        const db = e.target.result;
+      req.onupgradeneeded = () => {
+        const db = req.result;
         if (!db.objectStoreNames.contains('firebaseLocalStorage')) {
           db.createObjectStore('firebaseLocalStorage', { keyPath: 'fbase_key' });
         }
       };
-      req.onsuccess = (e: any) => {
-        const db = e.target.result;
-        const tx = db.transaction('firebaseLocalStorage', 'readwrite');
-        const store = tx.objectStore('firebaseLocalStorage');
-        store.put({
+      req.onsuccess = () => {
+        const tx = req.result.transaction('firebaseLocalStorage', 'readwrite');
+        tx.objectStore('firebaseLocalStorage').put({
           fbase_key: `firebase:authUser:${apiKey}:[DEFAULT]`,
           value: userValue,
         });
       };
     },
-    {
-      uid,
-      email,
-      displayName,
-      emailVerified,
-      isAnonymous,
-      apiKey,
-      events: options.events || [],
-      userProfile: options.userProfile,
-      familyMembers: options.familyMembers || [],
-    },
+    { uid, email, displayName, emailVerified, isAnonymous, apiKey },
   );
 }

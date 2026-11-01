@@ -4,19 +4,18 @@
  * Organiza AI — Gemini PR Code Reviewer
  *
  * Automates pull request code reviews using Google Gemini.
- * Evaluates compliance with AGENTS.md, DESIGN.md, CONTEXT.md,
- * and relevant feature specifications in .specs/features/.
+ * Evaluates compliance with AGENTS.md, DESIGN.md and docs/knowledge/.
  *
  * Rules:
  * - Automatic review runs only once per PR (on initial creation or first run).
  * - Subsequent updates require explicit '/review' in PR comments.
  * - Notice about '/review' is posted at most once to prevent comment spam.
  * - Categorizes findings with industry standard priority: P1, P2, P3.
- * - Formats out-of-scope improvements as structured TLC Spec-Driven issue drafts (EARS).
+ * - Turns out-of-scope improvements into short, test-first GitHub issue drafts.
  */
 
 import { execSync } from 'node:child_process';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // ==========================================
@@ -31,7 +30,6 @@ export const DEFAULT_BASE_SHA = 'origin/main';
 export const DEFAULT_HEAD_SHA = 'HEAD';
 
 export const MAX_DIFF_CHAR_LIMIT = 250_000;
-export const MAX_SPEC_CHAR_LIMIT = 40_000;
 
 export const DIFF_EXCLUDES = [
   ':!package-lock.json',
@@ -44,13 +42,14 @@ export const DIFF_EXCLUDES = [
   ':!e2e/screenshots',
 ];
 
-export const FALLBACK_MODELS = [
-  'gemini-3.8-flash',
-  'gemini-3.7-flash',
-  'gemini-3.6-flash',
-  'gemini-flash-latest',
-  'gemini-3.5-flash',
-];
+// gemini-3.8-flash is the current stable Flash; the alias keeps reviews running
+// if 3.8 is retired before this list is updated. GEMINI_MODEL overrides both.
+export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-flash-latest'];
+
+// Gemini 3+ reason best with the default sampling, so only the thinking level is set.
+export const GENERATION_CONFIG = {
+  thinkingConfig: { thinkingLevel: 'high' },
+};
 
 export const NOTICE_COMMENT_BODY = `${NOTICE_COMMENT_MARKER}
 > ℹ️ **Este PR já possui uma revisão inicial do Gemini.**
@@ -61,16 +60,16 @@ DIRETRIZES TÉCNICAS E ARQUITETURAIS MANDATÓRIAS (AGENTS.md & DESIGN.md):
 1. Standalone Components Only — NgModules são terminantemente proibidos (AD-001).
 2. OnPush Change Detection — Obrigatório em 100% dos componentes, sem exceção (AD-002).
 3. Modern Control Flow — Usar exclusivamente @if, @for, @switch. Proibido *ngIf e *ngFor.
-4. Angular Signals — Estado local com signal(), computed(), effect(), input(), output(), model(). RxJS apenas onde estritamente necessário (ex: Firestore streams convertidas com toSignal) (AD-003).
-5. Design System Fechado — Features consomem exclusivamente os 32 componentes Org* de @shared/ui. ZERO tags brutas do Angular Material (<mat-icon>, <mat-button>, <mat-chip>, etc.) em templates de features (AD-039, AD-041, AD-044).
-6. SCSS + BEM + Design Tokens — Proibido Tailwind, proibido !important, proibido cores hexadecimais literais (usar sempre var(--org-*)). Proibido box-shadow e border-radius hardcoded (usar var(--org-shadow-*) e var(--org-radius-*)).
+4. Angular Signals — Estado local com signal(), computed(), effect(), input(), output(), model(). RxJS apenas onde estritamente necessário (ex: Firestore streams convertidas com toSignal).
+5. Design System Fechado — Features consomem exclusivamente componentes Org* de @shared/ui. Zero imports de @angular/material, tags <mat-*> ou seletores .mat-* fora de shared/ui e do app shell (docs/knowledge/decisions/design-system.md).
+6. SCSS + BEM + Design Tokens — Proibido Tailwind, !important, cores hex, --mdc-*, seletores .dark e valores literais de font-size/font-weight/line-height/letter-spacing/transition, box-shadow e border-radius (usar sempre var(--org-*)) (docs/knowledge/decisions/styling-rules.md).
 7. Acessibilidade (WCAG 2.1 AA) — HTML semântico, atributos ARIA, alvos de toque primários >= 48px.
 8. TypeScript Estrito — Proibido uso de "any". Tipos e interfaces explícitos.
-9. Smart/Dumb Pattern — *.container.ts para estado e Firebase; *.component.ts para apresentação pura (inputs/outputs, zero business logic) (AD-011).
+9. Smart/Dumb Pattern — *.container.ts para estado e Firebase; *.component.ts para apresentação pura (inputs/outputs, zero business logic).
 `;
 
 export const DOMAIN_RULES = `
-DOMÍNIO E REGRAS DE NEGÓCIO (CONTEXT.md):
+DOMÍNIO E REGRAS DE NEGÓCIO (docs/knowledge/):
 - Verified RSVP: Presença exige identidade Google ou usuário autenticado; zero convidados anônimos no Firestore.
 - Personal Family Roster: Convidados primários gerenciam membros da família com vínculo e cancelamento em cascata.
 - Smart Rachadinha: Rateio transparente de custos por convidado com cópia de chave Pix em 1 clique.
@@ -86,44 +85,39 @@ Classifique todos os apontamentos ou débitos encontrados rigorosamente de acord
 - 🔵 **P3 (Sugestão / Menor / Nitpick)**: Melhorias cosméticas, legibilidade de código, nomenclatura de variáveis, sugestão de refatoração pontual ou documentação.
 `;
 
-export const OUT_OF_SCOPE_SPEC_GUIDELINES = `
-PROPOSTAS FORA DO ESCOPO (TLC SPEC-DRIVEN):
-Se você identificar um problema, oportunidade ou melhoria válida que esteja FORA do escopo do PR ou da especificação atual:
-NÃO bloqueie o PR por causa disso. Em vez disso, adicione a seção exata:
-#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)
-Com uma especificação estruturada pronta para abertura de Issue no GitHub e para o desenvolvedor copiar o prompt para o seu agente:
+export const ISSUE_PROPOSAL_MARKER = '#### 🚀 Proposta para Nova Issue';
 
-Estrutura obrigatória da proposta:
-##### [Título Sugerido no formato Conventional Commits, ex: feat(dashboard): permitir ordenação de convidados por presença]
+// Mirrors docs/knowledge/decisions/workflow.md: a goal, an observable acceptance
+// check and the test that proves it, then implementation.
+export const OUT_OF_SCOPE_ISSUE_GUIDELINES = `
+PROPOSTAS FORA DO ESCOPO (NOVA ISSUE):
+Se você identificar um problema ou melhoria válida que esteja FORA do escopo deste PR, NÃO bloqueie o PR.
+Em vez disso, adicione a seção exata:
+${ISSUE_PROPOSAL_MARKER}
 
-- **Arquivos de Referência**:
-  [Listar 1 a 3 caminhos de arquivos do PR onde a oportunidade foi identificada, ex: \`src/app/features/organizer/...\`]
+Mantenha a proposta curta e verificável:
+##### [Título no formato Conventional Commits, ex: feat(dashboard): ordenar convidados por presença]
 
-- **Visão Geral e Importância (Valor & Motivação)**:
-  [Explicação clara do problema ou oportunidade, e por que é importante implementar — valor de negócio, confiabilidade técnica ou UX.]
+- **Arquivos de referência**: [1 a 3 caminhos do PR onde a oportunidade apareceu]
+- **Problema**: [1 a 3 frases: o que acontece hoje e por que importa]
+- **Objetivo**: [o resultado esperado, em uma frase]
+- **Critério de aceite**: [1 a 3 itens observáveis, que um teste ou o usuário consiga verificar]
+- **Teste que prova**: [qual teste criar ou ajustar (unitário com Vitest, regras do Firestore ou E2E com Playwright) e o que ele afirma]
+- **Fora do escopo**: [opcional: o que não fazer nesta issue]
+- **Conhecimento relacionado**: [opcional: arquivos de docs/knowledge/ que se aplicam]
 
-- **Limites de Escopo**:
-  - **No Escopo**: [O que deve ser contemplado nesta issue]
-  - **Fora do Escopo**: [O que NÃO deve ser incluído para evitar scope creep]
-
-- **Critérios de Aceitação (Notação EARS - Easy Approach to Requirements Syntax)**:
-  Cada critério DEVE conter a palavra "DEVE" ou "SHALL":
-  * **Ubíquo (Invariante)**: O sistema DEVE [comportamento contínuo/invariante].
-  * **Orientado a Evento**: QUANDO [gatilho/evento], o sistema DEVE [ação esperada].
-  * **Condicional / Unwanted-behavior**: SE [condição de erro/limite], o sistema DEVE [resposta/fallback esperado].
-
-- **Prompt Pronto para o Agente**:
+- **Prompt para o agente**:
 \`\`\`text
-Quero implementar a melhoria: [Título da Issue].
-Contexto: Durante o review de [Arquivos de Referência], identificamos que [explicação objetiva do problema/necessidade]. Precisamos dessa melhoria para [o que deve ser feito e o benefício gerado].
-Siga os critérios de aceitação:
+Implemente: [Título].
+Contexto: [o problema em 1 a 2 frases, citando os arquivos de referência].
+Critério de aceite:
 - [Critério 1]
 - [Critério 2]
-- [Critério 3]
-Quero apenas a fase Specify da skill tlc-spec-driven.
+Comece pelo teste que prova o critério, depois implemente. Siga AGENTS.md e docs/knowledge/
+e rode npm run quality e npm run build antes de terminar.
 \`\`\`
 
-Se não houver propostas fora do escopo com real relevância, omita completamente a seção "#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)".
+Se não houver proposta fora do escopo com real relevância, omita completamente a seção "${ISSUE_PROPOSAL_MARKER}".
 `;
 
 // ==========================================
@@ -177,24 +171,18 @@ function runGit(cmd) {
 function getPRMetadata() {
   let prTitle = process.env.PR_TITLE || '';
   let prBody = process.env.PR_BODY || '';
-  let headBranch = '';
 
   if (process.env.GITHUB_EVENT_PATH && existsSync(process.env.GITHUB_EVENT_PATH)) {
     try {
       const eventData = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
       prTitle = eventData.pull_request?.title || eventData.issue?.title || prTitle;
-      prBody = eventData.pull_request?.body || eventData.comment?.body || prBody;
-      headBranch = eventData.pull_request?.head?.ref || '';
+      prBody = eventData.pull_request?.body || eventData.issue?.body || prBody;
     } catch {
       // Ignore JSON parse errors in event payload
     }
   }
 
-  if (!headBranch) {
-    headBranch = runGit('git rev-parse --abbrev-ref HEAD');
-  }
-
-  return { prTitle, prBody, headBranch };
+  return { prTitle, prBody };
 }
 
 function getGitDiff() {
@@ -220,65 +208,14 @@ function getGitDiff() {
   return diff;
 }
 
-export function findRelevantSpec(diffContent, branch, title, body, customSpecsDir = null) {
-  const specsDir = customSpecsDir || resolve(process.cwd(), '.specs/features');
-  if (!existsSync(specsDir)) return null;
-
-  const features = readdirSync(specsDir, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
-
-  // A. Check if diff explicitly touches files in a spec directory
-  for (const feature of features) {
-    if (diffContent.includes(`.specs/features/${feature}`)) {
-      const specPath = resolve(specsDir, feature, 'spec.md');
-      if (existsSync(specPath)) {
-        return { id: feature, path: specPath, content: readFileSync(specPath, 'utf8') };
-      }
-    }
-  }
-
-  // B. Check branch name, PR title, and PR body against spec names/numbers
-  const combined = [branch, title, body].filter(Boolean).join(' ').toLowerCase();
-  for (const feature of features) {
-    const num = feature.match(/^(\d+)/)?.[1];
-    const cleanName = feature.replace(/^\d+-/, '').toLowerCase();
-
-    const isMatch =
-      (num &&
-        (combined.includes(`spec ${num}`) ||
-          combined.includes(`spec #${num}`) ||
-          combined.includes(`feature/${num}`) ||
-          combined.includes(`feat/${num}`) ||
-          combined.includes(`feat-${num}`) ||
-          combined.includes(`feature-${num}`))) ||
-      combined.includes(feature.toLowerCase()) ||
-      (cleanName.length > 6 && combined.includes(cleanName));
-
-    if (isMatch) {
-      const specPath = resolve(specsDir, feature, 'spec.md');
-      if (existsSync(specPath)) {
-        return { id: feature, path: specPath, content: readFileSync(specPath, 'utf8') };
-      }
-    }
-  }
-
-  return null;
-}
 // ==========================================
 // PROMPT BUILDERS
 // ==========================================
 
-export function buildSystemPrompt(relevantSpec) {
-  const specSection = relevantSpec
-    ? `#### 📑 Conformidade com a Spec: \`${relevantSpec.id}\`
-- [ ] / [x] Critérios de Aceitação da Spec atendidos pelo diff
-[Comentário objetivo sobre o alinhamento com a especificação]`
-    : '';
-
+export function buildSystemPrompt() {
   return `
 Você é o Senior Angular Architect e Tech Lead do projeto Organiza AI (Angular 22+, Firebase Modular SDK, SCSS BEM, Glassmorphism).
-Sua missão é realizar um Code Review minucioso e rigoroso do Pull Request, avaliando tanto a integridade técnica/arquitetural quanto o alinhamento com as regras de negócio e especificações de produto.
+Sua missão é realizar um Code Review minucioso e rigoroso do Pull Request, avaliando tanto a integridade técnica/arquitetural quanto o alinhamento com as regras de negócio.
 
 ${ARCHITECTURAL_GUIDELINES}
 
@@ -286,7 +223,7 @@ ${DOMAIN_RULES}
 
 ${TAXONOMY_GUIDELINES}
 
-${OUT_OF_SCOPE_SPEC_GUIDELINES}
+${OUT_OF_SCOPE_ISSUE_GUIDELINES}
 
 FORMATO MANDATÓRIO DA SUA RESPOSTA (em Português pt-BR):
 ${REVIEW_COMMENT_MARKER}
@@ -303,8 +240,6 @@ ${REVIEW_COMMENT_MARKER}
 - [ ] / [x] **Acessibilidade (WCAG 2.1 AA)**: Touch targets >= 48px, ARIA e semântica
 - [ ] / [x] **TypeScript Strict**: Tipagem estrita com zero "any"
 
-${specSection}
-
 #### 🔍 Resumo das Alterações
 [Resumo conciso do que foi implementado/alterado no PR e seu impacto no sistema]
 
@@ -316,34 +251,26 @@ ${specSection}
 Se não houver problemas em uma dada prioridade, não liste aquela categoria.
 Destaque também pontos fortes e boas práticas adotadas.]
 
-[Se aplicável, adicione a seção: #### 🚀 Proposta para Nova Issue (TLC Spec-Driven)]
+[Se aplicável, adicione a seção: ${ISSUE_PROPOSAL_MARKER}]
 `;
 }
 
-export function buildUserPrompt(diff, relevantSpec) {
-  let prompt = `
+/** The PR description states the goal and acceptance check (docs/knowledge/decisions/workflow.md). */
+export function buildUserPrompt(diff, pr = { title: '', body: '' }) {
+  return `
+Título do Pull Request: ${pr.title || '(sem título)'}
+
+Descrição do Pull Request (objetivo e critério de aceite):
+${pr.body?.trim() || '(sem descrição)'}
+
 Aqui está o git diff do Pull Request para análise:
 
 \`\`\`diff
 ${diff}
 \`\`\`
+
+Por favor, realize o code review completo e rigoroso, aplicando a taxonomia P1/P2/P3 e propondo issues fora do escopo no formato definido quando oportuno.
 `;
-
-  if (relevantSpec) {
-    prompt += `
-Abaixo está o conteúdo da especificação da feature (.specs/features/${relevantSpec.id}/spec.md) para você validar se os critérios de aceitação foram atendidos:
-
-\`\`\`markdown
-${relevantSpec.content.slice(0, MAX_SPEC_CHAR_LIMIT)}
-\`\`\`
-`;
-  }
-
-  prompt += `
-Por favor, realize o code review completo e rigoroso, aplicando a taxonomia P1/P2/P3 e estruturando propostas fora do escopo no formato TLC Spec-Driven quando oportuno.
-`;
-
-  return prompt;
 }
 
 // ==========================================
@@ -371,10 +298,7 @@ async function callGemini(systemInstruction, userPrompt) {
               parts: [{ text: userPrompt }],
             },
           ],
-          generationConfig: {
-            temperature: 0.2,
-            topP: 0.8,
-          },
+          generationConfig: GENERATION_CONFIG,
         }),
       });
 
@@ -454,17 +378,16 @@ async function deletePRComment(headers, repo, commentId) {
 }
 
 // ==========================================
-// TLC SPEC-DRIVEN ISSUE BUILDER
+// OUT-OF-SCOPE ISSUE BUILDER
 // ==========================================
 
 export function parseIssueProposal(reviewMarkdown) {
   if (!reviewMarkdown || typeof reviewMarkdown !== 'string') return null;
 
-  const marker = '#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)';
-  const markerIdx = reviewMarkdown.indexOf(marker);
+  const markerIdx = reviewMarkdown.indexOf(ISSUE_PROPOSAL_MARKER);
   if (markerIdx === -1) return null;
 
-  const sectionContent = reviewMarkdown.slice(markerIdx + marker.length).trim();
+  const sectionContent = reviewMarkdown.slice(markerIdx + ISSUE_PROPOSAL_MARKER.length).trim();
   if (!sectionContent) return null;
 
   // Title can be in `##### <title>` or `**Título Sugerido**: <title>` or `**Título**: <title>`
@@ -472,7 +395,9 @@ export function parseIssueProposal(reviewMarkdown) {
     sectionContent.match(/^#####\s+(.+)$/m) ||
     sectionContent.match(/\*\*Título(?:\s+Sugerido)?\*\*:\s*(.+)$/m);
 
-  const rawTitle = titleMatch ? titleMatch[1].trim() : 'Melhoria fora do escopo (TLC Spec-Driven)';
+  const rawTitle = titleMatch
+    ? titleMatch[1].trim()
+    : 'Melhoria fora do escopo identificada no review';
   const title = rawTitle.replace(/^[`'"]|[`'"]$/g, '').trim();
 
   return {
@@ -510,7 +435,7 @@ export async function createGitHubIssue(headers, repo, proposal, prNumber) {
       body: JSON.stringify({
         title: proposal.title,
         body: bodyWithFooter,
-        labels: ['enhancement', 'tlc-spec-driven', 'status: needs-spec'],
+        labels: ['enhancement'],
       }),
     });
 
@@ -540,19 +465,12 @@ async function main() {
       process.exit(1);
     }
 
-    const { prTitle, prBody, headBranch } = getPRMetadata();
+    const { prTitle, prBody } = getPRMetadata();
     const diff = getGitDiff();
 
     if (!diff) {
       console.log('ℹ️ Nenhuma alteração de código encontrada no diff.');
       process.exit(0);
-    }
-
-    const relevantSpec = findRelevantSpec(diff, headBranch, prTitle, prBody);
-    if (relevantSpec) {
-      console.log(`📑 Especificação relevante detectada: \x1b[36m${relevantSpec.id}\x1b[0m`);
-    } else {
-      console.log('ℹ️ Nenhuma especificação de feature específica vinculada identificada.');
     }
 
     const headers = {
@@ -603,11 +521,11 @@ async function main() {
     }
 
     // Call Gemini API to generate the code review
-    const systemPrompt = buildSystemPrompt(relevantSpec);
-    const userPrompt = buildUserPrompt(diff, relevantSpec);
+    const systemPrompt = buildSystemPrompt();
+    const userPrompt = buildUserPrompt(diff, { title: prTitle, body: prBody });
     let reviewMarkdown = await callGemini(systemPrompt, userPrompt);
 
-    // Process out-of-scope TLC Spec-Driven issue proposal if suggested by Gemini
+    // Open the out-of-scope issue proposed by Gemini, if any
     const issueProposal = parseIssueProposal(reviewMarkdown);
     if (issueProposal) {
       if (isDryRun) {
@@ -628,8 +546,8 @@ async function main() {
             : 'Issue vinculada no GitHub';
           const issueRefBadge = `\n\n> 📌 **${statusText}**: [#${issueResult.number} — ${issueProposal.title}](${issueResult.url})\n`;
           reviewMarkdown = reviewMarkdown.replace(
-            '#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)',
-            `#### 🚀 Proposta para Nova Issue (TLC Spec-Driven)${issueRefBadge}`,
+            ISSUE_PROPOSAL_MARKER,
+            `${ISSUE_PROPOSAL_MARKER}${issueRefBadge}`,
           );
         }
       }

@@ -24,7 +24,7 @@ export class EventEditorPage extends BasePage {
       .getByTestId('event-editor-page')
       .or(page.locator('section.editor'))
       .first();
-    this.categoryChips = page.locator('.editor__category-options org-chip');
+    this.categoryChips = page.getByTestId('category-options').locator('org-chip');
     this.titleInput = page
       .getByTestId('event-title-input')
       .or(page.locator('input[formcontrolname="title"]'))
@@ -69,17 +69,11 @@ export class EventEditorPage extends BasePage {
     this.nextStepBtns = page.locator(
       'org-button[label="Próximo"] button, [data-testid="stepper-next-btn"] button, button:has-text("Próximo")',
     );
-    this.itemNameInput = page
-      .getByTestId('item-name-input')
-      .or(page.locator('.editor__item-name-field input'))
-      .first();
-    this.itemQtyInput = page
-      .getByTestId('item-qty-input')
-      .or(page.locator('.editor__item-qty-field input'))
-      .first();
+    this.itemNameInput = page.getByTestId('item-name-input').first();
+    this.itemQtyInput = page.getByTestId('item-qty-input').first();
     this.addItemBtn = page
       .getByTestId('add-item-btn')
-      .or(page.locator('.editor__add-btn, button[aria-label="Adicionar item"]'))
+      .or(page.locator('button[aria-label="Adicionar item"]'))
       .first();
   }
 
@@ -95,7 +89,7 @@ export class EventEditorPage extends BasePage {
   ): Promise<void> {
     await this.titleInput.fill(title);
     const categoryChip = this.page
-      .locator('.editor__category-options org-chip, org-chip, mat-chip-option')
+      .locator('[data-testid="category-options"] org-chip, org-chip, mat-chip-option')
       .first();
     if (await categoryChip.isVisible()) {
       await categoryChip.click();

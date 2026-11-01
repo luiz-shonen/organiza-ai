@@ -1,0 +1,14 @@
+// The only global text utility: a gradient fill for display headings.
+.org-gradient-text {
+  display: inline-block;
+  background-image: linear-gradient(to right, var(--org-on-surface), var(--org-primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+
+  // Keeps descenders and accents from being clipped by the text mask.
+  padding-bottom: 0.5em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

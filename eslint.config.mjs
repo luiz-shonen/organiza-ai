@@ -95,7 +95,22 @@ export default tseslint.config(
     },
   },
   {
+    // Firestore rules tests run on Vitest, not Playwright.
+    files: ['e2e/rules/**/*.ts'],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      parser: tseslint.parser,
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+      ],
+    },
+  },
+  {
     files: ['e2e/**/*.ts'],
+    ignores: ['e2e/rules/**'],
     extends: [...tseslint.configs.recommended],
     ...playwright.configs['flat/recommended'],
     languageOptions: {
@@ -120,7 +135,11 @@ export default tseslint.config(
       'playwright/no-eval': 'warn',
       'playwright/no-conditional-in-test': 'warn',
       'playwright/no-focused-test': 'error',
-      'playwright/expect-expect': 'warn',
+      // Page objects and design-token helpers assert through assert*() methods.
+      'playwright/expect-expect': [
+        'warn',
+        { assertFunctionPatterns: [String.raw`(^|\.)assert[A-Z]`] },
+      ],
       'playwright/no-force-option': 'warn',
     },
   },

@@ -63,20 +63,20 @@
 
   &__confirmed-title {
     font-weight: var(--org-font-weight-bold);
-    font-size: 1.125rem;
+    font-size: var(--org-font-size-lg);
     margin: 0 0 8px;
-    color: var(--org-text-primary);
+    color: var(--org-on-surface);
   }
 
   &__confirmed-subtitle {
-    color: var(--org-text-secondary);
+    color: var(--org-on-surface-variant);
     margin: 0 0 16px;
-    font-size: 0.95rem;
+    font-size: var(--org-font-size-md);
   }
 
   &__cancel-btn {
     padding: var(--org-space-sm) 20px;
-    border-radius: var(--org-radius-pill);
+    border-radius: var(--org-radius-full);
     border: 1px solid var(--org-error);
     color: var(--org-error);
     font-weight: var(--org-font-weight-bold);
@@ -84,8 +84,8 @@
     background: transparent;
     cursor: pointer;
     transition:
-      background-color 0.2s ease,
-      color 0.2s ease;
+      background-color var(--org-motion-base) var(--org-motion-ease),
+      color var(--org-motion-base) var(--org-motion-ease);
 
     &:hover {
       background-color: var(--org-error-container);
@@ -99,8 +99,8 @@
     padding: 0 16px;
 
     h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: var(--org-font-size-2xl);
+      font-weight: var(--org-font-weight-bold);
       color: var(--org-error);
       margin: 0 0 8px;
     }

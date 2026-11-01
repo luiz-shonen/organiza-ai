@@ -3,16 +3,14 @@ import {
   ChangeDetectionStrategy,
   input,
   effect,
-  inject,
   ElementRef,
   viewChild,
 } from '@angular/core';
-import { Clipboard } from '@angular/cdk/clipboard';
 import QRCode from 'qrcode';
 import {
-  FeedbackService,
   OrgButtonComponent,
-  OrgIconComponent,
+  OrgCardHeaderComponent,
+  OrgCopyButtonComponent,
   OrgSurfaceComponent,
 } from '../../../../../shared/ui';
 import { shareWhatsApp } from '../../../../../core/utils';
@@ -20,7 +18,12 @@ import { shareWhatsApp } from '../../../../../core/utils';
 @Component({
   selector: 'app-share-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent],
+  imports: [
+    OrgButtonComponent,
+    OrgCardHeaderComponent,
+    OrgCopyButtonComponent,
+    OrgSurfaceComponent,
+  ],
   templateUrl: './share-panel.component.html',
   styleUrl: './share-panel.component.scss',
 })
@@ -29,8 +32,6 @@ export class SharePanelComponent {
   readonly eventTitle = input('');
 
   private readonly qrCanvas = viewChild<ElementRef<HTMLCanvasElement>>('qrCanvas');
-  private readonly clipboard = inject(Clipboard);
-  private readonly feedback = inject(FeedbackService);
 
   constructor() {
     effect(() => {
@@ -44,11 +45,6 @@ export class SharePanelComponent {
         });
       }
     });
-  }
-
-  protected copyLink(): void {
-    this.clipboard.copy(this.eventUrl());
-    this.feedback.success('Link copiado!', { duration: 2000 });
   }
 
   protected shareWhatsApp(): void {

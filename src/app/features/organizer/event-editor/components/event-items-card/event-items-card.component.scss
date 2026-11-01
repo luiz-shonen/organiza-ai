@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.items-card {
+  &__add {
+    align-items: flex-start;
+    display: flex;
+    gap: var(--org-space-sm);
+    padding-top: 12px;
+  }
+
+  &__name-field {
+    flex: 1;
+  }
+
+  &__qty-field {
+    width: 106px;
+  }
+
+  &__add-btn {
+    margin-top: var(--org-space-sm);
+  }
+
+  &__list {
+    list-style: none;
+    margin: var(--org-space-sm) 0 0;
+    padding: 0;
+  }
+
+  &__item {
+    align-items: center;
+    background: color-mix(in srgb, var(--org-surface) 60%, transparent);
+    border: 1px solid var(--org-outline-variant);
+    border-radius: var(--org-radius-sm);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--org-space-xs);
+    padding: var(--org-space-sm) var(--org-space-md);
+    transition: background-color var(--org-motion-fast) var(--org-motion-ease);
+
+    &:hover {
+      background: color-mix(in srgb, var(--org-surface) 85%, transparent);
+    }
+  }
+
+  &__item-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-2xs);
+  }
+
+  &__item-name {
+    font-weight: var(--org-font-weight-medium);
+  }
+
+  &__item-qty {
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-font-size-xs);
+  }
+
+  &__item-claimed {
+    align-items: center;
+    color: var(--org-primary);
+    display: flex;
+    font-size: var(--org-font-size-sm);
+    gap: var(--org-space-xs);
+  }
+}

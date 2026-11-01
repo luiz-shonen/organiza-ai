@@ -26,14 +26,14 @@
 
   &__title {
     margin: 0;
-    font-size: 1.35rem;
-    color: var(--org-text-primary);
+    font-size: var(--org-font-size-xl);
+    color: var(--org-on-surface);
   }
 
   &__description {
     margin: 4px 0 0;
-    color: var(--org-text-secondary);
-    font-size: 0.875rem;
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-font-size-sm);
   }
 
   &__form {

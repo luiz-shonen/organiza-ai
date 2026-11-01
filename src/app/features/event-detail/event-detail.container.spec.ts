@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ComponentRef, signal } from '@angular/core';
+import { ComponentRef, WritableSignal, signal } from '@angular/core';
+
+type MockCurrentUser = Record<string, unknown> | null;
 import { of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
@@ -41,14 +43,14 @@ describe('EventDetailContainer', () => {
   let mockFamilyService: {
     getFamilyMembers: ReturnType<typeof vi.fn>;
   };
-  let currentUserSignal: ReturnType<typeof signal<any>>;
+  let currentUserSignal: WritableSignal<MockCurrentUser>;
   let mockAuthService: {
-    currentUser: any;
+    currentUser: WritableSignal<MockCurrentUser>;
     loginAnonymously: ReturnType<typeof vi.fn>;
     loginWithGoogle: ReturnType<typeof vi.fn>;
   };
   let mockGuestSessionService: {
-    session: any;
+    session: WritableSignal<unknown>;
     saveSession: ReturnType<typeof vi.fn>;
     clearSession: ReturnType<typeof vi.fn>;
   };
@@ -223,7 +225,7 @@ describe('EventDetailContainer', () => {
 
   it('uses named companion arrays first and retains legacy counts in the guest total', () => {
     fixture.detectChanges();
-    (component as any).guests.set([
+    component['guests'].set([
       {
         id: 'named-guest',
         name: 'Ana',
@@ -241,14 +243,14 @@ describe('EventDetailContainer', () => {
       },
     ]);
 
-    expect((component as any).guestCount()).toBe(6);
+    expect(component['guestCount']()).toBe(6);
   });
 
   describe('RSVP 1-Touch flow', () => {
     it('authenticates with Google when unauthenticated and triggers confetti on confirmed RSVP', async () => {
       fixture.detectChanges();
 
-      await (component as any).onConfirmRsvp();
+      await component['onConfirmRsvp']();
 
       expect(mockAuthService.loginWithGoogle).toHaveBeenCalledTimes(1);
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
@@ -274,7 +276,7 @@ describe('EventDetailContainer', () => {
       });
       fixture.detectChanges();
 
-      await (component as any).onConfirmRsvp();
+      await component['onConfirmRsvp']();
 
       expect(mockAuthService.loginWithGoogle).not.toHaveBeenCalled();
       expect(mockDrawerService.open).toHaveBeenCalled();
@@ -291,7 +293,7 @@ describe('EventDetailContainer', () => {
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
     });
 
-    it('opens GuestFormDialogComponent and performs batchConfirmRsvp when family members are present', async () => {
+    it('opens the RSVP drawer and performs batchConfirmRsvp when family members are present', async () => {
       const mockFamily: FamilyMember[] = [
         { id: 'f-1', name: 'Carla', relationship: 'spouse', createdAt: '' },
       ];
@@ -313,7 +315,7 @@ describe('EventDetailContainer', () => {
       });
       fixture.detectChanges();
 
-      await (component as any).onConfirmRsvp();
+      await component['onConfirmRsvp']();
 
       expect(mockDrawerService.open).toHaveBeenCalled();
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
@@ -336,7 +338,7 @@ describe('EventDetailContainer', () => {
       });
       fixture.detectChanges();
 
-      await (component as any).onCancelRsvp();
+      await component['onCancelRsvp']();
 
       expect(mockDialogs.confirm).toHaveBeenCalled();
       expect(mockGuestService.cancelRsvp).toHaveBeenCalledWith('evt-123', 'usr-1', 'usr-1');
@@ -354,7 +356,7 @@ describe('EventDetailContainer', () => {
       });
       fixture.detectChanges();
 
-      await (component as any).onClaimItemById('item-1');
+      await component['onClaimItemById']('item-1');
 
       expect(mockItemService.claimItem).toHaveBeenCalledWith(
         'evt-123',
@@ -370,7 +372,7 @@ describe('EventDetailContainer', () => {
       currentUserSignal.set(null);
       fixture.detectChanges();
 
-      await (component as any).onClaimItemById('item-1');
+      await component['onClaimItemById']('item-1');
 
       expect(mockItemService.claimItem).not.toHaveBeenCalled();
       expect(mockFeedback.info).toHaveBeenCalledWith('Por favor, confirme sua presença primeiro.');
@@ -379,7 +381,7 @@ describe('EventDetailContainer', () => {
     it('unclaims item successfully', async () => {
       fixture.detectChanges();
 
-      await (component as any).onUnclaimItemById('item-1');
+      await component['onUnclaimItemById']('item-1');
 
       expect(mockItemService.unclaimItem).toHaveBeenCalledWith('evt-123', 'item-1');
       expect(mockFeedback.success).toHaveBeenCalledWith('Item liberado.');
@@ -394,7 +396,7 @@ describe('EventDetailContainer', () => {
       mockItemService.claimItem.mockRejectedValue(new Error('Claim failed'));
       fixture.detectChanges();
 
-      await (component as any).onClaimItemById('item-1');
+      await component['onClaimItemById']('item-1');
 
       expect(mockFeedback.error).toHaveBeenCalledWith('Erro ao assumir item. Tente novamente.');
     });

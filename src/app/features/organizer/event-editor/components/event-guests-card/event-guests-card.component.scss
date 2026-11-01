@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.guests-card {
+  &__actions {
+    display: flex;
+    gap: var(--org-space-sm);
+    margin: var(--org-space-md) 0;
+  }
+
+  &__action {
+    flex: 1;
+  }
+
+  &__empty {
+    color: var(--org-on-surface-variant);
+    margin: 0;
+    padding: var(--org-space-md) 0;
+    text-align: center;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}

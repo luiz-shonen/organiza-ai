@@ -7,7 +7,12 @@ on:
 jobs:
   comment-review:
     name: On-Demand Gemini Review
-    if: github.event.issue.pull_request && (contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/gemini review'))
+    # Only people with write access may trigger it: the job checks out the PR head
+    # and runs it with GEMINI_API_KEY, so a fork author must never be able to start it.
+    if: >-
+      github.event.issue.pull_request &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association) &&
+      (contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/gemini review'))
     timeout-minutes: 10
     runs-on: ubuntu-latest
     permissions:
@@ -18,8 +23,9 @@ jobs:
     steps:
       - name: Fetch PR Metadata
         id: pr-meta
+        # Runs before checkout, so gh needs the repository explicitly.
         run: |
-          PR_DATA=$(gh pr view ${{ github.event.issue.number }} --json baseRefOid,headRefOid)
+          PR_DATA=$(gh pr view ${{ github.event.issue.number }} --repo "${{ github.repository }}" --json baseRefOid,headRefOid)
           echo "base_sha=$(echo "$PR_DATA" | jq -r .baseRefOid)" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(echo "$PR_DATA" | jq -r .headRefOid)" >> "$GITHUB_OUTPUT"
         env:
@@ -46,3 +52,11 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           IS_ON_DEMAND: 'true'
         run: node scripts/gemini-pr-review.mjs
+
+      - name: Report Failure on the PR
+        if: failure()
+        run: |
+          gh pr comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" \
+            --body "⚠️ A revisão sob demanda do Gemini falhou. Veja o log em ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

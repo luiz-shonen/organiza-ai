@@ -11,7 +11,7 @@ This skill provides step-by-step instructions for authoring pure presentational 
 
 All component authoring must adhere to:
 
-- **`tlc-spec-driven`**: Ensure component contracts (inputs/outputs/models) are specified before implementation; commit changes with atomic Conventional Commits.
+- **Test-first** ([workflow](../../../docs/knowledge/decisions/workflow.md)): state the goal and an observable acceptance check, write the test that proves it, then implement; commit with Conventional Commits.
 - **`tdd`**: Author component unit tests (`.component.spec.ts`) testing input rendering, output emissions, disabled behavior, and accessibility.
 - **`bem-css`**: Style components using strict BEM SCSS, `--org-*` custom properties, and glassmorphism styling.
 
@@ -19,9 +19,9 @@ All component authoring must adhere to:
 
 ## 1. Principles of Dumb / Presentational Components
 
-- **Zero Business Logic**: Presentational components never fetch data, never inject Firestore/backend services, and never perform navigation (AD-011).
+- **Zero Business Logic**: Presentational components never fetch data, never inject Firestore/backend services, and never perform navigation.
 - **Signal-Driven API**: State flows in through `input()` or `input.required()`, and events flow out through `output()`.
-- **Mandatory OnPush**: Every component must declare `changeDetection: ChangeDetectionStrategy.OnPush` (AD-002).
+- **Mandatory OnPush**: Every component must declare `changeDetection: ChangeDetectionStrategy.OnPush`.
 - **Template Separation**: Always use `templateUrl` and `styleUrl`. Never inline templates or styles.
 - **Strict BEM**: Block name matches the component selector without `app-` prefix (e.g. `app-item-card` $\rightarrow$ `.item-card`).
 - **WCAG 2.1 AA**: Native semantic elements, ARIA attributes, keyboard support, and minimum 48px touch targets.
@@ -110,29 +110,29 @@ export class ItemCardComponent {
 .item-card {
   display: flex;
   flex-direction: column;
-  gap: var(--org-spacing-3, 12px);
-  padding: var(--org-spacing-4, 16px);
+  gap: var(--org-space-sm);
+  padding: var(--org-space-md);
   transition:
-    transform 0.2s ease,
-    border-color 0.2s ease;
+    transform var(--org-motion-base) var(--org-motion-ease),
+    border-color var(--org-motion-base) var(--org-motion-ease);
 
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--org-spacing-2, 8px);
+    gap: var(--org-space-sm);
   }
 
   &__title {
-    font-size: var(--org-font-size-base, 1rem);
-    font-weight: 600;
-    color: var(--org-text-primary, #0f172a);
+    font-size: var(--org-font-size-md);
+    font-weight: var(--org-font-weight-semibold);
+    color: var(--org-on-surface);
     margin: 0;
   }
 
   &__description {
-    font-size: var(--org-font-size-sm, 0.875rem);
-    color: var(--org-text-secondary, #64748b);
+    font-size: var(--org-font-size-sm);
+    color: var(--org-on-surface-variant);
     margin: 0;
   }
 
@@ -140,19 +140,19 @@ export class ItemCardComponent {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: var(--org-spacing-3, 12px);
+    gap: var(--org-space-sm);
     margin-top: auto;
-    padding-top: var(--org-spacing-2, 8px);
-    border-top: 1px solid var(--org-border-subtle, rgba(255, 255, 255, 0.1));
+    padding-top: var(--org-space-sm);
+    border-top: 1px solid var(--org-outline-variant);
   }
 
   &__status {
-    font-size: var(--org-font-size-xs, 0.75rem);
-    color: var(--org-text-muted, #94a3b8);
+    font-size: var(--org-font-size-xs);
+    color: var(--org-on-surface-muted);
   }
 
   &--claimed {
-    border-color: var(--org-primary, #ff4d94);
+    border-color: var(--org-primary);
   }
 }
 ```

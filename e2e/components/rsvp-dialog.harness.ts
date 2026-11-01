@@ -77,19 +77,28 @@ export class RsvpDialogHarness {
     await this.cancelBtn.click();
   }
 
+  /** Waits for the drawer to take focus (it does after its open animation), then presses Escape. */
   async dismissViaEscape(): Promise<void> {
+    await this.assertFocusInside();
     await this.page.keyboard.press('Escape');
     await expect(this.dialogRoot.first()).toBeHidden();
   }
 
+  async assertFocusInside(): Promise<void> {
+    await expect
+      .poll(() =>
+        this.page.evaluate(() =>
+          Boolean(
+            document.querySelector('[data-testid="rsvp-drawer"]')?.contains(document.activeElement),
+          ),
+        ),
+      )
+      .toBe(true);
+  }
+
   async assertFocusTrapped(): Promise<void> {
     await expect(this.dialogRoot.first()).toBeVisible();
-
-    const isInitialFocusInside = await this.page.evaluate(() => {
-      const dialog = document.querySelector('[data-testid="rsvp-drawer"]');
-      return dialog ? dialog.contains(document.activeElement) : false;
-    });
-    expect(isInitialFocusInside).toBe(true);
+    await this.assertFocusInside();
 
     for (let i = 0; i < 5; i++) {
       await this.page.keyboard.press('Tab');

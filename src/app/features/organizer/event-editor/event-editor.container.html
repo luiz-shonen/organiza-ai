@@ -3,34 +3,31 @@
     <org-page-header title="Carregando..." icon="edit" />
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
-        <org-surface variant="card" class="editor__card">
-          <div class="editor__card-header">
-            <div class="skeleton-box editor__card-icon"></div>
-            <div class="skeleton-box editor__skeleton-title"></div>
+        <org-surface variant="card">
+          <div class="editor__skeleton-header">
+            <org-skeleton class="editor__skeleton-icon" shape="circle" />
+            <org-skeleton class="editor__skeleton-title" />
           </div>
-          <div class="editor__card-content">
-            <div class="editor__form">
-              <div class="skeleton-box editor__skeleton-input"></div>
-              <div class="skeleton-box editor__skeleton-textarea"></div>
-              <div class="skeleton-box editor__skeleton-input"></div>
-              <div class="skeleton-box editor__skeleton-input"></div>
-              <div class="skeleton-box editor__skeleton-input"></div>
-              <div class="skeleton-box editor__skeleton-btn"></div>
-            </div>
+          <div class="editor__skeleton-form">
+            <org-skeleton class="editor__skeleton-input" />
+            <org-skeleton class="editor__skeleton-textarea" />
+            <org-skeleton class="editor__skeleton-input" />
+            <org-skeleton class="editor__skeleton-input" />
+            <org-skeleton class="editor__skeleton-input" />
+            <org-skeleton class="editor__skeleton-btn" />
           </div>
         </org-surface>
       </div>
     </div>
   } @else {
     <org-page-header [title]="isEditing() ? 'Editar Evento' : 'Novo Evento'" icon="edit">
-      <div orgPageHeaderActions class="editor__header-actions-slot">
+      <div orgPageHeaderActions class="editor__header-actions">
         <org-button
           label="Voltar"
           icon="arrow_back"
           variant="secondary"
           (pressed)="router.navigate(['/meus-eventos'])"
           aria-label="Voltar para a lista de eventos"
-          class="editor__back-btn"
         />
         @if (isEditing() && isOwner()) {
           <org-button
@@ -38,7 +35,6 @@
             icon="group_add"
             variant="secondary"
             (pressed)="openCollaboratorsDialog()"
-            class="editor__collab-btn"
           />
         }
       </div>
@@ -57,457 +53,104 @@
 
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col">
-        <!-- Event Form -->
-        <org-surface variant="card" class="editor__card">
-          <div class="editor__card-header">
-            <org-icon name="edit_note" class="editor__card-icon" />
-            <h2 class="editor__card-title">Dados do Evento</h2>
-          </div>
-          <div class="editor__card-content-stepper">
+        <org-surface variant="card">
+          <org-card-header icon="edit_note" heading="Dados do Evento" />
+          <div
+            class="editor__step-progress"
+            data-testid="event-step-progress"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            <span class="editor__step-progress-count">
+              Etapa {{ activeStepIndex() + 1 }} de {{ stepLabels.length }}
+            </span>
+            <strong class="editor__step-progress-title">{{ stepLabels[activeStepIndex()] }}</strong>
             <div
-              class="editor__step-progress"
-              data-testid="event-step-progress"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              <span class="editor__step-progress-count">
-                Etapa {{ activeStepIndex() + 1 }} de {{ stepLabels.length }}
-              </span>
-              <strong class="editor__step-progress-title">{{
+              class="editor__step-progress-track"
+              role="progressbar"
+              aria-label="Progresso do formulário"
+              aria-valuemin="1"
+              [attr.aria-valuemax]="stepLabels.length"
+              [attr.aria-valuenow]="activeStepIndex() + 1"
+              [attr.aria-valuetext]="
+                'Etapa ' +
+                (activeStepIndex() + 1) +
+                ' de ' +
+                stepLabels.length +
+                ': ' +
                 stepLabels[activeStepIndex()]
-              }}</strong>
-              <div
-                class="editor__step-progress-track"
-                role="progressbar"
-                aria-label="Progresso do formulário"
-                aria-valuemin="1"
-                [attr.aria-valuemax]="stepLabels.length"
-                [attr.aria-valuenow]="activeStepIndex() + 1"
-                [attr.aria-valuetext]="
-                  'Etapa ' +
-                  (activeStepIndex() + 1) +
-                  ' de ' +
-                  stepLabels.length +
-                  ': ' +
-                  stepLabels[activeStepIndex()]
-                "
-              >
-                @for (stepLabel of stepLabels; track stepLabel; let index = $index) {
-                  <span
-                    class="editor__step-progress-segment"
-                    [class.editor__step-progress-segment--complete]="index < activeStepIndex()"
-                    [class.editor__step-progress-segment--active]="index === activeStepIndex()"
-                  ></span>
-                }
-              </div>
-            </div>
-            <org-stepper
-              [linear]="true"
-              [compact]="true"
-              #stepper
-              class="editor__stepper editor__stepper--mobile"
-              ariaLabel="Etapas de criação do evento"
-              (selectionChange)="activeStepIndex.set($event)"
+              "
             >
-              <!-- Step 1: Basic Info -->
-              <org-step label="Informações do evento" [stepControl]="basicInfoForm">
-                <form [formGroup]="basicInfoForm" class="editor__form" id="basic-info-form">
-                  <org-text-field
-                    class="org-input"
-                    label="Título do Evento"
-                    placeholder="Ex: Festa Junina 2026"
-                    [required]="true"
-                    [error]="
-                      basicInfoForm.controls.title.hasError('required') &&
-                      basicInfoForm.controls.title.touched
-                        ? 'Título é obrigatório'
-                        : ''
-                    "
-                    formControlName="title"
-                    testId="event-title-input"
-                  />
-
-                  <div class="editor__category-field">
-                    <span class="editor__category-label">Categoria do Evento</span>
-                    <div
-                      class="editor__category-options"
-                      role="group"
-                      aria-label="Categoria do Evento"
-                    >
-                      @for (cat of categories; track cat.name) {
-                        <org-chip
-                          [label]="cat.name"
-                          [class]="cat.class"
-                          [selectable]="true"
-                          [selected]="basicInfoForm.controls.category.value === cat.name"
-                          (selectionChange)="selectCategory(cat.name)"
-                        />
-                      }
-                    </div>
-                    @if (
-                      basicInfoForm.controls.category.hasError('required') &&
-                      basicInfoForm.controls.category.touched
-                    ) {
-                      <span class="editor__category-error" role="alert"
-                        >Selecione uma categoria</span
-                      >
-                    }
-                  </div>
-
-                  <org-textarea-field
-                    class="org-input"
-                    label="Descrição"
-                    placeholder="Descreva o evento..."
-                    [rows]="4"
-                    [required]="true"
-                    [maxLength]="500"
-                    [error]="
-                      basicInfoForm.controls.description.hasError('required') &&
-                      basicInfoForm.controls.description.touched
-                        ? 'Descrição é obrigatória'
-                        : ''
-                    "
-                    formControlName="description"
-                    testId="event-description-input"
-                  />
-
-                  <div class="editor__date-time-row">
-                    <org-date-field
-                      class="editor__date-field org-input"
-                      label="Data do Evento"
-                      [min]="minDate"
-                      [required]="true"
-                      [error]="
-                        basicInfoForm.controls.date.hasError('required') &&
-                        basicInfoForm.controls.date.touched
-                          ? 'Data é obrigatória'
-                          : basicInfoForm.controls.date.hasError('matDatepickerMin')
-                            ? 'Data não pode ser no passado'
-                            : basicInfoForm.controls.date.hasError('matDatepickerParse')
-                              ? 'Data inválida'
-                              : ''
-                      "
-                      formControlName="date"
-                      testId="event-date-input"
-                    />
-
-                    <org-time-field
-                      class="editor__time-field org-input"
-                      label="Hora"
-                      [required]="true"
-                      [error]="
-                        basicInfoForm.controls.time.hasError('required') &&
-                        basicInfoForm.controls.time.touched
-                          ? 'Hora é obrigatória'
-                          : ''
-                      "
-                      formControlName="time"
-                      testId="event-time-input"
-                    />
-                  </div>
-
-                  <div class="editor__step-actions">
-                    <org-button
-                      label="Próximo"
-                      icon="send"
-                      testId="stepper-next-btn"
-                      [disabled]="basicInfoForm.invalid"
-                      (pressed)="nextStep(stepper)"
-                    />
-                  </div>
-                </form>
-              </org-step>
-
-              <!-- Step 2: Address -->
-              <org-step label="Endereço do evento" [stepControl]="addressForm">
-                <form [formGroup]="addressForm" class="editor__form" id="address-form">
-                  <h3 class="editor__section-title">Endereço</h3>
-                  <div class="editor__address-row-top">
-                    <org-text-field
-                      class="org-input editor__cep-field"
-                      label="CEP"
-                      placeholder="00000-000"
-                      [required]="true"
-                      [error]="
-                        addressForm.controls.cep.hasError('required') &&
-                        addressForm.controls.cep.touched
-                          ? 'CEP é obrigatório'
-                          : ''
-                      "
-                      formControlName="cep"
-                      testId="event-cep-input"
-                      (valueChange)="formatCep($event)"
-                    />
-
-                    <org-text-field
-                      class="editor__number-field org-input"
-                      label="Número"
-                      placeholder="Ex: 123"
-                      [required]="true"
-                      [error]="
-                        addressForm.controls.number.hasError('required') &&
-                        addressForm.controls.number.touched
-                          ? 'Número é obrigatório'
-                          : ''
-                      "
-                      formControlName="number"
-                      testId="event-number-input"
-                    />
-                  </div>
-
-                  <div class="editor__address-row-single">
-                    <org-text-field
-                      class="editor__address-field org-input editor__disabled-field"
-                      label="Endereço"
-                      placeholder="Ex: Rua das Festas"
-                      prefixIcon="location_on"
-                      suffixIcon="lock"
-                      [readOnly]="true"
-                      [required]="true"
-                      [error]="
-                        addressForm.controls.address.hasError('required') &&
-                        addressForm.controls.address.touched
-                          ? 'Endereço é obrigatório'
-                          : ''
-                      "
-                      formControlName="address"
-                      testId="event-street-input"
-                    />
-                  </div>
-
-                  <div class="editor__address-row">
-                    <org-text-field
-                      class="org-input editor__disabled-field"
-                      label="Bairro"
-                      placeholder="Ex: Centro"
-                      suffixIcon="lock"
-                      [readOnly]="true"
-                      [required]="true"
-                      [error]="
-                        addressForm.controls.neighborhood.hasError('required') &&
-                        addressForm.controls.neighborhood.touched
-                          ? 'Bairro é obrigatório'
-                          : ''
-                      "
-                      formControlName="neighborhood"
-                    />
-
-                    <org-text-field
-                      class="org-input editor__disabled-field"
-                      label="Cidade/UF"
-                      placeholder="Ex: São Paulo/SP"
-                      suffixIcon="lock"
-                      [readOnly]="true"
-                      [required]="true"
-                      [error]="
-                        addressForm.controls.city.hasError('required') &&
-                        addressForm.controls.city.touched
-                          ? 'Cidade/UF é obrigatória'
-                          : ''
-                      "
-                      formControlName="city"
-                    />
-                  </div>
-
-                  <div class="editor__step-actions">
-                    <org-button
-                      label="Voltar"
-                      icon="arrow_back"
-                      variant="text"
-                      [gradient]="false"
-                      (pressed)="previousStep(stepper)"
-                    />
-                    <org-button
-                      label="Próximo"
-                      icon="send"
-                      testId="stepper-next-btn"
-                      [disabled]="addressForm.invalid"
-                      (pressed)="nextStep(stepper)"
-                    />
-                  </div>
-                </form>
-              </org-step>
-
-              <!-- Step 3: Pix -->
-              <org-step label="Pagamento por Pix" [stepControl]="pixForm">
-                <form [formGroup]="pixForm" class="editor__form" id="pix-form">
-                  <h3 class="editor__section-title">Pagamento (Pix)</h3>
-                  <org-text-field
-                    class="org-input"
-                    label="Chave Pix (opcional)"
-                    placeholder="CPF, e-mail ou chave aleatória"
-                    prefixIcon="pix"
-                    hint="Deixe em branco se não quiser rachadinha"
-                    formControlName="pixKey"
-                  />
-
-                  <div class="editor__step-actions">
-                    <org-button
-                      label="Voltar"
-                      icon="arrow_back"
-                      variant="secondary"
-                      (pressed)="previousStep(stepper)"
-                    />
-                    @if (isOwner()) {
-                      <org-button
-                        [label]="isEditing() ? 'Salvar' : 'Criar Evento'"
-                        icon="save"
-                        class="editor__save-btn"
-                        [disabled]="
-                          basicInfoForm.invalid ||
-                          addressForm.invalid ||
-                          pixForm.invalid ||
-                          saving()
-                        "
-                        [loading]="saving()"
-                        (pressed)="saveEvent()"
-                        testId="event-save-btn"
-                      />
-                    } @else {
-                      <p class="editor__collab-save-disabled">
-                        <org-icon name="lock" />
-                        Apenas o organizador principal pode salvar alterações principais.
-                      </p>
-                    }
-                  </div>
-                </form>
-              </org-step>
-            </org-stepper>
-          </div>
-        </org-surface>
-
-        <!-- Items Manager (only when editing) -->
-        @if (isEditing()) {
-          <org-surface variant="card" class="editor__card">
-            <div class="editor__card-header">
-              <org-icon name="checklist" class="editor__card-icon" />
-              <div class="editor__card-title-group">
-                <h2 class="editor__card-title">Lista de Itens</h2>
-                <p class="editor__card-subtitle">{{ items().length }} itens cadastrados</p>
-              </div>
-            </div>
-            <div class="editor__card-content">
-              <div class="editor__add-item">
-                <org-text-field
-                  class="editor__item-name-field org-input"
-                  label="Nome do item"
-                  placeholder="Ex: Bolo de milho"
-                  [(value)]="newItemName"
-                />
-                <org-text-field
-                  class="editor__item-qty-field org-input"
-                  label="Quantidade"
-                  type="number"
-                  [min]="1"
-                  [value]="newItemQuantity().toString()"
-                  (valueChange)="setNewItemQuantity($event)"
-                />
-                <org-icon-button
-                  ariaLabel="Adicionar item"
-                  icon="add"
-                  variant="primary"
-                  [gradient]="false"
-                  (pressed)="addItem()"
-                  [disabled]="!newItemName().trim()"
-                  class="editor__add-btn"
-                />
-              </div>
-
-              @if (items().length > 0) {
-                <ul class="editor__items" role="list">
-                  @for (item of items(); track item.id) {
-                    <li class="editor__item" role="listitem">
-                      <div class="editor__item-info">
-                        <span class="editor__item-name">{{ item.name }}</span>
-                        @if (item.quantity > 1) {
-                          <span class="editor__item-qty">× {{ item.quantity }}</span>
-                        }
-                        @if (item.claimedBy) {
-                          <span class="editor__item-claimed">
-                            <org-icon name="person" size="sm" />
-                            {{ item.claimedBy.name }}
-                          </span>
-                        }
-                      </div>
-                      <org-icon-button
-                        [ariaLabel]="'Remover ' + item.name"
-                        icon="delete"
-                        variant="default"
-                        [gradient]="false"
-                        (pressed)="removeItem(item)"
-                      />
-                    </li>
-                  }
-                </ul>
+              @for (stepLabel of stepLabels; track stepLabel; let index = $index) {
+                <span
+                  class="editor__step-progress-segment"
+                  [class.editor__step-progress-segment--complete]="index < activeStepIndex()"
+                  [class.editor__step-progress-segment--active]="index === activeStepIndex()"
+                ></span>
               }
             </div>
-          </org-surface>
+          </div>
+          <org-stepper
+            #stepper
+            class="editor__stepper--mobile"
+            ariaLabel="Etapas de criação do evento"
+            [linear]="true"
+            [compact]="true"
+            (selectionChange)="activeStepIndex.set($event)"
+          >
+            <org-step label="Informações do evento" [stepControl]="basicInfoForm">
+              <app-event-basic-info-step
+                [form]="basicInfoForm"
+                [categories]="categories"
+                [minDate]="minDate"
+                (next)="stepper.next()"
+              />
+            </org-step>
+
+            <org-step label="Endereço do evento" [stepControl]="addressForm">
+              <app-event-address-step
+                [form]="addressForm"
+                (cepInput)="formatCep($event)"
+                (back)="stepper.previous()"
+                (next)="stepper.next()"
+              />
+            </org-step>
+
+            <org-step label="Pagamento por Pix" [stepControl]="pixForm">
+              <app-event-pix-step
+                [form]="pixForm"
+                [canSave]="isOwner()"
+                [isEditing]="isEditing()"
+                [saving]="saving()"
+                [complete]="basicInfoForm.valid && addressForm.valid && pixForm.valid"
+                (back)="stepper.previous()"
+                (save)="saveEvent()"
+              />
+            </org-step>
+          </org-stepper>
+        </org-surface>
+
+        @if (isEditing()) {
+          <app-event-items-card
+            [items]="items()"
+            (add)="addItem($event)"
+            (remove)="removeItem($event)"
+          />
         }
       </div>
 
       @if (isEditing()) {
         <div class="editor__col">
-          <!-- Share Panel -->
           <app-share-panel
             [eventUrl]="eventUrl()"
             [eventTitle]="basicInfoForm.controls.title.value"
           />
-
-          <!-- Guest List Card -->
-          <org-surface variant="card" class="editor__card print-section">
-            <div class="editor__card-header">
-              <org-icon name="group" class="editor__card-icon" />
-              <div class="editor__card-title-group">
-                <h2 class="editor__card-title">Lista de Convidados</h2>
-                <p class="editor__card-subtitle">{{ guests().length }} confirmados</p>
-              </div>
-            </div>
-            <div class="editor__card-content">
-              <div class="editor__guest-actions no-print">
-                <org-button
-                  label="Excel"
-                  icon="download"
-                  variant="secondary"
-                  (pressed)="exportToCsv()"
-                  [disabled]="guests().length === 0"
-                  class="editor__guest-action-btn"
-                />
-                <org-button
-                  label="Imprimir"
-                  icon="print"
-                  variant="secondary"
-                  (pressed)="printList()"
-                  [disabled]="guests().length === 0"
-                  class="editor__guest-action-btn"
-                />
-              </div>
-
-              @if (guests().length > 0) {
-                <div class="guest-table-container">
-                  <table class="guest-table">
-                    <thead>
-                      <tr>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (guest of guests(); track guest.id) {
-                        <tr>
-                          <td>{{ guest.name }}</td>
-                          <td>{{ guest.phone }}</td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              } @else {
-                <p class="editor__empty-guests no-print">
-                  Nenhum convidado confirmou presença ainda.
-                </p>
-              }
-            </div>
-          </org-surface>
+          <app-event-guests-card
+            class="print-section"
+            [guests]="guests()"
+            (exportCsv)="exportToCsv()"
+            (print)="printList()"
+          />
         </div>
       }
     </div>

@@ -4,25 +4,67 @@
 }
 
 .org-button__control {
+  --mat-button-filled-container-shape: var(--org-radius-xl);
+  --mat-button-outlined-container-shape: var(--org-radius-xl);
+  --mat-button-text-container-shape: var(--org-radius-xl);
+
   align-items: center;
   display: inline-flex;
-  gap: var(--org-space-sm, 8px);
+  gap: var(--org-space-sm);
   justify-content: center;
-  min-height: var(--org-space-2xl, 48px);
-  min-width: var(--org-space-2xl, 48px);
+  min-height: var(--org-space-2xl);
+  min-width: var(--org-space-2xl);
+  overflow: hidden;
   padding-inline: 20px;
+  position: relative;
+  transition:
+    transform var(--org-motion-base) var(--org-motion-ease),
+    box-shadow var(--org-motion-base) var(--org-motion-ease);
+
+  &:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: auto;
+    transform: none;
+  }
 
   &--full-width {
     width: 100%;
   }
 
-  &--gradient {
+  &--primary {
+    --mat-button-filled-label-text-color: var(--org-on-primary);
+    --mat-button-filled-disabled-label-text-color: var(--org-on-primary);
+    --mat-button-filled-label-text-weight: var(--org-font-weight-bold);
+
     background: var(--org-gradient-primary);
-    color: var(--org-on-primary);
+    box-shadow: var(--org-shadow-primary);
+
+    &:hover:not(:disabled) {
+      box-shadow: var(--org-shadow-primary-hover);
+      transform: translateY(-1px) scale(1.02);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  &--danger {
+    --mat-button-filled-label-text-color: var(--org-on-error);
+    --mat-button-filled-disabled-label-text-color: var(--org-on-error);
+
+    background: var(--org-error);
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      box-shadow: var(--org-shadow-md);
+    }
   }
 
   &--secondary {
-    color: var(--org-primary);
+    --mat-button-outlined-label-text-color: var(--org-primary);
 
     &.org-button__control--gradient {
       background:
@@ -32,17 +74,8 @@
     }
   }
 
-  &--danger {
-    background: var(--org-danger);
-    color: var(--org-on-danger);
-  }
-
   &--text {
-    color: var(--org-primary);
-
-    &.org-button__control--gradient {
-      background: transparent;
-    }
+    --mat-button-text-label-text-color: var(--org-primary);
   }
 }
 
@@ -50,7 +83,7 @@
   display: inline-block;
   flex: 0 0 auto;
   height: 20px;
-  margin-right: var(--org-space-sm, 8px);
+  margin-right: var(--org-space-sm);
   object-fit: contain;
   vertical-align: middle;
   width: 20px;
@@ -58,13 +91,13 @@
 
 .org-button__icon {
   display: inline-flex;
-  margin-right: var(--org-space-sm, 8px);
+  margin-right: var(--org-space-md);
   vertical-align: middle;
 }
 
 .org-button__spinner {
   display: inline-block;
-  margin-right: var(--org-space-sm, 8px);
+  margin-right: var(--org-space-sm);
   vertical-align: middle;
 }
 

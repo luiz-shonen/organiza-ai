@@ -1,28 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { RsvpDrawerResult } from '../../../../core/models';
 import { RsvpDrawerComponent } from './rsvp-drawer.component';
 
 describe('RsvpDrawerComponent', () => {
   let fixture: ComponentFixture<RsvpDrawerComponent>;
-  let close: ReturnType<typeof vi.fn>;
+  let close: ReturnType<typeof vi.fn<(result: RsvpDrawerResult) => void>>;
 
   beforeEach(async () => {
-    close = vi.fn();
+    close = vi.fn<(result: RsvpDrawerResult) => void>();
     await TestBed.configureTestingModule({
       imports: [RsvpDrawerComponent],
-      providers: [
-        provideNoopAnimations(),
-        { provide: MatDialogRef, useValue: { close } },
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: { session: { name: 'Carlos', phone: '11999998888' } },
-        },
-      ],
+      providers: [provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RsvpDrawerComponent);
+    fixture.componentRef.setInput('drawerData', {
+      session: { name: 'Carlos', phone: '11999998888' },
+      familyMembers: [],
+      userId: '',
+    });
+    fixture.componentInstance.submitted.subscribe(close);
     fixture.detectChanges();
   });
 

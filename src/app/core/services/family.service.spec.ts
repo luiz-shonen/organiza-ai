@@ -82,7 +82,7 @@ describe('FamilyService', () => {
           id: 'fam-3',
           name: 'Carla',
           relationship: 'other' as const,
-          createdAt: { seconds: 1778414400, nanoseconds: 0 } as any,
+          createdAt: { seconds: 1778414400, nanoseconds: 0 },
         },
       ]);
 

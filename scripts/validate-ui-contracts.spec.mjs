@@ -112,6 +112,7 @@ test('rejects undefined tokens, literal typography and motion, dark selectors an
         font-size: 14px;
         transition: color 160ms ease;
         --mdc-outlined-text-field-outline-color: red;
+        outline-color: var(--org-motion-var(--org-primary));
         .dark & { color: var(--org-primary); }
       }
     `,
@@ -125,6 +126,7 @@ test('rejects undefined tokens, literal typography and motion, dark selectors an
       'raw-motion',
       'dark-mode-selector',
       'dead-mdc-token',
+      'malformed-token-reference',
     ]);
   } finally {
     await rm(root, { recursive: true, force: true });

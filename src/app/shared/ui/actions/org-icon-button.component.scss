@@ -13,9 +13,9 @@
   min-width: var(--org-space-2xl);
   padding: 0;
   transition:
-    background-color var(--org-motion-fast) var(--org-motion-var(--org-motion-ease)),
-    color var(--org-motion-fast) var(--org-motion-var(--org-motion-ease)),
-    transform var(--org-motion-fast) var(--org-motion-var(--org-motion-ease));
+    background-color var(--org-motion-fast) var(--org-motion-ease),
+    color var(--org-motion-fast) var(--org-motion-ease),
+    transform var(--org-motion-fast) var(--org-motion-ease);
 
   &:disabled {
     cursor: not-allowed;

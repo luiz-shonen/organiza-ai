@@ -45,6 +45,7 @@ const CODE_PRIORITY = new Map([
   ['raw-motion', 12],
   ['dark-mode-selector', 13],
   ['dead-mdc-token', 14],
+  ['malformed-token-reference', 15],
 ]);
 
 const TOKEN_REFERENCE = /var\(\s*(--org-[\w-]+)\s*([,)])/g;
@@ -59,6 +60,9 @@ const RAW_FONT_SHORTHAND = /(?:^|[;{\s])font\s*:\s*(?!\s*(?:inherit|initial|unse
 const RAW_MOTION = /(?:^|[;{\s])transition(?:-duration)?\s*:[^;]*?\b\d*\.?\d+m?s\b[^;]*;/m;
 // Angular Material 19+ only reads --mat-* tokens; --mdc-* declarations are silently ignored.
 const DEAD_MDC_TOKEN = /--mdc-[\w-]+\s*:/;
+// A token name glued to another call, e.g. var(--org-motion-var(--org-motion-ease)), is invalid
+// CSS that the undefined-token check cannot see because the name is never closed.
+const MALFORMED_TOKEN_REFERENCE = /var\(\s*--org-[\w-]*\(/;
 const DARK_MODE_SELECTOR = /\.dark\s*&|:host-context\(\s*\.dark\s*\)|html\.dark\b/;
 
 /** @typedef {{ code: string, file: string, line: number, message: string }} UiContractViolation */
@@ -331,6 +335,19 @@ export async function scanStyleConsistency(root) {
           ),
         );
       }
+    }
+
+    if (MALFORMED_TOKEN_REFERENCE.test(source)) {
+      violations.push(
+        makeViolation(
+          root,
+          'malformed-token-reference',
+          filePath,
+          source,
+          MALFORMED_TOKEN_REFERENCE,
+          'Referência de token malformada: o nome do token não pode conter outra chamada.',
+        ),
+      );
     }
 
     if (filePath.endsWith('.scss') && DEAD_MDC_TOKEN.test(source)) {

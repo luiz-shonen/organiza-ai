@@ -18,8 +18,8 @@
   padding-inline: 20px;
   position: relative;
   transition:
-    transform var(--org-motion-base) var(--org-motion-var(--org-motion-ease)),
-    box-shadow var(--org-motion-base) var(--org-motion-var(--org-motion-ease));
+    transform var(--org-motion-base) var(--org-motion-ease),
+    box-shadow var(--org-motion-base) var(--org-motion-ease);
 
   &:disabled {
     box-shadow: none;

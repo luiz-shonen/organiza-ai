@@ -46,6 +46,8 @@ interface HomeCard {
   readonly event: PartyEvent;
   readonly status: EventSummaryStatus | null;
   readonly pending: boolean;
+  /** The member created the event or helps organize it: no invite to answer. */
+  readonly organizer: boolean;
   readonly bring: FamilyChecklistRow[];
   readonly bought: number;
 }
@@ -105,11 +107,27 @@ export class HomeContainer {
       .reverse(),
   );
 
+  /** Events the member organizes (owner or collaborator); they never wait for an answer. */
+  private readonly organizedIds = computed<ReadonlySet<string>>(() => {
+    const uid = this.member()?.uid;
+    if (!uid) return new Set();
+    return new Set(
+      this.active()
+        .filter((event) => event.createdBy === uid || (event.collaborators ?? []).includes(uid))
+        .map((event) => event.id),
+    );
+  });
+  private readonly awaitingAnswer = computed(() =>
+    this.upcoming().filter(
+      (event) => !this.confirmedIds().has(event.id) && !this.organizedIds().has(event.id),
+    ),
+  );
+
   protected readonly confirmedCount = computed(
     () => this.upcoming().filter((event) => this.confirmedIds().has(event.id)).length,
   );
   protected readonly pendingCount = computed(() =>
-    this.member() ? this.upcoming().length - this.confirmedCount() : 0,
+    this.member() ? this.awaitingAnswer().length : 0,
   );
 
   protected readonly filters = computed<OrgFilterOption<HomeFilter>[]>(() => [
@@ -144,7 +162,7 @@ export class HomeContainer {
     const confirmed = this.confirmedIds();
     const source = {
       all: this.upcoming(),
-      pending: this.upcoming().filter((event) => !confirmed.has(event.id)),
+      pending: this.awaitingAnswer(),
       confirmed: this.upcoming().filter((event) => confirmed.has(event.id)),
       past: this.past(),
     }[this.filter()];
@@ -152,16 +170,19 @@ export class HomeContainer {
     return source.map((event) => {
       const isPast = daysUntil(event.date) < 0;
       const isConfirmed = confirmed.has(event.id);
+      const organizer = this.organizedIds().has(event.id);
       const household = this.households()[event.id];
       const bring = household ? buildFamilyChecklist(household.items, household.claims) : [];
       let status: EventSummaryStatus | null = null;
       if (isPast) status = { label: 'Realizado', variant: 'default' };
+      else if (organizer) status = { label: 'Organizador', variant: 'primary' };
       else if (isConfirmed) status = { label: 'Confirmado', variant: 'success' };
       else if (this.member()) status = { label: 'Pendente', variant: 'warning' };
       return {
         event,
         status,
-        pending: !isPast && !isConfirmed && !!this.member(),
+        pending: !isPast && !isConfirmed && !organizer && !!this.member(),
+        organizer,
         bring,
         bought: bring.filter((row) => row.bought).length,
       };
@@ -221,6 +242,10 @@ export class HomeContainer {
       this.households.update((all) => ({ ...all, [eventId]: household }));
       this.feedback.error('Não foi possível salvar. Tente novamente.');
     }
+  }
+
+  protected manageEvent(eventId: string): void {
+    void this.router.navigate(['/meus-eventos/evento', eventId]);
   }
 
   protected openEvent(eventId: string): void {

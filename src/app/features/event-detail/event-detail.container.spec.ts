@@ -238,6 +238,17 @@ describe('EventDetailContainer', () => {
     );
   });
 
+  it('does not ask the organizer to confirm presence at their own event', () => {
+    currentUserSignal.set({ uid: 'owner-1', displayName: 'Ana', isAnonymous: false });
+    mockEventService.getEvent.mockReturnValue(of({ ...mockEvent, createdBy: 'owner-1' }));
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-rsvp-card')).toBeNull();
+
+    currentUserSignal.set({ uid: 'guest-1', displayName: 'Bia', isAnonymous: false });
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('app-rsvp-card')).toBeTruthy();
+  });
+
   it('uses named companion arrays first and retains legacy counts in the guest total', () => {
     fixture.detectChanges();
     component['guests'].set([

@@ -17,14 +17,17 @@
         (edit)="editEvent()"
       />
 
-      <app-rsvp-card
-        [isConfirmed]="isUserConfirmed()"
-        [guestCount]="guestCount()"
-        [isLoading]="rsvpLoading()"
-        [guestName]="currentGuestName()"
-        (confirmRsvp)="onConfirmRsvp()"
-        (cancelRsvp)="onCancelRsvp()"
-      />
+      <!-- The organizer hosts the event; there is no presence for them to confirm. -->
+      @if (!isOwner()) {
+        <app-rsvp-card
+          [isConfirmed]="isUserConfirmed()"
+          [guestCount]="guestCount()"
+          [isLoading]="rsvpLoading()"
+          [guestName]="currentGuestName()"
+          (confirmRsvp)="onConfirmRsvp()"
+          (cancelRsvp)="onCancelRsvp()"
+        />
+      }
 
       @if (checklist().length) {
         <app-family-checklist-card

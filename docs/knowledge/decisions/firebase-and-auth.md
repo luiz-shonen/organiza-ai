@@ -14,6 +14,7 @@ related: [routes-and-domains.md]
 - Firebase modular SDK used directly; no `@angular/fire`.
 - Super admins are hardcoded in `AuthService.isSuperAdmin` and `firestore.rules`: `luiz.gmr.dev@gmail.com`, `jessica.calm.dev@gmail.com`.
 - Open registration: any authenticated Google or e-mail user can create events.
+- Manual testing on the real project uses an e-mail test account (a regular user, not a super admin). Its e-mail and password live only in the gitignored `.env.local` (`TEST_ACCOUNT_EMAIL`, `TEST_ACCOUNT_PASSWORD`; names in `.env.example`), because the repository is public. E2E tests never use it; they mock auth.
 - Each event has one owner (creator) and zero or more collaborators. Owners edit core data, cancel and delete; collaborators manage items and see guests.
 - Collaborators are invited by e-mail at `events/{id}/invitations/{email}` and auto-claimed on login.
 - E-mail/password accounts get a non-blocking verification banner.

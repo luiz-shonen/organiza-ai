@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Started by the /review comment workflow on the PR branch.
+  workflow_dispatch:
 
 jobs:
   quality:

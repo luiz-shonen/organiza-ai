@@ -30,4 +30,4 @@ A presentational component never injects a domain service. When it needs a side 
 
 Reactive forms belong to the page; a step or section component receives its typed `FormGroup` as an input (see `EventBasicInfoForm` in `core/models`).
 
-Example: `features/organizer/event-editor/` — the container owns data, forms and saving; `event-basic-info-step`, `event-address-step`, `event-pix-step`, `event-items-card` and `event-guests-card` are presentational.
+Example: `features/organizer/event-editor/` — the container owns data, forms and saving; `event-basic-info-step`, `event-address-step`, `event-items-step`, `event-pix-step` and `event-guests-card` are presentational.

@@ -25,7 +25,9 @@ item, plus the `bought` check of the family checklist.
 - Picking the same item again for the same person adds to the existing line (`addClaimEntry`).
 - Items may carry `unit` ("un.", "L", "pacotes") and `fixedQuantity`: whoever picks a fixed item
   brings all of it, so the "Eu levo" sheet skips the quantity.
-- Cancelling the RSVP deletes the household document in the same batch.
+- When a signed-in account holder cancels the RSVP, their household document is deleted in the
+  same batch. A guest who confirmed by phone only has no claims document, and the rules would
+  reject the delete, so `cancelRsvp` deletes it only when it is given the household uid.
 
 Over-claiming beyond the quantity is prevented by the UI (the sheet caps at what is missing);
 the rules do not count across documents.

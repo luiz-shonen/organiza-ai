@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatTooltip } from '@angular/material/tooltip';
+import { By } from '@angular/platform-browser';
 import { describe, expect, it, vi } from 'vitest';
 import { OrgIconButtonComponent } from './org-icon-button.component';
 
@@ -40,5 +42,20 @@ describe('OrgIconButtonComponent', () => {
     expect(button.classList.contains('org-icon-button__control--default')).toBe(true);
     expect(button.disabled).toBe(true);
     expect(pressed).not.toHaveBeenCalled();
+  });
+
+  it('shows its label as a Material tooltip unless told otherwise', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgIconButtonComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgIconButtonComponent);
+    fixture.componentRef.setInput('ariaLabel', 'Copiar link');
+    fixture.componentRef.setInput('icon', 'link');
+    fixture.detectChanges();
+    const tooltip = fixture.debugElement.query(By.directive(MatTooltip)).injector.get(MatTooltip);
+    expect(tooltip.message).toBe('Copiar link');
+    expect(tooltip.disabled).toBe(false);
+
+    fixture.componentRef.setInput('tooltip', '');
+    fixture.detectChanges();
+    expect(tooltip.disabled).toBe(true);
   });
 });

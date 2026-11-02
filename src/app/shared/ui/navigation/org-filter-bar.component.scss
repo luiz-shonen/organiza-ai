@@ -49,23 +49,23 @@
   }
 }
 
+// A round bubble: a circle for one digit, a pill for more.
 .org-filter-bar__count {
+  align-items: center;
   background: var(--org-surface-container-high);
+  block-size: 20px;
   border-radius: var(--org-radius-full);
   color: var(--org-on-surface);
+  display: inline-flex;
   font-size: var(--org-font-size-xs);
   font-weight: var(--org-font-weight-bold);
+  justify-content: center;
+  line-height: var(--org-line-height-none);
   min-inline-size: 20px;
-  padding: var(--org-space-2xs) var(--org-space-xs);
-  text-align: center;
+  padding: 0 var(--org-space-xs);
 
   &--attention {
-    background: var(--org-warning);
-    color: var(--org-on-warning);
-  }
-
-  .org-filter-bar__option--active & {
-    background: var(--org-on-primary);
-    color: var(--org-primary);
+    background: var(--org-attention-count-bg);
+    color: var(--org-on-attention-count);
   }
 }

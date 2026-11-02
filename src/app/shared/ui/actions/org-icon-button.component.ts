@@ -30,8 +30,12 @@ export class OrgIconButtonComponent {
   public readonly disabled = input(false);
   public readonly gradient = input(false);
   public readonly testId = input('');
-  /** Material tooltip; defaults to nothing, since ariaLabel already names the button. */
-  public readonly tooltip = input('');
+  /**
+   * Material tooltip. An icon alone does not say what it does, so it defaults to the
+   * ariaLabel; pass '' to turn it off.
+   */
+  public readonly tooltip = input<string | null>(null);
+  protected readonly tooltipText = computed(() => this.tooltip() ?? this.ariaLabel());
   public readonly pressed = output<MouseEvent>();
 
   protected readonly isDisabled = computed(() => this.disabled());

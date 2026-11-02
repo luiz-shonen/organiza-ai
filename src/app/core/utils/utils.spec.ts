@@ -96,6 +96,7 @@ describe('Core Utilities', () => {
       expect(openSpy).toHaveBeenCalledWith(
         expect.stringContaining('https://wa.me/?text='),
         '_blank',
+        'noopener,noreferrer',
       );
       openSpy.mockRestore();
     });

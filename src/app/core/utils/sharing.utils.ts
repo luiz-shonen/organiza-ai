@@ -32,7 +32,7 @@ export function buildWhatsAppShareUrl(
 export function shareWhatsApp(title: string, date?: string, location?: string, url?: string): void {
   if (typeof window === 'undefined') return;
   const shareUrl = buildWhatsAppShareUrl(title, date, location, url);
-  window.open(shareUrl, '_blank');
+  window.open(shareUrl, '_blank', 'noopener,noreferrer');
 }
 
 /**

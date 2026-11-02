@@ -104,7 +104,7 @@ describe('SharePanelComponent', () => {
     const expectedText = `🎉 Você está convidado(a) para *Churrasco da Turma*!\n\nConfirme sua presença e veja o que levar:\nhttps://organiza.ai/events/evt-123`;
     const expectedUrl = `https://wa.me/?text=${encodeURIComponent(expectedText)}`;
 
-    expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank');
+    expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
   });
 
   it('should use default event title in WhatsApp message when eventTitle is empty', () => {
@@ -117,6 +117,6 @@ describe('SharePanelComponent', () => {
     const expectedText = `🎉 Você está convidado(a) para *nosso evento*!\n\nConfirme sua presença e veja o que levar:\nhttps://organiza.ai/events/evt-123`;
     const expectedUrl = `https://wa.me/?text=${encodeURIComponent(expectedText)}`;
 
-    expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank');
+    expect(windowOpenSpy).toHaveBeenCalledWith(expectedUrl, '_blank', 'noopener,noreferrer');
   });
 });

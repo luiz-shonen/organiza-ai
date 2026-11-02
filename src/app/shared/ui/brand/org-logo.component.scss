@@ -49,4 +49,9 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+
+  // The gradient only paints inside the box, and line-height 1 leaves no room for the
+  // descender of "g". Extra bottom padding gives it room; the margin keeps the layout.
+  margin-block-end: -0.2em;
+  padding-block-end: 0.2em;
 }

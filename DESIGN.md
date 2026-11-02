@@ -271,7 +271,7 @@ Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Va
 
 ### OrgConfirmDialogComponent
 
-Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations.
+Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top.
 
 ### OrgEmptyStateComponent
 

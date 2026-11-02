@@ -300,7 +300,10 @@ export class EventDetailContainer implements OnInit {
         title: 'Cancelar Presença',
         message:
           'Tem certeza que não poderá mais ir? Sua presença será cancelada e os itens que você selecionou voltarão para a lista.',
-        confirmLabel: 'Sim, cancelar',
+        confirmLabel: 'Cancelar presença',
+        cancelLabel: 'Continuo indo',
+        tone: 'danger',
+        icon: 'cancel',
       })
       .subscribe(async (result) => {
         if (result) {

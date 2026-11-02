@@ -5,11 +5,13 @@ import { signal, WritableSignal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProfileContainer } from './profile.container';
 import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
-import { FeedbackService } from '../../shared/ui';
+import { of } from 'rxjs';
+import { FeedbackService, OrgDialogService } from '../../shared/ui';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import type { User } from 'firebase/auth';
 
 describe('ProfileContainer', () => {
+  const mockDialogs = { confirm: vi.fn(() => of(true)) };
   let component: ProfileContainer;
   let fixture: ComponentFixture<ProfileContainer>;
   let router: Router;
@@ -103,6 +105,7 @@ describe('ProfileContainer', () => {
       providers: [
         provideNoopAnimations(),
         provideRouter([]),
+        { provide: OrgDialogService, useValue: mockDialogs },
         {
           provide: AuthService,
           useValue: { currentUser: mockCurrentUser, isSuperAdmin: signal(false) },
@@ -224,6 +227,21 @@ describe('ProfileContainer', () => {
     expect(mockFamilyService.deleteFamilyMember).toHaveBeenCalledWith('user-789', 'fam-1');
     expect(component.familyMembers()).toHaveLength(0);
     expect(mockFeedback.success).toHaveBeenCalledWith('Familiar removido com sucesso!');
+  });
+
+  it('asks before removing a family member and keeps them when the person goes back', async () => {
+    await component.loadProfileData();
+    fixture.detectChanges();
+    mockDialogs.confirm.mockReturnValueOnce(of(false));
+    mockFamilyService.deleteFamilyMember.mockClear();
+
+    await component.onRemoveFamilyMember('fam-1');
+
+    expect(mockDialogs.confirm).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Remover familiar', tone: 'danger' }),
+    );
+    expect(mockFamilyService.deleteFamilyMember).not.toHaveBeenCalled();
+    expect(component.familyMembers()).toHaveLength(1);
   });
 
   it('should publish a shared error when adding a family member fails', async () => {

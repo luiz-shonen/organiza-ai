@@ -9,7 +9,13 @@ export class OrgDialogService {
 
   public confirm(data: OrgConfirmDialogData): Observable<boolean> {
     return this.dialog
-      .open(OrgConfirmDialogComponent, { data, panelClass: 'org-confirm-dialog-panel' })
+      .open(OrgConfirmDialogComponent, {
+        data,
+        panelClass: 'org-confirm-dialog-panel',
+        width: '480px',
+        maxWidth: 'calc(100vw - 32px)',
+        autoFocus: 'dialog',
+      })
       .afterClosed()
       .pipe(map((result) => result === true));
   }

@@ -20,6 +20,7 @@ import {
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
 import { formatCep } from '../../../core/utils';
 import {
   AddressNumber,
@@ -347,6 +348,16 @@ export class EventEditorContainer implements OnInit {
           }
           return;
         }
+        const confirmed = await firstValueFrom(
+          this.dialogs.confirm({
+            title: 'Remover colaborador',
+            message: `${action.collaboratorId} deixa de poder editar os itens e ver a lista de convidados deste evento.`,
+            confirmLabel: 'Remover',
+            tone: 'danger',
+            icon: 'block',
+          }),
+        );
+        if (!confirmed) return;
         try {
           await this.eventService.removeCollaborator(eventId, action.collaboratorId);
           this.feedback.success('Colaborador removido');
@@ -373,7 +384,22 @@ export class EventEditorContainer implements OnInit {
 
   protected async removeItem(index: number): Promise<void> {
     const eventId = this.id();
-    if (!this.isEditing() || !eventId) {
+    const saved = this.isEditing() && !!eventId;
+    const name = saved ? this.items()[index]?.name : this.draftItems()[index]?.name;
+    if (!name) return;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Remover item',
+        message: saved
+          ? `"${name}" sai da lista do evento, e quem já escolheu este item deixa de levá-lo.`
+          : `"${name}" sai da lista de itens deste evento.`,
+        confirmLabel: 'Remover item',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) return;
+
+    if (!saved) {
       this.draftItems.update((items) => items.filter((_, i) => i !== index));
       return;
     }
@@ -400,6 +426,9 @@ export class EventEditorContainer implements OnInit {
         title: 'Cancelar evento',
         message: `Tem certeza que deseja cancelar o evento "${event.title}"? O link público vai avisar os convidados sobre o cancelamento.`,
         confirmLabel: 'Cancelar evento',
+        cancelLabel: 'Manter evento',
+        tone: 'danger',
+        icon: 'cancel',
       })
       .subscribe(async (confirmed) => {
         if (!confirmed) return;

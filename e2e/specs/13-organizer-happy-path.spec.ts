@@ -446,6 +446,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       // Delete first item
       const removeBtn = page.locator('button[aria-label="Remover Bolo de Chocolate"]');
       await removeBtn.click();
+      const confirmDialog = page.getByTestId('org-confirm-dialog');
+      await expect(confirmDialog).toContainText('Bolo de Chocolate');
+      await confirmDialog.getByTestId('org-confirm-submit').click();
 
       // Verify removed item is gone, remaining item still present
       await expect(itemsList).not.toContainText('Bolo de Chocolate');

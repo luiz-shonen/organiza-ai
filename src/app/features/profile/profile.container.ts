@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
 import type { UserProfile, FamilyMember, ThemeMode } from '../../core/models';
 import {
   OrgLoadingStateComponent,
   FeedbackService,
+  OrgDialogService,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
 } from '../../shared/ui';
@@ -40,6 +42,7 @@ export class ProfileContainer implements OnInit {
   private readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly themeService = inject(ThemeService);
+  private readonly dialogs = inject(OrgDialogService);
 
   protected readonly themeMode = this.themeService.mode;
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
@@ -158,6 +161,16 @@ export class ProfileContainer implements OnInit {
   async onRemoveFamilyMember(memberId: string): Promise<void> {
     const user = this.authService.currentUser();
     if (!user) return;
+    const name = this.familyMembers().find((member) => member.id === memberId)?.name ?? '';
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Remover familiar',
+        message: `${name || 'Este familiar'} sai da sua família e deixa de aparecer para confirmar presença junto com você.`,
+        confirmLabel: 'Remover',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) return;
 
     try {
       await this.familyService.deleteFamilyMember(user.uid, memberId);

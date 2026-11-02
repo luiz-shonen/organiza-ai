@@ -135,8 +135,10 @@ export class FamilyRosterHarness {
     await this.addMemberBtn.click();
   }
 
+  /** Clicks the bin and confirms the danger dialog that asks before removing. */
   async deleteMember(index: number): Promise<void> {
     await this.deleteMemberBtns.nth(index).click();
+    await this.page.getByTestId('org-confirm-submit').click();
   }
 
   async toggleSelectAll(): Promise<void> {

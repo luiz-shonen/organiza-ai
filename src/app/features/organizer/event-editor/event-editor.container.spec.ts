@@ -18,7 +18,7 @@ import { LocationService } from '../../../core/services/location.service';
 import { MatStepper } from '@angular/material/stepper';
 import { By } from '@angular/platform-browser';
 import { PartyEvent } from '../../../core/models';
-import { FeedbackService } from '../../../shared/ui';
+import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 
 vi.mock('qrcode', () => ({
   default: {
@@ -27,6 +27,7 @@ vi.mock('qrcode', () => ({
 }));
 
 describe('EventEditorContainer', () => {
+  const mockDialogs = { confirm: vi.fn(() => of(true)) };
   let component: EventEditorContainer;
   let fixture: ComponentFixture<EventEditorContainer>;
 
@@ -113,6 +114,7 @@ describe('EventEditorContainer', () => {
       imports: [EventEditorContainer, NoopAnimationsModule],
       providers: [
         provideRouter([]),
+        { provide: OrgDialogService, useValue: mockDialogs },
         { provide: EventService, useValue: mockEventService },
         { provide: ItemService, useValue: mockItemService },
         { provide: GuestService, useValue: mockGuestService },

@@ -50,7 +50,9 @@
     }
   }
 
+  // Material paints the fill from this token with a stronger selector than background.
   &--danger {
+    --mat-button-filled-container-color: var(--org-error);
     --mat-button-filled-label-text-color: var(--org-on-error);
     --mat-button-filled-disabled-label-text-color: var(--org-on-error);
 

@@ -167,6 +167,11 @@ test.describe('User Profile and Family Roster Management', () => {
     const deleteBtn = familyRoster.deleteMemberBtns.first();
     await expect(deleteBtn).toBeVisible();
     await deleteBtn.click();
+    // Removing asks first, in a danger dialog
+    const confirmDialog = page.getByTestId('org-confirm-dialog');
+    await expect(confirmDialog).toHaveClass(/org-confirm-dialog--danger/);
+    await expect(confirmDialog).toContainText('Remover familiar');
+    await confirmDialog.getByTestId('org-confirm-submit').click();
 
     // Assert member count decreased
     await expect(familyRoster.memberCards).toHaveCount(initialCount - 1);

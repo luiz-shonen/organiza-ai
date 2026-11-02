@@ -16,7 +16,6 @@ import {
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { MatStepper } from '@angular/material/stepper';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { By } from '@angular/platform-browser';
 import { PartyEvent } from '../../../core/models';
 import { FeedbackService } from '../../../shared/ui';
@@ -207,12 +206,8 @@ describe('EventEditorContainer', () => {
         quantity: 3,
       });
 
-      await component['removeItem']({
-        id: 'item-99',
-        name: 'Pastel',
-        quantity: 2,
-        claimedBy: null,
-      });
+      component['items'].set([{ id: 'item-99', name: 'Pastel', quantity: 2, claimedBy: null }]);
+      await component['removeItem'](0);
 
       expect(mockItemService.deleteItem).toHaveBeenCalledWith('evt-123', 'item-99');
     });
@@ -232,30 +227,58 @@ describe('EventEditorContainer', () => {
       expect(component['basicInfoForm'].enabled).toBe(true);
     });
 
-    it('should announce the active step with a compact mobile progress summary', () => {
+    it('has four steps, with the optional items step before Pix', () => {
       const stepper = fixture.debugElement.query(By.directive(MatStepper))
         .componentInstance as MatStepper;
+      expect(stepper.steps.map((step) => step.label)).toEqual([
+        'Informações',
+        'Endereço',
+        'Itens',
+        'Pix',
+      ]);
       const element = fixture.nativeElement as HTMLElement;
-
-      expect(element.querySelector('.editor__stepper--mobile')).toBeTruthy();
-      const progress = element.querySelector('[data-testid="event-step-progress"]');
-      expect(progress?.textContent).toContain('Etapa 1 de 3');
-      expect(progress?.textContent).toContain('Informações do evento');
-      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-        '1',
-      );
-
-      stepper.selectionChange.emit({ selectedIndex: 2 } as StepperSelectionEvent);
-      fixture.detectChanges();
-
-      expect(progress?.textContent).toContain('Etapa 3 de 3');
-      expect(progress?.textContent).toContain('Pagamento por Pix');
-      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-        '3',
-      );
-      expect(element.querySelector('#pix-form org-text-field')).toBeTruthy();
-      expect(element.querySelector('#pix-form org-button')).toBeTruthy();
+      expect(element.querySelector('[data-testid="event-editor-step-3"]')).toBeTruthy();
       expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')).toBeTruthy();
+    });
+
+    it('keeps items typed during creation and saves them with the new event', async () => {
+      await component['addItem']({
+        name: 'Pipoca',
+        quantity: 50,
+        unit: 'pacotes',
+        fixedQuantity: true,
+      });
+      await component['addItem']({ name: 'Bolo', quantity: 2 });
+      await component['removeItem'](1);
+      expect(mockItemService.addItem).not.toHaveBeenCalled();
+      expect(component['stepItems']()).toEqual([
+        { name: 'Pipoca', quantity: 50, unit: 'pacotes', fixedQuantity: true },
+      ]);
+
+      const date = new Date(Date.now() + 7 * 86_400_000);
+      component['basicInfoForm'].setValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: 'Descrição',
+        date,
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      await component['saveEvent']();
+
+      expect(mockEventService.createEvent).toHaveBeenCalled();
+      expect(mockItemService.addItem).toHaveBeenCalledWith('new-id', {
+        name: 'Pipoca',
+        quantity: 50,
+        unit: 'pacotes',
+        fixedQuantity: true,
+      });
     });
   });
 });

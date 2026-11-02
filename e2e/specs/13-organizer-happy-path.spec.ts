@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 import {
-  assertGlassmorphism,
+  assertCardSurface,
   assertMinTouchTarget,
   assertFontFamily,
   assertFocusedFieldCoherence,
@@ -76,7 +76,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await dashboardPage.captureScreenshot('13-01-dashboard');
     });
 
-    test('[E2E-02] should verify event cards have glassmorphic backdrop-filter blur', async ({
+    test('[E2E-02] should render event cards as flat Branco Essencial surfaces', async ({
       page,
       dashboardPage,
     }) => {
@@ -87,7 +87,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const cardSurface = page
         .locator('.org-surface, .dashboard__container, .dashboard__mobile-card, .glass-card')
         .first();
-      await assertGlassmorphism(cardSurface);
+      await assertCardSurface(cardSurface);
     });
   });
 
@@ -249,8 +249,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(step2NextBtn).toBeEnabled();
 
       const editorRegions = [
-        page.locator('.editor__card, org-surface').first(),
-        page.locator('.editor__title, h2, h1').first(),
+        page.getByTestId('event-editor-step-2').locator('org-surface').first(),
+        page.locator('h1').first(),
         page.locator('org-text-field:has([data-testid="event-cep-input"])').first(),
         page.locator('org-text-field:has([data-testid="event-number-input"])').first(),
         page.locator('org-text-field:has([data-testid="event-street-input"])').first(),
@@ -259,7 +259,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       for (const region of editorRegions) {
         await assertWithinViewport(page, region, 12);
       }
-      await assertStepperLayout(page, { isMobile, step: 2, label: 'Endereço do evento' });
+      await assertStepperLayout(page, { isMobile, step: 2, label: 'Endereço' });
       await assertNoHorizontalOverflow(page);
 
       const appContent = page.locator('main.app-content');
@@ -317,8 +317,10 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         '19:00',
       );
       await eventEditorPage.fillCep('01310100', '1000');
+      // Step 3 (Itens) is optional: skip straight to Pix.
+      await eventEditorPage.advanceStep();
 
-      // Assert Pix form and key input are visible on Step 3
+      // Assert Pix form and key input are visible on Step 4
       const pixForm = page
         .locator('#pix-form, form[formgroupname="pix"], .editor__pix-section, .editor__step-panel')
         .first();
@@ -334,7 +336,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
         .first();
       await expect(pixField).toBeVisible();
 
-      await assertStepperLayout(page, { isMobile, step: 3, label: 'Pagamento por Pix' });
+      await assertStepperLayout(page, { isMobile, step: 4, label: 'Pix' });
 
       const prevBtn = pixForm
         .locator(
@@ -367,6 +369,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       await page.goto('/meus-eventos/evento/happy-event-1');
       await eventEditorPage.assertLoaded();
+      await eventEditorPage.openStep('Itens');
 
       // Add item
       await eventEditorPage.addWishlistItem('Docinhos Gourmet', 'Comida', 20);
@@ -390,6 +393,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       await page.goto('/meus-eventos/evento/happy-event-1');
       await eventEditorPage.assertLoaded();
+      await eventEditorPage.openStep('Itens');
 
       // Existing item 'Bolo de Chocolate' is visible
       const itemsList = page.getByTestId('item-list');
@@ -433,15 +437,14 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
       await page.goto('/meus-eventos/evento/happy-event-1');
       await eventEditorPage.assertLoaded();
+      await eventEditorPage.openStep('Itens');
 
       const itemsList = page.getByTestId('item-list');
       await expect(itemsList).toContainText('Bolo de Chocolate');
       await expect(itemsList).toContainText('Refrigerante 2L');
 
       // Delete first item
-      const removeBtn = page
-        .locator('button[aria-label="Remover Bolo de Chocolate"]')
-        .or(page.getByTestId('item-list').locator('li button').first());
+      const removeBtn = page.locator('button[aria-label="Remover Bolo de Chocolate"]');
       await removeBtn.click();
 
       // Verify removed item is gone, remaining item still present
@@ -491,7 +494,12 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       // Fill Step 2
       await eventEditorPage.fillCep('01310100', '1000');
 
-      // Step 3: optionally fill Pix key and click Salvar
+      // Step 3: one item for the event list
+      await eventEditorPage.addWishlistItem('Bolo de milho', 'Comida', 10);
+      await expect(page.getByTestId('item-list')).toContainText('Bolo de milho');
+      await eventEditorPage.advanceStep();
+
+      // Step 4: optionally fill Pix key and click Salvar
       const pixKeyInput = page
         .locator(
           'org-text-field[formcontrolname="pixKey"] input, input[formcontrolname="pixKey"], [data-testid="event-pix-input"] input',
@@ -690,7 +698,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventDetailPage.captureScreenshot('13-11-rsvp-dialog-open');
     });
 
-    test('[E2E-19] should verify RSVP dialog surface glassmorphism backdrop-filter blur', async ({
+    test('[E2E-19] should render the RSVP dialog on a flat card surface', async ({
       page,
       eventDetailPage,
       rsvpDialog,
@@ -702,13 +710,14 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventDetailPage.openRsvpDialog();
       await rsvpDialog.assertVisible();
 
-      // Assert glassmorphism on the workflow drawer surface actually presented to guests.
-      await assertGlassmorphism(
+      // The RSVP drawer is a flat side panel (no blur); it docks to the edge, so no corner radius.
+      await assertCardSurface(
         page
           .locator(
             '.navigation-drawer, .rsvp-drawer, [data-testid="rsvp-drawer"], app-guest-form-dialog, mat-dialog-container',
           )
           .first(),
+        0,
       );
     });
   });
@@ -784,7 +793,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.captureScreenshot('13-13-profile-loaded');
     });
 
-    test('[E2E-22] should verify profile card glassmorphism backdrop-filter blur', async ({
+    test('[E2E-22] should render the profile card on a flat card surface', async ({
       page,
       profilePage,
     }) => {
@@ -795,7 +804,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       const profileCard = page
         .locator('app-profile-info-card .org-surface, app-profile-info-card')
         .first();
-      await assertGlassmorphism(profileCard);
+      await assertCardSurface(profileCard);
     });
 
     test('[E2E-23] should verify profile heading typography uses Plus Jakarta Sans font family', async ({

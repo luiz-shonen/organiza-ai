@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import type { ThemeMode } from '../../../../core/models';
 import {
   OrgButtonComponent,
-  OrgCardHeaderComponent,
   OrgSegmentedControlComponent,
   OrgSurfaceComponent,
   type OrgSegmentedOption,
@@ -14,12 +13,7 @@ const THEME_MODES: ReadonlySet<string> = new Set<ThemeMode>(['light', 'dark', 's
 @Component({
   selector: 'app-profile-preferences-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    OrgButtonComponent,
-    OrgCardHeaderComponent,
-    OrgSegmentedControlComponent,
-    OrgSurfaceComponent,
-  ],
+  imports: [OrgButtonComponent, OrgSegmentedControlComponent, OrgSurfaceComponent],
   templateUrl: './profile-preferences-card.component.html',
   styleUrl: './profile-preferences-card.component.scss',
 })

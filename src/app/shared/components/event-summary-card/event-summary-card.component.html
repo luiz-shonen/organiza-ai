@@ -1,0 +1,64 @@
+<org-surface variant="card" [testId]="testId()">
+  <article class="event-summary-card" [attr.aria-labelledby]="titleId()">
+    <div class="event-summary-card__top">
+      <div class="event-summary-card__heading">
+        <div class="event-summary-card__tags">
+          <org-badge [label]="categoryLabel()" [variant]="categoryVariant()" [gradient]="false" />
+          @if (status(); as status) {
+            <org-badge
+              data-testid="event-status"
+              [label]="status.label"
+              [variant]="status.variant"
+              [gradient]="false"
+            />
+          }
+        </div>
+        <h3 class="event-summary-card__title" [id]="titleId()">
+          @if (link(); as link) {
+            <a class="event-summary-card__link" data-testid="event-card-link" [routerLink]="link">{{
+              event().title
+            }}</a>
+          } @else {
+            {{ event().title }}
+          }
+        </h3>
+        @if (time()) {
+          <p class="event-summary-card__meta">
+            <org-icon name="schedule" size="sm" />
+            <span>{{ time() }}</span>
+          </p>
+        }
+      </div>
+      <org-date-badge [date]="event().date" />
+    </div>
+
+    @if (event().description) {
+      <p class="event-summary-card__description" [title]="event().description">
+        {{ event().description }}
+      </p>
+    }
+    @if (event().location) {
+      <p class="event-summary-card__meta" [title]="event().location">
+        <org-icon name="place" size="sm" />
+        <span class="event-summary-card__ellipsis">{{ event().location }}</span>
+      </p>
+    }
+
+    <ng-content select="[eventCardBody]" />
+
+    <footer class="event-summary-card__footer">
+      <div class="event-summary-card__actions">
+        <ng-content select="[eventCardFooter]" />
+      </div>
+      @if (link() && showDetails()) {
+        <a
+          class="event-summary-card__details"
+          data-testid="event-details-link"
+          [routerLink]="link()"
+          [attr.aria-label]="'Ver detalhes de ' + event().title"
+          >Ver detalhes</a
+        >
+      }
+    </footer>
+  </article>
+</org-surface>

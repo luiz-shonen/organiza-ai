@@ -135,6 +135,8 @@
     min-width: var(--org-touch);
     min-height: var(--org-touch);
     border-radius: var(--org-radius-circle);
+    color: inherit;
+    text-decoration: none;
 
     &:focus-visible {
       outline: 2px solid var(--org-primary);

@@ -40,6 +40,6 @@ export class HomePage extends BasePage {
   }
 
   async clickEventCard(index: number = 0): Promise<void> {
-    await this.eventCards.nth(index).click();
+    await this.eventCards.nth(index).getByTestId('event-card-link').click();
   }
 }

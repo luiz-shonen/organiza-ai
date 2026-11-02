@@ -1,5 +1,5 @@
 @if (loading()) {
-  <org-page-layout maxWidth="default">
+  <org-page-layout maxWidth="narrow">
     <div class="event-detail__loading" aria-hidden="true">
       <org-skeleton class="event-detail__skeleton-hero" />
       <org-skeleton class="event-detail__skeleton-card" />
@@ -7,10 +7,16 @@
     </div>
   </org-page-layout>
 } @else if (event(); as event) {
-  <org-page-layout maxWidth="default" data-testid="event-detail-page">
-    <app-event-card [event]="event" [guestCount]="guestCount()" />
+  <org-page-layout maxWidth="narrow" data-testid="event-detail-page">
+    <div class="event-detail__stack" data-testid="event-detail">
+      <app-event-card
+        [event]="event"
+        [guestCount]="guestCount()"
+        [isOwner]="isOwner()"
+        [canEdit]="canEdit()"
+        (edit)="editEvent()"
+      />
 
-    <section class="event-detail__section" aria-label="Confirmação de presença">
       <app-rsvp-card
         [isConfirmed]="isUserConfirmed()"
         [guestCount]="guestCount()"
@@ -19,29 +25,37 @@
         (confirmRsvp)="onConfirmRsvp()"
         (cancelRsvp)="onCancelRsvp()"
       />
-    </section>
 
-    <app-item-list-card
-      [items]="items()"
-      [currentUserId]="currentUserId()"
-      (claim)="onClaimItemById($event)"
-      (unclaim)="onUnclaimItemById($event)"
-    />
+      @if (checklist().length) {
+        <app-family-checklist-card
+          [rows]="checklist()"
+          (boughtToggle)="onToggleBought($event)"
+          (removeRow)="onRemoveClaim($event)"
+        />
+      }
 
-    @if (event.pixKey) {
-      <section class="event-detail__section" aria-label="Contribuição financeira">
-        <h2 class="event-detail__section-title org-gradient-text">Contribuição</h2>
+      <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
+
+      @if (event.pixKey) {
         <app-pix-card
           [pixKey]="event.pixKey"
           [pixType]="event.pixType"
           [estimatedBudget]="event.estimatedBudget ?? null"
           [guestCount]="guestCount()"
         />
-      </section>
-    }
+      }
+    </div>
+
+    <app-claim-sheet
+      [entry]="claimingEntry()"
+      [people]="claimPeople()"
+      [saving]="claimSaving()"
+      (confirm)="onConfirmClaim($event)"
+      (closed)="closeClaimSheet()"
+    />
   </org-page-layout>
 } @else {
-  <org-page-layout maxWidth="default">
+  <org-page-layout maxWidth="narrow">
     <org-empty-state
       icon="event"
       title="Evento não encontrado"

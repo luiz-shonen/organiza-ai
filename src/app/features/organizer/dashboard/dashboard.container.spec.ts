@@ -3,7 +3,7 @@ import { signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { DashboardContainer } from './dashboard.container';
 import {
@@ -11,6 +11,9 @@ import {
   AuthService,
   NotificationService,
   EventNotificationService,
+  GuestService,
+  ItemService,
+  ClaimService,
 } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { FeedbackService } from '../../../shared/ui';
@@ -22,6 +25,7 @@ describe('DashboardContainer', () => {
   let eventsSubject: BehaviorSubject<PartyEvent[]>;
   let mockEventService: {
     listEvents: ReturnType<typeof vi.fn>;
+    getUserEvents: ReturnType<typeof vi.fn>;
     cancelEvent: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: {
@@ -81,6 +85,7 @@ describe('DashboardContainer', () => {
 
     mockEventService = {
       listEvents: vi.fn().mockReturnValue(eventsSubject.asObservable()),
+      getUserEvents: vi.fn().mockReturnValue(eventsSubject.asObservable()),
       cancelEvent: vi.fn().mockResolvedValue(undefined),
     };
 
@@ -113,6 +118,27 @@ describe('DashboardContainer', () => {
         { provide: FeedbackService, useValue: mockFeedback },
         { provide: MatDialog, useValue: { open: vi.fn() } },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
+        {
+          provide: GuestService,
+          useValue: {
+            listGuests: () => of([{ id: 'g1', name: 'Ana', isConfirmed: true, confirmedAt: '' }]),
+          },
+        },
+        {
+          provide: ItemService,
+          useValue: {
+            getItems: vi.fn().mockResolvedValue([
+              { id: 'i1', name: 'Bolo', quantity: 2, claimedBy: null },
+              {
+                id: 'i2',
+                name: 'Suco',
+                quantity: 1,
+                claimedBy: { uid: 'x', name: 'X', phone: '' },
+              },
+            ]),
+          },
+        },
+        { provide: ClaimService, useValue: { listClaims: () => of([]) } },
       ],
     }).compileComponents();
 
@@ -132,12 +158,25 @@ describe('DashboardContainer', () => {
     expect(compiled.textContent).not.toContain('Novo Admin');
   });
 
-  it('should compute accurate filter counts for all, upcoming, past, and cancelled', () => {
-    const counts = component.filterCounts();
-    expect(counts.all).toBe(3);
-    expect(counts.upcoming).toBe(1);
-    expect(counts.past).toBe(1);
-    expect(counts.cancelled).toBe(1);
+  it('lists the events created by the person, upcoming first and cancelled last', () => {
+    expect(mockEventService.getUserEvents).toHaveBeenCalledWith('user-1');
+    expect(component.filteredEvents().map((event) => event.id)).toEqual([
+      'evt-1',
+      'evt-2',
+      'evt-3',
+    ]);
+  });
+
+  it('suggests what to do next for upcoming events (AI tip)', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const tips = (fixture.nativeElement as HTMLElement).querySelectorAll(
+      '[data-testid="insight-card"]',
+    );
+    expect(tips).toHaveLength(1);
+    expect(tips[0].textContent).toContain('Faltam 5 dias!');
+    expect(tips[0].textContent).toContain('1 item');
+    expect(tips[0].classList).toContain('org-insight-card--warning');
   });
 
   it('should filter events reactively when activeFilter is changed', () => {

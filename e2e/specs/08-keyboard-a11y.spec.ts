@@ -59,30 +59,15 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
   });
 
   test('should trap focus inside ConfirmDialog and dismiss via Escape key with focus restoration', async ({
-    dashboardPage,
+    eventEditorPage,
     confirmDialog,
     page,
   }) => {
     await setupA11yMockSession(page);
-    await page.goto('/meus-eventos');
-    await dashboardPage.assertLoaded();
+    await page.goto('/meus-eventos/evento/event-a11y-1');
+    await eventEditorPage.assertLoaded();
 
-    // Find cancel button for active visible event card/row
-    const activeCard = dashboardPage.eventCards
-      .filter({ hasText: 'Torneio de Xadrez e Jogos 2026' })
-      .filter({ visible: true })
-      .first();
-    await expect(activeCard).toBeVisible();
-
-    const cancelActionBtn = activeCard
-      .getByRole('button', { name: /cancelar/i })
-      .or(
-        activeCard.locator(
-          'button[aria-label*="Cancelar"], button.mat-warn, button[mattooltip="Cancelar"]',
-        ),
-      )
-      .first();
-
+    const cancelActionBtn = eventEditorPage.cancelEventBtn;
     await cancelActionBtn.click();
 
     // Verify dialog is visible

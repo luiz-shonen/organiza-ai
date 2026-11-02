@@ -1,9 +1,7 @@
 <org-surface variant="card" class="profile-preferences-card">
-  <section class="profile-preferences-card__content" aria-label="Preferências">
-    <org-card-header icon="palette" heading="Preferências" />
-
+  <section class="profile-preferences-card__content" aria-labelledby="profile-theme-label">
     <div class="profile-preferences-card__group">
-      <p class="profile-preferences-card__label" id="profile-theme-label">Tema</p>
+      <h2 class="profile-preferences-card__title" id="profile-theme-label">Aparência</h2>
       <org-segmented-control
         ariaLabel="Selecionar tema"
         [options]="themeOptions"
@@ -36,9 +34,9 @@
 
     <org-button
       class="profile-preferences-card__logout"
-      label="Sair"
+      label="Sair da conta"
       icon="logout"
-      variant="text"
+      variant="danger-text"
       testId="profile-logout-btn"
       (pressed)="logout.emit()"
     />

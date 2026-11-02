@@ -1,9 +1,16 @@
-import { ChangeDetectionStrategy, Component, input, output, signal, effect } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import type { UserProfile } from '../../../../core/models';
 import {
   OrgButtonComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
   OrgSurfaceComponent,
   OrgTextFieldComponent,
 } from '../../../../shared/ui';
@@ -11,13 +18,7 @@ import {
 @Component({
   selector: 'app-profile-info-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    OrgButtonComponent,
-    OrgTextFieldComponent,
-    OrgIconButtonComponent,
-    OrgIconComponent,
-    OrgSurfaceComponent,
-  ],
+  imports: [OrgButtonComponent, OrgTextFieldComponent, OrgIconButtonComponent, OrgSurfaceComponent],
   templateUrl: './profile-info-card.component.html',
   styleUrl: './profile-info-card.component.scss',
 })
@@ -27,6 +28,14 @@ export class ProfileInfoCardComponent {
 
   readonly isEditing = signal(false);
   readonly editName = signal('');
+
+  /** "março de 2026", from the profile creation date. */
+  protected readonly memberSince = computed(() => {
+    const created = new Date(this.user().createdAt);
+    return isNaN(created.getTime())
+      ? ''
+      : created.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  });
 
   constructor() {
     effect(() => {

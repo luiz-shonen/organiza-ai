@@ -1,192 +1,129 @@
-<org-page-layout maxWidth="wide" data-testid="dashboard-page">
-  <org-page-header title="Meus Eventos" icon="event">
+<org-page-layout maxWidth="default" data-testid="dashboard-page">
+  <org-page-header title="Meus eventos" [subtitle]="subtitle()">
     <org-button
       orgPageHeaderActions
+      class="dashboard__new-btn"
       label="Novo evento"
-      icon="add"
+      testId="create-event-btn"
+      [gradient]="false"
+      [fullWidth]="true"
       (pressed)="createEvent()"
-      data-testid="create-event-btn"
     />
   </org-page-header>
 
   @if (events() !== undefined) {
-    @if (nextEvent(); as event) {
-      <org-surface variant="card" class="dashboard__alert-banner" (click)="openPublicEvent(event)">
-        <div class="dashboard__alert-content">
-          <org-icon name="notifications_active" class="dashboard__alert-icon" />
-          <div class="dashboard__alert-text">
-            <strong>Próximo evento iminente:</strong> {{ event.title }}
-            <span>
-              @if (nextEventDays() === 0) {
-                (É hoje!)
-              } @else if (nextEventDays() === 1) {
-                (Amanhã!)
-              } @else {
-                (Faltam {{ nextEventDays() }} dias)
-              }
-            </span>
-          </div>
-        </div>
-        <org-icon name="arrow_forward_ios" size="sm" class="dashboard__alert-arrow" />
-      </org-surface>
-    }
+    <div class="dashboard__content" data-testid="dashboard-content">
+      @if (nextEvent(); as event) {
+        <a
+          class="dashboard__next"
+          data-testid="next-event-banner"
+          [routerLink]="['/evento', event.id]"
+        >
+          <span class="dashboard__next-icon">
+            <org-icon name="calendar_today" color="currentColor" />
+          </span>
+          <span class="dashboard__next-text">
+            <span class="dashboard__next-label">Próximo evento iminente:</span>
+            <strong class="dashboard__next-title">{{ event.title }}, {{ nextEventWhen() }}</strong>
+          </span>
+          <org-icon name="chevron_right" />
+        </a>
+      }
 
-    <div class="dashboard__filters">
-      <app-event-filters
-        [activeFilter]="activeFilter()"
-        [filterCounts]="filterCounts()"
-        (filterChange)="activeFilter.set($event)"
+      <org-filter-bar
+        ariaLabel="Filtros de status dos eventos"
+        [options]="filters"
+        [value]="activeFilter()"
+        (valueChange)="setFilter($event)"
       />
-    </div>
 
-    @if (filteredEvents().length === 0) {
-      <org-empty-state
-        icon="event"
-        title="Nenhum evento encontrado"
-        description="Nenhum evento encontrado para este filtro."
-      />
-    } @else {
-      <!-- Desktop table -->
-      <org-surface variant="panel" class="dashboard__table-wrapper">
-        <org-data-table
-          class="dashboard__table"
-          [rows]="filteredEvents()"
-          [columns]="tableColumns"
-          [actionTemplate]="eventActions"
-          actionLabel="Ações"
-          ariaLabel="Lista de eventos"
-          (rowActivated)="openPublicEvent($event)"
+      @if (cards().length === 0) {
+        <org-empty-state
+          icon="event"
+          title="Nenhum evento encontrado"
+          description="Nenhum evento encontrado para este filtro."
         />
-        <ng-template #eventActions let-event>
-          <div class="dashboard__actions">
-            <org-icon-button
-              icon="edit"
-              variant="default"
-              [gradient]="false"
-              [ariaLabel]="'Editar ' + event.title"
-              (pressed)="editEvent(event)"
-            />
-            <org-icon-button
-              icon="share"
-              variant="default"
-              [gradient]="false"
-              [ariaLabel]="'Compartilhar ' + event.title + ' no WhatsApp'"
-              (pressed)="shareWhatsApp(event)"
-            />
-            <org-icon-button
-              icon="link"
-              variant="default"
-              [gradient]="false"
-              [ariaLabel]="'Copiar link de ' + event.title"
-              (pressed)="copyLink(event)"
-            />
-            <org-icon-button
-              icon="block"
-              variant="danger"
-              [gradient]="false"
-              [ariaLabel]="'Cancelar ' + event.title"
-              (pressed)="cancelEvent(event)"
-            />
-          </div>
-        </ng-template>
-      </org-surface>
+      } @else {
+        <div class="dashboard__grid">
+          @for (card of cards(); track card.event.id) {
+            <app-event-summary-card
+              testId="organizer-event-card"
+              [event]="card.event"
+              [status]="card.status"
+              [link]="['/evento', card.event.id]"
+            >
+              @if (card.insight; as insight) {
+                <org-insight-card eventCardBody [tone]="insight.tone">
+                  {{ insight.lead }} <strong>{{ insight.strong }}</strong
+                  >{{ insight.rest }}
+                  <org-button
+                    orgInsightAction
+                    label="Lembrar convidados"
+                    variant="secondary"
+                    [compact]="true"
+                    (pressed)="shareWhatsApp(card.event)"
+                  />
+                  @if (card.stats && card.stats.items > card.stats.completeItems) {
+                    <org-button
+                      orgInsightAction
+                      label="Ver itens"
+                      variant="secondary"
+                      [compact]="true"
+                      (pressed)="editEvent(card.event)"
+                    />
+                  }
+                </org-insight-card>
+              }
 
-      <!-- Mobile cards -->
-      <div class="dashboard__mobile-cards">
-        @for (event of filteredEvents(); track event.id) {
-          <org-surface
-            variant="card"
-            class="dashboard__mobile-card dashboard__clickable-card"
-            [class.cancelled]="event.status === 'cancelled'"
-            [class.history]="isHistoryEvent(event.date) && event.status !== 'cancelled'"
-            (click)="openPublicEvent(event)"
-            data-testid="organizer-event-card"
-          >
-            <article class="dashboard__mobile-card-content">
-              <header>
-                <h2 class="dashboard__mobile-card-title">{{ event.title }}</h2>
-                <p class="dashboard__mobile-card-subtitle">
-                  {{ formatDate(event.date) }} · {{ event.location }}
-                </p>
-              </header>
-              <footer class="dashboard__actions">
-                <org-icon-button
-                  icon="edit"
-                  ariaLabel="Editar"
-                  (click)="stopRowClick($event)"
-                  (pressed)="editEvent(event)"
-                />
-                <org-icon-button
-                  icon="share"
-                  ariaLabel="Compartilhar no WhatsApp"
-                  (click)="stopRowClick($event)"
-                  (pressed)="shareWhatsApp(event)"
-                />
-                <org-icon-button
-                  icon="link"
-                  ariaLabel="Copiar link"
-                  (click)="stopRowClick($event)"
-                  (pressed)="copyLink(event)"
-                />
-                <org-icon-button
-                  icon="block"
-                  variant="danger"
-                  ariaLabel="Cancelar"
-                  (click)="stopRowClick($event)"
-                  (pressed)="cancelEvent(event)"
-                />
-              </footer>
-            </article>
-          </org-surface>
-        }
-      </div>
-    }
-  } @else {
-    <div aria-hidden="true">
-      <!-- Skeleton Desktop table -->
-      <org-surface variant="panel" class="dashboard__table-wrapper skeleton-table-wrapper">
-        <div class="skeleton-table">
-          <!-- Header fake -->
-          <div class="skeleton-table-header">
-            <org-skeleton class="skeleton-table__header-title" />
-            <org-skeleton class="skeleton-table__header-date" />
-            <org-skeleton class="skeleton-table__header-location" />
-            <org-skeleton class="skeleton-table__header-status" />
-          </div>
-          <!-- Rows fakes -->
-          @for (i of [1, 2, 3, 4]; track i) {
-            <div class="skeleton-table-row">
-              <org-skeleton class="skeleton-table__cell-title" />
-              <org-skeleton class="skeleton-table__cell-date" />
-              <org-skeleton class="skeleton-table__cell-location" />
-              <div class="dashboard__skeleton-actions">
-                <org-skeleton class="skeleton-table__action-btn" />
-                <org-skeleton class="skeleton-table__action-btn" />
-                <org-skeleton class="skeleton-table__action-btn" />
-              </div>
-            </div>
+              @if (card.stats; as stats) {
+                <org-expansion-panel eventCardBody heading="Progresso" icon="group">
+                  <span orgExpansionSummary>
+                    {{ stats.guests }} {{ stats.guests === 1 ? 'confirmado' : 'confirmados' }}
+                  </span>
+                  <dl class="dashboard__stats">
+                    <div class="dashboard__stat">
+                      <dt>Convidados confirmados</dt>
+                      <dd>{{ stats.guests }}</dd>
+                    </div>
+                    <div class="dashboard__stat">
+                      <dt>Itens completos</dt>
+                      <dd>{{ stats.completeItems }} de {{ stats.items }}</dd>
+                    </div>
+                    <org-progress
+                      variant="success"
+                      [value]="stats.items ? (stats.completeItems / stats.items) * 100 : 0"
+                      [ariaLabel]="stats.completeItems + ' de ' + stats.items + ' itens completos'"
+                    />
+                  </dl>
+                </org-expansion-panel>
+              }
+
+              <org-icon-button
+                eventCardFooter
+                icon="share"
+                variant="default"
+                [gradient]="false"
+                [ariaLabel]="'Compartilhar ' + card.event.title + ' no WhatsApp'"
+                (pressed)="shareWhatsApp(card.event)"
+              />
+              <org-icon-button
+                eventCardFooter
+                icon="link"
+                variant="default"
+                [gradient]="false"
+                [ariaLabel]="'Copiar link de ' + card.event.title"
+                (pressed)="copyLink(card.event)"
+              />
+            </app-event-summary-card>
           }
         </div>
-      </org-surface>
-
-      <!-- Skeleton Mobile cards -->
-      <div class="dashboard__mobile-cards">
-        @for (i of [1, 2, 3]; track i) {
-          <org-surface variant="card" class="dashboard__mobile-card">
-            <article class="dashboard__mobile-card-content">
-              <header class="dashboard__mobile-card-header">
-                <org-skeleton class="dashboard__skeleton-card-title" />
-                <org-skeleton class="dashboard__skeleton-card-subtitle" />
-              </header>
-              <footer class="dashboard__mobile-card-actions">
-                <org-skeleton class="dashboard__skeleton-card-action" />
-                <org-skeleton class="dashboard__skeleton-card-action" />
-                <org-skeleton class="dashboard__skeleton-card-action" />
-              </footer>
-            </article>
-          </org-surface>
-        }
-      </div>
+      }
+    </div>
+  } @else {
+    <div class="dashboard__grid" aria-hidden="true">
+      @for (i of [1, 2, 3]; track i) {
+        <org-skeleton class="dashboard__skeleton-card" />
+      }
     </div>
   }
 </org-page-layout>

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, WritableSignal, signal } from '@angular/core';
 
 type MockCurrentUser = Record<string, unknown> | null;
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
@@ -17,8 +17,9 @@ import {
   ConfettiService,
   SeasonalThemeService,
   DrawerService,
+  ClaimService,
 } from '../../core/services';
-import { PartyEvent, PartyItem, Guest, FamilyMember } from '../../core/models';
+import { PartyEvent, PartyItem, Guest, FamilyMember, EventClaims } from '../../core/models';
 
 describe('EventDetailContainer', () => {
   let component: EventDetailContainer;
@@ -46,6 +47,7 @@ describe('EventDetailContainer', () => {
   let currentUserSignal: WritableSignal<MockCurrentUser>;
   let mockAuthService: {
     currentUser: WritableSignal<MockCurrentUser>;
+    isSuperAdmin: WritableSignal<boolean>;
     loginAnonymously: ReturnType<typeof vi.fn>;
     loginWithGoogle: ReturnType<typeof vi.fn>;
   };
@@ -115,8 +117,19 @@ describe('EventDetailContainer', () => {
     },
   ];
 
+  let mockClaimsSubject: BehaviorSubject<EventClaims[]>;
+  let mockClaimService: {
+    listClaims: ReturnType<typeof vi.fn>;
+    saveClaims: ReturnType<typeof vi.fn>;
+  };
+
   beforeEach(async () => {
     currentUserSignal = signal(null);
+    mockClaimsSubject = new BehaviorSubject<EventClaims[]>([]);
+    mockClaimService = {
+      listClaims: vi.fn().mockReturnValue(mockClaimsSubject.asObservable()),
+      saveClaims: vi.fn().mockResolvedValue(undefined),
+    };
 
     mockEventService = {
       getEvent: vi.fn().mockReturnValue(of(mockEvent)),
@@ -138,6 +151,7 @@ describe('EventDetailContainer', () => {
     };
     mockAuthService = {
       currentUser: currentUserSignal,
+      isSuperAdmin: signal(false),
       loginAnonymously: vi.fn().mockResolvedValue(undefined),
       loginWithGoogle: vi.fn().mockImplementation(async () => {
         currentUserSignal.set({
@@ -200,6 +214,7 @@ describe('EventDetailContainer', () => {
         { provide: FeedbackService, useValue: mockFeedback },
         { provide: OrgDialogService, useValue: mockDialogs },
         { provide: DrawerService, useValue: mockDrawerService },
+        { provide: ClaimService, useValue: mockClaimService },
       ],
     }).compileComponents();
 
@@ -347,25 +362,23 @@ describe('EventDetailContainer', () => {
     });
   });
 
-  describe('Item claiming and unclaiming', () => {
-    it('claims item with authenticated user credentials when presence is confirmed', async () => {
-      currentUserSignal.set({
-        uid: 'usr-1',
-        displayName: 'Lucas Dev',
-        isAnonymous: false,
-      });
+  describe('Item claiming with household claims', () => {
+    const lucas = { uid: 'usr-1', displayName: 'Lucas Dev', isAnonymous: false };
+
+    it('opens the "Eu levo" sheet for confirmed guests, with the family to choose from', async () => {
+      currentUserSignal.set(lucas);
+      mockFamilyService.getFamilyMembers.mockResolvedValue([
+        { id: 'f1', name: 'Marta', relationship: 'child', createdAt: '' },
+      ]);
       fixture.detectChanges();
 
       await component['onClaimItemById']('item-1');
 
-      expect(mockItemService.claimItem).toHaveBeenCalledWith(
-        'evt-123',
-        'item-1',
-        expect.objectContaining({
-          name: 'Lucas Dev',
-        }),
-      );
-      expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
+      expect(component['claimingEntry']()?.item.id).toBe('item-1');
+      expect(component['claimPeople']()).toEqual([
+        { id: null, name: 'Você' },
+        { id: 'f1', name: 'Marta' },
+      ]);
     });
 
     it('prompts to confirm presence first when user is not confirmed', async () => {
@@ -374,29 +387,68 @@ describe('EventDetailContainer', () => {
 
       await component['onClaimItemById']('item-1');
 
-      expect(mockItemService.claimItem).not.toHaveBeenCalled();
+      expect(component['claimingEntry']()).toBeNull();
       expect(mockFeedback.info).toHaveBeenCalledWith('Por favor, confirme sua presença primeiro.');
     });
 
-    it('unclaims item successfully', async () => {
+    it('adds to what the same person already brings and saves the household document', async () => {
+      currentUserSignal.set(lucas);
       fixture.detectChanges();
+      mockClaimsSubject.next([
+        {
+          id: 'usr-1',
+          name: 'Lucas Dev',
+          updatedAt: '',
+          entries: [{ itemId: 'item-1', memberId: 'f1', who: 'Marta', quantity: 1, bought: false }],
+        },
+      ]);
 
-      await component['onUnclaimItemById']('item-1');
+      await component['onConfirmClaim']({
+        itemId: 'item-1',
+        quantity: 1,
+        memberId: 'f1',
+        who: 'Marta',
+      });
 
-      expect(mockItemService.unclaimItem).toHaveBeenCalledWith('evt-123', 'item-1');
+      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', 'Lucas Dev', [
+        { itemId: 'item-1', memberId: 'f1', who: 'Marta', quantity: 2, bought: false },
+      ]);
+      expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
+    });
+
+    it('removes a line from the family checklist', async () => {
+      currentUserSignal.set(lucas);
+      fixture.detectChanges();
+      mockClaimsSubject.next([
+        {
+          id: 'usr-1',
+          name: 'Lucas Dev',
+          updatedAt: '',
+          entries: [
+            { itemId: 'item-1', memberId: null, who: 'Lucas Dev', quantity: 2, bought: false },
+          ],
+        },
+      ]);
+
+      await component['onRemoveClaim']({
+        itemId: 'item-1',
+        memberId: null,
+        name: 'Picanha',
+        quantityLabel: '2',
+        who: 'Você',
+        bought: false,
+      });
+
+      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', 'Lucas Dev', []);
       expect(mockFeedback.success).toHaveBeenCalledWith('Item liberado.');
     });
 
-    it('publishes the shared error when claiming an item fails', async () => {
-      currentUserSignal.set({
-        uid: 'usr-1',
-        displayName: 'Lucas Dev',
-        isAnonymous: false,
-      });
-      mockItemService.claimItem.mockRejectedValue(new Error('Claim failed'));
+    it('publishes the shared error when saving a claim fails', async () => {
+      currentUserSignal.set(lucas);
+      mockClaimService.saveClaims.mockRejectedValue(new Error('Claim failed'));
       fixture.detectChanges();
 
-      await component['onClaimItemById']('item-1');
+      await component['onConfirmClaim']({ itemId: 'item-1', quantity: 1, memberId: null, who: '' });
 
       expect(mockFeedback.error).toHaveBeenCalledWith('Erro ao assumir item. Tente novamente.');
     });

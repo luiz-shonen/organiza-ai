@@ -33,13 +33,13 @@ describe('RsvpCardComponent', () => {
     it('renders unconfirmed CTA button and attendee count', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const subtitle = compiled.querySelector('.org-card-header__subheading');
-      expect(subtitle?.textContent).toContain('5 pessoa(s) confirmada(s)');
+      expect(subtitle?.textContent).toContain('5 pessoas confirmadas');
 
       const confirmBtn = compiled.querySelector(
         '.rsvp-card__confirm-btn button',
       ) as HTMLButtonElement;
       expect(confirmBtn).toBeTruthy();
-      expect(confirmBtn.textContent).toContain('Confirmar Presença');
+      expect(confirmBtn.textContent).toContain('Confirmar presença');
     });
 
     it('emits confirmRsvp output when CTA button is clicked', () => {
@@ -68,9 +68,9 @@ describe('RsvpCardComponent', () => {
       const title = compiled.querySelector('.org-card-header__heading');
       expect(title?.textContent).toContain('Você está na lista!');
 
-      const status = compiled.querySelector('.rsvp-card__status');
+      const status = compiled.querySelector('.rsvp-card__text');
       expect(status?.textContent).toContain('Lucas');
-      expect(status?.textContent).toContain('Sua presença está confirmada.');
+      expect(status?.textContent).toContain('sua presença está confirmada.');
     });
 
     it('renders cancel button and emits cancelRsvp output when clicked', () => {

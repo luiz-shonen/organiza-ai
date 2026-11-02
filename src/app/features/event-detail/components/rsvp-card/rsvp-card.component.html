@@ -1,59 +1,45 @@
-<org-surface variant="card">
+<org-surface variant="card" testId="rsvp-card">
   <article class="rsvp-card">
     <org-card-header
       [icon]="isConfirmed() ? 'verified' : 'how_to_reg'"
-      [tone]="isConfirmed() ? 'success' : 'tertiary'"
-      [heading]="isConfirmed() ? 'Você está na lista! 🎉' : 'Confirme sua Presença'"
-      [subheading]="guestCount() + ' pessoa(s) confirmada(s)'"
+      [tone]="isConfirmed() ? 'success' : 'info'"
+      [heading]="isConfirmed() ? 'Você está na lista!' : 'Confirme sua presença'"
+      [subheading]="
+        guestCount() === 1 ? '1 pessoa confirmada' : guestCount() + ' pessoas confirmadas'
+      "
     />
 
     @if (isConfirmed()) {
-      <div class="rsvp-card__confirmed-content">
-        <p class="rsvp-card__status">
-          <org-icon name="check_circle" class="rsvp-card__check" aria-hidden="true" />
-          <span>
-            @if (guestName()) {
-              Olá, <strong>{{ guestName() }}</strong
-              >! Sua presença está confirmada.
-            } @else {
-              Sua presença está confirmada.
-            }
-          </span>
-        </p>
-        <p class="rsvp-card__hint">
-          Estamos te esperando! Você pode assumir itens na lista colaborativa abaixo.
-        </p>
-      </div>
-    } @else {
-      <p class="rsvp-card__prompt">
-        Confirme sua presença em 1 toque para participar do evento e assumir itens da lista
-        colaborativa.
+      <p class="rsvp-card__text">
+        @if (guestName()) {
+          <strong>{{ guestName() }}</strong
+          >, sua presença está confirmada. Escolha abaixo o que vocês vão levar.
+        } @else {
+          Sua presença está confirmada. Escolha abaixo o que vocês vão levar.
+        }
       </p>
+      <org-button
+        class="rsvp-card__cancel-btn"
+        variant="secondary"
+        [disabled]="isLoading()"
+        [label]="isLoading() ? 'Cancelando...' : 'Não poderei ir'"
+        [fullWidth]="true"
+        (pressed)="onCancel()"
+      />
+    } @else {
+      <p class="rsvp-card__text">
+        Confirme em um toque para participar e assumir itens da lista colaborativa.
+      </p>
+      <org-button
+        class="rsvp-card__confirm-btn"
+        data-testid="rsvp-action-btn"
+        [gradient]="false"
+        [disabled]="isLoading()"
+        [loading]="isLoading()"
+        [label]="isLoading() ? 'Confirmando...' : 'Confirmar presença'"
+        [fullWidth]="true"
+        (pressed)="onConfirm()"
+      />
     }
-    <footer class="rsvp-card__actions">
-      @if (isConfirmed()) {
-        <org-button
-          class="rsvp-card__cancel-btn"
-          [disabled]="isLoading()"
-          [label]="isLoading() ? 'Cancelando...' : 'Não poderei ir'"
-          icon="cancel"
-          variant="danger"
-          [gradient]="false"
-          [fullWidth]="true"
-          (pressed)="onCancel()"
-        />
-      } @else {
-        <org-button
-          class="rsvp-card__confirm-btn"
-          [disabled]="isLoading()"
-          [loading]="isLoading()"
-          [label]="isLoading() ? 'Confirmando...' : 'Confirmar Presença (1 toque)'"
-          icon="how_to_reg"
-          [fullWidth]="true"
-          (pressed)="onConfirm()"
-          data-testid="rsvp-action-btn"
-        />
-      }
-    </footer>
   </article>
 </org-surface>

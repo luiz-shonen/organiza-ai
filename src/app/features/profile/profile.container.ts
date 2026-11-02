@@ -1,18 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
-import type { UserProfile, PartyEvent, FamilyMember, ThemeMode } from '../../core/models';
+import type { UserProfile, FamilyMember, ThemeMode } from '../../core/models';
 import {
   OrgLoadingStateComponent,
   FeedbackService,
-  OrgButtonComponent,
-  OrgEmptyStateComponent,
-  OrgIconComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
-  OrgSectionComponent,
-  OrgSurfaceComponent,
 } from '../../shared/ui';
 import { ProfilePreferencesCardComponent } from './components/profile-preferences-card/profile-preferences-card.component';
 import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
@@ -26,15 +20,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     OrgLoadingStateComponent,
-    CommonModule,
-    DatePipe,
     OrgPageLayoutComponent,
     OrgPageHeaderComponent,
-    OrgSectionComponent,
-    OrgSurfaceComponent,
-    OrgEmptyStateComponent,
-    OrgButtonComponent,
-    OrgIconComponent,
     ProfileInfoCardComponent,
     FamilyRosterManagerComponent,
     ProfilePreferencesCardComponent,
@@ -55,7 +42,6 @@ export class ProfileContainer implements OnInit {
 
   readonly loading = signal<boolean>(true);
   readonly userProfile = signal<UserProfile | null>(null);
-  readonly attendedEvents = signal<PartyEvent[]>([]);
   readonly familyMembers = signal<FamilyMember[]>([]);
   readonly updating = signal<boolean>(false);
   readonly addingFamilyMember = signal<boolean>(false);
@@ -78,9 +64,8 @@ export class ProfileContainer implements OnInit {
 
     try {
       this.loading.set(true);
-      const [profile, events, family] = await Promise.all([
+      const [profile, family] = await Promise.all([
         this.userService.getProfile(user.uid),
-        this.userService.getAttendedEvents(user.uid),
         this.familyService.getFamilyMembers(user.uid),
       ]);
 
@@ -103,7 +88,6 @@ export class ProfileContainer implements OnInit {
         });
       }
 
-      this.attendedEvents.set(events ?? []);
       this.familyMembers.set(family ?? []);
     } catch (err) {
       console.error('Error loading profile container data:', err);
@@ -172,13 +156,5 @@ export class ProfileContainer implements OnInit {
   protected async logout(): Promise<void> {
     await this.authService.logout();
     await this.router.navigate(['/login']);
-  }
-
-  protected exploreEvents(): void {
-    void this.router.navigate(['/']);
-  }
-
-  protected viewEvent(eventId: string): void {
-    void this.router.navigate(['/evento', eventId]);
   }
 }

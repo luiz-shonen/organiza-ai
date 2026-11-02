@@ -7,6 +7,15 @@ import {
   signal,
 } from '@angular/core';
 import {
+  OrgAvatarComponent,
+  OrgBottomSheetComponent,
+  OrgDateBadgeComponent,
+  OrgFilterBarComponent,
+  OrgInsightCardComponent,
+  OrgQuantityStepperComponent,
+  OrgSplitProgressComponent,
+  type OrgFilterOption,
+  type OrgSplitSegment,
   OrgBannerComponent,
   OrgBadgeComponent,
   OrgAutocompleteFieldComponent,
@@ -63,6 +72,13 @@ interface ShowcaseEventRow {
   selector: 'app-design-system-showcase',
   standalone: true,
   imports: [
+    OrgAvatarComponent,
+    OrgBottomSheetComponent,
+    OrgDateBadgeComponent,
+    OrgFilterBarComponent,
+    OrgInsightCardComponent,
+    OrgQuantityStepperComponent,
+    OrgSplitProgressComponent,
     OrgBannerComponent,
     OrgBadgeComponent,
     OrgAutocompleteFieldComponent,
@@ -101,6 +117,18 @@ export class DesignSystemShowcaseContainer {
   private readonly destroyRef = inject(DestroyRef);
 
   public readonly activeSeasonalTheme = signal<SeasonalThemeOption>('default');
+  protected readonly filterOptions: readonly OrgFilterOption[] = [
+    { id: 'all', label: 'Todos' },
+    { id: 'pending', label: 'Pendentes', count: 1, attention: true },
+    { id: 'confirmed', label: 'Confirmados' },
+  ];
+  protected readonly selectedFilter = signal('all');
+  protected readonly splitSegments: readonly OrgSplitSegment[] = [
+    { label: 'Ana', value: 4 },
+    { label: 'Marta', value: 2 },
+  ];
+  protected readonly sheetOpen = signal(false);
+  protected readonly sheetQuantity = signal(1);
   public readonly eventDate = signal<Date | null>(new Date(2026, 5, 24));
   public readonly eventTitle = signal('Ceia de Natal');
   public readonly eventFormat = signal<string | null>('presencial');

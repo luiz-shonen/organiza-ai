@@ -46,7 +46,7 @@ describe('FamilyRosterManagerComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.family-roster__empty')).toBeTruthy();
-    expect(compiled.textContent).toContain('Nenhum membro da família cadastrado ainda');
+    expect(compiled.textContent).toContain('Nenhum familiar cadastrado ainda');
   });
 
   it('should compose the roster in one shared surface with governed fields and actions', () => {
@@ -57,6 +57,12 @@ describe('FamilyRosterManagerComponent', () => {
     expect(compiled.querySelectorAll('org-surface')).toHaveLength(1);
     expect(compiled.querySelectorAll('mat-card')).toHaveLength(0);
     expect(component['relationshipOptions']).toHaveLength(6);
+    // With members listed, the add form waits behind the "+" button.
+    expect(compiled.querySelectorAll('org-text-field, org-autocomplete-field')).toHaveLength(0);
+    (
+      compiled.querySelector('button[data-testid="toggle-family-form-btn"]') as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
     expect(compiled.querySelectorAll('org-text-field, org-autocomplete-field')).toHaveLength(3);
     expect(compiled.querySelector('.family-roster__add-btn')).toBeInstanceOf(HTMLElement);
     expect(compiled.querySelector('.family-roster__remove-btn')).toBeInstanceOf(HTMLElement);

@@ -40,27 +40,18 @@ interface StepperLayoutExpectation {
  */
 export async function assertStepperLayout(
   page: Page,
-  { isMobile, step, label }: StepperLayoutExpectation,
+  { step, label }: StepperLayoutExpectation,
 ): Promise<void> {
-  const stepperHeader = page.locator('.mat-horizontal-stepper-header-container');
-  const stepProgress = page.getByTestId('event-step-progress');
-
-  if (isMobile) {
-    await expect(stepProgress).toBeVisible();
-    await expect(stepProgress).toContainText(`Etapa ${step} de 3`);
-    await expect(stepProgress).toContainText(label);
-    await expect(stepProgress.getByRole('progressbar')).toHaveAttribute(
-      'aria-valuenow',
-      String(step),
-    );
-    await expect(stepperHeader).toHaveCSS('display', 'none');
-    return;
-  }
-
-  await expect(stepperHeader).toHaveCSS('overflow-x', 'auto');
-  await expect(stepperHeader).toHaveCSS('flex-wrap', 'nowrap');
+  // Compact stepper on every width: numbered dots, only the current step shows its name.
+  const headers = page.locator('.mat-step-header');
+  await expect(headers).toHaveCount(4);
   const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');
   await expect(activeHeader).toBeVisible();
+  await expect(activeHeader).toContainText(label);
+  await expect(headers.nth(step - 1)).toHaveAttribute('aria-selected', 'true');
+  await expect(
+    page.locator('.mat-step-header[aria-selected="false"] .mat-step-label').first(),
+  ).toBeHidden();
   await assertWithinViewport(page, activeHeader);
 }
 

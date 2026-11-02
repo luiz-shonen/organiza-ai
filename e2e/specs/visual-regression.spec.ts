@@ -4,7 +4,7 @@ import { setupMockAuthSession } from '../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertMinTouchTarget,
-  assertGlassmorphism,
+  assertCardSurface,
   assertFontFamily,
   assertSingleSurfaceRing,
 } from '../helpers/design-tokens.helper';
@@ -68,7 +68,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     const loginCard = page
       .locator('.login__card [data-testid="org-surface"], .login__card .org-surface')
       .first();
-    await assertGlassmorphism(loginCard);
+    await assertCardSurface(loginCard);
 
     await assertNoHorizontalOverflow(page);
   });
@@ -99,7 +99,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     const stepperCard = page
       .locator('mat-card[orgSurface], .editor__card, .org-surface, [data-testid="org-surface"]')
       .first();
-    await assertGlassmorphism(stepperCard);
+    await assertCardSurface(stepperCard);
 
     await assertNoHorizontalOverflow(page);
   });
@@ -117,7 +117,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
         'app-profile-info-card .org-surface, app-profile-info-card [data-testid="org-surface"], app-profile-info-card [orgSurface]',
       )
       .first();
-    await assertGlassmorphism(profileCard);
+    await assertCardSurface(profileCard);
     await assertSingleSurfaceRing(profileCard);
 
     await assertNoHorizontalOverflow(page);
@@ -133,13 +133,13 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
 
     // Verify Brand title typography
     const showcaseTitle = page.locator('.org-ds-topbar__title');
-    await assertFontFamily(showcaseTitle, 'Fraunces');
+    await assertFontFamily(showcaseTitle, 'Fredoka');
 
     // Verify specimen card glassmorphism and single ring
     const firstSpecimen = page
       .locator('.org-ds-hero-card [data-testid="org-surface"], section [data-testid="org-surface"]')
       .first();
-    await assertGlassmorphism(firstSpecimen);
+    await assertCardSurface(firstSpecimen);
     await assertSingleSurfaceRing(firstSpecimen);
 
     // Verify interactive button touch targets in canvas

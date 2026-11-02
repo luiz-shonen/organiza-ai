@@ -14,6 +14,13 @@
   gap: var(--org-space-sm);
 }
 
+.profile-preferences-card__title {
+  color: var(--org-on-surface);
+  font: var(--org-font-weight-semibold) var(--org-font-size-md) / var(--org-line-height-snug)
+    var(--org-font-display);
+  margin: 0;
+}
+
 .profile-preferences-card__label {
   color: var(--org-on-surface-variant);
   font: var(--org-text-body-sm);

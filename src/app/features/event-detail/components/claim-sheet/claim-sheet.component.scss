@@ -1,0 +1,54 @@
+.claim-sheet__header {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+}
+
+.claim-sheet__name {
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.claim-sheet__total {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-regular);
+  margin-inline-start: var(--org-space-xs);
+}
+
+.claim-sheet__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
+
+.claim-sheet__question,
+.claim-sheet__fixed {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+.claim-sheet__fixed {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-xs);
+}
+
+.claim-sheet__people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+}
+
+.claim-sheet__actions {
+  display: grid;
+  gap: var(--org-space-sm);
+  grid-template-columns: 1fr 1.6fr;
+
+  org-button {
+    width: 100%;
+  }
+}

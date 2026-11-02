@@ -126,23 +126,21 @@ describe('ProfileContainer', () => {
     component = fixture.componentInstance;
   });
 
-  it('should initialize and load user profile, attended events, and family roster', async () => {
+  it('should initialize and load the user profile and family roster', async () => {
     await component.loadProfileData();
     fixture.detectChanges();
 
     expect(mockUserService.getProfile).toHaveBeenCalledWith('user-789');
-    expect(mockUserService.getAttendedEvents).toHaveBeenCalledWith('user-789');
     expect(mockFamilyService.getFamilyMembers).toHaveBeenCalledWith('user-789');
     expect(component.userProfile()).toEqual(mockUserProfile);
-    expect(component.attendedEvents()).toEqual(mockEvents);
     expect(component.familyMembers()).toEqual(mockFamily);
     expect(component.loading()).toBe(false);
 
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Meu Perfil');
-    expect(el.textContent).toContain('Minha Família');
+    expect(el.textContent).toContain('Meu perfil');
+    expect(el.textContent).toContain('Minha família');
     expect(el.textContent).toContain('Lucas Silva');
-    expect(el.textContent).toContain('Festa Julina dos Amigos');
+    expect(el.textContent).not.toContain('Eventos Confirmados');
   });
 
   it('should redirect to /login if current user is not logged in', async () => {
@@ -154,7 +152,6 @@ describe('ProfileContainer', () => {
 
   it('should fallback to auth user data if firestore profile is null', async () => {
     mockUserService.getProfile.mockResolvedValue(null);
-    mockUserService.getAttendedEvents.mockResolvedValue([]);
     mockFamilyService.getFamilyMembers.mockResolvedValue([]);
 
     await component.loadProfileData();
@@ -169,7 +166,6 @@ describe('ProfileContainer', () => {
       createdAt: '',
       updatedAt: '',
     });
-    expect(component.attendedEvents()).toEqual([]);
     expect(component.familyMembers()).toEqual([]);
   });
 
@@ -246,25 +242,6 @@ describe('ProfileContainer', () => {
     expect(mockFeedback.error).toHaveBeenCalledWith(
       'Não foi possível remover o familiar. Tente novamente.',
     );
-  });
-
-  it('should display empty state when user has no attended events', async () => {
-    mockUserService.getAttendedEvents.mockResolvedValue([]);
-
-    await component.loadProfileData();
-    fixture.detectChanges();
-
-    const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Nenhum evento no histórico');
-    expect(el.textContent).toContain('Explorar Eventos');
-  });
-
-  it('should compose attended-event surfaces and navigation actions through closed Org components', async () => {
-    await component.loadProfileData();
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('org-surface .profile-event-card')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('org-button.profile-event-card__btn')).toBeTruthy();
   });
 
   it('hosts the account preferences that used to live in the side menu', async () => {

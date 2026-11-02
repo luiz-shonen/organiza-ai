@@ -19,11 +19,12 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await expect(homePage.pageRoot).toHaveAttribute('aria-label', 'Eventos disponíveis');
     await expect(page.getByRole('heading', { level: 1, name: /eventos/i })).toBeVisible();
 
+    // The card title is the link to the event; "Ver detalhes" repeats it in the footer.
     const firstCard = homePage.eventCards.first();
     await expect(firstCard).toBeVisible();
-    await expect(firstCard).toHaveAttribute('role', 'link');
-    await expect(firstCard).toHaveAttribute('tabindex', '0');
-    await assertSingleSurfaceRing(firstCard.locator('.org-surface'));
+    await expect(firstCard.getByTestId('event-card-link')).toHaveAttribute('href', /\/evento\//);
+    await expect(firstCard.getByTestId('event-details-link')).toBeVisible();
+    await assertSingleSurfaceRing(firstCard);
     await assertNoHorizontalOverflow(page);
 
     await homePage.clickEventCard(0);
@@ -47,7 +48,8 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await homePage.goto('/');
     await homePage.assertLoaded();
 
-    await expect(homePage.headerLoginBtn.getByRole('button', { name: 'Entrar' })).toBeVisible();
+    await expect(homePage.headerLoginBtn).toBeVisible();
+    await expect(homePage.headerLoginBtn).toHaveAccessibleName(/Entrar/);
     await expect(page.getByRole('button', { name: 'Abrir menu de navegação' })).toHaveCount(0);
     await expect(homePage.bottomNav).toHaveCount(0);
   });

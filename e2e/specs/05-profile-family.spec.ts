@@ -55,18 +55,18 @@ test.describe('User Profile and Family Roster Management', () => {
     // Profile info card component should be rendered
     const profileInfoCard = page.locator('app-profile-info-card');
     await expect(profileInfoCard).toBeVisible();
-    await expect(page.locator('#profile-heading, .profile-info-card__title').first()).toContainText(
-      'Informações Pessoais',
+    // Perfil uses the narrow page width (the layout modifiers live on the host element).
+    await expect(page.locator('.org-page-layout__container').first()).toHaveCSS(
+      'max-width',
+      '600px',
     );
+    await expect(page.locator('#profile-heading').first()).toContainText('Carlos');
     await assertSingleSurfaceRing(profileInfoCard.locator('.org-surface'));
 
-    // Family roster and attended events sections
+    // Family roster and the Aparência card; confirmed events now live in Início → Confirmados.
     await expect(page.locator('app-family-roster-manager')).toBeVisible();
-    await expect(
-      page
-        .locator('#attended-events-heading, org-section[title*="Eventos"], .profile-event-card')
-        .first(),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Aparência' })).toBeVisible();
+    await expect(page.locator('.profile-event-card')).toHaveCount(0);
 
     // Interact with display name editing
     const editBtn = page.locator('.profile-info-card__edit-btn').first();
@@ -99,10 +99,11 @@ test.describe('User Profile and Family Roster Management', () => {
     // Verify family roster section
     const familyRosterRoot = page.locator('app-family-roster-manager');
     await expect(familyRosterRoot).toBeVisible();
-    await expect(
-      page.locator('#family-roster-heading, .family-roster__title').first(),
-    ).toContainText('Minha Família');
+    await expect(page.locator('#family-roster-heading').first()).toContainText('Minha família');
     await assertSingleSurfaceRing(familyRosterRoot.locator('.org-surface'));
+
+    // With people listed, the add form opens from the "+" button.
+    await page.locator('button[data-testid="toggle-family-form-btn"]').click();
 
     // Form inputs and add button presence
     await expect(familyRoster.nameInput).toBeVisible();

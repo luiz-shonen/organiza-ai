@@ -19,8 +19,25 @@ import {
   ConfettiService,
   SeasonalThemeService,
   DrawerService,
+  ClaimService,
 } from '../../core/services';
-import { PartyEvent, PartyItem, Guest, type RsvpDrawerResult } from '../../core/models';
+import {
+  PartyEvent,
+  PartyItem,
+  Guest,
+  type EventClaims,
+  type FamilyChecklistRow,
+  type FamilyMember,
+  type ItemClaimRequest,
+  type RsvpDrawerResult,
+} from '../../core/models';
+import {
+  addClaimEntry,
+  buildFamilyChecklist,
+  buildItemProgress,
+  removeClaimEntry,
+  toggleBought,
+} from '../../core/utils';
 import {
   OrgSkeletonComponent,
   FeedbackService,
@@ -33,6 +50,12 @@ import { EventCardComponent } from './components/event-card/event-card.component
 import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
 import { ItemListCardComponent } from './components/item-list-card/item-list-card.component';
 import { PixCardComponent } from './components/pix-card/pix-card.component';
+import { FamilyChecklistCardComponent } from './components/family-checklist-card/family-checklist-card.component';
+import {
+  ClaimSheetComponent,
+  type ClaimPerson,
+} from './components/claim-sheet/claim-sheet.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-detail',
@@ -45,6 +68,8 @@ import { PixCardComponent } from './components/pix-card/pix-card.component';
     RsvpCardComponent,
     ItemListCardComponent,
     PixCardComponent,
+    FamilyChecklistCardComponent,
+    ClaimSheetComponent,
   ],
   templateUrl: './event-detail.container.html',
   styleUrl: './event-detail.container.scss',
@@ -65,6 +90,8 @@ export class EventDetailContainer implements OnInit {
   private readonly seasonalThemeService = inject(SeasonalThemeService);
   private readonly dialogs = inject(OrgDialogService);
   private readonly drawerService = inject(DrawerService);
+  private readonly claimService = inject(ClaimService);
+  private readonly router = inject(Router);
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -72,6 +99,54 @@ export class EventDetailContainer implements OnInit {
   protected readonly loading = signal(true);
   protected readonly rsvpLoading = signal(false);
   protected readonly session = this.guestSession.session;
+  protected readonly claims = signal<EventClaims[]>([]);
+  private readonly familyMembers = signal<FamilyMember[]>([]);
+  /** Item open in the "Eu levo" sheet. */
+  private readonly claimingItemId = signal<string | null>(null);
+  protected readonly claimSaving = signal(false);
+
+  private readonly memberUid = computed(() => {
+    const user = this.authService.currentUser();
+    return user && !user.isAnonymous ? user.uid : null;
+  });
+
+  protected readonly progress = computed(() =>
+    buildItemProgress(this.items(), this.claims(), this.memberUid()),
+  );
+
+  private readonly myClaims = computed(() => {
+    const uid = this.memberUid();
+    return uid ? (this.claims().find((claims) => claims.id === uid) ?? null) : null;
+  });
+
+  protected readonly checklist = computed(() =>
+    buildFamilyChecklist(this.items(), this.myClaims()),
+  );
+
+  protected readonly claimingEntry = computed(
+    () => this.progress().find((entry) => entry.item.id === this.claimingItemId()) ?? null,
+  );
+
+  protected readonly claimPeople = computed<ClaimPerson[]>(() => [
+    { id: null, name: 'Você' },
+    ...this.familyMembers().map((member) => ({ id: member.id, name: member.name })),
+  ]);
+
+  protected readonly isOwner = computed(() => {
+    const uid = this.memberUid();
+    return !!uid && this.event()?.createdBy === uid;
+  });
+
+  protected readonly canEdit = computed(() => {
+    const uid = this.memberUid();
+    const event = this.event();
+    if (!uid || !event) return false;
+    return (
+      event.createdBy === uid ||
+      (event.collaborators ?? []).includes(uid) ||
+      this.authService.isSuperAdmin()
+    );
+  });
 
   protected readonly guestCount = computed(() => {
     return this.guests().reduce(
@@ -136,10 +211,15 @@ export class EventDetailContainer implements OnInit {
       next: (guests) => this.guests.set(guests),
     });
 
+    const claimsSub = this.claimService.listClaims(eventId).subscribe({
+      next: (claims) => this.claims.set(claims),
+    });
+
     this.destroyRef.onDestroy(() => {
       eventSub.unsubscribe();
       itemsSub.unsubscribe();
       guestsSub.unsubscribe();
+      claimsSub.unsubscribe();
       this.seasonalThemeService.resetToAuto();
     });
   }
@@ -253,34 +333,72 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected async onClaimItemById(itemId: string): Promise<void> {
-    if (!this.isUserConfirmed()) {
+    if (!this.isUserConfirmed() || !this.memberUid()) {
       this.feedback.info('Por favor, confirme sua presença primeiro.');
       return;
     }
+    if (this.familyMembers().length === 0) {
+      try {
+        this.familyMembers.set(await this.familyService.getFamilyMembers(this.memberUid()!));
+      } catch {
+        // Without the family list the account holder can still claim for themself.
+      }
+    }
+    this.claimingItemId.set(itemId);
+  }
 
-    const user = this.authService.currentUser();
-    const session = this.session();
-    const name = this.currentGuestName() || 'Convidado';
-    const phone = user?.phoneNumber || session?.phone || '';
+  protected closeClaimSheet(): void {
+    this.claimingItemId.set(null);
+  }
 
+  protected async onConfirmClaim(request: ItemClaimRequest): Promise<void> {
+    const ownName = this.currentGuestName() || 'Convidado';
+    const entries = addClaimEntry(this.myClaims()?.entries ?? [], {
+      ...request,
+      who: request.memberId ? request.who : ownName,
+    });
+    this.claimSaving.set(true);
     try {
-      await this.itemService.claimItem(this.id(), itemId, {
-        name,
-        phone,
-      });
+      await this.saveMyClaims(entries);
+      this.claimingItemId.set(null);
       this.confetti.fireSuccessConfetti();
       this.feedback.success('Item assumido com sucesso!');
     } catch {
       this.feedback.error('Erro ao assumir item. Tente novamente.');
+    } finally {
+      this.claimSaving.set(false);
     }
   }
 
-  protected async onUnclaimItemById(itemId: string): Promise<void> {
+  protected async onToggleBought(row: FamilyChecklistRow): Promise<void> {
     try {
-      await this.itemService.unclaimItem(this.id(), itemId);
+      await this.saveMyClaims(
+        toggleBought(this.myClaims()?.entries ?? [], row.itemId, row.memberId),
+      );
+    } catch {
+      this.feedback.error('Não foi possível salvar. Tente novamente.');
+    }
+  }
+
+  protected async onRemoveClaim(row: FamilyChecklistRow): Promise<void> {
+    try {
+      await this.saveMyClaims(
+        removeClaimEntry(this.myClaims()?.entries ?? [], row.itemId, row.memberId),
+      );
       this.feedback.success('Item liberado.');
     } catch {
       this.feedback.error('Erro ao liberar item. Tente novamente.');
     }
+  }
+
+  protected editEvent(): void {
+    void this.router.navigate(['/meus-eventos/evento', this.id()]);
+  }
+
+  /** Saves the household document; the snapshot listener refreshes the screen. */
+  private async saveMyClaims(entries: EventClaims['entries']): Promise<void> {
+    const uid = this.memberUid();
+    if (!uid) return;
+    await this.claimService.saveClaims(this.id(), uid, this.currentGuestName() || '', entries);
   }
 }

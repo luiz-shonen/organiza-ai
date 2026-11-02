@@ -1,151 +1,185 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
-import { Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { effect } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { firstValueFrom, of, switchMap } from 'rxjs';
 import {
-  EventService,
   AuthService,
-  NotificationService,
+  ClaimService,
   EventNotificationService,
+  EventService,
+  GuestService,
+  ItemService,
+  NotificationService,
 } from '../../../core/services';
-import { formatDate, shareWhatsApp } from '../../../core/utils';
-import { PartyEvent } from '../../../core/models';
-import { OrgSkeletonComponent, FeedbackService, OrgDialogService } from '../../../shared/ui';
+import { buildItemProgress, daysUntil, formatDate, shareWhatsApp } from '../../../core/utils';
+import type { PartyEvent } from '../../../core/models';
 import {
-  EventDashboardFiltersComponent,
-  EventStatusFilter,
-  EventFilterCounts,
-} from './components/event-filters/event-filters.component';
-import {
+  FeedbackService,
   OrgButtonComponent,
-  OrgDataColumn,
-  OrgDataTableComponent,
   OrgEmptyStateComponent,
-  OrgIconComponent,
+  OrgExpansionPanelComponent,
+  OrgFilterBarComponent,
   OrgIconButtonComponent,
+  OrgIconComponent,
+  OrgInsightCardComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
-  OrgSurfaceComponent,
+  OrgProgressComponent,
+  OrgSkeletonComponent,
+  type OrgFilterOption,
+  type OrgInsightTone,
 } from '../../../shared/ui';
+import {
+  EventSummaryCardComponent,
+  type EventSummaryStatus,
+} from '../../../shared/components/event-summary-card/event-summary-card.component';
+
+export type EventStatusFilter = 'all' | 'upcoming' | 'past' | 'cancelled';
+
+/** Numbers behind the "Progresso" panel and the AI tip of one event. */
+export interface EventStats {
+  readonly guests: number;
+  readonly items: number;
+  readonly completeItems: number;
+}
+
+interface DashboardCard {
+  readonly event: PartyEvent;
+  readonly status: EventSummaryStatus;
+  readonly stats: EventStats | null;
+  readonly insight: {
+    readonly tone: OrgInsightTone;
+    readonly lead: string;
+    readonly rest: string;
+    readonly strong: string;
+  } | null;
+}
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    OrgSkeletonComponent,
-    EventDashboardFiltersComponent,
-    OrgPageLayoutComponent,
-    OrgPageHeaderComponent,
-    OrgSurfaceComponent,
-    OrgEmptyStateComponent,
+    RouterLink,
     OrgButtonComponent,
-    OrgIconComponent,
+    OrgEmptyStateComponent,
+    OrgExpansionPanelComponent,
+    OrgFilterBarComponent,
     OrgIconButtonComponent,
-    OrgDataTableComponent,
+    OrgIconComponent,
+    OrgInsightCardComponent,
+    OrgPageHeaderComponent,
+    OrgPageLayoutComponent,
+    OrgProgressComponent,
+    OrgSkeletonComponent,
+    EventSummaryCardComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
 })
 export class DashboardContainer {
   private readonly eventService = inject(EventService);
+  private readonly guestService = inject(GuestService);
+  private readonly itemService = inject(ItemService);
+  private readonly claimService = inject(ClaimService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly clipboard = inject(Clipboard);
-  private readonly dialogs = inject(OrgDialogService);
   private readonly notificationService = inject(NotificationService);
   private readonly eventNotificationService = inject(EventNotificationService);
 
-  protected readonly events$ = this.eventService.listEvents();
-  protected readonly events = toSignal(this.events$);
-  protected readonly isSuperAdmin = this.authService.isSuperAdmin;
-  protected readonly user = this.authService.currentUser;
-  protected readonly tableColumns: readonly OrgDataColumn<PartyEvent>[] = [
-    { id: 'title', label: 'Evento', value: (event) => event.title },
-    { id: 'date', label: 'Data', value: (event) => this.formatDate(event.date) },
-    { id: 'location', label: 'Local', value: (event) => event.location },
-  ];
+  /** Events the person created or helps organise (super admins see every event). */
+  protected readonly events = toSignal(
+    toObservable(this.authService.currentUser).pipe(
+      switchMap((user) => {
+        if (!user) return of([] as PartyEvent[]);
+        return this.authService.isSuperAdmin()
+          ? this.eventService.listEvents()
+          : this.eventService.getUserEvents(user.uid);
+      }),
+    ),
+  );
 
   readonly activeFilter = signal<EventStatusFilter>('all');
+  private readonly stats = signal<Readonly<Record<string, EventStats>>>({});
 
-  readonly filterCounts = computed<EventFilterCounts>(() => {
-    const all = this.events() ?? [];
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
+  protected readonly filters: readonly OrgFilterOption<EventStatusFilter>[] = [
+    { id: 'all', label: 'Todos', testId: 'status-filter-all-chip' },
+    { id: 'upcoming', label: 'Em breve', testId: 'status-filter-active-chip' },
+    { id: 'past', label: 'Histórico', testId: 'status-filter-past-chip' },
+    { id: 'cancelled', label: 'Cancelados', testId: 'status-filter-cancelled-chip' },
+  ];
 
-    let upcoming = 0;
-    let past = 0;
-    let cancelled = 0;
-
-    for (const e of all) {
-      if (e.status === 'cancelled') {
-        cancelled++;
-      } else {
-        const eventDate = new Date(e.date);
-        if (eventDate >= now) {
-          upcoming++;
-        } else {
-          past++;
-        }
-      }
-    }
-
-    return {
-      all: all.length,
-      upcoming,
-      past,
-      cancelled,
-    };
+  protected readonly subtitle = computed(() => {
+    const count = this.events()?.length ?? 0;
+    return count === 1 ? '1 evento criado por você' : `${count} eventos criados por você`;
   });
 
   readonly filteredEvents = computed(() => {
-    const all = this.events();
-    if (!all) return [];
-    const filter = this.activeFilter();
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-
-    return all.filter((e) => {
-      const isCancelled = e.status === 'cancelled';
-      const eventDate = new Date(e.date);
-
-      switch (filter) {
-        case 'upcoming':
-          return !isCancelled && eventDate >= now;
-        case 'past':
-          return !isCancelled && eventDate < now;
-        case 'cancelled':
-          return isCancelled;
-        case 'all':
-        default:
-          return true;
+    const all = this.events() ?? [];
+    switch (this.activeFilter()) {
+      case 'upcoming':
+        return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) >= 0);
+      case 'past':
+        return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) < 0);
+      case 'cancelled':
+        return all.filter((e) => e.status === 'cancelled');
+      default: {
+        // Upcoming first (soonest on top), then history (latest first), then cancelled.
+        const rank = (e: PartyEvent) =>
+          e.status === 'cancelled' ? 2 : daysUntil(e.date) >= 0 ? 0 : 1;
+        return [...all].sort((a, b) => {
+          const byRank = rank(a) - rank(b);
+          if (byRank !== 0) return byRank;
+          const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
+          return rank(a) === 0 ? diff : -diff;
+        });
       }
-    });
+    }
   });
 
-  protected readonly nextEvent = computed(() => {
-    const all = this.events();
-    if (!all) return null;
-    const upcoming = all.filter((e) => {
-      const isCancelled = e.status === 'cancelled';
-      const eventDate = new Date(e.date);
-      const now = new Date();
-      return !isCancelled && eventDate >= now;
-    });
-    // Already ordered by date ASC from the service
-    return upcoming.length > 0 ? upcoming[0] : null;
-  });
+  protected readonly cards = computed<DashboardCard[]>(() =>
+    this.filteredEvents().map((event) => {
+      const days = daysUntil(event.date);
+      const stats = this.stats()[event.id] ?? null;
+      let status: EventSummaryStatus = { label: 'Em breve', variant: 'success' };
+      if (event.status === 'cancelled') status = { label: 'Cancelado', variant: 'danger' };
+      else if (days < 0) status = { label: 'Realizado', variant: 'default' };
+      const live = event.status !== 'cancelled' && days >= 0;
+      return {
+        event,
+        status,
+        stats,
+        insight: live && stats ? this.buildInsight(days, stats) : null,
+      };
+    }),
+  );
+
+  protected readonly nextEvent = computed(
+    () =>
+      (this.events() ?? []).find((e) => e.status !== 'cancelled' && daysUntil(e.date) >= 0) ?? null,
+  );
 
   protected readonly nextEventDays = computed(() => {
     const event = this.nextEvent();
-    if (!event) return null;
-    const eventDate = new Date(event.date);
-    const now = new Date();
-    eventDate.setHours(0, 0, 0, 0);
-    now.setHours(0, 0, 0, 0);
-    const diffTime = Math.abs(eventDate.getTime() - now.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return event ? daysUntil(event.date) : null;
+  });
+
+  protected readonly nextEventWhen = computed(() => {
+    const days = this.nextEventDays();
+    if (days === null) return '';
+    if (days === 0) return 'é hoje!';
+    if (days === 1) return 'amanhã';
+    return `em ${days} dias`;
   });
 
   constructor() {
@@ -153,6 +187,7 @@ export class DashboardContainer {
       const all = this.events();
       if (all && all.length > 0) {
         this.eventNotificationService.evaluateCountdownReminders(all);
+        untracked(() => void this.loadStats(all));
       }
     });
 
@@ -176,71 +211,75 @@ export class DashboardContainer {
     });
   }
 
+  /** Guests and item progress of upcoming events, for the tip and the "Progresso" panel. */
+  private async loadStats(events: readonly PartyEvent[]): Promise<void> {
+    const live = events.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) >= 0);
+    try {
+      const entries = await Promise.all(
+        live.map(async (event) => {
+          const [guests, items, claims] = await Promise.all([
+            firstValueFrom(this.guestService.listGuests(event.id)),
+            this.itemService.getItems(event.id),
+            firstValueFrom(this.claimService.listClaims(event.id)),
+          ]);
+          const progress = buildItemProgress(items, claims);
+          const people = guests.reduce(
+            (sum, guest) => sum + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
+            0,
+          );
+          const stats: EventStats = {
+            guests: people,
+            items: progress.length,
+            completeItems: progress.filter((p) => p.complete).length,
+          };
+          return [event.id, stats] as const;
+        }),
+      );
+      this.stats.set(Object.fromEntries(entries));
+    } catch (err) {
+      console.error('Error loading event progress:', err);
+    }
+  }
+
+  private buildInsight(days: number, stats: EventStats): DashboardCard['insight'] {
+    const missing = stats.items - stats.completeItems;
+    const lead = days === 0 ? 'É hoje!' : days === 1 ? 'Falta 1 dia!' : `Faltam ${days} dias!`;
+    if (missing > 0) {
+      return {
+        tone: days <= 7 ? 'warning' : 'info',
+        lead,
+        strong: missing === 1 ? '1 item' : `${missing} itens`,
+        rest: missing === 1 ? ' ainda está sem responsável.' : ' ainda estão sem responsável.',
+      };
+    }
+    return {
+      tone: 'info',
+      lead,
+      strong: stats.guests === 1 ? '1 pessoa confirmada' : `${stats.guests} pessoas confirmadas`,
+      rest: ' até agora. Que tal lembrar quem ainda não respondeu?',
+    };
+  }
+
+  protected setFilter(id: string): void {
+    this.activeFilter.set(id as EventStatusFilter);
+  }
+
   protected createEvent(): void {
     void this.router.navigate(['/meus-eventos/evento/novo']);
   }
 
-  protected stopRowClick(event: Event): void {
-    event.stopPropagation();
-  }
-
   protected editEvent(event: PartyEvent): void {
-    this.router.navigate(['/meus-eventos/evento', event.id]);
-  }
-
-  protected openPublicEvent(event: PartyEvent): void {
-    window.open(`/evento/${event.id}`, '_blank');
-  }
-
-  protected isHistoryEvent(dateStr: string): boolean {
-    const eventDate = new Date(dateStr);
-    const now = new Date();
-    eventDate.setHours(0, 0, 0, 0);
-    now.setHours(0, 0, 0, 0);
-    return eventDate < now;
-  }
-
-  protected async cancelEvent(event: PartyEvent): Promise<void> {
-    this.dialogs
-      .confirm({
-        title: 'Cancelar Evento',
-        message: `Tem certeza que deseja cancelar o evento "${event.title}"? Ele será movido para os cancelados e o link público avisará sobre o cancelamento.`,
-        confirmLabel: 'Cancelar Evento',
-      })
-      .subscribe(async (result) => {
-        if (result) {
-          try {
-            await this.eventService.cancelEvent(event.id);
-            this.feedback.success('Evento cancelado com sucesso!');
-          } catch {
-            this.feedback.error('Erro ao cancelar evento.');
-          }
-        }
-      });
-  }
-
-  async logout(): Promise<void> {
-    try {
-      await this.authService.logout();
-      this.router.navigate(['/login']);
-    } catch (err) {
-      console.error(err);
-      this.feedback.error('Erro ao sair da conta');
-    }
+    void this.router.navigate(['/meus-eventos/evento', event.id]);
   }
 
   protected shareWhatsApp(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
-    shareWhatsApp(event.title, this.formatDate(event.date), event.location, url);
+    shareWhatsApp(event.title, formatDate(event.date), event.location, url);
   }
 
   protected copyLink(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
     this.clipboard.copy(url);
     this.feedback.success('Link copiado!', { duration: 2000 });
-  }
-
-  protected formatDate(dateStr: string): string {
-    return formatDate(dateStr);
   }
 }

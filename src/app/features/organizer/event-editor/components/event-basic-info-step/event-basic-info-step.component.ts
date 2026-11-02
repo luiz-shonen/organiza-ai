@@ -3,8 +3,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EventBasicInfoForm, EventCategoryOption } from '../../../../../core/models';
 import {
   OrgButtonComponent,
+  OrgCardHeaderComponent,
   OrgChipComponent,
   OrgDateFieldComponent,
+  OrgSurfaceComponent,
   OrgTextFieldComponent,
   OrgTextareaFieldComponent,
   OrgTimeFieldComponent,
@@ -16,8 +18,10 @@ import {
   imports: [
     ReactiveFormsModule,
     OrgButtonComponent,
+    OrgCardHeaderComponent,
     OrgChipComponent,
     OrgDateFieldComponent,
+    OrgSurfaceComponent,
     OrgTextFieldComponent,
     OrgTextareaFieldComponent,
     OrgTimeFieldComponent,
@@ -30,6 +34,7 @@ export class EventBasicInfoStepComponent {
   readonly categories = input.required<readonly EventCategoryOption[]>();
   readonly minDate = input.required<Date>();
   readonly next = output<void>();
+  readonly cancelled = output<void>();
 
   protected selectCategory(category: string): void {
     const control = this.form().controls.category;

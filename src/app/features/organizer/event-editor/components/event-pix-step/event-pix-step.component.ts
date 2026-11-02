@@ -3,14 +3,23 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EventPixForm } from '../../../../../core/models';
 import {
   OrgButtonComponent,
+  OrgCardHeaderComponent,
   OrgIconComponent,
+  OrgSurfaceComponent,
   OrgTextFieldComponent,
 } from '../../../../../shared/ui';
 
 @Component({
   selector: 'app-event-pix-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, OrgButtonComponent, OrgIconComponent, OrgTextFieldComponent],
+  imports: [
+    ReactiveFormsModule,
+    OrgButtonComponent,
+    OrgCardHeaderComponent,
+    OrgIconComponent,
+    OrgSurfaceComponent,
+    OrgTextFieldComponent,
+  ],
   templateUrl: './event-pix-step.component.html',
   styleUrl: '../event-step.scss',
 })

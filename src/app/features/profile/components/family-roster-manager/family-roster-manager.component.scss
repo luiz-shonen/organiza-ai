@@ -1,171 +1,60 @@
-@use '../../../../shared/ui/tokens/semantic' as semantic;
+:host {
+  display: block;
+}
 
-.family-roster {
-  &__content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    min-width: 0;
-  }
+.family-roster__header {
+  padding: var(--org-space-md);
+}
 
-  &__header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-bottom: 1rem;
-  }
+.family-roster__form {
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  padding: var(--org-space-md);
+}
 
-  &__header-title-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+.family-roster__form-row {
+  display: grid;
+  gap: var(--org-space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
 
-  &__title {
-    margin: 0;
-    font-size: var(--org-font-size-xl);
-    font-weight: var(--org-font-weight-bold);
-    color: var(--org-on-surface);
-  }
+.family-roster__empty {
+  border-top: 1px solid var(--org-outline-variant);
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+  padding: var(--org-space-md);
+}
 
-  &__subtitle {
-    margin: 6px 0 0;
-    font-size: var(--org-font-size-sm);
-    color: var(--org-on-surface-variant);
-    line-height: var(--org-line-height-normal);
-  }
+.family-roster__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-  &__form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
+.family-roster__item {
+  align-items: center;
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  gap: var(--org-space-md);
+  padding: var(--org-space-sm) var(--org-space-sm) var(--org-space-sm) var(--org-space-md);
+}
 
-  &__form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
+.family-roster__item-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
 
-    @include semantic.tablet {
-      grid-template-columns: 1.3fr 1fr 1.2fr;
-    }
-  }
+.family-roster__item-name {
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+}
 
-  &__field {
-    width: 100%;
-  }
-
-  &__form-actions {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  &__add-btn {
-    width: 100%;
-
-    @include semantic.tablet {
-      width: auto;
-    }
-  }
-
-  &__list-container {
-    width: 100%;
-  }
-
-  &__empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 32px 16px;
-    text-align: center;
-    border-radius: var(--org-radius-md);
-    color: var(--org-on-surface-variant);
-    gap: 0.5rem;
-  }
-
-  &__empty-text {
-    margin: 0;
-    font-weight: var(--org-font-weight-semibold);
-    color: var(--org-on-surface);
-  }
-
-  &__empty-hint {
-    margin-top: 4px;
-    font-size: var(--org-font-size-sm);
-    color: var(--org-on-surface-variant);
-  }
-
-  &__list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  &__item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 0;
-  }
-
-  &__item-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--org-radius-circle);
-    background: var(--org-primary-container);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-    flex-shrink: 0;
-  }
-
-  &__item-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-  }
-
-  &__item-name-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  &__item-name {
-    font-weight: var(--org-font-weight-semibold);
-    font-size: var(--org-font-size-md);
-    color: var(--org-on-surface);
-  }
-
-  &__item-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    font-size: var(--org-font-size-xs);
-    font-weight: var(--org-font-weight-bold);
-    border-radius: var(--org-radius-sm);
-    text-transform: uppercase;
-    letter-spacing: var(--org-letter-spacing-wide);
-    background: var(--org-primary-container);
-    color: var(--org-on-primary-container);
-  }
-
-  &__item-phone {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: var(--org-font-size-sm);
-    color: var(--org-on-surface-variant);
-  }
-
-  &__remove-btn {
-    flex-shrink: 0;
-  }
+.family-roster__item-sub {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
 }

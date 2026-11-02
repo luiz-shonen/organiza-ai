@@ -19,12 +19,12 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
 
     const bannerHero = page.locator('.event-card__hero');
     await expect(bannerHero).toBeVisible();
-    await assertSingleSurfaceRing(bannerHero.locator('.org-surface'));
+    await assertSingleSurfaceRing(page.locator('.event-card .org-surface').nth(0));
     await assertSingleSurfaceRing(page.locator('.event-card__details-card .org-surface'));
 
     await expect(page.locator('h1.event-card__title')).toHaveText(String(guestEvent['title']));
     await expect(eventDetailPage.countdownTimer).toBeVisible();
-    await expect(page.locator('.event-card__date-badge')).toBeVisible();
+    await expect(eventDetailPage.countdownTimer.locator('.event-card__row-icon')).toBeVisible();
 
     const calendarLink = page.locator('.event-card__date-sub');
     await expect(calendarLink).toBeVisible();
@@ -101,30 +101,56 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     await expect(eventDetailPage.copyPixBtn).toHaveAccessibleName('Copiar chave Pix');
   });
 
-  test('should toggle item claim and unclaim states on wishlist card', async ({
+  test('should claim part of an item for the family and release it again', async ({
     eventDetailPage,
     itemList,
     page,
   }) => {
+    // The guest already confirmed; Pamonha (2) is free and Quentão was claimed before claims existed.
+    const event = buildGuestEvent({
+      guests: [
+        {
+          id: GUEST_UID,
+          uid: GUEST_UID,
+          name: 'Convidada E2E',
+          isConfirmed: true,
+          confirmedAt: '',
+        },
+      ],
+    });
     await setupMockAuthSession(page, {
       uid: GUEST_UID,
       displayName: 'Convidada E2E',
-      events: [guestEvent],
+      events: [event],
+      familyMembers: [{ id: 'fam-1', name: 'Marta', relationship: 'child', createdAt: '' }],
     });
-    await eventDetailPage.goto(`/evento/${guestEvent.id}`);
+    await eventDetailPage.goto(`/evento/${event.id}`);
     await eventDetailPage.assertLoaded();
 
     await expect(itemList.listRoot).toBeVisible();
-    await expect(itemList.listRoot).toHaveAttribute('aria-label', 'Lista de itens do evento');
     await expect(itemList.itemCards).toHaveCount(2);
+    await expect(itemList.remainingCount).toContainText('1 de 2');
+    await expect(itemList.claimBtns).toHaveCount(1);
 
-    const firstItem = itemList.itemCards.first();
-    await expect(firstItem.locator('.item-list-card__name')).toBeVisible();
-    await expect(firstItem.locator('.item-list-card__status')).toBeVisible();
+    await itemList.claimItem(0);
+    const sheet = page.getByTestId('claim-sheet');
+    await expect(sheet).toBeVisible();
+    await expect(sheet).toContainText('Pamonha');
+    await sheet.locator('button[data-testid="quantity-increase"]').click();
+    await expect(sheet.getByTestId('quantity-value')).toHaveText('2');
+    await sheet.getByTestId('claim-who-fam-1').click();
+    await sheet.locator('button[data-testid="claim-confirm-btn"]').click();
+    await expect(sheet).toBeHidden();
 
-    // "Pamonha" is free to claim; "Quentão" is already claimed by this guest.
-    await expect(itemList.claimBtns.first()).toHaveAccessibleName(/eu levo|levar/i);
-    await expect(itemList.unclaimBtns.first()).toHaveAccessibleName(/desistir/i);
+    const checklist = page.getByTestId('family-checklist-card');
+    await expect(checklist).toContainText('Pamonha');
+    await expect(checklist).toContainText('Marta');
+    await expect(itemList.remainingCount).toContainText('2 de 2');
+    await expect(itemList.claimBtns).toHaveCount(0);
+
+    await itemList.unclaimItem(0);
+    await expect(checklist).toBeHidden();
+    await expect(itemList.claimBtns).toHaveCount(1);
   });
 
   test('should show the empty wishlist state when the event has no items', async ({
@@ -170,7 +196,9 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
 
     await expect(eventDetailPage.categoryBadge).toBeVisible();
     await expect(eventDetailPage.categoryBadge).toHaveText('Festa Junina');
-    await expect(eventDetailPage.categoryBadge).toHaveClass(/cat-festa/);
+    await expect(eventDetailPage.categoryBadge.locator('.org-badge')).toHaveClass(
+      /org-badge--festa/,
+    );
 
     await expect(page.locator('.seasonal-overlay__junina')).toBeVisible();
     await expect(page.locator('html')).toHaveClass(/theme-junina/);

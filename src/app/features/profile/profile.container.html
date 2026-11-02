@@ -1,9 +1,5 @@
 <org-page-layout maxWidth="narrow" data-testid="profile-page">
-  <org-page-header
-    title="Meu Perfil"
-    subtitle="Gerencie suas informações, seus familiares e veja os eventos que você confirmou presença."
-    icon="account_circle"
-  />
+  <org-page-header title="Meu perfil" subtitle="Gerencie suas informações e seus familiares." />
 
   @if (loading()) {
     <org-loading-state label="Carregando perfil..." />
@@ -12,15 +8,6 @@
       <div class="profile-container__content">
         <section class="profile-container__section" aria-label="Dados do perfil">
           <app-profile-info-card [user]="profile" (updateName)="onUpdateName($event)" />
-        </section>
-
-        <section class="profile-container__section" aria-labelledby="family-roster-heading">
-          <app-family-roster-manager
-            [members]="familyMembers()"
-            [isAdding]="addingFamilyMember()"
-            (addMember)="onAddFamilyMember($event)"
-            (removeMember)="onRemoveFamilyMember($event)"
-          />
         </section>
 
         <section class="profile-container__section" aria-label="Preferências da conta">
@@ -34,84 +21,14 @@
           />
         </section>
 
-        <org-section
-          title="Eventos Confirmados"
-          icon="event"
-          [count]="attendedEvents().length"
-          aria-labelledby="attended-events-heading"
-        >
-          @if (attendedEvents().length === 0) {
-            <org-empty-state
-              icon="event"
-              title="Nenhum evento no histórico"
-              description="Você ainda não confirmou presença em nenhum evento. Quando você confirmar presença em uma festa ou evento, ele aparecerá aqui!"
-            >
-              <org-button
-                orgEmptyStateAction
-                class="profile-container__explore-btn"
-                label="Explorar Eventos"
-                icon="search"
-                (pressed)="exploreEvents()"
-              />
-            </org-empty-state>
-          } @else {
-            <div
-              class="profile-container__events-grid"
-              role="list"
-              aria-label="Lista de eventos confirmados"
-            >
-              @for (event of attendedEvents(); track event.id) {
-                <org-surface
-                  variant="card"
-                  role="listitem"
-                  [attr.aria-labelledby]="'event-title-' + event.id"
-                >
-                  <article class="profile-event-card">
-                    <div class="profile-event-card__header">
-                      <span class="profile-event-card__category">{{
-                        event.category || 'Evento'
-                      }}</span>
-                      @if (event.status === 'cancelled') {
-                        <span class="profile-event-card__badge profile-event-card__badge--cancelled"
-                          >Cancelado</span
-                        >
-                      } @else {
-                        <span class="profile-event-card__badge profile-event-card__badge--confirmed"
-                          >Confirmado</span
-                        >
-                      }
-                    </div>
-
-                    <h3 [id]="'event-title-' + event.id" class="profile-event-card__title">
-                      {{ event.title }}
-                    </h3>
-
-                    <div class="profile-event-card__meta">
-                      <div class="profile-event-card__meta-item">
-                        <org-icon name="schedule" size="sm" color="var(--org-primary)" />
-                        <span>{{ event.date | date: 'dd/MM/yyyy HH:mm' }}</span>
-                      </div>
-                      <div class="profile-event-card__meta-item">
-                        <org-icon name="place" size="sm" color="var(--org-primary)" />
-                        <span>{{ event.location }}</span>
-                      </div>
-                    </div>
-
-                    <div class="profile-event-card__actions">
-                      <org-button
-                        class="profile-event-card__btn"
-                        label="Acessar evento"
-                        icon="event"
-                        variant="secondary"
-                        (pressed)="viewEvent(event.id)"
-                      />
-                    </div>
-                  </article>
-                </org-surface>
-              }
-            </div>
-          }
-        </org-section>
+        <section class="profile-container__section" aria-labelledby="family-roster-heading">
+          <app-family-roster-manager
+            [members]="familyMembers()"
+            [isAdding]="addingFamilyMember()"
+            (addMember)="onAddFamilyMember($event)"
+            (removeMember)="onRemoveFamilyMember($event)"
+          />
+        </section>
       </div>
     }
   }

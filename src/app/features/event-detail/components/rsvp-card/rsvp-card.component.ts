@@ -1,7 +1,6 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import {
   OrgButtonComponent,
-  OrgIconComponent,
   OrgSurfaceComponent,
   OrgCardHeaderComponent,
 } from '../../../../shared/ui';
@@ -9,7 +8,7 @@ import {
 @Component({
   selector: 'app-rsvp-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgButtonComponent, OrgIconComponent, OrgSurfaceComponent, OrgCardHeaderComponent],
+  imports: [OrgButtonComponent, OrgSurfaceComponent, OrgCardHeaderComponent],
   templateUrl: './rsvp-card.component.html',
   styleUrl: './rsvp-card.component.scss',
 })

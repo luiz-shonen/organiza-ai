@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
 import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
 import {
   OrgAutocompleteFieldComponent,
+  OrgAvatarComponent,
   OrgButtonComponent,
+  OrgCardHeaderComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
   OrgSurfaceComponent,
   OrgTextFieldComponent,
 } from '../../../../shared/ui';
@@ -24,8 +25,9 @@ export interface AddFamilyMemberPayload {
     FormsModule,
     OrgButtonComponent,
     OrgAutocompleteFieldComponent,
+    OrgAvatarComponent,
+    OrgCardHeaderComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
     OrgSurfaceComponent,
     OrgTextFieldComponent,
   ],
@@ -42,6 +44,9 @@ export class FamilyRosterManagerComponent {
   protected readonly newName = signal<string>('');
   protected readonly newRelationship = signal<FamilyRelationship>('child');
   protected readonly newPhone = signal<string>('');
+  /** The add form stays out of the way until asked for, or while the list is empty. */
+  protected readonly showForm = signal(false);
+  protected readonly formOpen = computed(() => this.showForm() || this.members().length === 0);
 
   protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
 
@@ -67,6 +72,8 @@ export class FamilyRosterManagerComponent {
     this.newName.set('');
     this.newRelationship.set('child');
     this.newPhone.set('');
+    // Keep the form open so the next person can be added right away.
+    this.showForm.set(true);
   }
 
   protected onRemove(memberId: string): void {

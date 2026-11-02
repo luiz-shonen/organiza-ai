@@ -25,14 +25,14 @@ import { EVENT_CATEGORIES, Guest, NewPartyItem, PartyEvent, PartyItem } from '..
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
 import { EventGuestsCardComponent } from './components/event-guests-card/event-guests-card.component';
-import { EventItemsCardComponent } from './components/event-items-card/event-items-card.component';
+import { EventItemsStepComponent } from './components/event-items-step/event-items-step.component';
 import { EventPixStepComponent } from './components/event-pix-step/event-pix-step.component';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
+  OrgDialogService,
   OrgBannerComponent,
   OrgButtonComponent,
-  OrgCardHeaderComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
   OrgSkeletonComponent,
@@ -49,11 +49,10 @@ import { DrawerService } from '../../../core/services/drawer.service';
     EventAddressStepComponent,
     EventBasicInfoStepComponent,
     EventGuestsCardComponent,
-    EventItemsCardComponent,
+    EventItemsStepComponent,
     EventPixStepComponent,
     OrgBannerComponent,
     OrgButtonComponent,
-    OrgCardHeaderComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
     OrgSkeletonComponent,
@@ -76,6 +75,7 @@ export class EventEditorContainer implements OnInit {
   protected readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly drawerService = inject(DrawerService);
+  private readonly dialogs = inject(OrgDialogService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
 
@@ -91,11 +91,12 @@ export class EventEditorContainer implements OnInit {
   protected readonly guests = signal<Guest[]>([]);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
-  protected readonly stepLabels = [
-    'Informações do evento',
-    'Endereço do evento',
-    'Pagamento por Pix',
-  ] as const;
+  protected readonly stepLabels = ['Informações', 'Endereço', 'Itens', 'Pix'] as const;
+  /** Items typed while creating the event; saved right after the event exists. */
+  protected readonly draftItems = signal<NewPartyItem[]>([]);
+  protected readonly stepItems = computed<readonly NewPartyItem[]>(() =>
+    this.isEditing() ? this.items() : this.draftItems(),
+  );
   protected readonly categories = EVENT_CATEGORIES;
 
   public readonly isOwner = computed(() => {
@@ -287,6 +288,10 @@ export class EventEditorContainer implements OnInit {
         this.feedback.success('Evento atualizado!');
       } else {
         const newId = await this.eventService.createEvent(eventData);
+        for (const item of this.draftItems()) {
+          await this.itemService.addItem(newId, item);
+        }
+        this.draftItems.set([]);
         this.confetti.fireSuccessConfetti();
         this.feedback.success('Evento criado com sucesso!');
         await this.router.navigate(['/meus-eventos/evento', newId]);
@@ -336,7 +341,10 @@ export class EventEditorContainer implements OnInit {
 
   protected async addItem(item: NewPartyItem): Promise<void> {
     const eventId = this.id();
-    if (!eventId) return;
+    if (!this.isEditing() || !eventId) {
+      this.draftItems.update((items) => [...items, item]);
+      return;
+    }
 
     try {
       await this.itemService.addItem(eventId, item);
@@ -345,15 +353,46 @@ export class EventEditorContainer implements OnInit {
     }
   }
 
-  protected async removeItem(item: PartyItem): Promise<void> {
+  protected async removeItem(index: number): Promise<void> {
     const eventId = this.id();
-    if (!eventId) return;
+    if (!this.isEditing() || !eventId) {
+      this.draftItems.update((items) => items.filter((_, i) => i !== index));
+      return;
+    }
+    const item = this.items()[index];
+    if (!item) return;
 
     try {
       await this.itemService.deleteItem(eventId, item.id);
     } catch {
       this.feedback.error('Erro ao remover item.');
     }
+  }
+
+  protected cancelEditing(): void {
+    void this.router.navigate(['/meus-eventos']);
+  }
+
+  protected async cancelEvent(): Promise<void> {
+    const eventId = this.id();
+    const event = this.currentEvent();
+    if (!eventId || !event) return;
+    this.dialogs
+      .confirm({
+        title: 'Cancelar evento',
+        message: `Tem certeza que deseja cancelar o evento "${event.title}"? O link público vai avisar os convidados sobre o cancelamento.`,
+        confirmLabel: 'Cancelar evento',
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await this.eventService.cancelEvent(eventId);
+          this.feedback.success('Evento cancelado com sucesso!');
+          await this.router.navigate(['/meus-eventos']);
+        } catch {
+          this.feedback.error('Erro ao cancelar evento.');
+        }
+      });
   }
 
   protected exportToCsv(): void {

@@ -121,14 +121,18 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
   });
 
   test.describe('below 600px', () => {
-    // The compact "Etapa N de 3" indicator only exists on narrow screens.
     test.use({ viewport: { width: 390, height: 844 } });
 
-    test('should show the compact step progress', async ({ page, eventEditorPage }) => {
+    test('should show the compact stepper with only the current step named', async ({
+      page,
+      eventEditorPage,
+    }) => {
       await page.goto('/meus-eventos/evento/novo');
       await eventEditorPage.assertLoaded();
 
-      await expect(page.getByTestId('event-step-progress')).toContainText('Etapa 1 de 3');
+      const active = page.locator('.mat-step-header[aria-selected="true"]');
+      await expect(active).toContainText('Informações');
+      await expect(page.locator('.mat-step-header')).toHaveCount(4);
     });
   });
 
@@ -142,7 +146,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Verify stepper step labels are rendered
     await expect(
       page.locator('.mat-step-header, .mat-step-label, .editor__step-progress-title, org-step'),
-    ).toContainText(['Informações', 'Endereço', 'Pix']);
+    ).toContainText(['Informações', 'Endereço', 'Itens', 'Pix']);
 
     // Touch and blur title input without value to trigger validation
     await eventEditorPage.titleInput.focus();
@@ -173,30 +177,16 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(dateError).toBeHidden();
   });
 
-  test('should show confirmation dialog before cancelling or deleting an event', async ({
+  test('should show confirmation dialog before cancelling an event', async ({
     page,
-    dashboardPage,
+    eventEditorPage,
     confirmDialog,
   }) => {
-    await page.goto('/meus-eventos');
-    await dashboardPage.assertLoaded();
+    // Cancelling lives in the editor; the event cards only share and open the event.
+    await page.goto('/meus-eventos/evento/event-1');
+    await eventEditorPage.assertLoaded();
 
-    // Locate the cancel button for the active event
-    const activeRowOrCard = dashboardPage.eventCards
-      .filter({ hasText: 'Festa Junina da Comunidade' })
-      .filter({ visible: true })
-      .first();
-    await expect(activeRowOrCard).toBeVisible();
-
-    const cancelActionBtn = activeRowOrCard
-      .getByRole('button', { name: /cancelar/i })
-      .or(
-        activeRowOrCard.locator(
-          'org-icon-button[icon="block"] button, button[aria-label*="Cancelar"], button.mat-warn, button[mattooltip="Cancelar"]',
-        ),
-      )
-      .first();
-
+    const cancelActionBtn = eventEditorPage.cancelEventBtn;
     await cancelActionBtn.click();
 
     // Verify confirmation dialog appears

@@ -1,4 +1,4 @@
-// Shared layout for the three event form steps (basic info, address, pix).
+// Shared layout for the event form steps: one card per step, actions below it.
 @use '../../../../shared/ui/tokens/semantic' as semantic;
 
 :host {
@@ -8,88 +8,73 @@
 .event-step {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 20px var(--org-space-md);
+  gap: var(--org-space-md);
+}
+
+.event-step__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.event-step__row {
+  align-items: start;
+  display: grid;
+  gap: var(--org-space-md);
+  grid-template-columns: minmax(0, 1fr);
+
+  &--halves {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   @include semantic.tablet {
-    padding: var(--org-space-xl) 28px;
-  }
-
-  &__title {
-    color: var(--org-primary);
-    font-size: var(--org-font-size-lg);
-    font-weight: var(--org-font-weight-bold);
-    margin: var(--org-space-sm) 0 0;
-    padding-bottom: var(--org-space-xs);
-  }
-
-  &__row {
-    align-items: start;
-    display: grid;
-    gap: var(--org-space-md);
-    grid-template-columns: 1fr;
-
-    @include semantic.tablet {
-      &--halves {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      &--wide-narrow {
-        grid-template-columns: 2fr 1fr;
-      }
+    &--wide-narrow {
+      grid-template-columns: 2fr 1fr;
     }
   }
+}
 
-  &__category {
-    display: flex;
-    flex-direction: column;
-    gap: var(--org-space-sm);
-    margin-bottom: 12px;
-  }
+.event-step__category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
 
-  &__category-label {
-    color: var(--org-on-surface-variant);
-    font-size: var(--org-font-size-sm);
-    font-weight: var(--org-font-weight-semibold);
-  }
+.event-step__category-label {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+}
 
-  &__category-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--org-space-sm);
-  }
+.event-step__category-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+}
 
-  &__error {
-    color: var(--org-error);
-    font-size: var(--org-font-size-xs);
-    padding-left: var(--org-space-md);
-  }
+.event-step__error {
+  color: var(--org-error);
+  font-size: var(--org-font-size-xs);
+  padding-left: var(--org-space-md);
+}
 
-  &__locked {
-    opacity: 0.6;
-    user-select: none;
-  }
+// Filled by ViaCEP: visible but not editable.
+.event-step__locked {
+  opacity: 0.6;
+}
 
-  &__locked-note {
-    align-items: center;
-    color: var(--org-on-surface-muted);
-    display: inline-flex;
-    font-size: var(--org-font-size-sm);
-    gap: 6px;
-    margin: 0;
-  }
+.event-step__locked-note {
+  align-items: center;
+  color: var(--org-on-surface-muted);
+  display: inline-flex;
+  font-size: var(--org-font-size-sm);
+  gap: var(--org-space-xs);
+  margin: 0;
+}
 
-  &__actions {
-    display: flex;
-    flex-direction: column-reverse;
-    gap: var(--org-space-md);
-    justify-content: flex-end;
-    margin-top: var(--org-space-lg);
-    padding-top: var(--org-space-md);
-
-    @include semantic.tablet {
-      align-items: center;
-      flex-direction: row;
-    }
-  }
+.event-step__actions {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-md);
+  justify-content: space-between;
 }

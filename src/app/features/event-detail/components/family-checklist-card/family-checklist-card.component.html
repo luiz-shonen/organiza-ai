@@ -1,0 +1,29 @@
+<org-surface variant="card" testId="family-checklist-card">
+  <section class="family-card" aria-labelledby="family-card-title">
+    <org-card-header
+      id="family-card-title"
+      icon="check"
+      heading="Checklist da família"
+      subheading="O que vocês vão levar. Marque quando comprar."
+    />
+
+    <div class="family-card__progress">
+      <p class="family-card__progress-label">
+        <span>Comprados</span>
+        <strong>{{ bought() }} de {{ rows().length }}</strong>
+      </p>
+      <org-progress
+        variant="success"
+        [value]="percent()"
+        [ariaLabel]="bought() + ' de ' + rows().length + ' itens comprados'"
+      />
+    </div>
+
+    <app-family-checklist
+      [rows]="rows()"
+      [removable]="true"
+      (boughtToggle)="boughtToggle.emit($event)"
+      (removeRow)="removeRow.emit($event)"
+    />
+  </section>
+</org-surface>

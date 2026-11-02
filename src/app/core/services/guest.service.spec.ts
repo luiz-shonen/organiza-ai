@@ -98,6 +98,36 @@ describe('GuestService', () => {
       );
     });
 
+    it('formats family phones and drops one that is not a phone', async () => {
+      await service.batchConfirmRsvp('evt-100', { uid: 'user-123', name: 'Carlos Silva' }, [
+        {
+          id: 'fam-1',
+          name: 'Mariana',
+          relationship: 'spouse',
+          phone: '11988887777',
+          createdAt: '',
+        },
+        {
+          id: 'fam-2',
+          name: 'Lucas',
+          relationship: 'child',
+          phone: '3199231231232131',
+          createdAt: '',
+        },
+      ]);
+
+      expect(mockGateway.batchOps.set).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123_fam-1',
+        expect.objectContaining({ phone: '(11) 98888-7777' }),
+        { merge: true },
+      );
+      expect(mockGateway.batchOps.set).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123_fam-2',
+        expect.objectContaining({ phone: '' }),
+        { merge: true },
+      );
+    });
+
     it('works when family members list is empty', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',

@@ -11,15 +11,77 @@ service cloud.firestore {
       return request.auth != null && (email == 'luiz.gmr.dev@gmail.com' || email == 'jessica.calm.dev@gmail.com');
     }
 
+    // Field checks for documents people write. The app validates the same fields with
+    // value objects (src/app/core/value-objects); these limits are looser on purpose, so
+    // the rules stop abuse without rejecting anything the app saves.
+
+    // The fields this write sets or changes. On an update only those are checked, so an
+    // older document with a value outside these rules can still be edited.
+    function changedKeys() {
+      return resource == null
+          ? request.resource.data.keys()
+          : request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function changes(key) {
+      return key in changedKeys();
+    }
+
+    // Text up to `max` characters with no markup characters (< > { }). Empty is allowed.
+    function isPlainText(value, max) {
+      return value is string && value.size() <= max && !value.matches('(?s).*[<>{}].*');
+    }
+
+    // Plain text that is not empty.
+    function isFilledText(value, max) {
+      return isPlainText(value, max) && value.size() > 0;
+    }
+
+    // Empty, or 10 to 20 characters of digits and phone punctuation.
+    function isPhoneOrEmpty(value) {
+      return value is string && (value == '' || value.matches('[0-9 ()+.-]{10,20}'));
+    }
+
+    function isOptionalString(value, max) {
+      return value == null || (value is string && value.size() <= max);
+    }
+
+    function isRelationship(value) {
+      return value in ['spouse', 'child', 'parent', 'sibling', 'relative', 'other'];
+    }
+
     match /admins/{email} {
       allow read, write: if isSuperAdmin() || (request.auth != null && request.auth.token.get('email', '') == email);
     }
 
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid && isValidUser();
+
+      // displayName and name may be null: they come from the Google account.
+      function isValidUser() {
+        let data = request.resource.data;
+        return (!changes('displayName') || data.get('displayName', null) == null
+                  || isFilledText(data.get('displayName', null), 120))
+            && (!changes('name') || data.get('name', null) == null
+                  || isFilledText(data.get('name', null), 120))
+            && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
+            && (!changes('email') || isOptionalString(data.get('email', null), 254))
+            && (!changes('photoURL') || isOptionalString(data.get('photoURL', null), 2048))
+            && (!changes('themePref') || data.get('themePref', null) in ['light', 'dark', 'system']);
+      }
 
       match /family/{memberId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create, update: if request.auth != null && request.auth.uid == uid && isValidFamilyMember();
+
+        function isValidFamilyMember() {
+          let data = request.resource.data;
+          return (resource != null || data.keys().hasAll(['name', 'relationship']))
+              && (!changes('name') || isFilledText(data.get('name', null), 120))
+              && (!changes('relationship') || isRelationship(data.get('relationship', null)))
+              && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)));
+        }
       }
     }
 
@@ -34,7 +96,17 @@ service cloud.firestore {
     // Events: public read, admin-only write
     match /events/{eventId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isAdmin() && isValidEvent();
+      allow delete: if isAdmin();
+
+      // Size limits only: admins write events, and older ones may hold any text.
+      function isValidEvent() {
+        let data = request.resource.data;
+        return (!changes('title') || isFilledText(data.get('title', null), 200))
+            && (!changes('description') || isOptionalString(data.get('description', null), 2000))
+            && (!changes('location') || isOptionalString(data.get('location', null), 500))
+            && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77));
+      }
 
       // Invitations subcollection: admin write, invited user read/delete
       match /invitations/{email} {
@@ -61,9 +133,8 @@ service cloud.firestore {
           return request.auth != null
               && request.resource.data.keys().hasAll(['name', 'phone', 'companionsCount', 'uid'])
               && request.resource.data.uid == request.auth.uid
-              && request.resource.data.name is string
-              && request.resource.data.name.size() > 0
-              && request.resource.data.phone is string
+              && isFilledText(request.resource.data.name, 120)
+              && isPhoneOrEmpty(request.resource.data.phone)
               && request.resource.data.phone.size() >= 10
               && request.resource.data.companionsCount is int
               && request.resource.data.companionsCount >= 0
@@ -77,8 +148,8 @@ service cloud.firestore {
           return request.auth != null
               && request.resource.data.keys().hasAll(['name', 'primaryGuestId', 'isConfirmed', 'confirmedAt'])
               && request.resource.data.primaryGuestId == request.auth.uid
-              && request.resource.data.name is string
-              && request.resource.data.name.size() > 0
+              && isFilledText(request.resource.data.name, 120)
+              && isPhoneOrEmpty(request.resource.data.get('phone', ''))
               && request.resource.data.isConfirmed == true
               && request.resource.data.confirmedAt is string;
         }
@@ -90,7 +161,7 @@ service cloud.firestore {
         allow create, update: if request.auth != null
                               && request.auth.uid == uid
                               && request.resource.data.keys().hasOnly(['name', 'entries', 'updatedAt'])
-                              && request.resource.data.name is string
+                              && isPlainText(request.resource.data.name, 120)
                               && request.resource.data.entries is list
                               && request.resource.data.entries.size() <= 100;
         allow delete: if isAdmin() || (request.auth != null && request.auth.uid == uid);
@@ -105,7 +176,9 @@ service cloud.firestore {
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedBy'])
                         && (
                           // Claiming
-                          (resource.data.claimedBy == null && request.resource.data.claimedBy != null && request.resource.data.claimedBy.uid == request.auth.uid)
+                          (resource.data.claimedBy == null && request.resource.data.claimedBy != null && request.resource.data.claimedBy.uid == request.auth.uid
+                            && isPlainText(request.resource.data.claimedBy.get('name', ''), 120)
+                            && isOptionalString(request.resource.data.claimedBy.get('phone', ''), 30))
                           // Unclaiming
                           || (resource.data.claimedBy != null && resource.data.claimedBy.uid == request.auth.uid && request.resource.data.claimedBy == null)
                         )

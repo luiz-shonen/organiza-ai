@@ -11,7 +11,7 @@ related: [workflow.md]
 # Testing strategy
 
 - **Unit (Vitest, `npm test`)**: every component and service ships a `.spec.ts`. Test the public API: inputs update the template, interactions emit outputs, ARIA attributes are present.
-- **Firestore rules (`npm run test:rules`)**: every collection in `firestore.rules` is covered under `e2e/rules/`.
+- **Firestore rules (`npm run test:rules`)**: every collection in `firestore.rules` is covered under `e2e/rules/`, including the field checks (`field-validation.rules.test.ts`). Runs in the Firestore emulator, which needs Java 21 or newer on the PATH; CI runs it in the `firestore-rules` job.
 - **E2E (Playwright, `npm run test:e2e`)**: Desktop Chromium and Pixel 5. Each test is atomic: it builds its own state (mock auth via `addInitScript`, mock Firestore via `__MOCK_DOCUMENTS__`), checks one screen or step, saves a screenshot to `e2e/screenshots/` and ends. Page objects in `e2e/pages/`, harnesses in `e2e/components/`.
 - Visual checks assert tokens and invariants (no horizontal overflow, 48px targets, focus colour = `--org-primary`), not pixels.
 

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { Guest, GuestCompanion, FamilyMember } from '../models';
+import { Phone } from '../value-objects';
 
 export interface BatchPrimaryGuestInput {
   uid: string;
@@ -103,7 +104,8 @@ export class GuestService {
             id: memberId,
             name: member.name,
             primaryGuestId: primaryGuest.uid,
-            phone: member.phone ?? '',
+            // An older family phone may break the rules' format; it is not needed for the RSVP.
+            phone: Phone.create(member.phone)?.formatted ?? '',
             isConfirmed: true,
             confirmedAt: now,
             createdAt: now,

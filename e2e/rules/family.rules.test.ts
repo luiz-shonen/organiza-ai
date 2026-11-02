@@ -39,7 +39,7 @@ describe('family roster Firestore rules contract', () => {
     await assertSucceeds(
       setDoc(familyMemberDoc, {
         name: 'Ana Silva',
-        relationship: 'daughter',
+        relationship: 'child',
         phone: '11999998888',
         createdAt: '2026-09-01T00:00:00.000Z',
       }),
@@ -53,7 +53,7 @@ describe('family roster Firestore rules contract', () => {
     await testEnvironment.withSecurityRulesDisabled(async (context) => {
       await setDoc(doc(context.firestore(), 'users/user-123/family/member-1'), {
         name: 'Ana Silva',
-        relationship: 'daughter',
+        relationship: 'child',
         createdAt: '2026-09-01T00:00:00.000Z',
       });
     });
@@ -65,7 +65,7 @@ describe('family roster Firestore rules contract', () => {
     await assertFails(
       setDoc(targetDoc, {
         name: 'Hacked Silva',
-        relationship: 'daughter',
+        relationship: 'child',
       }),
     );
     await assertFails(deleteDoc(targetDoc));
@@ -75,7 +75,7 @@ describe('family roster Firestore rules contract', () => {
     await testEnvironment.withSecurityRulesDisabled(async (context) => {
       await setDoc(doc(context.firestore(), 'users/user-123/family/member-1'), {
         name: 'Ana Silva',
-        relationship: 'daughter',
+        relationship: 'child',
         createdAt: '2026-09-01T00:00:00.000Z',
       });
     });

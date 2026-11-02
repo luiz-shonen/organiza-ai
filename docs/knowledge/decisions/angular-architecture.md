@@ -27,7 +27,7 @@ related: [design-system.md, styling-rules.md]
   - Signal forms show their errors after the first submit.
 - Free text refuses `< > { }` and control characters.
 - `org-text-field` takes `[mask]` (for example `Phone.mask`) and `[maxLength]`. A phone is saved as "(11) 98888-1111".
-- This validation is client-side only. Firestore rules still accept any length or content on the documents people write: users, family, guests and claims.
+- `firestore.rules` checks the same fields on the server, with looser limits (see [firebase-and-auth.md](firebase-and-auth.md)).
 
 ## Four component roles
 

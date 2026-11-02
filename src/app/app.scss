@@ -126,6 +126,11 @@
     align-items: center;
     justify-content: flex-end;
     margin-left: auto;
+
+    // Visitors have no nav, so without this the actions would take the middle column.
+    @include semantic.desktop {
+      grid-column: 3;
+    }
   }
 
   &__avatar {

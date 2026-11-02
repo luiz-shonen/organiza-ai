@@ -15,6 +15,12 @@ import {
   OrgTextFieldComponent,
 } from '../../../../shared/ui';
 
+export interface ProfileDetailsPayload {
+  displayName: string;
+  /** Empty string clears the phone. */
+  phone: string;
+}
+
 @Component({
   selector: 'app-profile-info-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,10 +30,11 @@ import {
 })
 export class ProfileInfoCardComponent {
   readonly user = input.required<UserProfile>();
-  readonly updateName = output<string>();
+  readonly updateDetails = output<ProfileDetailsPayload>();
 
   readonly isEditing = signal(false);
   readonly editName = signal('');
+  readonly editPhone = signal('');
 
   /** "março de 2026", from the profile creation date. */
   protected readonly memberSince = computed(() => {
@@ -41,29 +48,32 @@ export class ProfileInfoCardComponent {
     effect(() => {
       const u = this.user();
       if (u) {
-        this.editName.set(u.displayName ?? u.name ?? '');
+        this.resetFields(u);
       }
     });
   }
 
   startEditing(): void {
-    const current = this.user();
-    this.editName.set(current.displayName ?? current.name ?? '');
+    this.resetFields(this.user());
     this.isEditing.set(true);
   }
 
   cancelEditing(): void {
-    const current = this.user();
-    this.editName.set(current.displayName ?? current.name ?? '');
+    this.resetFields(this.user());
     this.isEditing.set(false);
   }
 
-  saveName(): void {
+  saveDetails(): void {
     const trimmed = this.editName().trim();
     if (trimmed.length > 0) {
-      this.updateName.emit(trimmed);
+      this.updateDetails.emit({ displayName: trimmed, phone: this.editPhone().trim() });
       this.isEditing.set(false);
     }
+  }
+
+  private resetFields(user: UserProfile): void {
+    this.editName.set(user.displayName ?? user.name ?? '');
+    this.editPhone.set(user.phone ?? '');
   }
 
   get userInitial(): string {

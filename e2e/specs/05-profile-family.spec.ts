@@ -78,6 +78,11 @@ test.describe('User Profile and Family Roster Management', () => {
     await expect(profilePage.nameInput).toHaveValue('Carlos Alberto Silva');
     await assertFocusedFieldCoherence(page.locator('mat-form-field .mat-mdc-text-field-wrapper'));
 
+    // The same form edits the phone.
+    const profilePhoneInput = page.getByTestId('profile-phone-input');
+    await expect(profilePhoneInput).toBeVisible();
+    await profilePhoneInput.fill('(11) 97777-2222');
+
     await expect(profilePage.saveProfileBtn).toBeVisible();
     await expect(profilePage.saveProfileBtn).toBeEnabled();
     await profilePage.saveProfileBtn.click();
@@ -85,6 +90,7 @@ test.describe('User Profile and Family Roster Management', () => {
     // Assert update feedback or updated name rendered in profile card
     const nameDisplay = page.locator('.profile-info-card__name, app-profile-info-card');
     await expect(nameDisplay.first()).toContainText('Carlos Alberto Silva');
+    await expect(page.locator('.profile-info-card__details')).toContainText('(11) 97777-2222');
     await assertNoHorizontalOverflow(page);
   });
 

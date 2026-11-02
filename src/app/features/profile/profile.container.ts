@@ -9,7 +9,10 @@ import {
   OrgPageLayoutComponent,
 } from '../../shared/ui';
 import { ProfilePreferencesCardComponent } from './components/profile-preferences-card/profile-preferences-card.component';
-import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
+import {
+  ProfileInfoCardComponent,
+  type ProfileDetailsPayload,
+} from './components/profile-info-card/profile-info-card.component';
 import {
   FamilyRosterManagerComponent,
   type AddFamilyMemberPayload,
@@ -97,21 +100,22 @@ export class ProfileContainer implements OnInit {
     }
   }
 
-  async onUpdateName(newName: string): Promise<void> {
+  async onUpdateDetails({ displayName, phone }: ProfileDetailsPayload): Promise<void> {
     const current = this.userProfile();
     if (!current) return;
 
     try {
       this.updating.set(true);
-      await this.userService.updateProfile(current.uid, { displayName: newName });
+      await this.userService.updateProfile(current.uid, { displayName, phone });
       this.userProfile.set({
         ...current,
-        displayName: newName,
-        name: newName,
+        displayName,
+        name: displayName,
+        phone: phone || undefined,
       });
-      this.feedback.success('Nome atualizado com sucesso!');
+      this.feedback.success('Perfil atualizado com sucesso!');
     } catch {
-      this.feedback.error('Não foi possível atualizar o nome. Tente novamente.');
+      this.feedback.error('Não foi possível atualizar o perfil. Tente novamente.');
     } finally {
       this.updating.set(false);
     }

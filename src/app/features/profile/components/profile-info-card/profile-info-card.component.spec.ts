@@ -83,6 +83,8 @@ describe('ProfileInfoCardComponent', () => {
 
     expect(component.isEditing()).toBe(true);
     expect(component.editName()).toBe('Maria Santos');
+    expect(component.editPhone()).toBe('11987654321');
+    expect(fixture.nativeElement.querySelector('[data-testid="profile-phone-input"]')).toBeTruthy();
   });
 
   it('should cancel editing mode when cancel button is clicked', () => {
@@ -97,24 +99,43 @@ describe('ProfileInfoCardComponent', () => {
     expect(component.editName()).toBe('Maria Santos');
   });
 
-  it('should emit updateName with trimmed text and close edit mode on save', () => {
-    const emitSpy = vi.spyOn(component.updateName, 'emit');
+  it('should emit updateDetails with trimmed name and phone and close edit mode on save', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
 
     component.startEditing();
     component.editName.set('  Maria Silva  ');
-    component.saveName();
+    component.editPhone.set(' 11911112222 ');
+    component.saveDetails();
     fixture.detectChanges();
 
-    expect(emitSpy).toHaveBeenCalledWith('Maria Silva');
+    expect(emitSpy).toHaveBeenCalledWith({ displayName: 'Maria Silva', phone: '11911112222' });
     expect(component.isEditing()).toBe(false);
   });
 
-  it('should not emit updateName when editName is blank', () => {
-    const emitSpy = vi.spyOn(component.updateName, 'emit');
+  it('should emit an empty phone when the phone is cleared', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
+
+    component.startEditing();
+    component.editPhone.set('');
+    component.saveDetails();
+
+    expect(emitSpy).toHaveBeenCalledWith({ displayName: 'Maria Santos', phone: '' });
+  });
+
+  it('should restore the phone when editing is cancelled', () => {
+    component.startEditing();
+    component.editPhone.set('000');
+    component.cancelEditing();
+
+    expect(component.editPhone()).toBe('11987654321');
+  });
+
+  it('should not emit updateDetails when editName is blank', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
 
     component.startEditing();
     component.editName.set('    ');
-    component.saveName();
+    component.saveDetails();
     fixture.detectChanges();
 
     expect(emitSpy).not.toHaveBeenCalled();

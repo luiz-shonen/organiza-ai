@@ -7,7 +7,7 @@
     @if (userProfile(); as profile) {
       <div class="profile-container__content">
         <section class="profile-container__section" aria-label="Dados do perfil">
-          <app-profile-info-card [user]="profile" (updateName)="onUpdateName($event)" />
+          <app-profile-info-card [user]="profile" (updateDetails)="onUpdateDetails($event)" />
         </section>
 
         <section class="profile-container__section" aria-label="Preferências da conta">

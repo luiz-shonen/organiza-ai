@@ -169,17 +169,19 @@ describe('ProfileContainer', () => {
     expect(component.familyMembers()).toEqual([]);
   });
 
-  it('should update name, update signal, and show success snackbar on onUpdateName', async () => {
+  it('should update name and phone, update signal, and show success snackbar', async () => {
     await component.loadProfileData();
     fixture.detectChanges();
 
-    await component.onUpdateName('Carlos Silva');
+    await component.onUpdateDetails({ displayName: 'Carlos Silva', phone: '11912345678' });
 
     expect(mockUserService.updateProfile).toHaveBeenCalledWith('user-789', {
       displayName: 'Carlos Silva',
+      phone: '11912345678',
     });
     expect(component.userProfile()?.displayName).toBe('Carlos Silva');
-    expect(mockFeedback.success).toHaveBeenCalledWith('Nome atualizado com sucesso!');
+    expect(component.userProfile()?.phone).toBe('11912345678');
+    expect(mockFeedback.success).toHaveBeenCalledWith('Perfil atualizado com sucesso!');
   });
 
   it('should show error snackbar when updateProfile fails', async () => {
@@ -188,10 +190,10 @@ describe('ProfileContainer', () => {
 
     mockUserService.updateProfile.mockRejectedValue(new Error('Update failed'));
 
-    await component.onUpdateName('Novo Nome');
+    await component.onUpdateDetails({ displayName: 'Novo Nome', phone: '' });
 
     expect(mockFeedback.error).toHaveBeenCalledWith(
-      'Não foi possível atualizar o nome. Tente novamente.',
+      'Não foi possível atualizar o perfil. Tente novamente.',
     );
   });
 

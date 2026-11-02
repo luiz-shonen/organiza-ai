@@ -2,12 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NewPartyItem } from '../../../../../core/models';
-import { EventItemsStepComponent } from './event-items-step.component';
+import { EventItemsStepComponent, type ItemUpdate } from './event-items-step.component';
+
+const ITEMS: NewPartyItem[] = [
+  { name: 'Canjica', quantity: 5, unit: 'panelas', fixedQuantity: true },
+  { name: 'Quentão', quantity: 6, unit: 'L' },
+];
 
 describe('EventItemsStepComponent', () => {
   let fixture: ComponentFixture<EventItemsStepComponent>;
-  let component: EventItemsStepComponent;
-  let added: ReturnType<typeof vi.fn<(item: NewPartyItem) => void>>;
+  let element: HTMLElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -15,60 +19,45 @@ describe('EventItemsStepComponent', () => {
       providers: [provideNoopAnimations()],
     }).compileComponents();
     fixture = TestBed.createComponent(EventItemsStepComponent);
-    component = fixture.componentInstance;
-    added = vi.fn<(item: NewPartyItem) => void>();
-    component.add.subscribe(added);
+    fixture.componentRef.setInput('items', ITEMS);
     fixture.detectChanges();
+    element = fixture.nativeElement as HTMLElement;
   });
 
-  it('adds an item with the tidied name and a whole quantity', () => {
-    component['name'].set('  Pipoca   doce ');
-    component['quantity'].set('3');
-    component['submit']();
-
-    expect(added).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'Pipoca doce', quantity: 3, unit: 'un.' }),
-    );
+  it('lists each item with its quantity and an edit and a remove button', () => {
+    const rows = element.querySelectorAll('.items-step__item');
+    expect(rows).toHaveLength(2);
+    expect(rows[0].querySelector('.items-step__item-name')?.textContent).toContain('Canjica');
+    expect(rows[0].querySelector('.items-step__item-qty')?.textContent).toContain('5 panelas');
+    expect(element.querySelector('button[aria-label="Editar Canjica"]')).toBeTruthy();
+    expect(element.querySelector('button[aria-label="Remover Canjica"]')).toBeTruthy();
   });
 
-  it('refuses markup in the name and shows why', () => {
-    component['name'].set('<script>');
-    component['submit']();
+  it('edits an item in a sheet and leaves the add form as it was', () => {
+    const updated = vi.fn<(update: ItemUpdate) => void>();
+    fixture.componentInstance.update.subscribe(updated);
+    const addName = element.querySelector('[data-testid="item-name-input"]') as HTMLInputElement;
+    addName.value = 'Pipoca';
+    addName.dispatchEvent(new Event('input'));
+
+    (element.querySelector('button[aria-label="Editar Quentão"]') as HTMLButtonElement).click();
     fixture.detectChanges();
-
-    expect(added).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain('Não use os caracteres < > { }');
-  });
-
-  it('blocks a quantity outside 1 to 999 or with decimals', () => {
-    component['name'].set('Refrigerante');
-    for (const quantity of ['0', '1000', '1.5']) {
-      component['quantity'].set(quantity);
-      fixture.detectChanges();
-      expect(component['canAdd']()).toBe(false);
-      expect(fixture.nativeElement.textContent).toContain('Use um número inteiro de 1 a 999');
-    }
-  });
-
-  it('asks for a unit from the list when the typed one matches none', () => {
-    component['name'].set('Refrigerante');
-    component['unit'].set(null);
-    component['submit']();
-    fixture.detectChanges();
-
-    expect(added).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain('Escolha uma unidade da lista');
-  });
-
-  it('types the quantity as digits only, without the browser number spinner', () => {
-    const input = fixture.nativeElement.querySelector(
-      '[data-testid="item-qty-input"]',
+    const editName = element.querySelector(
+      '[data-testid="edit-item-name-input"]',
     ) as HTMLInputElement;
-    expect(input.type).toBe('text');
-    expect(input.getAttribute('inputmode')).toBe('numeric');
+    expect(element.querySelector('[data-testid="edit-item-sheet"]')).toBeTruthy();
+    expect(editName.value).toBe('Quentão');
 
-    input.value = '1a2b3c4';
-    input.dispatchEvent(new Event('input'));
-    expect(input.value).toBe('123');
+    editName.value = 'Quentão sem álcool';
+    editName.dispatchEvent(new Event('input'));
+    (element.querySelector('[data-testid="edit-item-save-btn"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    expect(updated).toHaveBeenCalledWith({
+      index: 1,
+      item: { name: 'Quentão sem álcool', quantity: 6, unit: 'L', fixedQuantity: false },
+    });
+    expect(element.querySelector('[data-testid="edit-item-sheet"]')).toBeNull();
+    expect(addName.value).toBe('Pipoca');
   });
 });

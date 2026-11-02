@@ -1,54 +1,36 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { NewPartyItem } from '../../../../../core/models';
 import { formatQuantity } from '../../../../../core/utils';
-import { ItemName, Quantity } from '../../../../../core/value-objects';
 import {
-  OrgAutocompleteFieldComponent,
+  OrgBottomSheetComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconButtonComponent,
   OrgSurfaceComponent,
-  OrgTextFieldComponent,
-  type OrgSelectOption,
 } from '../../../../../shared/ui';
+import { ItemFormComponent } from '../item-form/item-form.component';
 
-// The most common first; typing in the field filters the list.
-const UNITS: readonly OrgSelectOption[] = [
-  'un.',
-  'kg',
-  'g',
-  'L',
-  'ml',
-  'dúzias',
-  'pacotes',
-  'garrafas',
-  'latas',
-  'caixas',
-  'fardos',
-  'sacos',
-  'potes',
-  'panelas',
-  'travessas',
-  'bandejas',
-  'porções',
-  'fatias',
-].map((unit) => ({ value: unit, label: unit }));
+export interface ItemUpdate {
+  readonly index: number;
+  readonly item: NewPartyItem;
+}
 
 /**
  * "Itens" step: what guests can bring. Optional; the list can also be changed later
  * by editing the event. The lock inside "Quantidade" makes the item fixed: whoever
- * picks it brings the whole quantity.
+ * picks it brings the whole quantity. ✏️ edits an item in a sheet, so the add form
+ * keeps what was being typed.
  */
 @Component({
   selector: 'app-event-items-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    OrgAutocompleteFieldComponent,
+    ItemFormComponent,
+    OrgBottomSheetComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgIconButtonComponent,
     OrgSurfaceComponent,
-    OrgTextFieldComponent,
   ],
   templateUrl: './event-items-step.component.html',
   styleUrls: ['../event-step.scss', './event-items-step.component.scss'],
@@ -58,35 +40,18 @@ export class EventItemsStepComponent {
   /** Read-only list for collaborators without edit rights. */
   public readonly canEdit = input(true);
   public readonly add = output<NewPartyItem>();
+  public readonly update = output<ItemUpdate>();
   public readonly remove = output<number>();
   public readonly back = output<void>();
   public readonly next = output<void>();
 
-  protected readonly units = UNITS;
-  protected readonly name = signal('');
-  protected readonly quantity = signal('1');
-  protected readonly unit = signal<string | null>('un.');
-  protected readonly fixed = signal(false);
   protected readonly openHint = signal<number | null>(null);
-
-  /** Set on an add with invalid fields; the errors then follow what is typed. */
-  protected readonly showErrors = signal(false);
-  protected readonly nameMaxLength = ItemName.RULES.max;
-  protected readonly maskQuantity = Quantity.mask;
-  protected readonly unitError = computed(() =>
-    this.showErrors() && !this.unit() ? 'Escolha uma unidade da lista' : '',
-  );
-  protected readonly nameError = computed(() =>
-    this.showErrors() ? (ItemName.validate(this.name()) ?? '') : '',
-  );
-  protected readonly quantityError = computed(() =>
-    String(this.quantity()).trim() === ''
-      ? 'Informe a quantidade'
-      : (Quantity.validate(this.quantity()) ?? ''),
-  );
-  protected readonly canAdd = computed(
-    () => this.name().trim().length > 0 && !this.quantityError(),
-  );
+  /** Index of the item open in the edit sheet; null while it is closed. */
+  protected readonly editingIndex = signal<number | null>(null);
+  protected readonly editingItem = computed(() => {
+    const index = this.editingIndex();
+    return index === null ? null : (this.items()[index] ?? null);
+  });
 
   protected label(item: NewPartyItem): string {
     return formatQuantity(item.quantity, item.unit);
@@ -96,23 +61,10 @@ export class EventItemsStepComponent {
     this.openHint.update((current) => (current === index ? null : index));
   }
 
-  protected submit(): void {
-    if (!this.canAdd()) return;
-    const name = ItemName.create(this.name());
-    const quantity = Quantity.create(this.quantity());
-    if (!name || !quantity || !this.unit()) {
-      this.showErrors.set(true);
-      return;
-    }
-    this.add.emit({
-      name: name.value,
-      quantity: quantity.value,
-      unit: this.unit() ?? undefined,
-      fixedQuantity: this.fixed(),
-    });
-    this.name.set('');
-    this.quantity.set('1');
-    this.fixed.set(false);
-    this.showErrors.set(false);
+  protected saveEdit(item: NewPartyItem): void {
+    const index = this.editingIndex();
+    if (index === null) return;
+    this.update.emit({ index, item });
+    this.editingIndex.set(null);
   }
 }

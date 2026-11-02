@@ -124,9 +124,13 @@ test.describe('User Profile and Family Roster Management', () => {
     await expect(familyRoster.addMemberBtn).toBeVisible();
     await assertFocusedFieldCoherence(familyRoster.nameInput);
 
-    // Add button disabled when name is empty
+    // With the name empty, adding says what is missing instead of a silent disabled button
     await familyRoster.nameInput.fill('');
-    await expect(familyRoster.addMemberBtn).toBeDisabled();
+    await expect(familyRoster.addMemberBtn).toBeEnabled();
+    await familyRoster.addMemberBtn.click();
+    await expect(page.locator('app-family-roster-manager')).toContainText(
+      'Informe o nome do familiar',
+    );
 
     // 1. Add first family member: Spouse
     await familyRoster.nameInput.fill('Mariana Silva');
@@ -149,18 +153,23 @@ test.describe('User Profile and Family Roster Management', () => {
     const memberCount = await familyRoster.memberCards.count();
     expect(memberCount).toBeGreaterThanOrEqual(2);
 
-    // 3. Edit a family member: the row's pencil loads it into the same form
+    // 3. Edit a family member in a sheet; a half-typed new member stays in the add form
+    await familyRoster.nameInput.fill('Pedro');
     await familyRoster.memberCards
       .filter({ hasText: 'Lucas Silva' })
       .locator('button[aria-label="Editar Lucas Silva"]')
       .click();
-    await expect(page.getByText('Editando Lucas Silva')).toBeVisible();
-    await expect(familyRoster.nameInput).toHaveValue('Lucas Silva');
-    await familyRoster.nameInput.fill('Lucas Souza');
-    await page.getByRole('button', { name: 'Salvar alterações' }).click();
+    const editSheet = page.getByTestId('edit-family-member-sheet');
+    await expect(editSheet).toBeVisible();
+    const editName = page.getByTestId('edit-family-member-name-input');
+    await expect(editName).toHaveValue('Lucas Silva');
+    await editName.fill('Lucas Souza');
+    await page.getByTestId('edit-family-member-save-btn').click();
+    await expect(editSheet).toBeHidden();
     await expect(familyRoster.memberCards.filter({ hasText: 'Lucas Souza' })).toHaveCount(1);
     await expect(familyRoster.memberCards.filter({ hasText: 'Lucas Silva' })).toHaveCount(0);
-    await expect(familyRoster.addMemberBtn).toContainText('Adicionar familiar');
+    await expect(familyRoster.nameInput).toHaveValue('Pedro');
+    await familyRoster.nameInput.fill('');
 
     // 4. Remove a family member
     const initialCount = await familyRoster.memberCards.count();

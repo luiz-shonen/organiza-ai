@@ -52,6 +52,16 @@ export class ItemService {
     });
   }
 
+  /** Changes what the item is; who already claimed it stays as it was. */
+  async updateItem(eventId: string, itemId: string, data: PartyItemCreate): Promise<void> {
+    await this.gateway.updateDoc(`${this.itemsPath(eventId)}/${itemId}`, {
+      name: data.name,
+      quantity: data.quantity,
+      unit: data.unit ?? null,
+      fixedQuantity: data.fixedQuantity ?? false,
+    });
+  }
+
   async deleteItem(eventId: string, itemId: string): Promise<void> {
     await this.gateway.deleteDoc(`${this.itemsPath(eventId)}/${itemId}`);
   }

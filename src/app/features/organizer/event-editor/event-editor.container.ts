@@ -36,7 +36,10 @@ import { EVENT_CATEGORIES, Guest, NewPartyItem, PartyEvent, PartyItem } from '..
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
 import { EventGuestsCardComponent } from './components/event-guests-card/event-guests-card.component';
-import { EventItemsStepComponent } from './components/event-items-step/event-items-step.component';
+import {
+  EventItemsStepComponent,
+  type ItemUpdate,
+} from './components/event-items-step/event-items-step.component';
 import { EventPixStepComponent } from './components/event-pix-step/event-pix-step.component';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
@@ -379,6 +382,23 @@ export class EventEditorContainer implements OnInit {
       await this.itemService.addItem(eventId, item);
     } catch {
       this.feedback.error('Erro ao adicionar item.');
+    }
+  }
+
+  protected async updateItem({ index, item }: ItemUpdate): Promise<void> {
+    const eventId = this.id();
+    if (!this.isEditing() || !eventId) {
+      this.draftItems.update((items) => items.map((current, i) => (i === index ? item : current)));
+      return;
+    }
+    const saved = this.items()[index];
+    if (!saved) return;
+
+    try {
+      await this.itemService.updateItem(eventId, saved.id, item);
+      this.feedback.success('Item atualizado');
+    } catch {
+      this.feedback.error('Erro ao atualizar item.');
     }
   }
 

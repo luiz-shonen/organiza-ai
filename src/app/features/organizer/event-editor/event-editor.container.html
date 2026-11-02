@@ -80,6 +80,7 @@
             <app-event-items-step
               [items]="stepItems()"
               (add)="addItem($event)"
+              (update)="updateItem($event)"
               (remove)="removeItem($event)"
               (back)="stepper.previous()"
               (next)="stepper.next()"

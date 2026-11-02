@@ -71,6 +71,7 @@ describe('EventEditorContainer', () => {
     listItems: ReturnType<typeof vi.fn>;
     addItem: ReturnType<typeof vi.fn>;
     deleteItem: ReturnType<typeof vi.fn>;
+    updateItem: ReturnType<typeof vi.fn>;
   };
 
   let mockGuestService: {
@@ -98,6 +99,7 @@ describe('EventEditorContainer', () => {
       listItems: vi.fn().mockReturnValue(of([])),
       addItem: vi.fn().mockResolvedValue('item-1'),
       deleteItem: vi.fn().mockResolvedValue(undefined),
+      updateItem: vi.fn().mockResolvedValue(undefined),
     };
 
     mockGuestService = {
@@ -209,6 +211,16 @@ describe('EventEditorContainer', () => {
       });
 
       component['items'].set([{ id: 'item-99', name: 'Pastel', quantity: 2, claimedBy: null }]);
+      await component['updateItem']({
+        index: 0,
+        item: { name: 'Pastel de queijo', quantity: 4, unit: 'un.' },
+      });
+      expect(mockItemService.updateItem).toHaveBeenCalledWith('evt-123', 'item-99', {
+        name: 'Pastel de queijo',
+        quantity: 4,
+        unit: 'un.',
+      });
+
       await component['removeItem'](0);
 
       expect(mockItemService.deleteItem).toHaveBeenCalledWith('evt-123', 'item-99');

@@ -67,7 +67,6 @@ export class FamilyRosterHarness {
 
     this.addMemberBtn = searchScope
       .getByTestId('add-family-member-btn')
-      .locator('button')
       .or(
         searchScope.locator(
           '.family-roster__add-btn button, .family-selector__inline-actions button[type="submit"], button:has-text("Adicionar"), button:has-text("Adicionar Familiar"), button:has-text("Adicionar e Selecionar"), [aria-label*="Adicionar familiar"], [aria-label*="Salvar e selecionar"]',

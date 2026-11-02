@@ -9,70 +9,10 @@
       />
     </div>
 
-    <!-- One form, always open: it adds people, or edits the one picked with ✏️. -->
-    <form
-      class="family-roster__form"
-      data-testid="family-member-form"
-      [attr.aria-label]="
-        editingId() ? 'Editar ' + editingName() : 'Formulário para adicionar familiar'
-      "
-      (ngSubmit)="onSubmit()"
-    >
-      @if (editingId()) {
-        <p class="family-roster__form-title" role="status">Editando {{ editingName() }}</p>
-      }
-      <org-text-field
-        label="Nome do familiar"
-        placeholder="Ex: Lucas"
-        testId="family-member-name-input"
-        [value]="newName()"
-        [required]="true"
-        [maxLength]="nameMaxLength"
-        [error]="nameError()"
-        (valueChange)="newName.set($event)"
-      />
-      <div class="family-roster__form-row">
-        <org-autocomplete-field
-          label="Parentesco"
-          [options]="relationshipOptions"
-          [value]="newRelationship()"
-          [required]="true"
-          [error]="relationshipError()"
-          (valueChange)="setRelationship($event)"
-        />
-        <org-text-field
-          label="WhatsApp (opcional)"
-          type="tel"
-          placeholder="(11) 99999-9999"
-          testId="family-member-phone-input"
-          [mask]="maskPhone"
-          [error]="phoneError()"
-          [value]="newPhone()"
-          (valueChange)="newPhone.set($event)"
-        />
-      </div>
-      <div class="family-roster__form-actions">
-        @if (editingId()) {
-          <org-button
-            label="Cancelar"
-            variant="text"
-            data-testid="cancel-edit-family-member-btn"
-            (pressed)="resetForm()"
-          />
-        }
-        <org-button
-          class="family-roster__add-btn"
-          type="submit"
-          variant="secondary"
-          data-testid="add-family-member-btn"
-          [label]="editingId() ? 'Salvar alterações' : 'Adicionar familiar'"
-          [class.family-roster__add-btn--full]="!editingId()"
-          [fullWidth]="!editingId()"
-          [disabled]="!newName().trim() || saving()"
-          [loading]="saving()"
-        />
-      </div>
-    </form>
+    <!-- Always open to add people; ✏️ edits one in a sheet, keeping this draft. -->
+    <div class="family-roster__form">
+      <app-family-member-form [saving]="saving()" (submitted)="addMember.emit($event)" />
+    </div>
 
     @if (members().length === 0) {
       <p class="family-roster__empty" role="status">
@@ -104,8 +44,7 @@
               data-testid="edit-family-member-btn"
               [gradient]="false"
               [ariaLabel]="'Editar ' + member.name"
-              [attr.aria-pressed]="editingId() === member.id"
-              (pressed)="startEdit(member)"
+              (pressed)="editingId.set(member.id)"
             />
             <org-icon-button
               class="family-roster__remove-btn"
@@ -122,3 +61,22 @@
     }
   </section>
 </org-surface>
+
+<org-bottom-sheet
+  testId="edit-family-member-sheet"
+  [ariaLabel]="'Editar ' + (editingMember()?.name ?? 'familiar')"
+  [open]="!!editingMember()"
+  (closed)="editingId.set(null)"
+>
+  @if (editingMember(); as member) {
+    <h2 class="family-roster__sheet-title">Editar {{ member.name }}</h2>
+    <app-family-member-form
+      testIdPrefix="edit-family-member"
+      submitLabel="Salvar alterações"
+      cancelLabel="Cancelar"
+      [member]="member"
+      (submitted)="saveEdit($event)"
+      (cancelled)="editingId.set(null)"
+    />
+  }
+</org-bottom-sheet>

@@ -19,6 +19,7 @@
 
       @if (isEditing()) {
         <form
+          novalidate
           class="profile-info-card__edit-form"
           aria-label="Editar nome e telefone"
           (submit)="$event.preventDefault(); saveDetails()"

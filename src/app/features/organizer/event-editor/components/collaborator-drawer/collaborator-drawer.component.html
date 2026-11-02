@@ -20,7 +20,7 @@
       (pressed)="closed.emit()"
     />
   </header>
-  <form class="collaborator-drawer__form" (submit)="$event.preventDefault(); invite()">
+  <form novalidate class="collaborator-drawer__form" (submit)="$event.preventDefault(); invite()">
     <org-text-field
       label="E-mail do colaborador"
       type="email"

@@ -1,0 +1,59 @@
+<form
+  novalidate
+  class="family-member-form"
+  [attr.data-testid]="testIdPrefix() + '-form'"
+  (submit)="$event.preventDefault(); submit()"
+>
+  <org-text-field
+    label="Nome do familiar"
+    placeholder="Ex: Lucas"
+    [testId]="testIdPrefix() + '-name-input'"
+    [value]="name()"
+    [required]="true"
+    [maxLength]="nameMaxLength"
+    [error]="nameError()"
+    (valueChange)="name.set($event)"
+  />
+  <div class="family-member-form__row">
+    <org-autocomplete-field
+      label="Parentesco"
+      [testId]="testIdPrefix() + '-relationship-input'"
+      [options]="relationshipOptions"
+      [value]="relationship()"
+      [required]="true"
+      [error]="relationshipError()"
+      (valueChange)="setRelationship($event)"
+    />
+    <org-text-field
+      label="WhatsApp (opcional)"
+      type="tel"
+      placeholder="(11) 99999-9999"
+      [testId]="testIdPrefix() + '-phone-input'"
+      [mask]="maskPhone"
+      [error]="phoneError()"
+      [value]="phone()"
+      (valueChange)="phone.set($event)"
+    />
+  </div>
+  <div class="family-member-form__actions">
+    @if (cancelLabel(); as cancelLabel) {
+      <org-button
+        variant="text"
+        [label]="cancelLabel"
+        [testId]="testIdPrefix() + '-cancel-btn'"
+        (pressed)="cancelled.emit()"
+      />
+    }
+    <org-button
+      type="submit"
+      [class.family-member-form__submit--full]="!cancelLabel()"
+      [variant]="cancelLabel() ? 'primary' : 'secondary'"
+      [gradient]="false"
+      [label]="submitLabel()"
+      [fullWidth]="!cancelLabel()"
+      [disabled]="saving()"
+      [loading]="saving()"
+      [testId]="cancelLabel() ? testIdPrefix() + '-save-btn' : 'add-family-member-btn'"
+    />
+  </div>
+</form>

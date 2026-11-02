@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+.family-member-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
+
+.family-member-form__row {
+  display: grid;
+  gap: var(--org-space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.family-member-form__actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}
+
+// Adding: the button spans the card. Editing: Cancelar and Salvar sit on the right.
+.family-member-form__submit--full {
+  flex: 1;
+}

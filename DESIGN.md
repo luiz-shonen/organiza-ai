@@ -143,11 +143,11 @@ Uso recomendado: `<org-section title="Próximos eventos" icon="event">...</org-s
 
 ### OrgButtonComponent
 
-Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, `text`, `tonal` (soft lilac: "Responder convite"), `attention` (amber outline: "Eu levo") and `danger-text` ("Sair da conta"); use `disabled` or `loading` instead of local state CSS. `compact` draws a 36px pill while Material keeps the 48px touch target around it.
+Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, `text`, `tonal` (soft lilac: "Responder convite"), `attention` (amber outline: "Eu levo") and `danger-text` ("Sair da conta"); use `disabled` or `loading` instead of local state CSS. `compact` draws a 36px pill while Material keeps the 48px touch target around it. `tooltip` shows a Material tooltip (hover, focus, long press); never use a native `title`. A toggle passes `[ariaPressed]` (the "Fixa / Dividir" lock switches between `tonal` and `text`), and a button that reveals a hint passes `[ariaExpanded]`.
 
 ### OrgIconButtonComponent
 
-Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required.
+Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required. `tooltip` adds a Material tooltip when the icon alone is not obvious.
 
 ### OrgChipComponent
 
@@ -159,7 +159,7 @@ Uso recomendado: `<org-icon name="event" size="sm" />`. Use the typed icon map i
 
 ### OrgTextFieldComponent
 
-Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`. With `[suffixAction]="true"`, projected `[orgFieldSuffix]` content sits inside the field end (the "Fixa / Dividir" lock of the item quantity).
+Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`. With `[suffixAction]="true"`, projected `[orgFieldSuffix]` content sits inside the field end (the "Fixa / Dividir" `org-button` of the item quantity). `[mask]` reformats what is typed (`Phone.mask`, `Quantity.mask`), `[maxLength]` caps it and `inputMode="numeric"` opens the number keyboard. Type numbers as text with a mask instead of `type="number"`, whose browser spin arrows do not match the system.
 
 ### OrgTextareaFieldComponent
 
@@ -296,6 +296,10 @@ Uso recomendado: `<org-skeleton class="dashboard__skeleton-title" />` (or `shape
 ### OrgExpansionPanelComponent
 
 Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary.
+
+### OrgTooltipComponent
+
+Uso recomendado: `<org-tooltip [text]="event().location"><p class="ellipsis">{{ event().location }}</p></org-tooltip>`. Material tooltip over any content, e.g. the full text of a line cut with an ellipsis. Buttons use their own `tooltip` input instead. Features never use the native `title` attribute (`feature-native-tooltip`) nor a native `<button>` (`feature-raw-button`).
 
 ### FeedbackSnackbarComponent
 

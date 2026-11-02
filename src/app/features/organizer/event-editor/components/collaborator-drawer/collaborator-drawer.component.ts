@@ -5,7 +5,6 @@ import type {
 } from '../../../../../core/models';
 import {
   OrgButtonComponent,
-  OrgIconComponent,
   OrgIconButtonComponent,
   OrgTextFieldComponent,
 } from '../../../../../shared/ui';
@@ -14,7 +13,7 @@ import { Email } from '../../../../../core/value-objects';
 @Component({
   selector: 'app-collaborator-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgButtonComponent, OrgIconComponent, OrgIconButtonComponent, OrgTextFieldComponent],
+  imports: [OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   templateUrl: './collaborator-drawer.component.html',
   styleUrl: './collaborator-drawer.component.scss',
 })

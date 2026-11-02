@@ -33,15 +33,17 @@
     </div>
 
     @if (event().description) {
-      <p class="event-summary-card__description" [title]="event().description">
-        {{ event().description }}
-      </p>
+      <org-tooltip [text]="event().description">
+        <p class="event-summary-card__description">{{ event().description }}</p>
+      </org-tooltip>
     }
     @if (event().location) {
-      <p class="event-summary-card__meta" [title]="event().location">
-        <org-icon name="place" size="sm" />
-        <span class="event-summary-card__ellipsis">{{ event().location }}</span>
-      </p>
+      <org-tooltip [text]="event().location">
+        <p class="event-summary-card__meta">
+          <org-icon name="place" size="sm" />
+          <span class="event-summary-card__ellipsis">{{ event().location }}</span>
+        </p>
+      </org-tooltip>
     }
 
     <ng-content select="[eventCardBody]" />

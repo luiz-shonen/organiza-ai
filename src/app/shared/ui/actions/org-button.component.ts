@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrgIconComponent, OrgIconName } from './org-icon.component';
 
 export type OrgButtonVariant =
@@ -32,7 +33,7 @@ function normalizeVariant(value: unknown): OrgButtonVariant {
 @Component({
   selector: 'org-button',
   standalone: true,
-  imports: [MatButtonModule, MatProgressSpinnerModule, OrgIconComponent],
+  imports: [MatButtonModule, MatProgressSpinnerModule, MatTooltipModule, OrgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-button.component.html',
   styleUrl: './org-button.component.scss',
@@ -53,6 +54,12 @@ export class OrgButtonComponent {
   public readonly imageSrc = input<string | null>(null);
   public readonly imageAlt = input('');
   public readonly testId = input('');
+  /** Material tooltip shown on hover, focus and long press. */
+  public readonly tooltip = input('');
+  /** For a toggle button: whether it is on. */
+  public readonly ariaPressed = input<boolean | null>(null);
+  /** For a button that shows or hides something next to it. */
+  public readonly ariaExpanded = input<boolean | null>(null);
   public readonly pressed = output<void>();
 
   protected readonly isDisabled = computed(() => this.disabled() || this.loading());

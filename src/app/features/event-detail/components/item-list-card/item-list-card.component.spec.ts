@@ -78,7 +78,7 @@ describe('ItemListCardComponent', () => {
 
   it('explains a fixed quantity when asked', () => {
     const element = fixture.nativeElement as HTMLElement;
-    const fixedButton = element.querySelector('.item-list-card__fixed') as HTMLButtonElement;
+    const fixedButton = element.querySelector('.item-list-card__fixed button') as HTMLButtonElement;
     fixedButton.click();
     fixture.detectChanges();
     expect(element.querySelector('.item-list-card__hint')?.textContent).toContain(

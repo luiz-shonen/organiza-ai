@@ -47,7 +47,8 @@
       <org-text-field
         class="rsvp-drawer__field"
         label="Outros acompanhantes"
-        type="number"
+        inputMode="numeric"
+        [mask]="maskCount"
         hint="De 0 a 10 acompanhantes fora da família"
         formControlName="companionsCount"
         testId="rsvp-companions-input"

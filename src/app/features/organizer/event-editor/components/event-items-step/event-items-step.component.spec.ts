@@ -49,4 +49,26 @@ describe('EventItemsStepComponent', () => {
       expect(fixture.nativeElement.textContent).toContain('Use um número inteiro de 1 a 999');
     }
   });
+
+  it('asks for a unit from the list when the typed one matches none', () => {
+    component['name'].set('Refrigerante');
+    component['unit'].set(null);
+    component['submit']();
+    fixture.detectChanges();
+
+    expect(added).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('Escolha uma unidade da lista');
+  });
+
+  it('types the quantity as digits only, without the browser number spinner', () => {
+    const input = fixture.nativeElement.querySelector(
+      '[data-testid="item-qty-input"]',
+    ) as HTMLInputElement;
+    expect(input.type).toBe('text');
+    expect(input.getAttribute('inputmode')).toBe('numeric');
+
+    input.value = '1a2b3c4';
+    input.dispatchEvent(new Event('input'));
+    expect(input.value).toBe('123');
+  });
 });

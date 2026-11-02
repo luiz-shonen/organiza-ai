@@ -3,25 +3,35 @@ import type { NewPartyItem } from '../../../../../core/models';
 import { formatQuantity } from '../../../../../core/utils';
 import { ItemName, Quantity } from '../../../../../core/value-objects';
 import {
+  OrgAutocompleteFieldComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
-  OrgSelectFieldComponent,
   OrgSurfaceComponent,
   OrgTextFieldComponent,
   type OrgSelectOption,
 } from '../../../../../shared/ui';
 
+// The most common first; typing in the field filters the list.
 const UNITS: readonly OrgSelectOption[] = [
   'un.',
   'kg',
+  'g',
   'L',
+  'ml',
+  'dúzias',
   'pacotes',
   'garrafas',
+  'latas',
   'caixas',
+  'fardos',
+  'sacos',
+  'potes',
   'panelas',
+  'travessas',
   'bandejas',
+  'porções',
+  'fatias',
 ].map((unit) => ({ value: unit, label: unit }));
 
 /**
@@ -33,11 +43,10 @@ const UNITS: readonly OrgSelectOption[] = [
   selector: 'app-event-items-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    OrgAutocompleteFieldComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
-    OrgSelectFieldComponent,
     OrgSurfaceComponent,
     OrgTextFieldComponent,
   ],
@@ -63,6 +72,10 @@ export class EventItemsStepComponent {
   /** Set on an add with invalid fields; the errors then follow what is typed. */
   protected readonly showErrors = signal(false);
   protected readonly nameMaxLength = ItemName.RULES.max;
+  protected readonly maskQuantity = Quantity.mask;
+  protected readonly unitError = computed(() =>
+    this.showErrors() && !this.unit() ? 'Escolha uma unidade da lista' : '',
+  );
   protected readonly nameError = computed(() =>
     this.showErrors() ? (ItemName.validate(this.name()) ?? '') : '',
   );
@@ -87,7 +100,7 @@ export class EventItemsStepComponent {
     if (!this.canAdd()) return;
     const name = ItemName.create(this.name());
     const quantity = Quantity.create(this.quantity());
-    if (!name || !quantity) {
+    if (!name || !quantity || !this.unit()) {
       this.showErrors.set(true);
       return;
     }

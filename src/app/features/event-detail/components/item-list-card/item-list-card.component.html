@@ -53,15 +53,16 @@
           </div>
 
           @if (entry.item.fixedQuantity) {
-            <button
-              type="button"
+            <org-button
               class="item-list-card__fixed"
-              [attr.aria-expanded]="openHint() === entry.item.id"
-              (click)="toggleHint(entry.item.id)"
-            >
-              <org-icon name="info" size="sm" color="currentColor" />
-              Quantidade fixa
-            </button>
+              variant="text"
+              icon="info"
+              label="Quantidade fixa"
+              [compact]="true"
+              [gradient]="false"
+              [ariaExpanded]="openHint() === entry.item.id"
+              (pressed)="toggleHint(entry.item.id)"
+            />
             @if (openHint() === entry.item.id) {
               <p class="item-list-card__hint">
                 Ao escolher este item, você leva

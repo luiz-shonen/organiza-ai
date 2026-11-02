@@ -50,26 +50,9 @@
   }
 
   &__chip {
-    align-items: center;
-    background: color-mix(in srgb, var(--org-surface) 70%, transparent);
-    border: 1px solid var(--org-outline-variant);
-    border-radius: var(--org-radius-full);
-    color: var(--org-on-surface);
-    cursor: pointer;
-    display: inline-flex;
-    gap: var(--org-space-xs, 4px);
-    margin: var(--org-space-2xs, 4px);
+    display: inline-block;
+    margin: var(--org-space-2xs);
     max-width: 100%;
-    min-height: var(--org-space-xl, 36px);
-    overflow: hidden;
-    padding: 0 var(--org-space-md, 12px);
-    text-overflow: ellipsis;
-
-    &:hover {
-      background: color-mix(in srgb, var(--org-error) 12%, transparent);
-      border-color: var(--org-error);
-      color: var(--org-error);
-    }
   }
 
   &__pending {

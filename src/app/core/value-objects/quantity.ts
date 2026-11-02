@@ -11,6 +11,11 @@ export class Quantity {
     return Quantity.create(raw) ? null : Quantity.INVALID_MESSAGE;
   }
 
+  /** Input mask applied while typing: digits only, at most three. */
+  static mask(raw: string): string {
+    return (raw ?? '').replace(/\D/g, '').slice(0, String(Quantity.MAX).length);
+  }
+
   static create(raw: string | number | null | undefined): Quantity | null {
     const text = String(raw ?? '').trim();
     if (!/^\d+$/.test(text)) return null;

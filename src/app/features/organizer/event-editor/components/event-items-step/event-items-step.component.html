@@ -18,33 +18,39 @@
         <div class="event-step__row event-step__row--halves">
           <org-text-field
             label="Quantidade"
-            type="number"
+            inputMode="numeric"
             testId="item-qty-input"
-            [min]="1"
-            [max]="999"
+            [mask]="maskQuantity"
             [error]="quantityError()"
             [suffixAction]="true"
             [(value)]="quantity"
           >
-            <button
-              orgFieldSuffix
-              type="button"
-              class="items-step__lock"
-              data-testid="item-fixed-toggle"
-              [class.items-step__lock--on]="fixed()"
-              [attr.aria-pressed]="fixed()"
-              [attr.title]="
-                fixed()
-                  ? 'Quantidade fixa: quem escolher leva a quantidade toda. Toque para permitir dividir.'
-                  : 'Os convidados podem dividir. Toque para fixar a quantidade.'
-              "
-              (click)="fixed.set(!fixed())"
-            >
-              <org-icon [name]="fixed() ? 'lock' : 'lock_open'" size="sm" color="currentColor" />
-              {{ fixed() ? 'Fixa' : 'Dividir' }}
-            </button>
+            <span orgFieldSuffix>
+              <org-button
+                testId="item-fixed-toggle"
+                [variant]="fixed() ? 'tonal' : 'text'"
+                [compact]="true"
+                [gradient]="false"
+                [icon]="fixed() ? 'lock' : 'lock_open'"
+                [label]="fixed() ? 'Fixa' : 'Dividir'"
+                [ariaPressed]="fixed()"
+                [tooltip]="
+                  fixed()
+                    ? 'Quantidade fixa: quem escolher leva a quantidade toda. Toque para permitir dividir.'
+                    : 'Os convidados podem dividir. Toque para fixar a quantidade.'
+                "
+                (pressed)="fixed.set(!fixed())"
+              />
+            </span>
           </org-text-field>
-          <org-select-field label="Unidade" [options]="units" [(value)]="unit" />
+          <org-autocomplete-field
+            label="Unidade"
+            testId="item-unit-input"
+            [options]="units"
+            [required]="true"
+            [error]="unitError()"
+            [(value)]="unit"
+          />
         </div>
         <org-button
           label="Adicionar item"
@@ -80,15 +86,16 @@
                 {{ item.name }} <span class="items-step__item-qty">{{ label(item) }}</span>
               </p>
               @if (item.fixedQuantity) {
-                <button
-                  type="button"
+                <org-button
                   class="items-step__fixed"
-                  [attr.aria-expanded]="openHint() === $index"
-                  (click)="toggleHint($index)"
-                >
-                  <org-icon name="info" size="sm" color="currentColor" />
-                  Quantidade fixa
-                </button>
+                  variant="text"
+                  icon="info"
+                  label="Quantidade fixa"
+                  [compact]="true"
+                  [gradient]="false"
+                  [ariaExpanded]="openHint() === $index"
+                  (pressed)="toggleHint($index)"
+                />
                 @if (openHint() === $index) {
                   <p class="items-step__hint">
                     Quem escolher este item leva {{ item.quantity === 1 ? 'o' : 'todos os' }}

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrgIconComponent, OrgIconName } from './org-icon.component';
 
 export type OrgIconButtonVariant = 'default' | 'danger' | 'primary';
@@ -15,7 +16,7 @@ function normalizeVariant(value: unknown): OrgIconButtonVariant {
 @Component({
   selector: 'org-icon-button',
   standalone: true,
-  imports: [MatButtonModule, OrgIconComponent],
+  imports: [MatButtonModule, MatTooltipModule, OrgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-icon-button.component.html',
   styleUrl: './org-icon-button.component.scss',
@@ -29,6 +30,8 @@ export class OrgIconButtonComponent {
   public readonly disabled = input(false);
   public readonly gradient = input(false);
   public readonly testId = input('');
+  /** Material tooltip; defaults to nothing, since ariaLabel already names the button. */
+  public readonly tooltip = input('');
   public readonly pressed = output<MouseEvent>();
 
   protected readonly isDisabled = computed(() => this.disabled());

@@ -42,13 +42,16 @@
       Colaboradores ativos ({{ drawerData().collaborators.length }})
     </h3>
     @for (collaborator of drawerData().collaborators; track collaborator) {
-      <button
-        type="button"
+      <org-button
         class="collaborator-drawer__chip"
-        (click)="action.emit({ action: 'remove', collaboratorId: collaborator })"
-      >
-        {{ collaborator }} <org-icon name="close" size="sm" aria-hidden="true" />
-      </button>
+        variant="secondary"
+        icon="close"
+        [label]="collaborator"
+        [compact]="true"
+        [gradient]="false"
+        [tooltip]="'Remover ' + collaborator"
+        (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator })"
+      />
     }
   </section>
   <section aria-labelledby="pending-invites">

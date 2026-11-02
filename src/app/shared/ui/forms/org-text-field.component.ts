@@ -57,6 +57,8 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
   public readonly readOnly = input(false);
   public readonly min = input<string | number | null>(null);
   public readonly max = input<string | number | null>(null);
+  /** Keyboard to show on phones, e.g. 'numeric' for a quantity typed as text. */
+  public readonly inputMode = input<'numeric' | 'decimal' | 'text' | null>(null);
   /** Caps how many characters can be typed. */
   public readonly maxLength = input<number | null>(null);
   public readonly prefixIcon = input<string | null>(null);

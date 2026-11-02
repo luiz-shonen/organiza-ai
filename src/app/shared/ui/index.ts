@@ -58,6 +58,7 @@ export { OrgLoadingStateComponent } from './feedback/org-loading-state.component
 export { OrgSkeletonComponent } from './feedback/org-skeleton.component';
 export type { OrgSkeletonShape } from './feedback/org-skeleton.component';
 export { FeedbackSnackbarComponent } from './feedback/feedback-snackbar.component';
+export { OrgTooltipComponent } from './overlays/org-tooltip.component';
 export type { FeedbackSnackbarData, FeedbackVariant } from './feedback/feedback-snackbar.component';
 export { FeedbackService } from './feedback/feedback.service';
 export type { FeedbackOptions } from './feedback/feedback.service';

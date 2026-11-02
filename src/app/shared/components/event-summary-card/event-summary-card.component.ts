@@ -7,6 +7,7 @@ import {
   OrgDateBadgeComponent,
   OrgIconComponent,
   OrgSurfaceComponent,
+  OrgTooltipComponent,
   type OrgBadgeVariant,
 } from '../../ui';
 
@@ -26,6 +27,7 @@ export interface EventSummaryStatus {
   imports: [
     RouterLink,
     OrgSurfaceComponent,
+    OrgTooltipComponent,
     OrgBadgeComponent,
     OrgDateBadgeComponent,
     OrgIconComponent,

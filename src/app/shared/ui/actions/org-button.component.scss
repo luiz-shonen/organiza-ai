@@ -96,9 +96,12 @@
     --mat-button-outlined-outline-color: var(--org-warning);
   }
 
+  // A compact pill stays on one line: inside a field suffix it was squeezed and its
+  // label wrapped under the icon.
   &--compact {
     min-height: 36px;
     padding-inline: var(--org-space-md);
+    white-space: nowrap;
   }
 
   // Destructive but low-key ("Sair da conta"): red text, no fill.

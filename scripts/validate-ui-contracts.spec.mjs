@@ -49,6 +49,7 @@ test('rejects legacy UI directive consumers, raw material usages, and feature-ow
       'legacy-directive-selector',
       'feature-raw-material-tag',
       'feature-raw-material-button-attr',
+      'feature-raw-button',
       'feature-raw-material-module-import',
       'feature-material-selector',
       'feature-material-token',
@@ -56,6 +57,30 @@ test('rejects legacy UI directive consumers, raw material usages, and feature-ow
       'feature-raw-box-shadow',
       'feature-raw-border-radius',
     ]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('rejects native buttons and title tooltips but keeps Org title inputs and the showcase', async () => {
+  const root = await createFixture({
+    'src/app/features/demo/demo.component.html':
+      '<org-page-header title="Meus eventos" />\n<p class="x" [title]="event.location">x</p>',
+    'src/app/features/other/other.component.html':
+      '<button type="button" (click)="go()">Ir</button>',
+    'src/app/features/design-system/showcase.component.html':
+      '<button type="button" class="org-ds-season-card">Natal</button>',
+  });
+
+  try {
+    const violations = await scanUiContracts(root);
+    assert.deepEqual(
+      violations.map((violation) => [violation.code, violation.file.replaceAll('\\', '/')]),
+      [
+        ['feature-raw-button', 'src/app/features/other/other.component.html'],
+        ['feature-native-tooltip', 'src/app/features/demo/demo.component.html'],
+      ],
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }

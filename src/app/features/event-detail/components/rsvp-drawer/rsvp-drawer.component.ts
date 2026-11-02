@@ -57,6 +57,8 @@ export class RsvpDrawerComponent {
 
   protected readonly fieldError = fieldError;
   protected readonly maskPhone = Phone.mask;
+  /** Digits only, at most two: the count goes from 0 to 10. */
+  protected readonly maskCount = (value: string): string => value.replace(/\D/g, '').slice(0, 2);
   protected readonly nameMaxLength = PersonName.MAX;
 
   protected readonly form = this.fb.nonNullable.group({

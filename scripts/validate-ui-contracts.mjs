@@ -15,6 +15,10 @@ const LEGACY_DIRECTIVES = [
 const LEGACY_SELECTOR =
   /\[(?:orgSurface|orgFormGrid)\]|\borg(?:Button|IconButton|Chip|FormField|FieldLabel)\b/;
 const RAW_MATERIAL_TAG = /<mat-[a-z]/;
+const RAW_BUTTON_TAG = /<button\b/;
+// A native title as a tooltip, on an element (lowercase tag without a hyphen) rather than
+// an Org input such as <org-page-header title="...">.
+const NATIVE_TITLE_TOOLTIP = /<[a-z][a-z0-9]*\s[^>]*?\s(?:\[attr\.title\]|\[title\]|title)\s*=/;
 const RAW_MATERIAL_BUTTON_ATTR =
   /\bmat-(?:raised-button|flat-button|stroked-button|icon-button|fab|mini-fab|button|dialog-(?:title|content|actions|close))\b/;
 // Any Angular Material import in a feature means a missing closed Org primitive (AD-041).
@@ -34,6 +38,8 @@ const CODE_PRIORITY = new Map([
   ['legacy-directive-selector', 1],
   ['feature-raw-material-tag', 2],
   ['feature-raw-material-button-attr', 3],
+  ['feature-raw-button', 3.1],
+  ['feature-native-tooltip', 3.2],
   ['feature-raw-material-module-import', 4],
   ['feature-material-selector', 5],
   ['feature-material-token', 6],
@@ -107,6 +113,12 @@ function isSharedUi(filePath) {
   const segments = pathSegments(filePath);
   const isAppShell = segments.at(-2) === 'app' && segments.at(-1).startsWith('app.');
   return isAppShell || (segments.includes('shared') && segments.includes('ui'));
+}
+
+/** The Design System showcase draws its own specimens (e.g. the seasonal theme cards). */
+function isDesignSystemShowcase(filePath) {
+  const segments = pathSegments(filePath);
+  return segments.includes('features') && segments.includes('design-system');
 }
 
 /** Token sources own every literal and every theme selector; nothing else may. */
@@ -197,6 +209,32 @@ export async function scanUiContracts(root) {
             source,
             RAW_MATERIAL_TAG,
             'Use um componente fechado Org (`<org-icon>`, `<org-chip>`, `<org-button>`, etc.) em vez de tags brutas do Angular Material.',
+          ),
+        );
+      }
+
+      if (RAW_BUTTON_TAG.test(source) && !isDesignSystemShowcase(filePath)) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-raw-button',
+            filePath,
+            source,
+            RAW_BUTTON_TAG,
+            'Use `<org-button>`, `<org-icon-button>` ou `<org-chip>` em vez de `<button>` nativo.',
+          ),
+        );
+      }
+
+      if (NATIVE_TITLE_TOOLTIP.test(source)) {
+        violations.push(
+          makeViolation(
+            root,
+            'feature-native-tooltip',
+            filePath,
+            source,
+            NATIVE_TITLE_TOOLTIP,
+            'Use `tooltip` no `<org-button>`/`<org-icon-button>` ou `<org-tooltip>` em vez do atributo `title`.',
           ),
         );
       }

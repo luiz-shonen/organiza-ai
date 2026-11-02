@@ -84,6 +84,18 @@ service cloud.firestore {
         }
       }
 
+      // Claims: what each household brings. One document per account holder, written only by them.
+      match /claims/{uid} {
+        allow read: if true;
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.keys().hasOnly(['name', 'entries', 'updatedAt'])
+                              && request.resource.data.name is string
+                              && request.resource.data.entries is list
+                              && request.resource.data.entries.size() <= 100;
+        allow delete: if isAdmin() || (request.auth != null && request.auth.uid == uid);
+      }
+
       // Items subcollection: public read, admin create/delete, public claim/unclaim
       match /items/{itemId} {
         allow read: if true;

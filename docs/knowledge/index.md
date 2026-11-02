@@ -1,7 +1,7 @@
 ---
 type: index
 title: Organiza AI — Knowledge Base
-updated: 2026-10-31
+updated: 2026-11-02
 ---
 
 # Organiza AI — Knowledge Base
@@ -19,6 +19,7 @@ A rule that has `enforced_by` is checked by a script or a test; the check is the
 | [tokens-and-theming](decisions/tokens-and-theming.md)     | Foundation / semantic / theme token layers, dark mode and seasonal themes       |
 | [styling-rules](decisions/styling-rules.md)               | BEM, no `!important`, no literal typography or motion, mobile-first             |
 | [firebase-and-auth](decisions/firebase-and-auth.md)       | Modular SDK, super admins, ownership and collaborators, verified RSVP           |
+| [household-claims](decisions/household-claims.md)         | What each family brings: claims per household, units, fixed quantity, bought    |
 | [routes-and-domains](decisions/routes-and-domains.md)     | `/meus-eventos` vs `/admin`, feature folders                                    |
 | [testing](decisions/testing.md)                           | Vitest, Firestore rules tests, atomic Playwright E2E                            |
 | [workflow](decisions/workflow.md)                         | Test-first changes, quality gate, Conventional Commits, CD                      |

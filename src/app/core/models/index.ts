@@ -16,6 +16,14 @@ export type {
 export type { EventInvitation } from './invitation.model';
 export type { Guest, GuestCompanion, GuestCreate, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';
+export type {
+  EventClaims,
+  FamilyChecklistRow,
+  ItemClaimEntry,
+  ItemClaimRequest,
+  ItemProgress,
+  ItemShare,
+} from './claim.model';
 export type { AuthUser } from './user.model';
 export type { UserProfile } from './profile.model';
 export type {

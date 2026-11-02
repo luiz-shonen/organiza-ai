@@ -155,6 +155,9 @@ export class GuestService {
       for (const itemDoc of itemDocs) {
         batch.update(`events/${eventId}/items/${itemDoc.id}`, { claimedBy: null });
       }
+
+      // The household's share of the list goes back to the event with the RSVP.
+      batch.delete(`events/${eventId}/claims/${targetUid}`);
     });
   }
 

@@ -20,11 +20,19 @@ export class ItemService {
     );
   }
 
+  async getItems(eventId: string): Promise<PartyItem[]> {
+    return this.gateway.getDocs<Omit<PartyItem, 'id'>>(this.itemsPath(eventId));
+  }
+
   async addItem(eventId: string, data: PartyItemCreate): Promise<string> {
-    return this.gateway.addDoc(this.itemsPath(eventId), {
-      ...data,
+    const item: Record<string, unknown> = {
+      name: data.name,
+      quantity: data.quantity,
       claimedBy: null,
-    });
+    };
+    if (data.unit) item['unit'] = data.unit;
+    if (data.fixedQuantity) item['fixedQuantity'] = true;
+    return this.gateway.addDoc(this.itemsPath(eventId), item);
   }
 
   async claimItem(

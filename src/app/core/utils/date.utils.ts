@@ -59,3 +59,15 @@ export function formatTime(dateStr: string, locale = 'pt-BR'): string {
     hour12: false,
   });
 }
+
+/**
+ * Short weekday plus time, e.g. 'dom. · 20:00'. The day and month already
+ * appear in the date badge next to it, so they are left out on purpose.
+ */
+export function formatWeekdayTime(dateStr: string, locale = 'pt-BR'): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '';
+  const weekday = date.toLocaleDateString(locale, { weekday: 'short' });
+  return `${weekday} · ${formatTime(dateStr, locale)}`;
+}

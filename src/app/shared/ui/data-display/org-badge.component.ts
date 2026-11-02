@@ -55,4 +55,6 @@ export class OrgBadgeComponent {
     transform: normalizeVariant,
   });
   public readonly gradient = input(true);
+  /** Rounded, sentence-case counter ("Faltam 6 un.") instead of the uppercase tag. */
+  public readonly pill = input(false);
 }

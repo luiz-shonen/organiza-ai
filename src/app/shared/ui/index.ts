@@ -71,3 +71,15 @@ export { OrgLogoComponent } from './brand/org-logo.component';
 export type { OrgLogoSize } from './brand/org-logo.component';
 export { OrgSegmentedControlComponent } from './selection/org-segmented-control.component';
 export type { OrgSegmentedOption } from './selection/org-segmented-control.component';
+export { OrgDateBadgeComponent } from './data-display/org-date-badge.component';
+export { OrgSplitProgressComponent } from './data-display/org-split-progress.component';
+export type {
+  OrgSplitSegment,
+  OrgSplitProgressSize,
+} from './data-display/org-split-progress.component';
+export { OrgFilterBarComponent } from './navigation/org-filter-bar.component';
+export type { OrgFilterOption } from './navigation/org-filter-bar.component';
+export { OrgQuantityStepperComponent } from './forms/org-quantity-stepper.component';
+export { OrgBottomSheetComponent } from './overlays/org-bottom-sheet.component';
+export { OrgInsightCardComponent } from './feedback/org-insight-card.component';
+export type { OrgInsightTone } from './feedback/org-insight-card.component';

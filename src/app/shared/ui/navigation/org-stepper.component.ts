@@ -1,3 +1,4 @@
+import { MatIconModule } from '@angular/material/icon';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,7 +15,7 @@ import { OrgStepComponent } from './org-step.component';
 @Component({
   selector: 'org-stepper',
   standalone: true,
-  imports: [MatStepperModule, NgTemplateOutlet],
+  imports: [MatIconModule, MatStepperModule, NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-stepper.component.html',
   styleUrl: './org-stepper.component.scss',

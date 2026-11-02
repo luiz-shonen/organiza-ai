@@ -1,0 +1,14 @@
+<aside
+  class="org-insight-card"
+  data-testid="insight-card"
+  [class.org-insight-card--warning]="tone() === 'warning'"
+>
+  <p class="org-insight-card__label">
+    <org-icon name="auto_awesome" size="sm" color="var(--org-primary)" />
+    {{ label() }}
+  </p>
+  <p class="org-insight-card__message"><ng-content /></p>
+  <div class="org-insight-card__actions">
+    <ng-content select="[orgInsightAction]" />
+  </div>
+</aside>

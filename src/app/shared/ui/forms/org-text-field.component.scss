@@ -16,3 +16,8 @@
   font-size: var(--org-font-size-xs);
   margin: -16px 0 0;
 }
+
+.org-text-field__suffix {
+  display: inline-flex;
+  padding-inline-end: var(--org-space-xs);
+}

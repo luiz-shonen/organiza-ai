@@ -7,6 +7,14 @@
   [selectedIndex]="selectedIndex()"
   (selectionChange)="updateSelection($event.selectedIndex)"
 >
+  <!-- Finished steps show a check, whether or not they can be reopened. -->
+  <ng-template matStepperIcon="edit">
+    <mat-icon fontSet="material-icons-outlined" aria-hidden="true">check</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="done">
+    <mat-icon fontSet="material-icons-outlined" aria-hidden="true">check</mat-icon>
+  </ng-template>
+
   @for (step of steps(); track step.label()) {
     <mat-step
       [editable]="!step.disabled()"

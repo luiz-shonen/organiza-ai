@@ -1,9 +1,11 @@
-@if (variant() === 'secondary') {
+@if (variant() === 'secondary' || variant() === 'attention') {
   <button
     mat-stroked-button
     class="org-button__control org-button__control--secondary"
+    [class.org-button__control--attention]="variant() === 'attention'"
     [class.org-button__control--gradient]="gradient()"
     [class.org-button__control--full-width]="fullWidth()"
+    [class.org-button__control--compact]="compact()"
     [attr.aria-busy]="loading() ? 'true' : null"
     [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"
@@ -19,12 +21,14 @@
     }
     <span class="org-button__label">{{ label() }}</span>
   </button>
-} @else if (variant() === 'text') {
+} @else if (variant() === 'text' || variant() === 'danger-text') {
   <button
     mat-button
     class="org-button__control org-button__control--text"
+    [class.org-button__control--danger-text]="variant() === 'danger-text'"
     [class.org-button__control--gradient]="gradient()"
     [class.org-button__control--full-width]="fullWidth()"
+    [class.org-button__control--compact]="compact()"
     [attr.aria-busy]="loading() ? 'true' : null"
     [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"
@@ -45,8 +49,10 @@
     mat-flat-button
     class="org-button__control org-button__control--primary"
     [class.org-button__control--danger]="variant() === 'danger'"
+    [class.org-button__control--tonal]="variant() === 'tonal'"
     [class.org-button__control--gradient]="gradient()"
     [class.org-button__control--full-width]="fullWidth()"
+    [class.org-button__control--compact]="compact()"
     [attr.aria-busy]="loading() ? 'true' : null"
     [attr.data-testid]="testId() || null"
     [disabled]="isDisabled()"

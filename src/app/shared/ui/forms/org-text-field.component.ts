@@ -59,6 +59,8 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
   public readonly max = input<string | number | null>(null);
   public readonly prefixIcon = input<string | null>(null);
   public readonly suffixIcon = input<string | null>(null);
+  /** Renders projected `[orgFieldSuffix]` content (e.g. a small toggle) at the end of the field. */
+  public readonly suffixAction = input(false);
   public readonly passwordVisible = input(false);
   public readonly testId = input('');
   public readonly togglePasswordVisibility = output<void>();

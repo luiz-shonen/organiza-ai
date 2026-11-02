@@ -127,7 +127,7 @@ Import only from `@shared/ui`. A feature owns layout and domain content; each `O
 
 ### OrgSurfaceComponent
 
-Uso recomendado: `<org-surface variant="card" [atmosphere]="true">...</org-surface>`. Variants are `card`, `panel`, `drawer`, `dialog`, and `hero`; atmosphere is opt-in and token-driven.
+Uso recomendado: `<org-surface variant="card" [atmosphere]="true">...</org-surface>`. Variants are `card`, `panel`, `drawer`, `dialog`, and `hero`; atmosphere is opt-in and token-driven. `[flush]="true"` drops the inner padding for cards made of full-width rows with dividers (event date/place, "Lista do evento", "Minha família").
 
 ### OrgPageLayoutComponent
 
@@ -135,7 +135,7 @@ Uso recomendado: `<org-page-layout maxWidth="wide">...</org-page-layout>`. Use i
 
 ### OrgPageHeaderComponent
 
-Uso recomendado: `<org-page-header title="Meus eventos" icon="event" [gradient]="true" />`. Pass semantic title, subtitle, icon, and actions through its API.
+Uso recomendado: `<org-page-header title="Olá, " highlight="Jéssica" subtitle="…" />`. Fredoka title without icon (Branco Essencial); `highlight` paints the trailing words in the leaf-green gradient. Actions go in `[orgPageHeaderActions]` (full width on phones, right side from tablet up).
 
 ### OrgSectionComponent
 
@@ -143,7 +143,7 @@ Uso recomendado: `<org-section title="Próximos eventos" icon="event">...</org-s
 
 ### OrgButtonComponent
 
-Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, and `text`; use `disabled` or `loading` instead of local state CSS.
+Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, `text`, `tonal` (soft lilac: "Responder convite"), `attention` (amber outline: "Eu levo") and `danger-text` ("Sair da conta"); use `disabled` or `loading` instead of local state CSS. `compact` draws a 36px pill while Material keeps the 48px touch target around it.
 
 ### OrgIconButtonComponent
 
@@ -159,7 +159,7 @@ Uso recomendado: `<org-icon name="event" size="sm" />`. Use the typed icon map i
 
 ### OrgTextFieldComponent
 
-Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`.
+Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`. With `[suffixAction]="true"`, projected `[orgFieldSuffix]` content sits inside the field end (the "Fixa / Dividir" lock of the item quantity).
 
 ### OrgTextareaFieldComponent
 
@@ -233,6 +233,30 @@ Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the l
 
 Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
 
+### OrgDateBadgeComponent
+
+Uso recomendado: `<org-date-badge [date]="event.date" />`. Sky-blue month/day block at the top right of every event card (Início and Meus eventos). Announces the full date to screen readers.
+
+### OrgFilterBarComponent
+
+Uso recomendado: `<org-filter-bar ariaLabel="Filtrar eventos" [options]="filters()" [value]="filter()" (valueChange)="filter.set($event)" />`. Pill filters above a list; the same bar on Início (Todos, Pendentes, Confirmados, Anteriores) and Meus eventos (Todos, Em breve, Histórico, Cancelados). `OrgFilterOption.count` shows a counter, `attention` paints it amber.
+
+### OrgSplitProgressComponent
+
+Uso recomendado: `<org-split-progress [total]="10" [segments]="[{ label: 'Ana', value: 4 }]" ariaLabel="Bolo de milho: 4 de 10" />`. Goal-gradient bar split by person in four leaf greens, with matching name chips below (`showLegend`). `size="md"` is the 10px "Itens completos" bar; `muted` fades completed items.
+
+### OrgQuantityStepperComponent
+
+Uso recomendado: `<org-quantity-stepper [(value)]="quantity" [max]="remaining" unit="un." />`. − / + with 48px targets for picking how many of an item someone brings.
+
+### OrgBottomSheetComponent
+
+Uso recomendado: `<org-bottom-sheet ariaLabel="Eu levo" [open]="open()" (closed)="open.set(false)">…</org-bottom-sheet>`. Slides up from the bottom on phones, centred card from tablet up; traps focus and closes on Escape or scrim tap. The page owns the content and the open state.
+
+### OrgInsightCardComponent
+
+Uso recomendado: `<org-insight-card tone="warning">Faltam 3 dias! <strong>2 itens</strong> estão sem responsável.<org-button orgInsightAction … /></org-insight-card>`. "Dica do Organiza AI" with the AI sparkle; `warning` (orange) when the event is close and something is missing, `info` (blue) otherwise.
+
 ### OrgMetricCardComponent
 
 Uso recomendado: `<org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />`.
@@ -243,7 +267,7 @@ Uso recomendado: `<org-data-table [rows]="events" [columns]="eventColumns" [acti
 
 ### OrgBadgeComponent
 
-Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use.
+Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use. Tags are uppercase and soft-tinted (category, Confirmado, Pendente, Cancelado); `[pill]="true"` gives the sentence-case counter ("Faltam 6 un.").
 
 ### OrgConfirmDialogComponent
 
@@ -271,7 +295,7 @@ Uso recomendado: `<org-skeleton class="dashboard__skeleton-title" />` (or `shape
 
 ### OrgExpansionPanelComponent
 
-Uso recomendado: `<org-expansion-panel heading="Adicionar Família?" icon="diversity_3" [(expanded)]="open"><span orgExpansionSummary>2 selecionados</span>…</org-expansion-panel>` for collapsible sections.
+Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary.
 
 ### FeedbackSnackbarComponent
 

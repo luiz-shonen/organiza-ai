@@ -4,15 +4,14 @@
 
 .org-badge {
   align-items: center;
-  border-radius: var(--org-radius-full);
+  border-radius: var(--org-radius-xs);
   display: inline-flex;
-  font-size: var(--org-font-size-xs);
-  font-weight: var(--org-font-weight-bold);
+  font: var(--org-text-label);
   gap: var(--org-space-xs);
-  min-height: 24px;
-  padding: var(--org-space-2xs) var(--org-space-sm);
   letter-spacing: var(--org-letter-spacing-wide);
-  box-shadow: var(--org-shadow-xs);
+  min-height: 22px;
+  padding: var(--org-space-2xs) var(--org-space-sm);
+  text-transform: uppercase;
   transition:
     background-color var(--org-motion-base) var(--org-motion-ease),
     color var(--org-motion-base) var(--org-motion-ease);
@@ -34,18 +33,18 @@
 }
 
 .org-badge--success {
-  background: var(--org-success);
-  color: var(--org-on-success);
+  background: var(--org-success-container);
+  color: var(--org-on-success-container);
 }
 
 .org-badge--warning {
-  background: var(--org-warning);
-  color: var(--org-on-warning);
+  background: color-mix(in srgb, var(--org-warning) 18%, var(--org-surface));
+  color: var(--org-warning-ink);
 }
 
 .org-badge--danger {
-  background: var(--org-error);
-  color: var(--org-on-error);
+  background: var(--org-error-container);
+  color: var(--org-on-error-container);
 }
 
 .org-badge--aniversario,
@@ -93,4 +92,13 @@
 .org-badge--gradient {
   background: var(--org-gradient-primary);
   color: var(--org-on-primary);
+}
+
+.org-badge--pill {
+  border-radius: var(--org-radius-full);
+  font-weight: var(--org-font-weight-bold);
+  letter-spacing: normal;
+  padding-inline: var(--org-space-sm);
+  text-transform: none;
+  white-space: nowrap;
 }

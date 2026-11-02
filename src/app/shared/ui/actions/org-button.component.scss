@@ -75,6 +75,37 @@
     }
   }
 
+  // Soft lilac fill: a clear but secondary call to action ("Responder convite").
+  &--tonal {
+    --mat-button-filled-container-color: var(--org-primary-container);
+    --mat-button-filled-label-text-color: var(--org-on-primary-container);
+    --mat-button-filled-label-text-weight: var(--org-font-weight-semibold);
+
+    background: var(--org-primary-container);
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      box-shadow: none;
+      background: color-mix(in srgb, var(--org-primary) 22%, var(--org-surface));
+    }
+  }
+
+  // Amber outline for the "Eu levo" action on items that still need someone.
+  &--attention {
+    --mat-button-outlined-label-text-color: var(--org-warning-ink);
+    --mat-button-outlined-outline-color: var(--org-warning);
+  }
+
+  &--compact {
+    min-height: 36px;
+    padding-inline: var(--org-space-md);
+  }
+
+  // Destructive but low-key ("Sair da conta"): red text, no fill.
+  &--text.org-button__control--danger-text {
+    --mat-button-text-label-text-color: var(--org-error);
+  }
+
   &--text {
     --mat-button-text-label-text-color: var(--org-on-primary-container);
     --mat-button-text-label-text-weight: var(--org-font-weight-semibold);

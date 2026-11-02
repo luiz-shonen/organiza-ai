@@ -82,4 +82,10 @@
   @include semantic.tablet {
     padding: 24px 16px;
   }
+
+  // After the tablet padding so it wins at every width.
+  &--flush {
+    overflow: hidden;
+    padding: 0;
+  }
 }

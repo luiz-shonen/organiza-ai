@@ -1,0 +1,22 @@
+<div class="org-filter-bar" role="tablist" [attr.aria-label]="ariaLabel()">
+  @for (option of options(); track option.id) {
+    <button
+      type="button"
+      role="tab"
+      class="org-filter-bar__option"
+      [class.org-filter-bar__option--active]="option.id === value()"
+      [attr.aria-selected]="option.id === value()"
+      [attr.data-testid]="option.testId || null"
+      (click)="select(option.id)"
+    >
+      <span>{{ option.label }}</span>
+      @if (option.count) {
+        <span
+          class="org-filter-bar__count"
+          [class.org-filter-bar__count--attention]="option.attention"
+          >{{ option.count }}</span
+        >
+      }
+    </button>
+  }
+</div>

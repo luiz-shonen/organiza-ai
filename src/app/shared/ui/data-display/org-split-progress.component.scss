@@ -1,0 +1,86 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.org-split-progress {
+  background: var(--org-progress-track);
+  block-size: var(--org-progress-height);
+  border-radius: var(--org-radius-full);
+  display: flex;
+  gap: var(--org-space-2xs);
+  overflow: hidden;
+
+  &--md {
+    block-size: 10px;
+  }
+
+  &--muted {
+    opacity: 0.6;
+  }
+}
+
+.org-split-progress__segment {
+  block-size: 100%;
+}
+
+// Four leaf greens, darkest first, so neighbours stay distinguishable.
+.org-split-progress__tone {
+  &--0 {
+    background: var(--org-success);
+  }
+
+  &--1 {
+    background: color-mix(in srgb, var(--org-success) 65%, var(--org-surface));
+  }
+
+  &--2 {
+    background: color-mix(in srgb, var(--org-success) 40%, var(--org-surface));
+  }
+
+  &--3 {
+    background: color-mix(in srgb, var(--org-success) 80%, var(--org-on-surface));
+  }
+}
+
+.org-split-progress__footer {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.org-split-progress__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.org-split-progress__chip {
+  align-items: center;
+  background: var(--org-surface-container-low);
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface-variant);
+  display: inline-flex;
+  font-size: var(--org-font-size-xs);
+  gap: var(--org-space-xs);
+  padding: var(--org-space-xs) var(--org-space-sm);
+
+  strong {
+    color: var(--org-on-surface);
+  }
+}
+
+.org-split-progress__dot {
+  block-size: 8px;
+  border-radius: var(--org-radius-circle);
+  inline-size: 8px;
+}

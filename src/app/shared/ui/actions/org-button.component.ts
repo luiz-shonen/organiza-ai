@@ -3,7 +3,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OrgIconComponent, OrgIconName } from './org-icon.component';
 
-export type OrgButtonVariant = 'primary' | 'secondary' | 'danger' | 'text';
+export type OrgButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'text'
+  | 'tonal'
+  | 'attention'
+  | 'danger-text';
 export type OrgButtonType = 'button' | 'submit' | 'reset';
 
 const VALID_BUTTON_VARIANTS: ReadonlySet<OrgButtonVariant> = new Set([
@@ -11,6 +18,9 @@ const VALID_BUTTON_VARIANTS: ReadonlySet<OrgButtonVariant> = new Set([
   'secondary',
   'danger',
   'text',
+  'tonal',
+  'attention',
+  'danger-text',
 ]);
 
 function normalizeVariant(value: unknown): OrgButtonVariant {
@@ -38,6 +48,8 @@ export class OrgButtonComponent {
   public readonly loading = input(false);
   public readonly gradient = input(true);
   public readonly fullWidth = input(false);
+  /** 36px visual height; Material keeps the 48px touch target around it. */
+  public readonly compact = input(false);
   public readonly imageSrc = input<string | null>(null);
   public readonly imageAlt = input('');
   public readonly testId = input('');

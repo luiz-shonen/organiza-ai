@@ -1,0 +1,28 @@
+:host {
+  display: inline-flex;
+  flex: none;
+}
+
+.org-date-badge {
+  align-items: center;
+  background: var(--org-secondary-container);
+  border-radius: var(--org-radius-sm);
+  color: var(--org-on-secondary-container);
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  min-inline-size: 52px;
+  padding: var(--org-space-sm);
+}
+
+.org-date-badge__month {
+  font: var(--org-font-weight-bold) var(--org-font-size-2xs) / var(--org-line-height-none)
+    var(--org-font-body);
+  letter-spacing: var(--org-letter-spacing-wide);
+}
+
+.org-date-badge__day {
+  color: var(--org-on-surface);
+  font: var(--org-font-weight-semibold) var(--org-font-size-2xl) / var(--org-line-height-tight)
+    var(--org-font-display);
+}

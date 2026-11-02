@@ -1,0 +1,28 @@
+<div class="org-quantity-stepper" role="group" [attr.aria-label]="ariaLabel()">
+  <button
+    type="button"
+    class="org-quantity-stepper__button"
+    aria-label="Diminuir"
+    data-testid="quantity-decrease"
+    [disabled]="!canDecrease()"
+    (click)="step(-1)"
+  >
+    <org-icon name="remove" color="currentColor" />
+  </button>
+  <output class="org-quantity-stepper__value" aria-live="polite" data-testid="quantity-value">{{
+    value()
+  }}</output>
+  @if (unit()) {
+    <span class="org-quantity-stepper__unit">{{ unit() }}</span>
+  }
+  <button
+    type="button"
+    class="org-quantity-stepper__button"
+    aria-label="Aumentar"
+    data-testid="quantity-increase"
+    [disabled]="!canIncrease()"
+    (click)="step(1)"
+  >
+    <org-icon name="add" color="currentColor" />
+  </button>
+</div>

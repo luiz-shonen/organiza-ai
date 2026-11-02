@@ -24,42 +24,42 @@ const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
   {
     label: 'Páscoa da Ressurreição',
     rootClass: 'theme-pascoa',
-    primary: '#7552a8',
-    secondary: '#d2a060',
-    tertiary: '#f4d58e',
-    gradientFragment: '#7552a8',
+    primary: '#7950f2',
+    secondary: '#1c9bef',
+    tertiary: '#2f9e44',
+    gradientFragment: '#7950f2',
     canvas: '#faf6ff',
-    ringColor: 'rgba(109, 59, 167, 0.26)',
+    ringColor: '#ebe6f7',
   },
   {
     label: 'Festa Junina',
     rootClass: 'theme-junina',
-    primary: '#ff5722',
-    secondary: '#ff8c42',
-    tertiary: '#ffb300',
-    gradientFragment: '#ff5722',
+    primary: '#7950f2',
+    secondary: '#1c9bef',
+    tertiary: '#2f9e44',
+    gradientFragment: '#7950f2',
     canvas: '#fff6df',
-    ringColor: 'rgba(255, 87, 34, 0.28)',
+    ringColor: '#ebe6f7',
   },
   {
     label: 'Natal de Jesus',
     rootClass: 'theme-natal',
-    primary: '#b84555',
-    secondary: '#d77a61',
-    tertiary: '#deb36a',
-    gradientFragment: '#b84555',
+    primary: '#7950f2',
+    secondary: '#1c9bef',
+    tertiary: '#2f9e44',
+    gradientFragment: '#7950f2',
     canvas: '#fff5f1',
-    ringColor: 'rgba(211, 47, 47, 0.28)',
+    ringColor: '#ebe6f7',
   },
   {
     label: 'Ano Novo',
     rootClass: 'theme-ano-novo',
-    primary: '#b88a33',
-    secondary: '#ead9a5',
-    tertiary: '#8293b5',
-    gradientFragment: '#b88a33',
+    primary: '#7950f2',
+    secondary: '#1c9bef',
+    tertiary: '#2f9e44',
+    gradientFragment: '#7950f2',
     canvas: '#fffbed',
-    ringColor: 'rgba(178, 122, 16, 0.28)',
+    ringColor: '#ebe6f7',
   },
 ];
 
@@ -133,7 +133,7 @@ test.describe('Design System Showcase', () => {
     const typography = page.locator('section#typography');
     const iconography = page.locator('section#iconography');
     await expect(typography).toContainText('Plus Jakarta Sans');
-    await expect(typography).toContainText('Fraunces');
+    await expect(typography).toContainText('Fredoka');
     await expect(typography).toContainText('JetBrains Mono');
     await expect(typography.getByText('Uso recomendado')).toBeVisible();
     await expect(iconography).toContainText('Material Icons');
@@ -178,6 +178,7 @@ test.describe('Design System Showcase', () => {
     );
   });
 
+  // Seasonal themes only tint the canvas; the action, info and progress palette never changes.
   test('applies each seasonal theme to the complete shared token contract', async ({ page }) => {
     await openShowcase(page);
 
@@ -221,9 +222,7 @@ test.describe('Design System Showcase', () => {
     await expect(page).toHaveURL(/\/design-system/);
   });
 
-  test('uses a 24px glass blur and warm invitation treatment on showcase surfaces', async ({
-    page,
-  }) => {
+  test('uses flat surfaces and a solid lilac action on showcase surfaces', async ({ page }) => {
     await openShowcase(page);
 
     const treatment = await page
@@ -239,7 +238,7 @@ test.describe('Design System Showcase', () => {
       .locator('.org-ds-hero-card .org-button__control--gradient')
       .evaluate((element) => getComputedStyle(element).backgroundImage);
 
-    expect(treatment.backdropFilter).toContain('blur(24px)');
+    expect(treatment.backdropFilter).toBe('none');
     expect(treatment.backgroundImage).toContain('radial-gradient');
     expect(buttonBackground).toContain('linear-gradient');
   });

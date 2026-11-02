@@ -119,7 +119,7 @@ describe('DesignSystemShowcaseContainer', () => {
 
     expect(typography).toBeTruthy();
     expect(typography?.textContent).toContain('Plus Jakarta Sans');
-    expect(typography?.textContent).toContain('Fraunces');
+    expect(typography?.textContent).toContain('Fredoka');
     expect(typography?.querySelector('app-design-system-code-example')).toBeTruthy();
     expect(iconography?.textContent).toContain('Material Icons');
     expect(iconography?.querySelector('org-icon')).toBeTruthy();

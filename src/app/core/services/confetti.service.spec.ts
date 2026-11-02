@@ -33,14 +33,14 @@ describe('ConfettiService', () => {
       expect.objectContaining({
         particleCount: 5,
         angle: 60,
-        colors: ['#ff4d94', '#ff8c42', '#6b4c9a'],
+        colors: ['#9775fa', '#40c057', '#4dabf7'],
       }),
     );
     expect(confetti).toHaveBeenCalledWith(
       expect.objectContaining({
         particleCount: 5,
         angle: 120,
-        colors: ['#ff4d94', '#ff8c42', '#6b4c9a'],
+        colors: ['#9775fa', '#40c057', '#4dabf7'],
       }),
     );
   });

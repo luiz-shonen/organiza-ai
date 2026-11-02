@@ -1,3 +1,33 @@
 :host {
   display: block;
 }
+
+// Goal-gradient bar: thin rounded track, leaf fill. The gradient variant paints the
+// highlight gradient over Material's indicator, which only accepts a flat colour.
+.org-progress {
+  --mat-progress-bar-track-height: var(--org-progress-height);
+  --mat-progress-bar-active-indicator-height: var(--org-progress-height);
+  --mat-progress-bar-track-shape: var(--org-radius-full);
+  --mat-progress-bar-track-color: var(--org-progress-track);
+  --mat-progress-bar-active-indicator-color: var(--org-success);
+
+  border-radius: var(--org-radius-full);
+  overflow: hidden;
+
+  &--primary {
+    --mat-progress-bar-track-color: var(--org-primary-container);
+    --mat-progress-bar-active-indicator-color: var(--org-primary);
+  }
+
+  &--warning {
+    --mat-progress-bar-track-color: var(--org-surface-container);
+    --mat-progress-bar-active-indicator-color: var(--org-warning);
+  }
+
+  &--success.org-progress--gradient ::ng-deep .mdc-linear-progress__bar-inner {
+    border-top-width: 0;
+    height: 100%;
+    background: var(--org-gradient-highlight);
+    border-radius: var(--org-radius-full);
+  }
+}

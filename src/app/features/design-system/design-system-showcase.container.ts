@@ -187,11 +187,11 @@ export class DesignSystemShowcaseContainer {
   margin-bottom: var(--org-space-xl);
 }`,
     colors: `:root {
-  --org-primary: #ff4d94;
-  --org-secondary: #ff8c42;
-  --org-tertiary: #ffc837;
-  --org-success: #10b981;
-  --org-error: #ef4444;
+  --org-primary: #7950f2;
+  --org-secondary: #1c9bef;
+  --org-tertiary: #2f9e44;
+  --org-success: #2f9e44;
+  --org-error: #c92a2a;
 }`,
     iconography: `import { OrgIconComponent } from '@shared/ui';
 
@@ -209,7 +209,7 @@ export class DesignSystemShowcaseContainer {
 }`,
     typography: `:root {
   --org-font-body: 'Plus Jakarta Sans', sans-serif;
-  --org-font-display: 'Fraunces', Georgia, serif;
+  --org-font-display: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
   --org-font-mono: 'JetBrains Mono', monospace;
   --org-font-size-display: clamp(2.25rem, 5vw, 4.5rem);
   --org-font-size-md: 1rem;

@@ -5,7 +5,7 @@
   :root {
     // Font families
     --org-font-body: 'Plus Jakarta Sans', sans-serif;
-    --org-font-display: 'Fraunces', georgia, serif;
+    --org-font-display: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
     --org-font-mono: 'JetBrains Mono', monospace;
 
     // Font sizes
@@ -46,12 +46,12 @@
     // Composite text styles for the `font` shorthand. Prettier wraps these after the
     // size/line-height slash, which the SCSS operator rule misreads as division.
     /* stylelint-disable scss/operator-no-newline-after */
-    --org-text-display: var(--org-font-weight-extrabold) var(--org-font-size-display) /
+    --org-text-display: var(--org-font-weight-semibold) var(--org-font-size-display) /
       var(--org-line-height-display) var(--org-font-display);
-    --org-text-heading: var(--org-font-weight-extrabold) var(--org-font-size-heading) /
-      var(--org-line-height-heading) var(--org-font-body);
-    --org-text-title: var(--org-font-weight-bold) var(--org-font-size-lg) /
-      var(--org-line-height-snug) var(--org-font-body);
+    --org-text-heading: var(--org-font-weight-semibold) var(--org-font-size-heading) /
+      var(--org-line-height-heading) var(--org-font-display);
+    --org-text-title: var(--org-font-weight-semibold) var(--org-font-size-lg) /
+      var(--org-line-height-snug) var(--org-font-display);
     --org-text-body: var(--org-font-weight-regular) var(--org-font-size-md) /
       var(--org-line-height-relaxed) var(--org-font-body);
     --org-text-body-sm: var(--org-font-weight-regular) var(--org-font-size-sm) /
@@ -76,8 +76,16 @@
     --org-radius-md: 1rem;
     --org-radius-lg: 1.25rem;
     --org-radius-xl: 1.75rem;
+    --org-radius-card: 18px;
     --org-radius-full: 9999px;
     --org-radius-circle: 50%;
+
+    // Touch targets (Fitts: never below 44px; 48px is the app standard)
+    --org-touch-min: 44px;
+    --org-touch: 48px;
+    --org-header-height: 64px;
+    --org-bottom-nav-height: 64px;
+    --org-progress-height: 6px;
 
     // Icon sizes
     --org-icon-size-sm: 1rem;
@@ -93,7 +101,7 @@
     --org-motion-ease-emphasized: cubic-bezier(0.4, 0, 0.2, 1);
 
     // Glass recipe (theme-independent part)
-    --org-glass-blur: blur(24px);
-    --org-glass-ring-width: 1.5px;
+    --org-glass-blur: none;
+    --org-glass-ring-width: 1px;
   }
 }

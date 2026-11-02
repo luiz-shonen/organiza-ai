@@ -4,16 +4,16 @@
 }
 
 .org-button__control {
-  --mat-button-filled-container-shape: var(--org-radius-xl);
-  --mat-button-outlined-container-shape: var(--org-radius-xl);
-  --mat-button-text-container-shape: var(--org-radius-xl);
+  --mat-button-filled-container-shape: var(--org-radius-full);
+  --mat-button-outlined-container-shape: var(--org-radius-full);
+  --mat-button-text-container-shape: var(--org-radius-full);
 
   align-items: center;
   display: inline-flex;
   gap: var(--org-space-sm);
   justify-content: center;
-  min-height: var(--org-space-2xl);
-  min-width: var(--org-space-2xl);
+  min-height: var(--org-touch);
+  min-width: var(--org-touch);
   overflow: hidden;
   padding-inline: 20px;
   position: relative;
@@ -36,14 +36,13 @@
   &--primary {
     --mat-button-filled-label-text-color: var(--org-on-primary);
     --mat-button-filled-disabled-label-text-color: var(--org-on-primary);
-    --mat-button-filled-label-text-weight: var(--org-font-weight-bold);
+    --mat-button-filled-label-text-weight: var(--org-font-weight-semibold);
 
     background: var(--org-gradient-primary);
     box-shadow: var(--org-shadow-primary);
 
     &:hover:not(:disabled) {
       box-shadow: var(--org-shadow-primary-hover);
-      transform: translateY(-1px) scale(1.02);
     }
 
     &:active:not(:disabled) {
@@ -63,19 +62,22 @@
     }
   }
 
+  // Outline alternative: neutral so only the primary action stands out (Von Restorff).
   &--secondary {
-    --mat-button-outlined-label-text-color: var(--org-primary);
+    --mat-button-outlined-label-text-color: var(--org-on-surface);
+    --mat-button-outlined-outline-color: var(--org-outline);
+    --mat-button-outlined-label-text-weight: var(--org-font-weight-semibold);
 
-    &.org-button__control--gradient {
-      background:
-        linear-gradient(var(--org-surface), var(--org-surface)) padding-box,
-        var(--org-gradient-border) border-box;
-      border: 1px solid transparent;
+    background: var(--org-surface);
+
+    &:hover:not(:disabled) {
+      background: var(--org-surface-container-low);
     }
   }
 
   &--text {
-    --mat-button-text-label-text-color: var(--org-primary);
+    --mat-button-text-label-text-color: var(--org-on-primary-container);
+    --mat-button-text-label-text-weight: var(--org-font-weight-semibold);
   }
 }
 

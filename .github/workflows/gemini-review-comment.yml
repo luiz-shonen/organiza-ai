@@ -13,7 +13,8 @@ jobs:
       github.event.issue.pull_request &&
       contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association) &&
       (contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/gemini review'))
-    timeout-minutes: 10
+    # Two models, three tries each, a 4 min cap per call: up to ~10 min during an outage.
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -73,7 +74,7 @@ jobs:
         run: node scripts/gemini-pr-review.mjs
 
       - name: Report Failure on the PR
-        if: failure()
+        if: failure() || cancelled()
         run: |
           gh pr comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" \
             --body "⚠️ A revisão sob demanda do Gemini falhou. Veja o log em $RUN_URL"

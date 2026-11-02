@@ -13,6 +13,8 @@ import {
   ISSUE_PROPOSAL_MARKER,
   OUT_OF_SCOPE_ISSUE_GUIDELINES,
   parseIssueProposal,
+  REQUEST_TIMEOUT_MS,
+  RETRY_DELAYS_MS,
 } from './gemini-pr-review.mjs';
 
 test('gemini-pr-review: constants and markers are properly defined', () => {
@@ -25,6 +27,14 @@ test('gemini-pr-review: constants and markers are properly defined', () => {
   assert.ok(ARCHITECTURAL_GUIDELINES.includes('OnPush'));
   assert.ok(TAXONOMY_GUIDELINES.includes('P1 (Crítico / Bloqueante)'));
   assert.equal(ISSUE_PROPOSAL_MARKER, '#### 🚀 Proposta para Nova Issue');
+});
+
+test('gemini-pr-review: a hung call is cut off well inside the 20 min job', () => {
+  assert.equal(REQUEST_TIMEOUT_MS, 240_000);
+  // Worst case: each model answers 503 twice, then hangs until the cap.
+  const waits = RETRY_DELAYS_MS.reduce((total, delay) => total + delay, 0);
+  const worstCaseMs = FALLBACK_MODELS.length * (waits + REQUEST_TIMEOUT_MS);
+  assert.ok(worstCaseMs < 20 * 60_000);
 });
 
 test('gemini-pr-review: buildSystemPrompt includes architectural rules and priority taxonomy', () => {

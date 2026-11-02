@@ -49,6 +49,10 @@ export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-flash-latest'];
 // Gemini answers 429/5xx when it is overloaded; each model is retried after these waits.
 export const RETRYABLE_STATUSES = [429, 500, 503];
 export const RETRY_DELAYS_MS = [10_000, 30_000];
+// A full review takes up to ~3 min; past 4 min the request is hung (seen during a 503
+// outage, when one call sat 5 min until the job was cancelled). A hung call moves on to
+// the next model instead of retrying the same one.
+export const REQUEST_TIMEOUT_MS = 240_000;
 
 // Gemini 3+ reason best with the default sampling, so only the thinking level is set.
 export const GENERATION_CONFIG = {
@@ -324,6 +328,7 @@ async function requestGemini(model, systemInstruction, userPrompt) {
         ],
         generationConfig: GENERATION_CONFIG,
       }),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -346,6 +351,11 @@ async function requestGemini(model, systemInstruction, userPrompt) {
     }
     return { error: new Error(`Modelo ${model} não retornou texto.`), retryable: false };
   } catch (err) {
+    if (err?.name === 'TimeoutError') {
+      const seconds = REQUEST_TIMEOUT_MS / 1000;
+      console.warn(`⚠️ ${model} não respondeu em ${seconds}s; tentando o próximo modelo.`);
+      return { error: new Error(`Timeout de ${seconds}s em ${model}`), retryable: false };
+    }
     console.warn(`⚠️ Erro de conexão com ${model}:`, err.message);
     return { error: err, retryable: true };
   }

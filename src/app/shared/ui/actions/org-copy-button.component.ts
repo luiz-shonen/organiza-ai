@@ -29,6 +29,10 @@ export class OrgCopyButtonComponent {
   public readonly variant = input<OrgButtonVariant>('primary');
   public readonly gradient = input(true);
   public readonly fullWidth = input(false);
+  /** Small pill, e.g. as a card header action. */
+  public readonly compact = input(false);
+  /** Material tooltip, e.g. what exactly gets copied when the label is short. */
+  public readonly tooltip = input('');
   public readonly copied = output<string>();
 
   protected copy(): void {

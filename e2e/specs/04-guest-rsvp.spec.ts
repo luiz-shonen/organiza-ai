@@ -98,7 +98,7 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
       'Chave Pix',
     );
     await expect(eventDetailPage.copyPixBtn).toBeVisible();
-    await expect(eventDetailPage.copyPixBtn).toHaveAccessibleName('Copiar chave Pix');
+    await expect(eventDetailPage.copyPixBtn).toHaveAccessibleName('Copiar');
   });
 
   test('should claim part of an item for the family and release it again', async ({

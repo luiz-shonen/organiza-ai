@@ -4,7 +4,22 @@
       icon="pix"
       heading="Rachadinha via Pix"
       [subheading]="pixType() ? 'Tipo: ' + pixType() : 'Contribua com o evento!'"
-    />
+    >
+      <!-- Copy sits in the header, as in banking apps: the key below is what it copies. -->
+      @if (pixKey()) {
+        <org-copy-button
+          orgCardHeaderAction
+          label="Copiar"
+          tooltip="Copiar chave Pix"
+          variant="tonal"
+          copiedMessage="Chave Pix copiada!"
+          data-testid="copy-pix-btn"
+          [value]="pixKey()"
+          [gradient]="false"
+          [compact]="true"
+        />
+      }
+    </org-card-header>
 
     @if (formattedSuggestedSplit(); as split) {
       <div
@@ -19,19 +34,9 @@
 
     @if (pixKey()) {
       <div class="pix-card__key-container">
+        <span class="pix-card__key-label">Chave Pix</span>
         <code class="pix-card__key" aria-label="Chave Pix">{{ pixKey() }}</code>
       </div>
     }
-
-    <footer class="pix-card__actions">
-      <org-copy-button
-        class="pix-card__copy-btn"
-        label="Copiar chave Pix"
-        copiedMessage="Chave Pix copiada!"
-        [value]="pixKey()"
-        [fullWidth]="true"
-        data-testid="copy-pix-btn"
-      />
-    </footer>
   </article>
 </org-surface>

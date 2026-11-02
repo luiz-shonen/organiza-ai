@@ -98,9 +98,11 @@ describe('PixCardComponent', () => {
       fixture.detectChanges();
 
       const copyBtn = fixture.nativeElement.querySelector(
-        '.pix-card__copy-btn button',
+        '[data-testid="copy-pix-btn"] button',
       ) as HTMLButtonElement;
       expect(copyBtn).toBeTruthy();
+      // In the card header, next to the title.
+      expect(copyBtn.closest('.org-card-header__action')).toBeTruthy();
       copyBtn.click();
 
       expect(mockClipboard.copy).toHaveBeenCalledWith('minha-chave-pix-123');

@@ -19,8 +19,20 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
+      statuses: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      STATUS_CONTEXT: Gemini Review (/review)
 
     steps:
+      # 👀 on the /review comment shows right away that the run was picked up.
+      - name: Acknowledge the Comment
+        continue-on-error: true
+        run: |
+          gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" \
+            -f content=eyes --silent
+
       - name: Fetch PR Metadata
         id: pr-meta
         # Runs before checkout, so gh needs the repository explicitly.
@@ -28,8 +40,15 @@ jobs:
           PR_DATA=$(gh pr view ${{ github.event.issue.number }} --repo "${{ github.repository }}" --json baseRefOid,headRefOid)
           echo "base_sha=$(echo "$PR_DATA" | jq -r .baseRefOid)" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(echo "$PR_DATA" | jq -r .headRefOid)" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # issue_comment runs are not listed in the PR checks, so a commit status on the
+      # head commit puts the review there, with a "Details" link to this run.
+      - name: Mark Review as Running on the PR
+        continue-on-error: true
+        run: |
+          gh api "repos/${{ github.repository }}/statuses/${{ steps.pr-meta.outputs.head_sha }}" --silent \
+            -f state=pending -f context="$STATUS_CONTEXT" -f target_url="$RUN_URL" \
+            -f description="Revisão do Gemini em andamento"
 
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -57,6 +76,13 @@ jobs:
         if: failure()
         run: |
           gh pr comment ${{ github.event.issue.number }} --repo "${{ github.repository }}" \
-            --body "⚠️ A revisão sob demanda do Gemini falhou. Veja o log em ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            --body "⚠️ A revisão sob demanda do Gemini falhou. Veja o log em $RUN_URL"
+
+      - name: Mark Review as Finished on the PR
+        if: always() && steps.pr-meta.outputs.head_sha != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+        run: |
+          if [ "$STATE" = success ]; then DESC="Revisão do Gemini publicada"; else DESC="Revisão do Gemini falhou"; fi
+          gh api "repos/${{ github.repository }}/statuses/${{ steps.pr-meta.outputs.head_sha }}" --silent \
+            -f state="$STATE" -f context="$STATUS_CONTEXT" -f target_url="$RUN_URL" -f description="$DESC"

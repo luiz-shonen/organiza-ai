@@ -46,6 +46,10 @@ export const DIFF_EXCLUDES = [
 // if 3.8 is retired before this list is updated. GEMINI_MODEL overrides both.
 export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-flash-latest'];
 
+// Gemini answers 429/5xx when it is overloaded; each model is retried after these waits.
+export const RETRYABLE_STATUSES = [429, 500, 503];
+export const RETRY_DELAYS_MS = [10_000, 30_000];
+
 // Gemini 3+ reason best with the default sampling, so only the thinking level is set.
 export const GENERATION_CONFIG = {
   thinkingConfig: { thinkingLevel: 'high' },
@@ -277,54 +281,74 @@ Por favor, realize o code review completo e rigoroso, aplicando a taxonomia P1/P
 // GEMINI API CALLER
 // ==========================================
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function callGemini(systemInstruction, userPrompt) {
   let lastError = null;
 
   for (const model of CANDIDATE_MODELS) {
-    try {
-      console.log(`🤖 Tentando modelo ${model}...`);
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: systemInstruction }],
-          },
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: userPrompt }],
-            },
-          ],
-          generationConfig: GENERATION_CONFIG,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.warn(
-          `⚠️ Modelo ${model} falhou com status ${response.status}: ${errorText.slice(0, 100)}`,
-        );
-        lastError = new Error(`Status ${response.status}: ${errorText}`);
-        continue;
+    for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
+      if (attempt > 0) {
+        const delay = RETRY_DELAYS_MS[attempt - 1];
+        console.log(`⏳ Aguardando ${delay / 1000}s para tentar ${model} de novo...`);
+        await sleep(delay);
       }
-
-      const data = await response.json();
-      const reviewMarkdown = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (reviewMarkdown) {
-        console.log(`✨ Review gerado com sucesso pelo modelo ${model}!`);
-        return reviewMarkdown;
-      }
-    } catch (err) {
-      console.warn(`⚠️ Erro de conexão com ${model}:`, err.message);
-      lastError = err;
+      const result = await requestGemini(model, systemInstruction, userPrompt);
+      if (result.review) return result.review;
+      lastError = result.error;
+      if (!result.retryable) break;
     }
   }
 
   throw lastError || new Error('Nenhum modelo Gemini respondeu.');
+}
+
+/** One generateContent call; a failure says whether trying the same model again may help. */
+async function requestGemini(model, systemInstruction, userPrompt) {
+  try {
+    console.log(`🤖 Tentando modelo ${model}...`);
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: systemInstruction }],
+        },
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: userPrompt }],
+          },
+        ],
+        generationConfig: GENERATION_CONFIG,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.warn(
+        `⚠️ Modelo ${model} falhou com status ${response.status}: ${errorText.slice(0, 100)}`,
+      );
+      return {
+        error: new Error(`Status ${response.status}: ${errorText}`),
+        retryable: RETRYABLE_STATUSES.includes(response.status),
+      };
+    }
+
+    const data = await response.json();
+    const reviewMarkdown = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (reviewMarkdown) {
+      console.log(`✨ Review gerado com sucesso pelo modelo ${model}!`);
+      return { review: reviewMarkdown };
+    }
+    return { error: new Error(`Modelo ${model} não retornou texto.`), retryable: false };
+  } catch (err) {
+    console.warn(`⚠️ Erro de conexão com ${model}:`, err.message);
+    return { error: err, retryable: true };
+  }
 }
 
 // ==========================================
@@ -580,7 +604,9 @@ async function main() {
   } catch (err) {
     console.error('❌ Falha na execução do Gemini PR Review:');
     console.error(err);
-    process.exit(0);
+    // On demand the job fails so the workflow reports it on the PR; the automatic
+    // review stays silent so a Gemini outage never blocks CI.
+    process.exit(IS_ON_DEMAND ? 1 : 0);
   }
 }
 

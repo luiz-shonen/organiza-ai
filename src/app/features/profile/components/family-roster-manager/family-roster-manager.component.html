@@ -41,6 +41,8 @@
           type="tel"
           placeholder="(11) 99999-9999"
           testId="family-member-phone-input"
+          [mask]="maskPhone"
+          [error]="phoneError()"
           [value]="newPhone()"
           (valueChange)="newPhone.set($event)"
         />
@@ -87,7 +89,7 @@
               <span class="family-roster__item-sub">
                 {{ getRelationshipLabel(member.relationship) }}
                 @if (member.phone) {
-                  · {{ member.phone }}
+                  · {{ displayPhone(member.phone) }}
                 }
               </span>
             </div>

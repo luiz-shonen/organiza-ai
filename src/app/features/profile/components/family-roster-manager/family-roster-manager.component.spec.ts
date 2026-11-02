@@ -78,7 +78,7 @@ describe('FamilyRosterManagerComponent', () => {
 
     expect(items[1].textContent).toContain('Mariana Silva');
     expect(items[1].textContent).toContain('Cônjuge');
-    expect(items[1].textContent).toContain('11988887777');
+    expect(items[1].textContent).toContain('(11) 98888-7777');
   });
 
   it('should emit addMember output with valid payload and clear form inputs', () => {
@@ -98,12 +98,28 @@ describe('FamilyRosterManagerComponent', () => {
     expect(addSpy).toHaveBeenCalledWith({
       name: 'Carlos Silva',
       relationship: 'parent',
-      phone: '11977775555',
+      phone: '(11) 97777-5555',
     });
 
     expect(component['newName']()).toBe('');
     expect(component['newRelationship']()).toBe('child');
     expect(component['newPhone']()).toBe('');
+  });
+
+  it('should not emit addMember with an invalid phone and should show the error', () => {
+    fixture.componentRef.setInput('members', []);
+    fixture.detectChanges();
+    const addSpy = vi.fn();
+    component.addMember.subscribe(addSpy);
+
+    component['newName'].set('Carlos Silva');
+    component['newPhone'].set('(11) 9777');
+    component['onSubmit']();
+    fixture.detectChanges();
+
+    expect(addSpy).not.toHaveBeenCalled();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Telefone inválido');
+    expect(component['newName']()).toBe('Carlos Silva');
   });
 
   it('should preserve the selected relationship value from the autocomplete field', () => {
@@ -166,7 +182,7 @@ describe('FamilyRosterManagerComponent', () => {
 
     expect(component['newName']()).toBe('Mariana Silva');
     expect(component['newRelationship']()).toBe('spouse');
-    expect(component['newPhone']()).toBe('11988887777');
+    expect(component['newPhone']()).toBe('(11) 98888-7777');
     expect(compiled.querySelector('.family-roster__form-title')?.textContent).toContain(
       'Editando Mariana Silva',
     );
@@ -182,7 +198,7 @@ describe('FamilyRosterManagerComponent', () => {
       id: 'fam-2',
       name: 'Mariana Souza',
       relationship: 'spouse',
-      phone: '11988887777',
+      phone: '(11) 98888-7777',
     });
     expect(addSpy).not.toHaveBeenCalled();
     expect(component['editingId']()).toBeNull();

@@ -63,13 +63,19 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
   public readonly suffixAction = input(false);
   public readonly passwordVisible = input(false);
   public readonly testId = input('');
+  /** Reformats what is typed, e.g. a phone mask; the field shows and emits the result. */
+  public readonly mask = input<((value: string) => string) | null>(null);
   public readonly togglePasswordVisibility = output<void>();
   private onChange: (value: string) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
   protected updateValue(event: Event): void {
     if (!this.disabled()) {
-      const value = (event.target as HTMLInputElement).value;
+      const target = event.target as HTMLInputElement;
+      const mask = this.mask();
+      const value = mask ? mask(target.value) : target.value;
+      // Write back here: when the masked text equals the last value, no binding would reset it.
+      if (value !== target.value) target.value = value;
       this.value.set(value);
       this.onChange(value);
     }

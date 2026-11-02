@@ -39,6 +39,8 @@
             type="tel"
             placeholder="(11) 99999-9999"
             testId="profile-phone-input"
+            [mask]="maskPhone"
+            [error]="phoneError()"
             [value]="editPhone()"
             (valueChange)="editPhone.set($event)"
           />
@@ -89,7 +91,7 @@
       </div>
       <div class="profile-info-card__field">
         <dt>Telefone</dt>
-        <dd>{{ user().phone || 'Não informado' }}</dd>
+        <dd>{{ phoneDisplay() || 'Não informado' }}</dd>
       </div>
     </dl>
   </section>

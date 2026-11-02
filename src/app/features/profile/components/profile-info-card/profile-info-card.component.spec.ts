@@ -38,7 +38,7 @@ describe('ProfileInfoCardComponent', () => {
     const el: HTMLElement = fixture.nativeElement;
     expect(el.textContent).toContain('Maria Santos');
     expect(el.textContent).toContain('maria@example.com');
-    expect(el.textContent).toContain('11987654321');
+    expect(el.textContent).toContain('(11) 98765-4321');
     expect(el.textContent).toContain('M');
   });
 
@@ -83,7 +83,7 @@ describe('ProfileInfoCardComponent', () => {
 
     expect(component.isEditing()).toBe(true);
     expect(component.editName()).toBe('Maria Santos');
-    expect(component.editPhone()).toBe('11987654321');
+    expect(component.editPhone()).toBe('(11) 98765-4321');
     expect(fixture.nativeElement.querySelector('[data-testid="profile-phone-input"]')).toBeTruthy();
   });
 
@@ -108,7 +108,7 @@ describe('ProfileInfoCardComponent', () => {
     component.saveDetails();
     fixture.detectChanges();
 
-    expect(emitSpy).toHaveBeenCalledWith({ displayName: 'Maria Silva', phone: '11911112222' });
+    expect(emitSpy).toHaveBeenCalledWith({ displayName: 'Maria Silva', phone: '(11) 91111-2222' });
     expect(component.isEditing()).toBe(false);
   });
 
@@ -127,7 +127,20 @@ describe('ProfileInfoCardComponent', () => {
     component.editPhone.set('000');
     component.cancelEditing();
 
-    expect(component.editPhone()).toBe('11987654321');
+    expect(component.editPhone()).toBe('(11) 98765-4321');
+  });
+
+  it('should keep editing and show the error when the phone is invalid', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
+
+    component.startEditing();
+    component.editPhone.set('(31) 99231-23123');
+    component.saveDetails();
+    fixture.detectChanges();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+    expect(component.isEditing()).toBe(true);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Telefone inválido');
   });
 
   it('should not emit updateDetails when editName is blank', () => {

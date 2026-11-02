@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import type { UserProfile } from '../../../../core/models';
+import { Phone } from '../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgIconButtonComponent,
@@ -35,6 +36,16 @@ export class ProfileInfoCardComponent {
   readonly isEditing = signal(false);
   readonly editName = signal('');
   readonly editPhone = signal('');
+  /** Set on a save with an invalid phone; the error then follows what is typed. */
+  readonly showPhoneError = signal(false);
+
+  protected readonly maskPhone = Phone.mask;
+  protected readonly phoneDisplay = computed(() => Phone.display(this.user().phone));
+  protected readonly phoneError = computed(() =>
+    this.showPhoneError() && this.editPhone() && !Phone.isValid(this.editPhone())
+      ? Phone.INVALID_MESSAGE
+      : '',
+  );
 
   /** "março de 2026", from the profile creation date. */
   protected readonly memberSince = computed(() => {
@@ -65,15 +76,20 @@ export class ProfileInfoCardComponent {
 
   saveDetails(): void {
     const trimmed = this.editName().trim();
-    if (trimmed.length > 0) {
-      this.updateDetails.emit({ displayName: trimmed, phone: this.editPhone().trim() });
-      this.isEditing.set(false);
+    if (trimmed.length === 0) return;
+    const phone = this.editPhone().trim();
+    if (phone && !Phone.isValid(phone)) {
+      this.showPhoneError.set(true);
+      return;
     }
+    this.updateDetails.emit({ displayName: trimmed, phone: Phone.create(phone)?.formatted ?? '' });
+    this.isEditing.set(false);
   }
 
   private resetFields(user: UserProfile): void {
     this.editName.set(user.displayName ?? user.name ?? '');
-    this.editPhone.set(user.phone ?? '');
+    this.editPhone.set(Phone.mask(user.phone ?? ''));
+    this.showPhoneError.set(false);
   }
 
   get userInitial(): string {

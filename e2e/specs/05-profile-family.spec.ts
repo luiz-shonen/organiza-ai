@@ -81,7 +81,13 @@ test.describe('User Profile and Family Roster Management', () => {
     // The same form edits the phone.
     const profilePhoneInput = page.getByTestId('profile-phone-input');
     await expect(profilePhoneInput).toBeVisible();
-    await profilePhoneInput.fill('(11) 97777-2222');
+    // The mask keeps digits only, at most 11, and an incomplete number is refused.
+    await profilePhoneInput.fill('11a9777');
+    await expect(profilePhoneInput).toHaveValue('(11) 9777');
+    await profilePage.saveProfileBtn.click();
+    await expect(page.locator('app-profile-info-card')).toContainText('Telefone inválido');
+    await profilePhoneInput.fill('119777722229999');
+    await expect(profilePhoneInput).toHaveValue('(11) 97777-2222');
 
     await expect(profilePage.saveProfileBtn).toBeVisible();
     await expect(profilePage.saveProfileBtn).toBeEnabled();

@@ -16,6 +16,7 @@ related: [design-system.md, styling-rules.md]
 - Local state with `signal()`, `computed()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams.
 - Always `templateUrl` + `styleUrl`.
 - Strict TypeScript, no `any`. Interfaces and form types live in `src/app/core/models/`.
+- Values with rules of their own are value objects in `src/app/core/value-objects/`. `Phone` validates a Brazilian number (DDD plus 8 digits, or 9 starting with 9), saves it as "(11) 98888-1111" and gives `org-text-field` its typing mask through the `[mask]` input.
 
 ## Four component roles
 

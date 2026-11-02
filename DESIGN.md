@@ -227,7 +227,7 @@ Uso recomendado: `<org-avatar [name]="user.displayName" [photoUrl]="user.photoUR
 
 ### OrgLogoComponent
 
-Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the login screen. Calendar mark plus the gradient wordmark; the surrounding link provides the accessible name.
+Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the login screen. Calendar mark plus the gradient wordmark; the surrounding link provides the accessible name. The mark is an inline SVG animated with CSS only: every 6s the calendar hops, the check is drawn and confetti bursts from it; `[animated]="false"` and `prefers-reduced-motion` keep it still. `public/icons/favicon.svg` is the same mark, and the PNG/ICO icons are rendered from it.
 
 ### OrgSegmentedControlComponent
 

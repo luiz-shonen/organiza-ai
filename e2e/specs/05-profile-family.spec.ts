@@ -14,7 +14,8 @@ const mockFamilyEvent = {
   date: new Date(Date.now() + 86400000 * 3).toISOString(),
   location: 'Av. Paulista, 1000 - São Paulo/SP',
   status: 'active',
-  createdBy: 'test-user-uid',
+  // Someone else hosts it: the signed-in user is a guest who answers the invite.
+  createdBy: 'host-organizer-uid',
   creatorEmail: 'carlos.silva@exemplo.com',
   collaborators: [],
   createdAt: new Date().toISOString(),

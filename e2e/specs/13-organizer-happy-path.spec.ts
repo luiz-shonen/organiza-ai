@@ -624,8 +624,9 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
   // Phase 3 - Task T8: Guest RSVP — Event Detail Page [E2E-16, E2E-17]
   test.describe('Guest RSVP — Event Detail Page', () => {
     test.beforeEach(async ({ page }) => {
+      // A guest's view: the event is hosted by someone else (the host has no RSVP card).
       await setupMockAuthSession(page, {
-        events: [mockHappyPathEvent],
+        events: [{ ...mockHappyPathEvent, createdBy: 'host-organizer-uid' }],
       });
     });
 

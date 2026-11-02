@@ -1,8 +1,8 @@
 {
   "name": "Organiza AI - Gestão de Festas",
   "short_name": "Organiza AI",
-  "theme_color": "#ffb783",
-  "background_color": "#fff8f5",
+  "theme_color": "#7950f2",
+  "background_color": "#f6f3ff",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
@@ -18,10 +18,10 @@
       "type": "image/png"
     },
     {
-      "src": "icons/logo-icone.svg",
+      "src": "icons/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "maskable any"
+      "purpose": "any"
     }
   ]
 }

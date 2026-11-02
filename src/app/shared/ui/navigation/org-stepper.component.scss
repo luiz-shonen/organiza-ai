@@ -40,6 +40,11 @@
       padding: 0 var(--org-space-xs);
     }
 
+    // The current step shows its name inside the pill; give the text room on the right.
+    .mat-horizontal-stepper-header[aria-selected='true'] {
+      padding-inline-end: var(--org-space-md);
+    }
+
     .mat-step-header[aria-selected='false'] .mat-step-label {
       display: none;
     }

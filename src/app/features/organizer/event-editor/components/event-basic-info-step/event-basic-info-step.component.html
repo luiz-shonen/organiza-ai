@@ -38,12 +38,29 @@
               (selectionChange)="selectCategory(cat.name)"
             />
           }
+          <org-chip
+            label="Personalizar"
+            testId="custom-category-chip"
+            [selectable]="true"
+            [selected]="isCustomCategory()"
+            (selectionChange)="selectCustomCategory()"
+          />
         </div>
-        @if (
-          basicInfoForm.controls.category.hasError('required') &&
-          basicInfoForm.controls.category.touched
+        @if (isCustomCategory()) {
+          <org-text-field
+            label="Tipo do evento"
+            placeholder="Ex: Chá revelação"
+            testId="custom-category-input"
+            formControlName="category"
+            [required]="true"
+            [maxLength]="categoryMaxLength"
+            [error]="fieldError(basicInfoForm.controls.category, 'Digite o tipo do evento')"
+          />
+        } @else if (
+          fieldError(basicInfoForm.controls.category, 'Selecione uma categoria');
+          as error
         ) {
-          <span class="event-step__error" role="alert">Selecione uma categoria</span>
+          <span class="event-step__error" role="alert">{{ error }}</span>
         }
       </div>
 

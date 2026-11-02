@@ -1,6 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { EventDescription, EventTitle, fieldError } from '../../../../../core/value-objects';
+import {
+  EventCategory,
+  EventDescription,
+  EventTitle,
+  fieldError,
+} from '../../../../../core/value-objects';
 import { EventBasicInfoForm, EventCategoryOption } from '../../../../../core/models';
 import {
   OrgButtonComponent,
@@ -41,9 +46,30 @@ export class EventBasicInfoStepComponent {
   protected readonly titleMaxLength = EventTitle.RULES.max;
   protected readonly descriptionMaxLength = EventDescription.RULES.max;
 
+  protected readonly categoryMaxLength = EventCategory.RULES.max;
+  /** Set when the organizer picks "Personalizar" to type a category of their own. */
+  private readonly customRequested = signal(false);
+
+  /** True while the category is typed instead of picked, including a saved custom one. */
+  protected isCustomCategory(): boolean {
+    const value = this.form().controls.category.value;
+    return this.customRequested() || (value.trim() !== '' && !this.isPreset(value));
+  }
+
   protected selectCategory(category: string): void {
+    this.customRequested.set(false);
     const control = this.form().controls.category;
     control.setValue(category);
     control.markAsTouched();
+  }
+
+  protected selectCustomCategory(): void {
+    const control = this.form().controls.category;
+    if (this.isPreset(control.value)) control.setValue('');
+    this.customRequested.set(true);
+  }
+
+  private isPreset(value: string): boolean {
+    return this.categories().some((category) => category.name === value);
   }
 }

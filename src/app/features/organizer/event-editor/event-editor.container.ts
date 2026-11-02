@@ -24,6 +24,7 @@ import { formatCep } from '../../../core/utils';
 import {
   AddressNumber,
   Cep,
+  EventCategory,
   EventDescription,
   EventTitle,
   PixKey,
@@ -118,7 +119,7 @@ export class EventEditorContainer implements OnInit {
 
   protected readonly basicInfoForm = this.fb.nonNullable.group({
     title: ['', [requiredText, valueObjectValidator(EventTitle.validate)]],
-    category: ['', [Validators.required]],
+    category: ['', [requiredText, valueObjectValidator(EventCategory.validate)]],
     description: ['', [requiredText, valueObjectValidator(EventDescription.validate)]],
     date: [null as Date | null, [Validators.required]],
     time: ['', [Validators.required]],
@@ -241,7 +242,8 @@ export class EventEditorContainer implements OnInit {
     this.saving.set(true);
 
     const raw = this.basicInfoForm.getRawValue();
-    const { category, date, time } = raw;
+    const { date, time } = raw;
+    const category = EventCategory.create(raw.category)?.value ?? raw.category.trim();
     // The forms are valid here, so each value object exists; they save the tidied text.
     const title = EventTitle.create(raw.title)?.value ?? raw.title.trim();
     const description = EventDescription.create(raw.description)?.value ?? raw.description.trim();

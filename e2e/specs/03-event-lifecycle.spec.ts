@@ -224,17 +224,25 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await page.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
 
-    // Verify all 7 event category chips exist
-    await expect(eventEditorPage.categoryChips).toHaveCount(7);
+    // 14 ready-made categories plus Personalizar
+    await expect(eventEditorPage.categoryChips).toHaveCount(15);
 
     const categoryLabels = [
       'Aniversário',
       'Casamento',
+      'Natal',
+      'Ano Novo',
+      'Páscoa',
       'Festa Junina',
       'Churrasco',
       'Happy Hour',
+      'Confraternização',
       'Formatura',
-      'Outros',
+      'Chá de bebê',
+      'Chá de panela',
+      'Batizado',
+      'Reunião de família',
+      'Personalizar',
     ];
     for (const label of categoryLabels) {
       await expect(eventEditorPage.categoryChips.filter({ hasText: label })).toBeVisible();
@@ -250,5 +258,18 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await festaChip.click();
     await expect(festaChip.locator('mat-chip-option')).toHaveClass(/mat-mdc-chip-selected/);
     await expect(churrascoChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);
+
+    // Personalizar opens a field to type the category; markup is refused
+    const customChip = page.getByTestId('custom-category-chip');
+    await customChip.click();
+    await expect(festaChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);
+    const customInput = page.getByTestId('custom-category-input');
+    await expect(customInput).toBeVisible();
+    await customInput.fill('<b>');
+    await customInput.blur();
+    await expect(page.getByTestId('event-editor-step-1')).toContainText('Não use os caracteres');
+    await customInput.fill('Chá revelação');
+    await expect(customInput).toHaveValue('Chá revelação');
+    await expect(customChip).toHaveClass(/mat-mdc-chip-selected/);
   });
 });

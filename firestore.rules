@@ -103,6 +103,7 @@ service cloud.firestore {
       function isValidEvent() {
         let data = request.resource.data;
         return (!changes('title') || isFilledText(data.get('title', null), 200))
+            && (!changes('category') || isOptionalString(data.get('category', null), 60))
             && (!changes('description') || isOptionalString(data.get('description', null), 2000))
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77));

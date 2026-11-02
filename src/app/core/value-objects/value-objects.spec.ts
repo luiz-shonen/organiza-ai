@@ -4,6 +4,7 @@ import {
   AddressNumber,
   Cep,
   Email,
+  EventCategory,
   EventDescription,
   EventTitle,
   ItemName,
@@ -87,6 +88,18 @@ describe('EventTitle, EventDescription and ItemName', () => {
 
   it('drops control characters', () => {
     expect(normalizePlainText('Bolo\u0000 de\u0007 milho')).toBe('Bolo de milho');
+  });
+});
+
+describe('EventCategory', () => {
+  it('accepts a typed category and tidies it', () => {
+    expect(EventCategory.create('  Chá   revelação ')?.value).toBe('Chá revelação');
+  });
+
+  it('refuses markup and lengths out of range', () => {
+    expect(EventCategory.validate('<b>')).toBe('Não use os caracteres < > { }');
+    expect(EventCategory.validate('A')).toBe('Use pelo menos 2 caracteres');
+    expect(EventCategory.validate('x'.repeat(41))).toBe('Use no máximo 40 caracteres');
   });
 });
 

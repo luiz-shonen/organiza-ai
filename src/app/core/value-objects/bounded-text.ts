@@ -53,3 +53,19 @@ export class ItemName {
     return text ? new ItemName(text) : null;
   }
 }
+
+/** A category typed by the organizer when none of the ready-made ones fits: 2 to 40 characters. */
+export class EventCategory {
+  static readonly RULES: PlainTextRules = { min: 2, max: 40 };
+
+  private constructor(readonly value: string) {}
+
+  static validate(raw: string | null | undefined): string | null {
+    return validatePlainText(raw, EventCategory.RULES);
+  }
+
+  static create(raw: string | null | undefined): EventCategory | null {
+    const text = createText(raw, EventCategory.RULES);
+    return text ? new EventCategory(text) : null;
+  }
+}

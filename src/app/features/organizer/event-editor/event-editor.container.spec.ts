@@ -309,6 +309,28 @@ describe('EventEditorContainer', () => {
       expect(mockEventService.createEvent).not.toHaveBeenCalled();
     });
 
+    it('saves a category typed by the organizer', async () => {
+      component['basicInfoForm'].setValue({
+        title: 'Festa',
+        category: '  Chá   revelação ',
+        description: 'Arraiá com quentão',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      await component['saveEvent']();
+
+      expect(mockEventService.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ category: 'Chá revelação' }),
+      );
+    });
+
     it('saves tidied text and the CEP formatted', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
       component['basicInfoForm'].setValue({

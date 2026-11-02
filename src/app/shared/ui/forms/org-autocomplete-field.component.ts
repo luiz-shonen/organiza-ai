@@ -57,7 +57,13 @@ export class OrgAutocompleteFieldComponent implements ControlValueAccessor {
     () => this.options().find((option) => option.value === this.value()) ?? null,
   );
   protected readonly inputValue = computed(() => this.selectedOption()?.label ?? this.query());
+  /**
+   * Typing filters the list. With an option already chosen (the text is its label) the
+   * whole list shows again, so the person can switch to another one without erasing.
+   */
   protected readonly filteredOptions = computed(() => {
+    const selected = this.selectedOption();
+    if (selected && this.query() === selected.label) return this.options();
     const query = normalizeSearchText(this.query());
     return this.options().filter((option) => normalizeSearchText(option.label).includes(query));
   });

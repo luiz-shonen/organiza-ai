@@ -106,6 +106,8 @@
           <app-share-panel
             [eventUrl]="eventUrl()"
             [eventTitle]="basicInfoForm.controls.title.value"
+            [eventDate]="currentEvent()?.date ?? null"
+            [eventLocation]="currentEvent()?.location ?? null"
           />
           <app-event-guests-card
             class="print-section"

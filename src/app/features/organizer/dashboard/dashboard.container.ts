@@ -20,7 +20,7 @@ import {
   ItemService,
   NotificationService,
 } from '../../../core/services';
-import { buildItemProgress, daysUntil, formatDate, shareWhatsApp } from '../../../core/utils';
+import { buildItemProgress, daysUntil, shareWhatsApp } from '../../../core/utils';
 import type { PartyEvent } from '../../../core/models';
 import {
   FeedbackService,
@@ -274,7 +274,7 @@ export class DashboardContainer {
 
   protected shareWhatsApp(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
-    shareWhatsApp(event.title, formatDate(event.date), event.location, url);
+    shareWhatsApp({ title: event.title, date: event.date, location: event.location, url });
   }
 
   protected copyLink(event: PartyEvent): void {

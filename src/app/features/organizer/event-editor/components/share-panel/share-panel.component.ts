@@ -30,6 +30,9 @@ import { shareWhatsApp } from '../../../../../core/utils';
 export class SharePanelComponent {
   readonly eventUrl = input('');
   readonly eventTitle = input('');
+  /** ISO date and time, shown in the invitation. */
+  readonly eventDate = input<string | null>(null);
+  readonly eventLocation = input<string | null>(null);
 
   private readonly qrCanvas = viewChild<ElementRef<HTMLCanvasElement>>('qrCanvas');
 
@@ -48,7 +51,11 @@ export class SharePanelComponent {
   }
 
   protected shareWhatsApp(): void {
-    const title = this.eventTitle() || 'nosso evento';
-    shareWhatsApp(title, undefined, undefined, this.eventUrl());
+    shareWhatsApp({
+      title: this.eventTitle(),
+      date: this.eventDate(),
+      location: this.eventLocation(),
+      url: this.eventUrl(),
+    });
   }
 }

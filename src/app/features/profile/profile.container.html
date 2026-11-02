@@ -23,6 +23,17 @@
           />
         </section>
 
+        <section class="profile-container__section" aria-label="Preferências da conta">
+          <app-profile-preferences-card
+            [themeMode]="themeMode()"
+            [isSuperAdmin]="isSuperAdmin()"
+            (themeChange)="changeTheme($event)"
+            (openAdmin)="openRoute('/admin')"
+            (openDesignSystem)="openRoute('/design-system')"
+            (logout)="logout()"
+          />
+        </section>
+
         <org-section
           title="Eventos Confirmados"
           icon="event"

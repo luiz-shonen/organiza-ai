@@ -1,6 +1,6 @@
 import { test, expect } from '../fixtures/test.fixture';
 import { buildGuestEvent } from '../fixtures/mock-events';
-import { mockFirestoreDocuments } from '../helpers/auth-mock.helper';
+import { mockFirestoreDocuments, setupMockAuthSession } from '../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertSingleSurfaceRing,
@@ -40,20 +40,31 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await assertNoHorizontalOverflow(page);
   });
 
-  test('should toggle dark and light themes and persist in localStorage', async ({
+  test('should offer visitors an Entrar button instead of a hamburger menu', async ({
     homePage,
     page,
   }) => {
     await homePage.goto('/');
     await homePage.assertLoaded();
 
-    // Theme choices live in the navigation drawer so the toolbar stays focused on navigation.
-    await expect(homePage.navigationMenuTrigger).toBeVisible();
-    await homePage.openNavigationDrawer();
+    await expect(homePage.headerLoginBtn.getByRole('button', { name: 'Entrar' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Abrir menu de navegação' })).toHaveCount(0);
+    await expect(homePage.bottomNav).toHaveCount(0);
+  });
 
+  test('should toggle dark and light themes and persist in localStorage', async ({
+    homePage,
+    profilePage,
+    page,
+  }) => {
+    await setupMockAuthSession(page);
+    await profilePage.goto('/perfil');
+    await profilePage.assertLoaded();
+
+    // Theme choices live in Perfil → Preferências; there is no side menu anymore.
     // 1. Switch to Dark theme
-    await expect(homePage.drawerThemeDark).toBeVisible();
-    await homePage.drawerThemeDark.click();
+    await expect(homePage.profileThemeDark).toBeVisible();
+    await homePage.profileThemeDark.click();
 
     // Assert DOM class and localStorage persistence
     await expect(page.locator('html')).toHaveClass(/dark/);
@@ -61,8 +72,8 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     expect(darkStorageValue).toBe('dark');
 
     // 2. Switch to Light theme
-    await expect(homePage.drawerThemeLight).toBeVisible();
-    await homePage.drawerThemeLight.click();
+    await expect(homePage.profileThemeLight).toBeVisible();
+    await homePage.profileThemeLight.click();
 
     // Assert DOM class removed and localStorage updated
     await expect(page.locator('html')).not.toHaveClass(/dark/);
@@ -71,7 +82,7 @@ test.describe('Home Theming, Feed and Accessibility', () => {
 
     // 3. Verify persistence across page reload
     await page.reload();
-    await homePage.assertLoaded();
+    await profilePage.assertLoaded();
     await expect(page.locator('html')).not.toHaveClass(/dark/);
     const persistedValue = await page.evaluate(() => localStorage.getItem('theme_mode'));
     expect(persistedValue).toBe('light');

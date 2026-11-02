@@ -47,6 +47,20 @@ describe('LoginContainer', () => {
     expect(component['hidePassword']()).toBe(true);
   });
 
+  it('shows no validation errors on a fresh page, only after the field is touched', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelectorAll('.org-text-field__error').length).toBe(0);
+
+    const emailInput = compiled.querySelector(
+      '[data-testid="login-email-input"]',
+    ) as HTMLInputElement;
+    emailInput.dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    const errors = Array.from(compiled.querySelectorAll('.org-text-field__error'));
+    expect(errors.map((error) => error.textContent?.trim())).toEqual(['E-mail é obrigatório']);
+  });
+
   it('should toggle password visibility signal', () => {
     expect(component['hidePassword']()).toBe(true);
     component['hidePassword'].set(false);

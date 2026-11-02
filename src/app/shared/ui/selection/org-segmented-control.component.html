@@ -1,0 +1,22 @@
+<mat-button-toggle-group
+  class="org-segmented-control"
+  hideSingleSelectionIndicator
+  [attr.aria-label]="ariaLabel()"
+  [value]="value()"
+  (change)="select($event.value)"
+>
+  @for (option of options(); track option.value) {
+    <mat-button-toggle
+      class="org-segmented-control__option"
+      [value]="option.value"
+      [attr.data-testid]="option.testId || null"
+    >
+      <span class="org-segmented-control__content">
+        @if (option.icon) {
+          <org-icon [name]="option.icon" size="md" color="currentColor" />
+        }
+        <span>{{ option.label }}</span>
+      </span>
+    </mat-button-toggle>
+  }
+</mat-button-toggle-group>

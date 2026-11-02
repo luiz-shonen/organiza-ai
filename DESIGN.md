@@ -23,14 +23,15 @@
 
 ## 1. Brand Identity & Festive Narrative
 
-Organiza AI is built on the **Modern Festive Planner** narrative: transforming event organization from a tedious administrative chore into a vibrant, communal celebration.
+Organiza AI is built on the **Branco Essencial + Usabilidade** direction (approved prototype: `docs/design-proposals/branco-essencial-ux.html`, third column, checkpoint `0ab2fc0`): white, neutral components on a calm canvas, with colour reserved for what matters.
 
 ### Aesthetic Pillars
 
-- **Vibrant Modernism:** Punchy primary accents, joyful animations, and celebratory confetti.
-- **Glassmorphism:** Multi-layered depth via single-ring translucent backdrops with hardware-accelerated blur.
-- **Bubbly Geometric Shapes:** Unapologetically rounded corners ($12\text{px}$ to $24\text{px}$, pill badges).
-- **Canonical Warm Palette:** The signature **Pink $\rightarrow$ Orange $\rightarrow$ Yellow** progression.
+- **Colour has a job:** lilac (`#7950F2`) only for actions, sky blue (`#1C9BEF`) for dates and info, leaf green (`#2F9E44`) for success and progress. Everything else is neutral (Von Restorff).
+- **Flat surfaces:** solid white cards with a hairline `--org-outline-variant` border, `--org-radius-card` (18px) corners and a faint lilac ground shadow. No glass blur.
+- **Friendly type:** Fredoka for titles, Plus Jakarta Sans for body text; pill-shaped buttons.
+- **Goal gradient:** progress bars and the page-title highlight use the leaf gradient (`--org-gradient-highlight`).
+- **Seven usability laws** guide every screen: Jakob (bottom bar on phones, no hamburger), Fitts (targets ≥ 44px, 48px standard), Hick (few choices at a time), Miller (group information), Von Restorff (one highlighted action), Zeigarnik (show what is left to finish) and the goal-gradient effect.
 
 ---
 
@@ -38,32 +39,33 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 
 The source of truth is `src/app/shared/ui/tokens/`; this section only names the families. Rules and rationale: [docs/knowledge/decisions/tokens-and-theming.md](docs/knowledge/decisions/tokens-and-theming.md).
 
-| Family            | Tokens                                                                                                                  | File                                                                                           |
-| :---------------- | :---------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------------------------------------- | ------- | ------ | ------------------ |
-| Brand             | `--org-primary` (#FF4D94), `--org-secondary` (#FF8C42), `--org-tertiary` (#FFC837) and their `on-` / `-container` pairs | `_semantic.scss`                                                                               |
-| Status            | `--org-error`, `--org-warning`, `--org-success`, `--org-info` (+ `on-` / `-container`)                                  | `_semantic.scss`                                                                               |
-| Surfaces & text   | `--org-canvas`, `--org-surface`, `--org-surface-container-low                                                           | -                                                                                              | high`, `--org-surface-variant`, `--org-on-surface`, `--org-on-surface-variant`, `--org-on-surface-muted` | `_semantic.scss`          |
-| Lines             | `--org-outline`, `--org-outline-variant`                                                                                | `_semantic.scss`                                                                               |
-| States            | `--org-state-hover`, `--org-state-selected`, `--org-scrim`                                                              | `_semantic.scss`                                                                               |
-| Glass & elevation | `--org-glass-bg                                                                                                         | -strong`, `--org-glass-blur`, `--org-glass-ring-color`, `--org-glass-shadow`, `--org-shadow-xs | sm                                                                                                       | md                        | lg                                                                                                                | overlay | primary` | `_semantic.scss` / `_foundation.scss` |
-| Gradients         | `--org-gradient-primary`, `--org-gradient-border`, `--org-gradient-theme-*`                                             | `_semantic.scss`                                                                               |
-| Categories        | `--org-cat-<categoria>-bg                                                                                               | color`                                                                                         | `_semantic.scss`                                                                                         |
-| Typography        | `--org-font-body                                                                                                        | display                                                                                        | mono`, `--org-font-size-2xs…4xl                                                                          | heading                   | display`, `--org-font-weight-_`, `--org-line-height-_`, `--org-letter-spacing-\*`, composites `--org-text-display | heading | title    | body                                  | body-sm | label` | `_foundation.scss` |
-| Spacing           | `--org-space-2xs` (2px) … `--org-space-3xl` (64px)                                                                      | `_foundation.scss`                                                                             |
-| Radius            | `--org-radius-xs                                                                                                        | sm                                                                                             | md                                                                                                       | lg                        | xl                                                                                                                | full    | circle`  | `_foundation.scss`                    |
-| Icons             | `--org-icon-size-sm                                                                                                     | md                                                                                             | lg                                                                                                       | xl` (16 / 20 / 24 / 40px) | `_foundation.scss`                                                                                                |
-| Motion            | `--org-motion-fast                                                                                                      | base                                                                                           | slow`, `--org-motion-ease                                                                                | ease-emphasized`          | `_foundation.scss`                                                                                                |
+| Family            | Tokens                                                                                                                                                                                                                                    | File                                                                                           |
+| :---------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------------------------------------- | ------- | ------ | ------------------ |
+| Brand             | `--org-primary` (#7950F2 lilac), `--org-secondary` (#1C9BEF sky), `--org-tertiary` (#2F9E44 leaf) and their `on-` / `-container` pairs                                                                                                    | `_semantic.scss`                                                                               |
+| Usability         | `--org-touch-min` (44px), `--org-touch` (48px), `--org-header-height`, `--org-bottom-nav-height`, `--org-progress-height`, `--org-radius-card` (18px), `--org-gradient-highlight`, `--org-progress-track`, `--org-nav-active-bg` / `-ink` | `_foundation.scss` / `_semantic.scss`                                                          |
+| Status            | `--org-error`, `--org-warning`, `--org-success`, `--org-info` (+ `on-` / `-container`)                                                                                                                                                    | `_semantic.scss`                                                                               |
+| Surfaces & text   | `--org-canvas`, `--org-surface`, `--org-surface-container-low                                                                                                                                                                             | -                                                                                              | high`, `--org-surface-variant`, `--org-on-surface`, `--org-on-surface-variant`, `--org-on-surface-muted` | `_semantic.scss`          |
+| Lines             | `--org-outline`, `--org-outline-variant`                                                                                                                                                                                                  | `_semantic.scss`                                                                               |
+| States            | `--org-state-hover`, `--org-state-selected`, `--org-scrim`                                                                                                                                                                                | `_semantic.scss`                                                                               |
+| Glass & elevation | `--org-glass-bg                                                                                                                                                                                                                           | -strong`, `--org-glass-blur`, `--org-glass-ring-color`, `--org-glass-shadow`, `--org-shadow-xs | sm                                                                                                       | md                        | lg                                                                                                                | overlay | primary` | `_semantic.scss` / `_foundation.scss` |
+| Gradients         | `--org-gradient-primary`, `--org-gradient-border`, `--org-gradient-theme-*`                                                                                                                                                               | `_semantic.scss`                                                                               |
+| Categories        | `--org-cat-<categoria>-bg                                                                                                                                                                                                                 | color`                                                                                         | `_semantic.scss`                                                                                         |
+| Typography        | `--org-font-body                                                                                                                                                                                                                          | display                                                                                        | mono`, `--org-font-size-2xs…4xl                                                                          | heading                   | display`, `--org-font-weight-_`, `--org-line-height-_`, `--org-letter-spacing-\*`, composites `--org-text-display | heading | title    | body                                  | body-sm | label` | `_foundation.scss` |
+| Spacing           | `--org-space-2xs` (2px) … `--org-space-3xl` (64px)                                                                                                                                                                                        | `_foundation.scss`                                                                             |
+| Radius            | `--org-radius-xs                                                                                                                                                                                                                          | sm                                                                                             | md                                                                                                       | lg                        | xl                                                                                                                | full    | circle`  | `_foundation.scss`                    |
+| Icons             | `--org-icon-size-sm                                                                                                                                                                                                                       | md                                                                                             | lg                                                                                                       | xl` (16 / 20 / 24 / 40px) | `_foundation.scss`                                                                                                |
+| Motion            | `--org-motion-fast                                                                                                                                                                                                                        | base                                                                                           | slow`, `--org-motion-ease                                                                                | ease-emphasized`          | `_foundation.scss`                                                                                                |
 
 Dark mode redefines the semantic roles on `html.dark`; seasonal themes (`html.theme-*`) are generated from the `$seasonal-themes` map in `_themes.scss`.
 
 ## 3. Typography
 
-Plus Jakarta Sans for all UI text, Fraunces for display headings in the catalog, JetBrains Mono for code. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
+Plus Jakarta Sans for all UI text, Fredoka (semibold) for titles (`--org-font-display`, used by `--org-text-display|heading|title`), JetBrains Mono for code. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
 
 ## 4. Breakpoints, Glass and Elevation
 
 - Breakpoints (mixins in `_semantic.scss`): `semantic.mobile` (< 600px), `semantic.tablet` (≥ 600px), `semantic.desktop` (≥ 900px), `semantic.wide` (≥ 1200px).
-- Glass (`backdrop-filter: var(--org-glass-blur)` + 1.5px gradient ring) belongs to DS surfaces only: `org-surface`, drawers, dialogs, snackbars.
+- Surfaces are flat: the `--org-glass-*` names remain, but resolve to a solid surface, no blur and a 1px `--org-outline-variant` ring. They belong to DS surfaces only: `org-surface`, drawers, dialogs, snackbars.
 - Elevation through `--org-shadow-*` / `--org-glass-shadow`; radius through `--org-radius-*`.
 
 ## 5. Canonical Iconography
@@ -213,7 +215,23 @@ Uso recomendado: `<org-navigation-list [items]="navigationItems" (selected)="nav
 
 ### OrgProgressComponent
 
-Uso recomendado: `<org-progress [value]="67" ariaLabel="67% concluído" variant="primary" [gradient]="true" />`.
+Uso recomendado: `<org-progress [value]="67" ariaLabel="8 de 12 confirmados" variant="success" />`. The goal-gradient bar: 6px rounded track on `--org-progress-track`, leaf gradient fill (`success` + `gradient`, the default look for progress). Use the same bar for every progress in the app.
+
+### OrgNavBarComponent
+
+Uso recomendado: `<org-nav-bar layout="bottom" [items]="navItems" [activeRoute]="currentUrl()" />`. Primary navigation only, owned by the app shell: `bottom` is the fixed phone bar (Início, Meus eventos, Perfil), `header` the segmented pills in the centre of the desktop header. Items are typed `OrgNavBarItem` (`route`, `label`, `icon`, `testId`, optional `exact`); the active link gets `aria-current="page"`.
+
+### OrgAvatarComponent
+
+Uso recomendado: `<org-avatar [name]="user.displayName" [photoUrl]="user.photoURL" size="md" />`. Photo or initial on a neutral disc; wrap it in a link or button that carries the accessible name (the avatar itself is decorative). `highlighted` tints it lilac for the profile header.
+
+### OrgLogoComponent
+
+Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the login screen. Calendar mark plus the gradient wordmark; the surrounding link provides the accessible name.
+
+### OrgSegmentedControlComponent
+
+Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
 
 ### OrgMetricCardComponent
 
@@ -237,7 +255,7 @@ Uso recomendado: `<org-empty-state icon="event" title="Nenhum evento" descriptio
 
 ### OrgCardHeaderComponent
 
-Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card; tones are `primary`, `primary-soft` (default), `tertiary` and `success`.
+Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card; tones are `info` (default, sky blue), `primary`, `primary-soft`, `tertiary` and `success`. Keep lilac tones for cards whose header is itself the call to action.
 
 ### OrgCopyButtonComponent
 
@@ -275,15 +293,15 @@ Não usar em novo código. As diretivas de compatibilidade foram removidas: `Org
 
 ## 7. Seasonal Theming Architecture
 
-`SeasonalThemeService` adds one class to `<html>`; each class only swaps the brand roles (`--org-primary`, `--org-secondary`, `--org-tertiary`, gradients, canvas and glass ring). Values live in the `$seasonal-themes` map in `src/app/shared/ui/tokens/_themes.scss`:
+`SeasonalThemeService` adds one class to `<html>`; each class only tints the page background (`--org-canvas`, light and dark). Actions, dates and progress keep the app palette so every screen stays consistent. Without a seasonal theme the shell shows a faint confetti pattern (`public/icons/confetti.svg`) in the three palette colours. Values live in the `$seasonal-themes` map in `src/app/shared/ui/tokens/_themes.scss`:
 
-| Class             | Primary | Secondary | Tertiary |
-| :---------------- | :------ | :-------- | :------- |
-| (none) — padrão   | #FF4D94 | #FF8C42   | #FFC837  |
-| `.theme-junina`   | #FF5722 | #FF8C42   | #FFB300  |
-| `.theme-natal`    | #B84555 | #D77A61   | #DEB36A  |
-| `.theme-pascoa`   | #7552A8 | #D2A060   | #F4D58E  |
-| `.theme-ano-novo` | #B88A33 | #EAD9A5   | #8293B5  |
+| Class             | Canvas (light) | Canvas (dark) |
+| :---------------- | :------------- | :------------ |
+| (none) — padrão   | #FFFFFF        | #181429       |
+| `.theme-junina`   | #FFF6DF        | #1F1712       |
+| `.theme-natal`    | #FFF5F1        | #1F1416       |
+| `.theme-pascoa`   | #FAF6FF        | #18142A       |
+| `.theme-ano-novo` | #FFFBED        | #17161C       |
 
 To add a theme, add one entry to the map and its id to the service.
 
@@ -322,6 +340,7 @@ To add a theme, add one entry to the map and its id to the service.
 - Do NOT use `!important`, `--mdc-*` tokens, `.dark` selectors or literal font sizes/weights/durations; use `--org-*` tokens.
 - Do NOT nest multiple glassmorphic borders creating double rings.
 - Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
-- Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.
+- Do NOT paint non-actions lilac; lilac means "tap here". Dates and info are sky blue, progress and success are leaf green.
+- Do NOT add a hamburger menu or side drawer for app navigation; destinations live in the bottom bar (phone) and header (desktop), account settings in Perfil.
 - Do NOT use `ChangeDetectionStrategy.Default`.
 - Do NOT introduce a new feature-local directive as a styling API when a standalone component can own the contract.

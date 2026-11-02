@@ -62,3 +62,12 @@ export type { FeedbackSnackbarData, FeedbackVariant } from './feedback/feedback-
 export { FeedbackService } from './feedback/feedback.service';
 export type { FeedbackOptions } from './feedback/feedback.service';
 export { OrgBannerComponent } from './feedback/org-banner.component';
+
+export { OrgNavBarComponent } from './navigation/org-nav-bar.component';
+export type { OrgNavBarItem, OrgNavBarLayout } from './navigation/org-nav-bar.component';
+export { OrgAvatarComponent } from './data-display/org-avatar.component';
+export type { OrgAvatarSize } from './data-display/org-avatar.component';
+export { OrgLogoComponent } from './brand/org-logo.component';
+export type { OrgLogoSize } from './brand/org-logo.component';
+export { OrgSegmentedControlComponent } from './selection/org-segmented-control.component';
+export type { OrgSegmentedOption } from './selection/org-segmented-control.component';

@@ -1,0 +1,46 @@
+<org-surface variant="card" class="profile-preferences-card">
+  <section class="profile-preferences-card__content" aria-label="Preferências">
+    <org-card-header icon="palette" heading="Preferências" />
+
+    <div class="profile-preferences-card__group">
+      <p class="profile-preferences-card__label" id="profile-theme-label">Tema</p>
+      <org-segmented-control
+        ariaLabel="Selecionar tema"
+        [options]="themeOptions"
+        [value]="themeMode()"
+        (valueChange)="selectTheme($event)"
+      />
+    </div>
+
+    @if (isSuperAdmin()) {
+      <div class="profile-preferences-card__group">
+        <p class="profile-preferences-card__label">Administração</p>
+        <div class="profile-preferences-card__actions">
+          <org-button
+            label="Painel administrativo"
+            icon="admin_panel_settings"
+            variant="secondary"
+            testId="profile-admin-link"
+            (pressed)="openAdmin.emit()"
+          />
+          <org-button
+            label="Design System"
+            icon="palette"
+            variant="secondary"
+            testId="profile-design-system-link"
+            (pressed)="openDesignSystem.emit()"
+          />
+        </div>
+      </div>
+    }
+
+    <org-button
+      class="profile-preferences-card__logout"
+      label="Sair"
+      icon="logout"
+      variant="text"
+      testId="profile-logout-btn"
+      (pressed)="logout.emit()"
+    />
+  </section>
+</org-surface>

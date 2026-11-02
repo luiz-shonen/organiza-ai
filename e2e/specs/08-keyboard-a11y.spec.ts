@@ -36,28 +36,26 @@ async function setupA11yMockSession(page: Page) {
 }
 
 test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', () => {
-  test('should navigate home feed interactive elements and activate theme toggle with keyboard', async ({
+  test('should reach the primary navigation and the theme choice with the keyboard', async ({
+    profilePage,
     homePage,
     page,
   }) => {
-    await homePage.goto('/');
-    await homePage.assertLoaded();
+    await setupA11yMockSession(page);
+    await profilePage.goto('/perfil');
+    await profilePage.assertLoaded();
 
-    // 1. Focus on the navigation trigger using keyboard/direct focus.
-    await homePage.navigationMenuTrigger.focus();
-    await expect(homePage.navigationMenuTrigger).toBeFocused();
+    // 1. The profile destination is reachable from the primary navigation by keyboard.
+    const profileLink = homePage.profileNavLink;
+    await profileLink.focus();
+    await expect(profileLink).toBeFocused();
+    await expect(profileLink).toHaveAttribute('aria-current', 'page');
 
-    // 2. Open navigation drawer with Enter, then activate a theme choice with Enter.
-    await page.keyboard.press('Enter');
-    await expect(homePage.navigationDrawer).toBeVisible();
-    await homePage.drawerThemeDark.focus();
-    await expect(homePage.drawerThemeDark).toBeFocused();
+    // 2. The theme choice lives in Perfil (no side menu) and responds to Enter.
+    await homePage.profileThemeDark.focus();
+    await expect(homePage.profileThemeDark).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('html')).toHaveClass(/dark/);
-
-    // 3. Dismiss the drawer with Escape and verify it is closed.
-    await page.keyboard.press('Escape');
-    await expect(homePage.navigationDrawer).toBeHidden();
   });
 
   test('should trap focus inside ConfirmDialog and dismiss via Escape key with focus restoration', async ({

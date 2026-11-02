@@ -4,7 +4,7 @@ import { provideRouter, Router } from '@angular/router';
 import { signal, WritableSignal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProfileContainer } from './profile.container';
-import { AuthService, UserService, FamilyService } from '../../core/services';
+import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
 import { FeedbackService } from '../../shared/ui';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import type { User } from 'firebase/auth';
@@ -105,7 +105,7 @@ describe('ProfileContainer', () => {
         provideRouter([]),
         {
           provide: AuthService,
-          useValue: { currentUser: mockCurrentUser },
+          useValue: { currentUser: mockCurrentUser, isSuperAdmin: signal(false) },
         },
         {
           provide: UserService,
@@ -265,5 +265,20 @@ describe('ProfileContainer', () => {
 
     expect(fixture.nativeElement.querySelector('org-surface .profile-event-card')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('org-button.profile-event-card__btn')).toBeTruthy();
+  });
+
+  it('hosts the account preferences that used to live in the side menu', async () => {
+    const themeService = TestBed.inject(ThemeService);
+    const setMode = vi.spyOn(themeService, 'setMode').mockImplementation(() => undefined);
+
+    await component.loadProfileData();
+    fixture.detectChanges();
+
+    const el: HTMLElement = fixture.nativeElement;
+    const dark = el.querySelector('[data-testid="profile-theme-dark"] button') as HTMLButtonElement;
+    dark.click();
+    expect(setMode).toHaveBeenCalledWith('dark');
+    expect(el.querySelector('[data-testid="profile-logout-btn"]')).toBeTruthy();
+    expect(el.querySelector('[data-testid="profile-admin-link"]')).toBeNull();
   });
 });

@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+.profile-preferences-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.profile-preferences-card__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
+
+.profile-preferences-card__label {
+  color: var(--org-on-surface-variant);
+  font: var(--org-text-body-sm);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.profile-preferences-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+}
+
+.profile-preferences-card__logout {
+  align-self: flex-start;
+  margin-left: calc(var(--org-space-sm) * -1);
+}

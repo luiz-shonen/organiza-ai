@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService, UserService, FamilyService } from '../../core/services';
-import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
+import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
+import type { UserProfile, PartyEvent, FamilyMember, ThemeMode } from '../../core/models';
 import {
   OrgLoadingStateComponent,
   FeedbackService,
@@ -14,6 +14,7 @@ import {
   OrgSectionComponent,
   OrgSurfaceComponent,
 } from '../../shared/ui';
+import { ProfilePreferencesCardComponent } from './components/profile-preferences-card/profile-preferences-card.component';
 import { ProfileInfoCardComponent } from './components/profile-info-card/profile-info-card.component';
 import {
   FamilyRosterManagerComponent,
@@ -36,6 +37,7 @@ import {
     OrgIconComponent,
     ProfileInfoCardComponent,
     FamilyRosterManagerComponent,
+    ProfilePreferencesCardComponent,
   ],
   templateUrl: './profile.container.html',
   styleUrl: './profile.container.scss',
@@ -46,6 +48,10 @@ export class ProfileContainer implements OnInit {
   private readonly familyService = inject(FamilyService);
   private readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
+  private readonly themeService = inject(ThemeService);
+
+  protected readonly themeMode = this.themeService.mode;
+  protected readonly isSuperAdmin = this.authService.isSuperAdmin;
 
   readonly loading = signal<boolean>(true);
   readonly userProfile = signal<UserProfile | null>(null);
@@ -153,6 +159,19 @@ export class ProfileContainer implements OnInit {
     } catch {
       this.feedback.error('Não foi possível remover o familiar. Tente novamente.');
     }
+  }
+
+  protected changeTheme(mode: ThemeMode): void {
+    this.themeService.setMode(mode);
+  }
+
+  protected openRoute(route: string): void {
+    void this.router.navigateByUrl(route);
+  }
+
+  protected async logout(): Promise<void> {
+    await this.authService.logout();
+    await this.router.navigate(['/login']);
   }
 
   protected exploreEvents(): void {

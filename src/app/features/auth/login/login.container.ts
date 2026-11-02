@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services';
 import {
   OrgButtonComponent,
   OrgIconComponent,
+  OrgLogoComponent,
   OrgSurfaceComponent,
   OrgTextFieldComponent,
 } from '../../../shared/ui';
@@ -16,6 +17,7 @@ import {
     ReactiveFormsModule,
     OrgButtonComponent,
     OrgIconComponent,
+    OrgLogoComponent,
     OrgTextFieldComponent,
     OrgSurfaceComponent,
   ],

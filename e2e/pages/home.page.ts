@@ -5,11 +5,11 @@ export class HomePage extends BasePage {
   readonly pageRoot: Locator;
   readonly eventCards: Locator;
   readonly emptyState: Locator;
-  readonly navigationMenuTrigger: Locator;
-  readonly themeToggleBtn: Locator;
-  readonly navigationDrawer: Locator;
-  readonly drawerThemeLight: Locator;
-  readonly drawerThemeDark: Locator;
+  readonly headerLoginBtn: Locator;
+  readonly bottomNav: Locator;
+  readonly profileNavLink: Locator;
+  readonly profileThemeLight: Locator;
+  readonly profileThemeDark: Locator;
   readonly seasonalOverlay: Locator;
 
   constructor(page: Page) {
@@ -17,13 +17,18 @@ export class HomePage extends BasePage {
     this.pageRoot = page.getByTestId('home-page').or(page.locator('section.home'));
     this.eventCards = page.getByTestId('event-card').or(page.locator('a.home__card-link'));
     this.emptyState = page.getByTestId('home-empty-state').or(page.locator('.home__empty'));
-    this.navigationMenuTrigger = page.getByTestId('navigation-menu-trigger');
-    // Kept as a compatibility alias for legacy callers that only exercise an
-    // offline-safe toolbar interaction. Theme choices themselves are in the drawer.
-    this.themeToggleBtn = this.navigationMenuTrigger;
-    this.navigationDrawer = page.getByTestId('navigation-drawer');
-    this.drawerThemeLight = page.getByTestId('drawer-theme-light');
-    this.drawerThemeDark = page.getByTestId('drawer-theme-dark');
+    // No hamburger: visitors get an "Entrar" button, members the bottom bar (phone) or
+    // the header navigation (desktop). Both expose the same nav-* test ids.
+    this.headerLoginBtn = page.getByTestId('header-login-btn');
+    this.bottomNav = page.locator('.app-bottom-nav');
+    this.profileNavLink = page
+      .getByTestId('nav-profile')
+      .or(page.getByTestId('header-profile-link'))
+      .filter({ visible: true })
+      .first();
+    // Theme choices live in Perfil → Preferências.
+    this.profileThemeLight = page.getByTestId('profile-theme-light').getByRole('radio');
+    this.profileThemeDark = page.getByTestId('profile-theme-dark').getByRole('radio');
     this.seasonalOverlay = page
       .getByTestId('seasonal-overlay')
       .or(page.locator('.seasonal-overlay'))
@@ -32,11 +37,6 @@ export class HomePage extends BasePage {
 
   async assertLoaded(): Promise<void> {
     await expect(this.pageRoot).toBeVisible();
-  }
-
-  async openNavigationDrawer(): Promise<void> {
-    await this.navigationMenuTrigger.click();
-    await expect(this.navigationDrawer).toBeVisible();
   }
 
   async clickEventCard(index: number = 0): Promise<void> {

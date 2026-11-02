@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+// Neutral track, the chosen option lifts onto a surface "chip".
+.org-segmented-control {
+  --mat-button-toggle-shape: var(--org-radius-sm);
+  --mat-button-toggle-divider-color: transparent;
+  --mat-button-toggle-background-color: transparent;
+  --mat-button-toggle-text-color: var(--org-on-surface-variant);
+  --mat-button-toggle-selected-state-background-color: var(--org-surface);
+  --mat-button-toggle-selected-state-text-color: var(--org-on-surface);
+  --mat-button-toggle-label-text-weight: var(--org-font-weight-semibold);
+  --mat-button-toggle-label-text-size: var(--org-font-size-xs);
+  --mat-button-toggle-height: 52px;
+
+  background: var(--org-surface-container-low);
+  border: 0;
+  display: grid;
+  gap: var(--org-space-xs);
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  padding: var(--org-space-xs);
+  width: 100%;
+}
+
+.org-segmented-control__option {
+  border: 0;
+  border-radius: var(--org-radius-sm);
+
+  &.mat-button-toggle-checked {
+    box-shadow: var(--org-shadow-xs);
+  }
+}
+
+.org-segmented-control__content {
+  align-items: center;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+  justify-content: center;
+  line-height: var(--org-line-height-snug);
+  padding: var(--org-space-xs) 0;
+}

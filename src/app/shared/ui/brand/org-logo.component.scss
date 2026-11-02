@@ -1,0 +1,52 @@
+:host {
+  display: inline-flex;
+}
+
+.org-logo {
+  align-items: center;
+  color: var(--org-on-surface);
+  display: inline-flex;
+  font: var(--org-font-weight-semibold) var(--org-font-size-lg) / var(--org-line-height-none)
+    var(--org-font-display);
+  gap: var(--org-space-sm);
+
+  &--lg {
+    flex-direction: column;
+    font-size: var(--org-font-size-2xl);
+
+    .org-logo__mark {
+      block-size: var(--org-space-2xl);
+      inline-size: var(--org-space-2xl);
+    }
+  }
+}
+
+.org-logo__mark {
+  block-size: var(--org-icon-size-lg);
+  flex: none;
+  inline-size: var(--org-icon-size-lg);
+}
+
+.org-logo__sheet {
+  fill: var(--org-surface);
+  stroke: currentcolor;
+}
+
+.org-logo__band {
+  fill: var(--org-primary);
+}
+
+.org-logo__rings {
+  stroke: currentcolor;
+}
+
+.org-logo__check {
+  stroke: var(--org-primary);
+}
+
+.org-logo__text {
+  background: var(--org-gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

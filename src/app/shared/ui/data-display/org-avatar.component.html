@@ -1,0 +1,12 @@
+<span
+  class="org-avatar"
+  [class.org-avatar--lg]="size() === 'lg'"
+  [class.org-avatar--highlighted]="highlighted()"
+  aria-hidden="true"
+>
+  @if (photoUrl(); as photoUrl) {
+    <img class="org-avatar__image" [src]="photoUrl" alt="" referrerpolicy="no-referrer" />
+  } @else {
+    {{ initial() }}
+  }
+</span>

@@ -20,13 +20,9 @@ test.describe('PWA Offline Caching Resilience and Offline Mode Suite', () => {
     // 3. Verify page remains responsive and does not crash or blank out
     await expect(homePage.pageRoot).toBeVisible();
 
-    // Verify navigation drawer and its theme controls remain interactive offline.
-    await page.getByTestId('navigation-menu-trigger').click();
-    await expect(page.getByTestId('navigation-drawer')).toBeVisible();
-    await page.getByTestId('drawer-theme-dark').click();
-    await expect(page.locator('html')).toHaveClass(/dark/);
-    const darkStorageValue = await page.evaluate(() => localStorage.getItem('theme_mode'));
-    expect(darkStorageValue).toBe('dark');
+    // Verify the header and its offline banner stay usable while disconnected.
+    await expect(homePage.headerLoginBtn).toBeVisible();
+    await expect(page.getByRole('alert')).toContainText('Você está offline');
 
     // 4. Restore online connection
     await context.setOffline(false);

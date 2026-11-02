@@ -71,6 +71,21 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(element().querySelector('.event-card__host-name')?.textContent).toContain('Você');
   });
 
+  it("prefers the organizer's saved name and shows the viewer's initial when it is them", () => {
+    fixture.componentRef.setInput('event', { ...mockEvent, creatorName: 'Jéssica Souza' });
+    fixture.detectChanges();
+    expect(element().querySelector('.event-card__host-name')?.textContent).toContain(
+      'Jéssica Souza',
+    );
+
+    fixture.componentRef.setInput('event', { ...mockEvent, creatorEmail: '', creatorName: '' });
+    fixture.componentRef.setInput('isOwner', true);
+    fixture.componentRef.setInput('viewerName', 'Luiz Rodrigues');
+    fixture.detectChanges();
+    expect(element().querySelector('.event-card__host-name')?.textContent).toContain('Você');
+    expect(element().querySelector('.event-card__host org-avatar')?.textContent).toContain('L');
+  });
+
   it('offers "Editar evento" only to people who can edit', () => {
     expect(element().querySelector('[data-testid="edit-event-btn"]')).toBeNull();
 

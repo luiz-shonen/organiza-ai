@@ -68,6 +68,8 @@ export interface PartyEvent {
   status?: 'active' | 'cancelled';
   createdBy?: string;
   creatorEmail?: string;
+  /** The organizer's display name, saved with the event so guests see who invites them. */
+  creatorName?: string;
   collaborators?: string[];
   createdAt: string;
   updatedAt: string;

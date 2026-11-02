@@ -21,7 +21,7 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
-import { formatCep } from '../../../core/utils';
+import { formatCep, parseLocation } from '../../../core/utils';
 import {
   AddressNumber,
   Cep,
@@ -186,12 +186,16 @@ export class EventEditorContainer implements OnInit {
               time: timeStr,
             });
 
+            // Older events only have the one-line location; split it into the fields.
+            const details = event.addressDetails?.address
+              ? event.addressDetails
+              : parseLocation(event.location);
             this.addressForm.patchValue({
-              cep: event.addressDetails?.cep || '',
-              address: event.addressDetails?.address || event.location || '',
-              number: event.addressDetails?.number || '',
-              neighborhood: event.addressDetails?.neighborhood || '',
-              city: event.addressDetails?.city || '',
+              cep: details.cep || '',
+              address: details.address || '',
+              number: details.number || '',
+              neighborhood: details.neighborhood || '',
+              city: details.city || '',
             });
 
             this.pixForm.patchValue({
@@ -233,6 +237,15 @@ export class EventEditorContainer implements OnInit {
         guestsSub.unsubscribe();
       });
     }
+  }
+
+  /** Steps that still block saving, named as in the stepper. */
+  protected missingSteps(): string[] {
+    const missing: string[] = [];
+    if (this.basicInfoForm.invalid) missing.push(this.stepLabels[0]);
+    if (this.addressForm.invalid) missing.push(this.stepLabels[1]);
+    if (this.pixForm.invalid) missing.push(this.stepLabels[3]);
+    return missing;
   }
 
   protected async saveEvent(): Promise<void> {
@@ -305,6 +318,7 @@ export class EventEditorContainer implements OnInit {
       pixKey: pixKey || null,
       createdBy: user?.uid ?? '',
       creatorEmail: user?.email ?? '',
+      creatorName: user?.displayName ?? this.currentEvent()?.creatorName ?? '',
       collaborators: this.currentEvent()?.collaborators ?? [],
     };
 

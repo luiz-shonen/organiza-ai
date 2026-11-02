@@ -27,7 +27,8 @@
           @if (currentEvent()?.status !== 'cancelled') {
             <org-button
               label="Cancelar evento"
-              variant="text"
+              variant="danger-text"
+              icon="cancel"
               testId="cancel-event-btn"
               [compact]="true"
               (pressed)="cancelEvent()"
@@ -93,7 +94,7 @@
               [canSave]="isOwner()"
               [isEditing]="isEditing()"
               [saving]="saving()"
-              [complete]="basicInfoForm.valid && addressForm.valid && pixForm.valid"
+              [missingSteps]="missingSteps()"
               (back)="stepper.previous()"
               (save)="saveEvent()"
             />

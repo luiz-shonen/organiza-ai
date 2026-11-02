@@ -57,10 +57,12 @@
     <div class="event-card__host-info">
       <p class="event-card__host-label">Organizado por</p>
       <div class="event-card__host-person">
-        <org-avatar [name]="organizerName()" />
+        <org-avatar [name]="organizerAvatarName()" />
         <div>
           <p class="event-card__host-name">{{ organizerName() }}</p>
-          <p class="event-card__host-sub">{{ isOwner() ? 'Organizador' : 'Organizadora(o)' }}</p>
+          <p class="event-card__host-sub">
+            {{ isOwner() ? 'Você organiza este evento' : 'Organizador(a)' }}
+          </p>
         </div>
       </div>
     </div>

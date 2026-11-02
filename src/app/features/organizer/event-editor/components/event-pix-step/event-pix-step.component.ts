@@ -31,7 +31,8 @@ export class EventPixStepComponent {
   readonly isEditing = input(false);
   readonly saving = input(false);
   /** Every step of the event form is valid. */
-  readonly complete = input(false);
+  /** Steps that still block saving; empty when everything is filled in. */
+  readonly missingSteps = input<readonly string[]>([]);
   readonly back = output<void>();
   readonly save = output<void>();
 

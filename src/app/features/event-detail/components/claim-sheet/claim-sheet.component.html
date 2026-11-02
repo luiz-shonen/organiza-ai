@@ -30,7 +30,7 @@
           [(value)]="quantity"
           [min]="1"
           [max]="entry.remaining"
-          [unit]="entry.item.unit ?? null"
+          [unit]="unitFor(quantity(), entry.item.unit) || null"
         />
       </div>
     }

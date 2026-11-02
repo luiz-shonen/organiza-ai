@@ -121,7 +121,7 @@ export class DashboardContainer {
 
   protected readonly subtitle = computed(() => {
     const count = this.events()?.length ?? 0;
-    return count === 1 ? '1 evento criado por você' : `${count} eventos criados por você`;
+    return count === 1 ? '1 evento que você organiza' : `${count} eventos que você organiza`;
   });
 
   readonly filteredEvents = computed(() => {

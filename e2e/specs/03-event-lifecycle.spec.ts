@@ -261,19 +261,24 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     // Personalizar is typed in place: Enter commits, Escape keeps the previous text
     const customChip = page.getByTestId('custom-category-chip');
+    // Material opens the edit input on the next frame; type once it has the focus.
+    const editInput = customChip.locator('[contenteditable]');
     await customChip.click();
+    await expect(editInput).toBeFocused();
     await page.keyboard.type('Chá revelação');
     await page.keyboard.press('Enter');
     await expect(customChip).toContainText('Chá revelação');
     await expect(festaChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);
 
     await customChip.dblclick();
+    await expect(editInput).toBeFocused();
     await page.keyboard.press('Control+A');
     await page.keyboard.type('Outra coisa');
     await page.keyboard.press('Escape');
     await expect(customChip).toContainText('Chá revelação');
 
     await customChip.dblclick();
+    await expect(editInput).toBeFocused();
     await page.keyboard.press('Control+A');
     await page.keyboard.type('<b>');
     await page.keyboard.press('Enter');

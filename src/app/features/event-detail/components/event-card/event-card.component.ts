@@ -29,6 +29,8 @@ export class EventCardComponent {
   /** The viewer created or helps organise the event: shows "Editar evento". */
   public readonly canEdit = input(false);
   public readonly isOwner = input(false);
+  /** Name of the person viewing; the organizer's avatar uses it when it is them. */
+  public readonly viewerName = input<string | null>(null);
   public readonly edit = output<void>();
 
   protected readonly categoryName = computed(() => this.event().category || 'Evento');
@@ -68,11 +70,19 @@ export class EventCardComponent {
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.event().location)}`,
   );
 
-  protected readonly organizerName = computed(() => {
-    if (this.isOwner()) return 'Você';
-    const email = this.event().creatorEmail;
-    return email ? email.split('@')[0] : 'Organizador';
+  /** The organizer's own name (or the e-mail's first part for older events). */
+  private readonly creatorName = computed(() => {
+    const { creatorName, creatorEmail } = this.event();
+    return creatorName?.trim() || (creatorEmail ? creatorEmail.split('@')[0] : '');
   });
+  /** "Você" for the organizer; otherwise the organizer's name. */
+  protected readonly organizerName = computed(() =>
+    this.isOwner() ? 'Você' : this.creatorName() || 'Organizador(a)',
+  );
+  /** The avatar shows the person's initial, also when the label says "Você". */
+  protected readonly organizerAvatarName = computed(
+    () => (this.isOwner() ? this.viewerName() : null) || this.creatorName() || this.organizerName(),
+  );
 
   protected readonly googleCalendarUrl = computed(() => {
     const ev = this.event();

@@ -108,6 +108,10 @@ describe('item progress utils', () => {
   it('formats quantities and counts days to the event', () => {
     expect(formatQuantity(6, 'L')).toBe('6 L');
     expect(formatQuantity(6)).toBe('6');
+    expect(formatQuantity(1, 'panelas')).toBe('1 panela');
+    expect(formatQuantity(2, 'panelas')).toBe('2 panelas');
+    expect(formatQuantity(1, 'porções')).toBe('1 porção');
+    expect(formatQuantity(1, 'kg')).toBe('1 kg');
 
     const now = new Date('2026-11-01T22:00:00');
     expect(daysUntil('2026-11-04T08:00:00', now)).toBe(3);

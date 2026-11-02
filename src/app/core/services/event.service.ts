@@ -254,6 +254,7 @@ export class EventService {
       status: (data['status'] as 'active' | 'cancelled') ?? 'active',
       createdBy: (data['createdBy'] as string) ?? '',
       creatorEmail: (data['creatorEmail'] as string) ?? '',
+      creatorName: (data['creatorName'] as string) ?? '',
       collaborators: (data['collaborators'] as string[]) ?? [],
       createdAt: (data['createdAt'] as string) ?? '',
       updatedAt: (data['updatedAt'] as string) ?? '',

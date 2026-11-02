@@ -62,4 +62,10 @@
     overflow-wrap: anywhere;
     padding: var(--org-space-xs, 4px) 0;
   }
+
+  &__empty {
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-font-size-sm);
+    margin: 0;
+  }
 }

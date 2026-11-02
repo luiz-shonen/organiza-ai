@@ -7,7 +7,7 @@ import {
   output,
 } from '@angular/core';
 import type { ItemClaimRequest, ItemProgress } from '../../../../core/models';
-import { formatQuantity } from '../../../../core/utils';
+import { formatQuantity, unitFor } from '../../../../core/utils';
 import {
   OrgBadgeComponent,
   OrgBottomSheetComponent,
@@ -61,6 +61,7 @@ export class ClaimSheetComponent {
     computation: () => null,
   });
 
+  protected readonly unitFor = unitFor;
   protected readonly fixed = computed(() => !!this.entry()?.item.fixedQuantity);
   protected readonly remainingLabel = computed(() => {
     const entry = this.entry();

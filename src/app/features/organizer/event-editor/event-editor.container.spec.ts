@@ -171,6 +171,28 @@ describe('EventEditorContainer', () => {
       expect(mockFeedback.success).toHaveBeenCalledWith('Evento atualizado!');
     });
 
+    it('fills the address fields of an older event from its one-line location', () => {
+      mockEventService.getEvent.mockReturnValue(
+        of({ ...mockOwnerEvent, addressDetails: undefined }),
+      );
+      fixture = TestBed.createComponent(EventEditorContainer);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('id', 'evt-123');
+      fixture.detectChanges();
+
+      expect(component['addressForm'].getRawValue()).toEqual({
+        cep: '01001-000',
+        address: 'Rua das Flores',
+        number: '100',
+        neighborhood: 'Centro',
+        city: 'São Paulo/SP',
+      });
+      expect(component['missingSteps']()).toEqual([]);
+
+      component['addressForm'].controls.number.setValue('');
+      expect(component['missingSteps']()).toEqual(['Endereço']);
+    });
+
     it('opens a typed collaborator drawer for the event owner', () => {
       const drawer = TestBed.inject(DrawerService);
       component['openCollaboratorsDialog']();

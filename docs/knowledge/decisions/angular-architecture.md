@@ -16,6 +16,13 @@ related: [design-system.md, styling-rules.md]
 - Local state with `signal()`, `computed()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams.
 - Always `templateUrl` + `styleUrl`.
 - Strict TypeScript, no `any`. Interfaces and form types live in `src/app/core/models/`.
+- Events save `addressDetails` beside the one-line `location`. Older events that only have the
+  line are split back into the fields by `parseLocation` when they are edited, and the Pix step
+  names the steps still blocking "Salvar" ("Para salvar, complete: Endereço").
+- Events also save `creatorName`, so guests see who invites them; the organizer sees "Você" with
+  their own initial, and no RSVP card on their own event (Início tags it "Organizador").
+- WhatsApp sharing (`buildShareMessage`, `shareWhatsApp`) sends no emoji: WhatsApp's share page
+  turns every character beyond U+07FF into "�" and then misplaces the link.
 - Every field people type in is checked by a value object in `src/app/core/value-objects/`:
   - `PersonName` covers the profile, family, guests and companions.
   - The others are `Phone`, `Email`, `EventTitle`, `EventDescription`, `ItemName`, `Quantity`, `Cep`, `AddressNumber` and `PixKey`.

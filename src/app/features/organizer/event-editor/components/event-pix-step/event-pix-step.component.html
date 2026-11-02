@@ -17,6 +17,11 @@
       />
     </div>
   </org-surface>
+  @if (canSave() && missingSteps().length) {
+    <p class="event-step__missing" role="status" data-testid="missing-steps">
+      Para salvar, complete: {{ missingSteps().join(', ') }}.
+    </p>
+  }
   <div class="event-step__actions">
     <org-button label="Voltar" variant="text" (pressed)="back.emit()" />
     @if (canSave()) {
@@ -24,7 +29,7 @@
         testId="event-save-btn"
         [label]="isEditing() ? 'Salvar alterações' : 'Criar evento'"
         [gradient]="false"
-        [disabled]="!complete() || saving()"
+        [disabled]="missingSteps().length > 0 || saving()"
         [loading]="saving()"
         (pressed)="save.emit()"
       />

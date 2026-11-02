@@ -25,6 +25,10 @@ item, plus the `bought` check of the family checklist.
 - Picking the same item again for the same person adds to the existing line (`addClaimEntry`).
 - Items may carry `unit` ("un.", "L", "pacotes") and `fixedQuantity`: whoever picks a fixed item
   brings all of it, so the "Eu levo" sheet skips the quantity.
+- Units are picked from a fixed list in the plural (`ITEM_UNITS` in `item-form`); `formatQuantity`
+  and `unitFor` read one of them in the singular ("1 panela", "2 panelas").
+- Items are edited in a side drawer with the same form as adding (`ItemService.updateItem`
+  changes name, quantity, unit and the fixed flag; who already claimed stays).
 - When a signed-in account holder cancels the RSVP, their household document is deleted in the
   same batch. A guest who confirmed by phone only has no claims document, and the rules would
   reject the delete, so `cancelRsvp` deletes it only when it is given the household uid.

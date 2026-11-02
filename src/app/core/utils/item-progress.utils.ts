@@ -56,9 +56,33 @@ export function buildItemProgress(
   });
 }
 
-/** "10 un.", "6 L" or just "10" when the item has no unit. */
+// Units are picked in the plural ("5 panelas"); one of them reads in the singular.
+const SINGULAR_UNITS: Readonly<Record<string, string>> = {
+  dúzias: 'dúzia',
+  pacotes: 'pacote',
+  garrafas: 'garrafa',
+  latas: 'lata',
+  caixas: 'caixa',
+  fardos: 'fardo',
+  sacos: 'saco',
+  potes: 'pote',
+  panelas: 'panela',
+  travessas: 'travessa',
+  bandejas: 'bandeja',
+  porções: 'porção',
+  fatias: 'fatia',
+};
+
+/** The unit as it reads next to `quantity`: "1 panela", "2 panelas". */
+export function unitFor(quantity: number, unit?: string | null): string {
+  if (!unit) return '';
+  return quantity === 1 ? (SINGULAR_UNITS[unit] ?? unit) : unit;
+}
+
+/** "10 un.", "6 L", "1 panela" or just "10" when the item has no unit. */
 export function formatQuantity(quantity: number, unit?: string | null): string {
-  return unit ? `${quantity} ${unit}` : `${quantity}`;
+  const label = unitFor(quantity, unit);
+  return label ? `${quantity} ${label}` : `${quantity}`;
 }
 
 /** Whole days from today until the date (negative when it has passed). */

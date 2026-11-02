@@ -78,3 +78,10 @@
   gap: var(--org-space-md);
   justify-content: space-between;
 }
+
+// Why "Salvar" is disabled on the last step: the steps still to fill in.
+.event-step__missing {
+  color: var(--org-warning-ink);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}

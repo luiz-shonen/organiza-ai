@@ -52,12 +52,16 @@
         [tooltip]="'Remover ' + collaborator"
         (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator })"
       />
+    } @empty {
+      <p class="collaborator-drawer__empty">Ninguém ainda. Convide pelo e-mail acima.</p>
     }
   </section>
   <section aria-labelledby="pending-invites">
     <h3 id="pending-invites">Convites pendentes ({{ drawerData().pendingInvites.length }})</h3>
     @for (invite of drawerData().pendingInvites; track invite) {
       <span class="collaborator-drawer__pending">{{ invite }}</span>
+    } @empty {
+      <p class="collaborator-drawer__empty">Nenhum convite esperando resposta.</p>
     }
   </section>
 </section>

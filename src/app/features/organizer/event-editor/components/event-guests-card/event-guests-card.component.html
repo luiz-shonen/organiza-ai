@@ -1,9 +1,5 @@
 <org-surface variant="card">
-  <org-card-header
-    icon="group"
-    heading="Lista de Convidados"
-    [subheading]="guests().length + ' confirmados'"
-  />
+  <org-card-header icon="group" heading="Lista de Convidados" [subheading]="summary()" />
 
   <div class="guests-card__actions no-print">
     <org-button

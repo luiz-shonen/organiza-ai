@@ -122,7 +122,17 @@ export class GuestService {
     await this.gateway.deleteDoc(this.guestDocPath(eventId, guestId));
   }
 
-  async cancelRsvp(eventId: string, guestId: string, primaryUid?: string): Promise<void> {
+  /**
+   * Removes the guest, their linked family and their claims. `householdUid` is the signed-in
+   * account cancelling its own RSVP: only then are its household claims deleted, because the
+   * rules let only that uid touch `claims/{uid}` (a phone-only guest has no claims document).
+   */
+  async cancelRsvp(
+    eventId: string,
+    guestId: string,
+    primaryUid?: string,
+    householdUid?: string,
+  ): Promise<void> {
     const targetUid = primaryUid || guestId;
 
     let familyDocs: { id: string }[] = [];
@@ -157,7 +167,9 @@ export class GuestService {
       }
 
       // The household's share of the list goes back to the event with the RSVP.
-      batch.delete(`events/${eventId}/claims/${targetUid}`);
+      if (householdUid) {
+        batch.delete(`events/${eventId}/claims/${householdUid}`);
+      }
     });
   }
 

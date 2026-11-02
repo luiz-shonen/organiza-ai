@@ -100,7 +100,7 @@
   font: inherit;
   font-size: var(--org-font-size-xs);
   gap: var(--org-space-xs);
-  min-block-size: 32px;
+  min-block-size: var(--org-touch-min);
   padding: 0;
 
   &:hover {

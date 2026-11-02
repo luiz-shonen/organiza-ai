@@ -159,6 +159,19 @@ describe('GuestService', () => {
       });
     });
 
+    it('releases the household claims only when the account holder cancels', async () => {
+      mockGateway.getDocs.mockResolvedValue([]);
+
+      await service.cancelRsvp('evt-100', 'user-123', 'user-123', 'user-123');
+      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/claims/user-123');
+
+      mockGateway.batchOps.delete.mockClear();
+      await service.cancelRsvp('evt-100', 'guest-9', '11999998888');
+      expect(mockGateway.batchOps.delete).not.toHaveBeenCalledWith(
+        'events/evt-100/claims/11999998888',
+      );
+    });
+
     it('rejects and rolls back if batch commit fails', async () => {
       mockGateway.runBatch.mockRejectedValue(new Error('Firestore batch error'));
 

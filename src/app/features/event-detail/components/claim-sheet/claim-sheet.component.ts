@@ -2,10 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   input,
+  linkedSignal,
   output,
-  signal,
 } from '@angular/core';
 import type { ItemClaimRequest, ItemProgress } from '../../../../core/models';
 import { formatQuantity } from '../../../../core/utils';
@@ -50,27 +49,23 @@ export class ClaimSheetComponent {
   public readonly confirm = output<ItemClaimRequest>();
   public readonly closed = output<void>();
 
-  protected readonly quantity = signal(1);
-  protected readonly who = signal<string | null>(null);
+  // Every time the sheet opens it starts from one unit (or the whole fixed quantity)
+  // for the account holder.
+  protected readonly quantity = linkedSignal(() => {
+    const entry = this.entry();
+    if (!entry) return 1;
+    return entry.item.fixedQuantity ? entry.remaining : Math.min(1, entry.remaining);
+  });
+  protected readonly who = linkedSignal<ItemProgress | null, string | null>({
+    source: this.entry,
+    computation: () => null,
+  });
 
   protected readonly fixed = computed(() => !!this.entry()?.item.fixedQuantity);
   protected readonly remainingLabel = computed(() => {
     const entry = this.entry();
     return entry ? formatQuantity(entry.remaining, entry.item.unit) : '';
   });
-
-  constructor() {
-    // Every time the sheet opens it starts from one unit for the account holder.
-    effect(() => {
-      const entry = this.entry();
-      if (entry) {
-        this.quantity.set(
-          entry.item.fixedQuantity ? entry.remaining : Math.min(1, entry.remaining),
-        );
-        this.who.set(null);
-      }
-    });
-  }
 
   protected total(entry: ItemProgress): string {
     return formatQuantity(entry.item.quantity, entry.item.unit);

@@ -101,6 +101,8 @@ export class EventDetailContainer implements OnInit {
   protected readonly session = this.guestSession.session;
   protected readonly claims = signal<EventClaims[]>([]);
   private readonly familyMembers = signal<FamilyMember[]>([]);
+  /** The family list is read once per visit, even when it turns out empty. */
+  private familyLoaded = false;
   /** Item open in the "Eu levo" sheet. */
   private readonly claimingItemId = signal<string | null>(null);
   protected readonly claimSaving = signal(false);
@@ -309,7 +311,7 @@ export class EventDetailContainer implements OnInit {
             const targetUid = user && !user.isAnonymous ? user.uid : undefined;
 
             if (targetUid) {
-              await this.guestService.cancelRsvp(this.id(), targetUid, targetUid);
+              await this.guestService.cancelRsvp(this.id(), targetUid, targetUid, targetUid);
             } else if (session?.phone) {
               const existingGuest = await this.guestService.getGuestByPhone(
                 this.id(),
@@ -337,9 +339,10 @@ export class EventDetailContainer implements OnInit {
       this.feedback.info('Por favor, confirme sua presença primeiro.');
       return;
     }
-    if (this.familyMembers().length === 0) {
+    if (!this.familyLoaded) {
       try {
         this.familyMembers.set(await this.familyService.getFamilyMembers(this.memberUid()!));
+        this.familyLoaded = true;
       } catch {
         // Without the family list the account holder can still claim for themself.
       }

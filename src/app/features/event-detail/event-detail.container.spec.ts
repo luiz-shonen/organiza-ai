@@ -356,7 +356,12 @@ describe('EventDetailContainer', () => {
       await component['onCancelRsvp']();
 
       expect(mockDialogs.confirm).toHaveBeenCalled();
-      expect(mockGuestService.cancelRsvp).toHaveBeenCalledWith('evt-123', 'usr-1', 'usr-1');
+      expect(mockGuestService.cancelRsvp).toHaveBeenCalledWith(
+        'evt-123',
+        'usr-1',
+        'usr-1',
+        'usr-1',
+      );
       expect(mockGuestSessionService.clearSession).toHaveBeenCalled();
       expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.');
     });
@@ -379,6 +384,17 @@ describe('EventDetailContainer', () => {
         { id: null, name: 'Você' },
         { id: 'f1', name: 'Marta' },
       ]);
+    });
+
+    it('reads the family list only once, even when it is empty', async () => {
+      currentUserSignal.set(lucas);
+      fixture.detectChanges();
+
+      await component['onClaimItemById']('item-1');
+      component['closeClaimSheet']();
+      await component['onClaimItemById']('item-1');
+
+      expect(mockFamilyService.getFamilyMembers).toHaveBeenCalledTimes(1);
     });
 
     it('prompts to confirm presence first when user is not confirmed', async () => {

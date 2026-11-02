@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services';
+import { Email, requiredText, valueObjectValidator } from '../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgIconComponent,
@@ -30,7 +31,7 @@ export class LoginContainer {
   private readonly fb = inject(FormBuilder);
 
   protected readonly form = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [requiredText, valueObjectValidator(Email.validate)]],
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 

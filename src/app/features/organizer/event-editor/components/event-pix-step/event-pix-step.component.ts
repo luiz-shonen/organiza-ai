@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { fieldError } from '../../../../../core/value-objects';
 import { EventPixForm } from '../../../../../core/models';
 import {
   OrgButtonComponent,
@@ -33,4 +34,6 @@ export class EventPixStepComponent {
   readonly complete = input(false);
   readonly back = output<void>();
   readonly save = output<void>();
+
+  protected readonly fieldError = fieldError;
 }

@@ -30,7 +30,8 @@
             testId="profile-name-input"
             [value]="editName()"
             [required]="true"
-            [error]="editName().trim().length === 0 ? 'O nome não pode ficar em branco' : ''"
+            [maxLength]="nameMaxLength"
+            [error]="nameError()"
             (valueChange)="editName.set($event)"
           />
           <org-text-field

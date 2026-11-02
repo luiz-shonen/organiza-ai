@@ -16,7 +16,18 @@ related: [design-system.md, styling-rules.md]
 - Local state with `signal()`, `computed()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams.
 - Always `templateUrl` + `styleUrl`.
 - Strict TypeScript, no `any`. Interfaces and form types live in `src/app/core/models/`.
-- Values with rules of their own are value objects in `src/app/core/value-objects/`. `Phone` validates a Brazilian number (DDD plus 8 digits, or 9 starting with 9), saves it as "(11) 98888-1111" and gives `org-text-field` its typing mask through the `[mask]` input.
+- Every field people type in is checked by a value object in `src/app/core/value-objects/`:
+  - `PersonName` covers the profile, family, guests and companions.
+  - The others are `Phone`, `Email`, `EventTitle`, `EventDescription`, `ItemName`, `Quantity`, `Cep`, `AddressNumber` and `PixKey`.
+- Each value object has two methods, and the page saves what `create` returns:
+  - `validate(raw)` returns the error message, or null. Empty values pass, so `required` handles them.
+  - `create(raw)` returns the tidied value, or null.
+- How forms use them:
+  - Reactive forms pair `valueObjectValidator(Vo.validate)` with `requiredText`, and show messages with `fieldError(control, requiredMessage)`.
+  - Signal forms show their errors after the first submit.
+- Free text refuses `< > { }` and control characters.
+- `org-text-field` takes `[mask]` (for example `Phone.mask`) and `[maxLength]`. A phone is saved as "(11) 98888-1111".
+- This validation is client-side only. Firestore rules still accept any length or content on the documents people write: users, family, guests and claims.
 
 ## Four component roles
 

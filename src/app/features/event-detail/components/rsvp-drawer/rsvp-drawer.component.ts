@@ -7,14 +7,15 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FamilyMember } from '../../../../core/models';
+import {
+  PersonName,
+  Phone,
+  fieldError,
+  requiredText,
+  valueObjectValidator,
+} from '../../../../core/value-objects';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
@@ -28,8 +29,7 @@ import {
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
-const trimmedRequired: ValidatorFn = (control) =>
-  typeof control.value === 'string' && control.value.trim().length > 0 ? null : { required: true };
+const personNameValidators = [requiredText, valueObjectValidator(PersonName.validate)];
 
 @Component({
   selector: 'app-rsvp-drawer',
@@ -55,9 +55,13 @@ export class RsvpDrawerComponent {
   readonly selectedFamilyMemberIds = signal<string[]>([]);
   readonly isAddingInline = signal<boolean>(false);
 
+  protected readonly fieldError = fieldError;
+  protected readonly maskPhone = Phone.mask;
+  protected readonly nameMaxLength = PersonName.MAX;
+
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required]],
-    phone: ['', [Validators.required, Validators.minLength(10)]],
+    name: ['', personNameValidators],
+    phone: ['', [requiredText, valueObjectValidator(Phone.validate)]],
     companionsCount: [0, [Validators.min(0), Validators.max(10)]],
     companions: this.fb.nonNullable.array<string>([]),
   });
@@ -90,7 +94,7 @@ export class RsvpDrawerComponent {
     }
 
     while (this.companions.length < count) {
-      this.companions.push(this.fb.nonNullable.control('', [trimmedRequired]));
+      this.companions.push(this.fb.nonNullable.control('', personNameValidators));
     }
     while (this.companions.length > count) {
       this.companions.removeAt(this.companions.length - 1);
@@ -129,9 +133,11 @@ export class RsvpDrawerComponent {
 
     const raw = this.form.getRawValue();
     const result: RsvpDrawerResult = {
-      name: raw.name,
-      phone: raw.phone,
-      companions: raw.companions.map((name) => ({ name: name.trim() })),
+      name: PersonName.create(raw.name)?.value ?? raw.name.trim(),
+      phone: Phone.create(raw.phone)?.formatted ?? raw.phone.trim(),
+      companions: raw.companions.map((name) => ({
+        name: PersonName.create(name)?.value ?? name.trim(),
+      })),
       selectedFamilyMembers: this.familyMembers().filter((member) =>
         this.selectedFamilyMemberIds().includes(member.id),
       ),

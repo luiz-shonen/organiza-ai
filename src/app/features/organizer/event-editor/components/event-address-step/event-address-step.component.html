@@ -17,11 +17,8 @@
           label="CEP"
           placeholder="00000-000"
           [required]="true"
-          [error]="
-            addressForm.controls.cep.hasError('required') && addressForm.controls.cep.touched
-              ? 'CEP é obrigatório'
-              : ''
-          "
+          [maxLength]="9"
+          [error]="fieldError(addressForm.controls.cep, 'CEP é obrigatório')"
           formControlName="cep"
           testId="event-cep-input"
           (valueChange)="cepInput.emit($event)"
@@ -31,11 +28,8 @@
           label="Número"
           placeholder="Ex: 123"
           [required]="true"
-          [error]="
-            addressForm.controls.number.hasError('required') && addressForm.controls.number.touched
-              ? 'Número é obrigatório'
-              : ''
-          "
+          [maxLength]="7"
+          [error]="fieldError(addressForm.controls.number, 'Número é obrigatório')"
           formControlName="number"
           testId="event-number-input"
         />

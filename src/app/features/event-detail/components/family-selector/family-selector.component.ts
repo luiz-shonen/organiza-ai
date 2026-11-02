@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal } f
 import { CommonModule } from '@angular/common';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
 import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
+import { PersonName } from '../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
@@ -44,8 +45,17 @@ export class FamilySelectorComponent {
   protected readonly showInlineForm = signal<boolean>(false);
 
   protected readonly inlineName = signal<string>('');
-  protected readonly inlineRelationship = signal<FamilyRelationship>('child');
-  protected readonly inlinePhone = signal<string>('');
+  /** Null while what is typed in Parentesco matches no option. */
+  protected readonly inlineRelationship = signal<FamilyRelationship | null>('child');
+  /** Set on a submit with invalid fields; the errors then follow what is typed. */
+  protected readonly showInlineErrors = signal(false);
+  protected readonly inlineNameError = computed(() =>
+    this.showInlineErrors() ? (PersonName.validate(this.inlineName()) ?? '') : '',
+  );
+  protected readonly inlineRelationshipError = computed(() =>
+    this.showInlineErrors() && !this.inlineRelationship() ? 'Escolha um parentesco da lista' : '',
+  );
+  protected readonly nameMaxLength = PersonName.MAX;
 
   protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
   protected readonly relationshipAutocompleteOptions: readonly OrgSelectOption[] =
@@ -98,14 +108,15 @@ export class FamilySelectorComponent {
   }
 
   protected onSubmitInline(): void {
-    const trimmedName = this.inlineName().trim();
-    if (!trimmedName) return;
+    if (!this.inlineName().trim()) return;
+    const name = PersonName.create(this.inlineName());
+    const relationship = this.inlineRelationship();
+    if (!name || !relationship) {
+      this.showInlineErrors.set(true);
+      return;
+    }
 
-    this.addInlineMember.emit({
-      name: trimmedName,
-      relationship: this.inlineRelationship(),
-      phone: this.inlinePhone().trim() || undefined,
-    });
+    this.addInlineMember.emit({ name: name.value, relationship });
 
     this.showInlineForm.set(false);
     this.resetInlineForm();
@@ -113,12 +124,12 @@ export class FamilySelectorComponent {
 
   protected setInlineRelationship(value: string | null): void {
     const option = this.relationshipOptions.find((relationship) => relationship.value === value);
-    this.inlineRelationship.set(option?.value ?? 'child');
+    this.inlineRelationship.set(option?.value ?? null);
   }
 
   private resetInlineForm(): void {
     this.inlineName.set('');
     this.inlineRelationship.set('child');
-    this.inlinePhone.set('');
+    this.showInlineErrors.set(false);
   }
 }

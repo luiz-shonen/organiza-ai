@@ -154,4 +154,19 @@ describe('ProfileInfoCardComponent', () => {
     expect(emitSpy).not.toHaveBeenCalled();
     expect(component.isEditing()).toBe(true);
   });
+
+  it('should keep editing and show the error when the name is invalid', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
+
+    component.startEditing();
+    component.editName.set('Maria 123');
+    component.saveDetails();
+    fixture.detectChanges();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+    expect(component.isEditing()).toBe(true);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(
+      'Use só letras, espaços, hífen ou apóstrofo',
+    );
+  });
 });

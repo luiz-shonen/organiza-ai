@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { NewPartyItem } from '../../../../../core/models';
 import { formatQuantity } from '../../../../../core/utils';
+import { ItemName, Quantity } from '../../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
@@ -59,8 +60,19 @@ export class EventItemsStepComponent {
   protected readonly fixed = signal(false);
   protected readonly openHint = signal<number | null>(null);
 
+  /** Set on an add with invalid fields; the errors then follow what is typed. */
+  protected readonly showErrors = signal(false);
+  protected readonly nameMaxLength = ItemName.RULES.max;
+  protected readonly nameError = computed(() =>
+    this.showErrors() ? (ItemName.validate(this.name()) ?? '') : '',
+  );
+  protected readonly quantityError = computed(() =>
+    String(this.quantity()).trim() === ''
+      ? 'Informe a quantidade'
+      : (Quantity.validate(this.quantity()) ?? ''),
+  );
   protected readonly canAdd = computed(
-    () => this.name().trim().length > 0 && Number(this.quantity()) >= 1,
+    () => this.name().trim().length > 0 && !this.quantityError(),
   );
 
   protected label(item: NewPartyItem): string {
@@ -73,14 +85,21 @@ export class EventItemsStepComponent {
 
   protected submit(): void {
     if (!this.canAdd()) return;
+    const name = ItemName.create(this.name());
+    const quantity = Quantity.create(this.quantity());
+    if (!name || !quantity) {
+      this.showErrors.set(true);
+      return;
+    }
     this.add.emit({
-      name: this.name().trim(),
-      quantity: Math.max(1, Math.floor(Number(this.quantity()))),
+      name: name.value,
+      quantity: quantity.value,
       unit: this.unit() ?? undefined,
       fixedQuantity: this.fixed(),
     });
     this.name.set('');
     this.quantity.set('1');
     this.fixed.set(false);
+    this.showErrors.set(false);
   }
 }

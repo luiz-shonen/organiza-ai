@@ -21,6 +21,15 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { formatCep } from '../../../core/utils';
+import {
+  AddressNumber,
+  Cep,
+  EventDescription,
+  EventTitle,
+  PixKey,
+  requiredText,
+  valueObjectValidator,
+} from '../../../core/value-objects';
 import { EVENT_CATEGORIES, Guest, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
@@ -108,23 +117,23 @@ export class EventEditorContainer implements OnInit {
   });
 
   protected readonly basicInfoForm = this.fb.nonNullable.group({
-    title: ['', [Validators.required]],
+    title: ['', [requiredText, valueObjectValidator(EventTitle.validate)]],
     category: ['', [Validators.required]],
-    description: ['', [Validators.required]],
+    description: ['', [requiredText, valueObjectValidator(EventDescription.validate)]],
     date: [null as Date | null, [Validators.required]],
     time: ['', [Validators.required]],
   });
 
   protected readonly addressForm = this.fb.nonNullable.group({
-    cep: ['', [Validators.required]],
-    address: ['', [Validators.required]],
-    neighborhood: ['', [Validators.required]],
-    city: ['', [Validators.required]],
-    number: ['', [Validators.required]],
+    cep: ['', [requiredText, valueObjectValidator(Cep.validate)]],
+    address: ['', [requiredText]],
+    neighborhood: ['', [requiredText]],
+    city: ['', [requiredText]],
+    number: ['', [requiredText, valueObjectValidator(AddressNumber.validate)]],
   });
 
   protected readonly pixForm = this.fb.nonNullable.group({
-    pixKey: [''],
+    pixKey: ['', [valueObjectValidator(PixKey.validate)]],
   });
 
   ngOnInit(): void {
@@ -231,9 +240,16 @@ export class EventEditorContainer implements OnInit {
 
     this.saving.set(true);
 
-    const { title, category, description, date, time } = this.basicInfoForm.getRawValue();
-    const { cep, address, neighborhood, city, number } = this.addressForm.getRawValue();
-    const { pixKey } = this.pixForm.getRawValue();
+    const raw = this.basicInfoForm.getRawValue();
+    const { category, date, time } = raw;
+    // The forms are valid here, so each value object exists; they save the tidied text.
+    const title = EventTitle.create(raw.title)?.value ?? raw.title.trim();
+    const description = EventDescription.create(raw.description)?.value ?? raw.description.trim();
+    const rawAddress = this.addressForm.getRawValue();
+    const { address, neighborhood, city } = rawAddress;
+    const cep = Cep.create(rawAddress.cep)?.formatted ?? rawAddress.cep;
+    const number = AddressNumber.create(rawAddress.number)?.value ?? rawAddress.number.trim();
+    const pixKey = PixKey.create(this.pixForm.getRawValue().pixKey)?.value ?? '';
 
     let finalDate = new Date();
     if (date) {

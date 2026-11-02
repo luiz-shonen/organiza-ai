@@ -3,7 +3,7 @@
  * starting with 9 (mobile). Stored and shown as "(11) 98888-1111".
  */
 export class Phone {
-  static readonly INVALID_MESSAGE = 'Telefone inválido. Use DDD + número, ex.: (11) 98888-1111';
+  static readonly INVALID_MESSAGE = 'Telefone inválido, ex.: (11) 98888-1111';
 
   private constructor(readonly digits: string) {}
 
@@ -18,6 +18,12 @@ export class Phone {
     if (digits.length === 10 && digits[2] !== '9') return new Phone(digits);
     if (digits.length === 11 && digits[2] === '9') return new Phone(digits);
     return null;
+  }
+
+  /** The problem with `raw`, or null when it is valid. Empty text is left to `required`. */
+  static validate(raw: string | null | undefined): string | null {
+    if ((raw ?? '').trim().length === 0) return null;
+    return Phone.isValid(raw) ? null : Phone.INVALID_MESSAGE;
   }
 
   static isValid(raw: string | null | undefined): boolean {

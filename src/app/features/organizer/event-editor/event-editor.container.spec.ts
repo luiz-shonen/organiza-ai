@@ -280,5 +280,59 @@ describe('EventEditorContainer', () => {
         fixedQuantity: true,
       });
     });
+
+    it('refuses markup in the title, a bad house number and an invalid Pix key', async () => {
+      const date = new Date(Date.now() + 7 * 86_400_000);
+      component['basicInfoForm'].setValue({
+        title: '<script>Festa</script>',
+        category: 'Outros',
+        description: 'Arraiá com quentão',
+        date,
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: 'Casa 5',
+      });
+      component['pixForm'].setValue({ pixKey: 'chave qualquer' });
+
+      expect(component['basicInfoForm'].controls.title.getError('valueObject')).toBe(
+        'Não use os caracteres < > { }',
+      );
+      expect(component['addressForm'].controls.number.invalid).toBe(true);
+      expect(component['pixForm'].controls.pixKey.invalid).toBe(true);
+
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).not.toHaveBeenCalled();
+    });
+
+    it('saves tidied text and the CEP formatted', async () => {
+      const date = new Date(Date.now() + 7 * 86_400_000);
+      component['basicInfoForm'].setValue({
+        title: '  Festa   Junina ',
+        category: 'Outros',
+        description: 'Arraiá com quentão',
+        date,
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: 's/n',
+      });
+      await component['saveEvent']();
+
+      expect(mockEventService.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Festa Junina',
+          addressDetails: expect.objectContaining({ cep: '30514-160', number: 'S/N' }),
+        }),
+      );
+    });
   });
 });

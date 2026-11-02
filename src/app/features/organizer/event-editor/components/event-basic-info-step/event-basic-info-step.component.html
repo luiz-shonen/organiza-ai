@@ -16,11 +16,8 @@
         label="Título do evento"
         placeholder="Ex: Festa Junina 2026"
         [required]="true"
-        [error]="
-          basicInfoForm.controls.title.hasError('required') && basicInfoForm.controls.title.touched
-            ? 'Título é obrigatório'
-            : ''
-        "
+        [maxLength]="titleMaxLength"
+        [error]="fieldError(basicInfoForm.controls.title, 'Título é obrigatório')"
         formControlName="title"
         testId="event-title-input"
       />
@@ -55,13 +52,8 @@
         placeholder="Descreva o evento..."
         [rows]="4"
         [required]="true"
-        [maxLength]="500"
-        [error]="
-          basicInfoForm.controls.description.hasError('required') &&
-          basicInfoForm.controls.description.touched
-            ? 'Descrição é obrigatória'
-            : ''
-        "
+        [maxLength]="descriptionMaxLength"
+        [error]="fieldError(basicInfoForm.controls.description, 'Descrição é obrigatória')"
         formControlName="description"
         testId="event-description-input"
       />

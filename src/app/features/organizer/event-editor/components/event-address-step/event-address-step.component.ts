@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { fieldError } from '../../../../../core/value-objects';
 import { EventAddressForm } from '../../../../../core/models';
 import {
   OrgButtonComponent,
@@ -26,4 +27,6 @@ export class EventAddressStepComponent {
   readonly cepInput = output<string>();
   readonly back = output<void>();
   readonly next = output<void>();
+
+  protected readonly fieldError = fieldError;
 }

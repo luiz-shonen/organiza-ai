@@ -226,4 +226,28 @@ describe('FamilyRosterManagerComponent', () => {
       'Adicionar familiar',
     );
   });
+
+  it('should refuse an invalid name or an unknown relationship and show both errors', () => {
+    fixture.componentRef.setInput('members', []);
+    fixture.detectChanges();
+    const addSpy = vi.fn();
+    component.addMember.subscribe(addSpy);
+
+    component['newName'].set('Lucas <b>');
+    component['setRelationship'](null);
+    component['onSubmit']();
+    fixture.detectChanges();
+
+    expect(addSpy).not.toHaveBeenCalled();
+    const text = (fixture.nativeElement as HTMLElement).textContent;
+    expect(text).toContain('Use só letras, espaços, hífen ou apóstrofo');
+    expect(text).toContain('Escolha um parentesco da lista');
+
+    component['newName'].set('  Lucas   Silva ');
+    component['setRelationship']('child');
+    component['onSubmit']();
+    expect(addSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Lucas Silva', relationship: 'child' }),
+    );
+  });
 });

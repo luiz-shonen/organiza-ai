@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal } f
 import { FormsModule } from '@angular/forms';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
 import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
-import { Phone } from '../../../../core/value-objects';
+import { PersonName, Phone } from '../../../../core/value-objects';
 import {
   OrgAutocompleteFieldComponent,
   OrgAvatarComponent,
@@ -49,15 +49,21 @@ export class FamilyRosterManagerComponent {
   readonly removeMember = output<string>();
 
   protected readonly newName = signal<string>('');
-  protected readonly newRelationship = signal<FamilyRelationship>('child');
+  /** Null while what is typed in Parentesco matches no option. */
+  protected readonly newRelationship = signal<FamilyRelationship | null>('child');
   protected readonly newPhone = signal<string>('');
-  /** Set on a submit with an invalid phone; the error then follows what is typed. */
-  protected readonly showPhoneError = signal(false);
-  protected readonly phoneError = computed(() =>
-    this.showPhoneError() && this.newPhone() && !Phone.isValid(this.newPhone())
-      ? Phone.INVALID_MESSAGE
-      : '',
+  /** Set on a submit with invalid fields; the errors then follow what is typed. */
+  protected readonly showErrors = signal(false);
+  protected readonly nameError = computed(() =>
+    this.showErrors() ? (PersonName.validate(this.newName()) ?? '') : '',
   );
+  protected readonly relationshipError = computed(() =>
+    this.showErrors() && !this.newRelationship() ? 'Escolha um parentesco da lista' : '',
+  );
+  protected readonly phoneError = computed(() =>
+    this.showErrors() ? (Phone.validate(this.newPhone()) ?? '') : '',
+  );
+  protected readonly nameMaxLength = PersonName.MAX;
   protected readonly maskPhone = Phone.mask;
   protected readonly displayPhone = Phone.display;
   /** Id of the member loaded into the form for editing; null while adding. */
@@ -74,22 +80,22 @@ export class FamilyRosterManagerComponent {
 
   protected setRelationship(value: string | null): void {
     const option = this.relationshipOptions.find((candidate) => candidate.value === value);
-    this.newRelationship.set(option?.value ?? 'child');
+    this.newRelationship.set(option?.value ?? null);
   }
 
   protected onSubmit(): void {
-    const trimmedName = this.newName().trim();
-    if (!trimmedName) return;
-    const phone = this.newPhone().trim();
-    if (phone && !Phone.isValid(phone)) {
-      this.showPhoneError.set(true);
+    if (!this.newName().trim()) return;
+    const name = PersonName.create(this.newName());
+    const relationship = this.newRelationship();
+    if (!name || !relationship || Phone.validate(this.newPhone())) {
+      this.showErrors.set(true);
       return;
     }
 
     const payload: AddFamilyMemberPayload = {
-      name: trimmedName,
-      relationship: this.newRelationship(),
-      phone: Phone.create(phone)?.formatted,
+      name: name.value,
+      relationship,
+      phone: Phone.create(this.newPhone())?.formatted,
     };
     const id = this.editingId();
     if (id) {
@@ -105,7 +111,7 @@ export class FamilyRosterManagerComponent {
     this.newName.set(member.name);
     this.newRelationship.set(member.relationship);
     this.newPhone.set(Phone.mask(member.phone ?? ''));
-    this.showPhoneError.set(false);
+    this.showErrors.set(false);
   }
 
   protected resetForm(): void {
@@ -113,7 +119,7 @@ export class FamilyRosterManagerComponent {
     this.newName.set('');
     this.newRelationship.set('child');
     this.newPhone.set('');
-    this.showPhoneError.set(false);
+    this.showErrors.set(false);
   }
 
   protected onRemove(memberId: string): void {

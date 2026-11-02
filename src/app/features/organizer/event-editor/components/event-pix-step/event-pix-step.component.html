@@ -10,6 +10,8 @@
         label="Chave Pix (opcional)"
         placeholder="CPF, e-mail ou chave aleatória"
         hint="Deixe em branco se não quiser rachadinha."
+        [maxLength]="77"
+        [error]="fieldError(form().controls.pixKey, '')"
         formControlName="pixKey"
         testId="event-pix-input"
       />

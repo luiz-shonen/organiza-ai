@@ -75,6 +75,8 @@
             label="Nome"
             placeholder="Ex: Pedro"
             [required]="true"
+            [maxLength]="nameMaxLength"
+            [error]="inlineNameError()"
             [(value)]="inlineName"
           />
 
@@ -84,6 +86,7 @@
             [options]="relationshipAutocompleteOptions"
             [value]="inlineRelationship()"
             [required]="true"
+            [error]="inlineRelationshipError()"
             (valueChange)="setInlineRelationship($event)"
           />
         </div>

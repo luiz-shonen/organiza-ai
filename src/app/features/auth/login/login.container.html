@@ -29,7 +29,7 @@
               ? ''
               : form.controls.email.hasError('required')
                 ? 'E-mail é obrigatório'
-                : form.controls.email.hasError('email')
+                : form.controls.email.hasError('valueObject')
                   ? 'Digite um e-mail válido'
                   : ''
           "

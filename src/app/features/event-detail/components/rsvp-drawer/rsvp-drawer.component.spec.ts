@@ -92,4 +92,41 @@ describe('RsvpDrawerComponent', () => {
     expect(close).not.toHaveBeenCalled();
     expect(fixture.nativeElement.textContent).toContain('Informe um número entre 0 e 10');
   });
+
+  it('refuses a name with digits and an incomplete phone, with their messages', () => {
+    const nameInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-name-input"]',
+    ) as HTMLInputElement;
+    const phoneInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-phone-input"]',
+    ) as HTMLInputElement;
+    nameInput.value = 'Carlos 2';
+    nameInput.dispatchEvent(new Event('input'));
+    phoneInput.value = '1199';
+    phoneInput.dispatchEvent(new Event('input'));
+
+    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
+    fixture.detectChanges();
+
+    expect(close).not.toHaveBeenCalled();
+    expect(phoneInput.value).toBe('(11) 99');
+    expect(fixture.nativeElement.textContent).toContain(
+      'Use só letras, espaços, hífen ou apóstrofo',
+    );
+    expect(fixture.nativeElement.textContent).toContain('Telefone inválido');
+  });
+
+  it('saves the phone formatted and the name tidied', () => {
+    const nameInput = fixture.nativeElement.querySelector(
+      '[data-testid="rsvp-name-input"]',
+    ) as HTMLInputElement;
+    nameInput.value = '  Carlos   Souza ';
+    nameInput.dispatchEvent(new Event('input'));
+
+    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
+
+    expect(close).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Carlos Souza', phone: '(11) 99999-8888' }),
+    );
+  });
 });

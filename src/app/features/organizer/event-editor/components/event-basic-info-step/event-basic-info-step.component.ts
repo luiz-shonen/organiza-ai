@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { EventDescription, EventTitle, fieldError } from '../../../../../core/value-objects';
 import { EventBasicInfoForm, EventCategoryOption } from '../../../../../core/models';
 import {
   OrgButtonComponent,
@@ -35,6 +36,10 @@ export class EventBasicInfoStepComponent {
   readonly minDate = input.required<Date>();
   readonly next = output<void>();
   readonly cancelled = output<void>();
+
+  protected readonly fieldError = fieldError;
+  protected readonly titleMaxLength = EventTitle.RULES.max;
+  protected readonly descriptionMaxLength = EventDescription.RULES.max;
 
   protected selectCategory(category: string): void {
     const control = this.form().controls.category;

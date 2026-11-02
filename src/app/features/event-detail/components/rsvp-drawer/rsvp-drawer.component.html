@@ -27,12 +27,9 @@
         label="Seu nome"
         formControlName="name"
         [required]="true"
+        [maxLength]="nameMaxLength"
         testId="rsvp-name-input"
-        [error]="
-          form.controls.name.hasError('required') && form.controls.name.touched
-            ? 'Nome é obrigatório'
-            : ''
-        "
+        [error]="fieldError(form.controls.name, 'Nome é obrigatório')"
       />
 
       <org-text-field
@@ -40,15 +37,11 @@
         label="WhatsApp / Telefone"
         type="tel"
         formControlName="phone"
+        placeholder="(11) 99999-9999"
         [required]="true"
+        [mask]="maskPhone"
         testId="rsvp-phone-input"
-        [error]="
-          form.controls.phone.hasError('required') && form.controls.phone.touched
-            ? 'Telefone é obrigatório'
-            : form.controls.phone.hasError('minlength') && form.controls.phone.touched
-              ? 'Mínimo 10 dígitos'
-              : ''
-        "
+        [error]="fieldError(form.controls.phone, 'Telefone é obrigatório')"
       />
 
       <org-text-field
@@ -73,11 +66,8 @@
             [label]="'Acompanhante ' + ($index + 1)"
             [formControlName]="$index"
             [required]="true"
-            [error]="
-              control.hasError('required') && control.touched
-                ? 'Nome do acompanhante é obrigatório'
-                : ''
-            "
+            [maxLength]="nameMaxLength"
+            [error]="fieldError(control, 'Nome do acompanhante é obrigatório')"
           />
         }
       </div>

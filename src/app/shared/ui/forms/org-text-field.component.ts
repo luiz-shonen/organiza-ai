@@ -57,6 +57,8 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
   public readonly readOnly = input(false);
   public readonly min = input<string | number | null>(null);
   public readonly max = input<string | number | null>(null);
+  /** Caps how many characters can be typed. */
+  public readonly maxLength = input<number | null>(null);
   public readonly prefixIcon = input<string | null>(null);
   public readonly suffixIcon = input<string | null>(null);
   /** Renders projected `[orgFieldSuffix]` content (e.g. a small toggle) at the end of the field. */

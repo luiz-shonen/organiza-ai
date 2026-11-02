@@ -11,6 +11,8 @@
           label="Nome do item"
           placeholder="Ex: Pipoca doce"
           testId="item-name-input"
+          [maxLength]="nameMaxLength"
+          [error]="nameError()"
           [(value)]="name"
         />
         <div class="event-step__row event-step__row--halves">
@@ -19,6 +21,8 @@
             type="number"
             testId="item-qty-input"
             [min]="1"
+            [max]="999"
+            [error]="quantityError()"
             [suffixAction]="true"
             [(value)]="quantity"
           >

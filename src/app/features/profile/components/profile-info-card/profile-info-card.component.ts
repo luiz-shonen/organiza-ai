@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import type { UserProfile } from '../../../../core/models';
-import { Phone } from '../../../../core/value-objects';
+import { PersonName, Phone } from '../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgIconButtonComponent,
@@ -36,15 +36,18 @@ export class ProfileInfoCardComponent {
   readonly isEditing = signal(false);
   readonly editName = signal('');
   readonly editPhone = signal('');
-  /** Set on a save with an invalid phone; the error then follows what is typed. */
-  readonly showPhoneError = signal(false);
+  /** Set on a save with invalid fields; the errors then follow what is typed. */
+  readonly showErrors = signal(false);
 
+  protected readonly nameMaxLength = PersonName.MAX;
   protected readonly maskPhone = Phone.mask;
   protected readonly phoneDisplay = computed(() => Phone.display(this.user().phone));
+  protected readonly nameError = computed(() => {
+    if (this.editName().trim().length === 0) return 'O nome não pode ficar em branco';
+    return this.showErrors() ? (PersonName.validate(this.editName()) ?? '') : '';
+  });
   protected readonly phoneError = computed(() =>
-    this.showPhoneError() && this.editPhone() && !Phone.isValid(this.editPhone())
-      ? Phone.INVALID_MESSAGE
-      : '',
+    this.showErrors() ? (Phone.validate(this.editPhone()) ?? '') : '',
   );
 
   /** "março de 2026", from the profile creation date. */
@@ -75,21 +78,23 @@ export class ProfileInfoCardComponent {
   }
 
   saveDetails(): void {
-    const trimmed = this.editName().trim();
-    if (trimmed.length === 0) return;
-    const phone = this.editPhone().trim();
-    if (phone && !Phone.isValid(phone)) {
-      this.showPhoneError.set(true);
+    if (this.editName().trim().length === 0) return;
+    const name = PersonName.create(this.editName());
+    if (!name || Phone.validate(this.editPhone())) {
+      this.showErrors.set(true);
       return;
     }
-    this.updateDetails.emit({ displayName: trimmed, phone: Phone.create(phone)?.formatted ?? '' });
+    this.updateDetails.emit({
+      displayName: name.value,
+      phone: Phone.create(this.editPhone())?.formatted ?? '',
+    });
     this.isEditing.set(false);
   }
 
   private resetFields(user: UserProfile): void {
     this.editName.set(user.displayName ?? user.name ?? '');
     this.editPhone.set(Phone.mask(user.phone ?? ''));
-    this.showPhoneError.set(false);
+    this.showErrors.set(false);
   }
 
   get userInitial(): string {

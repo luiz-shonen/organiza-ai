@@ -27,6 +27,8 @@
         testId="family-member-name-input"
         [value]="newName()"
         [required]="true"
+        [maxLength]="nameMaxLength"
+        [error]="nameError()"
         (valueChange)="newName.set($event)"
       />
       <div class="family-roster__form-row">
@@ -34,6 +36,8 @@
           label="Parentesco"
           [options]="relationshipOptions"
           [value]="newRelationship()"
+          [required]="true"
+          [error]="relationshipError()"
           (valueChange)="setRelationship($event)"
         />
         <org-text-field

@@ -80,15 +80,7 @@
           label="Data do evento"
           [min]="minDate()"
           [required]="true"
-          [error]="
-            basicInfoForm.controls.date.hasError('required') && basicInfoForm.controls.date.touched
-              ? 'Data é obrigatória'
-              : basicInfoForm.controls.date.hasError('matDatepickerMin')
-                ? 'Data não pode ser no passado'
-                : basicInfoForm.controls.date.hasError('matDatepickerParse')
-                  ? 'Data inválida'
-                  : ''
-          "
+          [error]="dateError()"
           formControlName="date"
           testId="event-date-input"
         />

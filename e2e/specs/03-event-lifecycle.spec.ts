@@ -102,7 +102,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Fill Step 1 (Basic Info) to unlock Step 2 (Address)
     await eventEditorPage.fillBasicInfo(
       'Festa de Integração 2026',
-      '12/25/2026',
+      '25/12/2026',
       'Comemoração de final de ano da equipe.',
       '19:00',
     );
@@ -171,7 +171,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     // Fill required fields and verify errors clear
     await eventEditorPage.titleInput.fill('Formatura Universitária');
-    await eventEditorPage.dateInput.fill('11/20/2026');
+    await eventEditorPage.dateInput.fill('20/11/2026');
 
     await expect(titleError).toBeHidden();
     await expect(dateError).toBeHidden();

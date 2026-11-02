@@ -7,10 +7,12 @@
     [disabled]="isDisabled()"
     [min]="min()"
     [required]="required()"
-    [value]="value()"
+    placeholder="dd/mm/aaaa"
+    inputmode="numeric"
+    maxlength="10"
+    [value]="pickerValue()"
     (blur)="markTouched()"
-    (dateInput)="updateValue($event.value)"
-    (dateChange)="updateValue($event.value)"
+    (dateChange)="pick($event.value)"
     (input)="onInputChange($event)"
   />
   <mat-datepicker-toggle matIconSuffix [disabled]="isDisabled()" [for]="picker" />

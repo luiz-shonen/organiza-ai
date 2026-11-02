@@ -139,7 +139,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.descriptionInput.fill(
         'Uma comemoração inesquecível com amigos e família.',
       );
-      await eventEditorPage.dateInput.fill('11/20/2026');
+      await eventEditorPage.dateInput.fill('20/11/2026');
       await eventEditorPage.timeInput.fill('19:00');
 
       // Próximo button becomes enabled
@@ -186,7 +186,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.assertLoaded();
       await eventEditorPage.fillBasicInfo(
         'Aniversário dos Sonhos 2026',
-        '11/20/2026',
+        '20/11/2026',
         'Uma comemoração inesquecível com amigos e família.',
         '19:00',
       );
@@ -312,7 +312,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.assertLoaded();
       await eventEditorPage.fillBasicInfo(
         'Aniversário dos Sonhos 2026',
-        '11/20/2026',
+        '20/11/2026',
         'Uma comemoração inesquecível com amigos e família.',
         '19:00',
       );
@@ -489,7 +489,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.assertLoaded();
       await eventEditorPage.fillBasicInfo(
         'Aniversário dos Sonhos 2026',
-        '11/20/2026',
+        '20/11/2026',
         'Uma comemoração inesquecível com amigos e família.',
         '19:00',
       );

@@ -146,7 +146,7 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         // Fill Step 1 to unlock Address Step
         await eventEditorPage.fillBasicInfo(
           'Festa da Primavera 2026',
-          '10/20/2026',
+          '20/10/2027',
           'Grande festival ao ar livre com comidas típicas.',
           '18:00',
         );

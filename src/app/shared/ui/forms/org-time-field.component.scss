@@ -22,3 +22,7 @@
   line-height: normal;
   padding: var(--org-space-sm) 0;
 }
+
+.org-time-field__error {
+  @include field.error-text;
+}

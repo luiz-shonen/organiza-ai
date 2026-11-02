@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   EventCategory,
+  EventDateTime,
   EventDescription,
   EventTitle,
   fieldError,
@@ -54,6 +55,16 @@ export class EventBasicInfoStepComponent {
   protected isCustomCategory(): boolean {
     const value = this.form().controls.category.value;
     return this.customRequested() || (value.trim() !== '' && !this.isPreset(value));
+  }
+
+  /** A typed date is judged once the field is left; a past date and time right away. */
+  protected dateError(): string {
+    const form = this.form();
+    const date = form.controls.date;
+    if (date.touched && date.hasError('invalidDate')) return EventDateTime.INVALID_DATE_MESSAGE;
+    if (date.touched && date.hasError('required')) return 'Data é obrigatória';
+    if (form.hasError('pastDateTime')) return EventDateTime.PAST_MESSAGE;
+    return '';
   }
 
   protected selectCategory(category: string): void {

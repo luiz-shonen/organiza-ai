@@ -1,10 +1,11 @@
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { describe, expect, it } from 'vitest';
 import {
   AddressNumber,
   Cep,
   Email,
   EventCategory,
+  EventDateTime,
   EventDescription,
   EventTitle,
   ItemName,
@@ -13,7 +14,9 @@ import {
   Quantity,
   fieldError,
   normalizePlainText,
+  notInPast,
   requiredText,
+  validDate,
   valueObjectValidator,
 } from './index';
 
@@ -170,5 +173,31 @@ describe('form helpers', () => {
     expect(control.valid).toBe(true);
     const required = new FormControl('', [Validators.required]);
     expect(required.valid).toBe(false);
+  });
+});
+
+describe('EventDateTime', () => {
+  const now = new Date(2026, 10, 2, 12, 0);
+
+  it('combines a date and a time and refuses the past', () => {
+    expect(EventDateTime.combine(new Date(2026, 10, 10), '19:30')).toEqual(
+      new Date(2026, 10, 10, 19, 30),
+    );
+    expect(EventDateTime.create(new Date(2026, 10, 10), '19:30', now)).not.toBeNull();
+    expect(EventDateTime.create(new Date(2026, 10, 2), '11:59', now)).toBeNull();
+    expect(EventDateTime.combine(new Date(NaN), '19:30')).toBeNull();
+  });
+
+  it('flags typed text that is not a date and a date and time before now', () => {
+    expect(validDate(new FormControl(new Date(NaN)))).toEqual({ invalidDate: true });
+    expect(validDate(new FormControl(new Date(2026, 10, 10)))).toBeNull();
+
+    const group = new FormGroup({
+      date: new FormControl<Date | null>(new Date(2026, 10, 2)),
+      time: new FormControl('11:00'),
+    });
+    expect(notInPast(() => now)(group)).toEqual({ pastDateTime: true });
+    group.controls.time.setValue('13:00');
+    expect(notInPast(() => now)(group)).toBeNull();
   });
 });

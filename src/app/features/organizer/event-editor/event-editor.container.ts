@@ -29,6 +29,8 @@ import {
   EventDescription,
   EventTitle,
   PixKey,
+  notInPast,
+  validDate,
   requiredText,
   valueObjectValidator,
 } from '../../../core/value-objects';
@@ -121,13 +123,16 @@ export class EventEditorContainer implements OnInit {
     return ev.createdBy === currentUid;
   });
 
-  protected readonly basicInfoForm = this.fb.nonNullable.group({
-    title: ['', [requiredText, valueObjectValidator(EventTitle.validate)]],
-    category: ['', [requiredText, valueObjectValidator(EventCategory.validate)]],
-    description: ['', [requiredText, valueObjectValidator(EventDescription.validate)]],
-    date: [null as Date | null, [Validators.required]],
-    time: ['', [Validators.required]],
-  });
+  protected readonly basicInfoForm = this.fb.nonNullable.group(
+    {
+      title: ['', [requiredText, valueObjectValidator(EventTitle.validate)]],
+      category: ['', [requiredText, valueObjectValidator(EventCategory.validate)]],
+      description: ['', [requiredText, valueObjectValidator(EventDescription.validate)]],
+      date: [null as Date | null, [Validators.required, validDate]],
+      time: ['', [Validators.required]],
+    },
+    { validators: notInPast() },
+  );
 
   protected readonly addressForm = this.fb.nonNullable.group({
     cep: ['', [requiredText, valueObjectValidator(Cep.validate)]],

@@ -295,6 +295,25 @@ describe('EventEditorContainer', () => {
       });
     });
 
+    it('blocks step 1 right away for a date and time in the past or a typed non-date', () => {
+      const form = component['basicInfoForm'];
+      form.setValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: 'Arraiá com quentão',
+        date: new Date(Date.now() - 86_400_000),
+        time: '20:00',
+      });
+      expect(form.hasError('pastDateTime')).toBe(true);
+      expect(form.invalid).toBe(true);
+
+      form.controls.date.setValue(new Date(NaN));
+      expect(form.controls.date.hasError('invalidDate')).toBe(true);
+
+      form.controls.date.setValue(new Date(Date.now() + 7 * 86_400_000));
+      expect(form.valid).toBe(true);
+    });
+
     it('refuses markup in the title, a bad house number and an invalid Pix key', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
       component['basicInfoForm'].setValue({

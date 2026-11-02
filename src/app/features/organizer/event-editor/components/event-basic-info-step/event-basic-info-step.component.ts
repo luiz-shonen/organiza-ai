@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   EventCategory,
@@ -12,6 +12,7 @@ import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgChipComponent,
+  OrgEditableChipComponent,
   OrgDateFieldComponent,
   OrgSurfaceComponent,
   OrgTextFieldComponent,
@@ -27,6 +28,7 @@ import {
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgChipComponent,
+    OrgEditableChipComponent,
     OrgDateFieldComponent,
     OrgSurfaceComponent,
     OrgTextFieldComponent,
@@ -48,13 +50,10 @@ export class EventBasicInfoStepComponent {
   protected readonly descriptionMaxLength = EventDescription.RULES.max;
 
   protected readonly categoryMaxLength = EventCategory.RULES.max;
-  /** Set when the organizer picks "Personalizar" to type a category of their own. */
-  private readonly customRequested = signal(false);
-
-  /** True while the category is typed instead of picked, including a saved custom one. */
-  protected isCustomCategory(): boolean {
-    const value = this.form().controls.category.value;
-    return this.customRequested() || (value.trim() !== '' && !this.isPreset(value));
+  /** The category when it is one the organizer typed, not one of the chips. */
+  protected customCategory(): string {
+    const value = this.form().controls.category.value.trim();
+    return value && !this.isPreset(value) ? value : '';
   }
 
   /** A typed date is judged once the field is left; a past date and time right away. */
@@ -68,16 +67,15 @@ export class EventBasicInfoStepComponent {
   }
 
   protected selectCategory(category: string): void {
-    this.customRequested.set(false);
     const control = this.form().controls.category;
     control.setValue(category);
     control.markAsTouched();
   }
 
-  protected selectCustomCategory(): void {
+  protected clearCategory(): void {
     const control = this.form().controls.category;
-    if (this.isPreset(control.value)) control.setValue('');
-    this.customRequested.set(true);
+    control.setValue('');
+    control.markAsTouched();
   }
 
   private isPreset(value: string): boolean {

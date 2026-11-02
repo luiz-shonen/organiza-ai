@@ -38,26 +38,19 @@
               (selectionChange)="selectCategory(cat.name)"
             />
           }
-          <org-chip
-            label="Personalizar"
+          <!-- Typed in place; a category of its own once committed. -->
+          <org-editable-chip
+            placeholder="Personalizar"
             testId="custom-category-chip"
-            [selectable]="true"
-            [selected]="isCustomCategory()"
-            (selectionChange)="selectCustomCategory()"
+            [value]="customCategory()"
+            [selected]="!!customCategory()"
+            [maxLength]="categoryMaxLength"
+            (valueChange)="selectCategory($event)"
+            (cleared)="clearCategory()"
           />
         </div>
-        @if (isCustomCategory()) {
-          <org-text-field
-            label="Tipo do evento"
-            placeholder="Ex: Chá revelação"
-            testId="custom-category-input"
-            formControlName="category"
-            [required]="true"
-            [maxLength]="categoryMaxLength"
-            [error]="fieldError(basicInfoForm.controls.category, 'Digite o tipo do evento')"
-          />
-        } @else if (
-          fieldError(basicInfoForm.controls.category, 'Selecione uma categoria');
+        @if (
+          fieldError(basicInfoForm.controls.category, 'Selecione ou digite uma categoria');
           as error
         ) {
           <span class="event-step__error" role="alert">{{ error }}</span>

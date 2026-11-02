@@ -1,0 +1,25 @@
+<mat-chip-grid #grid class="org-editable-chip" [attr.aria-label]="placeholder()">
+  <mat-chip-row
+    class="org-editable-chip__chip"
+    [class.org-editable-chip__chip--selected]="selected()"
+    [editable]="true"
+    [highlighted]="selected()"
+    [value]="hasValue() ? value() : ''"
+    [attr.data-testid]="testId() || null"
+    [aria-description]="'Enter ou toque no lápis para editar ' + label()"
+    (edited)="finish($event)"
+    (click)="startOnClick()"
+    (keydown.escape)="cancel()"
+    (removed)="cleared.emit()"
+  >
+    <button matChipEdit type="button" [attr.aria-label]="'Editar ' + label()">
+      <org-icon name="edit" size="sm" color="currentColor" />
+    </button>
+    {{ label() }}
+    @if (hasValue()) {
+      <button matChipRemove type="button" aria-label="Limpar">
+        <org-icon name="cancel" size="sm" color="currentColor" />
+      </button>
+    }
+  </mat-chip-row>
+</mat-chip-grid>

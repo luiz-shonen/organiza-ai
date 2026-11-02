@@ -57,6 +57,10 @@ $breakpoint-lg: 1200px;
     // Status
     --org-error: #c92a2a;
     --org-on-error: #fff;
+
+    // Filled destructive button ("Remover item"): white text on a deep red, both themes.
+    --org-danger-fill: #c92a2a;
+    --org-on-danger-fill: #fff;
     --org-error-container: #ffe3e3;
     --org-on-error-container: #a51111;
     --org-warning: #e8a200;

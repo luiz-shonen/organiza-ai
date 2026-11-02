@@ -153,6 +153,10 @@ Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" varia
 
 Uso recomendado: `<org-chip label="Celebrativo" variant="accent" [selected]="selected()" (selectionChange)="toggle($event)" />`. Use it for compact selectable labels, not arbitrary button styling.
 
+### OrgEditableChipComponent
+
+Uso recomendado: `<org-editable-chip placeholder="Personalizar" [value]="custom()" [selected]="!!custom()" (valueChange)="set($event)" (cleared)="clear()" />`. A Material editable chip for a value typed in place, next to the ready-made `org-chip` options (the event category). A click, Enter or the pencil starts editing; Enter or leaving the chip commits. Escape, an empty edit or an unchanged one keeps the previous value, so an edit left half-way never wipes it; ✕ clears it. The page validates what is committed.
+
 ### OrgIconComponent
 
 Uso recomendado: `<org-icon name="event" size="sm" />`. Use the typed icon map instead of a raw Material icon in feature markup.
@@ -251,7 +255,7 @@ Uso recomendado: `<org-quantity-stepper [(value)]="quantity" [max]="remaining" u
 
 ### OrgBottomSheetComponent
 
-Uso recomendado: `<org-bottom-sheet ariaLabel="Eu levo" [open]="open()" (closed)="open.set(false)">…</org-bottom-sheet>`. Slides up from the bottom on phones, centred card from tablet up; traps focus and closes on Escape or scrim tap. The page owns the content and the open state.
+Uso recomendado: `<org-bottom-sheet ariaLabel="Eu levo" [open]="open()" (closed)="open.set(false)">…</org-bottom-sheet>`. Slides up from the bottom on phones, centred card from tablet up; traps focus and closes on Escape or scrim tap. The page owns the content and the open state. `placement="side"` turns it into a right-hand drawer from tablet up (phones keep the bottom sheet): use it for editing (an item, a family member) and keep the centred card for a quick choice such as "Eu levo". Dialogs are only for decisions that interrupt, such as confirming a removal.
 
 ### OrgInsightCardComponent
 

@@ -30,6 +30,19 @@
     padding: var(--org-space-lg);
     transform: translate(-50%, -50%);
   }
+
+  // Editing: a full-height drawer from the right, the page still visible beside it.
+  &--side {
+    @include semantic.tablet {
+      animation-name: org-drawer-in;
+      block-size: 100dvh;
+      border-radius: var(--org-radius-card) 0 0 var(--org-radius-card);
+      inline-size: min(420px, 100vw);
+      inset: 0 0 0 auto;
+      max-block-size: none;
+      transform: none;
+    }
+  }
 }
 
 .org-bottom-sheet__handle {
@@ -48,6 +61,13 @@
   from {
     opacity: 0;
     translate: 0 24px;
+  }
+}
+
+@keyframes org-drawer-in {
+  from {
+    opacity: 0;
+    translate: 32px 0;
   }
 }
 

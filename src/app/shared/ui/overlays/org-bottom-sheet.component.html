@@ -2,6 +2,7 @@
   <div class="org-bottom-sheet__scrim" aria-hidden="true" (click)="closed.emit()"></div>
   <section
     class="org-bottom-sheet"
+    [class.org-bottom-sheet--side]="placement() === 'side'"
     role="dialog"
     aria-modal="true"
     cdkTrapFocus

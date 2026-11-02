@@ -40,9 +40,10 @@
       padding: 0 var(--org-space-xs);
     }
 
-    // The current step shows its name inside the pill; give the text room on the right.
+    // The current step shows its name inside the pill: the number keeps the same
+    // clearance from the edge as from the top and bottom, and the text gets room after it.
     .mat-horizontal-stepper-header[aria-selected='true'] {
-      padding-inline-end: var(--org-space-md);
+      padding-inline: var(--org-space-sm) var(--org-space-md);
     }
 
     .mat-step-header[aria-selected='false'] .mat-step-label {

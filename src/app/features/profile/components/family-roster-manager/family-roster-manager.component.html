@@ -64,6 +64,7 @@
 
 <org-bottom-sheet
   testId="edit-family-member-sheet"
+  placement="side"
   [ariaLabel]="'Editar ' + (editingMember()?.name ?? 'familiar')"
   [open]="!!editingMember()"
   (closed)="editingId.set(null)"

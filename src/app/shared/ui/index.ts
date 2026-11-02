@@ -49,6 +49,7 @@ export { OrgIconButtonComponent } from './actions/org-icon-button.component';
 export { OrgCopyButtonComponent } from './actions/org-copy-button.component';
 export type { OrgIconButtonVariant } from './actions/org-icon-button.component';
 export { OrgChipComponent } from './actions/org-chip.component';
+export { OrgEditableChipComponent } from './actions/org-editable-chip.component';
 export type { OrgChipVariant } from './actions/org-chip.component';
 export { ORG_ICON_MAP, OrgIconComponent } from './actions/org-icon.component';
 export type { OrgIconName, OrgIconSize } from './actions/org-icon.component';

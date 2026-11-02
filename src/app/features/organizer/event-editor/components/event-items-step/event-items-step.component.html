@@ -78,6 +78,7 @@
 
   <org-bottom-sheet
     testId="edit-item-sheet"
+    placement="side"
     [ariaLabel]="'Editar ' + (editingItem()?.name ?? 'item')"
     [open]="!!editingItem()"
     (closed)="editingIndex.set(null)"

@@ -1,0 +1,21 @@
+:host {
+  display: inline-flex;
+}
+
+// A bare grid: no field chrome, it sits in a row of chips.
+.org-editable-chip {
+  display: inline-flex;
+}
+
+.org-editable-chip__chip {
+  margin: 0;
+
+  // Dashed while it is only an invitation to type; Material's solid outline once it
+  // holds a category (highlighted, like the selected options beside it).
+  &:not(.org-editable-chip__chip--selected) {
+    --mat-chip-outline-width: 0;
+
+    border: 1px dashed var(--org-outline);
+    border-radius: var(--mat-chip-container-shape-radius, var(--org-radius-xs));
+  }
+}

@@ -224,8 +224,9 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await page.goto('/meus-eventos/evento/novo');
     await eventEditorPage.assertLoaded();
 
-    // 14 ready-made categories plus Personalizar
-    await expect(eventEditorPage.categoryChips).toHaveCount(15);
+    // 14 ready-made categories, plus Personalizar typed in place
+    await expect(eventEditorPage.categoryChips).toHaveCount(14);
+    await expect(page.getByTestId('custom-category-chip')).toContainText('Personalizar');
 
     const categoryLabels = [
       'Aniversário',
@@ -242,7 +243,6 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       'Chá de panela',
       'Batizado',
       'Reunião de família',
-      'Personalizar',
     ];
     for (const label of categoryLabels) {
       await expect(eventEditorPage.categoryChips.filter({ hasText: label })).toBeVisible();
@@ -259,17 +259,28 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(festaChip.locator('mat-chip-option')).toHaveClass(/mat-mdc-chip-selected/);
     await expect(churrascoChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);
 
-    // Personalizar opens a field to type the category; markup is refused
+    // Personalizar is typed in place: Enter commits, Escape keeps the previous text
     const customChip = page.getByTestId('custom-category-chip');
     await customChip.click();
+    await page.keyboard.type('Chá revelação');
+    await page.keyboard.press('Enter');
+    await expect(customChip).toContainText('Chá revelação');
     await expect(festaChip.locator('mat-chip-option')).not.toHaveClass(/mat-mdc-chip-selected/);
-    const customInput = page.getByTestId('custom-category-input');
-    await expect(customInput).toBeVisible();
-    await customInput.fill('<b>');
-    await customInput.blur();
+
+    await customChip.dblclick();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.type('Outra coisa');
+    await page.keyboard.press('Escape');
+    await expect(customChip).toContainText('Chá revelação');
+
+    await customChip.dblclick();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.type('<b>');
+    await page.keyboard.press('Enter');
     await expect(page.getByTestId('event-editor-step-1')).toContainText('Não use os caracteres');
-    await customInput.fill('Chá revelação');
-    await expect(customInput).toHaveValue('Chá revelação');
-    await expect(customChip).toHaveClass(/mat-mdc-chip-selected/);
+
+    // A preset again puts the chip back to Personalizar
+    await festaChip.click();
+    await expect(customChip).toContainText('Personalizar');
   });
 });

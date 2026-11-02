@@ -18,6 +18,10 @@ export interface AddFamilyMemberPayload {
   phone?: string;
 }
 
+export interface UpdateFamilyMemberPayload extends AddFamilyMemberPayload {
+  id: string;
+}
+
 @Component({
   selector: 'app-family-roster-manager',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,17 +40,21 @@ export interface AddFamilyMemberPayload {
 })
 export class FamilyRosterManagerComponent {
   readonly members = input.required<FamilyMember[]>();
-  readonly isAdding = input<boolean>(false);
+  /** True while the page saves an add or an edit. */
+  readonly saving = input<boolean>(false);
 
   readonly addMember = output<AddFamilyMemberPayload>();
+  readonly updateMember = output<UpdateFamilyMemberPayload>();
   readonly removeMember = output<string>();
 
   protected readonly newName = signal<string>('');
   protected readonly newRelationship = signal<FamilyRelationship>('child');
   protected readonly newPhone = signal<string>('');
-  /** The add form stays out of the way until asked for, or while the list is empty. */
-  protected readonly showForm = signal(false);
-  protected readonly formOpen = computed(() => this.showForm() || this.members().length === 0);
+  /** Id of the member loaded into the form for editing; null while adding. */
+  protected readonly editingId = signal<string | null>(null);
+  protected readonly editingName = computed(
+    () => this.members().find((member) => member.id === this.editingId())?.name ?? '',
+  );
 
   protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
 
@@ -59,24 +67,40 @@ export class FamilyRosterManagerComponent {
     this.newRelationship.set(option?.value ?? 'child');
   }
 
-  protected onAddSubmit(): void {
+  protected onSubmit(): void {
     const trimmedName = this.newName().trim();
     if (!trimmedName) return;
 
-    this.addMember.emit({
+    const payload: AddFamilyMemberPayload = {
       name: trimmedName,
       relationship: this.newRelationship(),
       phone: this.newPhone().trim() || undefined,
-    });
+    };
+    const id = this.editingId();
+    if (id) {
+      this.updateMember.emit({ id, ...payload });
+    } else {
+      this.addMember.emit(payload);
+    }
+    this.resetForm();
+  }
 
+  protected startEdit(member: FamilyMember): void {
+    this.editingId.set(member.id);
+    this.newName.set(member.name);
+    this.newRelationship.set(member.relationship);
+    this.newPhone.set(member.phone ?? '');
+  }
+
+  protected resetForm(): void {
+    this.editingId.set(null);
     this.newName.set('');
     this.newRelationship.set('child');
     this.newPhone.set('');
-    // Keep the form open so the next person can be added right away.
-    this.showForm.set(true);
   }
 
   protected onRemove(memberId: string): void {
+    if (this.editingId() === memberId) this.resetForm();
     this.removeMember.emit(memberId);
   }
 }

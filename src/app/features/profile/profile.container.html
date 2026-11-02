@@ -24,8 +24,9 @@
         <section class="profile-container__section" aria-labelledby="family-roster-heading">
           <app-family-roster-manager
             [members]="familyMembers()"
-            [isAdding]="addingFamilyMember()"
+            [saving]="savingFamilyMember()"
             (addMember)="onAddFamilyMember($event)"
+            (updateMember)="onUpdateFamilyMember($event)"
             (removeMember)="onRemoveFamilyMember($event)"
           />
         </section>

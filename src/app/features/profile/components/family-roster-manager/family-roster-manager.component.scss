@@ -20,6 +20,24 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
+.family-roster__form-title {
+  color: var(--org-primary);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.family-roster__form-actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}
+
+// While adding, the submit button spans the card, as before edit mode existed.
+.family-roster__add-btn--full {
+  flex: 1;
+}
+
 .family-roster__empty {
   border-top: 1px solid var(--org-outline-variant);
   color: var(--org-on-surface-variant);
@@ -40,6 +58,11 @@
   display: flex;
   gap: var(--org-space-md);
   padding: var(--org-space-sm) var(--org-space-sm) var(--org-space-sm) var(--org-space-md);
+
+  // The person loaded into the form, so it is clear who is being edited.
+  &--editing {
+    background: var(--org-state-selected);
+  }
 }
 
 .family-roster__item-info {

@@ -102,8 +102,8 @@ test.describe('User Profile and Family Roster Management', () => {
     await expect(page.locator('#family-roster-heading').first()).toContainText('Minha família');
     await assertSingleSurfaceRing(familyRosterRoot.locator('.org-surface'));
 
-    // With people listed, the add form opens from the "+" button.
-    await page.locator('button[data-testid="toggle-family-form-btn"]').click();
+    // The add form is always open; there is no toggle to show or hide it.
+    await expect(page.locator('[data-testid="toggle-family-form-btn"]')).toHaveCount(0);
 
     // Form inputs and add button presence
     await expect(familyRoster.nameInput).toBeVisible();
@@ -137,7 +137,20 @@ test.describe('User Profile and Family Roster Management', () => {
     const memberCount = await familyRoster.memberCards.count();
     expect(memberCount).toBeGreaterThanOrEqual(2);
 
-    // 3. Remove a family member
+    // 3. Edit a family member: the row's pencil loads it into the same form
+    await familyRoster.memberCards
+      .filter({ hasText: 'Lucas Silva' })
+      .locator('button[aria-label="Editar Lucas Silva"]')
+      .click();
+    await expect(page.getByText('Editando Lucas Silva')).toBeVisible();
+    await expect(familyRoster.nameInput).toHaveValue('Lucas Silva');
+    await familyRoster.nameInput.fill('Lucas Souza');
+    await page.getByRole('button', { name: 'Salvar alterações' }).click();
+    await expect(familyRoster.memberCards.filter({ hasText: 'Lucas Souza' })).toHaveCount(1);
+    await expect(familyRoster.memberCards.filter({ hasText: 'Lucas Silva' })).toHaveCount(0);
+    await expect(familyRoster.addMemberBtn).toContainText('Adicionar familiar');
+
+    // 4. Remove a family member
     const initialCount = await familyRoster.memberCards.count();
     const deleteBtn = familyRoster.deleteMemberBtns.first();
     await expect(deleteBtn).toBeVisible();

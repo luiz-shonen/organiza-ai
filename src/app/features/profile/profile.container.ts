@@ -13,6 +13,7 @@ import { ProfileInfoCardComponent } from './components/profile-info-card/profile
 import {
   FamilyRosterManagerComponent,
   type AddFamilyMemberPayload,
+  type UpdateFamilyMemberPayload,
 } from './components/family-roster-manager/family-roster-manager.component';
 
 @Component({
@@ -44,7 +45,7 @@ export class ProfileContainer implements OnInit {
   readonly userProfile = signal<UserProfile | null>(null);
   readonly familyMembers = signal<FamilyMember[]>([]);
   readonly updating = signal<boolean>(false);
-  readonly addingFamilyMember = signal<boolean>(false);
+  readonly savingFamilyMember = signal<boolean>(false);
 
   private isLoaded = false;
 
@@ -121,14 +122,32 @@ export class ProfileContainer implements OnInit {
     if (!user) return;
 
     try {
-      this.addingFamilyMember.set(true);
+      this.savingFamilyMember.set(true);
       const newMember = await this.familyService.addFamilyMember(user.uid, data);
       this.familyMembers.update((list) => [...list, newMember]);
       this.feedback.success('Familiar adicionado com sucesso!');
     } catch {
       this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
     } finally {
-      this.addingFamilyMember.set(false);
+      this.savingFamilyMember.set(false);
+    }
+  }
+
+  async onUpdateFamilyMember({ id, ...changes }: UpdateFamilyMemberPayload): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    try {
+      this.savingFamilyMember.set(true);
+      await this.familyService.updateFamilyMember(user.uid, id, changes);
+      this.familyMembers.update((list) =>
+        list.map((member) => (member.id === id ? { ...member, ...changes } : member)),
+      );
+      this.feedback.success('Familiar atualizado com sucesso!');
+    } catch {
+      this.feedback.error('Não foi possível atualizar o familiar. Tente novamente.');
+    } finally {
+      this.savingFamilyMember.set(false);
     }
   }
 

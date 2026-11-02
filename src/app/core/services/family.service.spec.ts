@@ -137,6 +137,27 @@ describe('FamilyService', () => {
     });
   });
 
+  describe('updateFamilyMember', () => {
+    it('does nothing if uid or memberId is empty', async () => {
+      await service.updateFamilyMember('', 'fam-1', { name: 'Ana', relationship: 'child' });
+      await service.updateFamilyMember('user-123', '', { name: 'Ana', relationship: 'child' });
+      expect(mockGateway.updateDoc).not.toHaveBeenCalled();
+    });
+
+    it('updates name, relationship and phone at users/{uid}/family/{memberId}', async () => {
+      await service.updateFamilyMember('user-123', 'fam-1', {
+        name: 'Ana Souza',
+        relationship: 'spouse',
+      });
+
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith('users/user-123/family/fam-1', {
+        name: 'Ana Souza',
+        relationship: 'spouse',
+        phone: '',
+      });
+    });
+  });
+
   describe('deleteFamilyMember', () => {
     it('does nothing if uid or memberId is empty', async () => {
       await service.deleteFamilyMember('', 'fam-1');

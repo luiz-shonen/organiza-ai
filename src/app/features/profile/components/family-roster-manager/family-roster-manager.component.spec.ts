@@ -57,12 +57,8 @@ describe('FamilyRosterManagerComponent', () => {
     expect(compiled.querySelectorAll('org-surface')).toHaveLength(1);
     expect(compiled.querySelectorAll('mat-card')).toHaveLength(0);
     expect(component['relationshipOptions']).toHaveLength(6);
-    // With members listed, the add form waits behind the "+" button.
-    expect(compiled.querySelectorAll('org-text-field, org-autocomplete-field')).toHaveLength(0);
-    (
-      compiled.querySelector('button[data-testid="toggle-family-form-btn"]') as HTMLButtonElement
-    ).click();
-    fixture.detectChanges();
+    // The form is always open, with no toggle in the header.
+    expect(compiled.querySelector('[data-testid="toggle-family-form-btn"]')).toBeNull();
     expect(compiled.querySelectorAll('org-text-field, org-autocomplete-field')).toHaveLength(3);
     expect(compiled.querySelector('.family-roster__add-btn')).toBeInstanceOf(HTMLElement);
     expect(compiled.querySelector('.family-roster__remove-btn')).toBeInstanceOf(HTMLElement);
@@ -97,7 +93,7 @@ describe('FamilyRosterManagerComponent', () => {
     component['newRelationship'].set('parent');
     component['newPhone'].set('11977775555');
 
-    component['onAddSubmit']();
+    component['onSubmit']();
 
     expect(addSpy).toHaveBeenCalledWith({
       name: 'Carlos Silva',
@@ -119,7 +115,7 @@ describe('FamilyRosterManagerComponent', () => {
     const addSpy = vi.fn();
     component.addMember.subscribe(addSpy);
 
-    component['onAddSubmit']();
+    component['onSubmit']();
 
     expect(addSpy).toHaveBeenCalledWith(expect.objectContaining({ relationship: 'parent' }));
   });
@@ -132,7 +128,7 @@ describe('FamilyRosterManagerComponent', () => {
     component.addMember.subscribe(addSpy);
 
     component['newName'].set('   ');
-    component['onAddSubmit']();
+    component['onSubmit']();
 
     expect(addSpy).not.toHaveBeenCalled();
   });
@@ -153,5 +149,65 @@ describe('FamilyRosterManagerComponent', () => {
     removeButtons[0].click();
 
     expect(removeSpy).toHaveBeenCalledWith('fam-1');
+  });
+
+  it('should load a member into the form and emit updateMember on save', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.detectChanges();
+
+    const updateSpy = vi.fn();
+    const addSpy = vi.fn();
+    component.updateMember.subscribe(updateSpy);
+    component.addMember.subscribe(addSpy);
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    compiled.querySelectorAll<HTMLButtonElement>('.family-roster__edit-btn button')[1].click();
+    fixture.detectChanges();
+
+    expect(component['newName']()).toBe('Mariana Silva');
+    expect(component['newRelationship']()).toBe('spouse');
+    expect(component['newPhone']()).toBe('11988887777');
+    expect(compiled.querySelector('.family-roster__form-title')?.textContent).toContain(
+      'Editando Mariana Silva',
+    );
+    expect(compiled.querySelectorAll('.family-roster__item--editing')).toHaveLength(1);
+    expect(compiled.querySelector('[data-testid="add-family-member-btn"]')?.textContent).toContain(
+      'Salvar alterações',
+    );
+
+    component['newName'].set('Mariana Souza');
+    component['onSubmit']();
+
+    expect(updateSpy).toHaveBeenCalledWith({
+      id: 'fam-2',
+      name: 'Mariana Souza',
+      relationship: 'spouse',
+      phone: '11988887777',
+    });
+    expect(addSpy).not.toHaveBeenCalled();
+    expect(component['editingId']()).toBeNull();
+    expect(component['newName']()).toBe('');
+  });
+
+  it('should leave edit mode on cancel without emitting', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.detectChanges();
+
+    const updateSpy = vi.fn();
+    component.updateMember.subscribe(updateSpy);
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    compiled.querySelector<HTMLButtonElement>('.family-roster__edit-btn button')!.click();
+    fixture.detectChanges();
+    compiled
+      .querySelector<HTMLButtonElement>('[data-testid="cancel-edit-family-member-btn"] button')!
+      .click();
+    fixture.detectChanges();
+
+    expect(updateSpy).not.toHaveBeenCalled();
+    expect(component['editingId']()).toBeNull();
+    expect(compiled.querySelector('[data-testid="add-family-member-btn"]')?.textContent).toContain(
+      'Adicionar familiar',
+    );
   });
 });

@@ -275,7 +275,7 @@ Uso recomendado: `<org-data-table [rows]="events" [columns]="eventColumns" [acti
 
 ### OrgBadgeComponent
 
-Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use. Tags are uppercase and soft-tinted (category, Confirmado, Pendente, Cancelado); `[pill]="true"` gives the sentence-case counter ("Faltam 6 un.").
+Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use. Status tags are uppercase and filled (Confirmado green, Pendente amber, Recusado and Cancelado red). A category tag takes `[hue]="getCategoryHue(category)"`: a tint, text and thin outline in that category's own colour, never the exact green, amber or red of the status tags. `[pill]="true"` gives a sentence-case counter.
 
 ### OrgConfirmDialogComponent
 

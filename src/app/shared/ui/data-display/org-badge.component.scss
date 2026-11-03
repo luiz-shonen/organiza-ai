@@ -98,6 +98,14 @@
   color: var(--org-cat-outros-color);
 }
 
+// A category in its own colour: a light tint, the text and a thin outline in that hue,
+// mixed with the surface and the text colour so it reads in light and dark.
+.org-badge--category {
+  background: color-mix(in srgb, var(--org-badge-hue) var(--org-category-tint), var(--org-surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--org-badge-hue) 55%, transparent);
+  color: color-mix(in srgb, var(--org-badge-hue) var(--org-category-ink), var(--org-on-surface));
+}
+
 .org-badge--gradient {
   background: var(--org-gradient-primary);
   color: var(--org-on-primary);

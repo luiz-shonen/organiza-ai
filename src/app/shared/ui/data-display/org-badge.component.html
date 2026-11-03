@@ -15,6 +15,8 @@
   [class.org-badge--outros]="variant() === 'outros'"
   [class.org-badge--gradient]="gradient()"
   [class.org-badge--pill]="pill()"
+  [class.org-badge--category]="!!hue()"
+  [style.--org-badge-hue]="hue()"
 >
   @if (icon(); as badgeIcon) {
     <org-icon [name]="badgeIcon" size="sm" />

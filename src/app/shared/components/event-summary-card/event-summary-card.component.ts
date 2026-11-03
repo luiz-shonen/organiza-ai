@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { getCategoryClass, type PartyEvent } from '../../../core/models';
+import { getCategoryClass, getCategoryHue, type PartyEvent } from '../../../core/models';
 import { addressLines, formatWeekdayTime } from '../../../core/utils';
 import {
   OrgBadgeComponent,
@@ -54,6 +54,7 @@ export class EventSummaryCardComponent {
   protected readonly categoryVariant = computed(
     () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
   );
+  protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
   protected readonly time = computed(() => formatWeekdayTime(this.event().date));
   protected readonly titleId = computed(() => `event-title-${this.event().id}`);
 }

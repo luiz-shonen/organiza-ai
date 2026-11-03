@@ -3,7 +3,12 @@
     <div class="event-summary-card__top">
       <div class="event-summary-card__heading">
         <div class="event-summary-card__tags">
-          <org-badge [label]="categoryLabel()" [variant]="categoryVariant()" [gradient]="false" />
+          <org-badge
+            [label]="categoryLabel()"
+            [variant]="categoryVariant()"
+            [hue]="categoryHue()"
+            [gradient]="false"
+          />
           @if (status(); as status) {
             <org-badge
               data-testid="event-status"

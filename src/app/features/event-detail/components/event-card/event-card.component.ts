@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { PartyEvent, getCategoryClass } from '../../../../core/models';
+import { PartyEvent, getCategoryClass, getCategoryHue } from '../../../../core/models';
 import {
   OrgAvatarComponent,
   OrgBadgeComponent,
@@ -35,6 +35,7 @@ export class EventCardComponent {
 
   protected readonly categoryName = computed(() => this.event().category || 'Evento');
 
+  protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
   protected readonly categoryBadgeVariant = computed<OrgBadgeVariant>(
     () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
   );

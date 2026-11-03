@@ -154,6 +154,8 @@ $breakpoint-lg: 1200px;
     // Event categories (tinted badges)
     // Category tags are outlined, in hues kept apart from the status tags
     // (Confirmado green, Pendente amber, Recusado red): no green, amber, orange or red here.
+    --org-category-tint: 14%;
+    --org-category-ink: 72%;
     --org-cat-aniversario-bg: #f8f0fc;
     --org-cat-aniversario-color: #862e9c;
     --org-cat-casamento-bg: #fdf0fa;
@@ -227,6 +229,8 @@ $breakpoint-lg: 1200px;
     --org-gradient-highlight: linear-gradient(90deg, #8ce99a, #69db7c 50%, #51cf66);
     --org-gradient-brand: linear-gradient(90deg, #b197fc, #74c0fc 55%, #8ce99a);
     --org-progress-track: rgb(255 255 255 / 0.1);
+    --org-category-tint: 24%;
+    --org-category-ink: 45%;
     --org-cat-aniversario-bg: color-mix(in srgb, #9c36b5 26%, #2a2346);
     --org-cat-aniversario-color: color-mix(in srgb, #9c36b5 40%, #fff);
     --org-cat-casamento-bg: color-mix(in srgb, #c2259f 26%, #2a2346);

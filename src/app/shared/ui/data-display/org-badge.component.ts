@@ -57,4 +57,6 @@ export class OrgBadgeComponent {
   public readonly gradient = input(true);
   /** Rounded, sentence-case counter ("Faltam 6 un.") instead of the uppercase tag. */
   public readonly pill = input(false);
+  /** A category tag in its own colour (`getCategoryHue`): tinted fill, text and outline. */
+  public readonly hue = input<string | null>(null);
 }

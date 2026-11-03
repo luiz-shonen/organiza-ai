@@ -6,7 +6,7 @@ export type {
   PixType,
   EventCategoryOption,
 } from './event.model';
-export { EVENT_CATEGORIES, getCategoryClass } from './event.model';
+export { EVENT_CATEGORIES, getCategoryClass, getCategoryHue } from './event.model';
 export type {
   EventAddressForm,
   EventBasicInfoForm,

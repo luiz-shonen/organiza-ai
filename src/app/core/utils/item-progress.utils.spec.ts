@@ -8,6 +8,7 @@ import {
   formatQuantity,
   removeClaimEntry,
   toggleBought,
+  hasStarted,
 } from './item-progress.utils';
 
 const items: PartyItem[] = [
@@ -117,5 +118,20 @@ describe('item progress utils', () => {
     expect(daysUntil('2026-11-04T08:00:00', now)).toBe(3);
     expect(daysUntil('2026-11-01T23:30:00', now)).toBe(0);
     expect(daysUntil('2026-10-30T10:00:00', now)).toBe(-2);
+  });
+});
+
+describe('hasStarted', () => {
+  const now = new Date('2026-11-03T09:00:00');
+
+  it('counts an event earlier today as started, though it is still today', () => {
+    expect(hasStarted('2026-11-03T08:30:00', now)).toBe(true);
+    expect(hasStarted('2026-11-03T20:30:00', now)).toBe(false);
+    expect(hasStarted('2026-11-04T08:30:00', now)).toBe(false);
+  });
+
+  it('does not count an event without a date', () => {
+    expect(hasStarted('', now)).toBe(false);
+    expect(hasStarted(undefined, now)).toBe(false);
   });
 });

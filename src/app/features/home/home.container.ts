@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 import { AuthService, ClaimService, ItemService, UserService } from '../../core/services';
 import type { EventClaims, FamilyChecklistRow, PartyEvent, PartyItem } from '../../core/models';
-import { buildFamilyChecklist, daysUntil, toggleBought } from '../../core/utils';
+import { buildFamilyChecklist, hasStarted, toggleBought } from '../../core/utils';
 import {
   FeedbackService,
   OrgButtonComponent,
@@ -122,11 +122,11 @@ export class HomeContainer {
     );
   });
   private readonly upcoming = computed(() =>
-    this.active().filter((event) => daysUntil(event.date) >= 0),
+    this.active().filter((event) => !hasStarted(event.date)),
   );
   private readonly past = computed(() =>
     this.active()
-      .filter((event) => daysUntil(event.date) < 0)
+      .filter((event) => hasStarted(event.date))
       .reverse(),
   );
 
@@ -154,7 +154,7 @@ export class HomeContainer {
     },
     { id: 'confirmed', label: 'Confirmados', testId: 'home-filter-confirmed' },
     { id: 'declined', label: 'Recusados', testId: 'home-filter-declined' },
-    { id: 'past', label: 'Anteriores', testId: 'home-filter-past' },
+    { id: 'past', label: 'Realizados', testId: 'home-filter-past' },
   ]);
 
   protected readonly subtitle = computed(() => {
@@ -185,7 +185,7 @@ export class HomeContainer {
     }[this.filter()];
 
     return source.map((event) => {
-      const isPast = daysUntil(event.date) < 0;
+      const isPast = hasStarted(event.date);
       const isConfirmed = confirmed.has(event.id);
       const isDeclined = !isConfirmed && this.declinedIds().has(event.id);
       const household = this.households()[event.id];
@@ -219,7 +219,7 @@ export class HomeContainer {
         pending: 'Eventos pendentes',
         confirmed: 'Eventos confirmados',
         declined: 'Eventos recusados',
-        past: 'Eventos anteriores',
+        past: 'Eventos realizados',
       })[this.filter()],
   );
 

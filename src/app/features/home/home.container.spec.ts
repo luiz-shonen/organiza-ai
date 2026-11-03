@@ -165,7 +165,7 @@ describe('HomeContainer', () => {
       expect(heading()).toContain('Eventos confirmados');
       select('home-filter-past');
       expect(titles()).toEqual(['Churrasco']);
-      expect(heading()).toContain('Eventos anteriores');
+      expect(heading()).toContain('Eventos realizados');
     });
 
     it('shows what the family brings and saves the "comprado" check', async () => {

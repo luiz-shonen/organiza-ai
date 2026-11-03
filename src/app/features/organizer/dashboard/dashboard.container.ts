@@ -21,7 +21,7 @@ import {
   NotificationService,
   UserService,
 } from '../../../core/services';
-import { buildItemProgress, daysUntil, shareWhatsApp } from '../../../core/utils';
+import { buildItemProgress, daysUntil, hasStarted, shareWhatsApp } from '../../../core/utils';
 import type { PartyEvent } from '../../../core/models';
 import {
   FeedbackService,
@@ -52,7 +52,7 @@ export const SOON_DAYS = 5;
 /** The tag on an organizer's event card. */
 export function summaryStatus(event: PartyEvent, days = daysUntil(event.date)): EventSummaryStatus {
   if (event.status === 'cancelled') return { label: 'Cancelado', variant: 'danger' };
-  if (days < 0) return { label: 'Realizado', variant: 'default' };
+  if (days < 0 || hasStarted(event.date)) return { label: 'Realizado', variant: 'default' };
   return days <= SOON_DAYS
     ? { label: 'Em breve', variant: 'success' }
     : { label: 'Agendado', variant: 'primary' };
@@ -129,7 +129,7 @@ export class DashboardContainer {
     { id: 'all', label: 'Todos', testId: 'status-filter-all-chip' },
     { id: 'soon', label: 'Em breve', testId: 'status-filter-soon-chip' },
     { id: 'scheduled', label: 'Agendados', testId: 'status-filter-scheduled-chip' },
-    { id: 'past', label: 'Histórico', testId: 'status-filter-past-chip' },
+    { id: 'past', label: 'Realizados', testId: 'status-filter-past-chip' },
     { id: 'cancelled', label: 'Cancelados', testId: 'status-filter-cancelled-chip' },
   ];
 
@@ -143,19 +143,17 @@ export class DashboardContainer {
     switch (this.activeFilter()) {
       case 'soon':
         return all.filter((e) => {
-          const days = daysUntil(e.date);
-          return e.status !== 'cancelled' && days >= 0 && days <= SOON_DAYS;
+          return e.status !== 'cancelled' && !hasStarted(e.date) && daysUntil(e.date) <= SOON_DAYS;
         });
       case 'scheduled':
         return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) > SOON_DAYS);
       case 'past':
-        return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) < 0);
+        return all.filter((e) => e.status !== 'cancelled' && hasStarted(e.date));
       case 'cancelled':
         return all.filter((e) => e.status === 'cancelled');
       default: {
         // Upcoming first (soonest on top), then history (latest first), then cancelled.
-        const rank = (e: PartyEvent) =>
-          e.status === 'cancelled' ? 2 : daysUntil(e.date) >= 0 ? 0 : 1;
+        const rank = (e: PartyEvent) => (e.status === 'cancelled' ? 2 : hasStarted(e.date) ? 1 : 0);
         return [...all].sort((a, b) => {
           const byRank = rank(a) - rank(b);
           if (byRank !== 0) return byRank;
@@ -171,7 +169,7 @@ export class DashboardContainer {
       const days = daysUntil(event.date);
       const stats = this.stats()[event.id] ?? null;
       const status = summaryStatus(event, days);
-      const live = event.status !== 'cancelled' && days >= 0;
+      const live = event.status !== 'cancelled' && !hasStarted(event.date);
       return {
         event,
         status,
@@ -183,7 +181,7 @@ export class DashboardContainer {
 
   protected readonly nextEvent = computed(
     () =>
-      (this.events() ?? []).find((e) => e.status !== 'cancelled' && daysUntil(e.date) >= 0) ?? null,
+      (this.events() ?? []).find((e) => e.status !== 'cancelled' && !hasStarted(e.date)) ?? null,
   );
 
   protected readonly nextEventDays = computed(() => {
@@ -241,7 +239,7 @@ export class DashboardContainer {
 
   /** Guests and item progress of upcoming events, for the tip and the "Progresso" panel. */
   private async loadStats(events: readonly PartyEvent[]): Promise<void> {
-    const live = events.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) >= 0);
+    const live = events.filter((e) => e.status !== 'cancelled' && !hasStarted(e.date));
     try {
       const entries = await Promise.all(
         live.map(async (event) => {

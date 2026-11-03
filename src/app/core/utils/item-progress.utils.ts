@@ -85,6 +85,15 @@ export function formatQuantity(quantity: number, unit?: string | null): string {
   return label ? `${quantity} ${label}` : `${quantity}`;
 }
 
+/**
+ * The event's start time has passed: from then on it is "Realizado", not upcoming. An event
+ * today at 8:30 is past at 8:31, even though daysUntil still says 0.
+ */
+export function hasStarted(dateStr: string | null | undefined, now = new Date()): boolean {
+  const start = new Date(dateStr ?? '').getTime();
+  return Number.isFinite(start) && start <= now.getTime();
+}
+
 /** Whole days from today until the date (negative when it has passed). */
 export function daysUntil(dateStr: string, now = new Date()): number {
   const target = new Date(dateStr);

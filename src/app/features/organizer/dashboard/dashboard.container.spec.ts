@@ -213,6 +213,12 @@ describe('DashboardContainer', () => {
     expect(summaryStatus(event, 168).label).toBe('Agendado');
     expect(summaryStatus(event, -1).label).toBe('Realizado');
     expect(summaryStatus({ status: 'cancelled' } as PartyEvent, 168).label).toBe('Cancelado');
+    // Earlier today: the start time passed, so it is no longer Em breve.
+    const earlier = {
+      status: 'active',
+      date: new Date(Date.now() - 3600000).toISOString(),
+    } as PartyEvent;
+    expect(summaryStatus(earlier, 0).label).toBe('Realizado');
   });
 
   it('should invoke evaluateCountdownReminders with loaded events', () => {

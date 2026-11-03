@@ -31,7 +31,15 @@ export class OrganizerDashboardPage extends BasePage {
   }
 
   async filterByStatus(
-    status: 'Todos' | 'Ativos' | 'Em breve' | 'Encerrados' | 'Histórico' | 'Cancelados' | string,
+    status:
+      | 'Todos'
+      | 'Ativos'
+      | 'Em breve'
+      | 'Encerrados'
+      | 'Histórico'
+      | 'Realizados'
+      | 'Cancelados'
+      | string,
   ): Promise<void> {
     const statusLower = status.toLowerCase();
     const idMap: Record<string, string> = {
@@ -41,6 +49,7 @@ export class OrganizerDashboardPage extends BasePage {
       agendados: 'scheduled',
       histórico: 'past',
       historico: 'past',
+      realizados: 'past',
       encerrados: 'past',
       cancelados: 'cancelled',
     };

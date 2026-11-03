@@ -145,27 +145,41 @@ describe('HomeContainer', () => {
       expect(element().querySelectorAll('[data-testid="answer-invite-btn"]')).toHaveLength(1);
     });
 
-    it('filters pending, confirmed and past events', () => {
+    it('combines the filter chips, and "Todos" clears them', () => {
       const titles = () =>
         Array.from(element().querySelectorAll('.event-summary-card__title')).map((title) =>
           title.textContent?.trim(),
         );
-      const select = (testId: string) => {
-        (element().querySelector(`[data-testid="${testId}"]`) as HTMLButtonElement).click();
+      // A chip toggles: Material's primary action is the button inside the chip.
+      const toggle = (testId: string) => {
+        (element().querySelector(`[data-testid="${testId}"] button`) as HTMLButtonElement).click();
         fixture.detectChanges();
       };
-
       const heading = () => element().querySelector('#home-list-title')?.textContent?.trim();
+      const checked = () =>
+        Array.from(element().querySelectorAll('mat-chip-option.mat-mdc-chip-selected'), (chip) =>
+          chip.getAttribute('data-testid'),
+        );
+
       expect(heading()).toContain('Próximos eventos');
-      select('home-filter-pending');
+      expect(checked()).toEqual(['home-filter-all']);
+
+      toggle('home-filter-pending');
       expect(titles()).toEqual(['Aniversário']);
       expect(heading()).toContain('Eventos pendentes');
-      select('home-filter-confirmed');
-      expect(titles()).toEqual(['Festa Junina']);
-      expect(heading()).toContain('Eventos confirmados');
-      select('home-filter-past');
+      expect(checked()).toEqual(['home-filter-pending']);
+
+      toggle('home-filter-past');
+      expect(titles()).toEqual(['Aniversário', 'Churrasco']);
+      expect(heading()).toContain('Eventos filtrados');
+
+      toggle('home-filter-pending');
       expect(titles()).toEqual(['Churrasco']);
       expect(heading()).toContain('Eventos realizados');
+
+      toggle('home-filter-all');
+      expect(checked()).toEqual(['home-filter-all']);
+      expect(heading()).toContain('Próximos eventos');
     });
 
     it('shows what the family brings and saves the "comprado" check', async () => {

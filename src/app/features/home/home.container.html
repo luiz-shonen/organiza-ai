@@ -42,17 +42,17 @@
         <org-filter-bar
           ariaLabel="Filtrar eventos"
           [options]="filters()"
-          [value]="filter()"
-          (valueChange)="setFilter($event)"
+          [values]="activeFilters()"
+          (valuesChange)="setFilters($event)"
         />
       }
 
       @if (cards().length === 0) {
         <org-empty-state
           icon="event"
-          [title]="filter() === 'past' ? 'Nenhum evento anterior' : 'Nada por aqui'"
+          [title]="onlyFilter('past') ? 'Nenhum evento realizado' : 'Nada por aqui'"
           [description]="
-            filter() === 'pending'
+            onlyFilter('pending')
               ? 'Você já respondeu todos os convites.'
               : 'Quando houver eventos neste filtro, eles aparecem aqui.'
           "

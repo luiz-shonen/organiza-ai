@@ -184,22 +184,25 @@ describe('DashboardContainer', () => {
     expect(component.filteredEvents().length).toBe(3);
 
     // 'soon': five days away at most
-    component.activeFilter.set('soon');
+    component.activeFilters.set(['soon']);
     const soon = component.filteredEvents();
     expect(soon.map((e) => e.id)).toEqual(['evt-1']);
 
     // 'scheduled': further ahead (the cancelled one stays out)
-    component.activeFilter.set('scheduled');
+    component.activeFilters.set(['scheduled']);
     expect(component.filteredEvents()).toEqual([]);
 
     // 'past'
-    component.activeFilter.set('past');
+    component.activeFilters.set(['past']);
     const past = component.filteredEvents();
     expect(past.length).toBe(1);
     expect(past[0].id).toBe('evt-2');
 
     // 'cancelled'
-    component.activeFilter.set('cancelled');
+    component.activeFilters.set(['soon', 'cancelled']);
+    expect(component.filteredEvents().map((e) => e.id)).toEqual(['evt-1', 'evt-3']);
+
+    component.activeFilters.set(['cancelled']);
     const cancelled = component.filteredEvents();
     expect(cancelled.length).toBe(1);
     expect(cancelled[0].id).toBe('evt-3');

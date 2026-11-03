@@ -122,7 +122,7 @@ export class DesignSystemShowcaseContainer {
     { id: 'pending', label: 'Pendentes', count: 1, attention: true },
     { id: 'confirmed', label: 'Confirmados' },
   ];
-  protected readonly selectedFilter = signal('all');
+  protected readonly selectedFilters = signal<readonly string[]>(['all']);
   protected readonly splitSegments: readonly OrgSplitSegment[] = [
     { label: 'Ana', value: 4 },
     { label: 'Marta', value: 2 },

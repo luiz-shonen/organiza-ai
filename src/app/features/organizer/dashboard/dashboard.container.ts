@@ -122,7 +122,8 @@ export class DashboardContainer {
     ),
   );
 
-  readonly activeFilter = signal<EventStatusFilter>('all');
+  /** The filter chips on; `['all']` shows every event. */
+  readonly activeFilters = signal<readonly EventStatusFilter[]>(['all']);
   private readonly stats = signal<Readonly<Record<string, EventStats>>>({});
 
   protected readonly filters: readonly OrgFilterOption<EventStatusFilter>[] = [
@@ -140,29 +141,36 @@ export class DashboardContainer {
 
   readonly filteredEvents = computed(() => {
     const all = this.events() ?? [];
-    switch (this.activeFilter()) {
-      case 'soon':
-        return all.filter((e) => {
+    const picked = this.activeFilters();
+    if (picked.includes('all')) return this.allSorted(all);
+    // Several chips on: every event any of them matches, once, in the same order as "Todos".
+    const matches = (e: PartyEvent, id: EventStatusFilter): boolean => {
+      switch (id) {
+        case 'soon':
           return e.status !== 'cancelled' && !hasStarted(e.date) && daysUntil(e.date) <= SOON_DAYS;
-        });
-      case 'scheduled':
-        return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) > SOON_DAYS);
-      case 'past':
-        return all.filter((e) => e.status !== 'cancelled' && hasStarted(e.date));
-      case 'cancelled':
-        return all.filter((e) => e.status === 'cancelled');
-      default: {
-        // Upcoming first (soonest on top), then history (latest first), then cancelled.
-        const rank = (e: PartyEvent) => (e.status === 'cancelled' ? 2 : hasStarted(e.date) ? 1 : 0);
-        return [...all].sort((a, b) => {
-          const byRank = rank(a) - rank(b);
-          if (byRank !== 0) return byRank;
-          const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
-          return rank(a) === 0 ? diff : -diff;
-        });
+        case 'scheduled':
+          return e.status !== 'cancelled' && daysUntil(e.date) > SOON_DAYS;
+        case 'past':
+          return e.status !== 'cancelled' && hasStarted(e.date);
+        case 'cancelled':
+          return e.status === 'cancelled';
+        default:
+          return true;
       }
-    }
+    };
+    return this.allSorted(all).filter((e) => picked.some((id) => matches(e, id)));
   });
+
+  /** Upcoming first (soonest on top), then history (latest first), then cancelled. */
+  private allSorted(all: readonly PartyEvent[]): PartyEvent[] {
+    const rank = (e: PartyEvent) => (e.status === 'cancelled' ? 2 : hasStarted(e.date) ? 1 : 0);
+    return [...all].sort((a, b) => {
+      const byRank = rank(a) - rank(b);
+      if (byRank !== 0) return byRank;
+      const diff = new Date(a.date).getTime() - new Date(b.date).getTime();
+      return rank(a) === 0 ? diff : -diff;
+    });
+  }
 
   protected readonly cards = computed<DashboardCard[]>(() =>
     this.filteredEvents().map((event) => {
@@ -286,8 +294,8 @@ export class DashboardContainer {
     };
   }
 
-  protected setFilter(id: string): void {
-    this.activeFilter.set(id as EventStatusFilter);
+  protected setFilters(ids: string[]): void {
+    this.activeFilters.set(ids as EventStatusFilter[]);
   }
 
   protected createEvent(): void {

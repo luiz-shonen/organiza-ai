@@ -247,7 +247,7 @@ Uso recomendado: `<org-date-badge [date]="event.date" />`. Sky-blue month/day bl
 
 ### OrgFilterBarComponent
 
-Uso recomendado: `<org-filter-bar ariaLabel="Filtrar eventos" [options]="filters()" [value]="filter()" (valueChange)="filter.set($event)" />`. Pill filters above a list; the same bar on Início (Todos, Pendentes, Confirmados, Anteriores) and Meus eventos (Todos, Em breve, Histórico, Cancelados). `OrgFilterOption.count` shows a counter, `attention` paints it amber.
+Uso recomendado: `<org-filter-bar ariaLabel="Filtrar eventos" [options]="filters()" [values]="activeFilters()" (valuesChange)="activeFilters.set($event)" />`. Filter chips above a list, on Material's chip listbox: the chips that are on show a check, and several can be on at once. "Todos" (`ORG_FILTER_ALL`) is on by default and alone; picking another chip turns it off, and turning the last one off (or picking "Todos") brings it back. The page shows every event any chip on matches. Used on Início (Todos, Pendentes, Confirmados, Recusados, Realizados) and Meus eventos (Todos, Em breve, Agendados, Realizados, Cancelados). `OrgFilterOption.count` shows a counter, `attention` paints it amber.
 
 ### OrgSplitProgressComponent
 

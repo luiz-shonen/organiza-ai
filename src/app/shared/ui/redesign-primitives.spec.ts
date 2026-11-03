@@ -27,26 +27,54 @@ describe('OrgDateBadgeComponent', () => {
 });
 
 describe('OrgFilterBarComponent', () => {
-  it('marks the selected option and emits only new choices', async () => {
+  async function bar() {
     const fixture = await create(OrgFilterBarComponent);
     fixture.componentRef.setInput('ariaLabel', 'Filtrar');
-    fixture.componentRef.setInput('value', 'all');
+    fixture.componentRef.setInput('values', ['all']);
     fixture.componentRef.setInput('options', [
       { id: 'all', label: 'Todos' },
       { id: 'pending', label: 'Pendentes', count: 2, attention: true },
+      { id: 'past', label: 'Realizados' },
     ]);
     fixture.detectChanges();
     const changes = vi.fn();
-    fixture.componentInstance.valueChange.subscribe(changes);
+    fixture.componentInstance.valuesChange.subscribe((values) => {
+      changes(values);
+      fixture.componentRef.setInput('values', values);
+      fixture.detectChanges();
+    });
+    const chip = (index: number) =>
+      fixture.nativeElement.querySelectorAll('mat-chip-option')[index] as HTMLElement;
+    const toggle = (index: number) => {
+      (chip(index).querySelector('button') as HTMLButtonElement).click();
+      fixture.detectChanges();
+    };
+    return { chip, toggle, changes };
+  }
 
-    const tabs = fixture.nativeElement.querySelectorAll('[role="tab"]');
-    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
-    expect(tabs[1].querySelector('.org-filter-bar__count--attention')?.textContent).toBe('2');
+  it('starts on "Todos", with the counter on its chip', async () => {
+    const { chip } = await bar();
+    expect(chip(0).classList).toContain('mat-mdc-chip-selected');
+    expect(chip(1).querySelector('.org-filter-bar__count--attention')?.textContent).toBe('2');
+  });
 
-    tabs[0].click();
-    tabs[1].click();
-    expect(changes).toHaveBeenCalledTimes(1);
-    expect(changes).toHaveBeenCalledWith('pending');
+  it('turns "Todos" off when another chip goes on, and lets several be on', async () => {
+    const { toggle, changes } = await bar();
+    toggle(1);
+    expect(changes).toHaveBeenLastCalledWith(['pending']);
+    toggle(2);
+    expect(changes).toHaveBeenLastCalledWith(['pending', 'past']);
+  });
+
+  it('goes back to "Todos" when the last chip goes off or "Todos" is picked', async () => {
+    const { toggle, changes } = await bar();
+    toggle(1);
+    toggle(1);
+    expect(changes).toHaveBeenLastCalledWith(['all']);
+    toggle(1);
+    toggle(2);
+    toggle(0);
+    expect(changes).toHaveBeenLastCalledWith(['all']);
   });
 });
 

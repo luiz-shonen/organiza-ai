@@ -326,8 +326,8 @@
           <org-filter-bar
             ariaLabel="Filtros de exemplo"
             [options]="filterOptions"
-            [value]="selectedFilter()"
-            (valueChange)="selectedFilter.set($event)"
+            [values]="selectedFilters()"
+            (valuesChange)="selectedFilters.set($event)"
           />
         </div>
       </org-surface>

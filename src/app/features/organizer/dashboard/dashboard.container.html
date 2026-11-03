@@ -20,8 +20,8 @@
       <org-filter-bar
         ariaLabel="Filtros de status dos eventos"
         [options]="filters"
-        [value]="activeFilter()"
-        (valueChange)="setFilter($event)"
+        [values]="activeFilters()"
+        (valuesChange)="setFilters($event)"
       />
 
       @if (cards().length === 0) {

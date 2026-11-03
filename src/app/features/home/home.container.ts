@@ -74,7 +74,8 @@ export class HomeContainer {
   private readonly feedback = inject(FeedbackService);
   private readonly router = inject(Router);
 
-  protected readonly filter = signal<HomeFilter>('all');
+  /** The filter chips on; `['all']` shows every upcoming event. */
+  protected readonly activeFilters = signal<readonly HomeFilter[]>(['all']);
 
   /** Only signed-in members have invitations to answer and a family list. */
   protected readonly member = computed(() => {
@@ -174,7 +175,7 @@ export class HomeContainer {
 
   protected readonly cards = computed<HomeCard[]>(() => {
     const confirmed = this.confirmedIds();
-    const source = {
+    const byFilter: Record<HomeFilter, PartyEvent[]> = {
       all: this.upcoming(),
       pending: this.awaitingAnswer(),
       confirmed: this.upcoming().filter((event) => confirmed.has(event.id)),
@@ -182,7 +183,12 @@ export class HomeContainer {
         (event) => !confirmed.has(event.id) && this.declinedIds().has(event.id),
       ),
       past: this.past(),
-    }[this.filter()];
+    };
+    // Several chips on: every event any of them shows, once, upcoming first.
+    const picked = this.activeFilters();
+    const source = picked.includes('all')
+      ? byFilter.all
+      : [...new Set(picked.flatMap((id) => byFilter[id]))];
 
     return source.map((event) => {
       const isPast = hasStarted(event.date);
@@ -211,17 +217,24 @@ export class HomeContainer {
     () => this.upcoming().find((event) => this.confirmedIds().has(event.id)) ?? null,
   );
 
-  /** The heading above the list names what the chosen tab shows. */
-  protected readonly listTitle = computed(
-    () =>
-      ({
-        all: 'Próximos eventos',
-        pending: 'Eventos pendentes',
-        confirmed: 'Eventos confirmados',
-        declined: 'Eventos recusados',
-        past: 'Eventos realizados',
-      })[this.filter()],
-  );
+  /** The heading above the list names what the chosen chip shows; several read as one list. */
+  protected readonly listTitle = computed(() => {
+    const picked = this.activeFilters();
+    if (picked.length > 1) return 'Eventos filtrados';
+    return {
+      all: 'Próximos eventos',
+      pending: 'Eventos pendentes',
+      confirmed: 'Eventos confirmados',
+      declined: 'Eventos recusados',
+      past: 'Eventos realizados',
+    }[picked[0] ?? 'all'];
+  });
+
+  /** Only one chip on, and it is this one (for the empty-state text). */
+  protected onlyFilter(id: HomeFilter): boolean {
+    const picked = this.activeFilters();
+    return picked.length === 1 && picked[0] === id;
+  }
 
   constructor() {
     effect(() => {
@@ -288,7 +301,7 @@ export class HomeContainer {
     void this.router.navigate(['/meus-eventos/evento/novo']);
   }
 
-  protected setFilter(id: string): void {
-    this.filter.set(id as HomeFilter);
+  protected setFilters(ids: string[]): void {
+    this.activeFilters.set(ids as HomeFilter[]);
   }
 }

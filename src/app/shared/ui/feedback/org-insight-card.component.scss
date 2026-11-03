@@ -10,8 +10,9 @@
   gap: var(--org-space-sm);
   padding: var(--org-space-md);
 
+  // Its own warm tint, not a category colour, so the tip keeps its tone when categories change.
   &--warning {
-    background: var(--org-cat-festa-bg);
+    background: color-mix(in srgb, var(--org-warning) 14%, var(--org-surface));
   }
 }
 

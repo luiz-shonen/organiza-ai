@@ -47,45 +47,54 @@
   color: var(--org-on-error-container);
 }
 
+// Event categories: outlined in their own hue. Status tags (success, warning, danger) stay
+// filled, so "Festa Junina" and "Confirmado" never look alike.
 .org-badge--aniversario,
 :host(.cat-aniversario) .org-badge {
-  background: var(--org-cat-aniversario-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-aniversario-color);
 }
 
 .org-badge--casamento,
 :host(.cat-casamento) .org-badge {
-  background: var(--org-cat-casamento-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-casamento-color);
 }
 
 .org-badge--festa,
 :host(.cat-festa) .org-badge {
-  background: var(--org-cat-festa-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-festa-color);
 }
 
 .org-badge--churrasco,
 :host(.cat-churrasco) .org-badge {
-  background: var(--org-cat-churrasco-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-churrasco-color);
 }
 
 .org-badge--happy,
 :host(.cat-happy) .org-badge {
-  background: var(--org-cat-happy-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-happy-color);
 }
 
 .org-badge--formatura,
 :host(.cat-formatura) .org-badge {
-  background: var(--org-cat-formatura-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-formatura-color);
 }
 
 .org-badge--outros,
 :host(.cat-outros) .org-badge {
-  background: var(--org-cat-outros-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-outros-color);
 }
 

@@ -155,12 +155,17 @@ describe('HomeContainer', () => {
         fixture.detectChanges();
       };
 
+      const heading = () => element().querySelector('#home-list-title')?.textContent?.trim();
+      expect(heading()).toContain('Próximos eventos');
       select('home-filter-pending');
       expect(titles()).toEqual(['Aniversário']);
+      expect(heading()).toContain('Eventos pendentes');
       select('home-filter-confirmed');
       expect(titles()).toEqual(['Festa Junina']);
+      expect(heading()).toContain('Eventos confirmados');
       select('home-filter-past');
       expect(titles()).toEqual(['Churrasco']);
+      expect(heading()).toContain('Eventos anteriores');
     });
 
     it('shows what the family brings and saves the "comprado" check', async () => {

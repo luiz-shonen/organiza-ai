@@ -193,7 +193,7 @@ export class HomeContainer {
       let status: EventSummaryStatus | null = null;
       if (isPast) status = { label: 'Realizado', variant: 'default' };
       else if (isConfirmed) status = { label: 'Confirmado', variant: 'success' };
-      else if (isDeclined) status = { label: 'Recusado', variant: 'default' };
+      else if (isDeclined) status = { label: 'Recusado', variant: 'danger' };
       else if (this.member()) status = { label: 'Pendente', variant: 'warning' };
       return {
         event,
@@ -211,8 +211,16 @@ export class HomeContainer {
     () => this.upcoming().find((event) => this.confirmedIds().has(event.id)) ?? null,
   );
 
-  protected readonly listTitle = computed(() =>
-    this.filter() === 'past' ? 'Eventos anteriores' : 'Próximos eventos',
+  /** The heading above the list names what the chosen tab shows. */
+  protected readonly listTitle = computed(
+    () =>
+      ({
+        all: 'Próximos eventos',
+        pending: 'Eventos pendentes',
+        confirmed: 'Eventos confirmados',
+        declined: 'Eventos recusados',
+        past: 'Eventos anteriores',
+      })[this.filter()],
   );
 
   constructor() {

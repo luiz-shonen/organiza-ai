@@ -152,14 +152,16 @@ $breakpoint-lg: 1200px;
     --org-color-gold: #ffd700;
 
     // Event categories (tinted badges)
+    // Category tags are outlined, in hues kept apart from the status tags
+    // (Confirmado green, Pendente amber, Recusado red): no green, amber, orange or red here.
     --org-cat-aniversario-bg: #f8f0fc;
     --org-cat-aniversario-color: #862e9c;
-    --org-cat-casamento-bg: #fff0f6;
-    --org-cat-casamento-color: #a61e4d;
-    --org-cat-festa-bg: #fff4e6;
-    --org-cat-festa-color: #c2410c;
-    --org-cat-churrasco-bg: #ebfbee;
-    --org-cat-churrasco-color: #2b8a3e;
+    --org-cat-casamento-bg: #fdf0fa;
+    --org-cat-casamento-color: #a2177e;
+    --org-cat-festa-bg: #e3fafc;
+    --org-cat-festa-color: #0b7285;
+    --org-cat-churrasco-bg: #edf2ff;
+    --org-cat-churrasco-color: #364fc7;
     --org-cat-happy-bg: #e7f5ff;
     --org-cat-happy-color: #1971c2;
     --org-cat-formatura-bg: #f3f0ff;
@@ -227,12 +229,12 @@ $breakpoint-lg: 1200px;
     --org-progress-track: rgb(255 255 255 / 0.1);
     --org-cat-aniversario-bg: color-mix(in srgb, #9c36b5 26%, #2a2346);
     --org-cat-aniversario-color: color-mix(in srgb, #9c36b5 40%, #fff);
-    --org-cat-casamento-bg: color-mix(in srgb, #d6336c 26%, #2a2346);
-    --org-cat-casamento-color: color-mix(in srgb, #d6336c 40%, #fff);
-    --org-cat-festa-bg: color-mix(in srgb, #e8590c 26%, #2a2346);
-    --org-cat-festa-color: color-mix(in srgb, #e8590c 40%, #fff);
-    --org-cat-churrasco-bg: color-mix(in srgb, #2f9e44 26%, #2a2346);
-    --org-cat-churrasco-color: color-mix(in srgb, #2f9e44 40%, #fff);
+    --org-cat-casamento-bg: color-mix(in srgb, #c2259f 26%, #2a2346);
+    --org-cat-casamento-color: color-mix(in srgb, #c2259f 40%, #fff);
+    --org-cat-festa-bg: color-mix(in srgb, #1098ad 26%, #2a2346);
+    --org-cat-festa-color: color-mix(in srgb, #1098ad 40%, #fff);
+    --org-cat-churrasco-bg: color-mix(in srgb, #4263eb 26%, #2a2346);
+    --org-cat-churrasco-color: color-mix(in srgb, #4263eb 40%, #fff);
     --org-cat-happy-bg: color-mix(in srgb, #1c7ed6 26%, #2a2346);
     --org-cat-happy-color: color-mix(in srgb, #1c7ed6 40%, #fff);
     --org-cat-formatura-bg: color-mix(in srgb, #7950f2 26%, #2a2346);

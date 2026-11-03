@@ -11,10 +11,11 @@
 
 .guest-list__actions {
   display: flex;
-  gap: var(--org-space-sm);
+  gap: var(--org-space-2xs);
 }
 
 .guest-list__households,
+.guest-list__people,
 .guest-list__declines-list {
   display: flex;
   flex-direction: column;
@@ -23,7 +24,18 @@
   padding: 0;
 }
 
-.guest-list__household {
+.guest-list__households {
+  gap: var(--org-space-sm);
+}
+
+.guest-list__phone {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+// One row per person: avatar, name with their role, then what they bring.
+.guest-list__person {
   align-items: flex-start;
   border-top: 1px solid var(--org-outline-variant);
   display: flex;
@@ -44,29 +56,32 @@
 }
 
 .guest-list__name {
+  align-items: center;
   color: var(--org-on-surface);
+  display: flex;
+  flex-wrap: wrap;
   font-size: var(--org-font-size-sm);
   font-weight: var(--org-font-weight-semibold);
+  gap: var(--org-space-xs);
   margin: 0;
 }
 
-.guest-list__phone {
+.guest-list__role {
   color: var(--org-on-surface-variant);
-  font-weight: var(--org-font-weight-regular);
-  margin-inline-start: var(--org-space-xs);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-medium);
+
+  &--host {
+    color: var(--org-primary);
+  }
 }
 
-.guest-list__line,
+.guest-list__bring,
 .guest-list__message {
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-sm);
   line-height: var(--org-line-height-normal);
   margin: 0;
-}
-
-.guest-list__label {
-  color: var(--org-on-surface);
-  font-weight: var(--org-font-weight-medium);
 }
 
 .guest-list__message {

@@ -9,7 +9,7 @@ const items = [
 ] as PartyItem[];
 
 describe('buildGuestHouseholds', () => {
-  it('groups family, companions and what each household brings', () => {
+  it('groups family and companions, with what each person brings', () => {
     const guests = [
       {
         id: 'u1',
@@ -41,8 +41,27 @@ describe('buildGuestHouseholds', () => {
         phone: '(31) 99267-7624',
         people: ['Pedro', 'Soraya'],
         bring: ['2 kg de Carne', '2 L de Refrigerante'],
+        members: [
+          {
+            name: 'Jéssica',
+            role: 'Convidado(a)',
+            bring: ['1 kg de Carne', '2 L de Refrigerante'],
+          },
+          { name: 'Pedro', role: 'Família', bring: ['1 kg de Carne'] },
+          { name: 'Soraya', role: 'Acompanhante', bring: [] },
+        ],
       },
-      { id: 'u2', name: 'Bia', phone: '', people: ['2 acompanhantes'], bring: ['1 Bolo'] },
+      {
+        id: 'u2',
+        name: 'Bia',
+        phone: '',
+        people: ['2 acompanhantes'],
+        bring: ['1 Bolo'],
+        members: [
+          { name: 'Bia', role: 'Convidado(a)', bring: ['1 Bolo'] },
+          { name: '2 acompanhantes', role: 'Acompanhante', bring: [] },
+        ],
+      },
     ]);
   });
 });

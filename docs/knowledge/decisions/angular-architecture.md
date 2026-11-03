@@ -23,9 +23,8 @@ related: [design-system.md, styling-rules.md]
   them: an e-mail account has no Firebase `displayName`, which showed the e-mail prefix ("admin").
   Saving the profile name renames it on every event the account owns (`EventService.renameCreator`), and
   "Meus eventos" fixes older events once. The organizer sees "Você" and no RSVP card on their own event.
-- The event page lists who is going ("Quem vai", `buildGuestHouseholds`): each confirmed household, the
-  family and companions with them, and what they bring, for everyone with the link. Organizers also see
-  phones, "Não poderão ir" with the messages, and Excel / Imprimir. The editor no longer has a guest list.
+- The event page lists who is going ("Quem vai", `buildGuestHouseholds`): one panel per confirmed household, like "Levar familiares?" (the first open, all open up to three), with each person (the guest, their family, their companions), their role and what they bring. Organizers also see phones, "Não poderão ir" with the messages, and Excel / Imprimir as icons in the card header. The editor has no guest list, and saving an edit goes back to Meus eventos.
+- In the RSVP drawer "Levar familiares?" comes before "Levar acompanhantes?".
 - Início and Meus eventos share `app-next-event-banner` ("Evento próximo: …, em 7 dias"): Início shows the nearest event the member confirmed, Meus eventos the nearest one they organize.
 - Início lists invites only (pending, confirmed, declined). Events the account owns or helps organize
   live in "Meus eventos" and never show on Início.

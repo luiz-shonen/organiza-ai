@@ -4,19 +4,27 @@ import type { GuestHousehold } from '../../../../core/utils';
 import { Phone } from '../../../../core/value-objects';
 import {
   OrgAvatarComponent,
-  OrgButtonComponent,
   OrgCardHeaderComponent,
+  OrgExpansionPanelComponent,
+  OrgIconButtonComponent,
   OrgSurfaceComponent,
 } from '../../../../shared/ui';
 
 /**
- * "Quem vai" on the event page: each confirmed household, who comes with them and what they
- * bring, for everyone with the link. Organizers also see phones, the declines and the export.
+ * "Quem vai" on the event page: one panel per confirmed household, like "Levar familiares?",
+ * with each person (the guest, their family, their companions) and what they bring. Organizers
+ * also see phones, the declines, and the Excel / print actions in the header.
  */
 @Component({
   selector: 'app-guest-list-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgAvatarComponent, OrgButtonComponent, OrgCardHeaderComponent, OrgSurfaceComponent],
+  imports: [
+    OrgAvatarComponent,
+    OrgCardHeaderComponent,
+    OrgExpansionPanelComponent,
+    OrgIconButtonComponent,
+    OrgSurfaceComponent,
+  ],
   templateUrl: './guest-list-card.component.html',
   styleUrl: './guest-list-card.component.scss',
 })
@@ -34,8 +42,19 @@ export class GuestListCardComponent {
   /** "3 confirmados · 5 pessoas": the households, and everyone coming with them. */
   protected readonly summary = computed(() => {
     const households = this.households();
-    const people = households.reduce((total, household) => total + 1 + household.people.length, 0);
+    const people = households.reduce((total, household) => total + household.members.length, 0);
     const answered = households.length === 1 ? '1 confirmado' : `${households.length} confirmados`;
     return people > households.length ? `${answered} · ${people} pessoas` : answered;
   });
+
+  /** Beside the guest's name: "+2 · 3 itens", short enough for a phone. */
+  protected householdSummary(household: GuestHousehold): string {
+    const extra = household.members.length - 1;
+    const items = household.bring.length;
+    const parts = [
+      ...(extra ? [`+${extra}`] : []),
+      ...(items ? [items === 1 ? '1 item' : `${items} itens`] : []),
+    ];
+    return parts.join(' · ') || '1 pessoa';
+  }
 }

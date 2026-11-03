@@ -334,6 +334,7 @@ export class EventEditorContainer implements OnInit {
       if (this.isEditing() && eventId) {
         await this.eventService.updateEvent(eventId, eventData);
         this.feedback.success('Evento atualizado!');
+        await this.router.navigate(['/meus-eventos']);
       } else {
         const newId = await this.eventService.createEvent(eventData);
         for (const item of this.draftItems()) {

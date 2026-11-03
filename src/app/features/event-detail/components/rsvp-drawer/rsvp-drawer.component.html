@@ -46,14 +46,6 @@
         [error]="fieldError(form.controls.phone, 'Telefone é obrigatório')"
       />
 
-      <app-companion-selector
-        class="rsvp-drawer__companions"
-        [names]="companionNames()"
-        [selected]="selectedCompanions()"
-        (toggleCompanion)="onToggleCompanion($event)"
-        (add)="onAddCompanion($event)"
-      />
-
       <div class="rsvp-drawer__family" data-testid="family-selector">
         <app-family-selector
           [members]="familyMembers()"
@@ -64,6 +56,14 @@
           (addInlineMember)="onAddInlineFamilyMember($event)"
         />
       </div>
+
+      <app-companion-selector
+        class="rsvp-drawer__companions"
+        [names]="companionNames()"
+        [selected]="selectedCompanions()"
+        (toggleCompanion)="onToggleCompanion($event)"
+        (add)="onAddCompanion($event)"
+      />
     </div>
 
     <footer class="rsvp-drawer__actions">

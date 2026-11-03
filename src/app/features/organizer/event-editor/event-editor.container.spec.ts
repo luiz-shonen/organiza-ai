@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -149,7 +149,8 @@ describe('EventEditorContainer', () => {
       expect(component['pixForm'].enabled).toBe(true);
     });
 
-    it('should allow owner to save event updates', async () => {
+    it('saves the changes of the owner and goes back to Meus eventos', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       await component['saveEvent']();
       expect(mockEventService.updateEvent).toHaveBeenCalledWith(
         'evt-123',
@@ -159,6 +160,7 @@ describe('EventEditorContainer', () => {
         }),
       );
       expect(mockFeedback.success).toHaveBeenCalledWith('Evento atualizado!');
+      expect(navigate).toHaveBeenCalledWith(['/meus-eventos']);
     });
 
     it('fills the address fields of an older event from its one-line location', () => {

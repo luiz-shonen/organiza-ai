@@ -22,11 +22,17 @@
       @if (!isOwner()) {
         <app-rsvp-card
           [isConfirmed]="isUserConfirmed()"
+          [isDeclined]="isDeclined()"
+          [canDecline]="!!memberUid()"
+          [bringsSomething]="checklist().length > 0"
+          [hasItems]="progress().length > 0"
           [guestCount]="guestCount()"
           [isLoading]="rsvpLoading()"
           [guestName]="currentGuestName()"
           (confirmRsvp)="onConfirmRsvp()"
+          (editRsvp)="onEditRsvp()"
           (cancelRsvp)="onCancelRsvp()"
+          (declineRsvp)="onDeclineRsvp()"
         />
       }
 
@@ -38,7 +44,10 @@
         />
       }
 
-      <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
+      <!-- An event with nothing to bring shows no list to guests; organizers still see it. -->
+      @if (progress().length || canEdit()) {
+        <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
+      }
 
       @if (event.pixKey) {
         <app-pix-card

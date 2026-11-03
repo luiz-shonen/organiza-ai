@@ -23,15 +23,8 @@ export class EventDetailPage extends BasePage {
     this.countdownTimer = page
       .getByTestId('countdown-timer')
       .or(page.locator('.countdown, .event-card__countdown, .event-card__date, app-event-hero'));
-    this.rsvpBtn = page
-      .getByTestId('rsvp-action-btn')
-      .locator('button')
-      .or(page.getByRole('button', { name: /confirmar|presença|rsvp/i }))
-      .or(
-        page.locator(
-          '.rsvp-card button, org-button[label*="Confirmar"] button, button:has-text("Confirmar"), button:has-text("Presença")',
-        ),
-      );
+    // The RSVP card also offers "Não poderei ir"; the confirm button is the one with the test id.
+    this.rsvpBtn = page.getByTestId('rsvp-action-btn').locator('button');
     this.pixCard = page.getByTestId('pix-card');
     this.copyPixBtn = page
       .getByTestId('copy-pix-btn')

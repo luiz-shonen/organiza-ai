@@ -34,4 +34,7 @@ related: [routes-and-domains.md]
 - RSVP requires a verified identity (Google or signed-in profile). Never write anonymous users to `users`; check `!user.isAnonymous`.
 - Each user keeps a private family roster at `users/{uid}/family`, used for batch RSVP.
 - A member added with "Novo membro" in the RSVP drawer is saved to that roster at once (the page passes `addFamilyMember` in the drawer data) and selected; the drawer closes only on "Confirmar". The quick form is a group, not a `<form>`, because it sits inside the RSVP form.
+- An invite is pending, confirmed or declined. "Não poderei ir" (on a pending invite, or cancelling a confirmed one) adds the event to `users/{uid}.declinedEvents`; confirming removes it. The decline is private: the organizer's guest list does not show it. Início tags it "Recusado" and leaves it out of "Pendentes".
+- Início offers "Responder convite" on a pending invite and "Ver convite" on an answered one. On the event page a confirmed member gets "Editar presença", which reopens the RSVP drawer filled in (`RsvpDrawerRequestData.existing`) and removes the family members left out.
+- An event with no items shows guests no "Lista do evento", and the RSVP card does not mention items; "Escolha abaixo o que vocês vão levar" only shows while the household has picked nothing.
 - "Outros acompanhantes" are people outside the family (a friend from work). Their names are saved on the guest, counted in "N pessoas confirmadas", and listed in the organizer's guest table.

@@ -60,7 +60,7 @@
               [event]="card.event"
               [status]="card.status"
               [link]="['/evento', card.event.id]"
-              [showDetails]="!card.pending"
+              [showDetails]="!card.pending && !card.answered"
             >
               @if (card.bring.length) {
                 <org-expansion-panel
@@ -104,6 +104,16 @@
                   label="Responder convite"
                   variant="tonal"
                   testId="answer-invite-btn"
+                  [compact]="true"
+                  (pressed)="openEvent(card.event.id)"
+                />
+              }
+              @if (card.answered) {
+                <org-button
+                  eventCardFooter
+                  label="Ver convite"
+                  variant="tonal"
+                  testId="view-invite-btn"
                   [compact]="true"
                   (pressed)="openEvent(card.event.id)"
                 />

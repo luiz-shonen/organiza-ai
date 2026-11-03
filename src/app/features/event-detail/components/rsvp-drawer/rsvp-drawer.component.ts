@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
@@ -72,11 +73,23 @@ export class RsvpDrawerComponent {
     return this.form.controls.companions;
   }
 
+  /** The presence is already confirmed: the drawer edits it. */
+  protected readonly editing = computed(() => !!this.drawerData().existing);
+
   constructor() {
     effect(() => {
       const data = this.drawerData();
       this.familyMembers.set(data.familyMembers ?? []);
       this.form.patchValue({ name: data.session?.name ?? '', phone: data.session?.phone ?? '' });
+
+      const existing = data.existing;
+      if (existing) {
+        const known = new Set((data.familyMembers ?? []).map((member) => member.id));
+        this.selectedFamilyMemberIds.set(existing.familyMemberIds.filter((id) => known.has(id)));
+        this.form.controls.companionsCount.setValue(existing.companions.length);
+        this.updateCompanionCount(existing.companions.length);
+        this.companions.setValue([...existing.companions]);
+      }
     });
   }
 

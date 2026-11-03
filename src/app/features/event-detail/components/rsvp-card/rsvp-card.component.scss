@@ -15,7 +15,8 @@
   margin: 0;
 }
 
-.rsvp-card__confirm-btn,
-.rsvp-card__cancel-btn {
-  width: 100%;
+.rsvp-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
 }

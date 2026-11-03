@@ -21,7 +21,11 @@ describe('HomeContainer', () => {
     getClaims: vi.fn(),
     saveClaims: vi.fn().mockResolvedValue(undefined),
   };
-  const userService = { getAttendedEvents: vi.fn(), getVisibleEvents: vi.fn() };
+  const userService = {
+    getAttendedEvents: vi.fn(),
+    getVisibleEvents: vi.fn(),
+    getDeclinedEvents: vi.fn(),
+  };
 
   const base = {
     description: 'Descrição',
@@ -47,6 +51,7 @@ describe('HomeContainer', () => {
     eventsSubject = new Subject<PartyEvent[]>();
     currentUser.set(null);
     userService.getAttendedEvents.mockResolvedValue([confirmed]);
+    userService.getDeclinedEvents.mockResolvedValue([]);
     userService.getVisibleEvents.mockReset();
     userService.getVisibleEvents.mockImplementation(() => eventsSubject.asObservable());
     claimService.getClaims.mockResolvedValue(household);
@@ -163,6 +168,12 @@ describe('HomeContainer', () => {
       ]);
     });
 
+    it('offers "Ver convite" on an answered invite instead of "Responder convite"', () => {
+      const confirmedCard = element().querySelectorAll('app-event-summary-card')[0];
+      expect(confirmedCard.querySelector('[data-testid="view-invite-btn"]')).not.toBeNull();
+      expect(confirmedCard.querySelector('[data-testid="answer-invite-btn"]')).toBeNull();
+    });
+
     it('opens the event from "Responder convite"', () => {
       (
         element().querySelector('button[data-testid="answer-invite-btn"]') as HTMLButtonElement
@@ -188,5 +199,23 @@ describe('HomeContainer', () => {
       ).click();
       expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-2']);
     });
+  });
+
+  it('shows a declined invite as "Recusado", out of the pending count', async () => {
+    userService.getDeclinedEvents.mockResolvedValue(['evt-2']);
+    currentUser.set({ uid: 'u1', displayName: 'Jéssica Souza', isAnonymous: false });
+    fixture.detectChanges();
+    eventsSubject.next([confirmed, pending]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const statuses = Array.from(element().querySelectorAll('[data-testid="event-status"]')).map(
+      (badge) => badge.textContent?.trim(),
+    );
+    expect(statuses).toEqual(['Confirmado', 'Recusado']);
+    expect(element().querySelector('[data-testid="answer-invite-btn"]')).toBeNull();
+    expect(element().querySelector('.org-page-header__subtitle')?.textContent).toContain(
+      '0 convites esperando resposta',
+    );
   });
 });

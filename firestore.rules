@@ -88,7 +88,9 @@ service cloud.firestore {
             && (!changes('photoURL') || isOptionalString(data.get('photoURL', null), 2048))
             && (!changes('themePref') || data.get('themePref', null) in ['light', 'dark', 'system'])
             && (!changes('invitedEvents')
-                  || (data.get('invitedEvents', null) is list && data.get('invitedEvents', null).size() <= 500));
+                  || (data.get('invitedEvents', null) is list && data.get('invitedEvents', null).size() <= 500))
+            && (!changes('declinedEvents')
+                  || (data.get('declinedEvents', null) is list && data.get('declinedEvents', null).size() <= 500));
       }
 
       match /family/{memberId} {

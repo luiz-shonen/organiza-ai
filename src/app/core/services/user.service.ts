@@ -78,6 +78,31 @@ export class UserService {
     await this.upsertProfile(uid, { themePref });
   }
 
+  /** Events the member said they cannot attend; Início shows them as "Recusado". */
+  async getDeclinedEvents(uid: string): Promise<string[]> {
+    if (!uid) return [];
+    try {
+      const user = await this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid));
+      return (user?.['declinedEvents'] as string[] | undefined) ?? [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Marks the invite as declined, or clears it when the member confirms after all. */
+  async setDeclined(uid: string, eventId: string, declined: boolean): Promise<void> {
+    if (!uid || !eventId) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      {
+        declinedEvents: declined
+          ? this.gateway.arrayUnion(eventId)
+          : this.gateway.arrayRemove(eventId),
+      },
+      { merge: true },
+    );
+  }
+
   /** Remembers an event the member opened from its invite link, so it shows on Início. */
   async rememberInvitedEvent(uid: string, eventId: string): Promise<void> {
     if (!uid || !eventId) return;

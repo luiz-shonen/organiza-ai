@@ -1,9 +1,15 @@
 <org-surface variant="card" testId="rsvp-card">
   <article class="rsvp-card">
     <org-card-header
-      [icon]="isConfirmed() ? 'verified' : 'how_to_reg'"
+      [icon]="isConfirmed() ? 'verified' : isDeclined() ? 'cancel' : 'how_to_reg'"
       [tone]="isConfirmed() ? 'success' : 'info'"
-      [heading]="isConfirmed() ? 'Você está na lista!' : 'Confirme sua presença'"
+      [heading]="
+        isConfirmed()
+          ? 'Você está na lista!'
+          : isDeclined()
+            ? 'Você recusou este convite'
+            : 'Confirme sua presença'
+      "
       [subheading]="
         guestCount() === 1 ? '1 pessoa confirmada' : guestCount() + ' pessoas confirmadas'
       "
@@ -13,33 +19,68 @@
       <p class="rsvp-card__text">
         @if (guestName()) {
           <strong>{{ guestName() }}</strong
-          >, sua presença está confirmada. Escolha abaixo o que vocês vão levar.
+          >, sua presença está confirmada.
         } @else {
-          Sua presença está confirmada. Escolha abaixo o que vocês vão levar.
+          Sua presença está confirmada.
+        }
+        @if (hasItems() && !bringsSomething()) {
+          Escolha abaixo o que vocês vão levar.
         }
       </p>
-      <org-button
-        class="rsvp-card__cancel-btn"
-        variant="secondary"
-        [disabled]="isLoading()"
-        [label]="isLoading() ? 'Cancelando...' : 'Não poderei ir'"
-        [fullWidth]="true"
-        (pressed)="onCancel()"
-      />
+      <div class="rsvp-card__actions">
+        <org-button
+          class="rsvp-card__edit-btn"
+          data-testid="rsvp-edit-btn"
+          label="Editar presença"
+          icon="edit"
+          variant="tonal"
+          [disabled]="isLoading()"
+          [fullWidth]="true"
+          (pressed)="onEdit()"
+        />
+        <org-button
+          class="rsvp-card__cancel-btn"
+          data-testid="rsvp-cancel-presence-btn"
+          variant="secondary"
+          [disabled]="isLoading()"
+          [label]="isLoading() ? 'Cancelando...' : 'Não poderei ir'"
+          [fullWidth]="true"
+          (pressed)="onCancel()"
+        />
+      </div>
     } @else {
       <p class="rsvp-card__text">
-        Confirme em um toque para participar e assumir itens da lista colaborativa.
+        @if (isDeclined()) {
+          O organizador não conta com você. Se der para ir, ainda dá tempo de confirmar.
+        } @else if (hasItems()) {
+          Confirme em um toque para participar e assumir itens da lista colaborativa.
+        } @else {
+          Confirme em um toque para o organizador contar com você.
+        }
       </p>
-      <org-button
-        class="rsvp-card__confirm-btn"
-        data-testid="rsvp-action-btn"
-        [gradient]="false"
-        [disabled]="isLoading()"
-        [loading]="isLoading()"
-        [label]="isLoading() ? 'Confirmando...' : 'Confirmar presença'"
-        [fullWidth]="true"
-        (pressed)="onConfirm()"
-      />
+      <div class="rsvp-card__actions">
+        <org-button
+          class="rsvp-card__confirm-btn"
+          data-testid="rsvp-action-btn"
+          [gradient]="false"
+          [disabled]="isLoading()"
+          [loading]="isLoading()"
+          [label]="isLoading() ? 'Confirmando...' : 'Confirmar presença'"
+          [fullWidth]="true"
+          (pressed)="onConfirm()"
+        />
+        @if (!isDeclined() && canDecline()) {
+          <org-button
+            class="rsvp-card__decline-btn"
+            data-testid="rsvp-decline-btn"
+            variant="secondary"
+            label="Não poderei ir"
+            [disabled]="isLoading()"
+            [fullWidth]="true"
+            (pressed)="onDecline()"
+          />
+        }
+      </div>
     }
   </article>
 </org-surface>

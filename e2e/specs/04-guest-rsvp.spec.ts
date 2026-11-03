@@ -153,18 +153,16 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     await expect(itemList.claimBtns).toHaveCount(1);
   });
 
-  test('should show the empty wishlist state when the event has no items', async ({
+  test('should hide the item list from guests when the event has nothing to bring', async ({
     eventDetailPage,
-    itemList,
     page,
   }) => {
     await mockFirestoreDocuments(page, { events: [buildGuestEvent({ items: [] })] });
     await eventDetailPage.goto(`/evento/${guestEvent.id}`);
     await eventDetailPage.assertLoaded();
 
-    const emptyState = itemList.listRoot.locator('.item-list-card__empty');
-    await expect(emptyState).toBeVisible();
-    await expect(emptyState).toContainText('Nenhum item adicionado a este evento ainda.');
+    await expect(page.getByTestId('rsvp-card')).toContainText('o organizador contar com você');
+    await expect(page.locator('app-item-list-card')).toHaveCount(0);
   });
 
   test('should render dynamic category badge matching event category tokens and activate seasonal theme overlay', async ({

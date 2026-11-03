@@ -74,6 +74,8 @@ export class GuestService {
     eventId: string,
     primaryGuest: BatchPrimaryGuestInput,
     familyMembers: FamilyMember[] = [],
+    /** Family members confirmed before and left out when the presence is edited. */
+    removedFamilyMemberIds: readonly string[] = [],
   ): Promise<void> {
     const now = new Date().toISOString();
     const companionsCount = primaryGuest.companions?.length ?? primaryGuest.companionsCount ?? 0;
@@ -112,6 +114,10 @@ export class GuestService {
           },
           { merge: true },
         );
+      }
+
+      for (const memberId of removedFamilyMemberIds) {
+        batch.delete(this.guestDocPath(eventId, `${primaryGuest.uid}_${memberId}`));
       }
     });
   }

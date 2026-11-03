@@ -7,7 +7,7 @@ import {
 } from '../helpers/design-tokens.helper';
 
 test.describe('Home Theming, Feed and Accessibility', () => {
-  test('should render home landmark region and navigable event cards', async ({
+  test('should render the home landmark for visitors, with no events since they are private', async ({
     homePage,
     page,
   }) => {
@@ -18,12 +18,25 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     await expect(homePage.pageRoot).toBeVisible();
     await expect(homePage.pageRoot).toHaveAttribute('aria-label', 'Eventos disponíveis');
     await expect(page.getByRole('heading', { level: 1, name: /eventos/i })).toBeVisible();
+    await expect(homePage.eventCards).toHaveCount(0);
+  });
 
-    // The card title is the link to the event; "Ver detalhes" repeats it in the footer.
+  test('should list an invite the member opened and link to the event', async ({
+    homePage,
+    page,
+  }) => {
+    const event = buildGuestEvent();
+    await setupMockAuthSession(page, {
+      events: [event],
+      userProfile: { id: 'test-user-uid', invitedEvents: [event.id] },
+    });
+    await homePage.goto('/');
+
+    // The card title is the link to the event; a pending invite offers "Responder convite".
     const firstCard = homePage.eventCards.first();
     await expect(firstCard).toBeVisible();
     await expect(firstCard.getByTestId('event-card-link')).toHaveAttribute('href', /\/evento\//);
-    await expect(firstCard.getByTestId('event-details-link')).toBeVisible();
+    await expect(firstCard.getByTestId('answer-invite-btn')).toBeVisible();
     await assertSingleSurfaceRing(firstCard);
     await assertNoHorizontalOverflow(page);
 

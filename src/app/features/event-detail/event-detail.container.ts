@@ -108,10 +108,27 @@ export class EventDetailContainer implements OnInit {
   private readonly claimingItemId = signal<string | null>(null);
   protected readonly claimSaving = signal(false);
 
-  private readonly memberUid = computed(() => {
+  protected readonly memberUid = computed(() => {
     const user = this.authService.currentUser();
     return user && !user.isAnonymous ? user.uid : null;
   });
+
+  /** The member said they cannot attend; cleared when they confirm after all. */
+  protected readonly declined = signal(false);
+  private readonly loadDeclined = effect(() => {
+    const uid = this.memberUid();
+    const eventId = this.id();
+    if (!uid) {
+      this.declined.set(false);
+      return;
+    }
+    this.userService
+      .getDeclinedEvents(uid)
+      .then((ids) => this.declined.set(ids.includes(eventId)))
+      .catch(console.error);
+  });
+
+  protected readonly isDeclined = computed(() => this.declined() && !this.isUserConfirmed());
 
   /** Opening the invite link puts the event on the member's Início; nothing else does. */
   private rememberedFor: string | null = null;
@@ -240,7 +257,25 @@ export class EventDetailContainer implements OnInit {
     });
   }
 
-  protected async onConfirmRsvp(event?: Event): Promise<void> {
+  protected onEditRsvp(): Promise<void> {
+    return this.onConfirmRsvp(undefined, true);
+  }
+
+  /** "Não poderei ir" on an invite not answered yet: nothing to cancel, only the answer. */
+  protected async onDeclineRsvp(): Promise<void> {
+    const uid = this.memberUid();
+    if (!uid) return;
+    try {
+      await this.userService.setDeclined(uid, this.id(), true);
+      this.declined.set(true);
+      this.feedback.success('Tudo bem, avisamos que você não poderá ir.');
+    } catch (err: unknown) {
+      console.error(err);
+      this.feedback.error('Não foi possível recusar o convite. Tente novamente.');
+    }
+  }
+
+  protected async onConfirmRsvp(event?: Event, editing = false): Promise<void> {
     this.rsvpLoading.set(true);
     try {
       let user = this.authService.currentUser();
@@ -256,14 +291,29 @@ export class EventDetailContainer implements OnInit {
         const phone = user.phoneNumber ?? '';
 
         const familyMembers = await this.familyService.getFamilyMembers(user.uid);
+        const mine = this.guests().find((guest) => guest.id === user.uid || guest.uid === user.uid);
+        const familyPrefix = `${user.uid}_`;
+        const confirmedFamilyIds = this.guests()
+          .filter((guest) => guest.primaryGuestId === user.uid)
+          .map((guest) => guest.id.replace(familyPrefix, ''));
+        const existing =
+          editing && mine
+            ? {
+                companions: (mine.companions ?? []).map((companion) => companion.name),
+                familyMemberIds: confirmedFamilyIds,
+              }
+            : undefined;
 
         this.drawerService.open({
           kind: 'rsvp',
           trigger: event?.currentTarget as HTMLElement | undefined,
           data: {
-            session: { name, phone },
+            session: existing
+              ? { name: mine?.name || name, phone: mine?.phone || phone }
+              : { name, phone },
             familyMembers,
             userId: user.uid,
+            existing,
             addFamilyMember: async (member) => {
               try {
                 const saved = await this.familyService.addFamilyMember(user.uid, member);
@@ -290,7 +340,14 @@ export class EventDetailContainer implements OnInit {
                   companions: result.companions,
                 },
                 result.selectedFamilyMembers ?? [],
+                confirmedFamilyIds.filter(
+                  (id) => !(result.selectedFamilyMembers ?? []).some((member) => member.id === id),
+                ),
               );
+              if (this.declined()) {
+                await this.userService.setDeclined(user.uid, this.id(), false);
+                this.declined.set(false);
+              }
 
               this.guestSession.saveSession({
                 name: result.name || name,
@@ -303,8 +360,12 @@ export class EventDetailContainer implements OnInit {
                 })
                 .catch(console.error);
 
-              this.confetti.fireSuccessConfetti();
-              this.feedback.success('Presença confirmada!');
+              if (existing) {
+                this.feedback.success('Presença atualizada!');
+              } else {
+                this.confetti.fireSuccessConfetti();
+                this.feedback.success('Presença confirmada!');
+              }
             } catch (err) {
               console.error(err);
               this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
@@ -344,6 +405,9 @@ export class EventDetailContainer implements OnInit {
 
             if (targetUid) {
               await this.guestService.cancelRsvp(this.id(), targetUid, targetUid, targetUid);
+              // Remembered as declined, so Início stops counting it as pending.
+              this.declined.set(true);
+              this.userService.setDeclined(targetUid, this.id(), true).catch(console.error);
             } else if (session?.phone) {
               const existingGuest = await this.guestService.getGuestByPhone(
                 this.id(),

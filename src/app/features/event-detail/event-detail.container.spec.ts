@@ -59,6 +59,8 @@ describe('EventDetailContainer', () => {
   let mockUserService: {
     upsertProfile: ReturnType<typeof vi.fn>;
     rememberInvitedEvent: ReturnType<typeof vi.fn>;
+    getDeclinedEvents: ReturnType<typeof vi.fn>;
+    setDeclined: ReturnType<typeof vi.fn>;
   };
   let mockConfettiService: {
     fireSuccessConfetti: ReturnType<typeof vi.fn>;
@@ -172,6 +174,8 @@ describe('EventDetailContainer', () => {
     mockUserService = {
       upsertProfile: vi.fn().mockResolvedValue(undefined),
       rememberInvitedEvent: vi.fn().mockResolvedValue(undefined),
+      getDeclinedEvents: vi.fn().mockResolvedValue([]),
+      setDeclined: vi.fn().mockResolvedValue(undefined),
     };
     mockConfettiService = {
       fireSuccessConfetti: vi.fn(),
@@ -302,6 +306,7 @@ describe('EventDetailContainer', () => {
           companions: [],
         }),
         [],
+        [],
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
       expect(mockFeedback.success).toHaveBeenCalledWith('Presença confirmada!');
@@ -329,6 +334,7 @@ describe('EventDetailContainer', () => {
           email: 'mariana@gmail.com',
           companions: [],
         }),
+        [],
         [],
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
@@ -366,6 +372,7 @@ describe('EventDetailContainer', () => {
           name: 'Lucas Dev',
         }),
         mockFamily,
+        [],
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
     });
@@ -390,6 +397,7 @@ describe('EventDetailContainer', () => {
       );
       expect(mockGuestSessionService.clearSession).toHaveBeenCalled();
       expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.');
+      expect(mockUserService.setDeclined).toHaveBeenCalledWith('usr-1', 'evt-123', true);
     });
   });
 

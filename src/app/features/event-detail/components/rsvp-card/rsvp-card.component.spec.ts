@@ -122,4 +122,47 @@ describe('RsvpCardComponent', () => {
       expect(cancelSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('answered states', () => {
+    const text = () => (fixture.nativeElement as HTMLElement).textContent ?? '';
+
+    it('stops asking to pick items once the household brings something', () => {
+      componentRef.setInput('isConfirmed', true);
+      fixture.detectChanges();
+      expect(text()).toContain('Escolha abaixo o que vocês vão levar.');
+
+      componentRef.setInput('bringsSomething', true);
+      fixture.detectChanges();
+      expect(text()).not.toContain('Escolha abaixo');
+      expect(text()).toContain('Editar presença');
+    });
+
+    it('does not mention items on an event with nothing to bring', () => {
+      componentRef.setInput('hasItems', false);
+      fixture.detectChanges();
+      expect(text()).not.toContain('itens');
+    });
+
+    it('offers "Não poderei ir" on a pending invite and emits the decline', () => {
+      componentRef.setInput('canDecline', true);
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.declineRsvp.subscribe(spy);
+      (
+        fixture.nativeElement.querySelector(
+          '[data-testid="rsvp-decline-btn"] button',
+        ) as HTMLButtonElement
+      ).click();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('shows a declined invite with a way back', () => {
+      componentRef.setInput('isDeclined', true);
+      componentRef.setInput('canDecline', true);
+      fixture.detectChanges();
+      expect(text()).toContain('Você recusou este convite');
+      expect(text()).toContain('Confirmar presença');
+      expect(fixture.nativeElement.querySelector('[data-testid="rsvp-decline-btn"]')).toBeNull();
+    });
+  });
 });

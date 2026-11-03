@@ -41,6 +41,8 @@ interface HomeCard {
   readonly event: PartyEvent;
   readonly status: EventSummaryStatus | null;
   readonly pending: boolean;
+  /** Answered (confirmed or declined) and not organized by the member: "Ver convite". */
+  readonly answered: boolean;
   /** The member created the event or helps organize it: no invite to answer. */
   readonly organizer: boolean;
   readonly bring: FamilyChecklistRow[];
@@ -96,6 +98,8 @@ export class HomeContainer {
   );
 
   private readonly confirmedIds = signal<ReadonlySet<string>>(new Set());
+  /** Invites the member said they cannot attend: answered, so not pending. */
+  private readonly declinedIds = signal<ReadonlySet<string>>(new Set());
   private readonly households = signal<Readonly<Record<string, Household>>>({});
 
   protected readonly firstName = computed(() => {
@@ -127,7 +131,10 @@ export class HomeContainer {
   });
   private readonly awaitingAnswer = computed(() =>
     this.upcoming().filter(
-      (event) => !this.confirmedIds().has(event.id) && !this.organizedIds().has(event.id),
+      (event) =>
+        !this.confirmedIds().has(event.id) &&
+        !this.declinedIds().has(event.id) &&
+        !this.organizedIds().has(event.id),
     ),
   );
 
@@ -178,6 +185,7 @@ export class HomeContainer {
     return source.map((event) => {
       const isPast = daysUntil(event.date) < 0;
       const isConfirmed = confirmed.has(event.id);
+      const isDeclined = !isConfirmed && this.declinedIds().has(event.id);
       const organizer = this.organizedIds().has(event.id);
       const household = this.households()[event.id];
       const bring = household ? buildFamilyChecklist(household.items, household.claims) : [];
@@ -185,11 +193,13 @@ export class HomeContainer {
       if (isPast) status = { label: 'Realizado', variant: 'default' };
       else if (organizer) status = { label: 'Organizador', variant: 'primary' };
       else if (isConfirmed) status = { label: 'Confirmado', variant: 'success' };
+      else if (isDeclined) status = { label: 'Recusado', variant: 'default' };
       else if (this.member()) status = { label: 'Pendente', variant: 'warning' };
       return {
         event,
         status,
-        pending: !isPast && !isConfirmed && !organizer && !!this.member(),
+        pending: !isPast && !isConfirmed && !isDeclined && !organizer && !!this.member(),
+        answered: !isPast && (isConfirmed || isDeclined) && !organizer,
         organizer,
         bring,
         bought: bring.filter((row) => row.bought).length,
@@ -209,6 +219,7 @@ export class HomeContainer {
           void this.loadMemberData(user.uid);
         } else {
           this.confirmedIds.set(new Set());
+          this.declinedIds.set(new Set());
           this.households.set({});
         }
       });
@@ -219,6 +230,7 @@ export class HomeContainer {
     try {
       const attended = await this.userService.getAttendedEvents(uid);
       this.confirmedIds.set(new Set(attended.map((event) => event.id)));
+      this.declinedIds.set(new Set(await this.userService.getDeclinedEvents(uid)));
       const entries = await Promise.all(
         attended.map(async (event) => {
           const [items, claims] = await Promise.all([

@@ -299,7 +299,7 @@ Uso recomendado: `<org-skeleton class="dashboard__skeleton-title" />` (or `shape
 
 ### OrgExpansionPanelComponent
 
-Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary.
+Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary. The summary keeps its own width and a long heading ends in an ellipsis, so the two never overlap in a narrow drawer; keep the summary short ("Nenhum", "2 selecionados").
 
 ### OrgTooltipComponent
 

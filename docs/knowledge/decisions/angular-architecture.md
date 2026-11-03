@@ -45,6 +45,8 @@ related: [design-system.md, styling-rules.md]
 | Presentational  | `*.component.ts`                  | nothing (FormBuilder for its own form is fine)                    | `input()` / `output()`                                              |
 | Design System   | `shared/ui/**/org-*.component.ts` | generic UI behaviour only (Clipboard, Overlay, `FeedbackService`) | inputs, outputs, content slots                                      |
 
+A drawer that must save something before it closes (the RSVP drawer adding a family member) receives a callback in its data, for example `RsvpDrawerRequestData.addFamilyMember`; the page implements it with the domain service and shows the feedback, so the drawer still injects nothing but `FormBuilder`.
+
 A presentational component never injects a domain service. When it needs a side effect that is purely UI (copy to clipboard and confirm), use the DS primitive that owns it (`org-copy-button`). When it needs a domain side effect, emit an output and let the page handle it.
 
 Reactive forms belong to the page; a step or section component receives its typed `FormGroup` as an input (see `EventBasicInfoForm` in `core/models`).

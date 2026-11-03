@@ -30,3 +30,9 @@ Inside `shared/ui`, customise Material through its token API only:
 - globally for overlays: `@include mat.select-overrides(...)` in `shared/ui/overlays/_org-overlays.scss`
 
 Never with `!important` and never with `--mdc-*` (ignored since Material 19).
+
+## Destructive actions
+
+- Every trash can is red: `org-icon-button` paints `delete` and `delete_outline` in the danger tone whatever `variant` it gets (`org-icon-button.component.spec.ts`).
+- Cancelling or deleting asks first in an `OrgConfirmDialog` with the danger tone; the action buttons use `variant="danger"` or `"danger-text"`.
+- Editing opens a side drawer (`org-bottom-sheet placement="side"`); dialogs are only for alerts and decisions that interrupt.

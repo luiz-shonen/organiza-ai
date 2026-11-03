@@ -1,0 +1,61 @@
+:host {
+  display: inline-flex;
+}
+
+// Two round options in a pill; the thumb sits under the one in use and slides between them.
+.org-theme-toggle {
+  --org-theme-toggle-size: 36px;
+
+  background: var(--org-surface-container);
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-full);
+  display: inline-flex;
+  padding: 2px;
+  position: relative;
+}
+
+.org-theme-toggle__thumb {
+  background: var(--org-primary-container);
+  border-radius: var(--org-radius-full);
+  height: var(--org-theme-toggle-size);
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  position: absolute;
+  transition: transform var(--org-motion-base) var(--org-motion-ease-emphasized);
+  width: var(--org-theme-toggle-size);
+}
+
+.org-theme-toggle--dark .org-theme-toggle__thumb {
+  transform: translateX(var(--org-theme-toggle-size));
+}
+
+.org-theme-toggle__option {
+  align-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  height: var(--org-theme-toggle-size);
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  transition: color var(--org-motion-fast) var(--org-motion-ease);
+  width: var(--org-theme-toggle-size);
+
+  &[aria-pressed='true'] {
+    color: var(--org-on-primary-container);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--org-focus-ring);
+    outline-offset: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-theme-toggle__thumb {
+    transition: none;
+  }
+}

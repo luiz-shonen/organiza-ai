@@ -1,0 +1,31 @@
+<div
+  class="org-theme-toggle"
+  role="group"
+  aria-label="Tema"
+  data-testid="theme-toggle"
+  [class.org-theme-toggle--dark]="dark()"
+>
+  <span class="org-theme-toggle__thumb" aria-hidden="true"></span>
+  <button
+    type="button"
+    class="org-theme-toggle__option"
+    aria-label="Tema claro"
+    matTooltip="Tema claro"
+    data-testid="theme-light-btn"
+    [attr.aria-pressed]="!dark()"
+    (click)="choose(false)"
+  >
+    <org-icon name="light_mode" size="sm" color="currentColor" />
+  </button>
+  <button
+    type="button"
+    class="org-theme-toggle__option"
+    aria-label="Tema escuro"
+    matTooltip="Tema escuro"
+    data-testid="theme-dark-btn"
+    [attr.aria-pressed]="dark()"
+    (click)="choose(true)"
+  >
+    <org-icon name="dark_mode" size="sm" color="currentColor" />
+  </button>
+</div>

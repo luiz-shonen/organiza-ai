@@ -153,6 +153,10 @@ Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" varia
 
 Uso recomendado: `<org-chip label="Celebrativo" variant="accent" [selected]="selected()" (selectionChange)="toggle($event)" />`. Use it for compact selectable labels, not arbitrary button styling.
 
+### OrgThemeToggleComponent
+
+Uso recomendado: `<org-theme-toggle [dark]="theme.isDark()" (darkChange)="theme.setMode($event ? 'dark' : 'light')" />`. The light / dark switch in the header, next to the avatar: a sun and a moon with a thumb that slides to the one in use. It holds no theme logic; the app's `ThemeService` saves the choice (and "Sistema" stays available on the profile page).
+
 ### OrgEditableChipComponent
 
 Uso recomendado: `<org-editable-chip placeholder="Personalizar" [value]="custom()" [selected]="!!custom()" (valueChange)="set($event)" (cleared)="clear()" />`. A Material editable chip for a value typed in place, next to the ready-made `org-chip` options (the event category). A click, Enter or the pencil starts editing; Enter or leaving the chip commits. Escape, an empty edit or an unchanged one keeps the previous value, so an edit left half-way never wipes it; ✕ clears it. The page validates what is committed.

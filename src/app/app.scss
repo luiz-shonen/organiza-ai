@@ -124,6 +124,7 @@
   &__end {
     display: flex;
     align-items: center;
+    gap: var(--org-space-sm);
     justify-content: flex-end;
     margin-left: auto;
 

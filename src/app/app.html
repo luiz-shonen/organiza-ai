@@ -89,6 +89,10 @@
         }
 
         <div class="app-toolbar__end">
+          <org-theme-toggle
+            [dark]="themeService.isDark()"
+            (darkChange)="themeService.setMode($event ? 'dark' : 'light')"
+          />
           @if (showAvatar()) {
             <a
               routerLink="/perfil"

@@ -223,12 +223,18 @@ describe('FirestoreGateway', () => {
 
     it('getCollectionGroupDocs executes collectionGroup query and returns mapped array', async () => {
       firestoreMocks.getDocs.mockResolvedValue({
-        docs: [{ id: 'g1', data: () => ({ name: 'Guest 1' }) }],
+        docs: [
+          {
+            id: 'g1',
+            ref: { parent: { parent: { id: 'evt-1' } } },
+            data: () => ({ name: 'Guest 1' }),
+          },
+        ],
       });
 
       const result = await gateway.getCollectionGroupDocs<{ name: string }>('guests');
       expect(firestoreMocks.collectionGroup).toHaveBeenCalledWith(mockFirestore, 'guests');
-      expect(result).toEqual([{ id: 'g1', name: 'Guest 1' }]);
+      expect(result).toEqual([{ id: 'g1', parentId: 'evt-1', name: 'Guest 1' }]);
     });
 
     it('setDoc delegates to setDoc with and without options', async () => {

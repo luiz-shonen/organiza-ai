@@ -7,15 +7,10 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import {
-  AuthService,
-  ClaimService,
-  EventService,
-  ItemService,
-  UserService,
-} from '../../core/services';
+import { of, switchMap } from 'rxjs';
+import { AuthService, ClaimService, ItemService, UserService } from '../../core/services';
 import type { EventClaims, FamilyChecklistRow, PartyEvent, PartyItem } from '../../core/models';
 import { buildFamilyChecklist, daysUntil, toggleBought } from '../../core/utils';
 import {
@@ -70,7 +65,6 @@ interface HomeCard {
   styleUrl: './home.container.scss',
 })
 export class HomeContainer {
-  private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
   private readonly claimService = inject(ClaimService);
   private readonly userService = inject(UserService);
@@ -78,7 +72,6 @@ export class HomeContainer {
   private readonly feedback = inject(FeedbackService);
   private readonly router = inject(Router);
 
-  protected readonly events = toSignal(this.eventService.listEvents());
   protected readonly filter = signal<HomeFilter>('all');
 
   /** Only signed-in members have invitations to answer and a family list. */
@@ -86,6 +79,21 @@ export class HomeContainer {
     const user = this.authService.currentUser();
     return user && !user.isAnonymous ? user : null;
   });
+
+  /** undefined while the session loads; null for visitors, who see no events. */
+  private readonly memberUid = computed(() =>
+    this.authService.loading() ? undefined : (this.member()?.uid ?? null),
+  );
+
+  /** Events are private: only the ones the member organizes, was invited to or answered. */
+  protected readonly events = toSignal(
+    toObservable(this.memberUid).pipe(
+      switchMap((uid) => {
+        if (uid === undefined) return of(undefined);
+        return uid ? this.userService.getVisibleEvents(uid) : of([]);
+      }),
+    ),
+  );
 
   private readonly confirmedIds = signal<ReadonlySet<string>>(new Set());
   private readonly households = signal<Readonly<Record<string, Household>>>({});

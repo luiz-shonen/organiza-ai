@@ -8,14 +8,19 @@ import {
 } from '@firebase/rules-unit-testing';
 import {
   arrayUnion,
+  collection,
+  collectionGroup,
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
   writeBatch,
 } from 'firebase/firestore';
-import { afterAll, afterEach, beforeAll, describe, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 const projectId = 'organizaai-events-rules';
 let testEnvironment: RulesTestEnvironment;
@@ -67,6 +72,48 @@ describe('events collection Firestore rules contract', () => {
 
     const unauthDb = testEnvironment.unauthenticatedContext().firestore();
     await assertSucceeds(getDoc(doc(unauthDb, 'events/event-1')));
+  });
+
+  it('keeps events private: the invite link opens one event, listing shows only your own', async () => {
+    await seed('events/festa-junina', { ...ownedEvent, title: 'Festa Junina' });
+    await seed('events/natal', { ...ownedEvent, title: 'Natal' });
+    await seed('events/churrasco', {
+      title: 'Churrasco',
+      createdBy: 'other-uid',
+      collaborators: ['guest-uid'],
+    });
+    const guestDb = accountDb('guest-uid', 'guest@organizaai.test');
+
+    await assertSucceeds(getDoc(doc(guestDb, 'events/festa-junina')));
+    await assertFails(getDocs(collection(guestDb, 'events')));
+    await assertFails(
+      getDocs(query(collection(guestDb, 'events'), where('createdBy', '==', 'owner-uid'))),
+    );
+    await assertFails(
+      getDocs(collection(testEnvironment.unauthenticatedContext().firestore(), 'events')),
+    );
+
+    await assertSucceeds(
+      getDocs(query(collection(guestDb, 'events'), where('createdBy', '==', 'guest-uid'))),
+    );
+    const collaborated = await assertSucceeds(
+      getDocs(
+        query(collection(guestDb, 'events'), where('collaborators', 'array-contains', 'guest-uid')),
+      ),
+    );
+    expect(collaborated.docs.map((d) => d.id)).toEqual(['churrasco']);
+  });
+
+  it('lets an account find only its own answers across events', async () => {
+    await seed('events/festa-junina/guests/guest-uid', { uid: 'guest-uid', name: 'Bia' });
+    await seed('events/natal/guests/other-uid', { uid: 'other-uid', name: 'Caio' });
+    const guestDb = accountDb('guest-uid', 'guest@organizaai.test');
+
+    const mine = await assertSucceeds(
+      getDocs(query(collectionGroup(guestDb, 'guests'), where('uid', '==', 'guest-uid'))),
+    );
+    expect(mine.docs.map((d) => d.ref.parent.parent?.id)).toEqual(['festa-junina']);
+    await assertFails(getDocs(collectionGroup(guestDb, 'guests')));
   });
 
   it('allows admin to create, update, and delete events', async () => {

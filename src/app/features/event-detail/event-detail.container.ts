@@ -7,6 +7,7 @@ import {
   input,
   OnInit,
   DestroyRef,
+  effect,
 } from '@angular/core';
 import {
   EventService,
@@ -110,6 +111,19 @@ export class EventDetailContainer implements OnInit {
   private readonly memberUid = computed(() => {
     const user = this.authService.currentUser();
     return user && !user.isAnonymous ? user.uid : null;
+  });
+
+  /** Opening the invite link puts the event on the member's Início; nothing else does. */
+  private rememberedFor: string | null = null;
+  private readonly rememberInvite = effect(() => {
+    const uid = this.memberUid();
+    const event = this.event();
+    if (!uid || !event || event.createdBy === uid || (event.collaborators ?? []).includes(uid)) {
+      return;
+    }
+    if (this.rememberedFor === uid) return;
+    this.rememberedFor = uid;
+    this.userService.rememberInvitedEvent(uid, event.id).catch(console.error);
   });
 
   protected readonly progress = computed(() =>

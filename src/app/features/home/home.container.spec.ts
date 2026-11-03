@@ -5,13 +5,7 @@ import { signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { HomeContainer } from './home.container';
-import {
-  AuthService,
-  ClaimService,
-  EventService,
-  ItemService,
-  UserService,
-} from '../../core/services';
+import { AuthService, ClaimService, ItemService, UserService } from '../../core/services';
 import type { EventClaims, PartyEvent } from '../../core/models';
 
 const inDays = (days: number): string => new Date(Date.now() + 86_400_000 * days).toISOString();
@@ -27,7 +21,7 @@ describe('HomeContainer', () => {
     getClaims: vi.fn(),
     saveClaims: vi.fn().mockResolvedValue(undefined),
   };
-  const userService = { getAttendedEvents: vi.fn() };
+  const userService = { getAttendedEvents: vi.fn(), getVisibleEvents: vi.fn() };
 
   const base = {
     description: 'Descrição',
@@ -53,6 +47,8 @@ describe('HomeContainer', () => {
     eventsSubject = new Subject<PartyEvent[]>();
     currentUser.set(null);
     userService.getAttendedEvents.mockResolvedValue([confirmed]);
+    userService.getVisibleEvents.mockReset();
+    userService.getVisibleEvents.mockImplementation(() => eventsSubject.asObservable());
     claimService.getClaims.mockResolvedValue(household);
 
     await TestBed.configureTestingModule({
@@ -60,8 +56,7 @@ describe('HomeContainer', () => {
       providers: [
         provideRouter([]),
         provideNoopAnimations(),
-        { provide: EventService, useValue: { listEvents: () => eventsSubject.asObservable() } },
-        { provide: AuthService, useValue: { currentUser } },
+        { provide: AuthService, useValue: { currentUser, loading: signal(false) } },
         { provide: UserService, useValue: userService },
         {
           provide: ItemService,
@@ -83,6 +78,7 @@ describe('HomeContainer', () => {
   });
 
   it('shows the loading state, then the empty state', () => {
+    currentUser.set({ uid: 'u1', displayName: 'Jéssica Souza', isAnonymous: false });
     fixture.detectChanges();
     expect(element().querySelector('org-loading-state')?.textContent).toContain(
       'Carregando eventos...',
@@ -95,14 +91,21 @@ describe('HomeContainer', () => {
     );
   });
 
-  it('greets visitors with the discovery title and lists upcoming events only', () => {
-    fixture.detectChanges();
-    eventsSubject.next([confirmed, pending, past]);
+  it('greets visitors with the discovery title and lists no events, since events are private', () => {
     fixture.detectChanges();
 
     expect(element().querySelector('h1')?.textContent).toContain('Descubra');
     expect(element().querySelector('org-filter-bar')).toBeNull();
-    expect(element().querySelectorAll('app-event-summary-card')).toHaveLength(2);
+    expect(element().querySelectorAll('app-event-summary-card')).toHaveLength(0);
+    expect(element().querySelector('[data-testid="home-empty-state"]')).not.toBeNull();
+    expect(userService.getVisibleEvents).not.toHaveBeenCalled();
+  });
+
+  it('asks only for the events the member can see', () => {
+    currentUser.set({ uid: 'u1', displayName: 'Jéssica Souza', isAnonymous: false });
+    fixture.detectChanges();
+
+    expect(userService.getVisibleEvents).toHaveBeenCalledWith('u1');
   });
 
   describe('signed in', () => {

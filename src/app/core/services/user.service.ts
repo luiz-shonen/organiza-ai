@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Observable, combineLatest, from, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventService } from './event.service';
 import type { UserProfile, PartyEvent, ThemeMode } from '../models';
@@ -77,6 +78,55 @@ export class UserService {
     await this.upsertProfile(uid, { themePref });
   }
 
+  /** Remembers an event the member opened from its invite link, so it shows on Início. */
+  async rememberInvitedEvent(uid: string, eventId: string): Promise<void> {
+    if (!uid || !eventId) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      { invitedEvents: this.gateway.arrayUnion(eventId) },
+      { merge: true },
+    );
+  }
+
+  /**
+   * Events are private: a member sees the ones they organize, the ones they opened from an
+   * invite link and the ones they answered. Never every event of the people who invited them.
+   */
+  getVisibleEvents(uid: string): Observable<PartyEvent[]> {
+    return combineLatest([
+      this.eventService.getUserEvents(uid),
+      from(this.getInvitedEvents(uid)),
+    ]).pipe(
+      map(([own, invited]) => {
+        const byId = new Map<string, PartyEvent>();
+        [...invited, ...own].forEach((event) => byId.set(event.id, event));
+        return Array.from(byId.values()).sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+        );
+      }),
+    );
+  }
+
+  private async getInvitedEvents(uid: string): Promise<PartyEvent[]> {
+    try {
+      const [user, attended] = await Promise.all([
+        this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid)),
+        this.getAttendedEvents(uid),
+      ]);
+      const attendedIds = new Set(attended.map((event) => event.id));
+      const invitedIds = ((user?.['invitedEvents'] as string[] | undefined) ?? []).filter(
+        (id) => !attendedIds.has(id),
+      );
+      const invited = await Promise.all(
+        invitedIds.map((eventId) => this.eventService.getEventById(eventId)),
+      );
+      return [...attended, ...invited.filter((event): event is PartyEvent => !!event)];
+    } catch (err) {
+      console.error('Error fetching invited events:', err);
+      return [];
+    }
+  }
+
   async getAttendedEvents(uid: string): Promise<PartyEvent[]> {
     if (!uid) return [];
     try {
@@ -97,8 +147,9 @@ export class UserService {
           this.gateway.where('uid', '==', uid),
         );
         guestDocs.forEach((guestDoc) => {
-          if (guestDoc.eventId) {
-            eventIds.add(guestDoc.eventId);
+          const eventId = guestDoc.eventId ?? guestDoc.parentId;
+          if (eventId) {
+            eventIds.add(eventId);
           }
         });
       } catch {

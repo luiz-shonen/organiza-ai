@@ -121,7 +121,7 @@ export class FirestoreGateway {
   async getCollectionGroupDocs<T>(
     collectionId: string,
     ...queryConstraints: QueryConstraint[]
-  ): Promise<(T & { id: string })[]> {
+  ): Promise<(T & { id: string; parentId?: string })[]> {
     if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
       return [...(window.__MOCK_DOCUMENTS__[collectionId] || [])] as (T & { id: string })[];
     }
@@ -130,6 +130,8 @@ export class FirestoreGateway {
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({
       id: d.id,
+      // The document that holds the subcollection, e.g. the event of a guest.
+      parentId: d.ref.parent.parent?.id,
       ...(d.data() as T),
     }));
   }

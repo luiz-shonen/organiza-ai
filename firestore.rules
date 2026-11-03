@@ -86,7 +86,9 @@ service cloud.firestore {
             && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
             && (!changes('email') || isOptionalString(data.get('email', null), 254))
             && (!changes('photoURL') || isOptionalString(data.get('photoURL', null), 2048))
-            && (!changes('themePref') || data.get('themePref', null) in ['light', 'dark', 'system']);
+            && (!changes('themePref') || data.get('themePref', null) in ['light', 'dark', 'system'])
+            && (!changes('invitedEvents')
+                  || (data.get('invitedEvents', null) is list && data.get('invitedEvents', null).size() <= 500));
       }
 
       match /family/{memberId} {
@@ -111,10 +113,22 @@ service cloud.firestore {
       );
     }
 
-    // Events: public read. Any account holder creates events they own; the owner edits,
-    // cancels and deletes; an invited account adds itself to the collaborators.
+    // Collection group query for the events a member answered (UserService.getAttendedEvents):
+    // only their own guest documents.
+    match /{path=**}/guests/{guestId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
+    // Events are private. Anyone with the invite link reads that one event; listing returns
+    // only the events the account owns or helps organize, never all events of the owner.
+    // Any account holder creates events they own; the owner edits, cancels and deletes; an
+    // invited account adds itself to the collaborators.
     match /events/{eventId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if isAdmin() || isSuperAdmin()
+                  || (request.auth != null
+                      && (resource.data.createdBy == request.auth.uid
+                          || request.auth.uid in resource.data.collaborators));
       allow create: if isValidEvent()
                     && (isAdmin()
                         || (isAccountHolder() && request.resource.data.get('createdBy', '') == request.auth.uid));

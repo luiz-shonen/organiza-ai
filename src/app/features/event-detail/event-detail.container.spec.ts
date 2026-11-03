@@ -58,6 +58,7 @@ describe('EventDetailContainer', () => {
   };
   let mockUserService: {
     upsertProfile: ReturnType<typeof vi.fn>;
+    rememberInvitedEvent: ReturnType<typeof vi.fn>;
   };
   let mockConfettiService: {
     fireSuccessConfetti: ReturnType<typeof vi.fn>;
@@ -170,6 +171,7 @@ describe('EventDetailContainer', () => {
     };
     mockUserService = {
       upsertProfile: vi.fn().mockResolvedValue(undefined),
+      rememberInvitedEvent: vi.fn().mockResolvedValue(undefined),
     };
     mockConfettiService = {
       fireSuccessConfetti: vi.fn(),
@@ -247,6 +249,19 @@ describe('EventDetailContainer', () => {
     currentUserSignal.set({ uid: 'guest-1', displayName: 'Bia', isAnonymous: false });
     fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).querySelector('app-rsvp-card')).toBeTruthy();
+  });
+
+  it("puts the event on the invited member's Início once, and never for the organizer", () => {
+    currentUserSignal.set({ uid: 'owner-1', displayName: 'Ana', isAnonymous: false });
+    mockEventService.getEvent.mockReturnValue(of({ ...mockEvent, createdBy: 'owner-1' }));
+    fixture.detectChanges();
+    expect(mockUserService.rememberInvitedEvent).not.toHaveBeenCalled();
+
+    currentUserSignal.set({ uid: 'guest-1', displayName: 'Bia', isAnonymous: false });
+    fixture.detectChanges();
+    fixture.detectChanges();
+    expect(mockUserService.rememberInvitedEvent).toHaveBeenCalledTimes(1);
+    expect(mockUserService.rememberInvitedEvent).toHaveBeenCalledWith('guest-1', 'evt-123');
   });
 
   it('uses named companion arrays first and retains legacy counts in the guest total', () => {

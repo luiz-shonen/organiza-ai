@@ -6,7 +6,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { arrayUnion, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, describe, it } from 'vitest';
 
 const projectId = 'organizaai-users-admins-rules';
@@ -51,6 +51,19 @@ describe('users collection Firestore rules contract', () => {
     );
 
     await assertSucceeds(getDoc(userDoc));
+  });
+
+  it('lets a user remember the events opened from invite links, as a list only', async () => {
+    const userDb = testEnvironment
+      .authenticatedContext('user-123', { email: userEmail })
+      .firestore();
+    const userDoc = doc(userDb, 'users/user-123');
+
+    await assertSucceeds(
+      setDoc(userDoc, { invitedEvents: arrayUnion('festa-junina') }, { merge: true }),
+    );
+    await assertSucceeds(setDoc(userDoc, { invitedEvents: arrayUnion('natal') }, { merge: true }));
+    await assertFails(setDoc(userDoc, { invitedEvents: 'festa-junina' }, { merge: true }));
   });
 
   it('denies user from reading or modifying someone elses profile', async () => {

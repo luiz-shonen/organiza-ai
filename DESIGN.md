@@ -143,7 +143,7 @@ Uso recomendado: `<org-section title="Próximos eventos" icon="event">...</org-s
 
 ### OrgButtonComponent
 
-Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, `text`, `tonal` (soft lilac: "Responder convite"), `attention` (amber outline: "Eu levo") and `danger-text` ("Sair da conta"); use `disabled` or `loading` instead of local state CSS. `compact` draws a 36px pill while Material keeps the 48px touch target around it. `tooltip` shows a Material tooltip (hover, focus, long press); never use a native `title`. A toggle passes `[ariaPressed]` (the "Fixa / Dividir" lock switches between `tonal` and `text`), and a button that reveals a hint passes `[ariaExpanded]`.
+Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, `text`, `tonal` (soft lilac: "Responder convite"), `attention` (soft amber fill, no outline: "Eu levo") and `danger-text` ("Sair da conta"); use `disabled` or `loading` instead of local state CSS. `compact` draws a 36px pill while Material keeps the 48px touch target around it. `tooltip` shows a Material tooltip (hover, focus, long press); never use a native `title`. A toggle passes `[ariaPressed]` (the "Fixa / Dividir" lock switches between `tonal` and `text`), and a button that reveals a hint passes `[ariaExpanded]`.
 
 ### OrgIconButtonComponent
 

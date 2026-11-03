@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.companion-selector__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.companion-selector__name {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-medium);
+}
+
+.companion-selector__empty,
+.companion-selector__hint {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+// Inside the narrow RSVP drawer: no box of its own, one field per line.
+.companion-selector__form {
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  padding-top: var(--org-space-md);
+}
+
+.companion-selector__actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}
+
+.companion-selector__new {
+  align-self: flex-start;
+}

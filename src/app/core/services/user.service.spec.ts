@@ -74,6 +74,7 @@ describe('UserService', () => {
         photoURL: 'https://avatar.png',
         name: 'Luiz',
         phone: '11999999999',
+        savedCompanions: [],
         themePref: 'dark',
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-01-02T00:00:00.000Z',

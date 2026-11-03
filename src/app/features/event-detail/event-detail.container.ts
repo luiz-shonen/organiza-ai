@@ -344,6 +344,7 @@ export class EventDetailContainer implements OnInit {
         trigger: event?.currentTarget as HTMLElement | undefined,
         data: {
           session: { name, phone },
+          savedCompanions: profile?.savedCompanions ?? [],
           familyMembers,
           userId: user.uid,
           existing,
@@ -384,6 +385,12 @@ export class EventDetailContainer implements OnInit {
               ),
             );
             this.userService.setAttending(user.uid, this.id(), true).catch(console.error);
+            this.userService
+              .rememberCompanions(
+                user.uid,
+                result.companions.map((companion) => companion.name),
+              )
+              .catch(console.error);
             if (this.declined()) {
               await this.userService.setDeclined(user.uid, this.id(), false);
               this.guestService.removeDecline(this.id(), user.uid).catch(console.error);

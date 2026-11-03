@@ -7,6 +7,8 @@ export interface UserProfile {
   photoURL: string | null;
   name?: string;
   phone?: string;
+  /** Companions outside the family the member has brought, offered again on the next RSVP. */
+  savedCompanions?: string[];
   themePref?: ThemeMode;
   createdAt: string;
   updatedAt: string;

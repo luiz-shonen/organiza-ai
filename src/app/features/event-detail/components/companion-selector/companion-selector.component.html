@@ -1,0 +1,68 @@
+<div class="companion-selector" data-testid="companion-selector">
+  <org-expansion-panel
+    heading="Levar acompanhantes?"
+    icon="group_add"
+    ariaLabel="Acompanhantes fora da família"
+    [(expanded)]="expanded"
+  >
+    <span orgExpansionSummary>{{ summary() }}</span>
+
+    @if (names().length) {
+      <ul class="companion-selector__list" aria-label="Acompanhantes que você já levou">
+        @for (name of names(); track name) {
+          <li>
+            <org-checkbox
+              [checked]="isSelected(name)"
+              [disabled]="!isSelected(name) && full()"
+              [ariaLabel]="'Levar ' + name"
+              (checkedChange)="onToggle(name)"
+            >
+              <span class="companion-selector__name">{{ name }}</span>
+            </org-checkbox>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="companion-selector__empty">
+        Quem você levar fica guardado para os próximos eventos.
+      </p>
+    }
+
+    @if (full()) {
+      <p class="companion-selector__hint">No máximo 10 acompanhantes por confirmação.</p>
+    }
+
+    @if (showForm()) {
+      <div class="companion-selector__form" role="group" aria-label="Novo acompanhante">
+        <org-text-field
+          label="Nome do acompanhante"
+          placeholder="Ex: Carlos"
+          testId="companion-name-input"
+          [required]="true"
+          [maxLength]="nameMaxLength"
+          [error]="nameError()"
+          [(value)]="newName"
+        />
+        <div class="companion-selector__actions">
+          <org-button label="Cancelar" variant="text" [gradient]="false" (pressed)="cancelNew()" />
+          <org-button
+            label="Adicionar"
+            testId="companion-add-btn"
+            [gradient]="false"
+            (pressed)="submitNew()"
+          />
+        </div>
+      </div>
+    } @else if (!full()) {
+      <org-button
+        class="companion-selector__new"
+        label="Novo acompanhante"
+        icon="person_add"
+        variant="text"
+        testId="companion-new-btn"
+        [gradient]="false"
+        (pressed)="showForm.set(true)"
+      />
+    }
+  </org-expansion-panel>
+</div>

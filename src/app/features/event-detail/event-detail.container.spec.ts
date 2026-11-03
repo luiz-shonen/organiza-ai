@@ -63,6 +63,7 @@ describe('EventDetailContainer', () => {
     setDeclined: ReturnType<typeof vi.fn>;
     setAttending: ReturnType<typeof vi.fn>;
     getProfile: ReturnType<typeof vi.fn>;
+    rememberCompanions: ReturnType<typeof vi.fn>;
   };
   let mockConfettiService: {
     fireSuccessConfetti: ReturnType<typeof vi.fn>;
@@ -177,6 +178,7 @@ describe('EventDetailContainer', () => {
       setDeclined: vi.fn().mockResolvedValue(undefined),
       setAttending: vi.fn().mockResolvedValue(undefined),
       getProfile: vi.fn().mockResolvedValue(null),
+      rememberCompanions: vi.fn().mockResolvedValue(undefined),
     };
     mockConfettiService = {
       fireSuccessConfetti: vi.fn(),

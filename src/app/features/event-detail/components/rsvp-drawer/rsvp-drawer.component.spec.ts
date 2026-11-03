@@ -62,72 +62,41 @@ describe('RsvpDrawerComponent', () => {
     expect(close.mock.calls[0][0].selectedFamilyMembers.map((m) => m.id)).toEqual(['fam-1']);
   });
 
-  it('reveals exactly the requested ordered companion fields with accessible labels', () => {
-    const countInput = fixture.nativeElement.querySelector(
-      '[data-testid="rsvp-companions-input"]',
-    ) as HTMLInputElement;
-    countInput.value = '3';
-    countInput.dispatchEvent(new Event('input'));
+  it('offers the saved companions and returns only the ones selected', () => {
+    fixture.componentRef.setInput('drawerData', {
+      session: { name: 'Carlos', phone: '11999998888' },
+      familyMembers: [],
+      userId: 'uid-1',
+      savedCompanions: ['Ana', 'Bruno'],
+    });
     fixture.detectChanges();
+    expect(fixture.componentInstance.companionNames()).toEqual(['Ana', 'Bruno']);
 
-    const inputs = fixture.nativeElement.querySelectorAll('[formarrayname="companions"] input');
-    expect(inputs).toHaveLength(3);
-    expect(fixture.nativeElement.textContent).toContain('Acompanhante 1');
-    expect(fixture.nativeElement.textContent).toContain('Acompanhante 3');
-  });
-
-  it('prevents submission and identifies a blank revealed companion', () => {
-    const countInput = fixture.nativeElement.querySelector(
-      '[data-testid="rsvp-companions-input"]',
-    ) as HTMLInputElement;
-    countInput.value = '1';
-    countInput.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-
-    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
-    fixture.detectChanges();
-
-    expect(close).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain('Nome do acompanhante é obrigatório');
-  });
-
-  it('returns ordered named companions and selected family members only when valid', () => {
-    const countInput = fixture.nativeElement.querySelector(
-      '[data-testid="rsvp-companions-input"]',
-    ) as HTMLInputElement;
-    countInput.value = '2';
-    countInput.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-
-    const inputs = fixture.nativeElement.querySelectorAll(
-      '[formarrayname="companions"] input',
-    ) as NodeListOf<HTMLInputElement>;
-    inputs[0].value = ' Ana ';
-    inputs[0].dispatchEvent(new Event('input'));
-    inputs[1].value = 'Bia';
-    inputs[1].dispatchEvent(new Event('input'));
+    fixture.componentInstance['onToggleCompanion']('Ana');
     fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
 
-    expect(close).toHaveBeenCalledWith(
-      expect.objectContaining({
-        companions: [{ name: 'Ana' }, { name: 'Bia' }],
-      }),
-    );
+    expect(close).toHaveBeenCalledWith(expect.objectContaining({ companions: [{ name: 'Ana' }] }));
   });
 
-  it('rejects a companion count greater than ten', () => {
-    const countInput = fixture.nativeElement.querySelector(
-      '[data-testid="rsvp-companions-input"]',
-    ) as HTMLInputElement;
-    countInput.value = '11';
-    countInput.dispatchEvent(new Event('input'));
+  it('adds a new companion to the list, already selected', () => {
+    fixture.componentInstance['onAddCompanion']('Carla');
+
+    expect(fixture.componentInstance.companionNames()).toEqual(['Carla']);
+    expect(fixture.componentInstance.selectedCompanions()).toEqual(['Carla']);
+  });
+
+  it('opens an edit with the companions already chosen', () => {
+    fixture.componentRef.setInput('drawerData', {
+      session: { name: 'Carlos', phone: '11999998888' },
+      familyMembers: [],
+      userId: 'uid-1',
+      savedCompanions: ['Bruno'],
+      existing: { companions: ['Ana'], familyMemberIds: [] },
+    });
     fixture.detectChanges();
 
-    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
-    fixture.detectChanges();
-
-    expect(close).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain('Informe um número entre 0 e 10');
+    expect(fixture.componentInstance.companionNames()).toEqual(['Bruno', 'Ana']);
+    expect(fixture.componentInstance.selectedCompanions()).toEqual(['Ana']);
   });
 
   it('refuses an incomplete phone, with its message', () => {

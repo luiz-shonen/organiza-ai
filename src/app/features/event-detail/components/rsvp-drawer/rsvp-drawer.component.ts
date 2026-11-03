@@ -8,15 +8,15 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FamilyMember } from '../../../../core/models';
 import {
-  PersonName,
   Phone,
   fieldError,
   requiredText,
   valueObjectValidator,
 } from '../../../../core/value-objects';
+import { CompanionSelectorComponent } from '../companion-selector/companion-selector.component';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
@@ -30,13 +30,12 @@ import {
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
-const personNameValidators = [requiredText, valueObjectValidator(PersonName.validate)];
-
 @Component({
   selector: 'app-rsvp-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    CompanionSelectorComponent,
     FamilySelectorComponent,
     OrgButtonComponent,
     OrgIconButtonComponent,
@@ -59,18 +58,14 @@ export class RsvpDrawerComponent {
   protected readonly fieldError = fieldError;
   protected readonly maskPhone = Phone.mask;
   /** Digits only, at most two: the count goes from 0 to 10. */
-  protected readonly maskCount = (value: string): string => value.replace(/\D/g, '').slice(0, 2);
-  protected readonly nameMaxLength = PersonName.MAX;
 
   protected readonly form = this.fb.nonNullable.group({
     phone: ['', [requiredText, valueObjectValidator(Phone.validate)]],
-    companionsCount: [0, [Validators.min(0), Validators.max(10)]],
-    companions: this.fb.nonNullable.array<string>([]),
   });
 
-  protected get companions(): FormArray {
-    return this.form.controls.companions;
-  }
+  /** Companions from the guest's history, plus any added in this drawer. */
+  readonly companionNames = signal<string[]>([]);
+  readonly selectedCompanions = signal<string[]>([]);
 
   /** The presence is already confirmed: the drawer edits it. */
   protected readonly editing = computed(() => !!this.drawerData().existing);
@@ -82,39 +77,28 @@ export class RsvpDrawerComponent {
       const data = this.drawerData();
       this.familyMembers.set(data.familyMembers ?? []);
       this.form.patchValue({ phone: data.session?.phone ?? '' });
+      const known = [...(data.savedCompanions ?? []), ...(data.existing?.companions ?? [])];
+      this.companionNames.set([...new Set(known)]);
 
       const existing = data.existing;
       if (existing) {
         const known = new Set((data.familyMembers ?? []).map((member) => member.id));
         this.selectedFamilyMemberIds.set(existing.familyMemberIds.filter((id) => known.has(id)));
-        this.form.controls.companionsCount.setValue(existing.companions.length);
-        this.updateCompanionCount(existing.companions.length);
-        this.companions.setValue([...existing.companions]);
+        this.selectedCompanions.set([...existing.companions]);
       }
     });
   }
 
-  protected onCompanionsCountInput(event: Event): void {
-    const count = Number((event.target as HTMLInputElement).value);
-    this.updateCompanionCount(count);
+  protected onToggleCompanion(name: string): void {
+    this.selectedCompanions.update((current) =>
+      current.includes(name) ? current.filter((n) => n !== name) : [...current, name],
+    );
   }
 
-  protected onCompanionsCountChange(value: string): void {
-    this.updateCompanionCount(Number(value));
-  }
-
-  private updateCompanionCount(count: number): void {
-    if (!Number.isInteger(count) || count < 0 || count > 10) {
-      this.companions.clear();
-      return;
-    }
-
-    while (this.companions.length < count) {
-      this.companions.push(this.fb.nonNullable.control('', personNameValidators));
-    }
-    while (this.companions.length > count) {
-      this.companions.removeAt(this.companions.length - 1);
-    }
+  /** A new name joins the list and is selected; the page saves it to the history on confirm. */
+  protected onAddCompanion(name: string): void {
+    this.companionNames.update((names) => [...names, name]);
+    this.selectedCompanions.update((current) => [...current, name]);
   }
 
   protected onToggleFamilyMember(memberId: string): void {
@@ -159,9 +143,7 @@ export class RsvpDrawerComponent {
     const result: RsvpDrawerResult = {
       name: this.drawerData().session?.name ?? '',
       phone: Phone.create(raw.phone)?.formatted ?? raw.phone.trim(),
-      companions: raw.companions.map((name) => ({
-        name: PersonName.create(name)?.value ?? name.trim(),
-      })),
+      companions: this.selectedCompanions().map((name) => ({ name })),
       selectedFamilyMembers: this.familyMembers().filter((member) =>
         this.selectedFamilyMemberIds().includes(member.id),
       ),

@@ -47,34 +47,13 @@
         [error]="fieldError(form.controls.phone, 'Telefone é obrigatório')"
       />
 
-      <org-text-field
-        class="rsvp-drawer__field"
-        label="Outros acompanhantes"
-        inputMode="numeric"
-        [mask]="maskCount"
-        hint="De 0 a 10 acompanhantes fora da família"
-        formControlName="companionsCount"
-        testId="rsvp-companions-input"
-        (valueChange)="onCompanionsCountChange($event)"
-        [error]="
-          form.controls.companionsCount.invalid && form.controls.companionsCount.touched
-            ? 'Informe um número entre 0 e 10'
-            : ''
-        "
+      <app-companion-selector
+        class="rsvp-drawer__companions"
+        [names]="companionNames()"
+        [selected]="selectedCompanions()"
+        (toggleCompanion)="onToggleCompanion($event)"
+        (add)="onAddCompanion($event)"
       />
-
-      <div formArrayName="companions" class="rsvp-drawer__companions" aria-label="Acompanhantes">
-        @for (control of companions.controls; track $index) {
-          <org-text-field
-            class="rsvp-drawer__field"
-            [label]="'Acompanhante ' + ($index + 1)"
-            [formControlName]="$index"
-            [required]="true"
-            [maxLength]="nameMaxLength"
-            [error]="fieldError(control, 'Nome do acompanhante é obrigatório')"
-          />
-        }
-      </div>
 
       <div class="rsvp-drawer__family" data-testid="family-selector">
         <app-family-selector

@@ -91,6 +91,8 @@ service cloud.firestore {
                   || (data.get('invitedEvents', null) is list && data.get('invitedEvents', null).size() <= 500))
             && (!changes('declinedEvents')
                   || (data.get('declinedEvents', null) is list && data.get('declinedEvents', null).size() <= 500))
+            && (!changes('savedCompanions')
+                  || (data.get('savedCompanions', null) is list && data.get('savedCompanions', null).size() <= 50))
             && (!changes('rsvpEvents')
                   || (data.get('rsvpEvents', null) is list && data.get('rsvpEvents', null).size() <= 500));
       }

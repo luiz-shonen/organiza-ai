@@ -30,6 +30,7 @@ export class UserService {
         photoURL: (data['photoURL'] as string | null) ?? null,
         name: (data['name'] as string | undefined) ?? (data['displayName'] as string | undefined),
         phone: data['phone'] as string | undefined,
+        savedCompanions: (data['savedCompanions'] as string[] | undefined) ?? [],
         themePref: data['themePref'] as ThemeMode | undefined,
         createdAt: createdAtDate
           ? createdAtDate.toISOString()
@@ -92,6 +93,16 @@ export class UserService {
     } catch {
       return [];
     }
+  }
+
+  /** Adds companions to the member's history, so the next RSVP offers them. */
+  async rememberCompanions(uid: string, names: readonly string[]): Promise<void> {
+    if (!uid || names.length === 0) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      { savedCompanions: this.gateway.arrayUnion(...names) },
+      { merge: true },
+    );
   }
 
   /** Keeps the events the member confirmed on their profile, so Início finds them at once. */

@@ -3,7 +3,6 @@ import { expect, Locator, Page } from '@playwright/test';
 export interface RsvpGuestDetails {
   name?: string;
   phone?: string;
-  companionsCount?: number;
 }
 
 export class RsvpDialogHarness {
@@ -14,7 +13,6 @@ export class RsvpDialogHarness {
   readonly familySelector: Locator;
   /** The guest's name, from their profile: shown, not typed. */
   readonly guestName: Locator;
-  readonly companionsInput: Locator;
 
   constructor(private readonly page: Page) {
     this.dialogRoot = page.getByTestId('rsvp-drawer');
@@ -38,13 +36,6 @@ export class RsvpDialogHarness {
       .or(this.dialogRoot.getByLabel(/telefone|whatsapp/i))
       .first();
 
-    this.companionsInput = this.dialogRoot
-      .getByTestId('rsvp-companions-input')
-      .locator('input')
-      .or(this.dialogRoot.getByTestId('rsvp-companions-input'))
-      .or(this.dialogRoot.getByLabel(/acompanhantes/i))
-      .first();
-
     this.familySelector = this.dialogRoot.getByTestId('family-selector');
   }
 
@@ -59,9 +50,6 @@ export class RsvpDialogHarness {
   async confirmRsvp(details?: RsvpGuestDetails): Promise<void> {
     if (details?.phone && (await this.phoneInput.isVisible())) {
       await this.phoneInput.fill(details.phone);
-    }
-    if (details?.companionsCount !== undefined && (await this.companionsInput.isVisible())) {
-      await this.companionsInput.fill(details.companionsCount.toString());
     }
     await this.confirmBtn.click();
   }

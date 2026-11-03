@@ -9,7 +9,13 @@ enforced_by:
   - scripts/validate-ui-contracts.mjs#feature-raw-material-tag
   - scripts/validate-ui-contracts.mjs#feature-material-selector
   - scripts/validate-ui-contracts.mjs#documentation-component-usage
-related: [tokens-and-theming.md, styling-rules.md, ../gotchas/material-mdc-tokens-are-ignored.md]
+related:
+  [
+    tokens-and-theming.md,
+    styling-rules.md,
+    events-and-invites.md,
+    ../gotchas/material-mdc-tokens-are-ignored.md,
+  ]
 ---
 
 # Closed Design System
@@ -30,6 +36,19 @@ Inside `shared/ui`, customise Material through its token API only:
 - globally for overlays: `@include mat.select-overrides(...)` in `shared/ui/overlays/_org-overlays.scss`
 
 Never with `!important` and never with `--mdc-*` (ignored since Material 19).
+
+## Layout and shared primitives
+
+- Pages: `org-page-layout` keeps 600px (`narrow`) and 960px (`default`) on phones and tablets, and
+  takes 70% of the width (at most 1440px) from 1200px up. Every change is checked on desktop and phone.
+- Drawers: the RSVP / collaborator drawer takes the whole phone screen and 480px on larger screens;
+  the side edit drawer (`org-bottom-sheet placement="side"`) is 480px.
+- `org-expansion-panel`: the summary keeps its own width and sits `--org-space-md` away from the
+  chevron; the title ellipsizes before it overlaps.
+- `org-filter-bar`: Material filter chips (check on, several at once, "Todos" alone by default).
+- `org-badge`: status variants are filled; a category passes `[hue]` for a tinted, outlined tag.
+- `org-theme-toggle`: the light / dark switch in the header; "Sistema" stays on the profile page.
+- `org-button variant="attention"` is a soft amber fill without outline ("Eu levo").
 
 ## Destructive actions
 

@@ -6,7 +6,7 @@ supersedes: [AD-001, AD-002, AD-003, AD-011]
 enforced_by:
   - eslint.config.mjs#prefer-standalone
   - eslint.config.mjs#prefer-on-push-component-change-detection
-related: [design-system.md, styling-rules.md]
+related: [design-system.md, styling-rules.md, events-and-invites.md]
 ---
 
 # Angular architecture and component roles
@@ -23,13 +23,10 @@ related: [design-system.md, styling-rules.md]
   them: an e-mail account has no Firebase `displayName`, which showed the e-mail prefix ("admin").
   Saving the profile name renames it on every event the account owns (`EventService.renameCreator`), and
   "Meus eventos" fixes older events once. The organizer sees "Você" and no RSVP card on their own event.
-- The event page lists who is going ("Quem vai", `buildGuestHouseholds`): one panel per confirmed household, like "Levar familiares?" (the first open, all open up to three), with each person (the guest, their family, their companions), their role and what they bring. Organizers also see phones, "Não poderão ir" with the messages, and Excel / Imprimir as icons in the card header. The editor has no guest list, and saving an edit goes back to Meus eventos.
-- In the RSVP drawer "Levar familiares?" comes before "Levar acompanhantes?".
-- Início and Meus eventos share `app-next-event-banner` ("Evento próximo: …, em 7 dias"): Início shows the nearest event the member confirmed, Meus eventos the nearest one they organize.
-- Início lists invites only (pending, confirmed, declined). Events the account owns or helps organize
-  live in "Meus eventos" and never show on Início.
 - The header has a light / dark switch (`org-theme-toggle`) next to the avatar; "Sistema" stays on the
   profile page.
+- Product behaviour of events and invites (states by start time, filter chips, RSVP, "Quem vai") is in
+  [events-and-invites](events-and-invites.md); time checks go through `hasStarted` / `daysUntil`.
 - WhatsApp sharing (`buildShareMessage`, `shareWhatsApp`) sends no emoji: WhatsApp's share page
   turns every character beyond U+07FF into "�" and then misplaces the link.
 - Every field people type in is checked by a value object in `src/app/core/value-objects/`:

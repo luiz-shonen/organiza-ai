@@ -6,10 +6,13 @@ supersedes: [AD-004, AD-005, AD-016, AD-017, AD-019, AD-022, AD-023, AD-024]
 enforced_by:
   - firestore.rules
   - e2e/rules/*.rules.test.ts
-related: [routes-and-domains.md]
+related: [routes-and-domains.md, events-and-invites.md]
 ---
 
 # Firebase, auth and permissions
+
+What the screens do with this data (invite states, filters, "Quem vai") is in
+[events-and-invites](events-and-invites.md).
 
 - Firebase modular SDK used directly; no `@angular/fire`.
 - Super admins are hardcoded in `AuthService.isSuperAdmin` and `firestore.rules`: `luiz.gmr.dev@gmail.com`, `jessica.calm.dev@gmail.com`.
@@ -31,14 +34,11 @@ related: [routes-and-domains.md]
   - A theme must be `light`, `dark` or `system`.
   - Events only have size limits: a title of up to 200 characters, a description of up to 2000, and a location of up to 500.
 - On an update, the rules check only the fields that change. That way an older document with a value outside the rules can still be edited.
-- There are no anonymous sessions: answering an invite needs an account. A visitor who taps "Confirmar presença" goes to `/login?redirect=/evento/{id}` and comes back to the invite after signing in (the login only follows app paths). The rules accept RSVPs from account holders only.
-- The RSVP drawer shows the guest's profile name ("Confirmando como …") and does not let them edit it. The phone is the profile phone: changing it in the drawer asks "Atualizar seu telefone?" and then saves it on the profile too, and a phone changed on the profile is what the next RSVP shows.
+- There are no anonymous sessions (no `signInAnonymously`, no guest session in local storage): answering an invite needs an account, and the rules accept RSVPs from account holders only. A visitor signs in at `/login?redirect=/evento/{id}`; the login only follows app paths.
+- The RSVP saves the guest with the profile name and phone; a phone changed in the drawer is written to the profile too.
 - Companions outside the family are picked in "Levar acompanhantes?", the same panel as "Levar familiares?": names the member brought before come from `users/{uid}.savedCompanions` (up to 50), "Novo acompanhante" adds one, and up to 10 go with one RSVP. Confirming adds the chosen names to that history. The profile page manages the same list in "Meus acompanhantes" (add, rename, remove), like "Minha família"; a rename or removal changes the history only, not RSVPs already made.
 - Each user keeps a private family roster at `users/{uid}/family`, used for batch RSVP.
 - A member added with "Novo membro" in the RSVP drawer is saved to that roster at once (the page passes `addFamilyMember` in the drawer data) and selected; the drawer closes only on "Confirmar". The quick form is a group, not a `<form>`, because it sits inside the RSVP form.
 - An invite is pending, confirmed or declined. Confirming adds the event to `users/{uid}.rsvpEvents` (Início reads it first; an older confirmation is added when the member opens the event), cancelling removes it.
 - "Não poderei ir" (on a pending invite, or cancelling a confirmed one) opens an optional message for the organizer (`DeclineMessage`, up to 300 characters). It saves `events/{id}/declines/{uid}` ({name, message, declinedAt}), read only by that account and the event's owner and collaborators, who see it under "Não poderão ir" in "Quem vai" on the event page; and it adds the event to `users/{uid}.declinedEvents`, so Início tags it "Recusado", lists it under "Recusados" and leaves it out of "Pendentes". Confirming removes both.
 - The collection group lookups (`guests.uid`, `invitations.invitedEmail`) need the single-field overrides in `firestore.indexes.json`; Firestore does not index collection group scope by default.
-- Início offers "Responder convite" on a pending invite and "Ver convite" on an answered one. On the event page a confirmed member gets "Editar presença", which reopens the RSVP drawer filled in (`RsvpDrawerRequestData.existing`) and removes the family members left out.
-- An event with no items shows guests no "Lista do evento", and the RSVP card does not mention items; "Escolha abaixo o que vocês vão levar" only shows while the household has picked nothing.
-- "Outros acompanhantes" are people outside the family (a friend from work). Their names are saved on the guest, counted in "N pessoas confirmadas", and listed in the organizer's guest table.

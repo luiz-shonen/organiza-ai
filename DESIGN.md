@@ -259,7 +259,7 @@ Uso recomendado: `<org-quantity-stepper [(value)]="quantity" [max]="remaining" u
 
 ### OrgBottomSheetComponent
 
-Uso recomendado: `<org-bottom-sheet ariaLabel="Eu levo" [open]="open()" (closed)="open.set(false)">…</org-bottom-sheet>`. Slides up from the bottom on phones, centred card from tablet up; traps focus and closes on Escape or scrim tap. The page owns the content and the open state. `placement="side"` turns it into a right-hand drawer from tablet up (phones keep the bottom sheet): use it for editing (an item, a family member) and keep the centred card for a quick choice such as "Eu levo". Dialogs are only for decisions that interrupt, such as confirming a removal.
+Uso recomendado: `<org-bottom-sheet ariaLabel="Eu levo" [open]="open()" (closed)="open.set(false)">…</org-bottom-sheet>`. Slides up from the bottom on phones, centred card from tablet up; traps focus and closes on Escape or scrim tap. The page owns the content and the open state. `placement="side"` turns it into a right-hand drawer from tablet up (phones keep the bottom sheet): use it for editing (an item, a family member) and keep the centred card for a quick choice such as "Eu levo". The side drawer is 480px wide. Dialogs are only for decisions that interrupt, such as confirming a removal.
 
 ### OrgInsightCardComponent
 
@@ -303,7 +303,7 @@ Uso recomendado: `<org-skeleton class="dashboard__skeleton-title" />` (or `shape
 
 ### OrgExpansionPanelComponent
 
-Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary. The summary keeps its own width and a long heading ends in an ellipsis, so the two never overlap in a narrow drawer; keep the summary short ("Nenhum", "2 selecionados").
+Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary. The summary keeps its own width, sits `--org-space-md` away from the chevron, and a long heading ends in an ellipsis, so they never overlap in a narrow drawer; keep the summary short ("Nenhum", "2 selecionados", "+2 · 3 itens").
 
 ### OrgTooltipComponent
 

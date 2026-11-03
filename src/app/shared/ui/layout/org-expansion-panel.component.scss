@@ -24,10 +24,13 @@
   padding: 0 var(--org-space-md);
 }
 
+// Material gives title and summary equal halves; in a narrow drawer the title then ran
+// over the summary. The summary keeps its own width and the title ellipsizes.
 .org-expansion-panel__title {
   align-items: center;
   color: var(--org-on-surface);
   display: flex;
+  flex: 1 1 auto;
   font-size: var(--org-font-size-sm);
   font-weight: var(--org-font-weight-semibold);
   gap: var(--org-space-sm);
@@ -35,9 +38,16 @@
   white-space: nowrap;
 }
 
+.org-expansion-panel__heading {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .org-expansion-panel__summary {
   align-items: center;
   display: flex;
+  flex: 0 0 auto;
   font-size: var(--org-font-size-xs);
   font-weight: var(--org-font-weight-semibold);
   justify-content: flex-end;

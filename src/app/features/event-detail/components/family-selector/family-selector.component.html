@@ -7,9 +7,11 @@
   >
     <span orgExpansionSummary>
       @if (selectedCount() > 0) {
-        <span class="family-selector__badge">{{ selectedCount() }} selecionado(s)</span>
+        <span class="family-selector__badge">{{
+          selectedCount() === 1 ? '1 selecionado' : selectedCount() + ' selecionados'
+        }}</span>
       } @else {
-        Nenhum selecionado
+        Nenhum
       }
     </span>
     @if (members().length > 0) {

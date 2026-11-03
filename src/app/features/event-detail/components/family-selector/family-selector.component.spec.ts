@@ -51,7 +51,7 @@ describe('FamilySelectorComponent', () => {
     expect(component['indeterminate']()).toBe(true);
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('1 selecionado(s)');
+    expect(compiled.textContent).toContain('1 selecionado');
   });
 
   it('should compute allSelected as true when all members are in selectedIds', () => {

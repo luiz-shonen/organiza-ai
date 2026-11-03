@@ -112,3 +112,12 @@
   font-size: var(--org-font-size-sm);
   padding: var(--org-space-md);
 }
+
+// What is still missing: information, not an action, so lilac text and no pill around it.
+.item-list-card__missing {
+  color: var(--org-primary);
+  flex: none;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  white-space: nowrap;
+}

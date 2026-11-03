@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, input, output, signal } f
 import type { ItemProgress } from '../../../../core/models';
 import { formatQuantity } from '../../../../core/utils';
 import {
-  OrgBadgeComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconComponent,
@@ -20,7 +19,6 @@ import {
   selector: 'app-item-list-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    OrgBadgeComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgIconComponent,

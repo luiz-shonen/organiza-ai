@@ -9,7 +9,6 @@ import {
 import type { ItemClaimRequest, ItemProgress } from '../../../../core/models';
 import { formatQuantity, unitFor } from '../../../../core/utils';
 import {
-  OrgBadgeComponent,
   OrgBottomSheetComponent,
   OrgButtonComponent,
   OrgChipComponent,
@@ -31,7 +30,6 @@ export interface ClaimPerson {
   selector: 'app-claim-sheet',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    OrgBadgeComponent,
     OrgBottomSheetComponent,
     OrgButtonComponent,
     OrgChipComponent,

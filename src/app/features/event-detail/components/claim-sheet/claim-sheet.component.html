@@ -10,12 +10,7 @@
         {{ entry.item.name }}
         <span class="claim-sheet__total">{{ total(entry) }}</span>
       </p>
-      <org-badge
-        variant="primary"
-        [pill]="true"
-        [gradient]="false"
-        [label]="'Faltam ' + remainingLabel()"
-      />
+      <span class="claim-sheet__missing">Faltam {{ remainingLabel() }}</span>
     </header>
 
     @if (fixed()) {

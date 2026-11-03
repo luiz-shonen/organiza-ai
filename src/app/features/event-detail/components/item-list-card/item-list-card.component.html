@@ -43,12 +43,9 @@
                 <org-icon name="check" size="sm" color="currentColor" />
               </span>
             } @else {
-              <org-badge
-                variant="primary"
-                [pill]="true"
-                [gradient]="false"
-                [label]="'Faltam ' + quantity(entry.remaining, entry.item.unit)"
-              />
+              <span class="item-list-card__missing" data-testid="item-missing"
+                >Faltam {{ quantity(entry.remaining, entry.item.unit) }}</span
+              >
             }
           </div>
 

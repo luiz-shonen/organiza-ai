@@ -52,3 +52,12 @@
     width: 100%;
   }
 }
+
+// Same as in the event list: lilac text, not a pill.
+.claim-sheet__missing {
+  color: var(--org-primary);
+  flex: none;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  white-space: nowrap;
+}

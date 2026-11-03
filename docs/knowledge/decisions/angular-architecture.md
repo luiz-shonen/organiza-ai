@@ -26,6 +26,7 @@ related: [design-system.md, styling-rules.md]
 - The event page lists who is going ("Quem vai", `buildGuestHouseholds`): each confirmed household, the
   family and companions with them, and what they bring, for everyone with the link. Organizers also see
   phones, "Não poderão ir" with the messages, and Excel / Imprimir. The editor no longer has a guest list.
+- Início and Meus eventos share `app-next-event-banner` ("Evento próximo: …, em 7 dias"): Início shows the nearest event the member confirmed, Meus eventos the nearest one they organize.
 - Início lists invites only (pending, confirmed, declined). Events the account owns or helps organize
   live in "Meus eventos" and never show on Início.
 - The header has a light / dark switch (`org-theme-toggle`) next to the avatar; "Sistema" stays on the

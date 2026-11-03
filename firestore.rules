@@ -186,7 +186,7 @@ service cloud.firestore {
                       );
 
         function isPrimaryRsvp() {
-          return request.auth != null
+          return isAccountHolder()
               && request.resource.data.keys().hasAll(['name', 'phone', 'companionsCount', 'uid'])
               && request.resource.data.uid == request.auth.uid
               && isFilledText(request.resource.data.name, 120)
@@ -201,7 +201,7 @@ service cloud.firestore {
         }
 
         function isLinkedFamilyRsvp() {
-          return request.auth != null
+          return isAccountHolder()
               && request.resource.data.keys().hasAll(['name', 'primaryGuestId', 'isConfirmed', 'confirmedAt'])
               && request.resource.data.primaryGuestId == request.auth.uid
               && isFilledText(request.resource.data.name, 120)

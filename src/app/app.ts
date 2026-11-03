@@ -12,13 +12,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import {
-  AuthService,
-  ThemeService,
-  GuestSessionService,
-  DrawerService,
-  SeasonalThemeService,
-} from './core/services';
+import { AuthService, ThemeService, DrawerService, SeasonalThemeService } from './core/services';
 import { isPrimaryDestination, resolveBackRoute } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
@@ -88,7 +82,6 @@ export class App {
   private readonly authService = inject(AuthService);
   protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
-  private readonly guestSession = inject(GuestSessionService);
   protected readonly drawerService = inject(DrawerService);
 
   private readonly seasonalService = inject(SeasonalThemeService);
@@ -127,7 +120,6 @@ export class App {
     return u !== null && !u.isAnonymous;
   });
   protected readonly isOffline = signal(!navigator.onLine);
-  protected readonly session = this.guestSession.session;
 
   protected readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -142,10 +134,7 @@ export class App {
     this.currentUrl().startsWith('/design-system'),
   );
   protected readonly backRoute = computed(() => resolveBackRoute(this.currentUrl()));
-  protected readonly showAvatar = computed(() => {
-    const u = this.user();
-    return u !== null && (!u.isAnonymous || this.session() !== null);
-  });
+  protected readonly showAvatar = this.isAuthenticated;
   protected readonly showBottomNav = computed(
     () => this.isAuthenticated() && isPrimaryDestination(this.currentUrl()),
   );

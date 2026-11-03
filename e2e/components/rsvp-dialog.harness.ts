@@ -12,7 +12,8 @@ export class RsvpDialogHarness {
   readonly cancelBtn: Locator;
   readonly phoneInput: Locator;
   readonly familySelector: Locator;
-  readonly nameInput: Locator;
+  /** The guest's name, from their profile: shown, not typed. */
+  readonly guestName: Locator;
   readonly companionsInput: Locator;
 
   constructor(private readonly page: Page) {
@@ -28,12 +29,7 @@ export class RsvpDialogHarness {
       .or(this.dialogRoot.getByRole('button', { name: /cancelar/i }))
       .first();
 
-    this.nameInput = this.dialogRoot
-      .getByTestId('rsvp-name-input')
-      .locator('input')
-      .or(this.dialogRoot.getByTestId('rsvp-name-input'))
-      .or(this.dialogRoot.getByLabel(/nome/i))
-      .first();
+    this.guestName = this.dialogRoot.getByTestId('rsvp-guest-name').first();
 
     this.phoneInput = this.dialogRoot
       .getByTestId('rsvp-phone-input')
@@ -61,9 +57,6 @@ export class RsvpDialogHarness {
   }
 
   async confirmRsvp(details?: RsvpGuestDetails): Promise<void> {
-    if (details?.name && (await this.nameInput.isVisible())) {
-      await this.nameInput.fill(details.name);
-    }
     if (details?.phone && (await this.phoneInput.isVisible())) {
       await this.phoneInput.fill(details.phone);
     }

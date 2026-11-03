@@ -693,7 +693,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(rsvpDialog.dialogRoot.first()).toHaveAttribute('aria-modal', 'true');
 
       // Assert controls
-      await expect(rsvpDialog.nameInput).toBeVisible();
+      await expect(rsvpDialog.guestName).toBeVisible();
       await expect(rsvpDialog.phoneInput).toBeVisible();
       await expect(rsvpDialog.confirmBtn).toBeVisible();
       await expect(rsvpDialog.cancelBtn).toBeVisible();

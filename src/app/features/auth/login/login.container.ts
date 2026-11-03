@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services';
 import { Email, requiredText, valueObjectValidator } from '../../../core/value-objects';
@@ -53,6 +53,7 @@ function authErrorMessage(message: string, fallback: string): string {
 export class LoginContainer {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
 
   protected readonly form = this.fb.nonNullable.group({
@@ -99,7 +100,13 @@ export class LoginContainer {
     }
   }
 
+  /** Back to the invite that sent the guest here, or to Meus eventos. Only app paths. */
   private async redirectAfterAuth(): Promise<void> {
+    const redirect = this.route.snapshot.queryParamMap.get('redirect') ?? '';
+    if (redirect.startsWith('/') && !redirect.startsWith('//')) {
+      await this.router.navigateByUrl(redirect);
+      return;
+    }
     await this.router.navigate(['/meus-eventos']);
   }
 

@@ -28,15 +28,11 @@
 
   <form [formGroup]="form" class="rsvp-drawer__form" id="rsvp-form">
     <div class="rsvp-drawer__content">
-      <org-text-field
-        class="rsvp-drawer__field"
-        label="Seu nome"
-        formControlName="name"
-        [required]="true"
-        [maxLength]="nameMaxLength"
-        testId="rsvp-name-input"
-        [error]="fieldError(form.controls.name, 'Nome é obrigatório')"
-      />
+      <div class="rsvp-drawer__guest" data-testid="rsvp-guest-name">
+        <span class="rsvp-drawer__guest-label">Confirmando como</span>
+        <strong class="rsvp-drawer__guest-name">{{ guestName() }}</strong>
+        <span class="rsvp-drawer__guest-hint">O nome vem do seu perfil.</span>
+      </div>
 
       <org-text-field
         class="rsvp-drawer__field"
@@ -46,6 +42,7 @@
         placeholder="(11) 99999-9999"
         [required]="true"
         [mask]="maskPhone"
+        hint="Mudar aqui também muda no seu perfil."
         testId="rsvp-phone-input"
         [error]="fieldError(form.controls.phone, 'Telefone é obrigatório')"
       />

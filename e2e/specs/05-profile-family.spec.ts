@@ -210,7 +210,7 @@ test.describe('User Profile and Family Roster Management', () => {
     const badge = rsvpDialog.familySelector.locator('.family-selector__badge');
     await expect(badge).toContainText(/1 selecionado/i);
 
-    await rsvpDialog.nameInput.fill('Carlos Alberto Silva');
+    await expect(rsvpDialog.guestName).toBeVisible();
     await rsvpDialog.phoneInput.fill('11999998888');
 
     await rsvpDialog.cancel();

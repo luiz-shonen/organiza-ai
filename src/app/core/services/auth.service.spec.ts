@@ -21,7 +21,6 @@ const mocks = vi.hoisted(() => {
     mockSignInWithEmailAndPassword: vi.fn(),
     mockCreateUserWithEmailAndPassword: vi.fn(),
     mockSignInWithPopup: vi.fn(),
-    mockSignInAnonymously: vi.fn(),
     mockSignOut: vi.fn(),
     mockSendEmailVerification: vi.fn(),
     MockGoogleAuthProvider: class MockGoogleAuthProvider {},
@@ -35,7 +34,6 @@ vi.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: mocks.mockSignInWithEmailAndPassword,
   createUserWithEmailAndPassword: mocks.mockCreateUserWithEmailAndPassword,
   signInWithPopup: mocks.mockSignInWithPopup,
-  signInAnonymously: mocks.mockSignInAnonymously,
   signOut: mocks.mockSignOut,
   sendEmailVerification: mocks.mockSendEmailVerification,
   GoogleAuthProvider: mocks.MockGoogleAuthProvider,
@@ -48,7 +46,6 @@ vi.mock('@firebase/auth', () => ({
   signInWithEmailAndPassword: mocks.mockSignInWithEmailAndPassword,
   createUserWithEmailAndPassword: mocks.mockCreateUserWithEmailAndPassword,
   signInWithPopup: mocks.mockSignInWithPopup,
-  signInAnonymously: mocks.mockSignInAnonymously,
   signOut: mocks.mockSignOut,
   sendEmailVerification: mocks.mockSendEmailVerification,
   GoogleAuthProvider: mocks.MockGoogleAuthProvider,
@@ -310,38 +307,6 @@ describe('AuthService', () => {
       expect(mocks.mockSignOut).toHaveBeenCalledWith(mockAuth);
       expect(service.currentUser()).toBeNull();
       expect(service.isSuperAdmin()).toBe(false);
-    });
-  });
-
-  describe('loginAnonymously', () => {
-    it('calls signInAnonymously when no current user is logged in', async () => {
-      const anonUser = {
-        uid: 'anon-123',
-        isAnonymous: true,
-        email: null,
-      } as unknown as User;
-
-      mockAuthState.currentUser = null;
-      mocks.mockSignInAnonymously.mockImplementation(async () => {
-        mockAuthState.currentUser = anonUser;
-        return { user: anonUser } as UserCredential;
-      });
-
-      await service.loginAnonymously();
-
-      expect(mockAuth.authStateReady).toHaveBeenCalled();
-      expect(mocks.mockSignInAnonymously).toHaveBeenCalledWith(mockAuth);
-      expect(service.currentUser()).toEqual(anonUser);
-      expect(service.isSuperAdmin()).toBe(false);
-    });
-
-    it('does not call signInAnonymously if already logged in', async () => {
-      mockAuthState.currentUser = regularUser;
-
-      await service.loginAnonymously();
-
-      expect(mockAuth.authStateReady).toHaveBeenCalled();
-      expect(mocks.mockSignInAnonymously).not.toHaveBeenCalled();
     });
   });
 

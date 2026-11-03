@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import {
   EventService,
-  GuestSessionService,
   ItemService,
   GuestService,
   AuthService,
@@ -85,7 +84,6 @@ export class EventDetailContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
   private readonly guestService = inject(GuestService);
-  private readonly guestSession = inject(GuestSessionService);
   private readonly feedback = inject(FeedbackService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
@@ -103,7 +101,6 @@ export class EventDetailContainer implements OnInit {
   protected readonly guests = signal<Guest[]>([]);
   protected readonly loading = signal(true);
   protected readonly rsvpLoading = signal(false);
-  protected readonly session = this.guestSession.session;
   protected readonly claims = signal<EventClaims[]>([]);
   private readonly familyMembers = signal<FamilyMember[]>([]);
   /** The family list is read once per visit, even when it turns out empty. */
@@ -238,42 +235,21 @@ export class EventDetailContainer implements OnInit {
     );
   });
 
+  /** Only signed-in accounts answer invites; there are no anonymous guests. */
   protected readonly isUserConfirmed = computed(() => {
-    const user = this.authService.currentUser();
-    if (user && !user.isAnonymous) {
-      return this.guests().some((g) => g.id === user.uid || g.uid === user.uid);
-    }
-    const session = this.session();
-    if (session?.phone) {
-      return this.guests().some((g) => g.phone === session.phone);
-    }
-    return false;
+    const uid = this.memberUid();
+    return !!uid && this.guests().some((g) => g.id === uid || g.uid === uid);
   });
 
   protected readonly currentGuestName = computed(() => {
-    const user = this.authService.currentUser();
-    if (user && !user.isAnonymous) {
-      const found = this.guests().find((g) => g.id === user.uid || g.uid === user.uid);
-      if (found) {
-        return found.name;
-      }
-      return user.displayName ?? null;
-    }
-    return this.session()?.name ?? null;
-  });
-
-  protected readonly currentUserId = computed(() => {
-    const user = this.authService.currentUser();
-    if (user && !user.isAnonymous) {
-      return user.uid;
-    }
-    return this.session()?.phone ?? null;
+    const uid = this.memberUid();
+    if (!uid) return null;
+    const found = this.guests().find((g) => g.id === uid || g.uid === uid);
+    return found?.name ?? this.authService.currentUser()?.displayName ?? null;
   });
 
   ngOnInit(): void {
     const eventId = this.id();
-
-    this.authService.loginAnonymously().catch(console.error);
 
     const eventSub = this.eventService.getEvent(eventId).subscribe({
       next: (event) => {
@@ -332,112 +308,129 @@ export class EventDetailContainer implements OnInit {
   protected async onConfirmRsvp(event?: Event, editing = false): Promise<void> {
     this.rsvpLoading.set(true);
     try {
-      let user = this.authService.currentUser();
+      const user = this.authService.currentUser();
       if (!user || user.isAnonymous) {
-        await this.authService.loginWithGoogle();
-        user = this.authService.currentUser();
-      }
-
-      if (user && !user.isAnonymous) {
-        const name = user.displayName || user.email?.split('@')[0] || 'Convidado';
-        const email = user.email ?? '';
-        const photoUrl = user.photoURL ?? '';
-        const phone = user.phoneNumber ?? '';
-
-        const familyMembers = await this.familyService.getFamilyMembers(user.uid);
-        const mine = this.guests().find((guest) => guest.id === user.uid || guest.uid === user.uid);
-        const familyPrefix = `${user.uid}_`;
-        const confirmedFamilyIds = this.guests()
-          .filter((guest) => guest.primaryGuestId === user.uid)
-          .map((guest) => guest.id.replace(familyPrefix, ''));
-        const existing =
-          editing && mine
-            ? {
-                companions: (mine.companions ?? []).map((companion) => companion.name),
-                familyMemberIds: confirmedFamilyIds,
-              }
-            : undefined;
-
-        this.drawerService.open({
-          kind: 'rsvp',
-          trigger: event?.currentTarget as HTMLElement | undefined,
-          data: {
-            session: existing
-              ? { name: mine?.name || name, phone: mine?.phone || phone }
-              : { name, phone },
-            familyMembers,
-            userId: user.uid,
-            existing,
-            addFamilyMember: async (member) => {
-              try {
-                const saved = await this.familyService.addFamilyMember(user.uid, member);
-                this.feedback.success(`${saved.name} foi adicionado(a) à sua família.`);
-                return saved;
-              } catch (err) {
-                console.error(err);
-                this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
-                throw err;
-              }
-            },
-          },
-          onComplete: async (result: RsvpDrawerResult) => {
-            this.rsvpLoading.set(true);
-            try {
-              await this.guestService.batchConfirmRsvp(
-                this.id(),
-                {
-                  uid: user.uid,
-                  name: result.name || name,
-                  email,
-                  phone: result.phone || phone,
-                  photoUrl,
-                  companions: result.companions,
-                },
-                result.selectedFamilyMembers ?? [],
-                confirmedFamilyIds.filter(
-                  (id) => !(result.selectedFamilyMembers ?? []).some((member) => member.id === id),
-                ),
-              );
-              this.userService.setAttending(user.uid, this.id(), true).catch(console.error);
-              if (this.declined()) {
-                await this.userService.setDeclined(user.uid, this.id(), false);
-                this.guestService.removeDecline(this.id(), user.uid).catch(console.error);
-                this.declined.set(false);
-              }
-
-              this.guestSession.saveSession({
-                name: result.name || name,
-                phone: result.phone || phone,
-              });
-              this.userService
-                .upsertProfile(user.uid, {
-                  name: result.name || name,
-                  phone: result.phone || phone,
-                })
-                .catch(console.error);
-
-              if (existing) {
-                this.feedback.success('Presença atualizada!');
-              } else {
-                this.confetti.fireSuccessConfetti();
-                this.feedback.success('Presença confirmada!');
-              }
-            } catch (err) {
-              console.error(err);
-              this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
-            } finally {
-              this.rsvpLoading.set(false);
-            }
-          },
+        // Answering needs an account: sign in, then come back to this invite.
+        await this.router.navigate(['/login'], {
+          queryParams: { redirect: '/evento/' + this.id() },
         });
         return;
       }
+
+      // The guest is named as on their profile; the RSVP never edits the name.
+      const profile = await this.userService.getProfile(user.uid);
+      const name =
+        profile?.name?.trim() || user.displayName || user.email?.split('@')[0] || 'Convidado';
+      const email = user.email ?? '';
+      const photoUrl = user.photoURL ?? '';
+      const phone = profile?.phone || user.phoneNumber || '';
+
+      const familyMembers = await this.familyService.getFamilyMembers(user.uid);
+      const mine = this.guests().find((guest) => guest.id === user.uid || guest.uid === user.uid);
+      const familyPrefix = `${user.uid}_`;
+      const confirmedFamilyIds = this.guests()
+        .filter((guest) => guest.primaryGuestId === user.uid)
+        .map((guest) => guest.id.replace(familyPrefix, ''));
+      const existing =
+        editing && mine
+          ? {
+              companions: (mine.companions ?? []).map((companion) => companion.name),
+              familyMemberIds: confirmedFamilyIds,
+            }
+          : undefined;
+
+      this.drawerService.open({
+        kind: 'rsvp',
+        trigger: event?.currentTarget as HTMLElement | undefined,
+        data: {
+          session: { name, phone },
+          familyMembers,
+          userId: user.uid,
+          existing,
+          addFamilyMember: async (member) => {
+            try {
+              const saved = await this.familyService.addFamilyMember(user.uid, member);
+              this.feedback.success(`${saved.name} foi adicionado(a) à sua família.`);
+              return saved;
+            } catch (err) {
+              console.error(err);
+              this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
+              throw err;
+            }
+          },
+        },
+        onComplete: async (result: RsvpDrawerResult) => {
+          const newPhone = result.phone || phone;
+          // The RSVP phone is the profile phone: changing it here changes it there too.
+          if (newPhone !== phone && !(await this.confirmPhoneChange(newPhone))) {
+            this.feedback.info('Nada foi salvo. Seu telefone continua o mesmo.');
+            return;
+          }
+          this.rsvpLoading.set(true);
+          try {
+            await this.guestService.batchConfirmRsvp(
+              this.id(),
+              {
+                uid: user.uid,
+                name,
+                email,
+                phone: newPhone,
+                photoUrl,
+                companions: result.companions,
+              },
+              result.selectedFamilyMembers ?? [],
+              confirmedFamilyIds.filter(
+                (id) => !(result.selectedFamilyMembers ?? []).some((member) => member.id === id),
+              ),
+            );
+            this.userService.setAttending(user.uid, this.id(), true).catch(console.error);
+            if (this.declined()) {
+              await this.userService.setDeclined(user.uid, this.id(), false);
+              this.guestService.removeDecline(this.id(), user.uid).catch(console.error);
+              this.declined.set(false);
+            }
+
+            if (newPhone !== phone) {
+              this.userService.upsertProfile(user.uid, { phone: newPhone }).catch(console.error);
+            }
+
+            if (existing) {
+              this.feedback.success('Presença atualizada!');
+            } else {
+              this.confetti.fireSuccessConfetti();
+              this.feedback.success('Presença confirmada!');
+            }
+          } catch (err) {
+            console.error(err);
+            this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
+          } finally {
+            this.rsvpLoading.set(false);
+          }
+        },
+      });
     } catch (err: unknown) {
       console.error(err);
-      this.feedback.error('Erro ao confirmar presença com o Google.', { duration: 4000 });
+      this.feedback.error('Não foi possível abrir a confirmação. Tente novamente.', {
+        duration: 4000,
+      });
     } finally {
       this.rsvpLoading.set(false);
     }
+  }
+
+  /** Asks before the RSVP changes the profile phone as well. */
+  private confirmPhoneChange(newPhone: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.dialogs
+        .confirm({
+          title: 'Atualizar seu telefone?',
+          message: 'O telefone do seu perfil também passa a ser ' + newPhone + '.',
+          confirmLabel: 'Atualizar',
+          cancelLabel: 'Cancelar',
+          icon: 'info',
+        })
+        .subscribe((confirmed) => resolve(!!confirmed));
+    });
   }
 
   protected async onCancelRsvp(message = ''): Promise<void> {
@@ -455,9 +448,7 @@ export class EventDetailContainer implements OnInit {
         if (result) {
           this.rsvpLoading.set(true);
           try {
-            const user = this.authService.currentUser();
-            const session = this.guestSession.session();
-            const targetUid = user && !user.isAnonymous ? user.uid : undefined;
+            const targetUid = this.memberUid();
 
             if (targetUid) {
               await this.guestService.cancelRsvp(this.id(), targetUid, targetUid, targetUid);
@@ -468,17 +459,8 @@ export class EventDetailContainer implements OnInit {
               this.guestService
                 .saveDecline(this.id(), targetUid, this.declineName(), message)
                 .catch(console.error);
-            } else if (session?.phone) {
-              const existingGuest = await this.guestService.getGuestByPhone(
-                this.id(),
-                session.phone,
-              );
-              if (existingGuest) {
-                await this.guestService.cancelRsvp(this.id(), existingGuest.id, session.phone);
-              }
             }
 
-            this.guestSession.clearSession();
             this.feedback.success('Sua presença foi cancelada.');
           } catch (err: unknown) {
             console.error(err);

@@ -8,7 +8,6 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
-  signInAnonymously,
   sendEmailVerification,
 } from 'firebase/auth';
 import { FirebaseService } from './firebase.service';
@@ -117,16 +116,6 @@ export class AuthService {
     const user = this.auth.currentUser;
     if (user) {
       await sendEmailVerification(user);
-    }
-  }
-
-  async loginAnonymously(): Promise<void> {
-    await this.auth.authStateReady();
-    // Only sign in anonymously if not already signed in.
-    if (!this.auth.currentUser) {
-      await signInAnonymously(this.auth);
-      this._currentUser.set(this.auth.currentUser);
-      this._isSuperAdmin.set(false);
     }
   }
 

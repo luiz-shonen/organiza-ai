@@ -1,7 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef, WritableSignal, signal } from '@angular/core';
+import { Router } from '@angular/router';
 
 type MockCurrentUser = Record<string, unknown> | null;
+
+/** Lets the drawer's onComplete, which the mock does not await, run to the end. */
+const settle = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
@@ -10,7 +14,6 @@ import {
   EventService,
   ItemService,
   GuestService,
-  GuestSessionService,
   AuthService,
   UserService,
   FamilyService,
@@ -51,13 +54,7 @@ describe('EventDetailContainer', () => {
   let mockAuthService: {
     currentUser: WritableSignal<MockCurrentUser>;
     isSuperAdmin: WritableSignal<boolean>;
-    loginAnonymously: ReturnType<typeof vi.fn>;
     loginWithGoogle: ReturnType<typeof vi.fn>;
-  };
-  let mockGuestSessionService: {
-    session: WritableSignal<unknown>;
-    saveSession: ReturnType<typeof vi.fn>;
-    clearSession: ReturnType<typeof vi.fn>;
   };
   let mockUserService: {
     upsertProfile: ReturnType<typeof vi.fn>;
@@ -65,6 +62,7 @@ describe('EventDetailContainer', () => {
     getDeclinedEvents: ReturnType<typeof vi.fn>;
     setDeclined: ReturnType<typeof vi.fn>;
     setAttending: ReturnType<typeof vi.fn>;
+    getProfile: ReturnType<typeof vi.fn>;
   };
   let mockConfettiService: {
     fireSuccessConfetti: ReturnType<typeof vi.fn>;
@@ -162,7 +160,6 @@ describe('EventDetailContainer', () => {
     mockAuthService = {
       currentUser: currentUserSignal,
       isSuperAdmin: signal(false),
-      loginAnonymously: vi.fn().mockResolvedValue(undefined),
       loginWithGoogle: vi.fn().mockImplementation(async () => {
         currentUserSignal.set({
           uid: 'usr-1',
@@ -173,17 +170,13 @@ describe('EventDetailContainer', () => {
         });
       }),
     };
-    mockGuestSessionService = {
-      session: signal(null),
-      saveSession: vi.fn(),
-      clearSession: vi.fn(),
-    };
     mockUserService = {
       upsertProfile: vi.fn().mockResolvedValue(undefined),
       rememberInvitedEvent: vi.fn().mockResolvedValue(undefined),
       getDeclinedEvents: vi.fn().mockResolvedValue([]),
       setDeclined: vi.fn().mockResolvedValue(undefined),
       setAttending: vi.fn().mockResolvedValue(undefined),
+      getProfile: vi.fn().mockResolvedValue(null),
     };
     mockConfettiService = {
       fireSuccessConfetti: vi.fn(),
@@ -221,7 +214,6 @@ describe('EventDetailContainer', () => {
         { provide: GuestService, useValue: mockGuestService },
         { provide: FamilyService, useValue: mockFamilyService },
         { provide: AuthService, useValue: mockAuthService },
-        { provide: GuestSessionService, useValue: mockGuestSessionService },
         { provide: UserService, useValue: mockUserService },
         { provide: ConfettiService, useValue: mockConfettiService },
         { provide: SeasonalThemeService, useValue: mockSeasonalThemeService },
@@ -300,24 +292,18 @@ describe('EventDetailContainer', () => {
   });
 
   describe('RSVP 1-Touch flow', () => {
-    it('authenticates with Google when unauthenticated and triggers confetti on confirmed RSVP', async () => {
+    it('sends a visitor without an account to sign in, and back to the invite', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       fixture.detectChanges();
 
       await component['onConfirmRsvp']();
+      await settle();
 
-      expect(mockAuthService.loginWithGoogle).toHaveBeenCalledTimes(1);
-      expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
-        'evt-123',
-        expect.objectContaining({
-          uid: 'usr-1',
-          email: 'lucas@gmail.com',
-          companions: [],
-        }),
-        [],
-        [],
-      );
-      expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
-      expect(mockFeedback.success).toHaveBeenCalledWith('Presença confirmada!');
+      expect(navigate).toHaveBeenCalledWith(['/login'], {
+        queryParams: { redirect: '/evento/evt-123' },
+      });
+      expect(mockDrawerService.open).not.toHaveBeenCalled();
+      expect(mockGuestService.batchConfirmRsvp).not.toHaveBeenCalled();
     });
 
     it('opens the RSVP drawer and persists the verified attendee through the batch contract', async () => {
@@ -330,15 +316,19 @@ describe('EventDetailContainer', () => {
       });
       fixture.detectChanges();
 
+      mockUserService.getProfile.mockResolvedValueOnce({ name: 'Mariana Souza', phone: '' });
+
       await component['onConfirmRsvp']();
+      await settle();
 
       expect(mockAuthService.loginWithGoogle).not.toHaveBeenCalled();
       expect(mockDrawerService.open).toHaveBeenCalled();
+      // The profile name wins over anything the drawer returns: the RSVP never renames.
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
         'evt-123',
         expect.objectContaining({
           uid: 'usr-google-99',
-          name: 'Lucas Dev',
+          name: 'Mariana Souza',
           email: 'mariana@gmail.com',
           companions: [],
         }),
@@ -346,6 +336,40 @@ describe('EventDetailContainer', () => {
         [],
       );
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
+    });
+
+    it('uses the profile phone and asks before the RSVP changes it', async () => {
+      currentUserSignal.set({ uid: 'usr-1', displayName: 'Lucas', isAnonymous: false });
+      mockUserService.getProfile.mockResolvedValue({ name: 'Lucas Dev', phone: '(11) 99999-8888' });
+      fixture.detectChanges();
+
+      rsvpResult = { ...rsvpResult, phone: '(11) 99999-8888' };
+      await component['onConfirmRsvp']();
+      await settle();
+      expect(mockDialogs.confirm).not.toHaveBeenCalled();
+      expect(mockUserService.upsertProfile).not.toHaveBeenCalled();
+
+      mockDialogs.confirm.mockReturnValueOnce(of(false));
+      rsvpResult = { ...rsvpResult, phone: '(31) 93434-8433' };
+      mockGuestService.batchConfirmRsvp.mockClear();
+      await component['onConfirmRsvp']();
+      await settle();
+      expect(mockDialogs.confirm).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Atualizar seu telefone?' }),
+      );
+      expect(mockGuestService.batchConfirmRsvp).not.toHaveBeenCalled();
+
+      await component['onConfirmRsvp']();
+      await settle();
+      expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
+        'evt-123',
+        expect.objectContaining({ phone: '(31) 93434-8433' }),
+        [],
+        [],
+      );
+      expect(mockUserService.upsertProfile).toHaveBeenCalledWith('usr-1', {
+        phone: '(31) 93434-8433',
+      });
     });
 
     it('opens the RSVP drawer and performs batchConfirmRsvp when family members are present', async () => {
@@ -371,6 +395,7 @@ describe('EventDetailContainer', () => {
       fixture.detectChanges();
 
       await component['onConfirmRsvp']();
+      await settle();
 
       expect(mockDrawerService.open).toHaveBeenCalled();
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
@@ -403,7 +428,6 @@ describe('EventDetailContainer', () => {
         'usr-1',
         'usr-1',
       );
-      expect(mockGuestSessionService.clearSession).toHaveBeenCalled();
       expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.');
       expect(mockUserService.setDeclined).toHaveBeenCalledWith('usr-1', 'evt-123', true);
     });

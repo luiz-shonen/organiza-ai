@@ -5,7 +5,7 @@ import { signal } from '@angular/core';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { App } from './app';
 import { FirebaseService } from './core/services/firebase.service';
-import { AuthService, GuestSessionService, SeasonalThemeService } from './core/services';
+import { AuthService, SeasonalThemeService } from './core/services';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -30,12 +30,6 @@ describe('App', () => {
           provide: SeasonalThemeService,
           useValue: {
             config: signal({ activeTheme: 'default' }),
-          },
-        },
-        {
-          provide: GuestSessionService,
-          useValue: {
-            session: signal(null),
           },
         },
       ],

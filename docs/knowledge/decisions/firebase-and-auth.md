@@ -31,7 +31,8 @@ related: [routes-and-domains.md]
   - A theme must be `light`, `dark` or `system`.
   - Events only have size limits: a title of up to 200 characters, a description of up to 2000, and a location of up to 500.
 - On an update, the rules check only the fields that change. That way an older document with a value outside the rules can still be edited.
-- RSVP requires a verified identity (Google or signed-in profile). Never write anonymous users to `users`; check `!user.isAnonymous`.
+- There are no anonymous sessions: answering an invite needs an account. A visitor who taps "Confirmar presença" goes to `/login?redirect=/evento/{id}` and comes back to the invite after signing in (the login only follows app paths). The rules accept RSVPs from account holders only.
+- The RSVP drawer shows the guest's profile name ("Confirmando como …") and does not let them edit it. The phone is the profile phone: changing it in the drawer asks "Atualizar seu telefone?" and then saves it on the profile too, and a phone changed on the profile is what the next RSVP shows.
 - Each user keeps a private family roster at `users/{uid}/family`, used for batch RSVP.
 - A member added with "Novo membro" in the RSVP drawer is saved to that roster at once (the page passes `addFamilyMember` in the drawer data) and selected; the drawer closes only on "Confirmar". The quick form is a group, not a `<form>`, because it sits inside the RSVP form.
 - An invite is pending, confirmed or declined. Confirming adds the event to `users/{uid}.rsvpEvents` (Início reads it first; an older confirmation is added when the member opens the event), cancelling removes it.

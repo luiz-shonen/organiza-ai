@@ -63,7 +63,6 @@ export class RsvpDrawerComponent {
   protected readonly nameMaxLength = PersonName.MAX;
 
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', personNameValidators],
     phone: ['', [requiredText, valueObjectValidator(Phone.validate)]],
     companionsCount: [0, [Validators.min(0), Validators.max(10)]],
     companions: this.fb.nonNullable.array<string>([]),
@@ -75,12 +74,14 @@ export class RsvpDrawerComponent {
 
   /** The presence is already confirmed: the drawer edits it. */
   protected readonly editing = computed(() => !!this.drawerData().existing);
+  /** The name comes from the profile; it is changed there, not here. */
+  protected readonly guestName = computed(() => this.drawerData().session?.name ?? '');
 
   constructor() {
     effect(() => {
       const data = this.drawerData();
       this.familyMembers.set(data.familyMembers ?? []);
-      this.form.patchValue({ name: data.session?.name ?? '', phone: data.session?.phone ?? '' });
+      this.form.patchValue({ phone: data.session?.phone ?? '' });
 
       const existing = data.existing;
       if (existing) {
@@ -156,7 +157,7 @@ export class RsvpDrawerComponent {
 
     const raw = this.form.getRawValue();
     const result: RsvpDrawerResult = {
-      name: PersonName.create(raw.name)?.value ?? raw.name.trim(),
+      name: this.drawerData().session?.name ?? '',
       phone: Phone.create(raw.phone)?.formatted ?? raw.phone.trim(),
       companions: raw.companions.map((name) => ({
         name: PersonName.create(name)?.value ?? name.trim(),

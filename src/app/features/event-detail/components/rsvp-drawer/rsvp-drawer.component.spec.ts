@@ -130,15 +130,10 @@ describe('RsvpDrawerComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Informe um número entre 0 e 10');
   });
 
-  it('refuses a name with digits and an incomplete phone, with their messages', () => {
-    const nameInput = fixture.nativeElement.querySelector(
-      '[data-testid="rsvp-name-input"]',
-    ) as HTMLInputElement;
+  it('refuses an incomplete phone, with its message', () => {
     const phoneInput = fixture.nativeElement.querySelector(
       '[data-testid="rsvp-phone-input"]',
     ) as HTMLInputElement;
-    nameInput.value = 'Carlos 2';
-    nameInput.dispatchEvent(new Event('input'));
     phoneInput.value = '1199';
     phoneInput.dispatchEvent(new Event('input'));
 
@@ -147,23 +142,18 @@ describe('RsvpDrawerComponent', () => {
 
     expect(close).not.toHaveBeenCalled();
     expect(phoneInput.value).toBe('(11) 99');
-    expect(fixture.nativeElement.textContent).toContain(
-      'Use só letras, espaços, hífen ou apóstrofo',
-    );
     expect(fixture.nativeElement.textContent).toContain('Telefone inválido');
   });
 
-  it('saves the phone formatted and the name tidied', () => {
-    const nameInput = fixture.nativeElement.querySelector(
-      '[data-testid="rsvp-name-input"]',
-    ) as HTMLInputElement;
-    nameInput.value = '  Carlos   Souza ';
-    nameInput.dispatchEvent(new Event('input'));
+  it('shows the profile name, which cannot be edited, and saves the phone formatted', () => {
+    const shown = fixture.nativeElement.querySelector('[data-testid="rsvp-guest-name"]');
+    expect(shown?.textContent).toContain('Carlos');
+    expect(fixture.nativeElement.querySelector('[data-testid="rsvp-name-input"]')).toBeNull();
 
     fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
 
     expect(close).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'Carlos Souza', phone: '(11) 99999-8888' }),
+      expect.objectContaining({ name: 'Carlos', phone: '(11) 99999-8888' }),
     );
   });
 });

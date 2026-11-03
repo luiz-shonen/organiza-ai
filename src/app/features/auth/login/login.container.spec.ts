@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -193,5 +193,26 @@ describe('LoginContainer', () => {
 
     expect(component['errorMessage']()).toBe('Falha ao autenticar com o Google.');
     expect(component['loading']()).toBe(false);
+  });
+
+  it('returns to the invite that sent the guest to sign in', async () => {
+    vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    const route = TestBed.inject(ActivatedRoute);
+    vi.spyOn(route.snapshot.queryParamMap, 'get').mockReturnValue('/evento/evt-1');
+    component['form'].setValue({ email: 'user@example.com', password: 'password123' });
+
+    await component['submit']();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/evento/evt-1');
+  });
+
+  it('ignores a redirect that leaves the app', async () => {
+    const route = TestBed.inject(ActivatedRoute);
+    vi.spyOn(route.snapshot.queryParamMap, 'get').mockReturnValue('//evil.example.com');
+    component['form'].setValue({ email: 'user@example.com', password: 'password123' });
+
+    await component['submit']();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
   });
 });

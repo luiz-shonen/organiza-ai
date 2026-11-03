@@ -20,6 +20,10 @@ import {
   type AddFamilyMemberPayload,
   type UpdateFamilyMemberPayload,
 } from './components/family-roster-manager/family-roster-manager.component';
+import {
+  CompanionRosterComponent,
+  type RenameCompanionPayload,
+} from './components/companion-roster/companion-roster.component';
 
 @Component({
   selector: 'app-profile-container',
@@ -30,6 +34,7 @@ import {
     OrgPageHeaderComponent,
     ProfileInfoCardComponent,
     FamilyRosterManagerComponent,
+    CompanionRosterComponent,
     ProfilePreferencesCardComponent,
   ],
   templateUrl: './profile.container.html',
@@ -50,6 +55,9 @@ export class ProfileContainer implements OnInit {
   readonly loading = signal<boolean>(true);
   readonly userProfile = signal<UserProfile | null>(null);
   readonly familyMembers = signal<FamilyMember[]>([]);
+  /** "Meus acompanhantes": the history the RSVP's "Levar acompanhantes?" offers. */
+  readonly companions = signal<string[]>([]);
+  readonly savingCompanions = signal(false);
   readonly updating = signal<boolean>(false);
   readonly savingFamilyMember = signal<boolean>(false);
 
@@ -96,6 +104,7 @@ export class ProfileContainer implements OnInit {
       }
 
       this.familyMembers.set(family ?? []);
+      this.companions.set(profile?.savedCompanions ?? []);
     } catch (err) {
       console.error('Error loading profile container data:', err);
     } finally {
@@ -178,6 +187,54 @@ export class ProfileContainer implements OnInit {
       this.feedback.success('Familiar removido com sucesso!');
     } catch {
       this.feedback.error('Não foi possível remover o familiar. Tente novamente.');
+    }
+  }
+
+  async onAddCompanion(name: string): Promise<void> {
+    await this.saveCompanions(
+      [...this.companions(), name],
+      `${name} entrou nos seus acompanhantes.`,
+    );
+  }
+
+  async onRenameCompanion({ from, to }: RenameCompanionPayload): Promise<void> {
+    await this.saveCompanions(
+      this.companions().map((name) => (name === from ? to : name)),
+      'Acompanhante atualizado!',
+    );
+  }
+
+  async onRemoveCompanion(name: string): Promise<void> {
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Remover acompanhante',
+        message: `${name} deixa de aparecer em "Levar acompanhantes?". As confirmações que já fez continuam iguais.`,
+        confirmLabel: 'Remover',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) return;
+    await this.saveCompanions(
+      this.companions().filter((known) => known !== name),
+      'Acompanhante removido.',
+    );
+  }
+
+  /** Writes the whole list, so a rename or a removal is kept as the member sees it. */
+  private async saveCompanions(names: string[], success: string): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user) return;
+    const previous = this.companions();
+    this.companions.set(names);
+    this.savingCompanions.set(true);
+    try {
+      await this.userService.upsertProfile(user.uid, { savedCompanions: names });
+      this.feedback.success(success);
+    } catch {
+      this.companions.set(previous);
+      this.feedback.error('Não foi possível salvar os acompanhantes. Tente novamente.');
+    } finally {
+      this.savingCompanions.set(false);
     }
   }
 

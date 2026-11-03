@@ -1,0 +1,98 @@
+<org-surface variant="card" testId="companion-roster" [flush]="true">
+  <section class="companion-roster" aria-labelledby="companion-roster-heading">
+    <div class="companion-roster__header">
+      <org-card-header
+        id="companion-roster-heading"
+        icon="group_add"
+        heading="Meus acompanhantes"
+        subheading="Quem vai com você e não é da família"
+      />
+    </div>
+
+    <form class="companion-roster__form" novalidate (submit)="$event.preventDefault(); submitAdd()">
+      <org-text-field
+        class="companion-roster__field"
+        label="Nome do acompanhante"
+        placeholder="Ex: Carlos"
+        testId="companion-roster-name-input"
+        [required]="true"
+        [maxLength]="nameMaxLength"
+        [error]="addError()"
+        [(value)]="newName"
+      />
+      <org-button
+        label="Adicionar acompanhante"
+        type="submit"
+        variant="secondary"
+        testId="companion-roster-add-btn"
+        [gradient]="false"
+        [fullWidth]="true"
+        [loading]="saving()"
+        [disabled]="saving()"
+      />
+    </form>
+
+    @if (names().length === 0) {
+      <p class="companion-roster__empty" role="status">
+        Nenhum acompanhante ainda. Quem você levar a um evento também aparece aqui.
+      </p>
+    } @else {
+      <ul class="companion-roster__list" aria-label="Acompanhantes cadastrados">
+        @for (name of names(); track name) {
+          <li class="companion-roster__item" data-testid="companion-roster-item">
+            <org-avatar [name]="name" />
+            <span class="companion-roster__name">{{ name }}</span>
+            <org-icon-button
+              icon="edit"
+              [gradient]="false"
+              [ariaLabel]="'Editar ' + name"
+              (pressed)="startEdit(name)"
+            />
+            <org-icon-button
+              icon="delete_outline"
+              variant="danger"
+              [gradient]="false"
+              [ariaLabel]="'Remover ' + name + ' dos acompanhantes'"
+              (pressed)="onRemove(name)"
+            />
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</org-surface>
+
+<org-bottom-sheet
+  testId="edit-companion-sheet"
+  placement="side"
+  [ariaLabel]="'Editar ' + (editing() ?? 'acompanhante')"
+  [open]="!!editing()"
+  (closed)="editing.set(null)"
+>
+  @if (editing(); as name) {
+    <h2 class="companion-roster__sheet-title">Editar {{ name }}</h2>
+    <form
+      class="companion-roster__sheet-form"
+      novalidate
+      (submit)="$event.preventDefault(); saveEdit()"
+    >
+      <org-text-field
+        label="Nome do acompanhante"
+        testId="edit-companion-name-input"
+        [required]="true"
+        [maxLength]="nameMaxLength"
+        [error]="editError()"
+        [(value)]="editName"
+      />
+      <div class="companion-roster__sheet-actions">
+        <org-button
+          label="Cancelar"
+          variant="text"
+          [gradient]="false"
+          (pressed)="editing.set(null)"
+        />
+        <org-button label="Salvar alterações" type="submit" [gradient]="false" />
+      </div>
+    </form>
+  }
+</org-bottom-sheet>

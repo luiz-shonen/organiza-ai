@@ -30,6 +30,16 @@
             (removeMember)="onRemoveFamilyMember($event)"
           />
         </section>
+
+        <section class="profile-container__section" aria-labelledby="companion-roster-heading">
+          <app-companion-roster
+            [names]="companions()"
+            [saving]="savingCompanions()"
+            (add)="onAddCompanion($event)"
+            (rename)="onRenameCompanion($event)"
+            (remove)="onRemoveCompanion($event)"
+          />
+        </section>
       </div>
     }
   }

@@ -24,6 +24,19 @@ describe('OrgIconButtonComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('close');
   });
 
+  it('always paints a trash can red', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgIconButtonComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(OrgIconButtonComponent);
+    fixture.componentRef.setInput('ariaLabel', 'Remover');
+    fixture.componentRef.setInput('icon', 'delete_outline');
+    fixture.componentRef.setInput('variant', 'default');
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    expect(button.classList.contains('org-icon-button__control--danger')).toBe(true);
+    expect(button.classList.contains('org-icon-button__control--default')).toBe(false);
+  });
+
   it('falls back to default and blocks emission while disabled', async () => {
     await TestBed.configureTestingModule({ imports: [OrgIconButtonComponent] }).compileComponents();
     const fixture: ComponentFixture<OrgIconButtonComponent> =

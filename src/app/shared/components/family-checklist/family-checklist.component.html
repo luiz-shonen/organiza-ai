@@ -15,7 +15,7 @@
       @if (removable()) {
         <org-icon-button
           icon="delete_outline"
-          variant="default"
+          variant="danger"
           [gradient]="false"
           [ariaLabel]="'Remover ' + row.name + ' de ' + row.who"
           (pressed)="removeRow.emit(row)"

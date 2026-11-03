@@ -7,6 +7,9 @@ export type OrgIconButtonVariant = 'default' | 'danger' | 'primary';
 
 const VALID_VARIANTS: ReadonlySet<OrgIconButtonVariant> = new Set(['default', 'danger', 'primary']);
 
+/** A trash can is always a destructive action, so it is always red. */
+const TRASH_ICONS: ReadonlySet<OrgIconName> = new Set(['delete', 'delete_outline']);
+
 function normalizeVariant(value: unknown): OrgIconButtonVariant {
   return typeof value === 'string' && VALID_VARIANTS.has(value as OrgIconButtonVariant)
     ? (value as OrgIconButtonVariant)
@@ -37,6 +40,10 @@ export class OrgIconButtonComponent {
   public readonly tooltip = input<string | null>(null);
   protected readonly tooltipText = computed(() => this.tooltip() ?? this.ariaLabel());
   public readonly pressed = output<MouseEvent>();
+
+  protected readonly tone = computed<OrgIconButtonVariant>(() =>
+    TRASH_ICONS.has(this.icon()) ? 'danger' : this.variant(),
+  );
 
   protected readonly isDisabled = computed(() => this.disabled());
 

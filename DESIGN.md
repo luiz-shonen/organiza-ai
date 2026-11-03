@@ -147,7 +147,7 @@ Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gra
 
 ### OrgIconButtonComponent
 
-Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required, and it is also shown as a Material tooltip, since an icon alone does not say what it does. `tooltip` overrides the text; `tooltip=""` turns it off.
+Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required, and it is also shown as a Material tooltip, since an icon alone does not say what it does. `tooltip` overrides the text; `tooltip=""` turns it off. A trash can (`delete`, `delete_outline`) is always `danger` red, whatever `variant` says, because removing is destructive everywhere.
 
 ### OrgChipComponent
 

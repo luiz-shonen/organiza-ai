@@ -36,15 +36,16 @@ export class OrganizerDashboardPage extends BasePage {
     const statusLower = status.toLowerCase();
     const idMap: Record<string, string> = {
       todos: 'all',
-      ativos: 'active',
-      'em breve': 'active',
+      ativos: 'soon',
+      'em breve': 'soon',
+      agendados: 'scheduled',
       histórico: 'past',
       historico: 'past',
       encerrados: 'past',
       cancelados: 'cancelled',
     };
     const testIdName = idMap[statusLower] || statusLower;
-    const pattern = status === 'Ativos' ? 'Ativos|Em breve|active|upcoming' : status;
+    const pattern = status === 'Ativos' ? 'Em breve' : status;
     const chip = this.page
       .getByTestId(`status-filter-${testIdName}-chip`)
       .or(this.page.getByRole('tab', { name: new RegExp(pattern, 'i') }))

@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { DashboardContainer } from './dashboard.container';
+import { DashboardContainer, summaryStatus } from './dashboard.container';
 import {
   EventService,
   AuthService,
@@ -183,11 +183,14 @@ describe('DashboardContainer', () => {
     // Default 'all'
     expect(component.filteredEvents().length).toBe(3);
 
-    // 'upcoming'
-    component.activeFilter.set('upcoming');
-    const upcoming = component.filteredEvents();
-    expect(upcoming.length).toBe(1);
-    expect(upcoming[0].id).toBe('evt-1');
+    // 'soon': five days away at most
+    component.activeFilter.set('soon');
+    const soon = component.filteredEvents();
+    expect(soon.map((e) => e.id)).toEqual(['evt-1']);
+
+    // 'scheduled': further ahead (the cancelled one stays out)
+    component.activeFilter.set('scheduled');
+    expect(component.filteredEvents()).toEqual([]);
 
     // 'past'
     component.activeFilter.set('past');
@@ -200,6 +203,16 @@ describe('DashboardContainer', () => {
     const cancelled = component.filteredEvents();
     expect(cancelled.length).toBe(1);
     expect(cancelled[0].id).toBe('evt-3');
+  });
+
+  it('tags an event Em breve up to five days away, Agendado further ahead', () => {
+    const event = { status: 'active' } as PartyEvent;
+    expect(summaryStatus(event, 0).label).toBe('Em breve');
+    expect(summaryStatus(event, 5).label).toBe('Em breve');
+    expect(summaryStatus(event, 6).label).toBe('Agendado');
+    expect(summaryStatus(event, 168).label).toBe('Agendado');
+    expect(summaryStatus(event, -1).label).toBe('Realizado');
+    expect(summaryStatus({ status: 'cancelled' } as PartyEvent, 168).label).toBe('Cancelado');
   });
 
   it('should invoke evaluateCountdownReminders with loaded events', () => {

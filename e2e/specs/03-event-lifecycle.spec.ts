@@ -55,7 +55,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     // Verify status filter chips are visible
     await expect(dashboardPage.filterChips.first()).toBeVisible();
-    await expect(dashboardPage.filterChips).toHaveCount(4);
+    await expect(dashboardPage.filterChips).toHaveCount(5);
 
     // Test filtering by Cancelados status
     await dashboardPage.filterByStatus('Cancelados');
@@ -64,8 +64,8 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       .filter({ visible: true });
     await expect(cancelledCard.first()).toBeVisible();
 
-    // Test filtering by Ativos status
-    await dashboardPage.filterByStatus('Ativos');
+    // Five days away: "Em breve"
+    await dashboardPage.filterByStatus('Em breve');
     const activeCard = dashboardPage.eventCards
       .filter({ hasText: 'Festa Junina da Comunidade' })
       .filter({ visible: true });

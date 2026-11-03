@@ -44,7 +44,19 @@ import {
 } from '../../../shared/components/event-summary-card/event-summary-card.component';
 import { NextEventBannerComponent } from '../../../shared/components/next-event-banner/next-event-banner.component';
 
-export type EventStatusFilter = 'all' | 'upcoming' | 'past' | 'cancelled';
+export type EventStatusFilter = 'all' | 'soon' | 'scheduled' | 'past' | 'cancelled';
+
+/** "Em breve" means really close: at most this many days away. Further ahead is "Agendado". */
+export const SOON_DAYS = 5;
+
+/** The tag on an organizer's event card. */
+export function summaryStatus(event: PartyEvent, days = daysUntil(event.date)): EventSummaryStatus {
+  if (event.status === 'cancelled') return { label: 'Cancelado', variant: 'danger' };
+  if (days < 0) return { label: 'Realizado', variant: 'default' };
+  return days <= SOON_DAYS
+    ? { label: 'Em breve', variant: 'success' }
+    : { label: 'Agendado', variant: 'primary' };
+}
 
 /** Numbers behind the "Progresso" panel and the AI tip of one event. */
 export interface EventStats {
@@ -115,7 +127,8 @@ export class DashboardContainer {
 
   protected readonly filters: readonly OrgFilterOption<EventStatusFilter>[] = [
     { id: 'all', label: 'Todos', testId: 'status-filter-all-chip' },
-    { id: 'upcoming', label: 'Em breve', testId: 'status-filter-active-chip' },
+    { id: 'soon', label: 'Em breve', testId: 'status-filter-soon-chip' },
+    { id: 'scheduled', label: 'Agendados', testId: 'status-filter-scheduled-chip' },
     { id: 'past', label: 'Histórico', testId: 'status-filter-past-chip' },
     { id: 'cancelled', label: 'Cancelados', testId: 'status-filter-cancelled-chip' },
   ];
@@ -128,8 +141,13 @@ export class DashboardContainer {
   readonly filteredEvents = computed(() => {
     const all = this.events() ?? [];
     switch (this.activeFilter()) {
-      case 'upcoming':
-        return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) >= 0);
+      case 'soon':
+        return all.filter((e) => {
+          const days = daysUntil(e.date);
+          return e.status !== 'cancelled' && days >= 0 && days <= SOON_DAYS;
+        });
+      case 'scheduled':
+        return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) > SOON_DAYS);
       case 'past':
         return all.filter((e) => e.status !== 'cancelled' && daysUntil(e.date) < 0);
       case 'cancelled':
@@ -152,9 +170,7 @@ export class DashboardContainer {
     this.filteredEvents().map((event) => {
       const days = daysUntil(event.date);
       const stats = this.stats()[event.id] ?? null;
-      let status: EventSummaryStatus = { label: 'Em breve', variant: 'success' };
-      if (event.status === 'cancelled') status = { label: 'Cancelado', variant: 'danger' };
-      else if (days < 0) status = { label: 'Realizado', variant: 'default' };
+      const status = summaryStatus(event, days);
       const live = event.status !== 'cancelled' && days >= 0;
       return {
         event,

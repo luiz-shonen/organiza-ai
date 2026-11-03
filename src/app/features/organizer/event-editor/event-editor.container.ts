@@ -58,6 +58,19 @@ import {
 } from '../../../shared/ui';
 import { DrawerService } from '../../../core/services/drawer.service';
 
+/** Firestore puts the code in the message ("Missing or insufficient permissions." is permission-denied). */
+function saveErrorMessage(error: unknown): string {
+  const text =
+    error instanceof Error ? `${(error as { code?: string }).code ?? ''} ${error.message}` : '';
+  if (/permission-denied|insufficient permissions/i.test(text)) {
+    return 'Sua conta não tem permissão para salvar este evento.';
+  }
+  if (/unavailable|network/i.test(text)) {
+    return 'Sem conexão com o servidor. Verifique sua internet e tente de novo.';
+  }
+  return 'Erro ao salvar evento. Tente novamente.';
+}
+
 @Component({
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -337,8 +350,8 @@ export class EventEditorContainer implements OnInit {
         this.feedback.success('Evento criado com sucesso!');
         await this.router.navigate(['/meus-eventos/evento', newId]);
       }
-    } catch {
-      this.feedback.error('Erro ao salvar evento.');
+    } catch (error: unknown) {
+      this.feedback.error(saveErrorMessage(error));
     } finally {
       this.saving.set(false);
     }

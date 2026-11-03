@@ -6,6 +6,24 @@ service cloud.firestore {
       return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.get('email', '')));
     }
 
+    // Signed in with e-mail or Google; the anonymous accounts guests RSVP with do not count.
+    function isAccountHolder() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function eventData(eventId) {
+      return get(/databases/$(database)/documents/events/$(eventId)).data;
+    }
+
+    function ownsEvent(event) {
+      return request.auth != null && event.get('createdBy', '') == request.auth.uid;
+    }
+
+    // The owner and the collaborators manage items, guests and invitations.
+    function managesEvent(event) {
+      return ownsEvent(event) || (request.auth != null && request.auth.uid in event.get('collaborators', []));
+    }
+
     function isSuperAdmin() {
       let email = request.auth.token.get('email', '');
       return request.auth != null && (email == 'luiz.gmr.dev@gmail.com' || email == 'jessica.calm.dev@gmail.com');
@@ -93,11 +111,30 @@ service cloud.firestore {
       );
     }
 
-    // Events: public read, admin-only write
+    // Events: public read. Any account holder creates events they own; the owner edits,
+    // cancels and deletes; an invited account adds itself to the collaborators.
     match /events/{eventId} {
       allow read: if true;
-      allow create, update: if isAdmin() && isValidEvent();
-      allow delete: if isAdmin();
+      allow create: if isValidEvent()
+                    && (isAdmin()
+                        || (isAccountHolder() && request.resource.data.get('createdBy', '') == request.auth.uid));
+      allow update: if isValidEvent()
+                    && (isAdmin()
+                        || (ownsEvent(resource.data) && !changes('createdBy'))
+                        || isJoiningByInvitation());
+      allow delete: if isAdmin() || ownsEvent(resource.data);
+
+      // claimPendingInvitations: the invited account adds only its own uid, while the
+      // invitation for its e-mail still exists (the same batch deletes it).
+      function isJoiningByInvitation() {
+        let email = request.auth.token.get('email', '').lower();
+        return isAccountHolder()
+            && email != ''
+            && exists(/databases/$(database)/documents/events/$(eventId)/invitations/$(email))
+            && changedKeys().hasOnly(['collaborators', 'updatedAt'])
+            && request.resource.data.get('collaborators', []).toSet()
+                 == resource.data.get('collaborators', []).toSet().union([request.auth.uid].toSet());
+      }
 
       // Size limits only: admins write events, and older ones may hold any text.
       function isValidEvent() {
@@ -109,23 +146,23 @@ service cloud.firestore {
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77));
       }
 
-      // Invitations subcollection: admin write, invited user read/delete
+      // Invitations subcollection: the owner invites, the invited user reads and claims
       match /invitations/{email} {
-        allow read: if isAdmin() || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
-        allow create, update: if isAdmin();
-        allow delete: if isAdmin() || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
+        allow read: if isAdmin() || managesEvent(eventData(eventId)) || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
+        allow create, update: if isAdmin() || ownsEvent(eventData(eventId));
+        allow delete: if isAdmin() || ownsEvent(eventData(eventId)) || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
       }
 
       // Guests subcollection: public read, validated anonymous write
       match /guests/{guestId} {
         allow read: if true;
         allow create: if isAdmin() || isPrimaryRsvp() || isLinkedFamilyRsvp();
-        allow update: if isAdmin() || (
+        allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && ((resource.data.uid == request.auth.uid && isPrimaryRsvp())
                             || (resource.data.primaryGuestId == request.auth.uid && isLinkedFamilyRsvp()))
                       );
-        allow delete: if isAdmin() || (
+        allow delete: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && (resource.data.uid == request.auth.uid || resource.data.primaryGuestId == request.auth.uid)
                       );
@@ -165,14 +202,14 @@ service cloud.firestore {
                               && isPlainText(request.resource.data.name, 120)
                               && request.resource.data.entries is list
                               && request.resource.data.entries.size() <= 100;
-        allow delete: if isAdmin() || (request.auth != null && request.auth.uid == uid);
+        allow delete: if isAdmin() || managesEvent(eventData(eventId)) || (request.auth != null && request.auth.uid == uid);
       }
 
-      // Items subcollection: public read, admin create/delete, public claim/unclaim
+      // Items subcollection: public read, the owner and collaborators manage, anyone claims
       match /items/{itemId} {
         allow read: if true;
-        allow create, delete: if isAdmin();
-        allow update: if isAdmin() || (
+        allow create, delete: if isAdmin() || managesEvent(eventData(eventId));
+        allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedBy'])
                         && (

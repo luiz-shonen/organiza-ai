@@ -56,10 +56,13 @@
     width: 100%;
   }
 
+  // The hint under "Outros acompanhantes" fills the space a field leaves below it, so the
+  // first companion needs its own room above the label.
   &__companions {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--org-space-xs);
+    margin-top: var(--org-space-md);
   }
 
   &__family {

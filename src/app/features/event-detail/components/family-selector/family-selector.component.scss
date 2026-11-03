@@ -1,5 +1,3 @@
-@use '../../../../shared/ui/tokens/semantic' as semantic;
-
 .family-selector {
   width: 100%;
   margin: 12px 0;
@@ -89,15 +87,13 @@
     gap: 4px;
   }
 
+  // Inside the narrow RSVP drawer: no box of its own, one field per line.
   &__inline-form {
-    background: var(--org-surface);
-    border: 1px solid var(--org-outline-variant);
-    border-radius: var(--org-radius-sm);
-    padding: 12px;
+    border-top: 1px solid var(--org-outline-variant);
+    padding-top: var(--org-space-md);
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 4px;
+    gap: var(--org-space-sm);
   }
 
   &__inline-title {
@@ -110,11 +106,7 @@
   &__inline-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 8px;
-
-    @include semantic.tablet {
-      grid-template-columns: 1.5fr 1fr;
-    }
+    gap: var(--org-space-xs);
   }
 
   &__inline-field {

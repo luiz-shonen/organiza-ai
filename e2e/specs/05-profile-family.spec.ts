@@ -22,6 +22,11 @@ const mockFamilyEvent = {
   updatedAt: new Date().toISOString(),
 };
 
+/** The narrow page width the layout draws on a screen this wide. */
+function narrowPageWidth(viewport: number): string {
+  return viewport >= 1200 ? `${Math.min(Math.round(viewport * 0.7), 1440)}px` : '600px';
+}
+
 test.describe('User Profile and Family Roster Management', () => {
   test.beforeEach(async ({ page }) => {
     await setupMockAuthSession(page, {
@@ -56,10 +61,11 @@ test.describe('User Profile and Family Roster Management', () => {
     // Profile info card component should be rendered
     const profileInfoCard = page.locator('app-profile-info-card');
     await expect(profileInfoCard).toBeVisible();
-    // Perfil uses the narrow page width (the layout modifiers live on the host element).
+    // Perfil uses the narrow page width (the layout modifiers live on the host element):
+    // 600px up to 1200px of screen, then 70% of the width (at most 1440px).
     await expect(page.locator('.org-page-layout__container').first()).toHaveCSS(
       'max-width',
-      '600px',
+      narrowPageWidth(page.viewportSize()?.width ?? 0),
     );
     await expect(page.locator('#profile-heading').first()).toContainText('Carlos');
     await assertSingleSurfaceRing(profileInfoCard.locator('.org-surface'));

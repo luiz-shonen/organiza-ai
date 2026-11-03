@@ -131,7 +131,7 @@ Uso recomendado: `<org-surface variant="card" [atmosphere]="true">...</org-surfa
 
 ### OrgPageLayoutComponent
 
-Uso recomendado: `<org-page-layout maxWidth="wide">...</org-page-layout>`. Use it as the page-width boundary, never a feature-local width recipe.
+Uso recomendado: `<org-page-layout maxWidth="wide">...</org-page-layout>`. Use it as the page-width boundary, never a feature-local width recipe. On screens of 1200px and up, `narrow` and `default` take 70% of the width (at most 1440px); phones and tablets keep 600px and 960px.
 
 ### OrgPageHeaderComponent
 

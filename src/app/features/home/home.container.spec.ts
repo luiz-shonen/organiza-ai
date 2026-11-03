@@ -25,6 +25,7 @@ describe('HomeContainer', () => {
     getAttendedEvents: vi.fn(),
     getVisibleEvents: vi.fn(),
     getDeclinedEvents: vi.fn(),
+    getProfile: vi.fn(),
   };
 
   const base = {
@@ -52,6 +53,7 @@ describe('HomeContainer', () => {
     currentUser.set(null);
     userService.getAttendedEvents.mockResolvedValue([confirmed]);
     userService.getDeclinedEvents.mockResolvedValue([]);
+    userService.getProfile.mockResolvedValue({ name: 'Jéssica Mello' });
     userService.getVisibleEvents.mockReset();
     userService.getVisibleEvents.mockImplementation(() => eventsSubject.asObservable());
     claimService.getClaims.mockResolvedValue(household);
@@ -128,8 +130,8 @@ describe('HomeContainer', () => {
       expect(banner?.textContent).toContain('Festa Junina, em 3 dias');
     });
 
-    it('greets by first name and summarises the invitations', () => {
-      expect(element().querySelector('h1')?.textContent).toContain('Jéssica');
+    it('greets with the profile name and summarises the invitations', () => {
+      expect(element().querySelector('h1')?.textContent).toContain('Jéssica Mello');
       expect(element().querySelector('.org-page-header__subtitle')?.textContent).toContain(
         '1 evento confirmado e 1 convite esperando resposta',
       );

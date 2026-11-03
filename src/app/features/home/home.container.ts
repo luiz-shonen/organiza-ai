@@ -102,10 +102,14 @@ export class HomeContainer {
   private readonly declinedIds = signal<ReadonlySet<string>>(new Set());
   private readonly households = signal<Readonly<Record<string, Household>>>({});
 
-  protected readonly firstName = computed(() => {
-    const name = this.member()?.displayName ?? this.member()?.email?.split('@')[0] ?? '';
-    return name.split(' ')[0];
-  });
+  /** The name on the member's profile ("Jéssica Mello"), read with the rest of their data. */
+  private readonly profileName = signal('');
+
+  /** "Olá, Jéssica Mello": the profile name, as on the Perfil page. */
+  protected readonly greetingName = computed(
+    () =>
+      this.profileName() || this.member()?.displayName || this.member()?.email?.split('@')[0] || '',
+  );
 
   /** Início is for invites only: events the member organizes (owner or collaborator) live in "Meus eventos". */
   private readonly active = computed(() => {
@@ -227,6 +231,10 @@ export class HomeContainer {
   }
 
   private async loadMemberData(uid: string): Promise<void> {
+    this.userService
+      .getProfile(uid)
+      .then((profile) => this.profileName.set(profile?.name?.trim() ?? ''))
+      .catch(() => this.profileName.set(''));
     try {
       const attended = await this.userService.getAttendedEvents(uid);
       this.confirmedIds.set(new Set(attended.map((event) => event.id)));

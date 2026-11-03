@@ -7,7 +7,7 @@
   <org-page-header
     data-testid="home-hero"
     [title]="member() ? 'Olá, ' : 'Eventos: '"
-    [highlight]="member() ? firstName() : 'Descubra, Participe e Celebre'"
+    [highlight]="member() ? greetingName() : 'Descubra, Participe e Celebre'"
     [subtitle]="subtitle()"
   />
 

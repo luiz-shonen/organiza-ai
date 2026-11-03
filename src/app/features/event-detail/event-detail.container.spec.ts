@@ -438,12 +438,18 @@ describe('EventDetailContainer', () => {
   describe('Item claiming with household claims', () => {
     const lucas = { uid: 'usr-1', displayName: 'Lucas Dev', isAnonymous: false };
 
-    it('opens the "Eu levo" sheet for confirmed guests, with the family to choose from', async () => {
+    it('opens the "Eu levo" sheet with only the relatives confirmed for this event', async () => {
       currentUserSignal.set(lucas);
       mockFamilyService.getFamilyMembers.mockResolvedValue([
         { id: 'f1', name: 'Marta', relationship: 'child', createdAt: '' },
+        { id: 'f2', name: 'Fernanda', relationship: 'sibling', createdAt: '' },
       ]);
       fixture.detectChanges();
+      // Marta was confirmed with Lucas; Fernanda is in the family but not going.
+      component['guests'].set([
+        ...mockGuests,
+        { id: 'usr-1_f1', name: 'Marta', primaryGuestId: 'usr-1', isConfirmed: true } as Guest,
+      ]);
 
       await component['onClaimItemById']('item-1');
 

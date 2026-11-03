@@ -207,10 +207,21 @@ export class EventDetailContainer implements OnInit {
     () => this.progress().find((entry) => entry.item.id === this.claimingItemId()) ?? null,
   );
 
-  protected readonly claimPeople = computed<ClaimPerson[]>(() => [
-    { id: null, name: 'Você' },
-    ...this.familyMembers().map((member) => ({ id: member.id, name: member.name })),
-  ]);
+  /** "Quem da família vai levar?": the member and only the relatives confirmed for this event. */
+  protected readonly claimPeople = computed<ClaimPerson[]>(() => {
+    const uid = this.memberUid();
+    const going = new Set(
+      this.guests()
+        .filter((guest) => uid && guest.primaryGuestId === uid)
+        .map((guest) => guest.id.replace(`${uid}_`, '')),
+    );
+    return [
+      { id: null, name: 'Você' },
+      ...this.familyMembers()
+        .filter((member) => going.has(member.id))
+        .map((member) => ({ id: member.id, name: member.name })),
+    ];
+  });
 
   protected readonly isOwner = computed(() => {
     const uid = this.memberUid();

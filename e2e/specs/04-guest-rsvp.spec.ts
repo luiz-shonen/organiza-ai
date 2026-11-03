@@ -116,6 +116,14 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
           isConfirmed: true,
           confirmedAt: '',
         },
+        // Only relatives confirmed for the event can be picked in "Eu levo".
+        {
+          id: `${GUEST_UID}_fam-1`,
+          name: 'Marta',
+          primaryGuestId: GUEST_UID,
+          isConfirmed: true,
+          confirmedAt: '',
+        },
       ],
     });
     await setupMockAuthSession(page, {

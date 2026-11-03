@@ -94,6 +94,20 @@ export class UserService {
     }
   }
 
+  /** Keeps the events the member confirmed on their profile, so Início finds them at once. */
+  async setAttending(uid: string, eventId: string, attending: boolean): Promise<void> {
+    if (!uid || !eventId) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      {
+        rsvpEvents: attending
+          ? this.gateway.arrayUnion(eventId)
+          : this.gateway.arrayRemove(eventId),
+      },
+      { merge: true },
+    );
+  }
+
   /** Marks the invite as declined, or clears it when the member confirms after all. */
   async setDeclined(uid: string, eventId: string, declined: boolean): Promise<void> {
     if (!uid || !eventId) return;

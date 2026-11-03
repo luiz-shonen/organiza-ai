@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { Guest } from '../../../../../core/models';
+import { Guest, GuestDecline } from '../../../../../core/models';
 import { Phone } from '../../../../../core/value-objects';
 import {
   OrgButtonComponent,
@@ -30,6 +30,8 @@ function companionsOf(guest: Guest): number {
 })
 export class EventGuestsCardComponent {
   readonly guests = input.required<readonly Guest[]>();
+  /** Who said "Não poderei ir", with the message they left. */
+  readonly declines = input<readonly GuestDecline[]>([]);
   readonly exportCsv = output<void>();
   readonly print = output<void>();
 

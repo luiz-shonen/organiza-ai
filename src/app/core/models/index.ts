@@ -14,7 +14,7 @@ export type {
   NewPartyItem,
 } from './event-editor-form.model';
 export type { EventInvitation } from './invitation.model';
-export type { Guest, GuestCompanion, GuestCreate, GuestSession } from './guest.model';
+export type { Guest, GuestCompanion, GuestCreate, GuestDecline, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';
 export type {
   EventClaims,

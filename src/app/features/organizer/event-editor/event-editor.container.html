@@ -113,6 +113,7 @@
           <app-event-guests-card
             class="print-section"
             [guests]="guests()"
+            [declines]="declines()"
             (exportCsv)="exportToCsv()"
             (print)="printList()"
           />

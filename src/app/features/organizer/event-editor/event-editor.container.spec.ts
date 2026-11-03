@@ -76,6 +76,7 @@ describe('EventEditorContainer', () => {
 
   let mockGuestService: {
     listGuests: ReturnType<typeof vi.fn>;
+    listDeclines: ReturnType<typeof vi.fn>;
   };
 
   let mockFeedback: {
@@ -104,6 +105,7 @@ describe('EventEditorContainer', () => {
 
     mockGuestService = {
       listGuests: vi.fn().mockReturnValue(of([])),
+      listDeclines: vi.fn().mockReturnValue(of([])),
     };
 
     mockFeedback = {

@@ -40,6 +40,8 @@ describe('EventDetailContainer', () => {
     batchConfirmRsvp: ReturnType<typeof vi.fn>;
     cancelRsvp: ReturnType<typeof vi.fn>;
     getGuestByPhone: ReturnType<typeof vi.fn>;
+    saveDecline: ReturnType<typeof vi.fn>;
+    removeDecline: ReturnType<typeof vi.fn>;
   };
   let mockFamilyService: {
     getFamilyMembers: ReturnType<typeof vi.fn>;
@@ -61,6 +63,7 @@ describe('EventDetailContainer', () => {
     rememberInvitedEvent: ReturnType<typeof vi.fn>;
     getDeclinedEvents: ReturnType<typeof vi.fn>;
     setDeclined: ReturnType<typeof vi.fn>;
+    setAttending: ReturnType<typeof vi.fn>;
   };
   let mockConfettiService: {
     fireSuccessConfetti: ReturnType<typeof vi.fn>;
@@ -144,6 +147,8 @@ describe('EventDetailContainer', () => {
     };
     mockGuestService = {
       listGuests: vi.fn().mockReturnValue(of(mockGuests)),
+      saveDecline: vi.fn().mockResolvedValue(undefined),
+      removeDecline: vi.fn().mockResolvedValue(undefined),
       saveVerifiedRsvp: vi.fn().mockResolvedValue(undefined),
       batchConfirmRsvp: vi.fn().mockResolvedValue(undefined),
       cancelRsvp: vi.fn().mockResolvedValue(undefined),
@@ -176,6 +181,7 @@ describe('EventDetailContainer', () => {
       rememberInvitedEvent: vi.fn().mockResolvedValue(undefined),
       getDeclinedEvents: vi.fn().mockResolvedValue([]),
       setDeclined: vi.fn().mockResolvedValue(undefined),
+      setAttending: vi.fn().mockResolvedValue(undefined),
     };
     mockConfettiService = {
       fireSuccessConfetti: vi.fn(),

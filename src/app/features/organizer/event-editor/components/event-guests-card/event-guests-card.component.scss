@@ -14,6 +14,41 @@
     flex: 1;
   }
 
+  &__declines {
+    border-top: 1px solid var(--org-outline-variant);
+    margin-top: var(--org-space-md);
+    padding-top: var(--org-space-md);
+  }
+
+  &__declines-title {
+    color: var(--org-on-surface);
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-semibold);
+    margin: 0 0 var(--org-space-sm);
+  }
+
+  &__declines-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-sm);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__decline-name {
+    color: var(--org-on-surface);
+    font-size: var(--org-font-size-sm);
+    font-weight: var(--org-font-weight-medium);
+  }
+
+  &__decline-message {
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-font-size-sm);
+    margin: var(--org-space-2xs) 0 0;
+    white-space: pre-line;
+  }
+
   &__empty {
     color: var(--org-on-surface-variant);
     margin: 0;

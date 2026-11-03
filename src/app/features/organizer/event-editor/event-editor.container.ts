@@ -35,7 +35,14 @@ import {
   requiredText,
   valueObjectValidator,
 } from '../../../core/value-objects';
-import { EVENT_CATEGORIES, Guest, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
+import {
+  EVENT_CATEGORIES,
+  Guest,
+  GuestDecline,
+  NewPartyItem,
+  PartyEvent,
+  PartyItem,
+} from '../../../core/models';
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
 import { EventGuestsCardComponent } from './components/event-guests-card/event-guests-card.component';
@@ -120,6 +127,7 @@ export class EventEditorContainer implements OnInit {
   protected readonly currentEvent = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
   protected readonly guests = signal<Guest[]>([]);
+  protected readonly declines = signal<GuestDecline[]>([]);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
   protected readonly stepLabels = ['Informações', 'Endereço', 'Itens', 'Pix'] as const;
@@ -246,10 +254,16 @@ export class EventEditorContainer implements OnInit {
         next: (guests) => this.guests.set(guests),
       });
 
+      const declinesSub = this.guestService.listDeclines(eventId).subscribe({
+        next: (declines) => this.declines.set(declines),
+        error: () => this.declines.set([]),
+      });
+
       this.destroyRef.onDestroy(() => {
         eventSub.unsubscribe();
         itemsSub.unsubscribe();
         guestsSub.unsubscribe();
+        declinesSub.unsubscribe();
       });
     }
   }

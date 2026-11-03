@@ -38,6 +38,22 @@ export class EventDescription {
   }
 }
 
+/** What a guest tells the organizer when they cannot go: optional, up to 300 characters. */
+export class DeclineMessage {
+  static readonly RULES: PlainTextRules = { min: 2, max: 300, multiline: true };
+
+  private constructor(readonly value: string) {}
+
+  static validate(raw: string | null | undefined): string | null {
+    return validatePlainText(raw, DeclineMessage.RULES);
+  }
+
+  static create(raw: string | null | undefined): DeclineMessage | null {
+    const text = createText(raw, DeclineMessage.RULES);
+    return text ? new DeclineMessage(text) : null;
+  }
+}
+
 /** The name of something to bring: 2 to 60 characters on one line. */
 export class ItemName {
   static readonly RULES: PlainTextRules = { min: 2, max: 60 };

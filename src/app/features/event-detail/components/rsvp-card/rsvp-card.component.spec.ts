@@ -73,17 +73,30 @@ describe('RsvpCardComponent', () => {
       expect(status?.textContent).toContain('sua presença está confirmada.');
     });
 
-    it('renders cancel button and emits cancelRsvp output when clicked', () => {
+    it('asks for an optional message, then emits cancelRsvp with it', () => {
       const cancelSpy = vi.fn();
       component.cancelRsvp.subscribe(cancelSpy);
 
       const cancelBtn = fixture.nativeElement.querySelector(
         '.rsvp-card__cancel-btn button',
       ) as HTMLButtonElement;
-      expect(cancelBtn).toBeTruthy();
       cancelBtn.click();
+      fixture.detectChanges();
+      expect(cancelSpy).not.toHaveBeenCalled();
 
-      expect(cancelSpy).toHaveBeenCalledTimes(1);
+      const textarea = fixture.nativeElement.querySelector(
+        '[data-testid="rsvp-decline-form"] textarea',
+      ) as HTMLTextAreaElement;
+      textarea.value = 'Vou estar viajando.';
+      textarea.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      (
+        fixture.nativeElement.querySelector(
+          '[data-testid="rsvp-decline-send-btn"] button',
+        ) as HTMLButtonElement
+      ).click();
+
+      expect(cancelSpy).toHaveBeenCalledWith('Vou estar viajando.');
     });
   });
 
@@ -153,7 +166,13 @@ describe('RsvpCardComponent', () => {
           '[data-testid="rsvp-decline-btn"] button',
         ) as HTMLButtonElement
       ).click();
-      expect(spy).toHaveBeenCalled();
+      fixture.detectChanges();
+      (
+        fixture.nativeElement.querySelector(
+          '[data-testid="rsvp-decline-send-btn"] button',
+        ) as HTMLButtonElement
+      ).click();
+      expect(spy).toHaveBeenCalledWith('');
     });
 
     it('shows a declined invite with a way back', () => {

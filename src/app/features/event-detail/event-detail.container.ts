@@ -130,6 +130,26 @@ export class EventDetailContainer implements OnInit {
 
   protected readonly isDeclined = computed(() => this.declined() && !this.isUserConfirmed());
 
+  /**
+   * Início finds confirmed events in the profile's rsvpEvents. A presence confirmed before that
+   * list was kept is added the first time the member opens the event.
+   */
+  private attendingSyncedFor: string | null = null;
+  private readonly syncAttending = effect(() => {
+    const uid = this.memberUid();
+    if (!uid || !this.isUserConfirmed() || this.attendingSyncedFor === uid) return;
+    this.attendingSyncedFor = uid;
+    this.userService.setAttending(uid, this.id(), true).catch(console.error);
+  });
+
+  /** The name the organizer sees on a decline. */
+  private declineName(): string {
+    const user = this.authService.currentUser();
+    return (
+      this.currentGuestName() || user?.displayName || user?.email?.split('@')[0] || 'Convidado(a)'
+    );
+  }
+
   /** Opening the invite link puts the event on the member's Início; nothing else does. */
   private rememberedFor: string | null = null;
   private readonly rememberInvite = effect(() => {
@@ -262,16 +282,20 @@ export class EventDetailContainer implements OnInit {
   }
 
   /** "Não poderei ir" on an invite not answered yet: nothing to cancel, only the answer. */
-  protected async onDeclineRsvp(): Promise<void> {
+  protected async onDeclineRsvp(message = ''): Promise<void> {
     const uid = this.memberUid();
     if (!uid) return;
+    this.rsvpLoading.set(true);
     try {
+      await this.guestService.saveDecline(this.id(), uid, this.declineName(), message);
       await this.userService.setDeclined(uid, this.id(), true);
       this.declined.set(true);
       this.feedback.success('Tudo bem, avisamos que você não poderá ir.');
     } catch (err: unknown) {
       console.error(err);
       this.feedback.error('Não foi possível recusar o convite. Tente novamente.');
+    } finally {
+      this.rsvpLoading.set(false);
     }
   }
 
@@ -344,8 +368,10 @@ export class EventDetailContainer implements OnInit {
                   (id) => !(result.selectedFamilyMembers ?? []).some((member) => member.id === id),
                 ),
               );
+              this.userService.setAttending(user.uid, this.id(), true).catch(console.error);
               if (this.declined()) {
                 await this.userService.setDeclined(user.uid, this.id(), false);
+                this.guestService.removeDecline(this.id(), user.uid).catch(console.error);
                 this.declined.set(false);
               }
 
@@ -384,7 +410,7 @@ export class EventDetailContainer implements OnInit {
     }
   }
 
-  protected async onCancelRsvp(): Promise<void> {
+  protected async onCancelRsvp(message = ''): Promise<void> {
     this.dialogs
       .confirm({
         title: 'Cancelar Presença',
@@ -405,9 +431,13 @@ export class EventDetailContainer implements OnInit {
 
             if (targetUid) {
               await this.guestService.cancelRsvp(this.id(), targetUid, targetUid, targetUid);
-              // Remembered as declined, so Início stops counting it as pending.
+              // Remembered as declined, so Início shows it as "Recusado" and the organizer sees why.
               this.declined.set(true);
               this.userService.setDeclined(targetUid, this.id(), true).catch(console.error);
+              this.userService.setAttending(targetUid, this.id(), false).catch(console.error);
+              this.guestService
+                .saveDecline(this.id(), targetUid, this.declineName(), message)
+                .catch(console.error);
             } else if (session?.phone) {
               const existingGuest = await this.guestService.getGuestByPhone(
                 this.id(),

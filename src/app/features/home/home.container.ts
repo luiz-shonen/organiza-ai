@@ -30,7 +30,7 @@ import {
 } from '../../shared/components/event-summary-card/event-summary-card.component';
 import { FamilyChecklistComponent } from '../../shared/components/family-checklist/family-checklist.component';
 
-export type HomeFilter = 'all' | 'pending' | 'confirmed' | 'past';
+export type HomeFilter = 'all' | 'pending' | 'confirmed' | 'declined' | 'past';
 
 interface Household {
   readonly items: PartyItem[];
@@ -147,6 +147,7 @@ export class HomeContainer {
       testId: 'home-filter-pending',
     },
     { id: 'confirmed', label: 'Confirmados', testId: 'home-filter-confirmed' },
+    { id: 'declined', label: 'Recusados', testId: 'home-filter-declined' },
     { id: 'past', label: 'Anteriores', testId: 'home-filter-past' },
   ]);
 
@@ -171,6 +172,9 @@ export class HomeContainer {
       all: this.upcoming(),
       pending: this.awaitingAnswer(),
       confirmed: this.upcoming().filter((event) => confirmed.has(event.id)),
+      declined: this.upcoming().filter(
+        (event) => !confirmed.has(event.id) && this.declinedIds().has(event.id),
+      ),
       past: this.past(),
     }[this.filter()];
 

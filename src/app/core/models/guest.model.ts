@@ -29,3 +29,11 @@ export interface GuestSession {
   name: string;
   phone: string;
 }
+
+/** "Não poderei ir": who declined, with an optional message the organizer reads. */
+export interface GuestDecline {
+  id: string;
+  name: string;
+  message: string;
+  declinedAt: string;
+}

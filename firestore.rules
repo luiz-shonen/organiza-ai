@@ -90,7 +90,9 @@ service cloud.firestore {
             && (!changes('invitedEvents')
                   || (data.get('invitedEvents', null) is list && data.get('invitedEvents', null).size() <= 500))
             && (!changes('declinedEvents')
-                  || (data.get('declinedEvents', null) is list && data.get('declinedEvents', null).size() <= 500));
+                  || (data.get('declinedEvents', null) is list && data.get('declinedEvents', null).size() <= 500))
+            && (!changes('rsvpEvents')
+                  || (data.get('rsvpEvents', null) is list && data.get('rsvpEvents', null).size() <= 500));
       }
 
       match /family/{memberId} {
@@ -207,6 +209,19 @@ service cloud.firestore {
               && request.resource.data.isConfirmed == true
               && request.resource.data.confirmedAt is string;
         }
+      }
+
+      // Declines: "Não poderei ir", one per account, with an optional message for the organizer.
+      match /declines/{uid} {
+        allow read: if isAdmin() || managesEvent(eventData(eventId))
+                    || (request.auth != null && request.auth.uid == uid);
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.keys().hasOnly(['name', 'message', 'declinedAt'])
+                              && isFilledText(request.resource.data.name, 120)
+                              && isPlainText(request.resource.data.message, 300)
+                              && request.resource.data.declinedAt is string;
+        allow delete: if isAdmin() || (request.auth != null && request.auth.uid == uid);
       }
 
       // Claims: what each household brings. One document per account holder, written only by them.

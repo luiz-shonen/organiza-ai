@@ -31,8 +31,8 @@
           [guestName]="currentGuestName()"
           (confirmRsvp)="onConfirmRsvp()"
           (editRsvp)="onEditRsvp()"
-          (cancelRsvp)="onCancelRsvp()"
-          (declineRsvp)="onDeclineRsvp()"
+          (cancelRsvp)="onCancelRsvp($event)"
+          (declineRsvp)="onDeclineRsvp($event)"
         />
       }
 

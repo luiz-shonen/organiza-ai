@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
-import { Guest, GuestCompanion, FamilyMember } from '../models';
+import { Guest, GuestCompanion, GuestDecline, FamilyMember } from '../models';
 import { Phone } from '../value-objects';
 
 export interface BatchPrimaryGuestInput {
@@ -32,6 +32,34 @@ export class GuestService {
         Omit<Guest, 'id'>
       >(this.guestsPath(eventId), this.gateway.orderBy('confirmedAt', 'desc'))
       .pipe(map((guests) => guests.map((guest) => this.toGuest(guest))));
+  }
+
+  /** Who said they cannot go, for the organizer's guest list. */
+  listDeclines(eventId: string): Observable<GuestDecline[]> {
+    return this.gateway
+      .collectionSnapshot<Omit<GuestDecline, 'id'>>(`events/${eventId}/declines`)
+      .pipe(
+        map((docs) =>
+          docs.map((d) => ({
+            id: d.id,
+            name: d.name ?? '',
+            message: d.message ?? '',
+            declinedAt: d.declinedAt ?? '',
+          })),
+        ),
+      );
+  }
+
+  async saveDecline(eventId: string, uid: string, name: string, message: string): Promise<void> {
+    await this.gateway.setDoc(`events/${eventId}/declines/${uid}`, {
+      name,
+      message,
+      declinedAt: new Date().toISOString(),
+    });
+  }
+
+  async removeDecline(eventId: string, uid: string): Promise<void> {
+    await this.gateway.deleteDoc(`events/${eventId}/declines/${uid}`);
   }
 
   async addGuest(eventId: string, guest: Partial<Guest>): Promise<string> {

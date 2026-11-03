@@ -1,5 +1,9 @@
 @use '../../shared/ui/tokens/semantic' as semantic;
 
+.home__next {
+  margin-block-end: var(--org-space-lg);
+}
+
 .home__list {
   display: flex;
   flex-direction: column;

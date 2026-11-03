@@ -1,0 +1,10 @@
+<a class="next-event" data-testid="next-event-banner" [routerLink]="['/evento', event().id]">
+  <span class="next-event__icon">
+    <org-icon name="calendar_today" color="currentColor" />
+  </span>
+  <span class="next-event__text">
+    <span class="next-event__label">Evento próximo:</span>
+    <strong class="next-event__title">{{ event().title }}, {{ when() }}</strong>
+  </span>
+  <org-icon name="chevron_right" />
+</a>

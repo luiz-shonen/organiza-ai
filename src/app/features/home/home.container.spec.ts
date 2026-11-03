@@ -122,6 +122,12 @@ describe('HomeContainer', () => {
       fixture.detectChanges();
     });
 
+    it('shows the nearest confirmed event at the top', () => {
+      const banner = element().querySelector('[data-testid="next-event-banner"]');
+      expect(banner?.textContent).toContain('Evento próximo:');
+      expect(banner?.textContent).toContain('Festa Junina, em 3 dias');
+    });
+
     it('greets by first name and summarises the invitations', () => {
       expect(element().querySelector('h1')?.textContent).toContain('Jéssica');
       expect(element().querySelector('.org-page-header__subtitle')?.textContent).toContain(

@@ -29,6 +29,7 @@ import {
   type EventSummaryStatus,
 } from '../../shared/components/event-summary-card/event-summary-card.component';
 import { FamilyChecklistComponent } from '../../shared/components/family-checklist/family-checklist.component';
+import { NextEventBannerComponent } from '../../shared/components/next-event-banner/next-event-banner.component';
 
 export type HomeFilter = 'all' | 'pending' | 'confirmed' | 'declined' | 'past';
 
@@ -60,6 +61,7 @@ interface HomeCard {
     OrgPageLayoutComponent,
     EventSummaryCardComponent,
     FamilyChecklistComponent,
+    NextEventBannerComponent,
   ],
   templateUrl: './home.container.html',
   styleUrl: './home.container.scss',
@@ -199,6 +201,11 @@ export class HomeContainer {
       };
     });
   });
+
+  /** The nearest upcoming event the member confirmed, for the banner at the top. */
+  protected readonly nextConfirmed = computed(
+    () => this.upcoming().find((event) => this.confirmedIds().has(event.id)) ?? null,
+  );
 
   protected readonly listTitle = computed(() =>
     this.filter() === 'past' ? 'Eventos anteriores' : 'Próximos eventos',

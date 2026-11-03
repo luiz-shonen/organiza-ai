@@ -7,7 +7,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { firstValueFrom, of, switchMap } from 'rxjs';
@@ -30,7 +30,6 @@ import {
   OrgExpansionPanelComponent,
   OrgFilterBarComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
   OrgInsightCardComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
@@ -43,6 +42,7 @@ import {
   EventSummaryCardComponent,
   type EventSummaryStatus,
 } from '../../../shared/components/event-summary-card/event-summary-card.component';
+import { NextEventBannerComponent } from '../../../shared/components/next-event-banner/next-event-banner.component';
 
 export type EventStatusFilter = 'all' | 'upcoming' | 'past' | 'cancelled';
 
@@ -69,19 +69,18 @@ interface DashboardCard {
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RouterLink,
     OrgButtonComponent,
     OrgEmptyStateComponent,
     OrgExpansionPanelComponent,
     OrgFilterBarComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
     OrgInsightCardComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
     OrgProgressComponent,
     OrgSkeletonComponent,
     EventSummaryCardComponent,
+    NextEventBannerComponent,
   ],
   templateUrl: './dashboard.container.html',
   styleUrl: './dashboard.container.scss',
@@ -174,14 +173,6 @@ export class DashboardContainer {
   protected readonly nextEventDays = computed(() => {
     const event = this.nextEvent();
     return event ? daysUntil(event.date) : null;
-  });
-
-  protected readonly nextEventWhen = computed(() => {
-    const days = this.nextEventDays();
-    if (days === null) return '';
-    if (days === 0) return 'é hoje!';
-    if (days === 1) return 'amanhã';
-    return `em ${days} dias`;
   });
 
   /** Events saved before "Organizado por" used the profile name get it once, here. */

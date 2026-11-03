@@ -14,20 +14,7 @@
   @if (events() !== undefined) {
     <div class="dashboard__content" data-testid="dashboard-content">
       @if (nextEvent(); as event) {
-        <a
-          class="dashboard__next"
-          data-testid="next-event-banner"
-          [routerLink]="['/evento', event.id]"
-        >
-          <span class="dashboard__next-icon">
-            <org-icon name="calendar_today" color="currentColor" />
-          </span>
-          <span class="dashboard__next-text">
-            <span class="dashboard__next-label">Evento próximo:</span>
-            <strong class="dashboard__next-title">{{ event.title }}, {{ nextEventWhen() }}</strong>
-          </span>
-          <org-icon name="chevron_right" />
-        </a>
+        <app-next-event-banner [event]="event" />
       }
 
       <org-filter-bar

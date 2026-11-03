@@ -11,6 +11,10 @@
     [subtitle]="subtitle()"
   />
 
+  @if (nextConfirmed(); as next) {
+    <app-next-event-banner class="home__next" [event]="next" />
+  }
+
   @if (events() === undefined) {
     <org-loading-state label="Carregando eventos..." />
   } @else if (events()!.length === 0) {

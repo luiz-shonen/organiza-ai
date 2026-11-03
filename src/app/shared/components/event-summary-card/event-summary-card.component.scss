@@ -61,8 +61,19 @@
   min-inline-size: 0;
 }
 
-.event-summary-card__ellipsis,
-.event-summary-card__description {
+// The pin sits beside the first line; each line keeps its own ellipsis.
+.event-summary-card__meta--address {
+  align-items: flex-start;
+}
+
+.event-summary-card__address {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.event-summary-card__address-line {
+  line-height: var(--org-line-height-normal);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -72,6 +83,9 @@
   color: var(--org-on-surface);
   font-size: var(--org-font-size-sm);
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-summary-card__footer {

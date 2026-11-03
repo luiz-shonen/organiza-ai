@@ -22,3 +22,19 @@ export function parseLocation(location: string | null | undefined): Required<Add
     cep,
   };
 }
+
+/**
+ * The address on two lines, the way map apps show it: "Rua X, 12 · Bairro" and
+ * "Cidade/UF · 00000-000". Uses `addressDetails` when the event has it.
+ */
+export function addressLines(
+  location: string | null | undefined,
+  details?: AddressDetails | null,
+): { street: string; area: string } {
+  const parts = details?.address ? { ...parseLocation(''), ...details } : parseLocation(location);
+  const streetNumber = [parts.address, parts.number].filter(Boolean).join(', ');
+  return {
+    street: [streetNumber, parts.neighborhood].filter(Boolean).join(' · '),
+    area: [parts.city, parts.cep].filter(Boolean).join(' · '),
+  };
+}

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { getCategoryClass, type PartyEvent } from '../../../core/models';
-import { formatWeekdayTime } from '../../../core/utils';
+import { addressLines, formatWeekdayTime } from '../../../core/utils';
 import {
   OrgBadgeComponent,
   OrgDateBadgeComponent,
@@ -38,6 +38,11 @@ export interface EventSummaryStatus {
 })
 export class EventSummaryCardComponent {
   public readonly event = input.required<PartyEvent>();
+
+  /** Two lines instead of one cut-off line: street and neighbourhood, then city and CEP. */
+  protected readonly address = computed(() =>
+    addressLines(this.event().location, this.event().addressDetails),
+  );
   public readonly status = input<EventSummaryStatus | null>(null);
   public readonly testId = input('event-card');
   /** Route of the event page; the title becomes the link to it. */

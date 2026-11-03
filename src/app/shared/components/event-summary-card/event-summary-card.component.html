@@ -39,9 +39,14 @@
     }
     @if (event().location) {
       <org-tooltip [text]="event().location">
-        <p class="event-summary-card__meta">
+        <p class="event-summary-card__meta event-summary-card__meta--address">
           <org-icon name="place" size="sm" />
-          <span class="event-summary-card__ellipsis">{{ event().location }}</span>
+          <span class="event-summary-card__address">
+            <span class="event-summary-card__address-line">{{ address().street }}</span>
+            @if (address().area) {
+              <span class="event-summary-card__address-line">{{ address().area }}</span>
+            }
+          </span>
         </p>
       </org-tooltip>
     }

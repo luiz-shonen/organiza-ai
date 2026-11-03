@@ -23,6 +23,9 @@ related: [design-system.md, styling-rules.md]
   them: an e-mail account has no Firebase `displayName`, which showed the e-mail prefix ("admin").
   Saving the profile name renames it on every event the account owns (`EventService.renameCreator`), and
   "Meus eventos" fixes older events once. The organizer sees "Você" and no RSVP card on their own event.
+- The event page lists who is going ("Quem vai", `buildGuestHouseholds`): each confirmed household, the
+  family and companions with them, and what they bring, for everyone with the link. Organizers also see
+  phones, "Não poderão ir" with the messages, and Excel / Imprimir. The editor no longer has a guest list.
 - Início lists invites only (pending, confirmed, declined). Events the account owns or helps organize
   live in "Meus eventos" and never show on Início.
 - The header has a light / dark switch (`org-theme-toggle`) next to the avatar; "Sistema" stays on the
@@ -57,4 +60,4 @@ A presentational component never injects a domain service. When it needs a side 
 
 Reactive forms belong to the page; a step or section component receives its typed `FormGroup` as an input (see `EventBasicInfoForm` in `core/models`).
 
-Example: `features/organizer/event-editor/` — the container owns data, forms and saving; `event-basic-info-step`, `event-address-step`, `event-items-step`, `event-pix-step` and `event-guests-card` are presentational.
+Example: `features/organizer/event-editor/` — the container owns data, forms and saving; `event-basic-info-step`, `event-address-step`, `event-items-step`, and `event-pix-step` are presentational.

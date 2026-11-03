@@ -13,7 +13,6 @@ import { FormBuilder, Validators } from '@angular/forms';
 import {
   EventService,
   ItemService,
-  GuestService,
   ConfettiService,
   HeaderService,
   AuthService,
@@ -35,17 +34,9 @@ import {
   requiredText,
   valueObjectValidator,
 } from '../../../core/value-objects';
-import {
-  EVENT_CATEGORIES,
-  Guest,
-  GuestDecline,
-  NewPartyItem,
-  PartyEvent,
-  PartyItem,
-} from '../../../core/models';
+import { EVENT_CATEGORIES, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
-import { EventGuestsCardComponent } from './components/event-guests-card/event-guests-card.component';
 import {
   EventItemsStepComponent,
   type ItemUpdate,
@@ -85,7 +76,6 @@ function saveErrorMessage(error: unknown): string {
   imports: [
     EventAddressStepComponent,
     EventBasicInfoStepComponent,
-    EventGuestsCardComponent,
     EventItemsStepComponent,
     EventPixStepComponent,
     OrgBannerComponent,
@@ -107,7 +97,6 @@ export class EventEditorContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
   private readonly locationService = inject(LocationService);
-  private readonly guestService = inject(GuestService);
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
@@ -126,8 +115,6 @@ export class EventEditorContainer implements OnInit {
   protected readonly minDate = new Date();
   protected readonly currentEvent = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
-  protected readonly guests = signal<Guest[]>([]);
-  protected readonly declines = signal<GuestDecline[]>([]);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
   protected readonly stepLabels = ['Informações', 'Endereço', 'Itens', 'Pix'] as const;
@@ -250,20 +237,9 @@ export class EventEditorContainer implements OnInit {
         next: (items) => this.items.set(items),
       });
 
-      const guestsSub = this.guestService.listGuests(eventId).subscribe({
-        next: (guests) => this.guests.set(guests),
-      });
-
-      const declinesSub = this.guestService.listDeclines(eventId).subscribe({
-        next: (declines) => this.declines.set(declines),
-        error: () => this.declines.set([]),
-      });
-
       this.destroyRef.onDestroy(() => {
         eventSub.unsubscribe();
         itemsSub.unsubscribe();
-        guestsSub.unsubscribe();
-        declinesSub.unsubscribe();
       });
     }
   }
@@ -510,36 +486,6 @@ export class EventEditorContainer implements OnInit {
           this.feedback.error('Erro ao cancelar evento.');
         }
       });
-  }
-
-  protected exportToCsv(): void {
-    const guestsList = this.guests();
-    if (!guestsList.length) {
-      this.feedback.info('Nenhum convidado para exportar.');
-      return;
-    }
-
-    const headers = ['Nome,Telefone,Data de Confirmação'];
-    const rows = guestsList.map((g) => {
-      const date = g.createdAt ? new Date(g.createdAt).toLocaleDateString('pt-BR') : '';
-      return `"${g.name}","${g.phone}","${date}"`;
-    });
-
-    const csvContent = headers.concat(rows).join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `convidados-${this.basicInfoForm.controls.title.value || 'evento'}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-
-  protected printList(): void {
-    window.print();
   }
 
   protected formatCep(value: string): void {

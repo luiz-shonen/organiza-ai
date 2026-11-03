@@ -8,7 +8,6 @@ import { EventEditorContainer } from './event-editor.container';
 import {
   EventService,
   ItemService,
-  GuestService,
   ConfettiService,
   HeaderService,
   AuthService,
@@ -74,11 +73,6 @@ describe('EventEditorContainer', () => {
     updateItem: ReturnType<typeof vi.fn>;
   };
 
-  let mockGuestService: {
-    listGuests: ReturnType<typeof vi.fn>;
-    listDeclines: ReturnType<typeof vi.fn>;
-  };
-
   let mockFeedback: {
     success: ReturnType<typeof vi.fn>;
     error: ReturnType<typeof vi.fn>;
@@ -103,11 +97,6 @@ describe('EventEditorContainer', () => {
       updateItem: vi.fn().mockResolvedValue(undefined),
     };
 
-    mockGuestService = {
-      listGuests: vi.fn().mockReturnValue(of([])),
-      listDeclines: vi.fn().mockReturnValue(of([])),
-    };
-
     mockFeedback = {
       success: vi.fn(),
       error: vi.fn(),
@@ -121,7 +110,6 @@ describe('EventEditorContainer', () => {
         { provide: OrgDialogService, useValue: mockDialogs },
         { provide: EventService, useValue: mockEventService },
         { provide: ItemService, useValue: mockItemService },
-        { provide: GuestService, useValue: mockGuestService },
         {
           provide: AuthService,
           useValue: {

@@ -6,3 +6,4 @@ export * from './relationship.utils';
 export * from './navigation.utils';
 export * from './item-progress.utils';
 export * from './address.utils';
+export * from './guest-households.utils';

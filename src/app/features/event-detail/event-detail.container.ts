@@ -29,12 +29,14 @@ import {
   type EventClaims,
   type FamilyChecklistRow,
   type FamilyMember,
+  type GuestDecline,
   type ItemClaimRequest,
   type RsvpDrawerResult,
 } from '../../core/models';
 import {
   addClaimEntry,
   buildFamilyChecklist,
+  buildGuestHouseholds,
   buildItemProgress,
   removeClaimEntry,
   toggleBought,
@@ -52,6 +54,7 @@ import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
 import { ItemListCardComponent } from './components/item-list-card/item-list-card.component';
 import { PixCardComponent } from './components/pix-card/pix-card.component';
 import { FamilyChecklistCardComponent } from './components/family-checklist-card/family-checklist-card.component';
+import { GuestListCardComponent } from './components/guest-list-card/guest-list-card.component';
 import {
   ClaimSheetComponent,
   type ClaimPerson,
@@ -70,6 +73,7 @@ import { Router } from '@angular/router';
     ItemListCardComponent,
     PixCardComponent,
     FamilyChecklistCardComponent,
+    GuestListCardComponent,
     ClaimSheetComponent,
   ],
   templateUrl: './event-detail.container.html',
@@ -129,6 +133,32 @@ export class EventDetailContainer implements OnInit {
   });
 
   protected readonly isDeclined = computed(() => this.declined() && !this.isUserConfirmed());
+
+  /** "Quem vai": every confirmed household, who comes with them and what they bring. */
+  protected readonly households = computed(() =>
+    buildGuestHouseholds(this.guests(), this.items(), this.claims()),
+  );
+
+  /** Who said "Não poderei ir"; only the organizers may read it, so it loads for them only. */
+  protected readonly declines = signal<GuestDecline[]>([]);
+  private declinesLoadedFor: string | null = null;
+  private readonly loadDeclines = effect((onCleanup) => {
+    if (!this.canEdit()) {
+      this.declines.set([]);
+      return;
+    }
+    const eventId = this.id();
+    if (this.declinesLoadedFor === eventId) return;
+    this.declinesLoadedFor = eventId;
+    const sub = this.guestService.listDeclines(eventId).subscribe({
+      next: (declines) => this.declines.set(declines),
+      error: () => this.declines.set([]),
+    });
+    onCleanup(() => {
+      sub.unsubscribe();
+      this.declinesLoadedFor = null;
+    });
+  });
 
   /**
    * Início finds confirmed events in the profile's rsvpEvents. A presence confirmed before that
@@ -529,5 +559,28 @@ export class EventDetailContainer implements OnInit {
     const uid = this.memberUid();
     if (!uid) return;
     await this.claimService.saveClaims(this.id(), uid, this.currentGuestName() || '', entries);
+  }
+
+  protected exportGuests(): void {
+    const quote = (value: string) => `"${value.replace(/"/g, '""')}"`;
+    const rows = this.households().map((household) =>
+      [household.name, household.phone, household.people.join(', '), household.bring.join(', ')]
+        .map(quote)
+        .join(','),
+    );
+    const csv = ['Nome,Telefone,Quem vai junto,O que leva', ...rows].join('\n');
+    // The byte order mark makes Excel read the accents as UTF-8.
+    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `convidados-${this.event()?.title || 'evento'}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  protected printGuests(): void {
+    window.print();
   }
 }

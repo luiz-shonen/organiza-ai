@@ -49,6 +49,15 @@
         <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
       }
 
+      <app-guest-list-card
+        class="print-section"
+        [households]="households()"
+        [forOrganizer]="canEdit()"
+        [declines]="declines()"
+        (exportCsv)="exportGuests()"
+        (print)="printGuests()"
+      />
+
       @if (event.pixKey) {
         <app-pix-card
           [pixKey]="event.pixKey"

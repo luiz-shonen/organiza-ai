@@ -24,7 +24,7 @@ describe('EventGuestsCardComponent', () => {
     expect(text).toContain('3 confirmados · 6 pessoas');
     expect(text).toContain('(11) 98888-7777');
     expect(text).toContain('+2');
-    expect(text).toContain('+1');
+    expect(text).toContain('Caio');
     expect(text).toContain('—');
   });
 });

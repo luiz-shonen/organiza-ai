@@ -25,6 +25,43 @@ describe('RsvpDrawerComponent', () => {
     fixture.detectChanges();
   });
 
+  it('saves a member added in the drawer to the profile, selects it and stays open', async () => {
+    const addFamilyMember = vi.fn().mockResolvedValue({
+      id: 'fam-1',
+      name: 'Lucas',
+      relationship: 'child',
+      phone: '',
+      createdAt: '2026-11-03T00:00:00.000Z',
+    });
+    const closed = vi.fn();
+    fixture.componentInstance.closed.subscribe(closed);
+    fixture.componentRef.setInput('drawerData', {
+      session: { name: 'Carlos', phone: '11999998888' },
+      familyMembers: [],
+      userId: 'uid-1',
+      addFamilyMember,
+    });
+    fixture.detectChanges();
+
+    await fixture.componentInstance['onAddInlineFamilyMember']({
+      name: 'Lucas',
+      relationship: 'child',
+    });
+    fixture.detectChanges();
+
+    expect(addFamilyMember).toHaveBeenCalledWith({
+      name: 'Lucas',
+      relationship: 'child',
+      phone: '',
+    });
+    expect(fixture.componentInstance.selectedFamilyMemberIds()).toEqual(['fam-1']);
+    expect(closed).not.toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
+
+    fixture.nativeElement.querySelector('[data-testid="rsvp-confirm-btn"] button').click();
+    expect(close.mock.calls[0][0].selectedFamilyMembers.map((m) => m.id)).toEqual(['fam-1']);
+  });
+
   it('reveals exactly the requested ordered companion fields with accessible labels', () => {
     const countInput = fixture.nativeElement.querySelector(
       '[data-testid="rsvp-companions-input"]',

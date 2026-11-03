@@ -122,6 +122,12 @@ export class FamilySelectorComponent {
     this.resetInlineForm();
   }
 
+  /** Enter in the name adds the member instead of submitting the RSVP around it. */
+  protected onInlineEnter(event: Event): void {
+    event.preventDefault();
+    this.onSubmitInline();
+  }
+
   protected setInlineRelationship(value: string | null): void {
     const option = this.relationshipOptions.find((relationship) => relationship.value === value);
     this.inlineRelationship.set(option?.value ?? null);

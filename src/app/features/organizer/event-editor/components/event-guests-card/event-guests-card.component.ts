@@ -9,6 +9,13 @@ import {
   OrgSurfaceComponent,
 } from '../../../../../shared/ui';
 
+/** The companions' names from the RSVP; an older answer only has the count ("+2"). */
+function companionsLabel(guest: Guest): string {
+  const names = (guest.companions ?? []).map((companion) => companion.name).filter(Boolean);
+  if (names.length) return names.join(', ');
+  return companionsOf(guest) ? `+${companionsOf(guest)}` : '—';
+}
+
 /** Companions named in the RSVP, or the older bare count. */
 function companionsOf(guest: Guest): number {
   return guest.companions?.length ?? guest.companionsCount ?? 0;
@@ -40,7 +47,7 @@ export class EventGuestsCardComponent {
     {
       id: 'companions',
       label: 'Acompanhantes',
-      value: (guest) => (companionsOf(guest) ? `+${companionsOf(guest)}` : '—'),
+      value: companionsLabel,
     },
   ];
 }

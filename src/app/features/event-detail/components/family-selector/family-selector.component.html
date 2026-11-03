@@ -64,9 +64,10 @@
         />
       </div>
     } @else {
-      <form
+      <!-- Not a <form>: it sits inside the RSVP form, and a nested submit sent that one. -->
+      <div
         class="family-selector__inline-form"
-        (ngSubmit)="onSubmitInline()"
+        role="group"
         aria-label="Formulário rápido para adicionar novo familiar"
       >
         <h4 class="family-selector__inline-title">Novo Familiar</h4>
@@ -80,6 +81,7 @@
             [maxLength]="nameMaxLength"
             [error]="inlineNameError()"
             [(value)]="inlineName"
+            (keydown.enter)="onInlineEnter($event)"
           />
 
           <org-autocomplete-field
@@ -102,12 +104,12 @@
           />
           <org-button
             label="Adicionar"
-            type="submit"
             [disabled]="!inlineName().trim() || isAddingInline()"
             [loading]="isAddingInline()"
+            (pressed)="onSubmitInline()"
           />
         </div>
-      </form>
+      </div>
     }
   </org-expansion-panel>
 </div>

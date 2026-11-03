@@ -246,7 +246,22 @@ export class EventDetailContainer implements OnInit {
         this.drawerService.open({
           kind: 'rsvp',
           trigger: event?.currentTarget as HTMLElement | undefined,
-          data: { session: { name, phone }, familyMembers, userId: user.uid },
+          data: {
+            session: { name, phone },
+            familyMembers,
+            userId: user.uid,
+            addFamilyMember: async (member) => {
+              try {
+                const saved = await this.familyService.addFamilyMember(user.uid, member);
+                this.feedback.success(`${saved.name} foi adicionado(a) à sua família.`);
+                return saved;
+              } catch (err) {
+                console.error(err);
+                this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
+                throw err;
+              }
+            },
+          },
           onComplete: async (result: RsvpDrawerResult) => {
             this.rsvpLoading.set(true);
             try {

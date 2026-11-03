@@ -115,16 +115,24 @@ export class RsvpDrawerComponent {
     );
   }
 
-  protected onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): void {
-    const member: FamilyMember = {
-      id: `temp_${Date.now()}`,
-      name: payload.name,
-      relationship: payload.relationship,
-      phone: payload.phone,
-      createdAt: new Date().toISOString(),
-    };
-    this.familyMembers.update((members) => [...members, member]);
-    this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
+  /** Saved to the profile right away and selected; the drawer stays open until "Confirmar". */
+  protected async onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): Promise<void> {
+    const save = this.drawerData().addFamilyMember;
+    if (!save) return;
+    this.isAddingInline.set(true);
+    try {
+      const member = await save({
+        name: payload.name,
+        relationship: payload.relationship,
+        phone: payload.phone ?? '',
+      });
+      this.familyMembers.update((members) => [...members, member]);
+      this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
+    } catch {
+      // The page tells the user; what was typed in the RSVP itself stays.
+    } finally {
+      this.isAddingInline.set(false);
+    }
   }
 
   protected submit(): void {

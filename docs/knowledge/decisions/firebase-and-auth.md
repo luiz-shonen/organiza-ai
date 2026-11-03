@@ -33,3 +33,5 @@ related: [routes-and-domains.md]
 - On an update, the rules check only the fields that change. That way an older document with a value outside the rules can still be edited.
 - RSVP requires a verified identity (Google or signed-in profile). Never write anonymous users to `users`; check `!user.isAnonymous`.
 - Each user keeps a private family roster at `users/{uid}/family`, used for batch RSVP.
+- A member added with "Novo membro" in the RSVP drawer is saved to that roster at once (the page passes `addFamilyMember` in the drawer data) and selected; the drawer closes only on "Confirmar". The quick form is a group, not a `<form>`, because it sits inside the RSVP form.
+- "Outros acompanhantes" are people outside the family (a friend from work). Their names are saved on the guest, counted in "N pessoas confirmadas", and listed in the organizer's guest table.

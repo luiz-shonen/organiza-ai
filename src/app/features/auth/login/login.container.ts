@@ -11,6 +11,31 @@ import {
   OrgTextFieldComponent,
 } from '../../../shared/ui';
 
+const WRONG_CREDENTIALS = 'E-mail ou senha incorretos.';
+
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/** Firebase puts the code in the message ("Firebase: Error (auth/wrong-password)."). */
+function authErrorMessage(message: string, fallback: string): string {
+  if (message.includes('wrong-password') || message.includes('invalid-credential')) {
+    return WRONG_CREDENTIALS;
+  }
+  if (message.includes('weak-password')) return 'A senha deve ter pelo menos 6 caracteres.';
+  if (message.includes('too-many-requests')) {
+    return 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.';
+  }
+  if (message.includes('network-request-failed')) {
+    return 'Sem conexão com o servidor. Verifique sua internet e tente de novo.';
+  }
+  if (message.includes('user-disabled')) return 'Esta conta foi desativada.';
+  if (message.includes('api-key-not-valid') || message.includes('invalid-api-key')) {
+    return 'O app está sem a configuração do Firebase. Avise o responsável.';
+  }
+  return fallback;
+}
+
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +75,7 @@ export class LoginContainer {
       await this.authService.login(email, password);
       await this.redirectAfterAuth();
     } catch (authError: unknown) {
-      const msg = authError instanceof Error ? authError.message : String(authError);
+      const msg = errorText(authError);
 
       // If user doesn't exist yet, attempt automatic creation
       if (msg.includes('user-not-found') || msg.includes('invalid-credential')) {
@@ -58,19 +83,16 @@ export class LoginContainer {
           await this.authService.register(email, password);
           await this.redirectAfterAuth();
         } catch (regError: unknown) {
-          const regMsg = regError instanceof Error ? regError.message : String(regError);
-          if (regMsg.includes('email-already-in-use') || regMsg.includes('wrong-password')) {
-            this.errorMessage.set('E-mail ou senha incorretos.');
-          } else if (regMsg.includes('weak-password')) {
-            this.errorMessage.set('A senha deve ter pelo menos 6 caracteres.');
-          } else {
-            this.errorMessage.set('Erro ao acessar a conta. Tente novamente.');
-          }
+          const regMsg = errorText(regError);
+          // The e-mail already has an account, so the password was the wrong part.
+          this.errorMessage.set(
+            regMsg.includes('email-already-in-use')
+              ? WRONG_CREDENTIALS
+              : authErrorMessage(regMsg, 'Erro ao acessar a conta. Tente novamente.'),
+          );
         }
-      } else if (msg.includes('wrong-password')) {
-        this.errorMessage.set('E-mail ou senha incorretos.');
       } else {
-        this.errorMessage.set('Erro na autenticação. Tente novamente.');
+        this.errorMessage.set(authErrorMessage(msg, 'Erro na autenticação. Tente novamente.'));
       }
     } finally {
       this.loading.set(false);

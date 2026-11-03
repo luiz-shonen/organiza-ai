@@ -121,6 +121,43 @@ describe('LoginContainer', () => {
     expect(component['errorMessage']()).toBe('A senha deve ter pelo menos 6 caracteres.');
   });
 
+  it('says the password is wrong when the e-mail already has an account', async () => {
+    mockAuthService.login.mockRejectedValueOnce(
+      new Error('Firebase: Error (auth/invalid-credential).'),
+    );
+    mockAuthService.register.mockRejectedValueOnce(
+      new Error('Firebase: Error (auth/email-already-in-use).'),
+    );
+    component['form'].setValue({ email: 'user@example.com', password: 'wrongpassword' });
+
+    await component['submit']();
+
+    expect(component['errorMessage']()).toBe('E-mail ou senha incorretos.');
+  });
+
+  it.each([
+    [
+      'auth/too-many-requests',
+      'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
+    ],
+    [
+      'auth/network-request-failed',
+      'Sem conexão com o servidor. Verifique sua internet e tente de novo.',
+    ],
+    [
+      'auth/api-key-not-valid.-please-pass-a-valid-api-key.',
+      'O app está sem a configuração do Firebase. Avise o responsável.',
+    ],
+  ])('explains %s', async (code, message) => {
+    mockAuthService.login.mockRejectedValueOnce(new Error(`Firebase: Error (${code}).`));
+    component['form'].setValue({ email: 'user@example.com', password: 'password123' });
+
+    await component['submit']();
+
+    expect(mockAuthService.register).not.toHaveBeenCalled();
+    expect(component['errorMessage']()).toBe(message);
+  });
+
   it('should handle wrong password login error', async () => {
     mockAuthService.login.mockRejectedValueOnce(new Error('wrong-password'));
     component['form'].setValue({

@@ -1,10 +1,10 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { buildGuestEvent } from '../fixtures/mock-events';
-import { mockFirestoreDocuments, setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { buildGuestEvent } from '../../fixtures/mock-events';
+import { mockFirestoreDocuments, setupMockAuthSession } from '../../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertSingleSurfaceRing,
-} from '../helpers/design-tokens.helper';
+} from '../../helpers/design-tokens.helper';
 
 test.describe('Home Theming, Feed and Accessibility', () => {
   test('should render the home landmark for visitors, with no events since they are private', async ({

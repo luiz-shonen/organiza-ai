@@ -6,7 +6,7 @@ import {
   assertFocusedFieldCoherence,
   meetsMinimumTouchTarget,
   assertSingleSurfaceRing,
-} from '../helpers/design-tokens.helper';
+} from '../../../helpers/design-tokens.helper';
 
 test('proves the numerical visual contracts on representative geometry', async ({ page }) => {
   await page.setContent(`

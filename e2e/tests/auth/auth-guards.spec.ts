@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
 
 test.describe('Authentication Guards and Form Validation', () => {
   test('should redirect unauthenticated access from protected routes to login', async ({

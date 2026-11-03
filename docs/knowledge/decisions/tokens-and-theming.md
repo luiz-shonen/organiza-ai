@@ -7,7 +7,7 @@ supersedes: [AD-033, AD-036, AD-040]
 enforced_by:
   - scripts/validate-ui-contracts.mjs#undefined-token
   - scripts/validate-ui-contracts.mjs#dark-mode-selector
-  - e2e/specs/design-system-showcase.spec.ts#seasonal-theme-token-contract
+  - e2e/tests/design-system/showcase.spec.ts#seasonal-theme-token-contract
 related: [styling-rules.md, ../gotchas/undefined-token-renders-nothing.md]
 ---
 

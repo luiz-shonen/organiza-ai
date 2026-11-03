@@ -1,6 +1,6 @@
-import { test, expect } from '../fixtures/test.fixture';
+import { test, expect } from '../../fixtures/test.fixture';
 
-test.describe('PWA Offline Caching Resilience and Offline Mode Suite', () => {
+test.describe('Offline mode and PWA cache', () => {
   test('should remain functional and retain view structure when transitioning to offline mode', async ({
     page,
     context,

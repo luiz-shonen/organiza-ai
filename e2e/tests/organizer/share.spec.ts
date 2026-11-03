@@ -1,6 +1,6 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
-import { getBoundingBox } from '../helpers/layout.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
+import { getBoundingBox } from '../../helpers/layout.helper';
 
 const mockShareEvent = {
   id: 'event-qr-share-123',
@@ -17,7 +17,7 @@ const mockShareEvent = {
   updatedAt: new Date().toISOString(),
 };
 
-test.describe('QR Code & WhatsApp Share Deep Link Suite', () => {
+test.describe('QR code and WhatsApp share link', () => {
   test.beforeEach(async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await setupMockAuthSession(page, {

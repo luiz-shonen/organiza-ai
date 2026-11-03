@@ -1,8 +1,8 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { GUEST_UID, buildGuestEvent } from '../fixtures/mock-events';
-import { mockFirestoreDocuments, setupMockAuthSession } from '../helpers/auth-mock.helper';
-import type { MockEvent } from '../helpers/auth-mock.helper';
-import { assertNoHorizontalOverflow } from '../helpers/design-tokens.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { GUEST_UID, buildGuestEvent } from '../../fixtures/mock-events';
+import { mockFirestoreDocuments, setupMockAuthSession } from '../../helpers/auth-mock.helper';
+import type { MockEvent } from '../../helpers/auth-mock.helper';
+import { assertNoHorizontalOverflow } from '../../helpers/design-tokens.helper';
 
 /**
  * The invite and guest behaviour of the redesign: filter chips, event states by start time,

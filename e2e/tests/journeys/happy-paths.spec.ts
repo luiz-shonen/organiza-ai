@@ -1,18 +1,18 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
 import {
   assertCardSurface,
   assertMinTouchTarget,
   assertFontFamily,
   assertFocusedFieldCoherence,
   assertNoHorizontalOverflow,
-} from '../helpers/design-tokens.helper';
+} from '../../helpers/design-tokens.helper';
 import {
   assertInlineInset,
   assertStepperLayout,
   assertSurfaceBlockPadding,
   assertWithinViewport,
-} from '../helpers/layout.helper';
+} from '../../helpers/layout.helper';
 
 const mockHappyPathEvent = {
   id: 'happy-event-1',
@@ -41,7 +41,7 @@ const mockHappyPathEvent = {
   updatedAt: new Date().toISOString(),
 };
 
-test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () => {
+test.describe('Happy paths across the app', () => {
   // Phase 2 - Task T2: Organizer Dashboard [E2E-01, E2E-02]
   test.describe('Organizer Dashboard Flow', () => {
     test.beforeEach(async ({ page }) => {
@@ -53,7 +53,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-01] should render dashboard with filter chips, event cards, and >= 48px Novo Evento button', async ({
+    test('should render dashboard with filter chips, event cards, and >= 48px Novo Evento button', async ({
       page,
       dashboardPage,
     }) => {
@@ -76,7 +76,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await dashboardPage.captureScreenshot('13-01-dashboard');
     });
 
-    test('[E2E-02] should render event cards as flat Branco Essencial surfaces', async ({
+    test('should render event cards as flat Branco Essencial surfaces', async ({
       page,
       dashboardPage,
     }) => {
@@ -102,7 +102,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-03] should render Step 1 with empty inputs and disabled Próximo button', async ({
+    test('should render Step 1 with empty inputs and disabled Próximo button', async ({
       page,
       eventEditorPage,
     }) => {
@@ -124,7 +124,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-02-step1-empty');
     });
 
-    test('[E2E-04] should fill Step 1 basic info, select category chip, and enable Próximo button', async ({
+    test('should fill Step 1 basic info, select category chip, and enable Próximo button', async ({
       page,
       eventEditorPage,
     }) => {
@@ -192,7 +192,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       );
     });
 
-    test('[E2E-05] should render Step 2 fields with disabled Próximo button before CEP entry', async ({
+    test('should render Step 2 fields with disabled Próximo button before CEP entry', async ({
       page,
       eventEditorPage,
     }) => {
@@ -220,7 +220,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-04-step2-empty');
     });
 
-    test('[E2E-06] should auto-populate address via ViaCEP mock when typing 8-digit CEP and enable Próximo', async ({
+    test('should auto-populate address via ViaCEP mock when typing 8-digit CEP and enable Próximo', async ({
       page,
       eventEditorPage,
       isMobile,
@@ -279,12 +279,8 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
   });
 
   // Phase 2 - Task T5: Create Event - Step 3 (Pix & Wishlist) [E2E-07, E2E-08, E2E-09, E2E-10]
-  test.describe('Create Event - Step 3 (Pix & Wishlist)', () => {
-    test('[E2E-07] should display Pix key and wishlist item inputs', async ({
-      page,
-      eventEditorPage,
-      isMobile,
-    }) => {
+  test.describe('Create Event - Steps 3 and 4 (Itens, Pix)', () => {
+    test('should display Pix key and item inputs', async ({ page, eventEditorPage, isMobile }) => {
       await setupMockAuthSession(page, {
         uid: 'test-user-uid',
         email: 'luiz.gmr.dev@gmail.com',
@@ -356,10 +352,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-06-step3-pix-empty');
     });
 
-    test('[E2E-08] should add a wishlist item and render it in the wishlist list', async ({
-      page,
-      eventEditorPage,
-    }) => {
+    test('should add an item and render it in the item list', async ({ page, eventEditorPage }) => {
       await setupMockAuthSession(page, {
         uid: 'test-user-uid',
         email: 'luiz.gmr.dev@gmail.com',
@@ -380,7 +373,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(itemsList).toContainText('Docinhos Gourmet');
     });
 
-    test('[E2E-09] should add a second wishlist item and display both simultaneously', async ({
+    test('should add a second item and display both simultaneously', async ({
       page,
       eventEditorPage,
     }) => {
@@ -410,7 +403,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-07-step3-wishlist-items');
     });
 
-    test('[E2E-10] should remove a wishlist item and keep remaining items visible', async ({
+    test('should remove a item and keep remaining items visible', async ({
       page,
       eventEditorPage,
     }) => {
@@ -458,7 +451,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
   // Phase 2 - Task T6: Create Event - Submit & Confirmation [E2E-11]
   test.describe('Create Event - Submit & Confirmation', () => {
-    test('[E2E-11] should submit completed event form, display success snackbar, and redirect', async ({
+    test('should submit completed event form, display success snackbar, and redirect', async ({
       page,
       eventEditorPage,
     }) => {
@@ -542,7 +535,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-12] should render editor pre-populated with existing event details', async ({
+    test('should render editor pre-populated with existing event details', async ({
       page,
       eventEditorPage,
     }) => {
@@ -559,7 +552,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-09-event-edit-prepopulated');
     });
 
-    test('[E2E-13] should update title, submit, and display success snackbar', async ({
+    test('should update title, submit, and display success snackbar', async ({
       page,
       eventEditorPage,
     }) => {
@@ -586,7 +579,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(snackBar).toContainText(/Evento atualizado/i);
     });
 
-    test('[E2E-14] should display validation error and disable save when title is cleared', async ({
+    test('should display validation error and disable save when title is cleared', async ({
       page,
       eventEditorPage,
     }) => {
@@ -609,7 +602,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await expect(nextBtn).toBeDisabled();
     });
 
-    test('[E2E-15] should verify focused title input border color matches theme token', async ({
+    test('should verify focused title input border color matches theme token', async ({
       page,
       eventEditorPage,
     }) => {
@@ -630,7 +623,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-16] should render public event details with h1 title, countdown, and location', async ({
+    test('should render public event details with h1 title, countdown, and location', async ({
       page,
       eventDetailPage,
     }) => {
@@ -654,7 +647,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventDetailPage.captureScreenshot('13-10-event-detail-public');
     });
 
-    test('[E2E-17] should verify RSVP button bounding box height is >= 48px', async ({
+    test('should verify RSVP button bounding box height is >= 48px', async ({
       page,
       eventDetailPage,
     }) => {
@@ -667,7 +660,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
   });
 
   // Phase 3 - Task T9: Guest RSVP — Dialog Open & Glassmorphism [E2E-18, E2E-19]
-  test.describe('Guest RSVP — Dialog Open & Glassmorphism', () => {
+  test.describe('Guest RSVP — Drawer', () => {
     test.beforeEach(async ({ page }) => {
       await setupMockAuthSession(page, {
         uid: 'test-guest-uid',
@@ -678,7 +671,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-18] should open RSVP modal dialog with form controls and buttons', async ({
+    test('should open RSVP drawer with form controls and buttons', async ({
       page,
       eventDetailPage,
       rsvpDialog,
@@ -702,7 +695,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventDetailPage.captureScreenshot('13-11-rsvp-dialog-open');
     });
 
-    test('[E2E-19] should render the RSVP dialog on a flat card surface', async ({
+    test('should render the RSVP drawer on a flat card surface', async ({
       page,
       eventDetailPage,
       rsvpDialog,
@@ -728,7 +721,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
   // Phase 3 - Task T10: Guest RSVP — Submission & Confirmation [E2E-20]
   test.describe('Guest RSVP — Submission & Confirmation', () => {
-    test('[E2E-20] should submit RSVP form, close dialog, and render confirmed status card', async ({
+    test('should submit RSVP form, close the drawer, and render confirmed status card', async ({
       page,
       eventDetailPage,
       rsvpDialog,
@@ -782,7 +775,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-21] should render user profile page with profile card, name, and phone fields', async ({
+    test('should render user profile page with profile card, name, and phone fields', async ({
       page,
       profilePage,
     }) => {
@@ -797,10 +790,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.captureScreenshot('13-13-profile-loaded');
     });
 
-    test('[E2E-22] should render the profile card on a flat card surface', async ({
-      page,
-      profilePage,
-    }) => {
+    test('should render the profile card on a flat card surface', async ({ page, profilePage }) => {
       await page.goto('/perfil');
       await profilePage.assertLoaded();
 
@@ -811,7 +801,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await assertCardSurface(profileCard);
     });
 
-    test('[E2E-23] should verify profile heading typography uses Plus Jakarta Sans font family', async ({
+    test('should verify profile heading typography uses Plus Jakarta Sans font family', async ({
       page,
       profilePage,
     }) => {
@@ -826,7 +816,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
   // Phase 4 - Task T12: Profile — Update Name [E2E-24]
   test.describe('Profile — Update Display Name', () => {
-    test('[E2E-24] should edit and update user display name in profile card', async ({
+    test('should edit and update user display name in profile card', async ({
       page,
       profilePage,
       isMobile,
@@ -884,7 +874,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-25] should add a family member and render member card in the roster', async ({
+    test('should add a family member and render member card in the roster', async ({
       page,
       profilePage,
     }) => {
@@ -904,7 +894,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await profilePage.captureScreenshot('13-15-family-member-added');
     });
 
-    test('[E2E-26] should verify Add Family Member button bounding box height is >= 48px', async ({
+    test('should verify Add Family Member button bounding box height is >= 48px', async ({
       page,
       profilePage,
     }) => {
@@ -920,7 +910,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
 
   // Phase 4 - Task T14: Family Roster — Remove Member [E2E-27]
   test.describe('Family Roster — Remove Member', () => {
-    test('[E2E-27] should remove a family member and keep remaining members visible', async ({
+    test('should remove a family member and keep remaining members visible', async ({
       page,
       profilePage,
     }) => {
@@ -959,7 +949,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
   });
 
   // Phase 4 - Task T15: Collaborator Invite Dialog & Submit [E2E-28, E2E-29]
-  test.describe('Collaborator Invite Dialog & Submit', () => {
+  test.describe('Collaborator Invite Drawer & Submit', () => {
     test.beforeEach(async ({ page }) => {
       await setupMockAuthSession(page, {
         uid: 'test-user-uid',
@@ -969,7 +959,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       });
     });
 
-    test('[E2E-28] should open collaborator invite dialog with email input and non-default border', async ({
+    test('should open collaborator invite drawer with email input and non-default border', async ({
       page,
       eventEditorPage,
     }) => {
@@ -1019,7 +1009,7 @@ test.describe('Feature 10: E2E Happy-Path Atomic Tests & Visual Baselines', () =
       await eventEditorPage.captureScreenshot('13-17-collaborator-dialog');
     });
 
-    test('[E2E-29] should submit collaborator invite and display snackbar confirmation', async ({
+    test('should submit collaborator invite and display snackbar confirmation', async ({
       page,
       eventEditorPage,
     }) => {

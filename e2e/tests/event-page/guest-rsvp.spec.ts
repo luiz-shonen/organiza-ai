@@ -1,14 +1,14 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { buildGuestEvent, GUEST_UID } from '../fixtures/mock-events';
-import { mockFirestoreDocuments, setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { buildGuestEvent, GUEST_UID } from '../../fixtures/mock-events';
+import { mockFirestoreDocuments, setupMockAuthSession } from '../../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertSingleSurfaceRing,
-} from '../helpers/design-tokens.helper';
+} from '../../helpers/design-tokens.helper';
 
 const guestEvent = buildGuestEvent();
 
-test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', () => {
+test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
   test('should render event detail route structure, banner, and countdown timer', async ({
     eventDetailPage,
     page,
@@ -46,7 +46,7 @@ test.describe('Guest Experience, RSVP Modal, Pix Split, and Wishlist Claims', ()
     await assertNoHorizontalOverflow(page);
   });
 
-  test('should open RSVP dialog when clicking RSVP button and support Escape dismissal', async ({
+  test('should open RSVP drawer when clicking RSVP button and support Escape dismissal', async ({
     eventDetailPage,
     rsvpDialog,
     page,

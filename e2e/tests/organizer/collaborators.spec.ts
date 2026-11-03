@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
 
 const mockCollabEvent = {
   id: 'mock-collab-event',

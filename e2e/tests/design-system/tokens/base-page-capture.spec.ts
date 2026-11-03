@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { buildVisualScreenshotPath, resetVisualScrollOwners } from '../pages/base.page';
+import { buildVisualScreenshotPath, resetVisualScrollOwners } from '../../../pages/base.page';
 
 test('resets every scroll owner without producing a public visual baseline', async ({ page }) => {
   await page.setContent(`

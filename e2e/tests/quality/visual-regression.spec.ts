@@ -1,13 +1,13 @@
-import { test, expect } from '../fixtures/test.fixture';
+import { test, expect } from '../../fixtures/test.fixture';
 import type { Page } from '@playwright/test';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
 import {
   assertNoHorizontalOverflow,
   assertMinTouchTarget,
   assertCardSurface,
   assertFontFamily,
   assertSingleSurfaceRing,
-} from '../helpers/design-tokens.helper';
+} from '../../helpers/design-tokens.helper';
 
 const mockEvent = {
   id: 'visual-baseline-event-1',
@@ -40,8 +40,8 @@ async function setupSuperAdminSession(page: Page): Promise<void> {
   });
 }
 
-test.describe('Consolidated Design System Zero-Regression Visual Baselines', () => {
-  test('[Visual-01] Home view should satisfy typography, glassmorphism, and zero-overflow', async ({
+test.describe('Design system visual baselines', () => {
+  test('Home view should satisfy typography, flat surfaces, and zero-overflow', async ({
     page,
     homePage,
   }) => {
@@ -55,7 +55,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertNoHorizontalOverflow(page);
   });
 
-  test('[Visual-02] Login view should satisfy touch targets, animated gradient, and card glassmorphism', async ({
+  test('Login view should satisfy touch targets, animated gradient, and flat cards', async ({
     page,
     loginPage,
   }) => {
@@ -73,7 +73,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertNoHorizontalOverflow(page);
   });
 
-  test('[Visual-03] Organizer Dashboard should render filter chips and surface single-ring architecture', async ({
+  test('Organizer Dashboard should render filter chips and surface single-ring architecture', async ({
     page,
     dashboardPage,
   }) => {
@@ -88,7 +88,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertNoHorizontalOverflow(page);
   });
 
-  test('[Visual-04] Event Editor Stepper should render multi-step layout with zero horizontal overflow', async ({
+  test('Event Editor Stepper should render multi-step layout with zero horizontal overflow', async ({
     page,
     eventEditorPage,
   }) => {
@@ -104,7 +104,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertNoHorizontalOverflow(page);
   });
 
-  test('[Visual-05] User Profile should verify personal info card and family roster glassmorphism', async ({
+  test('User Profile should verify the personal info card and the family roster surfaces', async ({
     page,
     profilePage,
   }) => {
@@ -123,7 +123,7 @@ test.describe('Consolidated Design System Zero-Regression Visual Baselines', () 
     await assertNoHorizontalOverflow(page);
   });
 
-  test('[Visual-06] Design System Showcase should satisfy full visual hierarchy across all 14 sections', async ({
+  test('Design System Showcase should satisfy full visual hierarchy across all 14 sections', async ({
     page,
     showcasePage,
   }) => {

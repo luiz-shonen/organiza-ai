@@ -1,8 +1,8 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { buildGuestEvent } from '../fixtures/mock-events';
-import { mockFirestoreDocuments } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { buildGuestEvent } from '../../fixtures/mock-events';
+import { mockFirestoreDocuments } from '../../helpers/auth-mock.helper';
 
-test.describe('Slow Network Loading and Skeleton Shimmer Loading Suite', () => {
+test.describe('Slow network: loading states and skeletons', () => {
   test('should handle network latency gracefully and render views without layout shift or crash', async ({
     page,
     homePage,

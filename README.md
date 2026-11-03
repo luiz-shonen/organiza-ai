@@ -111,15 +111,29 @@ npm run pr:create               # Push branch and open Pull Request with persona
 
 ## E2E Tests — Structure
 
+Suites are grouped by product area, not by the order they were written. Playwright reads
+`e2e/tests/` (`*.spec.ts` is Playwright's own suffix); the Firestore rules tests in `e2e/rules/`
+run in the emulator with Vitest (`npm run test:rules`).
+
 ```
 e2e/
-├── fixtures/        # test.fixture.ts — POM dependency injection
-├── helpers/         # auth-mock, firestore-mock, a11y, visual & overflow helpers
-├── pages/           # Page Object Models (BasePage, HomePage, LoginPage, ...)
-├── components/      # Component Harnesses (RsvpDialog, ItemList, SharePanel, ...)
-├── rules/           # Firestore security rules unit tests (*.rules.test.ts)
-├── specs/           # Test suites (01-home-theming ... 14-invites-and-guests, design-system-showcase, visual-regression)
-└── screenshots/     # 60 visual baselines ({milestone}-desktop/mobile.png)
+├── tests/
+│   ├── smoke.spec.ts         # Home and login render
+│   ├── home/                 # Início: feed, theme, empty state
+│   ├── auth/                 # Route guards, login form, sign-in
+│   ├── invites/              # Filter chips, event states, RSVP, declines, "Quem vai", companions
+│   ├── event-page/           # Event page: RSVP drawer, Pix split, "Eu levo", real-time sync
+│   ├── organizer/            # Event editor, collaborators, sharing (QR, WhatsApp)
+│   ├── profile/              # Profile, family roster, batch RSVP with family
+│   ├── journeys/             # Atomic happy paths across the app
+│   ├── quality/              # Layout and overflow, keyboard and a11y, offline, slow network
+│   └── design-system/        # Showcase and token contracts
+├── fixtures/                 # test.fixture.ts (page objects injected) and mock data
+├── helpers/                  # Auth and Firestore mocks, a11y, layout and token helpers
+├── pages/                    # Page objects (HomePage, LoginPage, EventDetailPage, …)
+├── components/               # Component harnesses (RsvpDialog, ItemList, SharePanel, …)
+├── rules/                    # Firestore security rules tests (*.rules.test.ts)
+└── screenshots/              # Screenshots the tests save ({name}-desktop/mobile.png)
 ```
 
 ### E2E Test Philosophy — Atomic Tests
@@ -128,24 +142,21 @@ Each test is **atomic**: it sets up its own state via mock session + navigation,
 
 To reach Step 2 of the event editor, that test's own `beforeEach` fills and advances Step 1 independently.
 
+The product rules these tests check are written in [`docs/knowledge/decisions/events-and-invites.md`](docs/knowledge/decisions/events-and-invites.md); a behaviour change updates the rule and its test together.
+
 ### Test Suites (254 tests · Chromium + Mobile Chrome)
 
-| File                              | Coverage                                                                                                                                                                                                                                                                                                      |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `01-home-theming.spec.ts`         | Feed, light/dark theme persistence, seasonal overlay, WCAG AA                                                                                                                                                                                                                                                 |
-| `02-auth-guards.spec.ts`          | Route guards, form validation, Google sign-in, superadmin guard                                                                                                                                                                                                                                               |
-| `03-event-lifecycle.spec.ts`      | Filter chips, ViaCEP auto-fill, stepper validation, cancel dialog                                                                                                                                                                                                                                             |
-| `04-guest-rsvp.spec.ts`           | Event detail, RSVP drawer, Pix split, item claim/unclaim                                                                                                                                                                                                                                                      |
-| `05-profile-family.spec.ts`       | Profile, family roster CRUD, batch RSVP with family                                                                                                                                                                                                                                                           |
-| `06-collaborator-rbac.spec.ts`    | Share panel, collaborator invite, clipboard                                                                                                                                                                                                                                                                   |
-| `07-visual-layout.spec.ts`        | Zero horizontal overflow (`assertNoHorizontalOverflow`), touch targets $\ge 48\text{ px}$, Nielsen Heuristics, screenshot baselines                                                                                                                                                                           |
-| `08-keyboard-a11y.spec.ts`        | Focus cycling, modal focus trap, Escape key                                                                                                                                                                                                                                                                   |
-| `09-multi-user-sync.spec.ts`      | Dual-context real-time sync, no session crosstalk                                                                                                                                                                                                                                                             |
-| `10-share-qr.spec.ts`             | QR code canvas, WhatsApp URI, clipboard                                                                                                                                                                                                                                                                       |
-| `11-pwa-offline.spec.ts`          | Offline cache, form interactivity, reconnection                                                                                                                                                                                                                                                               |
-| `12-network-loading.spec.ts`      | Throttled network, skeleton shimmer, layout shift                                                                                                                                                                                                                                                             |
-| `13-organizer-happy-path.spec.ts` | **Atomic happy paths**: dashboard, create event (Steps 1–3 + submit), edit event, guest RSVP (detail + dialog + submit), profile update, family roster, collaborator invite + visual token assertions (`backdrop-filter`, `--org-primary`, `font-family`, 48 px targets)                                      |
-| `14-invites-and-guests.spec.ts`   | Filter chips (check, several at once), Em breve / Agendado / Realizado by start time, category vs status tags, sign-in redirect, RSVP drawer (profile name and phone, family before companions), decline with a message, "Quem vai" for guests and organizers, header theme switch, profile companion history |
+| Folder           | Files                                                                                            | Coverage                                                                                                                                                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `home/`          | `home.spec.ts`                                                                                   | Início for visitors and members, light/dark theme, seasonal overlay, WCAG AA                                                                                                                                                     |
+| `auth/`          | `auth-guards.spec.ts`                                                                            | Route guards, form validation, Google sign-in, super admin guard                                                                                                                                                                 |
+| `invites/`       | `invites-and-guests.spec.ts`                                                                     | Filter chips (check, several at once), Em breve / Agendado / Realizado by start time, category vs status tags, sign-in redirect, RSVP drawer, decline with a message, "Quem vai", header theme switch, profile companion history |
+| `event-page/`    | `guest-rsvp.spec.ts`, `multi-user-sync.spec.ts`                                                  | Event page, RSVP drawer, Pix split, "Eu levo" claim and release, empty item list; two users editing at once                                                                                                                      |
+| `organizer/`     | `event-editor.spec.ts`, `collaborators.spec.ts`, `share.spec.ts`                                 | Meus eventos filters, ViaCEP, stepper validation, cancel dialog; collaborator invite; QR code and WhatsApp link                                                                                                                  |
+| `profile/`       | `profile-and-family.spec.ts`                                                                     | Profile, family roster, batch RSVP with family                                                                                                                                                                                   |
+| `journeys/`      | `happy-paths.spec.ts`                                                                            | Atomic happy paths: dashboard, create event (4 steps + submit), edit event, guest RSVP, profile, family, collaborator invite, token checks                                                                                       |
+| `quality/`       | `visual-layout`, `keyboard-a11y`, `offline`, `network-loading`, `visual-regression` (`.spec.ts`) | Zero horizontal overflow, touch targets ≥ 48px, focus trap and Escape, offline cache, throttled network and skeletons, design system baselines                                                                                   |
+| `design-system/` | `showcase.spec.ts`, `tokens/*.spec.ts`                                                           | Showcase page, seasonal theme tokens, token and layout contracts                                                                                                                                                                 |
 
 ### Mocking Strategy
 

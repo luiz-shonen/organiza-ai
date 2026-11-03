@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/test.fixture';
+import { test, expect } from '../fixtures/test.fixture';
 
 test.describe('Smoke Journey', () => {
   test('should render the home page with proper titles and landmark regions', async ({

@@ -1,10 +1,10 @@
-import { test, expect } from '../fixtures/test.fixture';
+import { test, expect } from '../../fixtures/test.fixture';
 import { BrowserContext, Page } from '@playwright/test';
-import { OrganizerDashboardPage } from '../pages/organizer-dashboard.page';
-import { EventEditorPage } from '../pages/event-editor.page';
-import { HomePage } from '../pages/home.page';
-import { EventDetailPage } from '../pages/event-detail.page';
-import { readStoredAuthUser, setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { OrganizerDashboardPage } from '../../pages/organizer-dashboard.page';
+import { EventEditorPage } from '../../pages/event-editor.page';
+import { HomePage } from '../../pages/home.page';
+import { EventDetailPage } from '../../pages/event-detail.page';
+import { readStoredAuthUser, setupMockAuthSession } from '../../helpers/auth-mock.helper';
 
 const sharedEventData = {
   id: 'event-sync-1',
@@ -51,7 +51,7 @@ async function setupGuestSession(page: Page) {
   });
 }
 
-test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
+test.describe('Real-time sync between two users', () => {
   let hostContext: BrowserContext;
   let guestContext: BrowserContext;
   let hostPage: Page;
@@ -106,7 +106,7 @@ test.describe('Real-Time Dual-Context Multi-User Concurrency Suite', () => {
     expect(guestUser?.email).toBe('guest@organiza.ai');
   });
 
-  test('should handle concurrent wishlist updates and RSVP interaction without data corruption', async () => {
+  test('should handle concurrent item list updates and RSVP interaction without data corruption', async () => {
     const hostDetail = new EventDetailPage(hostPage);
     const guestDetail = new EventDetailPage(guestPage);
 

@@ -1,7 +1,7 @@
-import { test, expect } from '../fixtures/test.fixture';
+import { test, expect } from '../../fixtures/test.fixture';
 import { Page } from '@playwright/test';
-import { buildGuestEvent } from '../fixtures/mock-events';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { buildGuestEvent } from '../../fixtures/mock-events';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -35,7 +35,7 @@ async function setupA11yMockSession(page: Page) {
   });
 }
 
-test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', () => {
+test.describe('Keyboard navigation, focus management and drawer focus trap', () => {
   test('should reach the primary navigation and the theme choice with the keyboard', async ({
     profilePage,
     homePage,
@@ -114,7 +114,7 @@ test.describe('Keyboard Navigation, Focus Management & Modal Focus Trap Suite', 
     await expect(loginPage.googleBtn).toBeFocused();
   });
 
-  test('should support keyboard focus and modal interaction on RSVP dialog', async ({
+  test('should support keyboard focus inside the RSVP drawer', async ({
     eventDetailPage,
     rsvpDialog,
     page,

@@ -1,10 +1,10 @@
-import { test, expect } from '../fixtures/test.fixture';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
+import { test, expect } from '../../fixtures/test.fixture';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
 import {
   assertFocusedFieldCoherence,
   assertNoHorizontalOverflow,
   assertSingleSurfaceRing,
-} from '../helpers/design-tokens.helper';
+} from '../../helpers/design-tokens.helper';
 
 const mockFamilyEvent = {
   id: 'test-event-placeholder',
@@ -194,7 +194,7 @@ test.describe('User Profile and Family Roster Management', () => {
     await assertNoHorizontalOverflow(page);
   });
 
-  test('should support batch family member selection inside RSVP dialog', async ({
+  test('should support batch family member selection inside RSVP drawer', async ({
     eventDetailPage,
     rsvpDialog,
     familyRoster,

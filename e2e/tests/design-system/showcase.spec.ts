@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
-import { setupMockAuthSession } from '../helpers/auth-mock.helper';
-import { assertMinTouchTarget, assertNoHorizontalOverflow } from '../helpers/design-tokens.helper';
+import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
+import {
+  assertMinTouchTarget,
+  assertNoHorizontalOverflow,
+} from '../../helpers/design-tokens.helper';
 
 const superAdmin = {
   uid: 'superadmin-uid',

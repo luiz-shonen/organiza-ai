@@ -1,8 +1,11 @@
-import { test, expect } from '../fixtures/test.fixture';
+import { test, expect } from '../../fixtures/test.fixture';
 import { Page } from '@playwright/test';
-import { assertNoHorizontalOverflow, assertMinTouchTarget } from '../helpers/design-tokens.helper';
-import { buildGuestEvent } from '../fixtures/mock-events';
-import { mockFirestoreDocuments, setupMockAuthSession } from '../helpers/auth-mock.helper';
+import {
+  assertNoHorizontalOverflow,
+  assertMinTouchTarget,
+} from '../../helpers/design-tokens.helper';
+import { buildGuestEvent } from '../../fixtures/mock-events';
+import { mockFirestoreDocuments, setupMockAuthSession } from '../../helpers/auth-mock.helper';
 
 const mockSampleEvents = [
   {
@@ -48,14 +51,14 @@ const THEME_ROOT_CLASS: Record<(typeof VISUAL_THEMES)[number], RegExp> = {
   dark: /\bdark\b/,
 };
 
-test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
+test.describe('Visual layout baselines and heuristic inspection', () => {
   for (const visualTheme of VISUAL_THEMES) {
     test.describe(`${visualTheme} theme`, () => {
       test.beforeEach(async ({ page }) => {
         await page.addInitScript((theme) => localStorage.setItem('theme_mode', theme), visualTheme);
       });
 
-      test('should capture Home page in the configured theme and audit glassmorphic styling', async ({
+      test('should capture Home page in the configured theme and audit its flat surfaces', async ({
         homePage,
         page,
       }) => {
@@ -90,7 +93,7 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         await loginPage.captureScreenshot('03-login-view');
       });
 
-      test('should capture Organizer Dashboard and verify status chips and card glassmorphism', async ({
+      test('should capture Organizer Dashboard and verify status chips and flat cards', async ({
         dashboardPage,
         page,
       }) => {
@@ -162,7 +165,7 @@ test.describe('Visual Layout Baselines & Heuristic Inspection Suite', () => {
         await eventEditorPage.captureScreenshot('05-event-editor-viacep');
       });
 
-      test('should capture Event Detail and RSVP dialog layout with glassmorphic modal', async ({
+      test('should capture Event Detail and RSVP drawer layout with the RSVP drawer', async ({
         eventDetailPage,
         rsvpDialog,
         page,

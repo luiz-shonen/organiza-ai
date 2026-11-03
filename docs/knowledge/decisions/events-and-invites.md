@@ -4,7 +4,7 @@ title: Events, invites and guests (product behaviour)
 status: active
 date: 2026-11-03
 enforced_by:
-  - e2e/specs/14-invites-and-guests.spec.ts
+  - e2e/tests/invites/invites-and-guests.spec.ts
   - src/app/features/home/home.container.spec.ts
   - src/app/features/organizer/dashboard/dashboard.container.spec.ts
   - src/app/features/event-detail/event-detail.container.spec.ts

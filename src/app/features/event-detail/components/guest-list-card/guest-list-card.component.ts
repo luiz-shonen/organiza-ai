@@ -39,12 +39,13 @@ export class GuestListCardComponent {
 
   protected readonly displayPhone = Phone.display;
 
-  /** "3 confirmados · 5 pessoas": the households, and everyone coming with them. */
+  /** "5 confirmados": everyone going, the guests and the people coming with them. */
   protected readonly summary = computed(() => {
-    const households = this.households();
-    const people = households.reduce((total, household) => total + household.members.length, 0);
-    const answered = households.length === 1 ? '1 confirmado' : `${households.length} confirmados`;
-    return people > households.length ? `${answered} · ${people} pessoas` : answered;
+    const people = this.households().reduce(
+      (total, household) => total + household.members.length,
+      0,
+    );
+    return people === 1 ? '1 confirmado' : `${people} confirmados`;
   });
 
   /** Beside the guest's name: "+2 · 3 itens", short enough for a phone. */

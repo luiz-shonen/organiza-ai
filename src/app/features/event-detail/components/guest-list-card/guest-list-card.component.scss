@@ -34,18 +34,20 @@
   margin: 0;
 }
 
-// One row per person: avatar, name with their role, then what they bring.
+// The guest is the panel title, so their part starts right under it, without the name again.
+.guest-list__holder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+}
+
+// One row per person with them: avatar, name with their role, then what they bring.
 .guest-list__person {
   align-items: flex-start;
   border-top: 1px solid var(--org-outline-variant);
   display: flex;
   gap: var(--org-space-sm);
   padding: var(--org-space-sm) 0;
-
-  &:first-child {
-    border-top: 0;
-    padding-top: 0;
-  }
 }
 
 .guest-list__info {
@@ -91,6 +93,7 @@
 // One item per line, with a bullet, so two or three items stay easy to read.
 .guest-list__items {
   color: var(--org-on-surface);
+  list-style: disc;
   font-size: var(--org-font-size-sm);
   line-height: var(--org-line-height-normal);
   margin: 0;

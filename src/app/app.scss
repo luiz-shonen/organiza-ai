@@ -20,25 +20,39 @@
     (
       container-background-color: var(--org-dialog-bg),
       container-text-color: var(--org-on-surface),
-      container-width: 352px,
-      container-shape: var(--org-radius-card),
+      // The whole screen on a phone; on a larger screen a roomy panel beside the page.
+      container-width: 100vw,
+      container-shape: 0,
       container-elevation-shadow: -8px 0 32px var(--org-chrome-shadow),
     )
   );
 
-  max-width: 90vw;
   border: none;
-  border-left: 1px solid var(--org-outline-variant);
+
+  @include semantic.tablet {
+    @include mat.sidenav-overrides(
+      (
+        container-width: 480px,
+        container-shape: var(--org-radius-card),
+      )
+    );
+
+    border-left: 1px solid var(--org-outline-variant);
+    max-width: 90vw;
+  }
 
   &--navigation {
     @include mat.sidenav-overrides(
       (
+        container-width: 352px,
+        container-shape: var(--org-radius-card),
         container-elevation-shadow: 8px 0 32px var(--org-chrome-shadow),
       )
     );
 
     border-left: 0;
     border-right: 1px solid var(--org-outline-variant);
+    max-width: 90vw;
   }
 }
 

@@ -19,6 +19,7 @@ import {
   GuestService,
   ItemService,
   NotificationService,
+  UserService,
 } from '../../../core/services';
 import { buildItemProgress, daysUntil, shareWhatsApp } from '../../../core/utils';
 import type { PartyEvent } from '../../../core/models';
@@ -91,6 +92,7 @@ export class DashboardContainer {
   private readonly itemService = inject(ItemService);
   private readonly claimService = inject(ClaimService);
   private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
   private readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly clipboard = inject(Clipboard);
@@ -182,7 +184,26 @@ export class DashboardContainer {
     return `em ${days} dias`;
   });
 
+  /** Events saved before "Organizado por" used the profile name get it once, here. */
+  private creatorNamesChecked = false;
+
   constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      const all = this.events();
+      if (!user || !all?.length || this.creatorNamesChecked) return;
+      this.creatorNamesChecked = true;
+      untracked(async () => {
+        const name = (await this.userService.getProfile(user.uid))?.name?.trim();
+        if (
+          name &&
+          all.some((event) => event.createdBy === user.uid && event.creatorName !== name)
+        ) {
+          await this.eventService.renameCreator(user.uid, name);
+        }
+      });
+    });
+
     effect(() => {
       const all = this.events();
       if (all && all.length > 0) {

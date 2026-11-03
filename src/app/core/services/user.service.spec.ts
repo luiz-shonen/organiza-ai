@@ -13,6 +13,7 @@ describe('UserService', () => {
   let mockEventService: {
     getEventById: ReturnType<typeof vi.fn>;
     getUserEvents: ReturnType<typeof vi.fn>;
+    renameCreator: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
@@ -20,6 +21,7 @@ describe('UserService', () => {
     mockEventService = {
       getEventById: vi.fn(),
       getUserEvents: vi.fn(),
+      renameCreator: vi.fn().mockResolvedValue(undefined),
     };
 
     TestBed.configureTestingModule({
@@ -131,6 +133,7 @@ describe('UserService', () => {
           updatedAt: expect.any(String),
         }),
       );
+      expect(mockEventService.renameCreator).toHaveBeenCalledWith('user-123', 'Updated Name');
     });
 
     it('creates a new user document when document does not exist yet', async () => {

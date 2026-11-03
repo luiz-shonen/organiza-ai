@@ -6,6 +6,7 @@ import type { PartyEvent, PartyEventCreate, PartyEventUpdate } from '../../core/
 @Injectable({ providedIn: 'root' })
 export class MockEventService {
   readonly listEvents = vi.fn((): Observable<PartyEvent[]> => of([]));
+  readonly renameCreator = vi.fn(async (): Promise<void> => undefined);
   readonly getEvent = vi.fn((_eventId: string): Observable<PartyEvent | null> => of(null));
   readonly createEvent = vi.fn(
     (_data: PartyEventCreate): Promise<string> => Promise.resolve('mock-event-id'),

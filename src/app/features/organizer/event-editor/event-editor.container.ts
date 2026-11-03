@@ -17,6 +17,7 @@ import {
   ConfettiService,
   HeaderService,
   AuthService,
+  UserService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
@@ -107,6 +108,7 @@ export class EventEditorContainer implements OnInit {
   private readonly dialogs = inject(OrgDialogService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -321,6 +323,8 @@ export class EventEditorContainer implements OnInit {
 
     const location = fullAddress || '';
     const user = this.authService.currentUser();
+    // The profile name ("Luiz Rodrigues"); an e-mail account has no displayName of its own.
+    const profileName = user ? (await this.userService.getProfile(user.uid))?.name?.trim() : '';
     const eventData = {
       title,
       category,
@@ -331,7 +335,7 @@ export class EventEditorContainer implements OnInit {
       pixKey: pixKey || null,
       createdBy: user?.uid ?? '',
       creatorEmail: user?.email ?? '',
-      creatorName: user?.displayName ?? this.currentEvent()?.creatorName ?? '',
+      creatorName: profileName || user?.displayName || this.currentEvent()?.creatorName || '',
       collaborators: this.currentEvent()?.collaborators ?? [],
     };
 

@@ -55,6 +55,11 @@ export class UserService {
       if (data.displayName !== undefined) {
         updateData['name'] = data.displayName;
       }
+      const newName = (data.name ?? data.displayName)?.trim();
+      if (newName) {
+        // Guests read the organizer's name from each event, not from this private profile.
+        this.eventService.renameCreator(uid, newName).catch(console.error);
+      }
       if (existing) {
         await this.gateway.updateDoc(this.userPath(uid), updateData);
       } else {

@@ -25,6 +25,22 @@ export class EventService {
       .pipe(map((docs) => docs.map((d) => this.mapEventData(d))));
   }
 
+  /** Keeps "Organizado por" in step with the owner's profile name on every event they own. */
+  async renameCreator(uid: string, creatorName: string): Promise<void> {
+    if (!uid || !creatorName) return;
+    const owned = await this.gateway.getDocs<{ id: string; creatorName?: string }>(
+      this.collectionName,
+      this.gateway.where('createdBy', '==', uid),
+    );
+    const stale = owned.filter((event) => event.creatorName !== creatorName);
+    if (stale.length === 0) return;
+    await this.gateway.runBatch((batch) => {
+      for (const event of stale) {
+        batch.update(`${this.collectionName}/${event.id}`, { creatorName });
+      }
+    });
+  }
+
   getUserEvents(uid: string): Observable<PartyEvent[]> {
     if (!uid) {
       return of([]);

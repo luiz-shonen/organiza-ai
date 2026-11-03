@@ -87,17 +87,6 @@
                 </org-expansion-panel>
               }
 
-              @if (card.organizer) {
-                <org-button
-                  eventCardFooter
-                  label="Gerenciar"
-                  icon="edit"
-                  variant="tonal"
-                  testId="manage-event-btn"
-                  [compact]="true"
-                  (pressed)="manageEvent(card.event.id)"
-                />
-              }
               @if (card.pending) {
                 <org-button
                   eventCardFooter

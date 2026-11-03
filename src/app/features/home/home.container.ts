@@ -43,8 +43,6 @@ interface HomeCard {
   readonly pending: boolean;
   /** Answered (confirmed or declined) and not organized by the member: "Ver convite". */
   readonly answered: boolean;
-  /** The member created the event or helps organize it: no invite to answer. */
-  readonly organizer: boolean;
   readonly bring: FamilyChecklistRow[];
   readonly bought: number;
 }
@@ -87,7 +85,7 @@ export class HomeContainer {
     this.authService.loading() ? undefined : (this.member()?.uid ?? null),
   );
 
-  /** Events are private: only the ones the member organizes, was invited to or answered. */
+  /** Events are private: only the ones the member was invited to or answered (organized ones are left out below). */
   protected readonly events = toSignal(
     toObservable(this.memberUid).pipe(
       switchMap((uid) => {
@@ -107,9 +105,16 @@ export class HomeContainer {
     return name.split(' ')[0];
   });
 
-  private readonly active = computed(() =>
-    (this.events() ?? []).filter((event) => event.status !== 'cancelled'),
-  );
+  /** Início is for invites only: events the member organizes (owner or collaborator) live in "Meus eventos". */
+  private readonly active = computed(() => {
+    const uid = this.member()?.uid;
+    return (this.events() ?? []).filter(
+      (event) =>
+        event.status !== 'cancelled' &&
+        event.createdBy !== uid &&
+        !(uid && (event.collaborators ?? []).includes(uid)),
+    );
+  });
   private readonly upcoming = computed(() =>
     this.active().filter((event) => daysUntil(event.date) >= 0),
   );
@@ -119,22 +124,9 @@ export class HomeContainer {
       .reverse(),
   );
 
-  /** Events the member organizes (owner or collaborator); they never wait for an answer. */
-  private readonly organizedIds = computed<ReadonlySet<string>>(() => {
-    const uid = this.member()?.uid;
-    if (!uid) return new Set();
-    return new Set(
-      this.active()
-        .filter((event) => event.createdBy === uid || (event.collaborators ?? []).includes(uid))
-        .map((event) => event.id),
-    );
-  });
   private readonly awaitingAnswer = computed(() =>
     this.upcoming().filter(
-      (event) =>
-        !this.confirmedIds().has(event.id) &&
-        !this.declinedIds().has(event.id) &&
-        !this.organizedIds().has(event.id),
+      (event) => !this.confirmedIds().has(event.id) && !this.declinedIds().has(event.id),
     ),
   );
 
@@ -186,21 +178,18 @@ export class HomeContainer {
       const isPast = daysUntil(event.date) < 0;
       const isConfirmed = confirmed.has(event.id);
       const isDeclined = !isConfirmed && this.declinedIds().has(event.id);
-      const organizer = this.organizedIds().has(event.id);
       const household = this.households()[event.id];
       const bring = household ? buildFamilyChecklist(household.items, household.claims) : [];
       let status: EventSummaryStatus | null = null;
       if (isPast) status = { label: 'Realizado', variant: 'default' };
-      else if (organizer) status = { label: 'Organizador', variant: 'primary' };
       else if (isConfirmed) status = { label: 'Confirmado', variant: 'success' };
       else if (isDeclined) status = { label: 'Recusado', variant: 'default' };
       else if (this.member()) status = { label: 'Pendente', variant: 'warning' };
       return {
         event,
         status,
-        pending: !isPast && !isConfirmed && !isDeclined && !organizer && !!this.member(),
-        answered: !isPast && (isConfirmed || isDeclined) && !organizer,
-        organizer,
+        pending: !isPast && !isConfirmed && !isDeclined && !!this.member(),
+        answered: !isPast && (isConfirmed || isDeclined),
         bring,
         bought: bring.filter((row) => row.bought).length,
       };
@@ -262,10 +251,6 @@ export class HomeContainer {
       this.households.update((all) => ({ ...all, [eventId]: household }));
       this.feedback.error('Não foi possível salvar. Tente novamente.');
     }
-  }
-
-  protected manageEvent(eventId: string): void {
-    void this.router.navigate(['/meus-eventos/evento', eventId]);
   }
 
   protected openEvent(eventId: string): void {

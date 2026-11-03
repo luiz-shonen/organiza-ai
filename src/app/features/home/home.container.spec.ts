@@ -181,23 +181,17 @@ describe('HomeContainer', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/evento', 'evt-2']);
     });
 
-    it('tags events the member organizes instead of asking for an answer', () => {
+    it('leaves the events the member organizes to "Meus eventos"', () => {
       eventsSubject.next([confirmed, { ...pending, createdBy: 'u1' }, past]);
       fixture.detectChanges();
 
-      const statuses = Array.from(element().querySelectorAll('[data-testid="event-status"]')).map(
-        (badge) => badge.textContent?.trim(),
+      const titles = Array.from(element().querySelectorAll('.event-summary-card__title')).map(
+        (title) => title.textContent?.trim(),
       );
-      expect(statuses).toEqual(['Confirmado', 'Organizador']);
-      expect(element().querySelectorAll('[data-testid="answer-invite-btn"]')).toHaveLength(0);
+      expect(titles).toEqual(['Festa Junina']);
       expect(element().querySelector('.org-page-header__subtitle')?.textContent).toContain(
         '0 convites esperando resposta',
       );
-
-      (
-        element().querySelector('button[data-testid="manage-event-btn"]') as HTMLButtonElement
-      ).click();
-      expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-2']);
     });
   });
 

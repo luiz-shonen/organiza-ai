@@ -88,6 +88,19 @@
   white-space: pre-line;
 }
 
+// One item per line, with a bullet, so two or three items stay easy to read.
+.guest-list__items {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  line-height: var(--org-line-height-normal);
+  margin: 0;
+  padding-inline-start: var(--org-space-lg);
+
+  li::marker {
+    color: var(--org-primary);
+  }
+}
+
 .guest-list__declines {
   border-top: 1px solid var(--org-outline-variant);
   padding-top: var(--org-space-md);

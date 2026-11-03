@@ -43,12 +43,16 @@ async function render(forOrganizer: boolean) {
 
 describe('GuestListCardComponent', () => {
   it('shows each person, their role and what they bring, without phones', async () => {
-    const text = (await render(false)).textContent ?? '';
+    const element = await render(false);
+    const text = element.textContent ?? '';
 
     expect(text).toContain('2 confirmados · 3 pessoas');
     expect(text).toContain('+1 · 2 itens');
-    expect(text).toContain('Leva 3 L de Sorvete');
-    expect(text).toContain('Leva 2 garrafas de Refrigerante');
+    expect(text).toContain('Leva:');
+    const lines = Array.from(element.querySelectorAll('.guest-list__items li'), (li) =>
+      li.textContent?.trim(),
+    );
+    expect(lines).toEqual(['3 L de Sorvete', '2 garrafas de Refrigerante']);
     expect(text).toContain('Família');
     expect(text).toContain('Não leva nada da lista');
     expect(text).not.toContain('99267');

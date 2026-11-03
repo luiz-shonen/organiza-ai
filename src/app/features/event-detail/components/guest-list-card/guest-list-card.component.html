@@ -55,13 +55,19 @@
                           >{{ person.role }}</span
                         >
                       </p>
-                      <p class="guest-list__bring">
-                        @if (person.bring.length) {
-                          Leva {{ person.bring.join(', ') }}
-                        } @else {
-                          Não leva nada da lista
-                        }
-                      </p>
+                      @if (person.bring.length) {
+                        <p class="guest-list__bring">Leva:</p>
+                        <ul
+                          class="guest-list__items"
+                          [attr.aria-label]="'O que ' + person.name + ' leva'"
+                        >
+                          @for (line of person.bring; track line) {
+                            <li>{{ line }}</li>
+                          }
+                        </ul>
+                      } @else {
+                        <p class="guest-list__bring">Não leva nada da lista</p>
+                      }
                     </div>
                   </li>
                 }

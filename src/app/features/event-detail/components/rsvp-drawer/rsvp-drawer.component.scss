@@ -62,8 +62,7 @@
     padding: var(--org-space-md);
   }
 
-  &__guest-label,
-  &__guest-hint {
+  &__guest-label {
     color: var(--org-on-surface-variant);
     font-size: var(--org-font-size-xs);
   }
@@ -71,7 +70,7 @@
   &__guest-name {
     color: var(--org-on-surface);
     font-family: var(--org-font-display);
-    font-size: var(--org-font-size-xl);
+    font-size: var(--org-font-size-2xl);
     line-height: var(--org-line-height-tight);
   }
 

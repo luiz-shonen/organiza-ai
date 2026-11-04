@@ -2,13 +2,21 @@
   display: block;
 }
 
+// Collapsible summary inside a card: outline only, the count on the right in leaf green.
 .org-expansion-panel {
-  --mat-expansion-container-background-color: var(--org-surface);
-  --mat-expansion-container-shape: var(--org-radius-md);
+  --mat-expansion-container-background-color: transparent;
+  --mat-expansion-container-shape: var(--org-radius-sm);
   --mat-expansion-container-elevation-shadow: none;
-  --mat-expansion-header-description-color: var(--org-on-surface-variant);
+  --mat-expansion-header-collapsed-state-height: var(--org-touch);
+  --mat-expansion-header-expanded-state-height: var(--org-touch);
+  --mat-expansion-header-description-color: var(--org-on-success-container);
+  --mat-expansion-header-indicator-color: var(--org-on-surface-variant);
+  --mat-expansion-header-hover-state-layer-color: var(--org-state-hover);
+  --mat-expansion-header-focus-state-layer-color: var(--org-state-hover);
 
   border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-sm);
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -16,25 +24,39 @@
   padding: 0 var(--org-space-md);
 }
 
+// Material gives title and summary equal halves; in a narrow drawer the title then ran
+// over the summary. The summary keeps its own width and the title ellipsizes.
 .org-expansion-panel__title {
   align-items: center;
   color: var(--org-on-surface);
   display: flex;
-  font-size: var(--org-font-size-md);
+  flex: 1 1 auto;
+  font-size: var(--org-font-size-sm);
   font-weight: var(--org-font-weight-semibold);
   gap: var(--org-space-sm);
+  min-inline-size: 0;
+  white-space: nowrap;
+}
+
+.org-expansion-panel__heading {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .org-expansion-panel__summary {
   align-items: center;
   display: flex;
-  font-size: var(--org-font-size-sm);
+  flex: 0 0 auto;
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
   justify-content: flex-end;
+  margin-inline-end: var(--org-space-md);
+  white-space: nowrap;
 }
 
 .org-expansion-panel__content {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-top: var(--org-space-sm);
+  gap: var(--org-space-md);
 }

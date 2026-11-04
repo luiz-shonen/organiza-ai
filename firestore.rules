@@ -6,9 +6,66 @@ service cloud.firestore {
       return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.get('email', '')));
     }
 
+    // Signed in with e-mail or Google; the anonymous accounts guests RSVP with do not count.
+    function isAccountHolder() {
+      return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function eventData(eventId) {
+      return get(/databases/$(database)/documents/events/$(eventId)).data;
+    }
+
+    function ownsEvent(event) {
+      return request.auth != null && event.get('createdBy', '') == request.auth.uid;
+    }
+
+    // The owner and the collaborators manage items, guests and invitations.
+    function managesEvent(event) {
+      return ownsEvent(event) || (request.auth != null && request.auth.uid in event.get('collaborators', []));
+    }
+
     function isSuperAdmin() {
       let email = request.auth.token.get('email', '');
       return request.auth != null && (email == 'luiz.gmr.dev@gmail.com' || email == 'jessica.calm.dev@gmail.com');
+    }
+
+    // Field checks for documents people write. The app validates the same fields with
+    // value objects (src/app/core/value-objects); these limits are looser on purpose, so
+    // the rules stop abuse without rejecting anything the app saves.
+
+    // The fields this write sets or changes. On an update only those are checked, so an
+    // older document with a value outside these rules can still be edited.
+    function changedKeys() {
+      return resource == null
+          ? request.resource.data.keys()
+          : request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function changes(key) {
+      return key in changedKeys();
+    }
+
+    // Text up to `max` characters with no markup characters (< > { }). Empty is allowed.
+    function isPlainText(value, max) {
+      return value is string && value.size() <= max && !value.matches('(?s).*[<>{}].*');
+    }
+
+    // Plain text that is not empty.
+    function isFilledText(value, max) {
+      return isPlainText(value, max) && value.size() > 0;
+    }
+
+    // Empty, or 10 to 20 characters of digits and phone punctuation.
+    function isPhoneOrEmpty(value) {
+      return value is string && (value == '' || value.matches('[0-9 ()+.-]{10,20}'));
+    }
+
+    function isOptionalString(value, max) {
+      return value == null || (value is string && value.size() <= max);
+    }
+
+    function isRelationship(value) {
+      return value in ['spouse', 'child', 'parent', 'sibling', 'relative', 'other'];
     }
 
     match /admins/{email} {
@@ -16,10 +73,41 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid && isValidUser();
+
+      // displayName and name may be null: they come from the Google account.
+      function isValidUser() {
+        let data = request.resource.data;
+        return (!changes('displayName') || data.get('displayName', null) == null
+                  || isFilledText(data.get('displayName', null), 120))
+            && (!changes('name') || data.get('name', null) == null
+                  || isFilledText(data.get('name', null), 120))
+            && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
+            && (!changes('email') || isOptionalString(data.get('email', null), 254))
+            && (!changes('photoURL') || isOptionalString(data.get('photoURL', null), 2048))
+            && (!changes('themePref') || data.get('themePref', null) in ['light', 'dark', 'system'])
+            && (!changes('invitedEvents')
+                  || (data.get('invitedEvents', null) is list && data.get('invitedEvents', null).size() <= 500))
+            && (!changes('declinedEvents')
+                  || (data.get('declinedEvents', null) is list && data.get('declinedEvents', null).size() <= 500))
+            && (!changes('savedCompanions')
+                  || (data.get('savedCompanions', null) is list && data.get('savedCompanions', null).size() <= 50))
+            && (!changes('rsvpEvents')
+                  || (data.get('rsvpEvents', null) is list && data.get('rsvpEvents', null).size() <= 500));
+      }
 
       match /family/{memberId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow create, update: if request.auth != null && request.auth.uid == uid && isValidFamilyMember();
+
+        function isValidFamilyMember() {
+          let data = request.resource.data;
+          return (resource != null || data.keys().hasAll(['name', 'relationship']))
+              && (!changes('name') || isFilledText(data.get('name', null), 120))
+              && (!changes('relationship') || isRelationship(data.get('relationship', null)))
+              && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)));
+        }
       }
     }
 
@@ -31,39 +119,80 @@ service cloud.firestore {
       );
     }
 
-    // Events: public read, admin-only write
-    match /events/{eventId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
+    // Collection group query for the events a member answered (UserService.getAttendedEvents):
+    // only their own guest documents.
+    match /{path=**}/guests/{guestId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
 
-      // Invitations subcollection: admin write, invited user read/delete
+    // Events are private. Anyone with the invite link reads that one event; listing returns
+    // only the events the account owns or helps organize, never all events of the owner.
+    // Any account holder creates events they own; the owner edits, cancels and deletes; an
+    // invited account adds itself to the collaborators.
+    match /events/{eventId} {
+      allow get: if true;
+      allow list: if isAdmin() || isSuperAdmin()
+                  || (request.auth != null
+                      && (resource.data.createdBy == request.auth.uid
+                          || request.auth.uid in resource.data.collaborators));
+      allow create: if isValidEvent()
+                    && (isAdmin()
+                        || (isAccountHolder() && request.resource.data.get('createdBy', '') == request.auth.uid));
+      allow update: if isValidEvent()
+                    && (isAdmin()
+                        || (ownsEvent(resource.data) && !changes('createdBy'))
+                        || isJoiningByInvitation());
+      allow delete: if isAdmin() || ownsEvent(resource.data);
+
+      // claimPendingInvitations: the invited account adds only its own uid, while the
+      // invitation for its e-mail still exists (the same batch deletes it).
+      function isJoiningByInvitation() {
+        let email = request.auth.token.get('email', '').lower();
+        return isAccountHolder()
+            && email != ''
+            && exists(/databases/$(database)/documents/events/$(eventId)/invitations/$(email))
+            && changedKeys().hasOnly(['collaborators', 'updatedAt'])
+            && request.resource.data.get('collaborators', []).toSet()
+                 == resource.data.get('collaborators', []).toSet().union([request.auth.uid].toSet());
+      }
+
+      // Size limits only: admins write events, and older ones may hold any text.
+      function isValidEvent() {
+        let data = request.resource.data;
+        return (!changes('title') || isFilledText(data.get('title', null), 200))
+            && (!changes('category') || isOptionalString(data.get('category', null), 60))
+            && (!changes('description') || isOptionalString(data.get('description', null), 2000))
+            && (!changes('location') || isOptionalString(data.get('location', null), 500))
+            && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77));
+      }
+
+      // Invitations subcollection: the owner invites, the invited user reads and claims
       match /invitations/{email} {
-        allow read: if isAdmin() || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
-        allow create, update: if isAdmin();
-        allow delete: if isAdmin() || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
+        allow read: if isAdmin() || managesEvent(eventData(eventId)) || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
+        allow create, update: if isAdmin() || ownsEvent(eventData(eventId));
+        allow delete: if isAdmin() || ownsEvent(eventData(eventId)) || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());
       }
 
       // Guests subcollection: public read, validated anonymous write
       match /guests/{guestId} {
         allow read: if true;
         allow create: if isAdmin() || isPrimaryRsvp() || isLinkedFamilyRsvp();
-        allow update: if isAdmin() || (
+        allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && ((resource.data.uid == request.auth.uid && isPrimaryRsvp())
                             || (resource.data.primaryGuestId == request.auth.uid && isLinkedFamilyRsvp()))
                       );
-        allow delete: if isAdmin() || (
+        allow delete: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && (resource.data.uid == request.auth.uid || resource.data.primaryGuestId == request.auth.uid)
                       );
 
         function isPrimaryRsvp() {
-          return request.auth != null
+          return isAccountHolder()
               && request.resource.data.keys().hasAll(['name', 'phone', 'companionsCount', 'uid'])
               && request.resource.data.uid == request.auth.uid
-              && request.resource.data.name is string
-              && request.resource.data.name.size() > 0
-              && request.resource.data.phone is string
+              && isFilledText(request.resource.data.name, 120)
+              && isPhoneOrEmpty(request.resource.data.phone)
               && request.resource.data.phone.size() >= 10
               && request.resource.data.companionsCount is int
               && request.resource.data.companionsCount >= 0
@@ -74,26 +203,53 @@ service cloud.firestore {
         }
 
         function isLinkedFamilyRsvp() {
-          return request.auth != null
+          return isAccountHolder()
               && request.resource.data.keys().hasAll(['name', 'primaryGuestId', 'isConfirmed', 'confirmedAt'])
               && request.resource.data.primaryGuestId == request.auth.uid
-              && request.resource.data.name is string
-              && request.resource.data.name.size() > 0
+              && isFilledText(request.resource.data.name, 120)
+              && isPhoneOrEmpty(request.resource.data.get('phone', ''))
               && request.resource.data.isConfirmed == true
               && request.resource.data.confirmedAt is string;
         }
       }
 
-      // Items subcollection: public read, admin create/delete, public claim/unclaim
+      // Declines: "Não poderei ir", one per account, with an optional message for the organizer.
+      match /declines/{uid} {
+        allow read: if isAdmin() || managesEvent(eventData(eventId))
+                    || (request.auth != null && request.auth.uid == uid);
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.keys().hasOnly(['name', 'message', 'declinedAt'])
+                              && isFilledText(request.resource.data.name, 120)
+                              && isPlainText(request.resource.data.message, 300)
+                              && request.resource.data.declinedAt is string;
+        allow delete: if isAdmin() || (request.auth != null && request.auth.uid == uid);
+      }
+
+      // Claims: what each household brings. One document per account holder, written only by them.
+      match /claims/{uid} {
+        allow read: if true;
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.keys().hasOnly(['name', 'entries', 'updatedAt'])
+                              && isPlainText(request.resource.data.name, 120)
+                              && request.resource.data.entries is list
+                              && request.resource.data.entries.size() <= 100;
+        allow delete: if isAdmin() || managesEvent(eventData(eventId)) || (request.auth != null && request.auth.uid == uid);
+      }
+
+      // Items subcollection: public read, the owner and collaborators manage, anyone claims
       match /items/{itemId} {
         allow read: if true;
-        allow create, delete: if isAdmin();
-        allow update: if isAdmin() || (
+        allow create, delete: if isAdmin() || managesEvent(eventData(eventId));
+        allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedBy'])
                         && (
                           // Claiming
-                          (resource.data.claimedBy == null && request.resource.data.claimedBy != null && request.resource.data.claimedBy.uid == request.auth.uid)
+                          (resource.data.claimedBy == null && request.resource.data.claimedBy != null && request.resource.data.claimedBy.uid == request.auth.uid
+                            && isPlainText(request.resource.data.claimedBy.get('name', ''), 120)
+                            && isOptionalString(request.resource.data.claimedBy.get('phone', ''), 30))
                           // Unclaiming
                           || (resource.data.claimedBy != null && resource.data.claimedBy.uid == request.auth.uid && request.resource.data.claimedBy == null)
                         )

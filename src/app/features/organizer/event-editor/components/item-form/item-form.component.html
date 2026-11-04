@@ -1,0 +1,68 @@
+<form novalidate class="item-form" (submit)="$event.preventDefault(); submit()">
+  <org-text-field
+    label="Nome do item"
+    placeholder="Ex: Pipoca doce"
+    [testId]="testIdPrefix() + '-name-input'"
+    [required]="true"
+    [maxLength]="nameMaxLength"
+    [error]="nameError()"
+    [(value)]="name"
+  />
+  <div class="event-step__row event-step__row--halves">
+    <org-text-field
+      label="Quantidade"
+      inputMode="numeric"
+      [testId]="testIdPrefix() + '-qty-input'"
+      [required]="true"
+      [mask]="maskQuantity"
+      [error]="quantityError()"
+      [suffixAction]="true"
+      [(value)]="quantity"
+    >
+      <span orgFieldSuffix>
+        <org-button
+          [testId]="testIdPrefix() + '-fixed-toggle'"
+          [variant]="fixed() ? 'tonal' : 'text'"
+          [compact]="true"
+          [gradient]="false"
+          [icon]="fixed() ? 'lock' : 'lock_open'"
+          [label]="fixed() ? 'Fixa' : 'Dividir'"
+          [ariaPressed]="fixed()"
+          [tooltip]="
+            fixed()
+              ? 'Quantidade fixa: quem escolher leva a quantidade toda. Toque para permitir dividir.'
+              : 'Os convidados podem dividir. Toque para fixar a quantidade.'
+          "
+          (pressed)="fixed.set(!fixed())"
+        />
+      </span>
+    </org-text-field>
+    <org-autocomplete-field
+      label="Unidade"
+      [testId]="testIdPrefix() + '-unit-input'"
+      [options]="units"
+      [required]="true"
+      [error]="unitError()"
+      [(value)]="unit"
+    />
+  </div>
+  <div class="item-form__actions">
+    @if (cancelLabel(); as cancelLabel) {
+      <org-button
+        variant="text"
+        [label]="cancelLabel"
+        [testId]="testIdPrefix() + '-cancel-btn'"
+        (pressed)="cancelled.emit()"
+      />
+    }
+    <org-button
+      type="submit"
+      [class.item-form__submit--full]="!cancelLabel()"
+      [variant]="cancelLabel() ? 'primary' : 'secondary'"
+      [gradient]="false"
+      [label]="submitLabel()"
+      [fullWidth]="!cancelLabel()"
+      [testId]="testIdPrefix() === 'item' ? 'add-item-btn' : testIdPrefix() + '-save-btn'"
+    />
+  </div>
+</form>

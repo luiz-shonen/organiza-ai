@@ -13,7 +13,6 @@
 
 .org-time-field__trigger {
   color: var(--org-primary);
-  margin-inline-end: 4px;
 }
 
 .org-time-field input[type='time'] {
@@ -21,4 +20,8 @@
   height: auto;
   line-height: normal;
   padding: var(--org-space-sm) 0;
+}
+
+.org-time-field__error {
+  @include field.error-text;
 }

@@ -104,6 +104,21 @@ describe('ItemService', () => {
     });
   });
 
+  it('updateItem changes name, quantity, unit and the fixed flag only', async () => {
+    await service.updateItem('evt-100', 'item-1', {
+      name: 'Canjica',
+      quantity: 5,
+      unit: 'panelas',
+    });
+
+    expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-100/items/item-1', {
+      name: 'Canjica',
+      quantity: 5,
+      unit: 'panelas',
+      fixedQuantity: false,
+    });
+  });
+
   it('deleteItem deletes the item document', async () => {
     await service.deleteItem('evt-100', 'item-1');
 

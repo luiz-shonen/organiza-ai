@@ -19,6 +19,9 @@ export class OrgPageHeaderComponent {
   /** Optional leading icon name. */
   public readonly icon = input<OrgIconName>();
 
+  /** Words appended to the title in the leaf-green highlight ("Olá, **Jéssica**"). */
+  public readonly highlight = input<string | null>(null);
+
   /** Whether the title applies the signature brand gradient styling. Defaults to false. */
   public readonly gradient = input<boolean>(false);
 }

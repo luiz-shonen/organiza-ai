@@ -12,25 +12,36 @@
   }
 }
 
-.org-page-layout {
-  &--narrow .org-page-layout__container {
-    max-width: 600px;
-    margin-inline: auto;
+// The width modifiers sit on the host element, so they must be matched with :host().
+:host(.org-page-layout--narrow) .org-page-layout__container {
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+:host(.org-page-layout--default) .org-page-layout__container {
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+:host(.org-page-layout--wide) .org-page-layout__container {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+// On a desktop screen the content takes about 70% of the width, so the page does not sit in a
+// thin column; phones and tablets keep the widths above.
+@include semantic.wide {
+  :host(.org-page-layout--narrow) .org-page-layout__container {
+    max-width: min(70vw, 1440px);
   }
 
-  &--default .org-page-layout__container {
-    max-width: 960px;
-    margin-inline: auto;
+  :host(.org-page-layout--default) .org-page-layout__container {
+    max-width: min(70vw, 1440px);
   }
+}
 
-  &--wide .org-page-layout__container {
-    max-width: 1200px;
-    margin-inline: auto;
-  }
-
-  &--full .org-page-layout__container {
-    max-width: 100%;
-  }
+:host(.org-page-layout--full) .org-page-layout__container {
+  max-width: 100%;
 }
 
 .org-page-layout__container {

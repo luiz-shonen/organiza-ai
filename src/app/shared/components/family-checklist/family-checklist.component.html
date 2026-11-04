@@ -1,0 +1,26 @@
+<ul class="family-checklist" data-testid="family-checklist">
+  @for (row of rows(); track row.itemId + ':' + row.memberId) {
+    <li class="family-checklist__row" [class.family-checklist__row--done]="row.bought">
+      <org-checkbox
+        [checked]="row.bought"
+        [ariaLabel]="(row.bought ? 'Desmarcar ' : 'Marcar como comprado: ') + row.name"
+        [testId]="'bought-' + row.itemId"
+        (checkedChange)="boughtToggle.emit(row)"
+      />
+      <span class="family-checklist__item">
+        <span class="family-checklist__name">{{ row.name }}</span>
+        <span class="family-checklist__qty">{{ row.quantityLabel }}</span>
+      </span>
+      <span class="family-checklist__who">{{ row.who }}</span>
+      @if (removable()) {
+        <org-icon-button
+          icon="delete_outline"
+          variant="danger"
+          [gradient]="false"
+          [ariaLabel]="'Remover ' + row.name + ' de ' + row.who"
+          (pressed)="removeRow.emit(row)"
+        />
+      }
+    </li>
+  }
+</ul>

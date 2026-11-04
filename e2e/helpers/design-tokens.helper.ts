@@ -32,27 +32,25 @@ export async function assertNoHorizontalOverflow(page: Page): Promise<void> {
 }
 
 /**
- * Asserts that the element (or its surface) has a glassmorphic backdrop-filter with blur.
+ * Asserts the Branco Essencial card: a flat `org-surface` (no blur) with the 18px card radius.
+ * Looks at the element itself, its closest surface ancestor or its first surface descendant.
  */
-export async function assertGlassmorphism(locator: Locator): Promise<void> {
+export async function assertCardSurface(locator: Locator, minRadius = 18): Promise<void> {
   const target = locator.first();
   await expect(target).toBeVisible();
-  const backdropFilter = await target.evaluate((el) => {
-    let current: HTMLElement | null = el;
-    while (current && current !== document.body) {
-      const style = window.getComputedStyle(current);
-      const filter = style.backdropFilter || style.webkitBackdropFilter || '';
-      if (filter && filter !== 'none') return filter;
-      current = current.parentElement;
-    }
-    const descendant = el.querySelector('.org-surface, [data-surface], .glass-drawer, mat-sidenav');
-    if (descendant) {
-      const style = window.getComputedStyle(descendant);
-      return style.backdropFilter || style.webkitBackdropFilter || '';
-    }
-    return '';
+  const surface = await target.evaluate((el) => {
+    const found =
+      el.closest('.org-surface') ??
+      el.querySelector('.org-surface, .mat-mdc-dialog-surface, [role="dialog"]') ??
+      el;
+    const style = window.getComputedStyle(found);
+    return {
+      radius: style.borderTopLeftRadius,
+      blur: style.backdropFilter || style.webkitBackdropFilter || 'none',
+    };
   });
-  expect(backdropFilter).toContain('blur');
+  expect(surface.blur).toBe('none');
+  expect(parseFloat(surface.radius)).toBeGreaterThanOrEqual(minRadius);
 }
 
 /**

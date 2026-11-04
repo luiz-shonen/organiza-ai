@@ -36,6 +36,25 @@ describe('OrgTextFieldComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Informe um e-mail válido.');
   });
 
+  it('applies the mask to what is typed and emits the masked value', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgTextFieldComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgTextFieldComponent> =
+      TestBed.createComponent(OrgTextFieldComponent);
+    fixture.componentRef.setInput('label', 'Telefone');
+    fixture.componentRef.setInput('mask', (value: string) => value.replace(/\D/g, ''));
+    fixture.detectChanges();
+    const emitted = vi.fn();
+    fixture.componentInstance.value.subscribe(emitted);
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.value = '12a3';
+    input.dispatchEvent(new Event('input'));
+
+    expect(input.value).toBe('123');
+    expect(fixture.componentInstance.value()).toBe('123');
+    expect(emitted).toHaveBeenCalledWith('123');
+  });
+
   it('provides a closed password visibility action', async () => {
     await TestBed.configureTestingModule({ imports: [OrgTextFieldComponent] }).compileComponents();
     const fixture = TestBed.createComponent(OrgTextFieldComponent);

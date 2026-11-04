@@ -5,6 +5,8 @@
     [disabled]="disabled() || disabledState"
     [min]="min()"
     [max]="max()"
+    [attr.maxlength]="maxLength()"
+    [attr.inputmode]="inputMode()"
     [placeholder]="placeholder()"
     [required]="required()"
     [readonly]="readOnly()"
@@ -29,6 +31,8 @@
         passwordVisible() ? 'visibility_off' : 'visibility'
       }}</mat-icon>
     </button>
+  } @else if (suffixAction()) {
+    <span matSuffix class="org-text-field__suffix"><ng-content select="[orgFieldSuffix]" /></span>
   } @else if (suffixIcon(); as suffixIcon) {
     <mat-icon matSuffix aria-hidden="true">{{ suffixIcon }}</mat-icon>
   }

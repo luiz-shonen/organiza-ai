@@ -1,10 +1,48 @@
+@use '../tokens/semantic' as semantic;
+
+// Badge and text side by side from tablet up; stacked and centred on phones.
 .org-confirm-dialog {
-  background: var(--org-glass-bg);
-  backdrop-filter: blur(24px);
+  --org-confirm-accent: var(--org-primary);
+  --org-confirm-badge-bg: var(--org-primary-container);
+  --org-confirm-badge-color: var(--org-on-primary-container);
+
+  background: var(--org-glass-bg-strong);
+  border-top: 4px solid var(--org-confirm-accent);
   color: var(--org-on-surface);
   display: grid;
-  gap: 24px;
-  padding: 40px;
+  gap: var(--org-space-md) var(--org-space-lg);
+  grid-template-columns: auto 1fr;
+  padding: var(--org-space-xl) var(--org-space-xl) var(--org-space-lg);
+
+  &--danger {
+    --org-confirm-accent: var(--org-error);
+    --org-confirm-badge-bg: var(--org-error-container);
+    --org-confirm-badge-color: var(--org-on-error-container);
+  }
+
+  @include semantic.mobile {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: var(--org-space-lg) var(--org-space-md) var(--org-space-md);
+    text-align: center;
+  }
+}
+
+.org-confirm-dialog__badge {
+  align-items: center;
+  background: var(--org-confirm-badge-bg);
+  block-size: var(--org-space-3xl);
+  border-radius: var(--org-radius-circle);
+  color: var(--org-confirm-badge-color);
+  display: inline-flex;
+  inline-size: var(--org-space-3xl);
+  justify-content: center;
+}
+
+.org-confirm-dialog__text {
+  align-self: center;
+  display: grid;
+  gap: var(--org-space-xs);
 }
 
 .org-confirm-dialog__title,
@@ -13,24 +51,33 @@
 }
 
 .org-confirm-dialog__title {
-  font-size: var(--org-font-size-2xl);
-  font-weight: var(--org-font-weight-extrabold);
+  font: var(--org-font-weight-extrabold) var(--org-font-size-xl) / var(--org-line-height-snug)
+    var(--org-font-display);
 }
 
 .org-confirm-dialog__message {
   color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
   line-height: var(--org-line-height-normal);
 }
 
 .org-confirm-dialog__actions {
   display: flex;
-  gap: 12px;
+  gap: var(--org-space-sm);
+  grid-column: 1 / -1;
   justify-content: flex-end;
-  margin-top: 8px;
-}
+  margin-top: var(--org-space-sm);
 
-.org-confirm-dialog__actions button {
-  min-height: 48px;
+  // Thumb reach: the confirm button on top, full width.
+  @include semantic.mobile {
+    flex-direction: column-reverse;
+    width: 100%;
+
+    .org-confirm-dialog__action,
+    .org-confirm-dialog__action .org-button__control {
+      width: 100%;
+    }
+  }
 }
 
 .org-confirm-dialog-panel .mat-mdc-dialog-surface {

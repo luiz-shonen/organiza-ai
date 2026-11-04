@@ -3,14 +3,17 @@ import { signal } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { DashboardContainer } from './dashboard.container';
+import { DashboardContainer, summaryStatus } from './dashboard.container';
 import {
   EventService,
   AuthService,
   NotificationService,
   EventNotificationService,
+  GuestService,
+  ItemService,
+  ClaimService,
 } from '../../../core/services';
 import { PartyEvent } from '../../../core/models';
 import { FeedbackService } from '../../../shared/ui';
@@ -22,6 +25,7 @@ describe('DashboardContainer', () => {
   let eventsSubject: BehaviorSubject<PartyEvent[]>;
   let mockEventService: {
     listEvents: ReturnType<typeof vi.fn>;
+    getUserEvents: ReturnType<typeof vi.fn>;
     cancelEvent: ReturnType<typeof vi.fn>;
   };
   let mockAuthService: {
@@ -81,6 +85,7 @@ describe('DashboardContainer', () => {
 
     mockEventService = {
       listEvents: vi.fn().mockReturnValue(eventsSubject.asObservable()),
+      getUserEvents: vi.fn().mockReturnValue(eventsSubject.asObservable()),
       cancelEvent: vi.fn().mockResolvedValue(undefined),
     };
 
@@ -113,6 +118,27 @@ describe('DashboardContainer', () => {
         { provide: FeedbackService, useValue: mockFeedback },
         { provide: MatDialog, useValue: { open: vi.fn() } },
         { provide: Clipboard, useValue: { copy: vi.fn() } },
+        {
+          provide: GuestService,
+          useValue: {
+            listGuests: () => of([{ id: 'g1', name: 'Ana', isConfirmed: true, confirmedAt: '' }]),
+          },
+        },
+        {
+          provide: ItemService,
+          useValue: {
+            getItems: vi.fn().mockResolvedValue([
+              { id: 'i1', name: 'Bolo', quantity: 2, claimedBy: null },
+              {
+                id: 'i2',
+                name: 'Suco',
+                quantity: 1,
+                claimedBy: { uid: 'x', name: 'X', phone: '' },
+              },
+            ]),
+          },
+        },
+        { provide: ClaimService, useValue: { listClaims: () => of([]) } },
       ],
     }).compileComponents();
 
@@ -132,35 +158,70 @@ describe('DashboardContainer', () => {
     expect(compiled.textContent).not.toContain('Novo Admin');
   });
 
-  it('should compute accurate filter counts for all, upcoming, past, and cancelled', () => {
-    const counts = component.filterCounts();
-    expect(counts.all).toBe(3);
-    expect(counts.upcoming).toBe(1);
-    expect(counts.past).toBe(1);
-    expect(counts.cancelled).toBe(1);
+  it('lists the events created by the person, upcoming first and cancelled last', () => {
+    expect(mockEventService.getUserEvents).toHaveBeenCalledWith('user-1');
+    expect(component.filteredEvents().map((event) => event.id)).toEqual([
+      'evt-1',
+      'evt-2',
+      'evt-3',
+    ]);
+  });
+
+  it('suggests what to do next for upcoming events (AI tip)', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const tips = (fixture.nativeElement as HTMLElement).querySelectorAll(
+      '[data-testid="insight-card"]',
+    );
+    expect(tips).toHaveLength(1);
+    expect(tips[0].textContent).toContain('Faltam 5 dias!');
+    expect(tips[0].textContent).toContain('1 item');
+    expect(tips[0].classList).toContain('org-insight-card--warning');
   });
 
   it('should filter events reactively when activeFilter is changed', () => {
     // Default 'all'
     expect(component.filteredEvents().length).toBe(3);
 
-    // 'upcoming'
-    component.activeFilter.set('upcoming');
-    const upcoming = component.filteredEvents();
-    expect(upcoming.length).toBe(1);
-    expect(upcoming[0].id).toBe('evt-1');
+    // 'soon': five days away at most
+    component.activeFilters.set(['soon']);
+    const soon = component.filteredEvents();
+    expect(soon.map((e) => e.id)).toEqual(['evt-1']);
+
+    // 'scheduled': further ahead (the cancelled one stays out)
+    component.activeFilters.set(['scheduled']);
+    expect(component.filteredEvents()).toEqual([]);
 
     // 'past'
-    component.activeFilter.set('past');
+    component.activeFilters.set(['past']);
     const past = component.filteredEvents();
     expect(past.length).toBe(1);
     expect(past[0].id).toBe('evt-2');
 
     // 'cancelled'
-    component.activeFilter.set('cancelled');
+    component.activeFilters.set(['soon', 'cancelled']);
+    expect(component.filteredEvents().map((e) => e.id)).toEqual(['evt-1', 'evt-3']);
+
+    component.activeFilters.set(['cancelled']);
     const cancelled = component.filteredEvents();
     expect(cancelled.length).toBe(1);
     expect(cancelled[0].id).toBe('evt-3');
+  });
+
+  it('tags an event Em breve up to five days away, Agendado further ahead', () => {
+    const event = { status: 'active' } as PartyEvent;
+    expect(summaryStatus(event, 0).label).toBe('Em breve');
+    expect(summaryStatus(event, 5).label).toBe('Em breve');
+    expect(summaryStatus(event, 6).label).toBe('Agendado');
+    expect(summaryStatus(event, 168).label).toBe('Agendado');
+    expect(summaryStatus(event, -1).label).toBe('Realizado');
+    expect(summaryStatus({ status: 'cancelled' } as PartyEvent, 168).label).toBe('Cancelado');
+    // Earlier today: the start time passed, so it is no longer Em breve.
+    const earlier = {
+      status: 'active',
+      date: new Date(Date.now() - 3600000).toISOString(),
+    } as PartyEvent;
+    expect(summaryStatus(earlier, 0).label).toBe('Realizado');
   });
 
   it('should invoke evaluateCountdownReminders with loaded events', () => {

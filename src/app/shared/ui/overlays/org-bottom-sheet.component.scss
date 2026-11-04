@@ -1,0 +1,78 @@
+@use '../tokens/semantic' as semantic;
+
+.org-bottom-sheet__scrim {
+  background: var(--org-scrim);
+  inset: 0;
+  position: fixed;
+  z-index: 1000;
+}
+
+.org-bottom-sheet {
+  animation: org-sheet-in var(--org-motion-base) var(--org-motion-ease-emphasized);
+  background: var(--org-dialog-bg);
+  border-radius: var(--org-radius-card) var(--org-radius-card) 0 0;
+  box-shadow: var(--org-shadow-overlay);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+  inset: auto 0 0;
+  max-block-size: 90dvh;
+  overflow-y: auto;
+  padding: var(--org-space-sm) var(--org-space-md)
+    calc(var(--org-space-md) + env(safe-area-inset-bottom));
+  position: fixed;
+  z-index: 1001;
+
+  @include semantic.tablet {
+    border-radius: var(--org-radius-card);
+    inline-size: min(440px, calc(100vw - var(--org-space-xl)));
+    inset: 50% auto auto 50%;
+    padding: var(--org-space-lg);
+    transform: translate(-50%, -50%);
+  }
+
+  // Editing: a full-height drawer from the right, the page still visible beside it.
+  &--side {
+    @include semantic.tablet {
+      animation-name: org-drawer-in;
+      block-size: 100dvh;
+      border-radius: var(--org-radius-card) 0 0 var(--org-radius-card);
+      inline-size: min(480px, 100vw);
+      inset: 0 0 0 auto;
+      max-block-size: none;
+      transform: none;
+    }
+  }
+}
+
+.org-bottom-sheet__handle {
+  align-self: center;
+  background: var(--org-outline);
+  block-size: 4px;
+  border-radius: var(--org-radius-full);
+  inline-size: 36px;
+
+  @include semantic.tablet {
+    display: none;
+  }
+}
+
+@keyframes org-sheet-in {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+
+@keyframes org-drawer-in {
+  from {
+    opacity: 0;
+    translate: 32px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-bottom-sheet {
+    animation: none;
+  }
+}

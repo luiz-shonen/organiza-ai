@@ -1,0 +1,35 @@
+:host {
+  display: inline-flex;
+}
+
+.org-avatar {
+  align-items: center;
+  background: var(--org-surface-container-low);
+  block-size: var(--org-icon-size-xl);
+  border-radius: var(--org-radius-circle);
+  color: var(--org-on-surface);
+  display: inline-flex;
+  flex: none;
+  font: var(--org-font-weight-bold) var(--org-font-size-md) / var(--org-line-height-none)
+    var(--org-font-body);
+  inline-size: var(--org-icon-size-xl);
+  justify-content: center;
+  overflow: hidden;
+
+  &--lg {
+    block-size: var(--org-space-3xl);
+    font-size: var(--org-font-size-2xl);
+    inline-size: var(--org-space-3xl);
+  }
+
+  &--highlighted {
+    background: var(--org-primary-container);
+    color: var(--org-on-primary-container);
+  }
+}
+
+.org-avatar__image {
+  block-size: 100%;
+  inline-size: 100%;
+  object-fit: cover;
+}

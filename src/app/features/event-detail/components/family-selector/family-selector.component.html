@@ -1,15 +1,17 @@
 <div class="family-selector">
   <org-expansion-panel
-    heading="Adicionar Família?"
+    heading="Levar familiares?"
     icon="diversity_3"
     ariaLabel="Opções para adicionar familiares ao evento"
     [(expanded)]="isExpanded"
   >
     <span orgExpansionSummary>
       @if (selectedCount() > 0) {
-        <span class="family-selector__badge">{{ selectedCount() }} selecionado(s)</span>
+        <span class="family-selector__badge">{{
+          selectedCount() === 1 ? '1 selecionado' : selectedCount() + ' selecionados'
+        }}</span>
       } @else {
-        Nenhum selecionado
+        Nenhum
       }
     </span>
     @if (members().length > 0) {
@@ -62,9 +64,10 @@
         />
       </div>
     } @else {
-      <form
+      <!-- Not a <form>: it sits inside the RSVP form, and a nested submit sent that one. -->
+      <div
         class="family-selector__inline-form"
-        (ngSubmit)="onSubmitInline()"
+        role="group"
         aria-label="Formulário rápido para adicionar novo familiar"
       >
         <h4 class="family-selector__inline-title">Novo Familiar</h4>
@@ -75,7 +78,10 @@
             label="Nome"
             placeholder="Ex: Pedro"
             [required]="true"
+            [maxLength]="nameMaxLength"
+            [error]="inlineNameError()"
             [(value)]="inlineName"
+            (keydown.enter)="onInlineEnter($event)"
           />
 
           <org-autocomplete-field
@@ -84,6 +90,7 @@
             [options]="relationshipAutocompleteOptions"
             [value]="inlineRelationship()"
             [required]="true"
+            [error]="inlineRelationshipError()"
             (valueChange)="setInlineRelationship($event)"
           />
         </div>
@@ -96,13 +103,13 @@
             (pressed)="onCancelInlineForm()"
           />
           <org-button
-            label="Adicionar e selecionar"
-            type="submit"
+            label="Adicionar"
             [disabled]="!inlineName().trim() || isAddingInline()"
             [loading]="isAddingInline()"
+            (pressed)="onSubmitInline()"
           />
         </div>
-      </form>
+      </div>
     }
   </org-expansion-panel>
 </div>

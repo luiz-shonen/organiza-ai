@@ -49,6 +49,8 @@ export { OrgIconButtonComponent } from './actions/org-icon-button.component';
 export { OrgCopyButtonComponent } from './actions/org-copy-button.component';
 export type { OrgIconButtonVariant } from './actions/org-icon-button.component';
 export { OrgChipComponent } from './actions/org-chip.component';
+export { OrgEditableChipComponent } from './actions/org-editable-chip.component';
+export { OrgThemeToggleComponent } from './actions/org-theme-toggle.component';
 export type { OrgChipVariant } from './actions/org-chip.component';
 export { ORG_ICON_MAP, OrgIconComponent } from './actions/org-icon.component';
 export type { OrgIconName, OrgIconSize } from './actions/org-icon.component';
@@ -58,7 +60,29 @@ export { OrgLoadingStateComponent } from './feedback/org-loading-state.component
 export { OrgSkeletonComponent } from './feedback/org-skeleton.component';
 export type { OrgSkeletonShape } from './feedback/org-skeleton.component';
 export { FeedbackSnackbarComponent } from './feedback/feedback-snackbar.component';
+export { OrgTooltipComponent } from './overlays/org-tooltip.component';
 export type { FeedbackSnackbarData, FeedbackVariant } from './feedback/feedback-snackbar.component';
 export { FeedbackService } from './feedback/feedback.service';
 export type { FeedbackOptions } from './feedback/feedback.service';
 export { OrgBannerComponent } from './feedback/org-banner.component';
+
+export { OrgNavBarComponent } from './navigation/org-nav-bar.component';
+export type { OrgNavBarItem, OrgNavBarLayout } from './navigation/org-nav-bar.component';
+export { OrgAvatarComponent } from './data-display/org-avatar.component';
+export type { OrgAvatarSize } from './data-display/org-avatar.component';
+export { OrgLogoComponent } from './brand/org-logo.component';
+export type { OrgLogoSize } from './brand/org-logo.component';
+export { OrgSegmentedControlComponent } from './selection/org-segmented-control.component';
+export type { OrgSegmentedOption } from './selection/org-segmented-control.component';
+export { OrgDateBadgeComponent } from './data-display/org-date-badge.component';
+export { OrgSplitProgressComponent } from './data-display/org-split-progress.component';
+export type {
+  OrgSplitSegment,
+  OrgSplitProgressSize,
+} from './data-display/org-split-progress.component';
+export { OrgFilterBarComponent } from './navigation/org-filter-bar.component';
+export type { OrgFilterOption } from './navigation/org-filter-bar.component';
+export { OrgQuantityStepperComponent } from './forms/org-quantity-stepper.component';
+export { OrgBottomSheetComponent } from './overlays/org-bottom-sheet.component';
+export { OrgInsightCardComponent } from './feedback/org-insight-card.component';
+export type { OrgInsightTone } from './feedback/org-insight-card.component';

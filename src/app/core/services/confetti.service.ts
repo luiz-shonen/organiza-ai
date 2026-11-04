@@ -15,14 +15,14 @@ export class ConfettiService {
         angle: 60,
         spread: 55,
         origin: { x: 0 },
-        colors: ['#ff4d94', '#ff8c42', '#6b4c9a'],
+        colors: ['#9775fa', '#40c057', '#4dabf7'],
       });
       confetti({
         particleCount: 5,
         angle: 120,
         spread: 55,
         origin: { x: 1 },
-        colors: ['#ff4d94', '#ff8c42', '#6b4c9a'],
+        colors: ['#9775fa', '#40c057', '#4dabf7'],
       });
 
       if (Date.now() < end) {

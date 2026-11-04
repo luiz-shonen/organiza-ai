@@ -14,8 +14,9 @@ Angular 22 + Angular Material 22 + Firebase app for organising events (pt-BR UI)
 - Pages (`*.container.ts`) own data and side effects; presentational components use only `input()`/`output()`.
 - Features use only `Org*` components from `src/app/shared/ui`. No `@angular/material` import, `<mat-*>` tag or `.mat-*` selector outside `shared/ui` and `src/app/app.*`. Missing primitive? Add it to the DS first and document it in `DESIGN.md`.
 - Styling only through `--org-*` tokens (`shared/ui/tokens/`): no `!important`, no hex, no literal font sizes/weights/line heights/letter spacing/transition durations, no `.dark` selectors, no `--mdc-*`.
-- Mobile first, zero horizontal overflow, touch targets ≥ 48px, WCAG 2.1 AA.
+- Mobile first, zero horizontal overflow, touch targets ≥ 48px, WCAG 2.1 AA. Every change must work on desktop (pages take 70% of the width from 1200px) and on a phone.
 - Super admins and open-registration rules: see `docs/knowledge/decisions/firebase-and-auth.md`.
+- How events, invites, filters, tags and "Quem vai" behave: see `docs/knowledge/decisions/events-and-invites.md`.
 
 ## Before you finish
 

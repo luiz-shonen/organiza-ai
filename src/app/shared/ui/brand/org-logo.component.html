@@ -1,0 +1,45 @@
+<span class="org-logo" [class.org-logo--lg]="size() === 'lg'" [class.org-logo--still]="!animated()">
+  <svg class="org-logo__mark" viewBox="0 0 26 26" aria-hidden="true" focusable="false">
+    <g class="org-logo__calendar">
+      <rect class="org-logo__sheet" x="2" y="4" width="22" height="20" rx="4" stroke-width="1.6" />
+      <path class="org-logo__band" d="M2 9.5h22V8a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4z" />
+      <path
+        class="org-logo__rings"
+        d="M8 2.5v4M18 2.5v4"
+        stroke-width="1.6"
+        stroke-linecap="round"
+      />
+      <path
+        class="org-logo__check"
+        d="M9 16.5l2.6 2.5 5-5"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        pathLength="1"
+      />
+    </g>
+    <!-- Confetti that bursts from the check once it is drawn. -->
+    <g class="org-logo__confetti">
+      <circle class="org-logo__piece org-logo__piece--1" cx="17" cy="15" r="1.7" />
+      <rect
+        class="org-logo__piece org-logo__piece--2"
+        x="15.8"
+        y="13.8"
+        width="2.4"
+        height="2.4"
+        rx="0.4"
+      />
+      <circle class="org-logo__piece org-logo__piece--3" cx="17" cy="15" r="1.4" />
+      <rect
+        class="org-logo__piece org-logo__piece--4"
+        x="16"
+        y="14"
+        width="2"
+        height="2"
+        rx="0.4"
+      />
+    </g>
+  </svg>
+  <span class="org-logo__text">Organiza AI</span>
+</span>

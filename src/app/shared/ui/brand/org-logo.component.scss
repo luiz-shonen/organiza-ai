@@ -1,0 +1,187 @@
+:host {
+  display: inline-flex;
+}
+
+.org-logo {
+  align-items: center;
+  color: var(--org-on-surface);
+  display: inline-flex;
+  font: var(--org-font-weight-semibold) var(--org-font-size-lg) / var(--org-line-height-none)
+    var(--org-font-display);
+  gap: var(--org-space-sm);
+
+  &--lg {
+    flex-direction: column;
+    font-size: var(--org-font-size-2xl);
+
+    .org-logo__mark {
+      block-size: var(--org-space-2xl);
+      inline-size: var(--org-space-2xl);
+    }
+  }
+}
+
+.org-logo__mark {
+  block-size: var(--org-icon-size-lg);
+  flex: none;
+  inline-size: var(--org-icon-size-lg);
+}
+
+.org-logo__sheet {
+  fill: var(--org-surface);
+  stroke: currentcolor;
+}
+
+.org-logo__band {
+  fill: var(--org-primary);
+}
+
+.org-logo__rings {
+  stroke: currentcolor;
+}
+
+.org-logo__check {
+  stroke: var(--org-primary);
+}
+
+.org-logo__text {
+  background: var(--org-gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  // The gradient only paints inside the box, and line-height 1 leaves no room for the
+  // descender of "g". Extra bottom padding gives it room; the margin keeps the layout.
+  margin-block-end: -0.2em;
+  padding-block-end: 0.2em;
+}
+
+// ---- Animation: a 6s loop. The calendar hops, the check is drawn, then confetti
+// bursts from it. Transforms and opacity only, so it stays on the compositor.
+.org-logo__mark {
+  overflow: visible;
+}
+
+.org-logo__calendar {
+  animation: org-logo-hop 6s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.org-logo__check {
+  animation: org-logo-draw 6s ease-out infinite;
+  stroke-dasharray: 1;
+}
+
+.org-logo__piece {
+  animation: org-logo-burst 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+
+  &--1 {
+    --org-logo-dx: 8px;
+    --org-logo-dy: -14px;
+
+    fill: var(--org-primary);
+  }
+
+  &--2 {
+    --org-logo-dx: 13px;
+    --org-logo-dy: -4px;
+
+    fill: var(--org-secondary);
+  }
+
+  &--3 {
+    --org-logo-dx: 2px;
+    --org-logo-dy: -17px;
+
+    fill: var(--org-success);
+  }
+
+  &--4 {
+    --org-logo-dx: 14px;
+    --org-logo-dy: -11px;
+
+    fill: var(--org-warning);
+  }
+}
+
+@keyframes org-logo-hop {
+  0%,
+  27%,
+  38%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  30% {
+    transform: translateY(-2px) scale(1.06);
+  }
+}
+
+@keyframes org-logo-draw {
+  0%,
+  12% {
+    opacity: 1;
+    stroke-dashoffset: 1;
+  }
+
+  27%,
+  88% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+
+  95%,
+  100% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes org-logo-burst {
+  0%,
+  28% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0) rotate(0deg);
+  }
+
+  32% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+    transform: translate(var(--org-logo-dx), var(--org-logo-dy)) scale(1) rotate(160deg);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+// Still mark: no motion when asked for (or when the person prefers it), check drawn.
+@mixin still() {
+  .org-logo__calendar,
+  .org-logo__check,
+  .org-logo__piece {
+    animation: none;
+  }
+
+  .org-logo__check {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+.org-logo--still {
+  @include still;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .org-logo {
+    @include still;
+  }
+}

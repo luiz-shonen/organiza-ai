@@ -1,0 +1,59 @@
+:host {
+  display: block;
+}
+
+// The whole row is one link to the event.
+.next-event {
+  align-items: center;
+  background: var(--org-surface);
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-md);
+  color: var(--org-on-surface);
+  display: flex;
+  gap: var(--org-space-md);
+  min-block-size: var(--org-touch);
+  padding: var(--org-space-md);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--org-state-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--org-primary);
+    outline-offset: 2px;
+  }
+}
+
+.next-event__icon {
+  align-items: center;
+  background: var(--org-secondary-container);
+  block-size: 40px;
+  border-radius: var(--org-radius-sm);
+  color: var(--org-on-secondary-container);
+  display: inline-flex;
+  flex: none;
+  inline-size: 40px;
+  justify-content: center;
+}
+
+.next-event__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+  min-inline-size: 0;
+}
+
+.next-event__label {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+}
+
+.next-event__title {
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

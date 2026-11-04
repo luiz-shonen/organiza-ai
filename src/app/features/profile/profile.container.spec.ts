@@ -4,12 +4,14 @@ import { provideRouter, Router } from '@angular/router';
 import { signal, WritableSignal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProfileContainer } from './profile.container';
-import { AuthService, UserService, FamilyService } from '../../core/services';
-import { FeedbackService } from '../../shared/ui';
+import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
+import { of } from 'rxjs';
+import { FeedbackService, OrgDialogService } from '../../shared/ui';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
 import type { User } from 'firebase/auth';
 
 describe('ProfileContainer', () => {
+  const mockDialogs = { confirm: vi.fn(() => of(true)) };
   let component: ProfileContainer;
   let fixture: ComponentFixture<ProfileContainer>;
   let router: Router;
@@ -103,9 +105,10 @@ describe('ProfileContainer', () => {
       providers: [
         provideNoopAnimations(),
         provideRouter([]),
+        { provide: OrgDialogService, useValue: mockDialogs },
         {
           provide: AuthService,
-          useValue: { currentUser: mockCurrentUser },
+          useValue: { currentUser: mockCurrentUser, isSuperAdmin: signal(false) },
         },
         {
           provide: UserService,
@@ -126,23 +129,21 @@ describe('ProfileContainer', () => {
     component = fixture.componentInstance;
   });
 
-  it('should initialize and load user profile, attended events, and family roster', async () => {
+  it('should initialize and load the user profile and family roster', async () => {
     await component.loadProfileData();
     fixture.detectChanges();
 
     expect(mockUserService.getProfile).toHaveBeenCalledWith('user-789');
-    expect(mockUserService.getAttendedEvents).toHaveBeenCalledWith('user-789');
     expect(mockFamilyService.getFamilyMembers).toHaveBeenCalledWith('user-789');
     expect(component.userProfile()).toEqual(mockUserProfile);
-    expect(component.attendedEvents()).toEqual(mockEvents);
     expect(component.familyMembers()).toEqual(mockFamily);
     expect(component.loading()).toBe(false);
 
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Meu Perfil');
-    expect(el.textContent).toContain('Minha Família');
+    expect(el.textContent).toContain('Meu perfil');
+    expect(el.textContent).toContain('Minha família');
     expect(el.textContent).toContain('Lucas Silva');
-    expect(el.textContent).toContain('Festa Julina dos Amigos');
+    expect(el.textContent).not.toContain('Eventos Confirmados');
   });
 
   it('should redirect to /login if current user is not logged in', async () => {
@@ -154,7 +155,6 @@ describe('ProfileContainer', () => {
 
   it('should fallback to auth user data if firestore profile is null', async () => {
     mockUserService.getProfile.mockResolvedValue(null);
-    mockUserService.getAttendedEvents.mockResolvedValue([]);
     mockFamilyService.getFamilyMembers.mockResolvedValue([]);
 
     await component.loadProfileData();
@@ -169,21 +169,22 @@ describe('ProfileContainer', () => {
       createdAt: '',
       updatedAt: '',
     });
-    expect(component.attendedEvents()).toEqual([]);
     expect(component.familyMembers()).toEqual([]);
   });
 
-  it('should update name, update signal, and show success snackbar on onUpdateName', async () => {
+  it('should update name and phone, update signal, and show success snackbar', async () => {
     await component.loadProfileData();
     fixture.detectChanges();
 
-    await component.onUpdateName('Carlos Silva');
+    await component.onUpdateDetails({ displayName: 'Carlos Silva', phone: '11912345678' });
 
     expect(mockUserService.updateProfile).toHaveBeenCalledWith('user-789', {
       displayName: 'Carlos Silva',
+      phone: '11912345678',
     });
     expect(component.userProfile()?.displayName).toBe('Carlos Silva');
-    expect(mockFeedback.success).toHaveBeenCalledWith('Nome atualizado com sucesso!');
+    expect(component.userProfile()?.phone).toBe('11912345678');
+    expect(mockFeedback.success).toHaveBeenCalledWith('Perfil atualizado com sucesso!');
   });
 
   it('should show error snackbar when updateProfile fails', async () => {
@@ -192,10 +193,10 @@ describe('ProfileContainer', () => {
 
     mockUserService.updateProfile.mockRejectedValue(new Error('Update failed'));
 
-    await component.onUpdateName('Novo Nome');
+    await component.onUpdateDetails({ displayName: 'Novo Nome', phone: '' });
 
     expect(mockFeedback.error).toHaveBeenCalledWith(
-      'Não foi possível atualizar o nome. Tente novamente.',
+      'Não foi possível atualizar o perfil. Tente novamente.',
     );
   });
 
@@ -228,6 +229,21 @@ describe('ProfileContainer', () => {
     expect(mockFeedback.success).toHaveBeenCalledWith('Familiar removido com sucesso!');
   });
 
+  it('asks before removing a family member and keeps them when the person goes back', async () => {
+    await component.loadProfileData();
+    fixture.detectChanges();
+    mockDialogs.confirm.mockReturnValueOnce(of(false));
+    mockFamilyService.deleteFamilyMember.mockClear();
+
+    await component.onRemoveFamilyMember('fam-1');
+
+    expect(mockDialogs.confirm).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Remover familiar', tone: 'danger' }),
+    );
+    expect(mockFamilyService.deleteFamilyMember).not.toHaveBeenCalled();
+    expect(component.familyMembers()).toHaveLength(1);
+  });
+
   it('should publish a shared error when adding a family member fails', async () => {
     mockFamilyService.addFamilyMember.mockRejectedValue(new Error('Add failed'));
 
@@ -248,22 +264,18 @@ describe('ProfileContainer', () => {
     );
   });
 
-  it('should display empty state when user has no attended events', async () => {
-    mockUserService.getAttendedEvents.mockResolvedValue([]);
+  it('hosts the account preferences that used to live in the side menu', async () => {
+    const themeService = TestBed.inject(ThemeService);
+    const setMode = vi.spyOn(themeService, 'setMode').mockImplementation(() => undefined);
 
     await component.loadProfileData();
     fixture.detectChanges();
 
     const el: HTMLElement = fixture.nativeElement;
-    expect(el.textContent).toContain('Nenhum evento no histórico');
-    expect(el.textContent).toContain('Explorar Eventos');
-  });
-
-  it('should compose attended-event surfaces and navigation actions through closed Org components', async () => {
-    await component.loadProfileData();
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.querySelector('org-surface .profile-event-card')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('org-button.profile-event-card__btn')).toBeTruthy();
+    const dark = el.querySelector('[data-testid="profile-theme-dark"] button') as HTMLButtonElement;
+    dark.click();
+    expect(setMode).toHaveBeenCalledWith('dark');
+    expect(el.querySelector('[data-testid="profile-logout-btn"]')).toBeTruthy();
+    expect(el.querySelector('[data-testid="profile-admin-link"]')).toBeNull();
   });
 });

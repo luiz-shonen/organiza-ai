@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
+import { MatTooltip } from '@angular/material/tooltip';
+import { By } from '@angular/platform-browser';
 import { OrgButtonComponent } from './org-button.component';
 
 describe('OrgButtonComponent', () => {
@@ -100,5 +102,32 @@ describe('OrgButtonComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[data-testid="save-event"]')).toBeTruthy();
+  });
+
+  it('passes the tooltip to Material and states pressed and expanded for toggles', async () => {
+    await TestBed.configureTestingModule({ imports: [OrgButtonComponent] }).compileComponents();
+    const fixture: ComponentFixture<OrgButtonComponent> =
+      TestBed.createComponent(OrgButtonComponent);
+    fixture.componentRef.setInput('label', 'Fixa');
+    fixture.componentRef.setInput('variant', 'tonal');
+    fixture.componentRef.setInput('tooltip', 'Quem escolher leva a quantidade toda.');
+    fixture.componentRef.setInput('ariaPressed', true);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    const tooltip = fixture.debugElement.query(By.directive(MatTooltip)).injector.get(MatTooltip);
+    expect(tooltip.message).toBe('Quem escolher leva a quantidade toda.');
+    expect(tooltip.disabled).toBe(false);
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+    expect(button.hasAttribute('aria-expanded')).toBe(false);
+    expect(button.hasAttribute('title')).toBe(false);
+
+    fixture.componentRef.setInput('tooltip', '');
+    fixture.componentRef.setInput('ariaPressed', null);
+    fixture.componentRef.setInput('ariaExpanded', false);
+    fixture.detectChanges();
+    expect(tooltip.disabled).toBe(true);
+    expect(button.hasAttribute('aria-pressed')).toBe(false);
+    expect(button.getAttribute('aria-expanded')).toBe('false');
   });
 });

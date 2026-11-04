@@ -130,6 +130,8 @@ export class AdminDashboardContainer implements OnInit {
         title: 'Remover Administrador',
         message: `Tem certeza que deseja remover as permissões administrativas do usuário "${email}"?`,
         confirmLabel: 'Remover Administrador',
+        tone: 'danger',
+        icon: 'block',
       })
       .subscribe(async (result: boolean | undefined) => {
         if (result) {

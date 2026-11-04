@@ -1,20 +1,22 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   input,
   output,
   signal,
 } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FamilyMember } from '../../../../core/models';
+import {
+  Phone,
+  fieldError,
+  requiredText,
+  valueObjectValidator,
+} from '../../../../core/value-objects';
+import { CompanionSelectorComponent } from '../companion-selector/companion-selector.component';
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
@@ -28,14 +30,12 @@ import {
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
-const trimmedRequired: ValidatorFn = (control) =>
-  typeof control.value === 'string' && control.value.trim().length > 0 ? null : { required: true };
-
 @Component({
   selector: 'app-rsvp-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    CompanionSelectorComponent,
     FamilySelectorComponent,
     OrgButtonComponent,
     OrgIconButtonComponent,
@@ -55,46 +55,50 @@ export class RsvpDrawerComponent {
   readonly selectedFamilyMemberIds = signal<string[]>([]);
   readonly isAddingInline = signal<boolean>(false);
 
+  protected readonly fieldError = fieldError;
+  protected readonly maskPhone = Phone.mask;
+  /** Digits only, at most two: the count goes from 0 to 10. */
+
   protected readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required]],
-    phone: ['', [Validators.required, Validators.minLength(10)]],
-    companionsCount: [0, [Validators.min(0), Validators.max(10)]],
-    companions: this.fb.nonNullable.array<string>([]),
+    phone: ['', [requiredText, valueObjectValidator(Phone.validate)]],
   });
 
-  protected get companions(): FormArray {
-    return this.form.controls.companions;
-  }
+  /** Companions from the guest's history, plus any added in this drawer. */
+  readonly companionNames = signal<string[]>([]);
+  readonly selectedCompanions = signal<string[]>([]);
+
+  /** The presence is already confirmed: the drawer edits it. */
+  protected readonly editing = computed(() => !!this.drawerData().existing);
+  /** The name comes from the profile; it is changed there, not here. */
+  protected readonly guestName = computed(() => this.drawerData().session?.name ?? '');
 
   constructor() {
     effect(() => {
       const data = this.drawerData();
       this.familyMembers.set(data.familyMembers ?? []);
-      this.form.patchValue({ name: data.session?.name ?? '', phone: data.session?.phone ?? '' });
+      this.form.patchValue({ phone: data.session?.phone ?? '' });
+      const known = [...(data.savedCompanions ?? []), ...(data.existing?.companions ?? [])];
+      this.companionNames.set([...new Set(known)]);
+
+      const existing = data.existing;
+      if (existing) {
+        const known = new Set((data.familyMembers ?? []).map((member) => member.id));
+        this.selectedFamilyMemberIds.set(existing.familyMemberIds.filter((id) => known.has(id)));
+        this.selectedCompanions.set([...existing.companions]);
+      }
     });
   }
 
-  protected onCompanionsCountInput(event: Event): void {
-    const count = Number((event.target as HTMLInputElement).value);
-    this.updateCompanionCount(count);
+  protected onToggleCompanion(name: string): void {
+    this.selectedCompanions.update((current) =>
+      current.includes(name) ? current.filter((n) => n !== name) : [...current, name],
+    );
   }
 
-  protected onCompanionsCountChange(value: string): void {
-    this.updateCompanionCount(Number(value));
-  }
-
-  private updateCompanionCount(count: number): void {
-    if (!Number.isInteger(count) || count < 0 || count > 10) {
-      this.companions.clear();
-      return;
-    }
-
-    while (this.companions.length < count) {
-      this.companions.push(this.fb.nonNullable.control('', [trimmedRequired]));
-    }
-    while (this.companions.length > count) {
-      this.companions.removeAt(this.companions.length - 1);
-    }
+  /** A new name joins the list and is selected; the page saves it to the history on confirm. */
+  protected onAddCompanion(name: string): void {
+    this.companionNames.update((names) => [...names, name]);
+    this.selectedCompanions.update((current) => [...current, name]);
   }
 
   protected onToggleFamilyMember(memberId: string): void {
@@ -109,16 +113,24 @@ export class RsvpDrawerComponent {
     );
   }
 
-  protected onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): void {
-    const member: FamilyMember = {
-      id: `temp_${Date.now()}`,
-      name: payload.name,
-      relationship: payload.relationship,
-      phone: payload.phone,
-      createdAt: new Date().toISOString(),
-    };
-    this.familyMembers.update((members) => [...members, member]);
-    this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
+  /** Saved to the profile right away and selected; the drawer stays open until "Confirmar". */
+  protected async onAddInlineFamilyMember(payload: InlineFamilyMemberPayload): Promise<void> {
+    const save = this.drawerData().addFamilyMember;
+    if (!save) return;
+    this.isAddingInline.set(true);
+    try {
+      const member = await save({
+        name: payload.name,
+        relationship: payload.relationship,
+        phone: payload.phone ?? '',
+      });
+      this.familyMembers.update((members) => [...members, member]);
+      this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
+    } catch {
+      // The page tells the user; what was typed in the RSVP itself stays.
+    } finally {
+      this.isAddingInline.set(false);
+    }
   }
 
   protected submit(): void {
@@ -129,9 +141,9 @@ export class RsvpDrawerComponent {
 
     const raw = this.form.getRawValue();
     const result: RsvpDrawerResult = {
-      name: raw.name,
-      phone: raw.phone,
-      companions: raw.companions.map((name) => ({ name: name.trim() })),
+      name: this.drawerData().session?.name ?? '',
+      phone: Phone.create(raw.phone)?.formatted ?? raw.phone.trim(),
+      companions: this.selectedCompanions().map((name) => ({ name })),
       selectedFamilyMembers: this.familyMembers().filter((member) =>
         this.selectedFamilyMemberIds().includes(member.id),
       ),

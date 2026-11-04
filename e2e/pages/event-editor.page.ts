@@ -62,10 +62,7 @@ export class EventEditorPage extends BasePage {
         ),
       )
       .first();
-    this.cancelEventBtn = page
-      .getByTestId('event-cancel-btn')
-      .or(page.locator('.editor__cancel-btn, button[aria-label="Cancelar evento"]'))
-      .first();
+    this.cancelEventBtn = page.locator('button[data-testid="cancel-event-btn"]').first();
     this.nextStepBtns = page.locator(
       'org-button[label="Próximo"] button, [data-testid="stepper-next-btn"] button, button:has-text("Próximo")',
     );
@@ -134,13 +131,25 @@ export class EventEditorPage extends BasePage {
     await nextBtn.click();
   }
 
+  /** Opens a step by its stepper label (editing allows jumping; creating goes in order). */
+  async openStep(label: 'Informações' | 'Endereço' | 'Itens' | 'Pix'): Promise<void> {
+    await this.page.locator('.mat-step-header').filter({ hasText: label }).click();
+    await expect(this.page.locator('.mat-step-header[aria-selected="true"]')).toContainText(label);
+  }
+
   async saveEvent(): Promise<void> {
+    if (!(await this.saveBtn.isVisible())) {
+      await this.openStep('Pix');
+    }
     const saveButton = this.saveBtn.filter({ visible: true }).first();
     await expect(saveButton).toBeEnabled();
     await saveButton.click();
   }
 
   async addWishlistItem(name: string, _category = 'Geral', quantity = 1): Promise<void> {
+    if (!(await this.itemNameInput.isVisible())) {
+      await this.openStep('Itens');
+    }
     await this.itemNameInput.fill(name);
     await this.itemQtyInput.fill(quantity.toString());
     await this.addItemBtn.click();

@@ -36,48 +36,6 @@
     min-width: 0;
   }
 
-  &__step-progress {
-    color: var(--org-on-surface);
-    display: grid;
-    gap: 6px;
-    padding: var(--org-space-md);
-
-    @include semantic.tablet {
-      display: none;
-    }
-  }
-
-  &__step-progress-count {
-    color: var(--org-on-surface-variant);
-    font-size: var(--org-font-size-sm);
-    font-weight: var(--org-font-weight-bold);
-    letter-spacing: var(--org-letter-spacing-wide);
-    text-transform: uppercase;
-  }
-
-  &__step-progress-title {
-    font-size: var(--org-font-size-md);
-    line-height: var(--org-line-height-snug);
-  }
-
-  &__step-progress-track {
-    display: grid;
-    gap: 6px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    height: 6px;
-    margin-top: var(--org-space-xs);
-  }
-
-  &__step-progress-segment {
-    background: var(--org-surface-container-high);
-    border-radius: var(--org-radius-full);
-
-    &--complete,
-    &--active {
-      background: var(--org-primary);
-    }
-  }
-
   &__skeleton-header {
     align-items: center;
     display: flex;
@@ -114,29 +72,5 @@
   &__skeleton-btn {
     height: var(--org-space-2xl);
     width: 128px;
-  }
-}
-
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .print-section,
-  .print-section * {
-    visibility: visible;
-  }
-
-  .print-section {
-    left: 0;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  @page {
-    margin: 1.5cm;
   }
 }

@@ -1,43 +1,72 @@
-@use '../tokens/semantic' as semantic;
-
 :host {
   display: block;
   max-width: 100%;
 }
 
 .org-stepper {
+  --mat-stepper-container-color: transparent;
+  --mat-stepper-header-icon-background-color: transparent;
+  --mat-stepper-header-icon-foreground-color: var(--org-on-surface-variant);
+  --mat-stepper-header-selected-state-icon-background-color: var(--org-primary);
+  --mat-stepper-header-selected-state-icon-foreground-color: var(--org-on-primary);
+  --mat-stepper-header-done-state-icon-background-color: var(--org-primary-container);
+  --mat-stepper-header-done-state-icon-foreground-color: var(--org-on-primary-container);
+  --mat-stepper-header-edit-state-icon-background-color: var(--org-primary-container);
+  --mat-stepper-header-edit-state-icon-foreground-color: var(--org-on-primary-container);
+  --mat-stepper-header-label-text-color: var(--org-on-surface-variant);
+  --mat-stepper-header-selected-state-label-text-color: var(--org-on-surface);
+  --mat-stepper-header-selected-state-label-text-weight: var(--org-font-weight-semibold);
+  --mat-stepper-line-color: var(--org-outline-variant);
+  --mat-stepper-header-hover-state-layer-color: var(--org-state-hover);
+  --mat-stepper-header-focus-state-layer-color: var(--org-state-hover);
+
   background: transparent;
-  border-radius: var(--org-radius-lg);
   max-width: 100%;
   min-width: 0;
-  overflow: hidden;
 
   &--compact {
-    --mat-stepper-header-height: 56px;
-    --mat-stepper-header-selected-state-icon-background-color: var(--org-primary);
-    --mat-stepper-header-selected-state-label-text-color: var(--org-primary);
-    --mat-stepper-header-selected-state-label-text-weight: 700;
-    --mat-stepper-header-done-state-icon-background-color: var(--org-primary);
-
-    @include semantic.tablet {
-      --mat-stepper-header-height: 64px;
-    }
+    --mat-stepper-header-height: var(--org-touch);
   }
 
-  &--compact ::ng-deep .mat-horizontal-stepper-header-container {
-    display: none;
-
-    @include semantic.tablet {
-      display: flex;
-      padding: 16px 24px;
-      overflow-x: auto;
-      flex-wrap: nowrap;
-      max-width: 100%;
-      -webkit-overflow-scrolling: touch;
+  // Compact header: dots joined by a line; only the current step shows its name
+  // (Hick, Zeigarnik: what is left is visible without crowding the screen).
+  &--compact ::ng-deep {
+    .mat-horizontal-stepper-header-container {
+      margin-bottom: var(--org-space-md);
     }
-  }
 
-  &--compact ::ng-deep .mat-horizontal-content-container {
-    padding: 0;
+    .mat-horizontal-stepper-header {
+      border-radius: var(--org-radius-full);
+      padding: 0 var(--org-space-xs);
+    }
+
+    // The current step shows its name inside the pill: the number keeps the same
+    // clearance from the edge as from the top and bottom, and the text gets room after it.
+    .mat-horizontal-stepper-header[aria-selected='true'] {
+      padding-inline: var(--org-space-sm) var(--org-space-md);
+    }
+
+    .mat-step-header[aria-selected='false'] .mat-step-label {
+      display: none;
+    }
+
+    .mat-step-icon {
+      block-size: 28px;
+      inline-size: 28px;
+    }
+
+    .mat-step-icon-state-number:not(.mat-step-icon-selected) {
+      border: 1.5px solid var(--org-outline);
+    }
+
+    .mat-stepper-horizontal-line {
+      margin: 0 var(--org-space-xs);
+      min-width: var(--org-space-sm);
+    }
+
+    .mat-horizontal-content-container {
+      overflow: visible;
+      padding: 0;
+    }
   }
 }

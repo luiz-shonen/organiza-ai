@@ -10,12 +10,18 @@
 
 .org-card-header__badge {
   align-items: center;
-  border-radius: var(--org-radius-circle);
+  border-radius: var(--org-radius-sm);
   display: inline-flex;
   flex: 0 0 auto;
   height: var(--org-icon-size-xl);
   justify-content: center;
   width: var(--org-icon-size-xl);
+
+  // Sky blue is the neutral info tone; lilac stays reserved for actions (Von Restorff).
+  &--info {
+    background-color: var(--org-secondary-container);
+    color: var(--org-on-secondary-container);
+  }
 
   &--primary {
     background-color: var(--org-primary);

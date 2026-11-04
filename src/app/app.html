@@ -19,7 +19,7 @@
             [photoUrl]="user()?.photoURL ?? null"
             [activeRoute]="currentUrl()"
             [themeMode]="themeService.mode()"
-            [isDesignSystemNavigation]="currentUrl().startsWith('/design-system')"
+            [isDesignSystemNavigation]="true"
             (themeChange)="themeService.setMode($event)"
             (logout)="logout()"
             (closed)="drawerService.close()"
@@ -44,69 +44,99 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <div class="bg-blobs" aria-hidden="true">
-      <div class="blob blob--1"></div>
-      <div class="blob blob--2"></div>
-      <div class="blob blob--3"></div>
-    </div>
+    <div
+      class="app-backdrop"
+      [class.app-backdrop--festive]="isFestiveBackdrop()"
+      aria-hidden="true"
+    ></div>
     <app-seasonal-overlay />
     @if (showHeader()) {
       <mat-toolbar class="app-toolbar" role="banner">
-        <a routerLink="/" class="app-toolbar__brand" aria-label="Ir para página inicial">
-          <img src="icons/logo.svg" alt="Organiza AI" class="app-toolbar__logo" />
-        </a>
-
-        <span class="app-toolbar__spacer"></span>
-
-        <org-icon-button
-          class="app-toolbar__menu-btn"
-          ariaLabel="Abrir menu de navegação"
-          icon="menu"
-          [gradient]="false"
-          testId="navigation-menu-trigger"
-          (pressed)="openNavigation($event)"
-        />
-
-        @if (user() && (!user()!.isAnonymous || session())) {
-          @if (user()!.photoURL) {
-            <button
-              type="button"
-              (click)="navigateFromDrawer('/perfil')"
-              aria-label="Abrir meu perfil"
-              class="app-toolbar__user-btn"
-            >
-              <img [src]="user()!.photoURL" alt="Avatar" class="app-toolbar__avatar" />
-            </button>
-          } @else {
+        <div class="app-toolbar__start">
+          @if (isDesignSystemPage()) {
+            <!-- The design system catalog keeps its section index in a drawer. -->
             <org-icon-button
-              class="app-toolbar__user-btn"
-              ariaLabel="Abrir meu perfil"
-              icon="account_circle"
-              [gradient]="false"
-              (pressed)="navigateFromDrawer('/perfil')"
+              ariaLabel="Abrir menu de navegação"
+              icon="menu"
+              testId="navigation-menu-trigger"
+              (pressed)="openNavigation($event)"
+            />
+          } @else if (backRoute(); as backRoute) {
+            <org-icon-button
+              ariaLabel="Voltar"
+              icon="arrow_back"
+              testId="header-back-btn"
+              (pressed)="navigate(backRoute)"
             />
           }
-        } @else {
-          <a routerLink="/login" aria-label="Acessar ou cadastrar" class="app-toolbar__login-btn">
-            <org-icon name="login" />
-            <span class="app-toolbar__login-label">
-              <span class="app-toolbar__login-label-full">Entrar / Cadastrar</span>
-              <span class="app-toolbar__login-label-short">Entrar</span>
-            </span>
+          <a
+            routerLink="/"
+            class="app-toolbar__brand"
+            [class.app-toolbar__brand--inset]="!backRoute() && !isDesignSystemPage()"
+            aria-label="Organiza AI · ir para o início"
+          >
+            <org-logo />
           </a>
+        </div>
+
+        @if (isAuthenticated()) {
+          <org-nav-bar
+            class="app-toolbar__nav"
+            layout="header"
+            [items]="headerNavItems"
+            [activeRoute]="currentUrl()"
+          />
         }
+
+        <div class="app-toolbar__end">
+          <org-theme-toggle
+            [dark]="themeService.isDark()"
+            (darkChange)="themeService.setMode($event ? 'dark' : 'light')"
+          />
+          @if (showAvatar()) {
+            <a
+              routerLink="/perfil"
+              class="app-toolbar__avatar"
+              data-testid="header-profile-link"
+              [attr.aria-label]="'Meu perfil · ' + (user()?.displayName || user()?.email || '')"
+              [attr.aria-current]="currentUrl().startsWith('/perfil') ? 'page' : null"
+            >
+              <org-avatar
+                [name]="user()?.displayName || user()?.email || ''"
+                [photoUrl]="user()?.photoURL ?? null"
+              />
+            </a>
+          } @else {
+            <org-button
+              label="Entrar"
+              icon="login"
+              variant="secondary"
+              testId="header-login-btn"
+              (pressed)="navigate('/login')"
+            />
+          }
+        </div>
       </mat-toolbar>
     }
 
     @if (isOffline()) {
       <div class="app-offline-banner" role="alert" aria-live="assertive">
-        <org-icon name="cloud_off" />
+        <org-icon name="cloud_off" color="currentColor" />
         Você está offline. Algumas funções podem estar indisponíveis.
       </div>
     }
 
-    <main class="app-content" role="main">
+    <main class="app-content" [class.app-content--with-nav]="showBottomNav()" role="main">
       <router-outlet />
     </main>
+
+    @if (showBottomNav()) {
+      <org-nav-bar
+        class="app-bottom-nav"
+        layout="bottom"
+        [items]="bottomNavItems"
+        [activeRoute]="currentUrl()"
+      />
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

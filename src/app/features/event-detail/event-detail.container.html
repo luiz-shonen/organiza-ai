@@ -1,5 +1,5 @@
 @if (loading()) {
-  <org-page-layout maxWidth="default">
+  <org-page-layout maxWidth="narrow">
     <div class="event-detail__loading" aria-hidden="true">
       <org-skeleton class="event-detail__skeleton-hero" />
       <org-skeleton class="event-detail__skeleton-card" />
@@ -7,41 +7,77 @@
     </div>
   </org-page-layout>
 } @else if (event(); as event) {
-  <org-page-layout maxWidth="default" data-testid="event-detail-page">
-    <app-event-card [event]="event" [guestCount]="guestCount()" />
-
-    <section class="event-detail__section" aria-label="Confirmação de presença">
-      <app-rsvp-card
-        [isConfirmed]="isUserConfirmed()"
+  <org-page-layout maxWidth="narrow" data-testid="event-detail-page">
+    <div class="event-detail__stack" data-testid="event-detail">
+      <app-event-card
+        [event]="event"
         [guestCount]="guestCount()"
-        [isLoading]="rsvpLoading()"
-        [guestName]="currentGuestName()"
-        (confirmRsvp)="onConfirmRsvp()"
-        (cancelRsvp)="onCancelRsvp()"
+        [isOwner]="isOwner()"
+        [viewerName]="currentGuestName()"
+        [canEdit]="canEdit()"
+        (edit)="editEvent()"
       />
-    </section>
 
-    <app-item-list-card
-      [items]="items()"
-      [currentUserId]="currentUserId()"
-      (claim)="onClaimItemById($event)"
-      (unclaim)="onUnclaimItemById($event)"
-    />
+      <!-- The organizer hosts the event; there is no presence for them to confirm. -->
+      @if (!isOwner()) {
+        <app-rsvp-card
+          [isConfirmed]="isUserConfirmed()"
+          [isDeclined]="isDeclined()"
+          [canDecline]="!!memberUid()"
+          [bringsSomething]="checklist().length > 0"
+          [hasItems]="progress().length > 0"
+          [guestCount]="guestCount()"
+          [isLoading]="rsvpLoading()"
+          [guestName]="currentGuestName()"
+          (confirmRsvp)="onConfirmRsvp()"
+          (editRsvp)="onEditRsvp()"
+          (cancelRsvp)="onCancelRsvp($event)"
+          (declineRsvp)="onDeclineRsvp($event)"
+        />
+      }
 
-    @if (event.pixKey) {
-      <section class="event-detail__section" aria-label="Contribuição financeira">
-        <h2 class="event-detail__section-title org-gradient-text">Contribuição</h2>
+      @if (checklist().length) {
+        <app-family-checklist-card
+          [rows]="checklist()"
+          (boughtToggle)="onToggleBought($event)"
+          (removeRow)="onRemoveClaim($event)"
+        />
+      }
+
+      <!-- An event with nothing to bring shows no list to guests; organizers still see it. -->
+      @if (progress().length || canEdit()) {
+        <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
+      }
+
+      <app-guest-list-card
+        class="print-section"
+        [households]="households()"
+        [forOrganizer]="canEdit()"
+        [declines]="declines()"
+        (exportCsv)="exportGuests()"
+        (print)="printGuests()"
+      />
+
+      @if (event.pixKey) {
         <app-pix-card
           [pixKey]="event.pixKey"
           [pixType]="event.pixType"
           [estimatedBudget]="event.estimatedBudget ?? null"
           [guestCount]="guestCount()"
         />
-      </section>
-    }
+      }
+    </div>
+
+    <app-claim-sheet
+      [entry]="claimingEntry()"
+      [people]="claimPeople()"
+      [saving]="claimSaving()"
+      (confirm)="onConfirmClaim($event)"
+      (closed)="closeClaimSheet()"
+    />
   </org-page-layout>
 } @else {
-  <org-page-layout maxWidth="default">
+  <org-page-layout maxWidth="narrow">
     <org-empty-state
       icon="event"
       title="Evento não encontrado"

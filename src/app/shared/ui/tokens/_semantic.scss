@@ -32,103 +32,118 @@ $breakpoint-lg: 1200px;
 
 // Semantic roles. Light values live on :root; html.dark and the seasonal
 // themes only redefine roles, so components never need a theme selector.
+// Palette: Branco Essencial + Usabilidade (docs/design-proposals/branco-essencial-ux.html).
 @mixin apply() {
   @include foundation.apply;
 
   :root {
-    // Brand (logo triple)
-    --org-primary: #ff4d94;
+    // Brand: lilac drives actions, sky blue carries dates and info, leaf green
+    // marks success and progress.
+    --org-primary: #7950f2;
     --org-on-primary: #fff;
-    --org-primary-container: #ff80b3;
-    --org-on-primary-container: #3d001a;
-    --org-secondary: #ff8c42;
+    --org-primary-container: #f1ecff;
+    --org-on-primary-container: #5f3dc4;
+    --org-secondary: #1c9bef;
     --org-on-secondary: #fff;
-    --org-secondary-container: #ffb380;
-    --org-on-secondary-container: #3d1400;
-    --org-tertiary: #ffc837;
-    --org-on-tertiary: #2a1f00;
-    --org-tertiary-container: #ffe499;
-    --org-on-tertiary-container: #332600;
+    --org-secondary-container: #e7f5ff;
+    --org-on-secondary-container: #1971c2;
+    --org-secondary-container-edge: #cfe8ff;
+    --org-tertiary: #2f9e44;
+    --org-on-tertiary: #fff;
+    --org-tertiary-container: #ebfbee;
+    --org-on-tertiary-container: #2b8a3e;
+    --org-tertiary-container-edge: #c3eccb;
 
     // Status
-    --org-error: #ba1a1a;
+    --org-error: #c92a2a;
     --org-on-error: #fff;
-    --org-error-container: #ffdad6;
-    --org-on-error-container: #93000a;
-    --org-warning: #f59e0b;
-    --org-on-warning: #000;
-    --org-success: #176b35;
-    --org-on-success: #fff;
-    --org-success-container: #d8f3dc;
-    --org-on-success-container: #0d3d1d;
-    --org-info: #155eef;
-    --org-on-info: #fff;
-    --org-info-container: #dbe8ff;
-    --org-on-info-container: #002b75;
 
-    // Surfaces, text and outlines (Material 3 vocabulary)
-    --org-canvas: #fff7fb;
-    --org-surface: #fff8f8;
-    --org-surface-container-low: #fff0f4;
-    --org-surface-container: #fce8ef;
-    --org-surface-container-high: #f8dde8;
-    --org-surface-variant: #fce1ed;
-    --org-on-surface: #2a101f;
-    --org-on-surface-variant: #4f3d46;
-    --org-on-surface-muted: #85737b;
-    --org-outline: #85737b;
-    --org-outline-variant: #d8c2cb;
+    // Filled destructive button ("Remover item"): white text on a deep red, both themes.
+    --org-danger-fill: #c92a2a;
+    --org-on-danger-fill: #fff;
+    --org-error-container: #ffe3e3;
+    --org-on-error-container: #a51111;
+    --org-warning: #e8a200;
+    --org-on-warning: #000;
+    --org-warning-ink: #7a5200;
+
+    // Count bubble that needs attention ("Pendentes 1"): white text, 5:1 on this amber.
+    --org-attention-count-bg: #a85d00;
+    --org-on-attention-count: #fff;
+    --org-success: #2f9e44;
+    --org-on-success: #fff;
+    --org-success-container: #ebfbee;
+    --org-on-success-container: #2b8a3e;
+    --org-info: #1c9bef;
+    --org-on-info: #fff;
+    --org-info-container: #e7f5ff;
+    --org-on-info-container: #1971c2;
+
+    // Surfaces, text and outlines (Material 3 vocabulary). Components are white
+    // and neutral; colour is reserved for actions, dates and progress.
+    --org-canvas: #fff;
+    --org-surface: #fff;
+    --org-surface-container-low: #f6f6f7;
+    --org-surface-container: #f6f6f7;
+    --org-surface-container-high: #ebe6f7;
+    --org-surface-variant: #f6f6f7;
+    --org-on-surface: #18181b;
+    --org-on-surface-variant: #5f5f6b;
+    --org-on-surface-muted: #5f5f6b;
+    --org-outline: #d4d4d8;
+    --org-outline-variant: #ebe6f7;
 
     // Interaction states
-    --org-state-hover: color-mix(in srgb, var(--org-primary) 10%, transparent);
-    --org-state-selected: color-mix(in srgb, var(--org-primary) 20%, transparent);
-    --org-scrim: rgb(15 10 20 / 0.5);
+    --org-state-hover: color-mix(in srgb, var(--org-primary) 8%, transparent);
+    --org-state-selected: color-mix(in srgb, var(--org-primary) 16%, transparent);
+    --org-focus-ring: 0 0 0 3px var(--org-primary-container);
+    --org-scrim: rgb(15 10 20 / 0.45);
 
-    // App chrome (toolbar, drawers, dialogs)
-    --org-chrome-tint: linear-gradient(135deg, rgba(255, 77, 148, 0.08), rgba(255, 140, 66, 0.08));
-    --org-chrome-edge: color-mix(in srgb, var(--org-primary) 24%, transparent);
-    --org-chrome-shadow: rgba(0, 0, 0, 0.15);
-    --org-dialog-bg: rgb(255 255 255 / 0.84);
+    // App chrome (header, bottom navigation, sheets, dialogs)
+    --org-chrome-tint: rgb(255 255 255 / 0.82);
+    --org-chrome-edge: rgb(24 24 27 / 0.06);
+    --org-chrome-shadow: rgba(0, 0, 0, 0.18);
+    --org-chrome-blur: blur(12px);
+    --org-dialog-bg: #fff;
+    --org-nav-active-bg: var(--org-primary-container);
+    --org-nav-active-ink: var(--org-on-primary-container);
 
-    // Feedback text on glass (snackbars)
-    --org-feedback-success-ink: #0d3d1d;
-    --org-feedback-error-ink: #93000a;
-    --org-feedback-info-ink: #002b75;
+    // Feedback text on surfaces (snackbars)
+    --org-feedback-success-ink: #2b8a3e;
+    --org-feedback-error-ink: #a51111;
+    --org-feedback-info-ink: #1971c2;
     --org-seasonal-overlay-opacity: 0.15;
-    --org-glass-edge: rgba(255, 255, 255, 0.65);
+    --org-glass-edge: var(--org-outline-variant);
 
     // Form fields
-    --org-field-fill: rgba(255, 248, 248, 0.88);
-    --org-field-text: #2a101f;
+    --org-field-fill: #fff;
+    --org-field-text: #18181b;
 
-    // Glass, elevation and gradients
-    --org-glass-bg: rgba(255, 255, 255, 0.65);
-    --org-glass-bg-strong: rgba(255, 255, 255, 0.8);
-    --org-glass-ring-color: rgba(255, 77, 148, 0.28);
-    --org-glass-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(255, 255, 255, 0.2),
-      0 8px 32px rgba(35, 16, 67, 0.08);
-    --org-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --org-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.08);
-    --org-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-    --org-shadow-lg: var(--org-glass-shadow);
-    --org-shadow-overlay: 0 16px 40px rgba(0, 0, 0, 0.32);
-    --org-shadow-primary:
-      inset 0 0 0 1.5px rgba(255, 255, 255, 0.3),
-      0 10px 20px color-mix(in srgb, var(--org-primary) 30%, transparent);
-    --org-shadow-primary-hover:
-      inset 0 0 0 1.5px rgba(255, 255, 255, 0.4),
-      0 14px 28px color-mix(in srgb, var(--org-primary) 45%, transparent);
+    // Cards: solid surface, hairline border and a lilac-tinted ground shadow.
+    // The glass names stay so every existing surface picks up the flat recipe.
+    --org-glass-bg: var(--org-surface);
+    --org-glass-bg-strong: var(--org-surface);
+    --org-glass-ring-color: var(--org-outline-variant);
+    --org-glass-shadow: 0 2px 0 rgb(121 80 242 / 0.08);
+    --org-shadow-xs: 0 1px 2px rgba(24, 24, 27, 0.04);
+    --org-shadow-sm: 0 2px 6px rgba(24, 24, 27, 0.08);
+    --org-shadow-md: 0 4px 12px rgba(24, 24, 27, 0.1);
+    --org-shadow-lg: 0 6px 18px rgb(121 80 242 / 0.12);
+    --org-shadow-overlay: 0 16px 40px rgba(0, 0, 0, 0.24);
+    --org-shadow-primary: none;
+    --org-shadow-primary-hover: 0 4px 12px color-mix(in srgb, var(--org-primary) 28%, transparent);
     --org-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --org-gradient-primary: linear-gradient(135deg, #ff4d94 0%, #ff8c42 50%, #ffc837 100%);
-    --org-gradient-border: linear-gradient(
-      135deg,
-      rgba(255, 77, 148, 0.4),
-      rgba(255, 140, 66, 0.4)
-    );
+
+    // Actions are solid lilac; the leaf gradient is reserved for the title
+    // highlight and progress fills (goal-gradient effect).
+    --org-gradient-primary: linear-gradient(var(--org-primary), var(--org-primary));
+    --org-gradient-border: linear-gradient(var(--org-outline-variant), var(--org-outline-variant));
+    --org-gradient-highlight: linear-gradient(90deg, #40c057, #37b24d 50%, #2f9e44);
+    --org-gradient-brand: linear-gradient(90deg, #7950f2, #1c9bef 55%, #40c057);
+    --org-progress-track: #ebfbee;
     --org-gradient-dusk: linear-gradient(160deg, #2b1f45 0%, #5b3a8c 55%, #ff6b5b 130%);
     --org-gradient-confirmation: linear-gradient(135deg, #4fc3e8 0%, #3ddc97 100%);
-    --org-gradient-ring: conic-gradient(from 0deg, #ff6b5b, #ffb648, #4fc3e8, #5b3a8c, #ff6b5b);
+    --org-gradient-ring: conic-gradient(from 0deg, #7950f2, #1c9bef, #40c057, #7950f2);
     --org-gradient-theme-pascoa: linear-gradient(135deg, #7552a8, #d2a060 52%, #f4d58e);
     --org-gradient-theme-junina: linear-gradient(135deg, #ff5722, #ff8c42 50%, #ffb300);
     --org-gradient-theme-natal: linear-gradient(135deg, #b84555, #d77a61 50%, #deb36a);
@@ -136,72 +151,100 @@ $breakpoint-lg: 1200px;
     --org-brand-whatsapp: #25d366;
     --org-color-gold: #ffd700;
 
-    // Event categories
-    --org-cat-aniversario-bg: #ffe499;
-    --org-cat-aniversario-color: #d35400;
-    --org-cat-casamento-bg: #fce1ed;
-    --org-cat-casamento-color: #8e44ad;
-    --org-cat-festa-bg: #ffb380;
-    --org-cat-festa-color: #c0392b;
-    --org-cat-churrasco-bg: #d5dbdb;
-    --org-cat-churrasco-color: #2c3e50;
-    --org-cat-happy-bg: #aed6f1;
-    --org-cat-happy-color: #2980b9;
-    --org-cat-formatura-bg: #d2b4de;
-    --org-cat-formatura-color: #4a235a;
-    --org-cat-outros-bg: #e5e7e9;
-    --org-cat-outros-color: #7f8c8d;
+    // Event categories (tinted badges)
+    // Category tags are outlined, in hues kept apart from the status tags
+    // (Confirmado green, Pendente amber, Recusado red): no green, amber, orange or red here.
+    --org-category-tint: 14%;
+    --org-category-ink: 72%;
+    --org-cat-aniversario-bg: #f8f0fc;
+    --org-cat-aniversario-color: #862e9c;
+    --org-cat-casamento-bg: #fdf0fa;
+    --org-cat-casamento-color: #a2177e;
+    --org-cat-festa-bg: #e3fafc;
+    --org-cat-festa-color: #0b7285;
+    --org-cat-churrasco-bg: #edf2ff;
+    --org-cat-churrasco-color: #364fc7;
+    --org-cat-happy-bg: #e7f5ff;
+    --org-cat-happy-color: #1971c2;
+    --org-cat-formatura-bg: #f3f0ff;
+    --org-cat-formatura-color: #5f3dc4;
+    --org-cat-outros-bg: #f1f3f5;
+    --org-cat-outros-color: #495057;
   }
 
   html.dark {
-    --org-primary-container: #5c183b;
-    --org-on-primary-container: #ffd8e6;
-    --org-secondary-container: #5a2c14;
-    --org-on-secondary-container: #ffdcc2;
-    --org-tertiary-container: #4e3900;
-    --org-on-tertiary-container: #ffe088;
-    --org-canvas: #241c31;
-    --org-surface: #241c31;
-    --org-surface-container-low: #2b2238;
-    --org-surface-container: #31273f;
-    --org-surface-container-high: #3a2e49;
-    --org-surface-variant: #4f3d46;
-    --org-on-surface: #fdecf2;
-    --org-on-surface-variant: #d8c2cb;
-    --org-on-surface-muted: #a08c95;
-    --org-outline: #a08c95;
-    --org-outline-variant: #4f3d46;
-    --org-field-fill: rgba(79, 61, 70, 0.88);
-    --org-field-text: #fdecf2;
-    --org-chrome-tint: linear-gradient(135deg, rgba(255, 77, 148, 0.12), rgba(255, 140, 66, 0.12));
-    --org-chrome-edge: color-mix(in srgb, var(--org-primary) 32%, transparent);
-    --org-dialog-bg: #241c31;
-    --org-feedback-success-ink: #fdecf2;
-    --org-feedback-error-ink: #fdecf2;
-    --org-feedback-info-ink: #fdecf2;
+    --org-primary: #b197fc;
+    --org-on-primary: #1b1530;
+    --org-primary-container: rgb(177 151 252 / 0.18);
+    --org-on-primary-container: #d0bfff;
+    --org-secondary: #74c0fc;
+    --org-on-secondary: #10243a;
+    --org-secondary-container: rgb(116 192 252 / 0.12);
+    --org-on-secondary-container: #a5d8ff;
+    --org-secondary-container-edge: rgb(116 192 252 / 0.2);
+    --org-tertiary: #69db7c;
+    --org-on-tertiary: #0f2a14;
+    --org-tertiary-container: rgb(105 219 124 / 0.1);
+    --org-on-tertiary-container: #8ce99a;
+    --org-tertiary-container-edge: rgb(105 219 124 / 0.2);
+    --org-error: #ff8787;
+    --org-on-error: #2a0b0b;
+    --org-error-container: rgb(255 135 135 / 0.14);
+    --org-on-error-container: #ffc9c9;
+    --org-warning-ink: #ffd166;
+    --org-success: #69db7c;
+    --org-on-success: #0f2a14;
+    --org-success-container: rgb(105 219 124 / 0.1);
+    --org-on-success-container: #8ce99a;
+    --org-info: #74c0fc;
+    --org-on-info: #10243a;
+    --org-info-container: rgb(116 192 252 / 0.12);
+    --org-on-info-container: #a5d8ff;
+    --org-canvas: #181429;
+    --org-surface: #2a2346;
+    --org-surface-container-low: #352d56;
+    --org-surface-container: #352d56;
+    --org-surface-container-high: #3d3463;
+    --org-surface-variant: #352d56;
+    --org-on-surface: #f6f3ff;
+    --org-on-surface-variant: #bcb3da;
+    --org-on-surface-muted: #bcb3da;
+    --org-outline: #4e4479;
+    --org-outline-variant: #3d3463;
+    --org-field-fill: #2a2346;
+    --org-field-text: #f6f3ff;
+    --org-chrome-tint: rgb(36 30 62 / 0.88);
+    --org-chrome-edge: rgb(255 255 255 / 0.07);
+    --org-dialog-bg: #241e3e;
+    --org-feedback-success-ink: #f6f3ff;
+    --org-feedback-error-ink: #f6f3ff;
+    --org-feedback-info-ink: #f6f3ff;
     --org-seasonal-overlay-opacity: 0.12;
-    --org-glass-edge: rgba(255, 255, 255, 0.14);
-    --org-glass-bg: rgb(43 31 69 / 0.62);
-    --org-glass-bg-strong: rgb(43 31 69 / 0.8);
-    --org-glass-shadow: 0 8px 24px hsl(265deg 60% 4% / 0.3);
+    --org-glass-shadow: none;
     --org-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
     --org-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
     --org-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --org-shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.35);
     --org-shadow-text: 0 2px 8px rgba(0, 0, 0, 0.7);
-    --org-cat-aniversario-bg: #4a3800;
-    --org-cat-aniversario-color: #ffd566;
-    --org-cat-casamento-bg: #471b3c;
-    --org-cat-casamento-color: #f1a9ee;
-    --org-cat-festa-bg: #521c10;
-    --org-cat-festa-color: #ff8a65;
-    --org-cat-churrasco-bg: #2d3748;
-    --org-cat-churrasco-color: #cbd5e0;
-    --org-cat-happy-bg: #1a365d;
-    --org-cat-happy-color: #90cdf4;
-    --org-cat-formatura-bg: #321c4d;
-    --org-cat-formatura-color: #d6bcfa;
-    --org-cat-outros-bg: #2d3748;
-    --org-cat-outros-color: #a0aec0;
+    --org-gradient-highlight: linear-gradient(90deg, #8ce99a, #69db7c 50%, #51cf66);
+    --org-gradient-brand: linear-gradient(90deg, #b197fc, #74c0fc 55%, #8ce99a);
+    --org-progress-track: rgb(255 255 255 / 0.1);
+    --org-category-tint: 24%;
+    --org-category-ink: 45%;
+    --org-cat-aniversario-bg: color-mix(in srgb, #9c36b5 26%, #2a2346);
+    --org-cat-aniversario-color: color-mix(in srgb, #9c36b5 40%, #fff);
+    --org-cat-casamento-bg: color-mix(in srgb, #c2259f 26%, #2a2346);
+    --org-cat-casamento-color: color-mix(in srgb, #c2259f 40%, #fff);
+    --org-cat-festa-bg: color-mix(in srgb, #1098ad 26%, #2a2346);
+    --org-cat-festa-color: color-mix(in srgb, #1098ad 40%, #fff);
+    --org-cat-churrasco-bg: color-mix(in srgb, #4263eb 26%, #2a2346);
+    --org-cat-churrasco-color: color-mix(in srgb, #4263eb 40%, #fff);
+    --org-cat-happy-bg: color-mix(in srgb, #1c7ed6 26%, #2a2346);
+    --org-cat-happy-color: color-mix(in srgb, #1c7ed6 40%, #fff);
+    --org-cat-formatura-bg: color-mix(in srgb, #7950f2 26%, #2a2346);
+    --org-cat-formatura-color: color-mix(in srgb, #7950f2 40%, #fff);
+    --org-cat-outros-bg: color-mix(in srgb, #a1a1aa 26%, #2a2346);
+    --org-cat-outros-color: color-mix(in srgb, #a1a1aa 40%, #fff);
   }
 
   @include themes.apply;

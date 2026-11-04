@@ -61,8 +61,14 @@
   border-radius: var(--org-radius-md);
 }
 
-.cdk-overlay-pane :is(.mat-mdc-menu-panel, .mat-mdc-select-panel, .mat-mdc-autocomplete-panel) {
+.cdk-overlay-pane .mat-mdc-menu-panel {
   overflow: hidden;
+}
+
+// Long option lists scroll inside the panel (Material caps its height); hiding the
+// overflow cut the last options off with no way to reach them.
+.cdk-overlay-pane :is(.mat-mdc-select-panel, .mat-mdc-autocomplete-panel) {
+  overflow: hidden auto;
 }
 
 .mat-mdc-snack-bar-container.org-feedback-snackbar,

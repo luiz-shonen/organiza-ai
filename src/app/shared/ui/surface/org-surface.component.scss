@@ -15,10 +15,10 @@
       padding-box,
     var(--org-gradient-border) border-box;
   border: var(--org-glass-ring-width, 1.5px) solid transparent;
-  border-radius: var(--org-radius-lg, 1rem);
+  border-radius: var(--org-radius-card);
   box-shadow: var(--org-glass-shadow);
   box-sizing: border-box;
-  padding: 16px 12px;
+  padding: var(--org-space-md);
   position: relative;
   transition:
     transform var(--org-motion-fast) var(--org-motion-ease),
@@ -45,14 +45,14 @@
   }
 
   &--hero {
-    border-radius: 1.5rem;
+    border-radius: var(--org-radius-card);
     height: 100%;
     overflow: hidden;
     padding: 0;
   }
 
   &--panel {
-    border-radius: 1.25rem;
+    border-radius: var(--org-radius-card);
     padding: 20px 16px;
 
     @include semantic.tablet {
@@ -81,5 +81,11 @@
 
   @include semantic.tablet {
     padding: 24px 16px;
+  }
+
+  // After the tablet padding so it wins at every width.
+  &--flush {
+    overflow: hidden;
+    padding: 0;
   }
 }

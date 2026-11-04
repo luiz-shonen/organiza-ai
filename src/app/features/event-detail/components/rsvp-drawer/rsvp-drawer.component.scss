@@ -51,15 +51,43 @@
     padding: 8px 12px;
   }
 
+  // Who is answering, said plainly: the account's name, in large type.
+  &__guest {
+    background: var(--org-surface-container-low);
+    border-radius: var(--org-radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-2xs);
+    margin-bottom: var(--org-space-md);
+    padding: var(--org-space-md);
+  }
+
+  &__guest-label {
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-font-size-xs);
+  }
+
+  &__guest-name {
+    color: var(--org-on-surface);
+    font-family: var(--org-font-display);
+    font-size: var(--org-font-size-2xl);
+    line-height: var(--org-line-height-tight);
+  }
+
+  // A hint fills the space Material leaves under a field; this keeps the next label clear.
   &__field {
     display: block;
+    margin-block-end: var(--org-space-sm);
     width: 100%;
   }
 
+  // The hint under "Outros acompanhantes" fills the space a field leaves below it, so the
+  // first companion needs its own room above the label.
   &__companions {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--org-space-xs);
+    margin-top: var(--org-space-md);
   }
 
   &__family {

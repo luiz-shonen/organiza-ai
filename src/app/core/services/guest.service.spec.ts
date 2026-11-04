@@ -98,6 +98,36 @@ describe('GuestService', () => {
       );
     });
 
+    it('formats family phones and drops one that is not a phone', async () => {
+      await service.batchConfirmRsvp('evt-100', { uid: 'user-123', name: 'Carlos Silva' }, [
+        {
+          id: 'fam-1',
+          name: 'Mariana',
+          relationship: 'spouse',
+          phone: '11988887777',
+          createdAt: '',
+        },
+        {
+          id: 'fam-2',
+          name: 'Lucas',
+          relationship: 'child',
+          phone: '3199231231232131',
+          createdAt: '',
+        },
+      ]);
+
+      expect(mockGateway.batchOps.set).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123_fam-1',
+        expect.objectContaining({ phone: '(11) 98888-7777' }),
+        { merge: true },
+      );
+      expect(mockGateway.batchOps.set).toHaveBeenCalledWith(
+        'events/evt-100/guests/user-123_fam-2',
+        expect.objectContaining({ phone: '' }),
+        { merge: true },
+      );
+    });
+
     it('works when family members list is empty', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
@@ -157,6 +187,19 @@ describe('GuestService', () => {
       expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100/items/item-2', {
         claimedBy: null,
       });
+    });
+
+    it('releases the household claims only when the account holder cancels', async () => {
+      mockGateway.getDocs.mockResolvedValue([]);
+
+      await service.cancelRsvp('evt-100', 'user-123', 'user-123', 'user-123');
+      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith('events/evt-100/claims/user-123');
+
+      mockGateway.batchOps.delete.mockClear();
+      await service.cancelRsvp('evt-100', 'guest-9', '11999998888');
+      expect(mockGateway.batchOps.delete).not.toHaveBeenCalledWith(
+        'events/evt-100/claims/11999998888',
+      );
     });
 
     it('rejects and rolls back if batch commit fails', async () => {

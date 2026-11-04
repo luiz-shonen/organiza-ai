@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -8,7 +8,6 @@ import { EventEditorContainer } from './event-editor.container';
 import {
   EventService,
   ItemService,
-  GuestService,
   ConfettiService,
   HeaderService,
   AuthService,
@@ -16,10 +15,9 @@ import {
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { MatStepper } from '@angular/material/stepper';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { By } from '@angular/platform-browser';
 import { PartyEvent } from '../../../core/models';
-import { FeedbackService } from '../../../shared/ui';
+import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 
 vi.mock('qrcode', () => ({
   default: {
@@ -28,6 +26,7 @@ vi.mock('qrcode', () => ({
 }));
 
 describe('EventEditorContainer', () => {
+  const mockDialogs = { confirm: vi.fn(() => of(true)) };
   let component: EventEditorContainer;
   let fixture: ComponentFixture<EventEditorContainer>;
 
@@ -71,10 +70,7 @@ describe('EventEditorContainer', () => {
     listItems: ReturnType<typeof vi.fn>;
     addItem: ReturnType<typeof vi.fn>;
     deleteItem: ReturnType<typeof vi.fn>;
-  };
-
-  let mockGuestService: {
-    listGuests: ReturnType<typeof vi.fn>;
+    updateItem: ReturnType<typeof vi.fn>;
   };
 
   let mockFeedback: {
@@ -98,10 +94,7 @@ describe('EventEditorContainer', () => {
       listItems: vi.fn().mockReturnValue(of([])),
       addItem: vi.fn().mockResolvedValue('item-1'),
       deleteItem: vi.fn().mockResolvedValue(undefined),
-    };
-
-    mockGuestService = {
-      listGuests: vi.fn().mockReturnValue(of([])),
+      updateItem: vi.fn().mockResolvedValue(undefined),
     };
 
     mockFeedback = {
@@ -114,9 +107,9 @@ describe('EventEditorContainer', () => {
       imports: [EventEditorContainer, NoopAnimationsModule],
       providers: [
         provideRouter([]),
+        { provide: OrgDialogService, useValue: mockDialogs },
         { provide: EventService, useValue: mockEventService },
         { provide: ItemService, useValue: mockItemService },
-        { provide: GuestService, useValue: mockGuestService },
         {
           provide: AuthService,
           useValue: {
@@ -156,7 +149,8 @@ describe('EventEditorContainer', () => {
       expect(component['pixForm'].enabled).toBe(true);
     });
 
-    it('should allow owner to save event updates', async () => {
+    it('saves the changes of the owner and goes back to Meus eventos', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       await component['saveEvent']();
       expect(mockEventService.updateEvent).toHaveBeenCalledWith(
         'evt-123',
@@ -166,6 +160,29 @@ describe('EventEditorContainer', () => {
         }),
       );
       expect(mockFeedback.success).toHaveBeenCalledWith('Evento atualizado!');
+      expect(navigate).toHaveBeenCalledWith(['/meus-eventos']);
+    });
+
+    it('fills the address fields of an older event from its one-line location', () => {
+      mockEventService.getEvent.mockReturnValue(
+        of({ ...mockOwnerEvent, addressDetails: undefined }),
+      );
+      fixture = TestBed.createComponent(EventEditorContainer);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('id', 'evt-123');
+      fixture.detectChanges();
+
+      expect(component['addressForm'].getRawValue()).toEqual({
+        cep: '01001-000',
+        address: 'Rua das Flores',
+        number: '100',
+        neighborhood: 'Centro',
+        city: 'São Paulo/SP',
+      });
+      expect(component['missingSteps']()).toEqual([]);
+
+      component['addressForm'].controls.number.setValue('');
+      expect(component['missingSteps']()).toEqual(['Endereço']);
     });
 
     it('opens a typed collaborator drawer for the event owner', () => {
@@ -207,12 +224,18 @@ describe('EventEditorContainer', () => {
         quantity: 3,
       });
 
-      await component['removeItem']({
-        id: 'item-99',
-        name: 'Pastel',
-        quantity: 2,
-        claimedBy: null,
+      component['items'].set([{ id: 'item-99', name: 'Pastel', quantity: 2, claimedBy: null }]);
+      await component['updateItem']({
+        index: 0,
+        item: { name: 'Pastel de queijo', quantity: 4, unit: 'un.' },
       });
+      expect(mockItemService.updateItem).toHaveBeenCalledWith('evt-123', 'item-99', {
+        name: 'Pastel de queijo',
+        quantity: 4,
+        unit: 'un.',
+      });
+
+      await component['removeItem'](0);
 
       expect(mockItemService.deleteItem).toHaveBeenCalledWith('evt-123', 'item-99');
     });
@@ -232,30 +255,153 @@ describe('EventEditorContainer', () => {
       expect(component['basicInfoForm'].enabled).toBe(true);
     });
 
-    it('should announce the active step with a compact mobile progress summary', () => {
+    it('has four steps, with the optional items step before Pix', () => {
       const stepper = fixture.debugElement.query(By.directive(MatStepper))
         .componentInstance as MatStepper;
+      expect(stepper.steps.map((step) => step.label)).toEqual([
+        'Informações',
+        'Endereço',
+        'Itens',
+        'Pix',
+      ]);
       const element = fixture.nativeElement as HTMLElement;
-
-      expect(element.querySelector('.editor__stepper--mobile')).toBeTruthy();
-      const progress = element.querySelector('[data-testid="event-step-progress"]');
-      expect(progress?.textContent).toContain('Etapa 1 de 3');
-      expect(progress?.textContent).toContain('Informações do evento');
-      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-        '1',
-      );
-
-      stepper.selectionChange.emit({ selectedIndex: 2 } as StepperSelectionEvent);
-      fixture.detectChanges();
-
-      expect(progress?.textContent).toContain('Etapa 3 de 3');
-      expect(progress?.textContent).toContain('Pagamento por Pix');
-      expect(progress?.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe(
-        '3',
-      );
-      expect(element.querySelector('#pix-form org-text-field')).toBeTruthy();
-      expect(element.querySelector('#pix-form org-button')).toBeTruthy();
+      expect(element.querySelector('[data-testid="event-editor-step-3"]')).toBeTruthy();
       expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')).toBeTruthy();
+    });
+
+    it('keeps items typed during creation and saves them with the new event', async () => {
+      await component['addItem']({
+        name: 'Pipoca',
+        quantity: 50,
+        unit: 'pacotes',
+        fixedQuantity: true,
+      });
+      await component['addItem']({ name: 'Bolo', quantity: 2 });
+      await component['removeItem'](1);
+      expect(mockItemService.addItem).not.toHaveBeenCalled();
+      expect(component['stepItems']()).toEqual([
+        { name: 'Pipoca', quantity: 50, unit: 'pacotes', fixedQuantity: true },
+      ]);
+
+      const date = new Date(Date.now() + 7 * 86_400_000);
+      component['basicInfoForm'].setValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: 'Descrição',
+        date,
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      await component['saveEvent']();
+
+      expect(mockEventService.createEvent).toHaveBeenCalled();
+      expect(mockItemService.addItem).toHaveBeenCalledWith('new-id', {
+        name: 'Pipoca',
+        quantity: 50,
+        unit: 'pacotes',
+        fixedQuantity: true,
+      });
+    });
+
+    it('blocks step 1 right away for a date and time in the past or a typed non-date', () => {
+      const form = component['basicInfoForm'];
+      form.setValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: 'Arraiá com quentão',
+        date: new Date(Date.now() - 86_400_000),
+        time: '20:00',
+      });
+      expect(form.hasError('pastDateTime')).toBe(true);
+      expect(form.invalid).toBe(true);
+
+      form.controls.date.setValue(new Date(NaN));
+      expect(form.controls.date.hasError('invalidDate')).toBe(true);
+
+      form.controls.date.setValue(new Date(Date.now() + 7 * 86_400_000));
+      expect(form.valid).toBe(true);
+    });
+
+    it('refuses markup in the title, a bad house number and an invalid Pix key', async () => {
+      const date = new Date(Date.now() + 7 * 86_400_000);
+      component['basicInfoForm'].setValue({
+        title: '<script>Festa</script>',
+        category: 'Outros',
+        description: 'Arraiá com quentão',
+        date,
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: 'Casa 5',
+      });
+      component['pixForm'].setValue({ pixKey: 'chave qualquer' });
+
+      expect(component['basicInfoForm'].controls.title.getError('valueObject')).toBe(
+        'Não use os caracteres < > { }',
+      );
+      expect(component['addressForm'].controls.number.invalid).toBe(true);
+      expect(component['pixForm'].controls.pixKey.invalid).toBe(true);
+
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).not.toHaveBeenCalled();
+    });
+
+    it('saves a category typed by the organizer', async () => {
+      component['basicInfoForm'].setValue({
+        title: 'Festa',
+        category: '  Chá   revelação ',
+        description: 'Arraiá com quentão',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      await component['saveEvent']();
+
+      expect(mockEventService.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ category: 'Chá revelação' }),
+      );
+    });
+
+    it('saves tidied text and the CEP formatted', async () => {
+      const date = new Date(Date.now() + 7 * 86_400_000);
+      component['basicInfoForm'].setValue({
+        title: '  Festa   Junina ',
+        category: 'Outros',
+        description: 'Arraiá com quentão',
+        date,
+        time: '20:00',
+      });
+      component['addressForm'].setValue({
+        cep: '30514160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: 's/n',
+      });
+      await component['saveEvent']();
+
+      expect(mockEventService.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Festa Junina',
+          addressDetails: expect.objectContaining({ cep: '30514-160', number: 'S/N' }),
+        }),
+      );
     });
   });
 });

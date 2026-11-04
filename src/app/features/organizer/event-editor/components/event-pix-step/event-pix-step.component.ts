@@ -1,16 +1,26 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { fieldError } from '../../../../../core/value-objects';
 import { EventPixForm } from '../../../../../core/models';
 import {
   OrgButtonComponent,
+  OrgCardHeaderComponent,
   OrgIconComponent,
+  OrgSurfaceComponent,
   OrgTextFieldComponent,
 } from '../../../../../shared/ui';
 
 @Component({
   selector: 'app-event-pix-step',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, OrgButtonComponent, OrgIconComponent, OrgTextFieldComponent],
+  imports: [
+    ReactiveFormsModule,
+    OrgButtonComponent,
+    OrgCardHeaderComponent,
+    OrgIconComponent,
+    OrgSurfaceComponent,
+    OrgTextFieldComponent,
+  ],
   templateUrl: './event-pix-step.component.html',
   styleUrl: '../event-step.scss',
 })
@@ -21,7 +31,10 @@ export class EventPixStepComponent {
   readonly isEditing = input(false);
   readonly saving = input(false);
   /** Every step of the event form is valid. */
-  readonly complete = input(false);
+  /** Steps that still block saving; empty when everything is filled in. */
+  readonly missingSteps = input<readonly string[]>([]);
   readonly back = output<void>();
   readonly save = output<void>();
+
+  protected readonly fieldError = fieldError;
 }

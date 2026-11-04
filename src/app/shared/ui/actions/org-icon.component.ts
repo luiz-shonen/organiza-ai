@@ -53,7 +53,18 @@ export type OrgIconName =
   | 'person_add'
   | 'expand_more'
   | 'login'
-  | 'cloud_off';
+  | 'cloud_off'
+  | 'home'
+  | 'calendar_month'
+  | 'brightness_auto'
+  | 'assignment'
+  | 'auto_awesome'
+  | 'remove'
+  | 'lock_open'
+  | 'check'
+  | 'chevron_right'
+  | 'event_available'
+  | 'calendar_today';
 
 export type OrgIconSize = 'sm' | 'md' | 'lg';
 
@@ -110,6 +121,17 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   expand_more: 'expand_more',
   login: 'login',
   cloud_off: 'cloud_off',
+  home: 'home',
+  calendar_month: 'calendar_month',
+  brightness_auto: 'brightness_auto',
+  assignment: 'assignment',
+  auto_awesome: 'auto_awesome',
+  remove: 'remove',
+  lock_open: 'lock_open',
+  check: 'check',
+  chevron_right: 'chevron_right',
+  event_available: 'event_available',
+  calendar_today: 'calendar_today',
 };
 
 @Component({

@@ -10,3 +10,7 @@
   display: block;
   width: 100%;
 }
+
+.org-date-field__error {
+  @include field.error-text;
+}

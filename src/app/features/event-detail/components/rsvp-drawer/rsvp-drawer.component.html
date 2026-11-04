@@ -7,9 +7,15 @@
 >
   <header class="rsvp-drawer__header">
     <div>
-      <h2 id="rsvp-drawer-title" class="rsvp-drawer__title">Confirme seus dados</h2>
+      <h2 id="rsvp-drawer-title" class="rsvp-drawer__title">
+        {{ editing() ? 'Editar presença' : 'Confirme seus dados' }}
+      </h2>
       <p class="rsvp-drawer__description">
-        Sua presença principal permanece vinculada à sua conta verificada.
+        {{
+          editing()
+            ? 'Mude acompanhantes, familiares ou seu telefone.'
+            : 'Sua presença principal permanece vinculada à sua conta verificada.'
+        }}
       </p>
     </div>
     <org-icon-button
@@ -22,65 +28,23 @@
 
   <form [formGroup]="form" class="rsvp-drawer__form" id="rsvp-form">
     <div class="rsvp-drawer__content">
-      <org-text-field
-        class="rsvp-drawer__field"
-        label="Seu nome"
-        formControlName="name"
-        [required]="true"
-        testId="rsvp-name-input"
-        [error]="
-          form.controls.name.hasError('required') && form.controls.name.touched
-            ? 'Nome é obrigatório'
-            : ''
-        "
-      />
+      <div class="rsvp-drawer__guest" data-testid="rsvp-guest-name">
+        <span class="rsvp-drawer__guest-label">Confirmando como</span>
+        <strong class="rsvp-drawer__guest-name">{{ guestName() }}</strong>
+      </div>
 
       <org-text-field
         class="rsvp-drawer__field"
         label="WhatsApp / Telefone"
         type="tel"
         formControlName="phone"
+        placeholder="(11) 99999-9999"
         [required]="true"
+        [mask]="maskPhone"
+        hint="Mudar aqui também muda no seu perfil."
         testId="rsvp-phone-input"
-        [error]="
-          form.controls.phone.hasError('required') && form.controls.phone.touched
-            ? 'Telefone é obrigatório'
-            : form.controls.phone.hasError('minlength') && form.controls.phone.touched
-              ? 'Mínimo 10 dígitos'
-              : ''
-        "
+        [error]="fieldError(form.controls.phone, 'Telefone é obrigatório')"
       />
-
-      <org-text-field
-        class="rsvp-drawer__field"
-        label="Outros acompanhantes"
-        type="number"
-        hint="De 0 a 10 acompanhantes fora da família"
-        formControlName="companionsCount"
-        testId="rsvp-companions-input"
-        (valueChange)="onCompanionsCountChange($event)"
-        [error]="
-          form.controls.companionsCount.invalid && form.controls.companionsCount.touched
-            ? 'Informe um número entre 0 e 10'
-            : ''
-        "
-      />
-
-      <div formArrayName="companions" class="rsvp-drawer__companions" aria-label="Acompanhantes">
-        @for (control of companions.controls; track $index) {
-          <org-text-field
-            class="rsvp-drawer__field"
-            [label]="'Acompanhante ' + ($index + 1)"
-            [formControlName]="$index"
-            [required]="true"
-            [error]="
-              control.hasError('required') && control.touched
-                ? 'Nome do acompanhante é obrigatório'
-                : ''
-            "
-          />
-        }
-      </div>
 
       <div class="rsvp-drawer__family" data-testid="family-selector">
         <app-family-selector
@@ -92,6 +56,14 @@
           (addInlineMember)="onAddInlineFamilyMember($event)"
         />
       </div>
+
+      <app-companion-selector
+        class="rsvp-drawer__companions"
+        [names]="companionNames()"
+        [selected]="selectedCompanions()"
+        (toggleCompanion)="onToggleCompanion($event)"
+        (add)="onAddCompanion($event)"
+      />
     </div>
 
     <footer class="rsvp-drawer__actions">
@@ -102,7 +74,11 @@
         data-testid="rsvp-cancel-btn"
         (pressed)="closeDrawer()"
       />
-      <org-button label="Confirmar" data-testid="rsvp-confirm-btn" (pressed)="submit()" />
+      <org-button
+        [label]="editing() ? 'Salvar' : 'Confirmar'"
+        data-testid="rsvp-confirm-btn"
+        (pressed)="submit()"
+      />
     </footer>
   </form>
 </section>

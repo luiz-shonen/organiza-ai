@@ -1,0 +1,6 @@
+@if (day()) {
+  <span class="org-date-badge" role="img" [attr.aria-label]="label()">
+    <span class="org-date-badge__month" aria-hidden="true">{{ month() }}</span>
+    <span class="org-date-badge__day" aria-hidden="true">{{ day() }}</span>
+  </span>
+}

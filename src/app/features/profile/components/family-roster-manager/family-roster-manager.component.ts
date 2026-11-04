@@ -1,75 +1,72 @@
-import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
+import { getRelationshipLabel } from '../../../../core/utils';
+import { Phone } from '../../../../core/value-objects';
 import {
-  OrgAutocompleteFieldComponent,
-  OrgButtonComponent,
+  OrgAvatarComponent,
+  OrgBottomSheetComponent,
+  OrgCardHeaderComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
   OrgSurfaceComponent,
-  OrgTextFieldComponent,
 } from '../../../../shared/ui';
+import {
+  FamilyMemberFormComponent,
+  type AddFamilyMemberPayload,
+} from '../family-member-form/family-member-form.component';
 
-export interface AddFamilyMemberPayload {
-  name: string;
-  relationship: FamilyRelationship;
-  phone?: string;
+export type { AddFamilyMemberPayload };
+
+export interface UpdateFamilyMemberPayload extends AddFamilyMemberPayload {
+  id: string;
 }
 
+/**
+ * "Minha família": the add form is always open, and ✏️ edits a person in a sheet, so
+ * whatever was being typed for a new member stays in the add form.
+ */
 @Component({
   selector: 'app-family-roster-manager',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    FormsModule,
-    OrgButtonComponent,
-    OrgAutocompleteFieldComponent,
+    FamilyMemberFormComponent,
+    OrgAvatarComponent,
+    OrgBottomSheetComponent,
+    OrgCardHeaderComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
     OrgSurfaceComponent,
-    OrgTextFieldComponent,
   ],
   templateUrl: './family-roster-manager.component.html',
   styleUrl: './family-roster-manager.component.scss',
 })
 export class FamilyRosterManagerComponent {
   readonly members = input.required<FamilyMember[]>();
-  readonly isAdding = input<boolean>(false);
+  /** True while the page saves an add or an edit. */
+  readonly saving = input<boolean>(false);
 
   readonly addMember = output<AddFamilyMemberPayload>();
+  readonly updateMember = output<UpdateFamilyMemberPayload>();
   readonly removeMember = output<string>();
 
-  protected readonly newName = signal<string>('');
-  protected readonly newRelationship = signal<FamilyRelationship>('child');
-  protected readonly newPhone = signal<string>('');
-
-  protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
+  protected readonly displayPhone = Phone.display;
+  /** Id of the member open in the edit sheet; null while it is closed. */
+  protected readonly editingId = signal<string | null>(null);
+  protected readonly editingMember = computed(
+    () => this.members().find((member) => member.id === this.editingId()) ?? null,
+  );
 
   protected getRelationshipLabel(value: FamilyRelationship): string {
     return getRelationshipLabel(value);
   }
 
-  protected setRelationship(value: string | null): void {
-    const option = this.relationshipOptions.find((candidate) => candidate.value === value);
-    this.newRelationship.set(option?.value ?? 'child');
-  }
-
-  protected onAddSubmit(): void {
-    const trimmedName = this.newName().trim();
-    if (!trimmedName) return;
-
-    this.addMember.emit({
-      name: trimmedName,
-      relationship: this.newRelationship(),
-      phone: this.newPhone().trim() || undefined,
-    });
-
-    this.newName.set('');
-    this.newRelationship.set('child');
-    this.newPhone.set('');
+  protected saveEdit(payload: AddFamilyMemberPayload): void {
+    const id = this.editingId();
+    if (!id) return;
+    this.updateMember.emit({ id, ...payload });
+    this.editingId.set(null);
   }
 
   protected onRemove(memberId: string): void {
+    if (this.editingId() === memberId) this.editingId.set(null);
     this.removeMember.emit(memberId);
   }
 }

@@ -51,7 +51,7 @@ describe('FamilySelectorComponent', () => {
     expect(component['indeterminate']()).toBe(true);
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('1 selecionado(s)');
+    expect(compiled.textContent).toContain('1 selecionado');
   });
 
   it('should compute allSelected as true when all members are in selectedIds', () => {
@@ -105,17 +105,32 @@ describe('FamilySelectorComponent', () => {
     // Set values
     component['inlineName'].set('Pedro Silva');
     component['setInlineRelationship']('sibling');
-    component['inlinePhone'].set('11966665555');
 
     component['onSubmitInline']();
 
-    expect(addInlineSpy).toHaveBeenCalledWith({
-      name: 'Pedro Silva',
-      relationship: 'sibling',
-      phone: '11966665555',
-    });
+    expect(addInlineSpy).toHaveBeenCalledWith({ name: 'Pedro Silva', relationship: 'sibling' });
     expect(component['showInlineForm']()).toBe(false);
     expect(component['inlineName']()).toBe('');
+  });
+
+  it('should keep the inline form open and show errors for an invalid name or relationship', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.componentRef.setInput('selectedIds', []);
+    fixture.detectChanges();
+    const addInlineSpy = vi.fn();
+    component.addInlineMember.subscribe(addInlineSpy);
+
+    component['onToggleInlineForm']();
+    component['inlineName'].set('Pedro 123');
+    component['setInlineRelationship'](null);
+    component['onSubmitInline']();
+    fixture.detectChanges();
+
+    expect(addInlineSpy).not.toHaveBeenCalled();
+    expect(component['showInlineForm']()).toBe(true);
+    const text = (fixture.nativeElement as HTMLElement).textContent;
+    expect(text).toContain('Use só letras, espaços, hífen ou apóstrofo');
+    expect(text).toContain('Escolha um parentesco da lista');
   });
 
   it('should compose the six relationship choices with the shared autocomplete field', () => {

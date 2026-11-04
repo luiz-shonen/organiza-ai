@@ -1,0 +1,26 @@
+:host {
+  display: block;
+}
+
+.family-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.family-card__progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
+
+.family-card__progress-label {
+  display: flex;
+  font-size: var(--org-font-size-xs);
+  justify-content: space-between;
+  margin: 0;
+
+  span {
+    color: var(--org-on-surface-variant);
+  }
+}

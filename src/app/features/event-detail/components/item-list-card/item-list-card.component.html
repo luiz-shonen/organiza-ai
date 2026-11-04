@@ -1,76 +1,99 @@
-<section class="item-list-card" aria-label="Lista de itens do evento" data-testid="item-list-card">
-  <div class="item-list-card__header">
-    <h2 class="item-list-card__title org-gradient-text">O que trazer</h2>
-    <span class="item-list-card__tag"> Lista Colaborativa </span>
-  </div>
+<org-surface variant="card" testId="item-list-card" [flush]="true">
+  <section class="item-list-card" aria-label="Lista de itens do evento">
+    <div class="item-list-card__header">
+      <org-card-header
+        icon="assignment"
+        heading="Lista do evento"
+        subheading="Escolha o que levar. Quem leva aparece na barra de cada item."
+      />
+      @if (progress().length) {
+        <div class="item-list-card__summary">
+          <p class="item-list-card__summary-label">
+            <span>Itens completos</span>
+            <strong data-testid="item-remaining-count"
+              >{{ complete() }} de {{ progress().length }}</strong
+            >
+          </p>
+          <org-progress
+            variant="success"
+            class="item-list-card__summary-bar"
+            [value]="percent()"
+            [ariaLabel]="complete() + ' de ' + progress().length + ' itens completos'"
+          />
+        </div>
+      }
+    </div>
 
-  <!-- List Items -->
-  <div class="item-list-card__list">
-    @for (item of items(); track item.id) {
-      <org-surface variant="card">
-        <article
+    <ul class="item-list-card__list">
+      @for (entry of progress(); track entry.item.id) {
+        <li
           class="item-list-card__item"
-          [class.item-list-card__item--claimed]="item.claimedBy"
+          data-testid="item-card"
+          [class.item-list-card__item--complete]="entry.complete"
         >
-          <div class="item-list-card__item-info">
-            <!-- Status Avatar -->
-            @if (item.claimedBy) {
-              <div class="item-list-card__avatar item-list-card__avatar--claimed">
-                <org-icon name="person" aria-hidden="true" />
-              </div>
+          <div class="item-list-card__top">
+            <p class="item-list-card__name">
+              {{ entry.item.name }}
+              <span class="item-list-card__total">{{
+                quantity(entry.item.quantity, entry.item.unit)
+              }}</span>
+            </p>
+            @if (entry.complete) {
+              <span class="item-list-card__done" aria-label="Item completo">
+                <org-icon name="check" size="sm" color="currentColor" />
+              </span>
             } @else {
-              <div class="item-list-card__avatar item-list-card__avatar--available">
-                <org-icon name="shopping_cart" aria-hidden="true" />
-              </div>
+              <span class="item-list-card__missing" data-testid="item-missing"
+                >Faltam {{ quantity(entry.remaining, entry.item.unit) }}</span
+              >
             }
-
-            <div class="item-list-card__details">
-              <p
-                class="item-list-card__name"
-                [class.item-list-card__name--claimed]="item.claimedBy"
-              >
-                {{ item.name }}
-              </p>
-              <p
-                class="item-list-card__status"
-                [class.item-list-card__status--claimed]="item.claimedBy"
-              >
-                {{ item.claimedBy ? 'Levado por ' + item.claimedBy.name : 'Disponível' }}
-              </p>
-            </div>
           </div>
 
-          <!-- Actions -->
-          <div class="item-list-card__actions">
-            @if (!item.claimedBy) {
+          @if (entry.item.fixedQuantity) {
+            <org-button
+              class="item-list-card__fixed"
+              variant="text"
+              icon="info"
+              label="Quantidade fixa"
+              [compact]="true"
+              [gradient]="false"
+              [ariaExpanded]="openHint() === entry.item.id"
+              (pressed)="toggleHint(entry.item.id)"
+            />
+            @if (openHint() === entry.item.id) {
+              <p class="item-list-card__hint">
+                Ao escolher este item, você leva
+                {{ entry.item.quantity === 1 ? 'a' : 'todos os' }}
+                {{ quantity(entry.item.quantity, entry.item.unit) }}.
+              </p>
+            }
+          }
+
+          <org-split-progress
+            class="item-list-card__bar"
+            [total]="entry.item.quantity"
+            [segments]="segments(entry)"
+            [muted]="entry.complete"
+            [ariaLabel]="
+              entry.item.name + ': ' + entry.claimed + ' de ' + entry.item.quantity + ' garantidos'
+            "
+          >
+            @if (!entry.complete) {
               <org-button
-                [disabled]="!currentUserId()"
-                class="item-list-card__claim-btn"
+                orgSplitAction
+                class="item-list-card__claim"
                 label="Eu levo"
-                variant="secondary"
-                [gradient]="false"
-                (pressed)="claim.emit(item.id!)"
+                variant="attention"
+                [compact]="true"
+                [testId]="'claim-' + entry.item.id"
+                (pressed)="claim.emit(entry.item.id)"
               />
-            } @else if (
-              item.claimedBy.uid === currentUserId() || item.claimedBy.phone === currentUserId()
-            ) {
-              <org-button
-                class="item-list-card__unclaim-btn"
-                label="Desistir"
-                variant="danger"
-                [gradient]="false"
-                (pressed)="unclaim.emit(item.id!)"
-              />
-            } @else {
-              <div class="item-list-card__check-icon" aria-label="Item já atribuído">
-                <org-icon name="check_circle" aria-hidden="true" />
-              </div>
             }
-          </div>
-        </article>
-      </org-surface>
-    } @empty {
-      <div class="item-list-card__empty">Nenhum item adicionado a este evento ainda.</div>
-    }
-  </div>
-</section>
+          </org-split-progress>
+        </li>
+      } @empty {
+        <li class="item-list-card__empty">Nenhum item adicionado a este evento ainda.</li>
+      }
+    </ul>
+  </section>
+</org-surface>

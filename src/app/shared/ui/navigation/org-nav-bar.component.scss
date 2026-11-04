@@ -1,0 +1,86 @@
+:host {
+  display: block;
+}
+
+.org-nav-bar {
+  display: flex;
+}
+
+.org-nav-bar__link {
+  align-items: center;
+  color: var(--org-on-surface-variant);
+  display: flex;
+  font-family: var(--org-font-body);
+  font-weight: var(--org-font-weight-semibold);
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+  transition:
+    background-color var(--org-motion-fast) var(--org-motion-ease),
+    color var(--org-motion-fast) var(--org-motion-ease);
+
+  &:focus-visible {
+    outline: 2px solid var(--org-primary);
+    outline-offset: -2px;
+  }
+}
+
+// Phone: three equal destinations, icon in a pill that fills when active.
+.org-nav-bar--bottom {
+  background: var(--org-surface);
+  border-top: 1px solid var(--org-outline-variant);
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  height: var(--org-bottom-nav-height);
+  padding-bottom: env(safe-area-inset-bottom);
+
+  .org-nav-bar__link {
+    flex-direction: column;
+    font-size: var(--org-font-size-xs);
+    gap: var(--org-space-2xs);
+    min-height: var(--org-touch);
+  }
+
+  .org-nav-bar__icon {
+    border-radius: var(--org-radius-full);
+    display: inline-flex;
+    padding: var(--org-space-2xs) var(--org-space-md);
+    transition: background-color var(--org-motion-fast) var(--org-motion-ease);
+  }
+
+  .org-nav-bar__link--active {
+    color: var(--org-on-surface);
+
+    .org-nav-bar__icon {
+      background: var(--org-nav-active-bg);
+      color: var(--org-nav-active-ink);
+    }
+  }
+}
+
+// Desktop header: segmented pills on a neutral track.
+.org-nav-bar--header {
+  background: var(--org-surface-container-low);
+  border-radius: var(--org-radius-full);
+  gap: var(--org-space-xs);
+  padding: var(--org-space-xs);
+
+  .org-nav-bar__link {
+    border-radius: var(--org-radius-full);
+    font-size: var(--org-font-size-sm);
+    min-height: var(--org-touch-min);
+    padding: 0 var(--org-space-md);
+
+    &:hover:not(.org-nav-bar__link--active) {
+      color: var(--org-on-surface);
+    }
+  }
+
+  .org-nav-bar__link--active {
+    background: var(--org-surface);
+    box-shadow: var(--org-shadow-xs);
+    color: var(--org-on-primary-container);
+  }
+}

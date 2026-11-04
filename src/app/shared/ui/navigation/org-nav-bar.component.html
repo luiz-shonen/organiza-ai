@@ -1,0 +1,24 @@
+<nav
+  class="org-nav-bar"
+  [class.org-nav-bar--bottom]="layout() === 'bottom'"
+  [class.org-nav-bar--header]="layout() === 'header'"
+  [attr.aria-label]="ariaLabel()"
+>
+  @for (item of items(); track item.route) {
+    <a
+      matRipple
+      class="org-nav-bar__link"
+      [class.org-nav-bar__link--active]="isActive(item)"
+      [routerLink]="item.route"
+      [attr.aria-current]="isActive(item) ? 'page' : null"
+      [attr.data-testid]="item.testId"
+    >
+      @if (layout() === 'bottom') {
+        <span class="org-nav-bar__icon">
+          <org-icon [name]="item.icon" size="md" color="currentColor" />
+        </span>
+      }
+      <span class="org-nav-bar__label">{{ item.label }}</span>
+    </a>
+  }
+</nav>

@@ -16,3 +16,10 @@
   font-size: var(--org-font-size-xs);
   margin: -16px 0 0;
 }
+
+// Material sets line-height: 0 on suffixes (meant for icons); a projected button
+// inherited it and wrapped its label under the icon.
+.org-text-field__suffix {
+  display: inline-flex;
+  line-height: normal;
+}

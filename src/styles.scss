@@ -39,9 +39,18 @@ html {
       color: (
         theme-type: light,
         primary: mat.$violet-palette,
-        tertiary: mat.$orange-palette,
+        tertiary: mat.$green-palette,
       ),
-      typography: 'Plus Jakarta Sans',
+      typography: (
+        plain-family: (
+          'Plus Jakarta Sans',
+          sans-serif,
+        ),
+        brand-family: (
+          'Fredoka',
+          sans-serif,
+        ),
+      ),
       density: 0,
     )
   );
@@ -56,9 +65,18 @@ html {
         color: (
           theme-type: dark,
           primary: mat.$violet-palette,
-          tertiary: mat.$orange-palette,
+          tertiary: mat.$green-palette,
         ),
-        typography: 'Plus Jakarta Sans',
+        typography: (
+          plain-family: (
+            'Plus Jakarta Sans',
+            sans-serif,
+          ),
+          brand-family: (
+            'Fredoka',
+            sans-serif,
+          ),
+        ),
       )
     );
     @include material-bridge;
@@ -67,7 +85,7 @@ html {
 
 body {
   color-scheme: light;
-  background-color: var(--org-surface);
+  background-color: var(--org-canvas);
   color: var(--org-on-surface);
   font: var(--mat-sys-body-medium);
   font-family: var(--org-font-body);

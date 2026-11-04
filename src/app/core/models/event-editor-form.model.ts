@@ -23,4 +23,6 @@ export type EventPixForm = FormGroup<{
 export interface NewPartyItem {
   readonly name: string;
   readonly quantity: number;
+  readonly unit?: string;
+  readonly fixedQuantity?: boolean;
 }

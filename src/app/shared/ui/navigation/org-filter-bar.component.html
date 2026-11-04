@@ -1,0 +1,25 @@
+<mat-chip-listbox
+  class="org-filter-bar"
+  [multiple]="true"
+  [value]="selected()"
+  [attr.aria-label]="ariaLabel()"
+  (change)="onChange($event)"
+>
+  @for (option of options(); track option.id) {
+    <mat-chip-option
+      class="org-filter-bar__option"
+      [value]="option.id"
+      [selected]="selected().includes(option.id)"
+      [attr.data-testid]="option.testId || null"
+    >
+      {{ option.label }}
+      @if (option.count) {
+        <span
+          class="org-filter-bar__count"
+          [class.org-filter-bar__count--attention]="option.attention"
+          >{{ option.count }}</span
+        >
+      }
+    </mat-chip-option>
+  }
+</mat-chip-listbox>

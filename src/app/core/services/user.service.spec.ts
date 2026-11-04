@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { UserService } from './user.service';
 import { FirestoreGateway } from './firestore.gateway';
@@ -11,12 +12,16 @@ describe('UserService', () => {
   let mockGateway: MockFirestoreGateway;
   let mockEventService: {
     getEventById: ReturnType<typeof vi.fn>;
+    getUserEvents: ReturnType<typeof vi.fn>;
+    renameCreator: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(() => {
     mockGateway = createMockFirestoreGateway();
     mockEventService = {
       getEventById: vi.fn(),
+      getUserEvents: vi.fn(),
+      renameCreator: vi.fn().mockResolvedValue(undefined),
     };
 
     TestBed.configureTestingModule({
@@ -69,6 +74,7 @@ describe('UserService', () => {
         photoURL: 'https://avatar.png',
         name: 'Luiz',
         phone: '11999999999',
+        savedCompanions: [],
         themePref: 'dark',
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-01-02T00:00:00.000Z',
@@ -128,6 +134,7 @@ describe('UserService', () => {
           updatedAt: expect.any(String),
         }),
       );
+      expect(mockEventService.renameCreator).toHaveBeenCalledWith('user-123', 'Updated Name');
     });
 
     it('creates a new user document when document does not exist yet', async () => {
@@ -233,6 +240,48 @@ describe('UserService', () => {
 
       const events = await service.getAttendedEvents('user-123');
       expect(events).toEqual([]);
+    });
+  });
+
+  describe('private events', () => {
+    const event = (id: string, date: string): PartyEvent => ({
+      id,
+      title: id,
+      description: '',
+      date,
+      location: '',
+      pixKey: null,
+      createdAt: '',
+      updatedAt: '',
+    });
+
+    it('remembers an event opened from its invite link on the user document', async () => {
+      await service.rememberInvitedEvent('user-123', 'festa-junina');
+
+      expect(mockGateway.setDoc).toHaveBeenCalledWith(
+        'users/user-123',
+        { invitedEvents: { type: 'arrayUnion', elements: ['festa-junina'] } },
+        { merge: true },
+      );
+    });
+
+    it('lists only the events organized, invited to or answered, never the rest of the inviter', async () => {
+      const own = event('meu-aniversario', '2026-09-01T00:00:00.000Z');
+      const invited = event('festa-junina', '2026-08-23T00:00:00.000Z');
+      const answered = event('churrasco', '2026-10-01T00:00:00.000Z');
+      mockEventService.getUserEvents.mockReturnValue(of([own]));
+      mockGateway.getDoc.mockResolvedValue({ invitedEvents: ['festa-junina', 'churrasco'] });
+      mockGateway.getCollectionGroupDocs.mockResolvedValue([
+        { id: 'user-123', parentId: 'churrasco' },
+      ]);
+      mockEventService.getEventById.mockImplementation(
+        async (id: string) => ({ 'festa-junina': invited, churrasco: answered })[id] ?? null,
+      );
+
+      const events = await firstValueFrom(service.getVisibleEvents('user-123'));
+
+      expect(events.map((e) => e.id)).toEqual(['festa-junina', 'meu-aniversario', 'churrasco']);
+      expect(mockEventService.getUserEvents).toHaveBeenCalledWith('user-123');
     });
   });
 });

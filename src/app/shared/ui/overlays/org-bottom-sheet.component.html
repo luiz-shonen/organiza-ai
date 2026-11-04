@@ -1,0 +1,16 @@
+@if (open()) {
+  <div class="org-bottom-sheet__scrim" aria-hidden="true" (click)="closed.emit()"></div>
+  <section
+    class="org-bottom-sheet"
+    [class.org-bottom-sheet--side]="placement() === 'side'"
+    role="dialog"
+    aria-modal="true"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    [attr.aria-label]="ariaLabel()"
+    [attr.data-testid]="testId() || null"
+  >
+    <span class="org-bottom-sheet__handle" aria-hidden="true"></span>
+    <ng-content />
+  </section>
+}

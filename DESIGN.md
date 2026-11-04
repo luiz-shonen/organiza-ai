@@ -23,14 +23,15 @@
 
 ## 1. Brand Identity & Festive Narrative
 
-Organiza AI is built on the **Modern Festive Planner** narrative: transforming event organization from a tedious administrative chore into a vibrant, communal celebration.
+Organiza AI is built on the **Branco Essencial + Usabilidade** direction (approved prototype: `docs/design-proposals/branco-essencial-ux.html`, third column, checkpoint `0ab2fc0`): white, neutral components on a calm canvas, with colour reserved for what matters.
 
 ### Aesthetic Pillars
 
-- **Vibrant Modernism:** Punchy primary accents, joyful animations, and celebratory confetti.
-- **Glassmorphism:** Multi-layered depth via single-ring translucent backdrops with hardware-accelerated blur.
-- **Bubbly Geometric Shapes:** Unapologetically rounded corners ($12\text{px}$ to $24\text{px}$, pill badges).
-- **Canonical Warm Palette:** The signature **Pink $\rightarrow$ Orange $\rightarrow$ Yellow** progression.
+- **Colour has a job:** lilac (`#7950F2`) only for actions, sky blue (`#1C9BEF`) for dates and info, leaf green (`#2F9E44`) for success and progress. Everything else is neutral (Von Restorff).
+- **Flat surfaces:** solid white cards with a hairline `--org-outline-variant` border, `--org-radius-card` (18px) corners and a faint lilac ground shadow. No glass blur.
+- **Friendly type:** Fredoka for titles, Plus Jakarta Sans for body text; pill-shaped buttons.
+- **Goal gradient:** progress bars and the page-title highlight use the leaf gradient (`--org-gradient-highlight`).
+- **Seven usability laws** guide every screen: Jakob (bottom bar on phones, no hamburger), Fitts (targets ≥ 44px, 48px standard), Hick (few choices at a time), Miller (group information), Von Restorff (one highlighted action), Zeigarnik (show what is left to finish) and the goal-gradient effect.
 
 ---
 
@@ -38,32 +39,33 @@ Organiza AI is built on the **Modern Festive Planner** narrative: transforming e
 
 The source of truth is `src/app/shared/ui/tokens/`; this section only names the families. Rules and rationale: [docs/knowledge/decisions/tokens-and-theming.md](docs/knowledge/decisions/tokens-and-theming.md).
 
-| Family            | Tokens                                                                                                                  | File                                                                                           |
-| :---------------- | :---------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------------------------------------- | ------- | ------ | ------------------ |
-| Brand             | `--org-primary` (#FF4D94), `--org-secondary` (#FF8C42), `--org-tertiary` (#FFC837) and their `on-` / `-container` pairs | `_semantic.scss`                                                                               |
-| Status            | `--org-error`, `--org-warning`, `--org-success`, `--org-info` (+ `on-` / `-container`)                                  | `_semantic.scss`                                                                               |
-| Surfaces & text   | `--org-canvas`, `--org-surface`, `--org-surface-container-low                                                           | -                                                                                              | high`, `--org-surface-variant`, `--org-on-surface`, `--org-on-surface-variant`, `--org-on-surface-muted` | `_semantic.scss`          |
-| Lines             | `--org-outline`, `--org-outline-variant`                                                                                | `_semantic.scss`                                                                               |
-| States            | `--org-state-hover`, `--org-state-selected`, `--org-scrim`                                                              | `_semantic.scss`                                                                               |
-| Glass & elevation | `--org-glass-bg                                                                                                         | -strong`, `--org-glass-blur`, `--org-glass-ring-color`, `--org-glass-shadow`, `--org-shadow-xs | sm                                                                                                       | md                        | lg                                                                                                                | overlay | primary` | `_semantic.scss` / `_foundation.scss` |
-| Gradients         | `--org-gradient-primary`, `--org-gradient-border`, `--org-gradient-theme-*`                                             | `_semantic.scss`                                                                               |
-| Categories        | `--org-cat-<categoria>-bg                                                                                               | color`                                                                                         | `_semantic.scss`                                                                                         |
-| Typography        | `--org-font-body                                                                                                        | display                                                                                        | mono`, `--org-font-size-2xs…4xl                                                                          | heading                   | display`, `--org-font-weight-_`, `--org-line-height-_`, `--org-letter-spacing-\*`, composites `--org-text-display | heading | title    | body                                  | body-sm | label` | `_foundation.scss` |
-| Spacing           | `--org-space-2xs` (2px) … `--org-space-3xl` (64px)                                                                      | `_foundation.scss`                                                                             |
-| Radius            | `--org-radius-xs                                                                                                        | sm                                                                                             | md                                                                                                       | lg                        | xl                                                                                                                | full    | circle`  | `_foundation.scss`                    |
-| Icons             | `--org-icon-size-sm                                                                                                     | md                                                                                             | lg                                                                                                       | xl` (16 / 20 / 24 / 40px) | `_foundation.scss`                                                                                                |
-| Motion            | `--org-motion-fast                                                                                                      | base                                                                                           | slow`, `--org-motion-ease                                                                                | ease-emphasized`          | `_foundation.scss`                                                                                                |
+| Family            | Tokens                                                                                                                                                                                                                                    | File                                                                                           |
+| :---------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------- | -------- | ------------------------------------- | ------- | ------ | ------------------ |
+| Brand             | `--org-primary` (#7950F2 lilac), `--org-secondary` (#1C9BEF sky), `--org-tertiary` (#2F9E44 leaf) and their `on-` / `-container` pairs                                                                                                    | `_semantic.scss`                                                                               |
+| Usability         | `--org-touch-min` (44px), `--org-touch` (48px), `--org-header-height`, `--org-bottom-nav-height`, `--org-progress-height`, `--org-radius-card` (18px), `--org-gradient-highlight`, `--org-progress-track`, `--org-nav-active-bg` / `-ink` | `_foundation.scss` / `_semantic.scss`                                                          |
+| Status            | `--org-error`, `--org-warning`, `--org-success`, `--org-info` (+ `on-` / `-container`)                                                                                                                                                    | `_semantic.scss`                                                                               |
+| Surfaces & text   | `--org-canvas`, `--org-surface`, `--org-surface-container-low                                                                                                                                                                             | -                                                                                              | high`, `--org-surface-variant`, `--org-on-surface`, `--org-on-surface-variant`, `--org-on-surface-muted` | `_semantic.scss`          |
+| Lines             | `--org-outline`, `--org-outline-variant`                                                                                                                                                                                                  | `_semantic.scss`                                                                               |
+| States            | `--org-state-hover`, `--org-state-selected`, `--org-scrim`                                                                                                                                                                                | `_semantic.scss`                                                                               |
+| Glass & elevation | `--org-glass-bg                                                                                                                                                                                                                           | -strong`, `--org-glass-blur`, `--org-glass-ring-color`, `--org-glass-shadow`, `--org-shadow-xs | sm                                                                                                       | md                        | lg                                                                                                                | overlay | primary` | `_semantic.scss` / `_foundation.scss` |
+| Gradients         | `--org-gradient-primary`, `--org-gradient-border`, `--org-gradient-theme-*`                                                                                                                                                               | `_semantic.scss`                                                                               |
+| Categories        | `--org-cat-<categoria>-bg                                                                                                                                                                                                                 | color`                                                                                         | `_semantic.scss`                                                                                         |
+| Typography        | `--org-font-body                                                                                                                                                                                                                          | display                                                                                        | mono`, `--org-font-size-2xs…4xl                                                                          | heading                   | display`, `--org-font-weight-_`, `--org-line-height-_`, `--org-letter-spacing-\*`, composites `--org-text-display | heading | title    | body                                  | body-sm | label` | `_foundation.scss` |
+| Spacing           | `--org-space-2xs` (2px) … `--org-space-3xl` (64px)                                                                                                                                                                                        | `_foundation.scss`                                                                             |
+| Radius            | `--org-radius-xs                                                                                                                                                                                                                          | sm                                                                                             | md                                                                                                       | lg                        | xl                                                                                                                | full    | circle`  | `_foundation.scss`                    |
+| Icons             | `--org-icon-size-sm                                                                                                                                                                                                                       | md                                                                                             | lg                                                                                                       | xl` (16 / 20 / 24 / 40px) | `_foundation.scss`                                                                                                |
+| Motion            | `--org-motion-fast                                                                                                                                                                                                                        | base                                                                                           | slow`, `--org-motion-ease                                                                                | ease-emphasized`          | `_foundation.scss`                                                                                                |
 
 Dark mode redefines the semantic roles on `html.dark`; seasonal themes (`html.theme-*`) are generated from the `$seasonal-themes` map in `_themes.scss`.
 
 ## 3. Typography
 
-Plus Jakarta Sans for all UI text, Fraunces for display headings in the catalog, JetBrains Mono for code. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
+Plus Jakarta Sans for all UI text, Fredoka (semibold) for titles (`--org-font-display`, used by `--org-text-display|heading|title`), JetBrains Mono for code. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
 
 ## 4. Breakpoints, Glass and Elevation
 
 - Breakpoints (mixins in `_semantic.scss`): `semantic.mobile` (< 600px), `semantic.tablet` (≥ 600px), `semantic.desktop` (≥ 900px), `semantic.wide` (≥ 1200px).
-- Glass (`backdrop-filter: var(--org-glass-blur)` + 1.5px gradient ring) belongs to DS surfaces only: `org-surface`, drawers, dialogs, snackbars.
+- Surfaces are flat: the `--org-glass-*` names remain, but resolve to a solid surface, no blur and a 1px `--org-outline-variant` ring. They belong to DS surfaces only: `org-surface`, drawers, dialogs, snackbars.
 - Elevation through `--org-shadow-*` / `--org-glass-shadow`; radius through `--org-radius-*`.
 
 ## 5. Canonical Iconography
@@ -125,15 +127,15 @@ Import only from `@shared/ui`. A feature owns layout and domain content; each `O
 
 ### OrgSurfaceComponent
 
-Uso recomendado: `<org-surface variant="card" [atmosphere]="true">...</org-surface>`. Variants are `card`, `panel`, `drawer`, `dialog`, and `hero`; atmosphere is opt-in and token-driven.
+Uso recomendado: `<org-surface variant="card" [atmosphere]="true">...</org-surface>`. Variants are `card`, `panel`, `drawer`, `dialog`, and `hero`; atmosphere is opt-in and token-driven. `[flush]="true"` drops the inner padding for cards made of full-width rows with dividers (event date/place, "Lista do evento", "Minha família").
 
 ### OrgPageLayoutComponent
 
-Uso recomendado: `<org-page-layout maxWidth="wide">...</org-page-layout>`. Use it as the page-width boundary, never a feature-local width recipe.
+Uso recomendado: `<org-page-layout maxWidth="wide">...</org-page-layout>`. Use it as the page-width boundary, never a feature-local width recipe. On screens of 1200px and up, `narrow` and `default` take 70% of the width (at most 1440px); phones and tablets keep 600px and 960px.
 
 ### OrgPageHeaderComponent
 
-Uso recomendado: `<org-page-header title="Meus eventos" icon="event" [gradient]="true" />`. Pass semantic title, subtitle, icon, and actions through its API.
+Uso recomendado: `<org-page-header title="Olá, " highlight="Jéssica" subtitle="…" />`. Fredoka title without icon (Branco Essencial); `highlight` paints the trailing words in the leaf-green gradient. Actions go in `[orgPageHeaderActions]` (full width on phones, right side from tablet up).
 
 ### OrgSectionComponent
 
@@ -141,15 +143,23 @@ Uso recomendado: `<org-section title="Próximos eventos" icon="event">...</org-s
 
 ### OrgButtonComponent
 
-Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, and `text`; use `disabled` or `loading` instead of local state CSS.
+Uso recomendado: `<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" (pressed)="save()" />`. Supported variants are `primary`, `secondary`, `danger`, `text`, `tonal` (soft lilac: "Responder convite"), `attention` (soft amber fill, no outline: "Eu levo") and `danger-text` ("Sair da conta"); use `disabled` or `loading` instead of local state CSS. `compact` draws a 36px pill while Material keeps the 48px touch target around it. `tooltip` shows a Material tooltip (hover, focus, long press); never use a native `title`. A toggle passes `[ariaPressed]` (the "Fixa / Dividir" lock switches between `tonal` and `text`), and a button that reveals a hint passes `[ariaExpanded]`.
 
 ### OrgIconButtonComponent
 
-Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required.
+Uso recomendado: `<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" (pressed)="create()" />`. The accessible label is required, and it is also shown as a Material tooltip, since an icon alone does not say what it does. `tooltip` overrides the text; `tooltip=""` turns it off. A trash can (`delete`, `delete_outline`) is always `danger` red, whatever `variant` says, because removing is destructive everywhere.
 
 ### OrgChipComponent
 
 Uso recomendado: `<org-chip label="Celebrativo" variant="accent" [selected]="selected()" (selectionChange)="toggle($event)" />`. Use it for compact selectable labels, not arbitrary button styling.
+
+### OrgThemeToggleComponent
+
+Uso recomendado: `<org-theme-toggle [dark]="theme.isDark()" (darkChange)="theme.setMode($event ? 'dark' : 'light')" />`. The light / dark switch in the header, next to the avatar: a sun and a moon with a thumb that slides to the one in use. It holds no theme logic; the app's `ThemeService` saves the choice (and "Sistema" stays available on the profile page).
+
+### OrgEditableChipComponent
+
+Uso recomendado: `<org-editable-chip placeholder="Personalizar" [value]="custom()" [selected]="!!custom()" (valueChange)="set($event)" (cleared)="clear()" />`. A Material editable chip for a value typed in place, next to the ready-made `org-chip` options (the event category). A click, Enter or the pencil starts editing; Enter or leaving the chip commits. Escape, an empty edit or an unchanged one keeps the previous value, so an edit left half-way never wipes it; ✕ clears it. The page validates what is committed.
 
 ### OrgIconComponent
 
@@ -157,7 +167,7 @@ Uso recomendado: `<org-icon name="event" size="sm" />`. Use the typed icon map i
 
 ### OrgTextFieldComponent
 
-Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`.
+Uso recomendado: `<org-text-field label="Título do evento" [(value)]="title" hint="Como os convidados verão o evento." />`. With `[suffixAction]="true"`, projected `[orgFieldSuffix]` content sits inside the field end (the "Fixa / Dividir" `org-button` of the item quantity). `[mask]` reformats what is typed (`Phone.mask`, `Quantity.mask`), `[maxLength]` caps it and `inputMode="numeric"` opens the number keyboard. Type numbers as text with a mask instead of `type="number"`, whose browser spin arrows do not match the system.
 
 ### OrgTextareaFieldComponent
 
@@ -213,7 +223,47 @@ Uso recomendado: `<org-navigation-list [items]="navigationItems" (selected)="nav
 
 ### OrgProgressComponent
 
-Uso recomendado: `<org-progress [value]="67" ariaLabel="67% concluído" variant="primary" [gradient]="true" />`.
+Uso recomendado: `<org-progress [value]="67" ariaLabel="8 de 12 confirmados" variant="success" />`. The goal-gradient bar: 6px rounded track on `--org-progress-track`, leaf gradient fill (`success` + `gradient`, the default look for progress). Use the same bar for every progress in the app.
+
+### OrgNavBarComponent
+
+Uso recomendado: `<org-nav-bar layout="bottom" [items]="navItems" [activeRoute]="currentUrl()" />`. Primary navigation only, owned by the app shell: `bottom` is the fixed phone bar (Início, Meus eventos, Perfil), `header` the segmented pills in the centre of the desktop header. Items are typed `OrgNavBarItem` (`route`, `label`, `icon`, `testId`, optional `exact`); the active link gets `aria-current="page"`.
+
+### OrgAvatarComponent
+
+Uso recomendado: `<org-avatar [name]="user.displayName" [photoUrl]="user.photoURL" size="md" />`. Photo or initial on a neutral disc; wrap it in a link or button that carries the accessible name (the avatar itself is decorative). `highlighted` tints it lilac for the profile header.
+
+### OrgLogoComponent
+
+Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the login screen. Calendar mark plus the gradient wordmark; the surrounding link provides the accessible name. The mark is an inline SVG animated with CSS only: every 6s the calendar hops, the check is drawn and confetti bursts from it; `[animated]="false"` and `prefers-reduced-motion` keep it still. `public/icons/favicon.svg` is the same mark, and the PNG/ICO icons are rendered from it.
+
+### OrgSegmentedControlComponent
+
+Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
+
+### OrgDateBadgeComponent
+
+Uso recomendado: `<org-date-badge [date]="event.date" />`. Sky-blue month/day block at the top right of every event card (Início and Meus eventos). Announces the full date to screen readers.
+
+### OrgFilterBarComponent
+
+Uso recomendado: `<org-filter-bar ariaLabel="Filtrar eventos" [options]="filters()" [values]="activeFilters()" (valuesChange)="activeFilters.set($event)" />`. Filter chips above a list, on Material's chip listbox: the chips that are on show a check, and several can be on at once. "Todos" (`ORG_FILTER_ALL`) is on by default and alone; picking another chip turns it off, and turning the last one off (or picking "Todos") brings it back. The page shows every event any chip on matches. Used on Início (Todos, Pendentes, Confirmados, Recusados, Realizados) and Meus eventos (Todos, Em breve, Agendados, Realizados, Cancelados). `OrgFilterOption.count` shows a counter, `attention` paints it amber.
+
+### OrgSplitProgressComponent
+
+Uso recomendado: `<org-split-progress [total]="10" [segments]="[{ label: 'Ana', value: 4 }]" ariaLabel="Bolo de milho: 4 de 10" />`. Goal-gradient bar split by person in four leaf greens, with matching name chips below (`showLegend`). `size="md"` is the 10px "Itens completos" bar; `muted` fades completed items.
+
+### OrgQuantityStepperComponent
+
+Uso recomendado: `<org-quantity-stepper [(value)]="quantity" [max]="remaining" unit="un." />`. − / + with 48px targets for picking how many of an item someone brings.
+
+### OrgBottomSheetComponent
+
+Uso recomendado: `<org-bottom-sheet ariaLabel="Eu levo" [open]="open()" (closed)="open.set(false)">…</org-bottom-sheet>`. Slides up from the bottom on phones, centred card from tablet up; traps focus and closes on Escape or scrim tap. The page owns the content and the open state. `placement="side"` turns it into a right-hand drawer from tablet up (phones keep the bottom sheet): use it for editing (an item, a family member) and keep the centred card for a quick choice such as "Eu levo". The side drawer is 480px wide. Dialogs are only for decisions that interrupt, such as confirming a removal.
+
+### OrgInsightCardComponent
+
+Uso recomendado: `<org-insight-card tone="warning">Faltam 3 dias! <strong>2 itens</strong> estão sem responsável.<org-button orgInsightAction … /></org-insight-card>`. "Dica do Organiza AI" with the AI sparkle; `warning` (orange) when the event is close and something is missing, `info` (blue) otherwise.
 
 ### OrgMetricCardComponent
 
@@ -225,11 +275,11 @@ Uso recomendado: `<org-data-table [rows]="events" [columns]="eventColumns" [acti
 
 ### OrgBadgeComponent
 
-Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use.
+Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Variants are semantic and the gradient can be disabled per use. Status tags are uppercase and filled (Confirmado green, Pendente amber, Recusado and Cancelado red). A category tag takes `[hue]="getCategoryHue(category)"`: a tint, text and thin outline in that category's own colour, never the exact green, amber or red of the status tags. `[pill]="true"` gives a sentence-case counter.
 
 ### OrgConfirmDialogComponent
 
-Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations.
+Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top.
 
 ### OrgEmptyStateComponent
 
@@ -237,7 +287,7 @@ Uso recomendado: `<org-empty-state icon="event" title="Nenhum evento" descriptio
 
 ### OrgCardHeaderComponent
 
-Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card; tones are `primary`, `primary-soft` (default), `tertiary` and `success`.
+Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card; tones are `info` (default, sky blue), `primary`, `primary-soft`, `tertiary` and `success`. Keep lilac tones for cards whose header is itself the call to action.
 
 ### OrgCopyButtonComponent
 
@@ -253,7 +303,11 @@ Uso recomendado: `<org-skeleton class="dashboard__skeleton-title" />` (or `shape
 
 ### OrgExpansionPanelComponent
 
-Uso recomendado: `<org-expansion-panel heading="Adicionar Família?" icon="diversity_3" [(expanded)]="open"><span orgExpansionSummary>2 selecionados</span>…</org-expansion-panel>` for collapsible sections.
+Uso recomendado: `<org-expansion-panel heading="Família leva 2 itens" icon="assignment" [(expanded)]="open"><span orgExpansionSummary>1/2 comprados</span>…</org-expansion-panel>` for collapsible summaries inside a card (Miller: details stay one tap away). Outline only, leaf-green icon and summary. The summary keeps its own width, sits `--org-space-md` away from the chevron, and a long heading ends in an ellipsis, so they never overlap in a narrow drawer; keep the summary short ("Nenhum", "2 selecionados", "+2 · 3 itens").
+
+### OrgTooltipComponent
+
+Uso recomendado: `<org-tooltip [text]="event().location"><p class="ellipsis">{{ event().location }}</p></org-tooltip>`. Material tooltip over any content, e.g. the full text of a line cut with an ellipsis. Buttons use their own `tooltip` input instead. Features never use the native `title` attribute (`feature-native-tooltip`) nor a native `<button>` (`feature-raw-button`).
 
 ### FeedbackSnackbarComponent
 
@@ -275,15 +329,15 @@ Não usar em novo código. As diretivas de compatibilidade foram removidas: `Org
 
 ## 7. Seasonal Theming Architecture
 
-`SeasonalThemeService` adds one class to `<html>`; each class only swaps the brand roles (`--org-primary`, `--org-secondary`, `--org-tertiary`, gradients, canvas and glass ring). Values live in the `$seasonal-themes` map in `src/app/shared/ui/tokens/_themes.scss`:
+`SeasonalThemeService` adds one class to `<html>`; each class only tints the page background (`--org-canvas`, light and dark). Actions, dates and progress keep the app palette so every screen stays consistent. Without a seasonal theme the shell shows a faint confetti pattern (`public/icons/confetti.svg`) in the three palette colours. Values live in the `$seasonal-themes` map in `src/app/shared/ui/tokens/_themes.scss`:
 
-| Class             | Primary | Secondary | Tertiary |
-| :---------------- | :------ | :-------- | :------- |
-| (none) — padrão   | #FF4D94 | #FF8C42   | #FFC837  |
-| `.theme-junina`   | #FF5722 | #FF8C42   | #FFB300  |
-| `.theme-natal`    | #B84555 | #D77A61   | #DEB36A  |
-| `.theme-pascoa`   | #7552A8 | #D2A060   | #F4D58E  |
-| `.theme-ano-novo` | #B88A33 | #EAD9A5   | #8293B5  |
+| Class             | Canvas (light) | Canvas (dark) |
+| :---------------- | :------------- | :------------ |
+| (none) — padrão   | #FFFFFF        | #181429       |
+| `.theme-junina`   | #FFF6DF        | #1F1712       |
+| `.theme-natal`    | #FFF5F1        | #1F1416       |
+| `.theme-pascoa`   | #FAF6FF        | #18142A       |
+| `.theme-ano-novo` | #FFFBED        | #17161C       |
 
 To add a theme, add one entry to the map and its id to the service.
 
@@ -322,6 +376,7 @@ To add a theme, add one entry to the map and its id to the service.
 - Do NOT use `!important`, `--mdc-*` tokens, `.dark` selectors or literal font sizes/weights/durations; use `--org-*` tokens.
 - Do NOT nest multiple glassmorphic borders creating double rings.
 - Do NOT create buttons with touch targets smaller than $48\text{px} \times 48\text{px}$.
-- Do NOT hardcode purple product palettes; follow the canonical **Pink-Orange-Yellow** brand triple.
+- Do NOT paint non-actions lilac; lilac means "tap here". Dates and info are sky blue, progress and success are leaf green.
+- Do NOT add a hamburger menu or side drawer for app navigation; destinations live in the bottom bar (phone) and header (desktop), account settings in Perfil.
 - Do NOT use `ChangeDetectionStrategy.Default`.
 - Do NOT introduce a new feature-local directive as a styling API when a standalone component can own the contract.

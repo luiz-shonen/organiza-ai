@@ -13,26 +13,41 @@ import { FormBuilder, Validators } from '@angular/forms';
 import {
   EventService,
   ItemService,
-  GuestService,
   ConfettiService,
   HeaderService,
   AuthService,
+  UserService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { formatCep } from '../../../core/utils';
-import { EVENT_CATEGORIES, Guest, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
+import { firstValueFrom } from 'rxjs';
+import { formatCep, parseLocation } from '../../../core/utils';
+import {
+  AddressNumber,
+  Cep,
+  EventCategory,
+  EventDescription,
+  EventTitle,
+  PixKey,
+  notInPast,
+  validDate,
+  requiredText,
+  valueObjectValidator,
+} from '../../../core/value-objects';
+import { EVENT_CATEGORIES, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
-import { EventGuestsCardComponent } from './components/event-guests-card/event-guests-card.component';
-import { EventItemsCardComponent } from './components/event-items-card/event-items-card.component';
+import {
+  EventItemsStepComponent,
+  type ItemUpdate,
+} from './components/event-items-step/event-items-step.component';
 import { EventPixStepComponent } from './components/event-pix-step/event-pix-step.component';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
+  OrgDialogService,
   OrgBannerComponent,
   OrgButtonComponent,
-  OrgCardHeaderComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
   OrgSkeletonComponent,
@@ -42,18 +57,29 @@ import {
 } from '../../../shared/ui';
 import { DrawerService } from '../../../core/services/drawer.service';
 
+/** Firestore puts the code in the message ("Missing or insufficient permissions." is permission-denied). */
+function saveErrorMessage(error: unknown): string {
+  const text =
+    error instanceof Error ? `${(error as { code?: string }).code ?? ''} ${error.message}` : '';
+  if (/permission-denied|insufficient permissions/i.test(text)) {
+    return 'Sua conta não tem permissão para salvar este evento.';
+  }
+  if (/unavailable|network/i.test(text)) {
+    return 'Sem conexão com o servidor. Verifique sua internet e tente de novo.';
+  }
+  return 'Erro ao salvar evento. Tente novamente.';
+}
+
 @Component({
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     EventAddressStepComponent,
     EventBasicInfoStepComponent,
-    EventGuestsCardComponent,
-    EventItemsCardComponent,
+    EventItemsStepComponent,
     EventPixStepComponent,
     OrgBannerComponent,
     OrgButtonComponent,
-    OrgCardHeaderComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
     OrgSkeletonComponent,
@@ -71,13 +97,14 @@ export class EventEditorContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
   private readonly locationService = inject(LocationService);
-  private readonly guestService = inject(GuestService);
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly drawerService = inject(DrawerService);
+  private readonly dialogs = inject(OrgDialogService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -88,14 +115,14 @@ export class EventEditorContainer implements OnInit {
   protected readonly minDate = new Date();
   protected readonly currentEvent = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
-  protected readonly guests = signal<Guest[]>([]);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
-  protected readonly stepLabels = [
-    'Informações do evento',
-    'Endereço do evento',
-    'Pagamento por Pix',
-  ] as const;
+  protected readonly stepLabels = ['Informações', 'Endereço', 'Itens', 'Pix'] as const;
+  /** Items typed while creating the event; saved right after the event exists. */
+  protected readonly draftItems = signal<NewPartyItem[]>([]);
+  protected readonly stepItems = computed<readonly NewPartyItem[]>(() =>
+    this.isEditing() ? this.items() : this.draftItems(),
+  );
   protected readonly categories = EVENT_CATEGORIES;
 
   public readonly isOwner = computed(() => {
@@ -106,24 +133,27 @@ export class EventEditorContainer implements OnInit {
     return ev.createdBy === currentUid;
   });
 
-  protected readonly basicInfoForm = this.fb.nonNullable.group({
-    title: ['', [Validators.required]],
-    category: ['', [Validators.required]],
-    description: ['', [Validators.required]],
-    date: [null as Date | null, [Validators.required]],
-    time: ['', [Validators.required]],
-  });
+  protected readonly basicInfoForm = this.fb.nonNullable.group(
+    {
+      title: ['', [requiredText, valueObjectValidator(EventTitle.validate)]],
+      category: ['', [requiredText, valueObjectValidator(EventCategory.validate)]],
+      description: ['', [requiredText, valueObjectValidator(EventDescription.validate)]],
+      date: [null as Date | null, [Validators.required, validDate]],
+      time: ['', [Validators.required]],
+    },
+    { validators: notInPast() },
+  );
 
   protected readonly addressForm = this.fb.nonNullable.group({
-    cep: ['', [Validators.required]],
-    address: ['', [Validators.required]],
-    neighborhood: ['', [Validators.required]],
-    city: ['', [Validators.required]],
-    number: ['', [Validators.required]],
+    cep: ['', [requiredText, valueObjectValidator(Cep.validate)]],
+    address: ['', [requiredText]],
+    neighborhood: ['', [requiredText]],
+    city: ['', [requiredText]],
+    number: ['', [requiredText, valueObjectValidator(AddressNumber.validate)]],
   });
 
   protected readonly pixForm = this.fb.nonNullable.group({
-    pixKey: [''],
+    pixKey: ['', [valueObjectValidator(PixKey.validate)]],
   });
 
   ngOnInit(): void {
@@ -166,12 +196,16 @@ export class EventEditorContainer implements OnInit {
               time: timeStr,
             });
 
+            // Older events only have the one-line location; split it into the fields.
+            const details = event.addressDetails?.address
+              ? event.addressDetails
+              : parseLocation(event.location);
             this.addressForm.patchValue({
-              cep: event.addressDetails?.cep || '',
-              address: event.addressDetails?.address || event.location || '',
-              number: event.addressDetails?.number || '',
-              neighborhood: event.addressDetails?.neighborhood || '',
-              city: event.addressDetails?.city || '',
+              cep: details.cep || '',
+              address: details.address || '',
+              number: details.number || '',
+              neighborhood: details.neighborhood || '',
+              city: details.city || '',
             });
 
             this.pixForm.patchValue({
@@ -203,16 +237,20 @@ export class EventEditorContainer implements OnInit {
         next: (items) => this.items.set(items),
       });
 
-      const guestsSub = this.guestService.listGuests(eventId).subscribe({
-        next: (guests) => this.guests.set(guests),
-      });
-
       this.destroyRef.onDestroy(() => {
         eventSub.unsubscribe();
         itemsSub.unsubscribe();
-        guestsSub.unsubscribe();
       });
     }
+  }
+
+  /** Steps that still block saving, named as in the stepper. */
+  protected missingSteps(): string[] {
+    const missing: string[] = [];
+    if (this.basicInfoForm.invalid) missing.push(this.stepLabels[0]);
+    if (this.addressForm.invalid) missing.push(this.stepLabels[1]);
+    if (this.pixForm.invalid) missing.push(this.stepLabels[3]);
+    return missing;
   }
 
   protected async saveEvent(): Promise<void> {
@@ -230,9 +268,17 @@ export class EventEditorContainer implements OnInit {
 
     this.saving.set(true);
 
-    const { title, category, description, date, time } = this.basicInfoForm.getRawValue();
-    const { cep, address, neighborhood, city, number } = this.addressForm.getRawValue();
-    const { pixKey } = this.pixForm.getRawValue();
+    const raw = this.basicInfoForm.getRawValue();
+    const { date, time } = raw;
+    const category = EventCategory.create(raw.category)?.value ?? raw.category.trim();
+    // The forms are valid here, so each value object exists; they save the tidied text.
+    const title = EventTitle.create(raw.title)?.value ?? raw.title.trim();
+    const description = EventDescription.create(raw.description)?.value ?? raw.description.trim();
+    const rawAddress = this.addressForm.getRawValue();
+    const { address, neighborhood, city } = rawAddress;
+    const cep = Cep.create(rawAddress.cep)?.formatted ?? rawAddress.cep;
+    const number = AddressNumber.create(rawAddress.number)?.value ?? rawAddress.number.trim();
+    const pixKey = PixKey.create(this.pixForm.getRawValue().pixKey)?.value ?? '';
 
     let finalDate = new Date();
     if (date) {
@@ -267,6 +313,8 @@ export class EventEditorContainer implements OnInit {
 
     const location = fullAddress || '';
     const user = this.authService.currentUser();
+    // The profile name ("Luiz Rodrigues"); an e-mail account has no displayName of its own.
+    const profileName = user ? (await this.userService.getProfile(user.uid))?.name?.trim() : '';
     const eventData = {
       title,
       category,
@@ -277,6 +325,7 @@ export class EventEditorContainer implements OnInit {
       pixKey: pixKey || null,
       createdBy: user?.uid ?? '',
       creatorEmail: user?.email ?? '',
+      creatorName: profileName || user?.displayName || this.currentEvent()?.creatorName || '',
       collaborators: this.currentEvent()?.collaborators ?? [],
     };
 
@@ -285,14 +334,19 @@ export class EventEditorContainer implements OnInit {
       if (this.isEditing() && eventId) {
         await this.eventService.updateEvent(eventId, eventData);
         this.feedback.success('Evento atualizado!');
+        await this.router.navigate(['/meus-eventos']);
       } else {
         const newId = await this.eventService.createEvent(eventData);
+        for (const item of this.draftItems()) {
+          await this.itemService.addItem(newId, item);
+        }
+        this.draftItems.set([]);
         this.confetti.fireSuccessConfetti();
         this.feedback.success('Evento criado com sucesso!');
         await this.router.navigate(['/meus-eventos/evento', newId]);
       }
-    } catch {
-      this.feedback.error('Erro ao salvar evento.');
+    } catch (error: unknown) {
+      this.feedback.error(saveErrorMessage(error));
     } finally {
       this.saving.set(false);
     }
@@ -324,6 +378,16 @@ export class EventEditorContainer implements OnInit {
           }
           return;
         }
+        const confirmed = await firstValueFrom(
+          this.dialogs.confirm({
+            title: 'Remover colaborador',
+            message: `${action.collaboratorId} deixa de poder editar os itens e ver a lista de convidados deste evento.`,
+            confirmLabel: 'Remover',
+            tone: 'danger',
+            icon: 'block',
+          }),
+        );
+        if (!confirmed) return;
         try {
           await this.eventService.removeCollaborator(eventId, action.collaboratorId);
           this.feedback.success('Colaborador removido');
@@ -336,7 +400,10 @@ export class EventEditorContainer implements OnInit {
 
   protected async addItem(item: NewPartyItem): Promise<void> {
     const eventId = this.id();
-    if (!eventId) return;
+    if (!this.isEditing() || !eventId) {
+      this.draftItems.update((items) => [...items, item]);
+      return;
+    }
 
     try {
       await this.itemService.addItem(eventId, item);
@@ -345,9 +412,46 @@ export class EventEditorContainer implements OnInit {
     }
   }
 
-  protected async removeItem(item: PartyItem): Promise<void> {
+  protected async updateItem({ index, item }: ItemUpdate): Promise<void> {
     const eventId = this.id();
-    if (!eventId) return;
+    if (!this.isEditing() || !eventId) {
+      this.draftItems.update((items) => items.map((current, i) => (i === index ? item : current)));
+      return;
+    }
+    const saved = this.items()[index];
+    if (!saved) return;
+
+    try {
+      await this.itemService.updateItem(eventId, saved.id, item);
+      this.feedback.success('Item atualizado');
+    } catch {
+      this.feedback.error('Erro ao atualizar item.');
+    }
+  }
+
+  protected async removeItem(index: number): Promise<void> {
+    const eventId = this.id();
+    const saved = this.isEditing() && !!eventId;
+    const name = saved ? this.items()[index]?.name : this.draftItems()[index]?.name;
+    if (!name) return;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Remover item',
+        message: saved
+          ? `"${name}" sai da lista do evento, e quem já escolheu este item deixa de levá-lo.`
+          : `"${name}" sai da lista de itens deste evento.`,
+        confirmLabel: 'Remover item',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) return;
+
+    if (!saved) {
+      this.draftItems.update((items) => items.filter((_, i) => i !== index));
+      return;
+    }
+    const item = this.items()[index];
+    if (!item) return;
 
     try {
       await this.itemService.deleteItem(eventId, item.id);
@@ -356,34 +460,33 @@ export class EventEditorContainer implements OnInit {
     }
   }
 
-  protected exportToCsv(): void {
-    const guestsList = this.guests();
-    if (!guestsList.length) {
-      this.feedback.info('Nenhum convidado para exportar.');
-      return;
-    }
-
-    const headers = ['Nome,Telefone,Data de Confirmação'];
-    const rows = guestsList.map((g) => {
-      const date = g.createdAt ? new Date(g.createdAt).toLocaleDateString('pt-BR') : '';
-      return `"${g.name}","${g.phone}","${date}"`;
-    });
-
-    const csvContent = headers.concat(rows).join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `convidados-${this.basicInfoForm.controls.title.value || 'evento'}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  protected cancelEditing(): void {
+    void this.router.navigate(['/meus-eventos']);
   }
 
-  protected printList(): void {
-    window.print();
+  protected async cancelEvent(): Promise<void> {
+    const eventId = this.id();
+    const event = this.currentEvent();
+    if (!eventId || !event) return;
+    this.dialogs
+      .confirm({
+        title: 'Cancelar evento',
+        message: `Tem certeza que deseja cancelar o evento "${event.title}"? O link público vai avisar os convidados sobre o cancelamento.`,
+        confirmLabel: 'Cancelar evento',
+        cancelLabel: 'Manter evento',
+        tone: 'danger',
+        icon: 'cancel',
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await this.eventService.cancelEvent(eventId);
+          this.feedback.success('Evento cancelado com sucesso!');
+          await this.router.navigate(['/meus-eventos']);
+        } catch {
+          this.feedback.error('Erro ao cancelar evento.');
+        }
+      });
   }
 
   protected formatCep(value: string): void {

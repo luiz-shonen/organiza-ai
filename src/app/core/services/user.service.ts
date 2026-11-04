@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Observable, combineLatest, from, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventService } from './event.service';
 import type { UserProfile, PartyEvent, ThemeMode } from '../models';
@@ -29,6 +30,7 @@ export class UserService {
         photoURL: (data['photoURL'] as string | null) ?? null,
         name: (data['name'] as string | undefined) ?? (data['displayName'] as string | undefined),
         phone: data['phone'] as string | undefined,
+        savedCompanions: (data['savedCompanions'] as string[] | undefined) ?? [],
         themePref: data['themePref'] as ThemeMode | undefined,
         createdAt: createdAtDate
           ? createdAtDate.toISOString()
@@ -54,6 +56,11 @@ export class UserService {
       if (data.displayName !== undefined) {
         updateData['name'] = data.displayName;
       }
+      const newName = (data.name ?? data.displayName)?.trim();
+      if (newName) {
+        // Guests read the organizer's name from each event, not from this private profile.
+        this.eventService.renameCreator(uid, newName).catch(console.error);
+      }
       if (existing) {
         await this.gateway.updateDoc(this.userPath(uid), updateData);
       } else {
@@ -77,6 +84,104 @@ export class UserService {
     await this.upsertProfile(uid, { themePref });
   }
 
+  /** Events the member said they cannot attend; Início shows them as "Recusado". */
+  async getDeclinedEvents(uid: string): Promise<string[]> {
+    if (!uid) return [];
+    try {
+      const user = await this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid));
+      return (user?.['declinedEvents'] as string[] | undefined) ?? [];
+    } catch {
+      return [];
+    }
+  }
+
+  /** Adds companions to the member's history, so the next RSVP offers them. */
+  async rememberCompanions(uid: string, names: readonly string[]): Promise<void> {
+    if (!uid || names.length === 0) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      { savedCompanions: this.gateway.arrayUnion(...names) },
+      { merge: true },
+    );
+  }
+
+  /** Keeps the events the member confirmed on their profile, so Início finds them at once. */
+  async setAttending(uid: string, eventId: string, attending: boolean): Promise<void> {
+    if (!uid || !eventId) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      {
+        rsvpEvents: attending
+          ? this.gateway.arrayUnion(eventId)
+          : this.gateway.arrayRemove(eventId),
+      },
+      { merge: true },
+    );
+  }
+
+  /** Marks the invite as declined, or clears it when the member confirms after all. */
+  async setDeclined(uid: string, eventId: string, declined: boolean): Promise<void> {
+    if (!uid || !eventId) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      {
+        declinedEvents: declined
+          ? this.gateway.arrayUnion(eventId)
+          : this.gateway.arrayRemove(eventId),
+      },
+      { merge: true },
+    );
+  }
+
+  /** Remembers an event the member opened from its invite link, so it shows on Início. */
+  async rememberInvitedEvent(uid: string, eventId: string): Promise<void> {
+    if (!uid || !eventId) return;
+    await this.gateway.setDoc(
+      this.userPath(uid),
+      { invitedEvents: this.gateway.arrayUnion(eventId) },
+      { merge: true },
+    );
+  }
+
+  /**
+   * Events are private: a member sees the ones they organize, the ones they opened from an
+   * invite link and the ones they answered. Never every event of the people who invited them.
+   */
+  getVisibleEvents(uid: string): Observable<PartyEvent[]> {
+    return combineLatest([
+      this.eventService.getUserEvents(uid),
+      from(this.getInvitedEvents(uid)),
+    ]).pipe(
+      map(([own, invited]) => {
+        const byId = new Map<string, PartyEvent>();
+        [...invited, ...own].forEach((event) => byId.set(event.id, event));
+        return Array.from(byId.values()).sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+        );
+      }),
+    );
+  }
+
+  private async getInvitedEvents(uid: string): Promise<PartyEvent[]> {
+    try {
+      const [user, attended] = await Promise.all([
+        this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid)),
+        this.getAttendedEvents(uid),
+      ]);
+      const attendedIds = new Set(attended.map((event) => event.id));
+      const invitedIds = ((user?.['invitedEvents'] as string[] | undefined) ?? []).filter(
+        (id) => !attendedIds.has(id),
+      );
+      const invited = await Promise.all(
+        invitedIds.map((eventId) => this.eventService.getEventById(eventId)),
+      );
+      return [...attended, ...invited.filter((event): event is PartyEvent => !!event)];
+    } catch (err) {
+      console.error('Error fetching invited events:', err);
+      return [];
+    }
+  }
+
   async getAttendedEvents(uid: string): Promise<PartyEvent[]> {
     if (!uid) return [];
     try {
@@ -97,8 +202,9 @@ export class UserService {
           this.gateway.where('uid', '==', uid),
         );
         guestDocs.forEach((guestDoc) => {
-          if (guestDoc.eventId) {
-            eventIds.add(guestDoc.eventId);
+          const eventId = guestDoc.eventId ?? guestDoc.parentId;
+          if (eventId) {
+            eventIds.add(eventId);
           }
         });
       } catch {

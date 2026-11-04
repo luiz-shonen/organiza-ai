@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.family-checklist {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.family-checklist__row {
+  align-items: center;
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  gap: var(--org-space-xs);
+  min-block-size: 56px;
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+
+.family-checklist__item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.family-checklist__name {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.family-checklist__qty,
+.family-checklist__who {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+}
+
+.family-checklist__row--done {
+  .family-checklist__name,
+  .family-checklist__qty {
+    color: var(--org-on-surface-variant);
+    text-decoration: line-through;
+  }
+}

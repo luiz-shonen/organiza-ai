@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -45,6 +45,20 @@ describe('LoginContainer', () => {
     expect(component['loading']()).toBe(false);
     expect(component['errorMessage']()).toBe('');
     expect(component['hidePassword']()).toBe(true);
+  });
+
+  it('shows no validation errors on a fresh page, only after the field is touched', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelectorAll('.org-text-field__error').length).toBe(0);
+
+    const emailInput = compiled.querySelector(
+      '[data-testid="login-email-input"]',
+    ) as HTMLInputElement;
+    emailInput.dispatchEvent(new Event('blur'));
+    fixture.detectChanges();
+
+    const errors = Array.from(compiled.querySelectorAll('.org-text-field__error'));
+    expect(errors.map((error) => error.textContent?.trim())).toEqual(['E-mail é obrigatório']);
   });
 
   it('should toggle password visibility signal', () => {
@@ -107,6 +121,43 @@ describe('LoginContainer', () => {
     expect(component['errorMessage']()).toBe('A senha deve ter pelo menos 6 caracteres.');
   });
 
+  it('says the password is wrong when the e-mail already has an account', async () => {
+    mockAuthService.login.mockRejectedValueOnce(
+      new Error('Firebase: Error (auth/invalid-credential).'),
+    );
+    mockAuthService.register.mockRejectedValueOnce(
+      new Error('Firebase: Error (auth/email-already-in-use).'),
+    );
+    component['form'].setValue({ email: 'user@example.com', password: 'wrongpassword' });
+
+    await component['submit']();
+
+    expect(component['errorMessage']()).toBe('E-mail ou senha incorretos.');
+  });
+
+  it.each([
+    [
+      'auth/too-many-requests',
+      'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
+    ],
+    [
+      'auth/network-request-failed',
+      'Sem conexão com o servidor. Verifique sua internet e tente de novo.',
+    ],
+    [
+      'auth/api-key-not-valid.-please-pass-a-valid-api-key.',
+      'O app está sem a configuração do Firebase. Avise o responsável.',
+    ],
+  ])('explains %s', async (code, message) => {
+    mockAuthService.login.mockRejectedValueOnce(new Error(`Firebase: Error (${code}).`));
+    component['form'].setValue({ email: 'user@example.com', password: 'password123' });
+
+    await component['submit']();
+
+    expect(mockAuthService.register).not.toHaveBeenCalled();
+    expect(component['errorMessage']()).toBe(message);
+  });
+
   it('should handle wrong password login error', async () => {
     mockAuthService.login.mockRejectedValueOnce(new Error('wrong-password'));
     component['form'].setValue({
@@ -142,5 +193,26 @@ describe('LoginContainer', () => {
 
     expect(component['errorMessage']()).toBe('Falha ao autenticar com o Google.');
     expect(component['loading']()).toBe(false);
+  });
+
+  it('returns to the invite that sent the guest to sign in', async () => {
+    vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    const route = TestBed.inject(ActivatedRoute);
+    vi.spyOn(route.snapshot.queryParamMap, 'get').mockReturnValue('/evento/evt-1');
+    component['form'].setValue({ email: 'user@example.com', password: 'password123' });
+
+    await component['submit']();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/evento/evt-1');
+  });
+
+  it('ignores a redirect that leaves the app', async () => {
+    const route = TestBed.inject(ActivatedRoute);
+    vi.spyOn(route.snapshot.queryParamMap, 'get').mockReturnValue('//evil.example.com');
+    component['form'].setValue({ email: 'user@example.com', password: 'password123' });
+
+    await component['submit']();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/meus-eventos']);
   });
 });

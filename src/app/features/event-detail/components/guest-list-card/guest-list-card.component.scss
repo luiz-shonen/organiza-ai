@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.guest-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.guest-list__actions {
+  display: flex;
+  gap: var(--org-space-2xs);
+}
+
+.guest-list__households,
+.guest-list__people,
+.guest-list__declines-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guest-list__households {
+  gap: var(--org-space-sm);
+}
+
+.guest-list__phone {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+// The guest is the panel title, so their part starts right under it, without the name again.
+.guest-list__holder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+}
+
+// One row per person with them: avatar, name with their role, then what they bring.
+.guest-list__person {
+  align-items: flex-start;
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  gap: var(--org-space-sm);
+  padding: var(--org-space-sm) 0;
+}
+
+.guest-list__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+  min-width: 0;
+}
+
+.guest-list__name {
+  align-items: center;
+  color: var(--org-on-surface);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  gap: var(--org-space-xs);
+  margin: 0;
+}
+
+.guest-list__role {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-medium);
+
+  &--host {
+    color: var(--org-primary);
+  }
+}
+
+.guest-list__bring,
+.guest-list__message {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  line-height: var(--org-line-height-normal);
+  margin: 0;
+}
+
+.guest-list__message {
+  white-space: pre-line;
+}
+
+// One item per line, with a bullet, so two or three items stay easy to read.
+.guest-list__items {
+  color: var(--org-on-surface);
+  list-style: disc;
+  font-size: var(--org-font-size-sm);
+  line-height: var(--org-line-height-normal);
+  margin: 0;
+  padding-inline-start: var(--org-space-lg);
+
+  li::marker {
+    color: var(--org-primary);
+  }
+}
+
+.guest-list__declines {
+  border-top: 1px solid var(--org-outline-variant);
+  padding-top: var(--org-space-md);
+}
+
+.guest-list__declines-title {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0 0 var(--org-space-sm);
+}
+
+.guest-list__declines-list {
+  gap: var(--org-space-sm);
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+}

@@ -1,113 +1,39 @@
-@use '../../shared/ui/tokens/semantic' as semantic;
+.event-detail__stack,
+.event-detail__loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
 
-.event-detail {
-  width: 100%;
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 0 12px 96px;
-  position: relative;
-  z-index: 10;
+.event-detail__skeleton-hero {
+  block-size: 180px;
+}
 
-  @include semantic.tablet {
-    padding: 0 16px 96px;
+.event-detail__skeleton-card {
+  block-size: 140px;
+}
+
+// "Imprimir" in the guest list prints only that card.
+@media print {
+  body * {
+    visibility: hidden;
   }
 
-  &__loading {
+  .print-section,
+  .print-section * {
+    visibility: visible;
+  }
+
+  .print-section {
+    left: 0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
     width: 100%;
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 40px 12px 0;
-
-    @include semantic.tablet {
-      padding: 40px 16px 0;
-    }
   }
 
-  &__skeleton-hero {
-    height: 240px;
-    width: 100%;
-    border-radius: var(--org-radius-lg);
-    margin-bottom: var(--org-space-md);
-
-    @include semantic.tablet {
-      height: 300px;
-      border-radius: var(--org-radius-xl);
-    }
-  }
-
-  &__skeleton-card {
-    height: 160px;
-    width: 100%;
-    border-radius: var(--org-radius-md);
-    margin-bottom: var(--org-space-md);
-  }
-
-  &__section {
-    margin-top: var(--org-space-xl);
-  }
-
-  &__section-title {
-    font-size: var(--org-font-size-2xl);
-    font-weight: var(--org-font-weight-bold);
-    margin: 0 0 var(--org-space-md);
-  }
-
-  &__confirmed-card {
-    border-radius: var(--org-radius-md);
-    padding: var(--org-space-lg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  &__confirmed-title {
-    font-weight: var(--org-font-weight-bold);
-    font-size: var(--org-font-size-lg);
-    margin: 0 0 8px;
-    color: var(--org-on-surface);
-  }
-
-  &__confirmed-subtitle {
-    color: var(--org-on-surface-variant);
-    margin: 0 0 16px;
-    font-size: var(--org-font-size-md);
-  }
-
-  &__cancel-btn {
-    padding: var(--org-space-sm) 20px;
-    border-radius: var(--org-radius-full);
-    border: 1px solid var(--org-error);
-    color: var(--org-error);
-    font-weight: var(--org-font-weight-bold);
-    font-size: var(--org-font-size-sm);
-    background: transparent;
-    cursor: pointer;
-    transition:
-      background-color var(--org-motion-base) var(--org-motion-ease),
-      color var(--org-motion-base) var(--org-motion-ease);
-
-    &:hover {
-      background-color: var(--org-error-container);
-    }
-  }
-
-  &__not-found {
-    max-width: 480px;
-    margin: 80px auto 0;
-    text-align: center;
-    padding: 0 16px;
-
-    h2 {
-      font-size: var(--org-font-size-2xl);
-      font-weight: var(--org-font-weight-bold);
-      color: var(--org-error);
-      margin: 0 0 8px;
-    }
-
-    p {
-      color: var(--org-on-surface-variant);
-      margin: 0;
-    }
+  @page {
+    margin: 1.5cm;
   }
 }

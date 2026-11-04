@@ -1,18 +1,12 @@
 <org-page-layout maxWidth="default" data-testid="event-editor-page">
   @if (loading()) {
-    <org-page-header title="Carregando..." icon="edit" />
+    <org-page-header title="Carregando..." />
     <div class="editor__grid" aria-hidden="true">
       <div class="editor__col">
         <org-surface variant="card">
-          <div class="editor__skeleton-header">
-            <org-skeleton class="editor__skeleton-icon" shape="circle" />
-            <org-skeleton class="editor__skeleton-title" />
-          </div>
           <div class="editor__skeleton-form">
             <org-skeleton class="editor__skeleton-input" />
             <org-skeleton class="editor__skeleton-textarea" />
-            <org-skeleton class="editor__skeleton-input" />
-            <org-skeleton class="editor__skeleton-input" />
             <org-skeleton class="editor__skeleton-input" />
             <org-skeleton class="editor__skeleton-btn" />
           </div>
@@ -20,123 +14,92 @@
       </div>
     </div>
   } @else {
-    <org-page-header [title]="isEditing() ? 'Editar Evento' : 'Novo Evento'" icon="edit">
-      <div orgPageHeaderActions class="editor__header-actions">
-        <org-button
-          label="Voltar"
-          icon="arrow_back"
-          variant="secondary"
-          (pressed)="router.navigate(['/meus-eventos'])"
-          aria-label="Voltar para a lista de eventos"
-        />
-        @if (isEditing() && isOwner()) {
+    <org-page-header [title]="isEditing() ? 'Editar evento' : 'Novo evento'">
+      @if (isEditing() && isOwner()) {
+        <div orgPageHeaderActions class="editor__header-actions">
           <org-button
             label="Colaboradores"
             icon="group_add"
             variant="secondary"
+            [compact]="true"
             (pressed)="openCollaboratorsDialog()"
           />
-        }
-      </div>
+          @if (currentEvent()?.status !== 'cancelled') {
+            <org-button
+              label="Cancelar evento"
+              variant="danger-text"
+              icon="cancel"
+              testId="cancel-event-btn"
+              [compact]="true"
+              (pressed)="cancelEvent()"
+            />
+          }
+        </div>
+      }
     </org-page-header>
 
     @if (isEditing() && !isOwner()) {
       <org-banner
         variant="info"
         icon="info"
-        [message]="'Modo Colaborador: Você tem permissão para gerenciar a lista de itens e visualizar os convidados. As informações principais do evento só podem ser alteradas pelo organizador.'"
         class="editor__collab-banner"
         role="status"
         aria-label="Permissões de colaborador"
+        [message]="'Modo colaborador: você pode gerenciar a lista de itens e ver os convidados. As informações principais só podem ser alteradas pelo organizador.'"
       />
     }
 
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
-      <div class="editor__col">
-        <org-surface variant="card">
-          <org-card-header icon="edit_note" heading="Dados do Evento" />
-          <div
-            class="editor__step-progress"
-            data-testid="event-step-progress"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <span class="editor__step-progress-count">
-              Etapa {{ activeStepIndex() + 1 }} de {{ stepLabels.length }}
-            </span>
-            <strong class="editor__step-progress-title">{{ stepLabels[activeStepIndex()] }}</strong>
-            <div
-              class="editor__step-progress-track"
-              role="progressbar"
-              aria-label="Progresso do formulário"
-              aria-valuemin="1"
-              [attr.aria-valuemax]="stepLabels.length"
-              [attr.aria-valuenow]="activeStepIndex() + 1"
-              [attr.aria-valuetext]="
-                'Etapa ' +
-                (activeStepIndex() + 1) +
-                ' de ' +
-                stepLabels.length +
-                ': ' +
-                stepLabels[activeStepIndex()]
-              "
-            >
-              @for (stepLabel of stepLabels; track stepLabel; let index = $index) {
-                <span
-                  class="editor__step-progress-segment"
-                  [class.editor__step-progress-segment--complete]="index < activeStepIndex()"
-                  [class.editor__step-progress-segment--active]="index === activeStepIndex()"
-                ></span>
-              }
-            </div>
-          </div>
-          <org-stepper
-            #stepper
-            class="editor__stepper--mobile"
-            ariaLabel="Etapas de criação do evento"
-            [linear]="true"
-            [compact]="true"
-            (selectionChange)="activeStepIndex.set($event)"
-          >
-            <org-step label="Informações do evento" [stepControl]="basicInfoForm">
-              <app-event-basic-info-step
-                [form]="basicInfoForm"
-                [categories]="categories"
-                [minDate]="minDate"
-                (next)="stepper.next()"
-              />
-            </org-step>
+      <div class="editor__col" data-testid="event-step-progress">
+        <org-stepper
+          #stepper
+          ariaLabel="Etapas de criação do evento"
+          [linear]="!isEditing()"
+          [compact]="true"
+          (selectionChange)="activeStepIndex.set($event)"
+        >
+          <org-step [label]="stepLabels[0]" [stepControl]="basicInfoForm">
+            <app-event-basic-info-step
+              [form]="basicInfoForm"
+              [categories]="categories"
+              [minDate]="minDate"
+              (next)="stepper.next()"
+              (cancelled)="cancelEditing()"
+            />
+          </org-step>
 
-            <org-step label="Endereço do evento" [stepControl]="addressForm">
-              <app-event-address-step
-                [form]="addressForm"
-                (cepInput)="formatCep($event)"
-                (back)="stepper.previous()"
-                (next)="stepper.next()"
-              />
-            </org-step>
+          <org-step [label]="stepLabels[1]" [stepControl]="addressForm">
+            <app-event-address-step
+              [form]="addressForm"
+              (cepInput)="formatCep($event)"
+              (back)="stepper.previous()"
+              (next)="stepper.next()"
+            />
+          </org-step>
 
-            <org-step label="Pagamento por Pix" [stepControl]="pixForm">
-              <app-event-pix-step
-                [form]="pixForm"
-                [canSave]="isOwner()"
-                [isEditing]="isEditing()"
-                [saving]="saving()"
-                [complete]="basicInfoForm.valid && addressForm.valid && pixForm.valid"
-                (back)="stepper.previous()"
-                (save)="saveEvent()"
-              />
-            </org-step>
-          </org-stepper>
-        </org-surface>
+          <org-step [label]="stepLabels[2]">
+            <app-event-items-step
+              [items]="stepItems()"
+              (add)="addItem($event)"
+              (update)="updateItem($event)"
+              (remove)="removeItem($event)"
+              (back)="stepper.previous()"
+              (next)="stepper.next()"
+            />
+          </org-step>
 
-        @if (isEditing()) {
-          <app-event-items-card
-            [items]="items()"
-            (add)="addItem($event)"
-            (remove)="removeItem($event)"
-          />
-        }
+          <org-step [label]="stepLabels[3]" [stepControl]="pixForm">
+            <app-event-pix-step
+              [form]="pixForm"
+              [canSave]="isOwner()"
+              [isEditing]="isEditing()"
+              [saving]="saving()"
+              [missingSteps]="missingSteps()"
+              (back)="stepper.previous()"
+              (save)="saveEvent()"
+            />
+          </org-step>
+        </org-stepper>
       </div>
 
       @if (isEditing()) {
@@ -144,12 +107,8 @@
           <app-share-panel
             [eventUrl]="eventUrl()"
             [eventTitle]="basicInfoForm.controls.title.value"
-          />
-          <app-event-guests-card
-            class="print-section"
-            [guests]="guests()"
-            (exportCsv)="exportToCsv()"
-            (print)="printList()"
+            [eventDate]="currentEvent()?.date ?? null"
+            [eventLocation]="currentEvent()?.location ?? null"
           />
         </div>
       }

@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  Email,
+  fieldError,
+  requiredText,
+  valueObjectValidator,
+} from '../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgIconButtonComponent,
@@ -23,8 +29,11 @@ export class AdminFormDrawerComponent {
   readonly closed = output<void>();
 
   protected readonly form = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [requiredText, valueObjectValidator(Email.validate)]],
   });
+
+  protected readonly fieldError = fieldError;
+  protected readonly emailMaxLength = Email.MAX;
 
   protected onSubmit(): void {
     if (this.form.invalid || this.saving()) {
@@ -32,7 +41,7 @@ export class AdminFormDrawerComponent {
       return;
     }
 
-    const email = this.form.getRawValue().email.trim();
+    const email = Email.create(this.form.getRawValue().email)?.value;
     if (email) {
       this.save.emit(email);
       this.form.reset();

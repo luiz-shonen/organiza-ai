@@ -41,6 +41,22 @@ describe('OrgAutocompleteFieldComponent', () => {
     ]);
   });
 
+  it('lists every option again once one is chosen, and filters when the text changes', async () => {
+    const fixture = await createComponent();
+    const values = () =>
+      fixture.componentInstance['filteredOptions']().map((option) => option.value);
+
+    fixture.componentInstance['selectOption']('sibling');
+    fixture.detectChanges();
+    expect(values()).toHaveLength(OPTIONS.length);
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.value = 'Pa';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(values()).toEqual(['parent', 'relative']);
+  });
+
   it('models the selected typed value and shows its label', async () => {
     const fixture = await createComponent();
     const onChange = vi.fn();

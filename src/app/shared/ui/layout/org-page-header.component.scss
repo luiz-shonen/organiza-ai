@@ -2,75 +2,79 @@
 
 :host {
   display: block;
-  margin-bottom: 24px;
-
-  @include semantic.tablet {
-    margin-bottom: 36px;
-  }
+  margin-bottom: var(--org-space-md);
 }
 
 .org-page-header {
+  align-items: stretch;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  align-items: flex-start;
+  gap: var(--org-space-md);
 
   @include semantic.tablet {
-    flex-direction: row;
     align-items: center;
+    flex-direction: row;
     justify-content: space-between;
   }
 
   &__content {
-    display: flex;
     align-items: flex-start;
-    gap: 16px;
+    display: flex;
+    gap: var(--org-space-md);
   }
 
   &__icon-wrap {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: rgba(255, 77, 148, 0.12);
+    background: var(--org-primary-container);
+    block-size: var(--org-touch);
+    border-radius: var(--org-radius-sm);
+    display: flex;
     flex-shrink: 0;
+    inline-size: var(--org-touch);
+    justify-content: center;
   }
 
   &__titles {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--org-space-xs);
   }
 
   &__title {
-    font-size: var(--org-font-size-heading);
-    font-weight: var(--org-font-weight-extrabold);
-    line-height: var(--org-line-height-tight);
     color: var(--org-on-surface);
-    margin: 0;
+    font-family: var(--org-font-display);
+    font-size: var(--org-font-size-heading);
+    font-weight: var(--org-font-weight-semibold);
+    line-height: var(--org-line-height-tight);
     letter-spacing: var(--org-letter-spacing-tight);
+    margin: 0;
+  }
+
+  &__highlight {
+    background: var(--org-gradient-highlight);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
 
   &__subtitle {
-    font-size: var(--org-font-size-md);
     color: var(--org-on-surface-variant);
-    margin: 0;
+    font-size: var(--org-font-size-sm);
     line-height: var(--org-line-height-normal);
+    margin: 0;
     max-width: 600px;
-
-    @include semantic.tablet {
-      font-size: var(--org-font-size-md);
-    }
   }
 
   &__actions {
-    display: flex;
     align-items: center;
-    gap: 12px;
+    display: flex;
     flex-wrap: wrap;
-    width: 100%;
+    gap: var(--org-space-sm);
+
+    &:empty {
+      display: none;
+    }
 
     @include semantic.tablet {
       width: auto;

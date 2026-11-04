@@ -1,0 +1,133 @@
+:host {
+  display: block;
+}
+
+.event-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  min-inline-size: 0;
+}
+
+.event-summary-card__top {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--org-space-md);
+  justify-content: space-between;
+}
+
+.event-summary-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  min-inline-size: 0;
+}
+
+.event-summary-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-xs);
+}
+
+.event-summary-card__title {
+  color: var(--org-on-surface);
+  font: var(--org-font-weight-semibold) var(--org-font-size-lg) / var(--org-line-height-snug)
+    var(--org-font-display);
+  margin: 0;
+}
+
+.event-summary-card__link {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    border-radius: var(--org-radius-xs);
+    outline: 2px solid var(--org-primary);
+    outline-offset: 2px;
+  }
+}
+
+.event-summary-card__meta {
+  align-items: center;
+  color: var(--org-on-surface-variant);
+  display: flex;
+  font-size: var(--org-font-size-sm);
+  gap: var(--org-space-xs);
+  margin: 0;
+  min-inline-size: 0;
+}
+
+// The pin sits beside the first line; each line keeps its own ellipsis.
+.event-summary-card__meta--address {
+  align-items: flex-start;
+}
+
+.event-summary-card__address {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.event-summary-card__address-line {
+  line-height: var(--org-line-height-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-summary-card__description {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-summary-card__footer {
+  align-items: center;
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+  margin-top: var(--org-space-xs);
+  padding-top: var(--org-space-sm);
+}
+
+.event-summary-card__actions {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-xs);
+
+  // Alone in the footer (no details link), the page's action sits on the right.
+  &:last-child {
+    margin-inline-start: auto;
+  }
+}
+
+// "Ver detalhes": quiet text action, the same on every card.
+.event-summary-card__details {
+  align-items: center;
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface);
+  display: inline-flex;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  margin-inline-start: auto;
+  min-block-size: var(--org-touch);
+  padding-inline: var(--org-space-sm);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--org-primary);
+    outline-offset: 2px;
+  }
+}

@@ -4,15 +4,14 @@
 
 .org-badge {
   align-items: center;
-  border-radius: var(--org-radius-full);
+  border-radius: var(--org-radius-xs);
   display: inline-flex;
-  font-size: var(--org-font-size-xs);
-  font-weight: var(--org-font-weight-bold);
+  font: var(--org-text-label);
   gap: var(--org-space-xs);
-  min-height: 24px;
-  padding: var(--org-space-2xs) var(--org-space-sm);
   letter-spacing: var(--org-letter-spacing-wide);
-  box-shadow: var(--org-shadow-xs);
+  min-height: 22px;
+  padding: var(--org-space-2xs) var(--org-space-sm);
+  text-transform: uppercase;
   transition:
     background-color var(--org-motion-base) var(--org-motion-ease),
     color var(--org-motion-base) var(--org-motion-ease);
@@ -34,63 +33,89 @@
 }
 
 .org-badge--success {
-  background: var(--org-success);
-  color: var(--org-on-success);
+  background: var(--org-success-container);
+  color: var(--org-on-success-container);
 }
 
 .org-badge--warning {
-  background: var(--org-warning);
-  color: var(--org-on-warning);
+  background: color-mix(in srgb, var(--org-warning) 18%, var(--org-surface));
+  color: var(--org-warning-ink);
 }
 
 .org-badge--danger {
-  background: var(--org-error);
-  color: var(--org-on-error);
+  background: var(--org-error-container);
+  color: var(--org-on-error-container);
 }
 
+// Event categories: outlined in their own hue. Status tags (success, warning, danger) stay
+// filled, so "Festa Junina" and "Confirmado" never look alike.
 .org-badge--aniversario,
 :host(.cat-aniversario) .org-badge {
-  background: var(--org-cat-aniversario-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-aniversario-color);
 }
 
 .org-badge--casamento,
 :host(.cat-casamento) .org-badge {
-  background: var(--org-cat-casamento-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-casamento-color);
 }
 
 .org-badge--festa,
 :host(.cat-festa) .org-badge {
-  background: var(--org-cat-festa-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-festa-color);
 }
 
 .org-badge--churrasco,
 :host(.cat-churrasco) .org-badge {
-  background: var(--org-cat-churrasco-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-churrasco-color);
 }
 
 .org-badge--happy,
 :host(.cat-happy) .org-badge {
-  background: var(--org-cat-happy-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-happy-color);
 }
 
 .org-badge--formatura,
 :host(.cat-formatura) .org-badge {
-  background: var(--org-cat-formatura-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-formatura-color);
 }
 
 .org-badge--outros,
 :host(.cat-outros) .org-badge {
-  background: var(--org-cat-outros-bg);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentcolor;
   color: var(--org-cat-outros-color);
+}
+
+// A category in its own colour: a light tint, the text and a thin outline in that hue,
+// mixed with the surface and the text colour so it reads in light and dark.
+.org-badge--category {
+  background: color-mix(in srgb, var(--org-badge-hue) var(--org-category-tint), var(--org-surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--org-badge-hue) 55%, transparent);
+  color: color-mix(in srgb, var(--org-badge-hue) var(--org-category-ink), var(--org-on-surface));
 }
 
 .org-badge--gradient {
   background: var(--org-gradient-primary);
   color: var(--org-on-primary);
+}
+
+.org-badge--pill {
+  border-radius: var(--org-radius-full);
+  font-weight: var(--org-font-weight-bold);
+  letter-spacing: normal;
+  padding-inline: var(--org-space-sm);
+  text-transform: none;
+  white-space: nowrap;
 }

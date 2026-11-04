@@ -38,6 +38,9 @@
           type="email"
           placeholder="exemplo@gmail.com"
           formControlName="email"
+          [required]="true"
+          [maxLength]="emailMaxLength"
+          [error]="fieldError(form.controls.email, 'E-mail é obrigatório')"
           hint="O usuário deve possuir uma conta Google válida cadastrada."
         />
 

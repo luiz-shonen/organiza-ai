@@ -1,0 +1,63 @@
+:host {
+  display: block;
+}
+
+// Same frame as "Minha família": header, the add form, then one row per person.
+.companion-roster__header {
+  padding: var(--org-space-md);
+}
+
+.companion-roster__form {
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  padding: var(--org-space-md);
+}
+
+.companion-roster__empty {
+  border-top: 1px solid var(--org-outline-variant);
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+  padding: var(--org-space-md);
+}
+
+.companion-roster__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.companion-roster__item {
+  align-items: center;
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  gap: var(--org-space-md);
+  padding: var(--org-space-sm) var(--org-space-sm) var(--org-space-sm) var(--org-space-md);
+}
+
+.companion-roster__name {
+  flex: 1;
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  min-inline-size: 0;
+}
+
+.companion-roster__sheet-title {
+  font: var(--org-font-weight-bold) var(--org-font-size-lg) / var(--org-line-height-snug)
+    var(--org-font-display);
+  margin: 0 0 var(--org-space-md);
+}
+
+.companion-roster__sheet-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
+
+.companion-roster__sheet-actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}

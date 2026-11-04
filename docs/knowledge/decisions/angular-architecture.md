@@ -6,7 +6,7 @@ supersedes: [AD-001, AD-002, AD-003, AD-011]
 enforced_by:
   - eslint.config.mjs#prefer-standalone
   - eslint.config.mjs#prefer-on-push-component-change-detection
-related: [design-system.md, styling-rules.md]
+related: [design-system.md, styling-rules.md, events-and-invites.md]
 ---
 
 # Angular architecture and component roles
@@ -16,6 +16,31 @@ related: [design-system.md, styling-rules.md]
 - Local state with `signal()`, `computed()`, `input()`, `output()`, `model()`. RxJS only for Firestore streams.
 - Always `templateUrl` + `styleUrl`.
 - Strict TypeScript, no `any`. Interfaces and form types live in `src/app/core/models/`.
+- Events save `addressDetails` beside the one-line `location`. Older events that only have the
+  line are split back into the fields by `parseLocation` when they are edited, and the Pix step
+  names the steps still blocking "Salvar" ("Para salvar, complete: Endereço").
+- Events also save `creatorName`, the owner's profile name ("Luiz Rodrigues"), so guests see who invites
+  them: an e-mail account has no Firebase `displayName`, which showed the e-mail prefix ("admin").
+  Saving the profile name renames it on every event the account owns (`EventService.renameCreator`), and
+  "Meus eventos" fixes older events once. The organizer sees "Você" and no RSVP card on their own event.
+- The header has a light / dark switch (`org-theme-toggle`) next to the avatar; "Sistema" stays on the
+  profile page.
+- Product behaviour of events and invites (states by start time, filter chips, RSVP, "Quem vai") is in
+  [events-and-invites](events-and-invites.md); time checks go through `hasStarted` / `daysUntil`.
+- WhatsApp sharing (`buildShareMessage`, `shareWhatsApp`) sends no emoji: WhatsApp's share page
+  turns every character beyond U+07FF into "�" and then misplaces the link.
+- Every field people type in is checked by a value object in `src/app/core/value-objects/`:
+  - `PersonName` covers the profile, family, guests and companions.
+  - The others are `Phone`, `Email`, `EventTitle`, `EventDescription`, `ItemName`, `Quantity`, `Cep`, `AddressNumber` and `PixKey`.
+- Each value object has two methods, and the page saves what `create` returns:
+  - `validate(raw)` returns the error message, or null. Empty values pass, so `required` handles them.
+  - `create(raw)` returns the tidied value, or null.
+- How forms use them:
+  - Reactive forms pair `valueObjectValidator(Vo.validate)` with `requiredText`, and show messages with `fieldError(control, requiredMessage)`.
+  - Signal forms show their errors after the first submit.
+- Free text refuses `< > { }` and control characters.
+- `org-text-field` takes `[mask]` (for example `Phone.mask`) and `[maxLength]`. A phone is saved as "(11) 98888-1111".
+- `firestore.rules` checks the same fields on the server, with looser limits (see [firebase-and-auth.md](firebase-and-auth.md)).
 
 ## Four component roles
 
@@ -26,8 +51,10 @@ related: [design-system.md, styling-rules.md]
 | Presentational  | `*.component.ts`                  | nothing (FormBuilder for its own form is fine)                    | `input()` / `output()`                                              |
 | Design System   | `shared/ui/**/org-*.component.ts` | generic UI behaviour only (Clipboard, Overlay, `FeedbackService`) | inputs, outputs, content slots                                      |
 
+A drawer that must save something before it closes (the RSVP drawer adding a family member) receives a callback in its data, for example `RsvpDrawerRequestData.addFamilyMember`; the page implements it with the domain service and shows the feedback, so the drawer still injects nothing but `FormBuilder`.
+
 A presentational component never injects a domain service. When it needs a side effect that is purely UI (copy to clipboard and confirm), use the DS primitive that owns it (`org-copy-button`). When it needs a domain side effect, emit an output and let the page handle it.
 
 Reactive forms belong to the page; a step or section component receives its typed `FormGroup` as an input (see `EventBasicInfoForm` in `core/models`).
 
-Example: `features/organizer/event-editor/` — the container owns data, forms and saving; `event-basic-info-step`, `event-address-step`, `event-pix-step`, `event-items-card` and `event-guests-card` are presentational.
+Example: `features/organizer/event-editor/` — the container owns data, forms and saving; `event-basic-info-step`, `event-address-step`, `event-items-step`, and `event-pix-step` are presentational.

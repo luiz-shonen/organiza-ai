@@ -51,6 +51,19 @@ export class FamilyService {
     };
   }
 
+  async updateFamilyMember(
+    uid: string,
+    memberId: string,
+    changes: Pick<FamilyMember, 'name' | 'relationship' | 'phone'>,
+  ): Promise<void> {
+    if (!uid || !memberId) return;
+    await this.gateway.updateDoc(`${this.familyPath(uid)}/${memberId}`, {
+      name: changes.name,
+      relationship: changes.relationship,
+      phone: changes.phone || '',
+    });
+  }
+
   async deleteFamilyMember(uid: string, memberId: string): Promise<void> {
     if (!uid || !memberId) return;
     await this.gateway.deleteDoc(`${this.familyPath(uid)}/${memberId}`);

@@ -5,89 +5,116 @@
   data-testid="home-page"
 >
   <org-page-header
-    title="Eventos: Descubra, Participe e Celebre"
-    subtitle="Encontre encontros, festas e momentos especiais. Confirme sua presença e combine itens com facilidade."
-    icon="event"
-    [gradient]="true"
+    data-testid="home-hero"
+    [title]="member() ? 'Olá, ' : 'Eventos: '"
+    [highlight]="member() ? greetingName() : 'Descubra, Participe e Celebre'"
+    [subtitle]="subtitle()"
   />
+
+  @if (nextConfirmed(); as next) {
+    <app-next-event-banner class="home__next" [event]="next" />
+  }
 
   @if (events() === undefined) {
     <org-loading-state label="Carregando eventos..." />
   } @else if (events()!.length === 0) {
     <org-empty-state
       icon="event"
-      title="Nenhum evento disponível no momento."
-      description="Que tal criar o primeiro evento e reunir as pessoas especiais?"
+      title="Nenhum evento por aqui ainda"
+      description="Quando você criar um evento ou receber um convite, ele aparece nesta tela."
       data-testid="home-empty-state"
     >
       <org-button
         orgEmptyStateAction
-        class="home__empty-btn"
-        label="Criar Primeiro Evento"
-        icon="add"
+        label="Criar meu primeiro evento"
+        [gradient]="false"
         (pressed)="createEvent()"
       />
     </org-empty-state>
   } @else {
-    <org-section title="Próximos Eventos" icon="event" [count]="events()!.length">
-      <nav class="home__grid" aria-label="Lista de eventos">
-        @for (event of events()!; track event.id) {
-          <a
-            class="home__card-link"
-            data-testid="event-card"
-            [routerLink]="['/evento', event.id]"
-            role="link"
-            tabindex="0"
-            (keydown.enter)="navigateToEvent(event.id)"
-            (keydown.space)="navigateToEvent(event.id, $event)"
-            [attr.aria-label]="'Ver detalhes do evento ' + event.title"
-          >
-            <org-surface variant="card" [interactive]="true">
-              <article class="home__card">
-                <div class="home__card-top">
-                  <div class="home__card-badge">
-                    <org-icon name="event" size="sm" color="var(--org-primary)" />
-                    <span>Evento</span>
-                  </div>
-                  @if (event.date) {
-                    <div class="home__date-badge" aria-label="Data do evento">
-                      <span class="home__date-month">{{ getMonth(event.date) }}</span>
-                      <span class="home__date-day">{{ getDay(event.date) }}</span>
-                    </div>
-                  }
-                </div>
+    <section class="home__list" aria-labelledby="home-list-title">
+      <h2 class="home__list-title" id="home-list-title">
+        {{ listTitle() }}
+        <span class="home__list-count">{{ cards().length }}</span>
+      </h2>
 
-                <div class="home__card-header">
-                  <h3 class="home__card-title">{{ event.title }}</h3>
-                  <p class="home__card-subtitle">
-                    <org-icon name="schedule" size="sm" color="var(--org-primary)" />
-                    {{ formatDate(event.date) }}
-                  </p>
-                </div>
+      @if (member()) {
+        <org-filter-bar
+          ariaLabel="Filtrar eventos"
+          [options]="filters()"
+          [values]="activeFilters()"
+          (valuesChange)="setFilters($event)"
+        />
+      }
 
-                <div class="home__card-content">
-                  @if (event.description) {
-                    <p class="home__card-description">{{ event.description }}</p>
-                  }
-                  @if (event.location) {
-                    <p class="home__card-location">
-                      <org-icon name="place" size="sm" color="var(--org-primary)" />
-                      <span>{{ event.location }}</span>
-                    </p>
-                  }
-                </div>
-
-                <div class="home__card-footer">
-                  <span class="home__card-cta">
-                    Ver Detalhes
-                    <org-icon name="event" size="sm" color="var(--org-primary)" />
+      @if (cards().length === 0) {
+        <org-empty-state
+          icon="event"
+          [title]="onlyFilter('past') ? 'Nenhum evento realizado' : 'Nada por aqui'"
+          [description]="
+            onlyFilter('pending')
+              ? 'Você já respondeu todos os convites.'
+              : 'Quando houver eventos neste filtro, eles aparecem aqui.'
+          "
+        />
+      } @else {
+        <div class="home__grid">
+          @for (card of cards(); track card.event.id) {
+            <app-event-summary-card
+              [event]="card.event"
+              [status]="card.status"
+              [link]="['/evento', card.event.id]"
+              [showDetails]="!card.pending && !card.answered"
+            >
+              @if (card.bring.length) {
+                <org-expansion-panel
+                  eventCardBody
+                  icon="assignment"
+                  data-testid="family-bring-panel"
+                  [heading]="
+                    'Família leva ' +
+                    card.bring.length +
+                    (card.bring.length === 1 ? ' item' : ' itens')
+                  "
+                >
+                  <span orgExpansionSummary>
+                    @if (card.bought === card.bring.length) {
+                      ✓ Tudo certo
+                    } @else {
+                      {{ card.bought }}/{{ card.bring.length }} comprados
+                    }
                   </span>
-                </div>
-              </article>
-            </org-surface>
-          </a>
-        }
-      </nav>
-    </org-section>
+                  <app-family-checklist
+                    [rows]="card.bring"
+                    (boughtToggle)="toggleBought(card.event.id, $event)"
+                  />
+                </org-expansion-panel>
+              }
+
+              @if (card.pending) {
+                <org-button
+                  eventCardFooter
+                  label="Responder convite"
+                  variant="tonal"
+                  testId="answer-invite-btn"
+                  [compact]="true"
+                  (pressed)="openEvent(card.event.id)"
+                />
+              }
+              @if (card.answered) {
+                <org-button
+                  eventCardFooter
+                  label="Ver convite"
+                  variant="tonal"
+                  testId="view-invite-btn"
+                  [compact]="true"
+                  (pressed)="openEvent(card.event.id)"
+                />
+              }
+            </app-event-summary-card>
+          }
+        </div>
+      }
+    </section>
   }
 </org-page-layout>

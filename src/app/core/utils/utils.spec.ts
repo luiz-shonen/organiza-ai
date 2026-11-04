@@ -4,7 +4,9 @@ import {
   getDay,
   getMonth,
   formatTime,
+  buildShareMessage,
   buildWhatsAppShareUrl,
+  formatShareDate,
   shareWhatsApp,
   copyToClipboard,
   generateId,
@@ -68,34 +70,52 @@ describe('Core Utilities', () => {
   });
 
   describe('sharing.utils', () => {
-    it('buildWhatsAppShareUrl constructs formatted WhatsApp URL with all metadata', () => {
-      const url = buildWhatsAppShareUrl(
-        'Aniversário de 30 Anos',
-        '15/10/2026',
-        'Espaço das Américas',
+    it('buildShareMessage puts the title, when, where and the link alone on the last line', () => {
+      const date = new Date(2026, 10, 10, 19, 30).toISOString();
+      const message = buildShareMessage({
+        title: 'Natal 2026 no sítio',
+        date,
+        location: 'Rua Senador Lemos, 85',
+        url: 'https://organiza.ai/evento/evt-123',
+      });
+      expect(message.split('\n')).toEqual([
+        '*Natal 2026 no sítio*',
+        'Você está convidado(a)!',
+        '',
+        '*Quando:* terça-feira, 10 de novembro · 19:30',
+        '*Onde:* Rua Senador Lemos, 85',
+        '',
+        'Confirme sua presença e veja o que levar:',
         'https://organiza.ai/evento/evt-123',
-      );
-      expect(url).toContain('https://wa.me/?text=');
-      const decoded = decodeURIComponent(url);
-      expect(decoded).toContain('🎉 Você está convidado(a) para *Aniversário de 30 Anos*!');
-      expect(decoded).toContain('📅 15/10/2026');
-      expect(decoded).toContain('📍 Espaço das Américas');
-      expect(decoded).toContain('https://organiza.ai/evento/evt-123');
+      ]);
     });
 
-    it('buildWhatsAppShareUrl constructs URL with minimal parameters', () => {
-      const url = buildWhatsAppShareUrl('Festa');
-      expect(url).toContain('https://wa.me/?text=');
-      const decoded = decodeURIComponent(url);
-      expect(decoded).toBe('https://wa.me/?text=🎉 Você está convidado(a) para *Festa*!');
+    it('buildShareMessage leaves out what it does not know', () => {
+      expect(buildShareMessage({ title: '  ' })).toBe('*Nosso evento*\nVocê está convidado(a)!');
+      expect(formatShareDate('não é data')).toBe('');
     });
 
-    it('shareWhatsApp opens the built URL in a new window', () => {
+    it('buildWhatsAppShareUrl only uses characters WhatsApp carries intact', () => {
+      const url = buildWhatsAppShareUrl({
+        title: 'Natal 2026 no sítio',
+        date: new Date(2026, 10, 10, 19, 30).toISOString(),
+        location: 'Rua Senador Lemos, 85',
+        url: 'https://organiza.ai/evento/abc',
+      });
+      expect(url.startsWith('https://api.whatsapp.com/send?text=')).toBe(true);
+      const text = decodeURIComponent(url.split('text=')[1]);
+      // Beyond U+07FF (emoji, ✨, —) WhatsApp's share page shows "�".
+      expect(Array.from(text).every((char) => char.codePointAt(0)! <= 0x7ff)).toBe(true);
+      expect(text.endsWith('https://organiza.ai/evento/abc')).toBe(true);
+    });
+
+    it('shareWhatsApp opens the share in a new tab', () => {
       const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
-      shareWhatsApp('Churrasco', '20/11/2026', 'Clube', 'https://organiza.ai/evento/abc');
+      shareWhatsApp({ title: 'Churrasco', url: 'https://organiza.ai/evento/abc' });
       expect(openSpy).toHaveBeenCalledWith(
-        expect.stringContaining('https://wa.me/?text='),
+        expect.stringContaining('https://api.whatsapp.com/send?text='),
         '_blank',
+        'noopener,noreferrer',
       );
       openSpy.mockRestore();
     });

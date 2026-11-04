@@ -20,7 +20,11 @@ export class ItemListHarness {
 
     this.claimBtns = this.listRoot.getByRole('button', { name: /eu levo/i });
 
-    this.unclaimBtns = this.listRoot.getByRole('button', { name: /desistir/i });
+    // Releasing a claim happens in the "Checklist da família" card, one line per person.
+    this.unclaimBtns = this.listRoot
+      .page()
+      .getByTestId('family-checklist-card')
+      .getByRole('button', { name: /^remover/i });
 
     this.remainingCount = this.listRoot
       .getByTestId('item-remaining-count')

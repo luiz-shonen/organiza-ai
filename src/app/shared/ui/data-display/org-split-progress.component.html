@@ -1,0 +1,32 @@
+<div
+  class="org-split-progress"
+  role="progressbar"
+  aria-valuemin="0"
+  [class.org-split-progress--md]="size() === 'md'"
+  [class.org-split-progress--muted]="muted()"
+  [attr.aria-valuemax]="total()"
+  [attr.aria-valuenow]="filled()"
+  [attr.aria-label]="ariaLabel()"
+>
+  @for (bar of bars(); track $index) {
+    <span
+      [class]="'org-split-progress__segment org-split-progress__tone--' + bar.tone"
+      [style.inline-size.%]="bar.width"
+    ></span>
+  }
+</div>
+<div class="org-split-progress__footer">
+  @if (showLegend() && segments().length) {
+    <ul class="org-split-progress__legend" [class.org-split-progress--muted]="muted()">
+      @for (segment of segments(); track $index) {
+        <li class="org-split-progress__chip">
+          <span
+            [class]="'org-split-progress__dot org-split-progress__tone--' + ($index % 4)"
+          ></span>
+          {{ segment.label }} <strong>{{ segment.value }}</strong>
+        </li>
+      }
+    </ul>
+  }
+  <ng-content select="[orgSplitAction]" />
+</div>

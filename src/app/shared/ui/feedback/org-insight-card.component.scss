@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+.org-insight-card {
+  background: var(--org-info-container);
+  border-radius: var(--org-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  padding: var(--org-space-md);
+
+  // Its own warm tint, not a category colour, so the tip keeps its tone when categories change.
+  &--warning {
+    background: color-mix(in srgb, var(--org-warning) 14%, var(--org-surface));
+  }
+}
+
+.org-insight-card__label {
+  align-items: center;
+  color: var(--org-on-primary-container);
+  display: flex;
+  font: var(--org-text-label);
+  gap: var(--org-space-xs);
+  letter-spacing: var(--org-letter-spacing-wide);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.org-insight-card__message {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  line-height: var(--org-line-height-normal);
+  margin: 0;
+}
+
+.org-insight-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+
+  &:empty {
+    display: none;
+  }
+}

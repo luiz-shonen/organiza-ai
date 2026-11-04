@@ -1,77 +1,33 @@
 .login {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 28px;
   min-height: 100dvh;
-  padding: 40px 24px;
+  padding: 40px 28px;
   box-sizing: border-box;
-  overflow: hidden;
-
-  /* Vibrant Modernism Liquid Glass Orbs */
-  &__orb {
-    position: absolute;
-    border-radius: var(--org-radius-circle);
-    filter: blur(140px);
-    opacity: 0.25;
-    pointer-events: none;
-    z-index: 0;
-
-    &--1 {
-      width: 320px;
-      height: 320px;
-      background: var(--org-primary);
-      top: 10%;
-      left: 10%;
-      animation: orbFloat1 12s ease-in-out infinite alternate;
-    }
-
-    &--2 {
-      width: 380px;
-      height: 380px;
-      background: var(--org-secondary);
-      bottom: 10%;
-      right: 10%;
-      animation: orbFloat2 15s ease-in-out infinite alternate;
-    }
-
-    &--3 {
-      width: 260px;
-      height: 260px;
-      background: var(--org-tertiary);
-      top: 40%;
-      right: 25%;
-      animation: orbFloat3 10s ease-in-out infinite alternate;
-    }
-  }
 
   &__header {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: var(--org-space-sm);
     width: 100%;
-    margin-bottom: var(--org-space-lg, 20px);
+    text-align: center;
   }
 
-  &__logo {
-    height: 76px;
-    margin-bottom: var(--org-space-sm, 8px);
+  &__brand {
+    margin: 0;
   }
 
   &__subtitle {
     color: var(--org-on-surface-variant);
-    font-size: var(--org-font-size-md);
-    font-weight: var(--org-font-weight-medium);
+    font: var(--org-text-body-sm);
     margin: 0;
-    text-align: center;
   }
 
   &__card {
-    position: relative;
-    z-index: 1;
     width: 100%;
     max-width: 400px;
   }
@@ -79,58 +35,26 @@
   &__card-content {
     display: flex;
     flex-direction: column;
-    gap: var(--org-space-lg, 20px);
-  }
-
-  &__tabs {
-    display: flex;
-    padding: var(--org-space-xs);
-    background-color: var(--org-surface-variant);
-    border-radius: var(--org-radius-sm);
-  }
-
-  &__tab {
-    flex: 1;
-    padding: 10px 14px;
-    border-radius: var(--org-radius-sm);
-    font-size: var(--org-font-size-sm);
-    font-weight: var(--org-font-weight-semibold);
-    color: var(--org-on-surface-variant);
-    text-align: center;
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-    transition: all var(--org-motion-base) var(--org-motion-ease);
-
-    &--active {
-      background-color: var(--org-surface);
-      box-shadow: var(--org-shadow-md);
-      font-weight: var(--org-font-weight-bold);
-      color: var(--org-primary);
-    }
+    gap: 18px;
+    padding: var(--org-space-sm) var(--org-space-xs);
   }
 
   &__error {
     display: flex;
     align-items: center;
     gap: var(--org-space-sm);
-    padding: 12px 16px;
+    padding: 12px var(--org-space-md);
     border-radius: var(--org-radius-sm);
-    background: rgba(186, 26, 26, 0.12);
-    border: 1px solid rgba(186, 26, 26, 0.3);
-    color: var(--org-error);
-    font-size: var(--org-font-size-sm);
+    background: var(--org-error-container);
+    color: var(--org-on-error-container);
+    font: var(--org-text-body-sm);
     font-weight: var(--org-font-weight-semibold);
-
-    mat-icon {
-      color: var(--org-error);
-    }
   }
 
   &__form {
     display: flex;
     flex-direction: column;
-    gap: var(--org-space-md, 16px);
+    gap: var(--org-space-md);
   }
 
   &__form-field {
@@ -140,54 +64,16 @@
   &__divider {
     display: flex;
     align-items: center;
-    text-align: center;
+    gap: 12px;
     color: var(--org-on-surface-variant);
-    font-size: var(--org-font-size-xs);
-    font-weight: var(--org-font-weight-bold);
-    margin: var(--org-space-xs, 4px) 0;
+    font: var(--org-text-body-sm);
 
     &::before,
     &::after {
       content: '';
       flex: 1;
+      height: 1px;
+      background: var(--org-outline-variant);
     }
-
-    &::before {
-      margin-right: var(--org-space-md, 12px);
-    }
-
-    &::after {
-      margin-left: var(--org-space-md, 12px);
-    }
-  }
-}
-
-@keyframes orbFloat1 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  100% {
-    transform: translate(40px, -30px) scale(1.15);
-  }
-}
-
-@keyframes orbFloat2 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  100% {
-    transform: translate(-30px, 40px) scale(1.1);
-  }
-}
-
-@keyframes orbFloat3 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-
-  100% {
-    transform: translate(25px, 25px) scale(1.2);
   }
 }

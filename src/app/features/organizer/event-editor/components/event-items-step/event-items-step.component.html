@@ -1,0 +1,108 @@
+<div class="event-step" data-testid="event-editor-step-3">
+  @if (canEdit()) {
+    <org-surface variant="card">
+      <div class="event-step__card">
+        <org-card-header
+          icon="assignment"
+          heading="Itens do evento"
+          subheading="O que os convidados podem levar. Opcional: você também pode adicionar depois, editando o evento."
+        />
+        <app-item-form (submitted)="add.emit($event)" />
+      </div>
+    </org-surface>
+  }
+
+  @if (items().length) {
+    <org-surface variant="card" [flush]="true">
+      <div class="items-step__added-head">
+        <org-card-header
+          icon="assignment"
+          heading="Itens adicionados"
+          [subheading]="
+            items().length === 1
+              ? '1 item na lista do evento'
+              : items().length + ' itens na lista do evento'
+          "
+        />
+      </div>
+      <ul class="items-step__list" data-testid="item-list">
+        @for (item of items(); track $index) {
+          <li
+            class="items-step__item"
+            [class.items-step__item--editing]="editingIndex() === $index"
+          >
+            <div class="items-step__item-text">
+              <p class="items-step__item-name">{{ item.name }}</p>
+              <p class="items-step__item-qty">{{ label(item) }}</p>
+              @if (item.fixedQuantity) {
+                <org-button
+                  class="items-step__fixed"
+                  variant="text"
+                  icon="info"
+                  label="Quantidade fixa"
+                  [compact]="true"
+                  [gradient]="false"
+                  [ariaExpanded]="openHint() === $index"
+                  (pressed)="toggleHint($index)"
+                />
+                @if (openHint() === $index) {
+                  <p class="items-step__hint">
+                    Quem escolher este item leva {{ item.quantity === 1 ? 'o' : 'todos os' }}
+                    {{ label(item) }}.
+                  </p>
+                }
+              }
+            </div>
+            @if (canEdit()) {
+              <div class="items-step__item-actions">
+                <org-icon-button
+                  icon="edit"
+                  testId="edit-item-btn"
+                  [ariaLabel]="'Editar ' + item.name"
+                  (pressed)="editingIndex.set($index)"
+                />
+                <org-icon-button
+                  icon="delete_outline"
+                  variant="danger"
+                  [gradient]="false"
+                  [ariaLabel]="'Remover ' + item.name"
+                  (pressed)="remove.emit($index)"
+                />
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    </org-surface>
+  }
+
+  <org-bottom-sheet
+    testId="edit-item-sheet"
+    placement="side"
+    [ariaLabel]="'Editar ' + (editingItem()?.name ?? 'item')"
+    [open]="!!editingItem()"
+    (closed)="editingIndex.set(null)"
+  >
+    @if (editingItem(); as item) {
+      <h2 class="items-step__sheet-title">Editar item</h2>
+      <app-item-form
+        testIdPrefix="edit-item"
+        submitLabel="Salvar alterações"
+        cancelLabel="Cancelar"
+        [item]="item"
+        (submitted)="saveEdit($event)"
+        (cancelled)="editingIndex.set(null)"
+      />
+    }
+  </org-bottom-sheet>
+
+  <div class="event-step__actions">
+    <org-button label="Voltar" variant="text" (pressed)="back.emit()" />
+    <org-button
+      label="Próximo"
+      testId="stepper-next-btn"
+      [gradient]="false"
+      (pressed)="next.emit()"
+    />
+  </div>
+</div>

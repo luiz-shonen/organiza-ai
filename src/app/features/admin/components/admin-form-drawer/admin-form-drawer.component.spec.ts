@@ -72,4 +72,20 @@ describe('AdminFormDrawerComponent', () => {
 
     expect(saveSpy).not.toHaveBeenCalled();
   });
+
+  it('should show the e-mail error after an invalid submit and save the address in lower case', () => {
+    const saveSpy = vi.fn();
+    component.save.subscribe(saveSpy);
+    fixture.componentRef.setInput('isOpen', true);
+    fixture.detectChanges();
+
+    component['form'].controls.email.setValue('admin@exemplo');
+    component['onSubmit']();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Informe um e-mail válido');
+
+    component['form'].controls.email.setValue(' Admin@Exemplo.com ');
+    component['onSubmit']();
+    expect(saveSpy).toHaveBeenCalledWith('admin@exemplo.com');
+  });
 });

@@ -18,5 +18,7 @@ export class OrgSurfaceComponent {
   public readonly atmosphereSecondary = input<string>();
   /** Applies the shared card hover/focus motion to one whole semantic surface. */
   public readonly interactive = input(false);
+  /** No inner padding: for cards made of full-width rows separated by dividers. */
+  public readonly flush = input(false);
   public readonly testId = input<string | null>(null);
 }

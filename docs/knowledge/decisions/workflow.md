@@ -2,7 +2,7 @@
 type: decision
 title: Development workflow
 status: active
-date: 2026-10-31
+date: 2026-11-02
 supersedes: [AD-012, AD-013, AD-042, AD-043, AD-045]
 enforced_by:
   - package.json#scripts.quality
@@ -30,6 +30,9 @@ Spec-Driven Development (spec.md → design.md → tasks.md → validation.md pe
 - Conventional Commits (commitlint); Husky runs lint-staged on pre-commit.
 - `npm run quality` also runs the repository script tests (`npm run test:scripts`).
 - `npm run pr:create` pushes the branch and opens the PR with the personal `GH_TOKEN` from `.env.local`, so a corporate `gh` login is never used.
-- CI (`ci.yml`) runs `quality`, then E2E, then `gemini-review` (`scripts/gemini-pr-review.mjs`); markdown-only changes skip the heavy jobs.
-- The Gemini review runs once when the PR is opened and again only on a `/review` (or `/gemini review`) comment. It ranks findings P1 (blocker) / P2 (debt) / P3 (nit) and turns out-of-scope ideas into short GitHub issues (goal, acceptance check, the test that proves it, and a ready prompt for an agent). It reviews against AGENTS.md, DESIGN.md and this knowledge base, using the PR title and description as the stated goal. It calls `gemini-3.8-flash` (falling back to the `gemini-flash-latest` alias, or `GEMINI_MODEL` if set) with `thinkingLevel: 'high'` and default sampling.
-- CD (`cd.yml`) deploys hosting and Firestore rules/indexes after CI passes on `main`; `cd-preview.yml` deploys PR previews.
+- CI (`ci.yml`) runs `quality`, then the Firestore rules tests and E2E, then `gemini-review` (`scripts/gemini-pr-review.mjs`); markdown-only changes skip the heavy jobs.
+- The Gemini review runs once when the PR is opened and again only on a `/review` (or `/gemini review`) comment. It ranks findings P1 (blocker) / P2 (debt) / P3 (nit) and turns out-of-scope ideas into short GitHub issues (goal, acceptance check, the test that proves it, and a ready prompt for an agent). It reviews against AGENTS.md, DESIGN.md and this knowledge base, using the PR title and description as the stated goal. It calls `gemini-3.8-flash` (falling back to the `gemini-flash-latest` alias, or `GEMINI_MODEL` if set) with `thinkingLevel: 'high'` and default sampling. On 429/500/503 each model is retried after 10s and 30s before falling back. A call that hangs past 4 min (seen during an outage) is cut off and the next model is tried, so the 20 min job never runs out; a cancelled run still comments the log link.
+- A `/review` runs only the Gemini review, not CI. `issue_comment` runs are not listed in the PR checks, so the workflow reacts 👀 to the comment and sets a `Gemini Review (/review)` commit status (pending, then success or failure, linking to the run). If it still fails, it comments the log link on the PR; the automatic review exits 0 instead, so a Gemini outage never turns CI red.
+- CD (`cd.yml`) deploys hosting and Firestore rules/indexes after CI passes on `main`; `cd-preview.yml` deploys PR previews (hosting only, so a preview runs against the rules already in production).
+- Both workflows write `public/runtime-config.js` from the `FIREBASE_API_KEY` secret; locally it is a gitignored copy of `runtime-config.example.js` (see [missing-static-file-returns-index](../gotchas/missing-static-file-returns-index.md)).
+- Queued fixes are tested and committed locally phase by phase, and pushed once at the end.

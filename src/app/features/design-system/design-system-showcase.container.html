@@ -323,6 +323,12 @@
             (selected)="selectNavigationExample($event)"
           />
           <org-menu triggerLabel="Mais ações" [actions]="menuActions" />
+          <org-filter-bar
+            ariaLabel="Filtros de exemplo"
+            [options]="filterOptions"
+            [values]="selectedFilters()"
+            (valuesChange)="selectedFilters.set($event)"
+          />
         </div>
       </org-surface>
       <app-design-system-code-example
@@ -375,6 +381,22 @@
         <org-metric-card label="Convites" value="6" description="aguardando resposta" />
       </div>
 
+      <h3 class="org-ds-subsection-title">Card de evento e lista colaborativa</h3>
+      <org-surface variant="card" class="org-ds-panel-card">
+        <div class="org-ds-control-row">
+          <org-date-badge date="2026-08-23T20:00:00" />
+          <org-avatar name="Jéssica" />
+          <org-badge label="Faltam 6 un." variant="primary" [pill]="true" [gradient]="false" />
+          <org-button label="Eu levo" variant="attention" [compact]="true" />
+          <org-button label="Responder convite" variant="tonal" [compact]="true" />
+        </div>
+        <org-split-progress
+          [total]="10"
+          [segments]="splitSegments"
+          ariaLabel="Bolo de milho: 6 de 10 garantidos"
+        />
+      </org-surface>
+
       <h3 class="org-ds-subsection-title">Badges de Status & Categorias (&lt;org-badge&gt;)</h3>
       <div class="org-ds-badge-showcase-grid" aria-label="Variantes de OrgBadge">
         <org-badge label="Default" variant="default" [gradient]="false" />
@@ -418,9 +440,27 @@
               (pressed)="showInfoExample()"
             />
             <org-button label="Abrir diálogo" variant="text" (pressed)="openDialogExample()" />
+            <org-button
+              label="Abrir folha inferior"
+              variant="secondary"
+              (pressed)="sheetOpen.set(true)"
+            />
           </div>
+          <org-insight-card tone="warning">
+            Faltam 3 dias! <strong>2 itens</strong> ainda estão sem responsável.
+            <org-button orgInsightAction label="Ver itens" variant="secondary" [compact]="true" />
+          </org-insight-card>
         </div>
       </org-surface>
+      <org-bottom-sheet
+        ariaLabel="Exemplo de folha inferior"
+        [open]="sheetOpen()"
+        (closed)="sheetOpen.set(false)"
+      >
+        <p>Quantos vocês vão levar?</p>
+        <org-quantity-stepper [(value)]="sheetQuantity" [max]="6" unit="un." />
+        <org-button label="Fechar" [gradient]="false" (pressed)="sheetOpen.set(false)" />
+      </org-bottom-sheet>
       <app-design-system-code-example label="Uso recomendado" [code]="componentExamples.overlays" />
     </section>
   </main>

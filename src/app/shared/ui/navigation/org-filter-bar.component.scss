@@ -1,0 +1,72 @@
+@use '@angular/material' as mat;
+
+:host {
+  display: block;
+  min-inline-size: 0;
+}
+
+// One row that scrolls sideways on a phone; the selected chips are lilac with a check.
+.org-filter-bar {
+  @include mat.chips-overrides(
+    (
+      container-shape-radius: var(--org-radius-full),
+      container-height: var(--org-touch),
+      outline-color: var(--org-outline-variant),
+      label-text-color: var(--org-on-surface-variant),
+      label-text-font: var(--org-font-body),
+      label-text-size: var(--org-font-size-sm),
+      label-text-weight: var(--org-font-weight-semibold),
+      elevated-container-color: var(--org-surface),
+      elevated-selected-container-color: var(--org-primary-container),
+      selected-label-text-color: var(--org-on-primary-container),
+      with-icon-selected-icon-color: var(--org-on-primary-container),
+      selected-hover-state-layer-color: var(--org-primary),
+      hover-state-layer-color: var(--org-on-surface),
+    )
+  );
+
+  display: block;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  ::ng-deep .mdc-evolution-chip-set__chips {
+    flex-wrap: nowrap;
+    gap: var(--org-space-sm);
+    margin: 0;
+    width: max-content;
+  }
+
+  ::ng-deep .mat-mdc-chip {
+    margin: 0;
+  }
+}
+
+.org-filter-bar__option {
+  flex: none;
+}
+
+// A round bubble beside the label: a circle for one digit, a pill for more.
+.org-filter-bar__count {
+  align-items: center;
+  background: var(--org-surface-container-high);
+  block-size: 20px;
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface);
+  display: inline-flex;
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-bold);
+  justify-content: center;
+  line-height: var(--org-line-height-none);
+  margin-inline-start: var(--org-space-xs);
+  min-inline-size: 20px;
+  padding: 0 var(--org-space-xs);
+
+  &--attention {
+    background: var(--org-attention-count-bg);
+    color: var(--org-on-attention-count);
+  }
+}

@@ -38,7 +38,7 @@ describe('ProfileInfoCardComponent', () => {
     const el: HTMLElement = fixture.nativeElement;
     expect(el.textContent).toContain('Maria Santos');
     expect(el.textContent).toContain('maria@example.com');
-    expect(el.textContent).toContain('11987654321');
+    expect(el.textContent).toContain('(11) 98765-4321');
     expect(el.textContent).toContain('M');
   });
 
@@ -83,6 +83,8 @@ describe('ProfileInfoCardComponent', () => {
 
     expect(component.isEditing()).toBe(true);
     expect(component.editName()).toBe('Maria Santos');
+    expect(component.editPhone()).toBe('(11) 98765-4321');
+    expect(fixture.nativeElement.querySelector('[data-testid="profile-phone-input"]')).toBeTruthy();
   });
 
   it('should cancel editing mode when cancel button is clicked', () => {
@@ -97,27 +99,74 @@ describe('ProfileInfoCardComponent', () => {
     expect(component.editName()).toBe('Maria Santos');
   });
 
-  it('should emit updateName with trimmed text and close edit mode on save', () => {
-    const emitSpy = vi.spyOn(component.updateName, 'emit');
+  it('should emit updateDetails with trimmed name and phone and close edit mode on save', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
 
     component.startEditing();
     component.editName.set('  Maria Silva  ');
-    component.saveName();
+    component.editPhone.set(' 11911112222 ');
+    component.saveDetails();
     fixture.detectChanges();
 
-    expect(emitSpy).toHaveBeenCalledWith('Maria Silva');
+    expect(emitSpy).toHaveBeenCalledWith({ displayName: 'Maria Silva', phone: '(11) 91111-2222' });
     expect(component.isEditing()).toBe(false);
   });
 
-  it('should not emit updateName when editName is blank', () => {
-    const emitSpy = vi.spyOn(component.updateName, 'emit');
+  it('should emit an empty phone when the phone is cleared', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
 
     component.startEditing();
-    component.editName.set('    ');
-    component.saveName();
+    component.editPhone.set('');
+    component.saveDetails();
+
+    expect(emitSpy).toHaveBeenCalledWith({ displayName: 'Maria Santos', phone: '' });
+  });
+
+  it('should restore the phone when editing is cancelled', () => {
+    component.startEditing();
+    component.editPhone.set('000');
+    component.cancelEditing();
+
+    expect(component.editPhone()).toBe('(11) 98765-4321');
+  });
+
+  it('should keep editing and show the error when the phone is invalid', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
+
+    component.startEditing();
+    component.editPhone.set('(31) 99231-23123');
+    component.saveDetails();
     fixture.detectChanges();
 
     expect(emitSpy).not.toHaveBeenCalled();
     expect(component.isEditing()).toBe(true);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Telefone inválido');
+  });
+
+  it('should not emit updateDetails when editName is blank', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
+
+    component.startEditing();
+    component.editName.set('    ');
+    component.saveDetails();
+    fixture.detectChanges();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+    expect(component.isEditing()).toBe(true);
+  });
+
+  it('should keep editing and show the error when the name is invalid', () => {
+    const emitSpy = vi.spyOn(component.updateDetails, 'emit');
+
+    component.startEditing();
+    component.editName.set('Maria 123');
+    component.saveDetails();
+    fixture.detectChanges();
+
+    expect(emitSpy).not.toHaveBeenCalled();
+    expect(component.isEditing()).toBe(true);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(
+      'Use só letras, espaços, hífen ou apóstrofo',
+    );
   });
 });

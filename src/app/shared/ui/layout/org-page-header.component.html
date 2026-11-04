@@ -8,6 +8,9 @@
     <div class="org-page-header__titles">
       <h1 class="org-page-header__title" [class.org-gradient-text]="gradient()">
         {{ title() }}
+        @if (highlight()) {
+          <span class="org-page-header__highlight">{{ highlight() }}</span>
+        }
       </h1>
       @if (subtitle()) {
         <p class="org-page-header__subtitle">{{ subtitle() }}</p>

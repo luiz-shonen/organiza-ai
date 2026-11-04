@@ -21,6 +21,12 @@
     "site": "organizaai",
     "public": "dist/organizaai/browser",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "/runtime-config.js",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+      }
+    ],
     "rewrites": [
       {
         "source": "**",

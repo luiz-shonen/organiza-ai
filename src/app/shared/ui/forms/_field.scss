@@ -3,4 +3,17 @@
   --mat-form-field-outlined-outline-color: var(--org-outline);
   --mat-form-field-outlined-focus-outline-color: var(--org-primary);
   --mat-form-field-outlined-focus-label-text-color: var(--org-primary);
+
+  // Material leaves no room after a suffix icon button (password eye, calendar, clock):
+  // the icon sat 8px from the border while the text starts 16px in. Match the text inset.
+  ::ng-deep .mat-mdc-form-field-icon-suffix {
+    padding-inline-end: var(--org-space-sm);
+  }
+}
+
+// The message under a field, pulled up into Material's empty subscript space.
+@mixin error-text() {
+  color: var(--org-error);
+  font-size: var(--org-font-size-xs);
+  margin: -16px 0 0;
 }

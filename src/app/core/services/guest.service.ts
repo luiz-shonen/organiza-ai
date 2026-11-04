@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
-import { Guest, GuestCompanion, FamilyMember } from '../models';
+import { Guest, GuestCompanion, GuestDecline, FamilyMember } from '../models';
+import { Phone } from '../value-objects';
 
 export interface BatchPrimaryGuestInput {
   uid: string;
@@ -31,6 +32,34 @@ export class GuestService {
         Omit<Guest, 'id'>
       >(this.guestsPath(eventId), this.gateway.orderBy('confirmedAt', 'desc'))
       .pipe(map((guests) => guests.map((guest) => this.toGuest(guest))));
+  }
+
+  /** Who said they cannot go, for the organizer's guest list. */
+  listDeclines(eventId: string): Observable<GuestDecline[]> {
+    return this.gateway
+      .collectionSnapshot<Omit<GuestDecline, 'id'>>(`events/${eventId}/declines`)
+      .pipe(
+        map((docs) =>
+          docs.map((d) => ({
+            id: d.id,
+            name: d.name ?? '',
+            message: d.message ?? '',
+            declinedAt: d.declinedAt ?? '',
+          })),
+        ),
+      );
+  }
+
+  async saveDecline(eventId: string, uid: string, name: string, message: string): Promise<void> {
+    await this.gateway.setDoc(`events/${eventId}/declines/${uid}`, {
+      name,
+      message,
+      declinedAt: new Date().toISOString(),
+    });
+  }
+
+  async removeDecline(eventId: string, uid: string): Promise<void> {
+    await this.gateway.deleteDoc(`events/${eventId}/declines/${uid}`);
   }
 
   async addGuest(eventId: string, guest: Partial<Guest>): Promise<string> {
@@ -73,6 +102,8 @@ export class GuestService {
     eventId: string,
     primaryGuest: BatchPrimaryGuestInput,
     familyMembers: FamilyMember[] = [],
+    /** Family members confirmed before and left out when the presence is edited. */
+    removedFamilyMemberIds: readonly string[] = [],
   ): Promise<void> {
     const now = new Date().toISOString();
     const companionsCount = primaryGuest.companions?.length ?? primaryGuest.companionsCount ?? 0;
@@ -103,13 +134,18 @@ export class GuestService {
             id: memberId,
             name: member.name,
             primaryGuestId: primaryGuest.uid,
-            phone: member.phone ?? '',
+            // An older family phone may break the rules' format; it is not needed for the RSVP.
+            phone: Phone.create(member.phone)?.formatted ?? '',
             isConfirmed: true,
             confirmedAt: now,
             createdAt: now,
           },
           { merge: true },
         );
+      }
+
+      for (const memberId of removedFamilyMemberIds) {
+        batch.delete(this.guestDocPath(eventId, `${primaryGuest.uid}_${memberId}`));
       }
     });
   }
@@ -122,7 +158,17 @@ export class GuestService {
     await this.gateway.deleteDoc(this.guestDocPath(eventId, guestId));
   }
 
-  async cancelRsvp(eventId: string, guestId: string, primaryUid?: string): Promise<void> {
+  /**
+   * Removes the guest, their linked family and their claims. `householdUid` is the signed-in
+   * account cancelling its own RSVP: only then are its household claims deleted, because the
+   * rules let only that uid touch `claims/{uid}` (a phone-only guest has no claims document).
+   */
+  async cancelRsvp(
+    eventId: string,
+    guestId: string,
+    primaryUid?: string,
+    householdUid?: string,
+  ): Promise<void> {
     const targetUid = primaryUid || guestId;
 
     let familyDocs: { id: string }[] = [];
@@ -154,6 +200,11 @@ export class GuestService {
 
       for (const itemDoc of itemDocs) {
         batch.update(`events/${eventId}/items/${itemDoc.id}`, { claimedBy: null });
+      }
+
+      // The household's share of the list goes back to the event with the RSVP.
+      if (householdUid) {
+        batch.delete(`events/${eventId}/claims/${householdUid}`);
       }
     });
   }

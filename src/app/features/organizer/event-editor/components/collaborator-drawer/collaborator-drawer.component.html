@@ -20,11 +20,12 @@
       (pressed)="closed.emit()"
     />
   </header>
-  <form class="collaborator-drawer__form" (submit)="$event.preventDefault(); invite()">
+  <form novalidate class="collaborator-drawer__form" (submit)="$event.preventDefault(); invite()">
     <org-text-field
       label="E-mail do colaborador"
       type="email"
       placeholder="nome@email.com"
+      [maxLength]="emailMaxLength"
       [(value)]="email"
       testId="collaborator-email-input"
     />
@@ -41,19 +42,26 @@
       Colaboradores ativos ({{ drawerData().collaborators.length }})
     </h3>
     @for (collaborator of drawerData().collaborators; track collaborator) {
-      <button
-        type="button"
+      <org-button
         class="collaborator-drawer__chip"
-        (click)="action.emit({ action: 'remove', collaboratorId: collaborator })"
-      >
-        {{ collaborator }} <org-icon name="close" size="sm" aria-hidden="true" />
-      </button>
+        variant="secondary"
+        icon="close"
+        [label]="collaborator"
+        [compact]="true"
+        [gradient]="false"
+        [tooltip]="'Remover ' + collaborator"
+        (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator })"
+      />
+    } @empty {
+      <p class="collaborator-drawer__empty">Ninguém ainda. Convide pelo e-mail acima.</p>
     }
   </section>
   <section aria-labelledby="pending-invites">
     <h3 id="pending-invites">Convites pendentes ({{ drawerData().pendingInvites.length }})</h3>
     @for (invite of drawerData().pendingInvites; track invite) {
       <span class="collaborator-drawer__pending">{{ invite }}</span>
+    } @empty {
+      <p class="collaborator-drawer__empty">Nenhum convite esperando resposta.</p>
     }
   </section>
 </section>

@@ -14,7 +14,8 @@ import {
   OUT_OF_SCOPE_ISSUE_GUIDELINES,
   parseIssueProposal,
   REQUEST_TIMEOUT_MS,
-  RETRY_DELAYS_MS,
+  ROUND_DELAYS_MS,
+  callGemini,
 } from './gemini-pr-review.mjs';
 
 test('gemini-pr-review: constants and markers are properly defined', () => {
@@ -22,19 +23,63 @@ test('gemini-pr-review: constants and markers are properly defined', () => {
   assert.equal(NOTICE_COMMENT_MARKER, '<!-- organiza-ai-gemini-review-notice -->');
   assert.ok(NOTICE_COMMENT_BODY.includes(NOTICE_COMMENT_MARKER));
   assert.ok(NOTICE_COMMENT_BODY.includes('/review'));
-  assert.deepEqual(FALLBACK_MODELS, ['gemini-3.8-flash', 'gemini-flash-latest']);
+  assert.deepEqual(FALLBACK_MODELS, [
+    'gemini-3.8-flash',
+    'gemini-flash-latest',
+    'gemini-pro-latest',
+    'gemini-flash-lite-latest',
+  ]);
   assert.deepEqual(GENERATION_CONFIG, { thinkingConfig: { thinkingLevel: 'high' } });
   assert.ok(ARCHITECTURAL_GUIDELINES.includes('OnPush'));
   assert.ok(TAXONOMY_GUIDELINES.includes('P1 (Crítico / Bloqueante)'));
   assert.equal(ISSUE_PROPOSAL_MARKER, '#### 🚀 Proposta para Nova Issue');
 });
 
-test('gemini-pr-review: a hung call is cut off well inside the 20 min job', () => {
+test('gemini-pr-review: a hung call is cut off well inside the 25 min job', () => {
   assert.equal(REQUEST_TIMEOUT_MS, 240_000);
-  // Worst case: each model answers 503 twice, then hangs until the cap.
-  const waits = RETRY_DELAYS_MS.reduce((total, delay) => total + delay, 0);
-  const worstCaseMs = FALLBACK_MODELS.length * (waits + REQUEST_TIMEOUT_MS);
-  assert.ok(worstCaseMs < 20 * 60_000);
+  // Worst case: GEMINI_MODEL plus every fallback hangs once until the cap (a hung model is
+  // dropped), on top of every round's wait.
+  const waits = ROUND_DELAYS_MS.reduce((total, delay) => total + delay, 0);
+  const worstCaseMs = (FALLBACK_MODELS.length + 1) * REQUEST_TIMEOUT_MS + waits;
+  assert.ok(worstCaseMs < 23 * 60_000);
+});
+
+const fakeGemini = (answers) => {
+  const calls = [];
+  const request = async (model) => {
+    calls.push(model);
+    const next = answers[model]?.shift();
+    return next ?? { error: new Error(`503 ${model}`), retryable: true };
+  };
+  return { calls, request };
+};
+const noWait = { delays: [30_000, 60_000], wait: async () => {} };
+
+test('gemini-pr-review: callGemini falls back to the next model when one is overloaded', async () => {
+  const { calls, request } = fakeGemini({ b: [{ review: 'ok from b' }] });
+  assert.equal(await callGemini(['a', 'b', 'c'], request, noWait), 'ok from b');
+  assert.deepEqual(calls, ['a', 'b']);
+});
+
+test('gemini-pr-review: callGemini retries overloaded models in rounds and drops the rest', async () => {
+  const waits = [];
+  const { calls, request } = fakeGemini({
+    b: [{ error: new Error('404 b'), retryable: false }],
+    a: [{ error: new Error('503 a'), retryable: true }, { review: 'ok from a' }],
+  });
+  const review = await callGemini(['a', 'b', 'c'], request, {
+    delays: [30_000, 60_000],
+    wait: async (ms) => waits.push(ms),
+  });
+  assert.equal(review, 'ok from a');
+  assert.deepEqual(calls, ['a', 'b', 'c', 'a']);
+  assert.deepEqual(waits, [30_000]);
+});
+
+test('gemini-pr-review: callGemini throws the last error when every round fails', async () => {
+  const { calls, request } = fakeGemini({});
+  await assert.rejects(callGemini(['a', 'b'], request, noWait), /503 b/);
+  assert.deepEqual(calls, ['a', 'b', 'a', 'b', 'a', 'b']);
 });
 
 test('gemini-pr-review: buildSystemPrompt includes architectural rules and priority taxonomy', () => {

@@ -1,0 +1,27 @@
+name: E2E Videos Cleanup
+
+# Drops a closed PR's GIF/MP4 files from the e2e-videos branch (see the e2e-videos job in ci.yml).
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    name: Remove the PR's E2E media
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Remove pr-${{ github.event.pull_request.number }}/ from the e2e-videos Branch
+        run: |
+          if git ls-remote --exit-code origin refs/heads/e2e-videos >/dev/null; then
+            bash scripts/e2e-videos-branch.sh remove ${{ github.event.pull_request.number }}
+          fi

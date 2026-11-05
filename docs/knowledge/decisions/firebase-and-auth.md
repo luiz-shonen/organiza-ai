@@ -19,6 +19,7 @@ What the screens do with this data (invite states, filters, "Quem vai") is in
 - Open registration: any account signed in with Google or e-mail creates events it owns (`createdBy` must be its uid); anonymous RSVP accounts cannot. `/admins` keeps full write access on top of that.
 - `firestore.rules` enforces the roles: the owner edits, cancels and deletes the event (and never changes `createdBy`) and invites; owner and collaborators manage items and guests; an invited account adds only its own uid to `collaborators`, while its invitation exists.
 - Rules deploy only from `main` (`cd.yml`), so a PR preview runs against the rules already in production.
+- The CD service account needs **Cloud Datastore Index Admin** to deploy `firestore.indexes.json`; without it the deploy fails with 403 and Hosting is not published ([gotcha](../gotchas/index-deploy-needs-index-admin.md)).
 - Manual testing on the real project uses an e-mail test account (a regular user, not a super admin). Its e-mail and password live only in the gitignored `.env.local` (`TEST_ACCOUNT_EMAIL`, `TEST_ACCOUNT_PASSWORD`; names in `.env.example`), because the repository is public. E2E tests never use it; they mock auth.
 - The editor shows "Sua conta não tem permissão para salvar este evento." when Firestore refuses a save.
 - Signing in locally needs `public/runtime-config.js` (gitignored, copied from `runtime-config.example.js`) with the real web API key; without it the app falls back to the E2E placeholder key and every sign-in returns 400.

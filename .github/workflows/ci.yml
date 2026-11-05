@@ -219,7 +219,8 @@ jobs:
     name: Gemini Code Review
     needs: [quality, e2e]
     if: github.event_name == 'pull_request' && github.event.action == 'opened' && !cancelled() && needs.quality.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped')
-    timeout-minutes: 20
+    # GEMINI_MODEL + four fallbacks, a 4 min cap per call, 90s of waits: under ~22 min.
+    timeout-minutes: 25
     runs-on: ubuntu-latest
     permissions:
       contents: read

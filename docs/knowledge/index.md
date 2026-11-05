@@ -34,6 +34,7 @@ A rule that has `enforced_by` is checked by a script or a test; the check is the
 | [overlays-are-global](gotchas/overlays-are-global.md)                             | Menus, selects and dialogs render outside component hosts                                     |
 | [nested-form-submits-outer](gotchas/nested-form-submits-outer.md)                 | A `<form>` inside a reactive form submits the outer one                                       |
 | [missing-static-file-returns-index](gotchas/missing-static-file-returns-index.md) | A missing `runtime-config.js` is served as `index.html` and Firebase gets the placeholder key |
+| [index-deploy-needs-index-admin](gotchas/index-deploy-needs-index-admin.md)       | The CD deploy fails with 403 on indexes unless its service account has Index Admin            |
 
 ## Elsewhere
 

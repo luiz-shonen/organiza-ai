@@ -68,6 +68,50 @@ service cloud.firestore {
       return value in ['spouse', 'child', 'parent', 'sibling', 'relative', 'other'];
     }
 
+    // Amigo oculto: one document per secret link, written by the event owner when drawing.
+    // Anyone holding the token reads it, signed in or not; nobody can list them. A link of a
+    // participant with an account (`giverUid`) opens only in that account, so a forwarded link
+    // shows nothing; the event owner still reads it, to see whether it was opened. A missing
+    // document passes, so the page can tell "not found" from "not your link".
+    // A link opens once: opening stamps `openedAt` and erases whom the person drew, and
+    // that change is allowed once only, to anyone holding the token (or its account).
+    match /secretSantaReveals/{token} {
+      allow get: if resource == null
+                 || isRevealHolder()
+                 || ownsEvent(eventData(resource.data.get('eventId', '')));
+      allow list: if false;
+      allow update: if isRevealHolder()
+                    && resource.data.get('openedAt', null) == null
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['openedAt', 'receiverName', 'receiverGiftOptions'])
+                    && request.resource.data.get('openedAt', null) is string
+                    && request.resource.data.openedAt.size() <= 40
+                    && request.resource.data.get('receiverName', null) == ''
+                    && request.resource.data.get('receiverGiftOptions', null) == [];
+      allow create: if request.resource.data.get('eventId', '') is string
+                    && ownsEvent(eventData(request.resource.data.get('eventId', '')))
+                    && isValidSecretSantaReveal();
+      allow delete: if ownsEvent(eventData(resource.data.eventId));
+
+      function isRevealHolder() {
+        let owner = resource.data.get('giverUid', null);
+        return owner == null || (request.auth != null && request.auth.uid == owner);
+      }
+
+      function isValidSecretSantaReveal() {
+        let data = request.resource.data;
+        return data.keys().hasOnly(['eventId', 'eventTitle', 'eventDate', 'giverName', 'giverUid',
+                                    'receiverName', 'receiverGiftOptions', 'createdAt'])
+            && isOptionalString(data.get('giverUid', null), 128)
+            && isOptionalString(data.get('eventTitle', null), 200)
+            && isOptionalString(data.get('eventDate', null), 40)
+            && isFilledText(data.get('giverName', null), 120)
+            && isFilledText(data.get('receiverName', null), 120)
+            && data.get('receiverGiftOptions', []) is list
+            && data.get('receiverGiftOptions', []).size() <= 10;
+      }
+    }
+
     match /admins/{email} {
       allow read, write: if isSuperAdmin() || (request.auth != null && request.auth.token.get('email', '') == email);
     }
@@ -95,6 +139,36 @@ service cloud.firestore {
                   || (data.get('savedCompanions', null) is list && data.get('savedCompanions', null).size() <= 50))
             && (!changes('rsvpEvents')
                   || (data.get('rsvpEvents', null) is list && data.get('rsvpEvents', null).size() <= 500));
+      }
+
+      // In-app notifications. The member reads, marks as read and dismisses them. The owner of
+      // an event writes one amigo oculto notice per event (`secret-santa_{eventId}`), for a
+      // participant who has an account, pointing to their secret link.
+      match /notifications/{notificationId} {
+        allow read, delete: if request.auth != null && request.auth.uid == uid;
+        allow update: if (request.auth != null && request.auth.uid == uid
+                          && changedKeys().hasOnly(['readAt']))
+                      || isSecretSantaNotice();
+        allow create: if isSecretSantaNotice();
+
+        function isSecretSantaNotice() {
+          let data = request.resource.data;
+          return request.auth != null
+              && data.keys().hasOnly(['kind', 'eventId', 'eventTitle', 'title', 'body',
+                                      'actionLabel', 'actionUrl', 'createdAt', 'readAt'])
+              && data.get('kind', '') == 'secret-santa'
+              && data.get('eventId', '') is string
+              && notificationId == 'secret-santa_' + data.get('eventId', '')
+              && ownsEvent(eventData(data.get('eventId', '')))
+              && isOptionalString(data.get('eventTitle', null), 200)
+              && isFilledText(data.get('title', null), 200)
+              && isFilledText(data.get('body', null), 500)
+              && isFilledText(data.get('actionLabel', null), 60)
+              && data.get('actionUrl', '') is string
+              && data.get('actionUrl', '').matches('/amigo-oculto/[A-Za-z0-9_-]{8,80}')
+              && data.get('createdAt', null) is string
+              && data.get('readAt', 'x') == null;
+        }
       }
 
       match /family/{memberId} {
@@ -163,7 +237,78 @@ service cloud.firestore {
             && (!changes('category') || isOptionalString(data.get('category', null), 60))
             && (!changes('description') || isOptionalString(data.get('description', null), 2000))
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
-            && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77));
+            && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77))
+            && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
+            && (!changes('requireApproval') || data.get('requireApproval', null) is bool);
+      }
+
+      // "Vai ter amigo oculto?", "Incluir opções de presente", how many per person (1 to 10) and
+      // whether guests may still join from the invite (`selfJoin`, missing means open).
+      function isSecretSantaSettings(value) {
+        return value is map
+            && value.keys().hasOnly(['enabled', 'giftOptions', 'maxGiftOptions', 'selfJoin'])
+            && value.get('enabled', false) is bool
+            && value.get('giftOptions', false) is bool
+            && value.get('selfJoin', true) is bool
+            && (!('maxGiftOptions' in value)
+                || (value.maxGiftOptions is int
+                    && value.maxGiftOptions >= 1
+                    && value.maxGiftOptions <= 10));
+      }
+
+      // Amigo oculto participants: names and phones, so only the owner and collaborators read
+      // the list. A guest also writes, reads and removes the entries they joined from the invite
+      // (`rsvp_{uid}…`: themself, relatives and companions), while sign-ups are open.
+      match /secretSantaParticipants/{participantId} {
+        allow read, delete: if isAdmin() || managesEvent(eventData(eventId));
+        allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
+                              && isValidSecretSantaParticipant();
+        allow get: if isOwnRsvpEntry();
+        allow delete: if isOwnRsvpEntry() && isSelfJoinOpen();
+        allow create, update: if isOwnRsvpEntry()
+                              && isSelfJoinOpen()
+                              && isValidSecretSantaParticipant()
+                              && request.resource.data.get('joinedBy', '') == request.auth.uid
+                              && !changes('distinctFrom');
+
+        // A missing document passes, so the guest can check whether they joined.
+        function isOwnRsvpEntry() {
+          return isAccountHolder()
+              && participantId.matches('rsvp_' + request.auth.uid + '(_.+)?')
+              && (resource == null || resource.data.get('joinedBy', '') == request.auth.uid);
+        }
+
+        // When the event asks for approval, only a guest the owner approved joins.
+        function isSelfJoinOpen() {
+          let event = eventData(eventId);
+          let settings = event.get('secretSanta', {});
+          return settings.get('enabled', false) == true
+              && settings.get('selfJoin', true) != false
+              && (event.get('requireApproval', false) != true
+                  || get(/databases/$(database)/documents/events/$(eventId)/guests/$(request.auth.uid))
+                       .data.get('approved', true) == true);
+        }
+
+        function isValidSecretSantaParticipant() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'guestId', 'joinedBy', 'distinctFrom', 'createdAt'])
+              && (resource != null || data.keys().hasAll(['name', 'phone', 'giftOptions']))
+              && (!changes('name') || isFilledText(data.get('name', null), 120))
+              && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
+              && (!changes('giftOptions')
+                    || (data.get('giftOptions', null) is list && data.get('giftOptions', null).size() <= 10))
+              && (!changes('guestId') || isOptionalString(data.get('guestId', null), 200))
+              // Nobody moves an entry to another account; a guest sets their own uid (above).
+              && (!changes('joinedBy') || (resource == null && data.get('joinedBy', '') == request.auth.uid))
+              && (!changes('distinctFrom')
+                    || (data.get('distinctFrom', null) is list && data.get('distinctFrom', null).size() <= 50))
+              && (!changes('createdAt') || isOptionalString(data.get('createdAt', null), 40));
+        }
+      }
+
+      // The latest amigo oculto draw holds every secret link; only the owner sends them.
+      match /secretSanta/{docId} {
+        allow read, write: if ownsEvent(eventData(eventId));
       }
 
       // Invitations subcollection: the owner invites, the invited user reads and claims
@@ -176,12 +321,21 @@ service cloud.firestore {
       // Guests subcollection: public read, validated anonymous write
       match /guests/{guestId} {
         allow read: if true;
-        allow create: if isAdmin() || isPrimaryRsvp() || isLinkedFamilyRsvp();
+        allow create: if isAdmin() || (isPrimaryRsvp() && waitsForApproval()) || isLinkedFamilyRsvp();
+        // Only organizers approve: a guest never changes `approved` on their own answer.
         allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
+                        && !changes('approved')
                         && ((resource.data.uid == request.auth.uid && isPrimaryRsvp())
                             || (resource.data.primaryGuestId == request.auth.uid && isLinkedFamilyRsvp()))
                       );
+
+        // "Aprovar quem confirma pelo link": a new answer starts as waiting (`approved: false`).
+        function waitsForApproval() {
+          return !exists(/databases/$(database)/documents/events/$(eventId))
+              || eventData(eventId).get('requireApproval', false) != true
+              || request.resource.data.get('approved', null) == false;
+        }
         allow delete: if isAdmin() || managesEvent(eventData(eventId)) || (
                         request.auth != null
                         && (resource.data.uid == request.auth.uid || resource.data.primaryGuestId == request.auth.uid)

@@ -43,13 +43,19 @@ test.describe('Invites, event states and guests', () => {
   test('Início filter chips start on "Todos" and combine', async ({ page }) => {
     const pending = invite('evt-pending', 'Aniversário pendente', inDays(10));
     const past = invite('evt-past', 'Churrasco passado', inDays(-5));
-    await asGuest(page, [pending, past]);
+    const declined = invite('evt-declined', 'Casamento recusado', inDays(20));
+    await asGuest(page, [pending, past, declined], { declinedEvents: ['evt-declined'] });
     await page.goto('/');
 
     const chip = (id: string) => page.getByTestId(`home-filter-${id}`);
-    const titles = page.locator('.event-summary-card__title');
+    const titles = page.locator('.invite-envelope__title');
+    // "Todos" is what is still open: neither the past event nor the declined invite.
     await expect(chip('all')).toHaveClass(/mat-mdc-chip-selected/);
     await expect(titles).toHaveText(['Aniversário pendente']);
+    await chip('declined').locator('button').click();
+    await expect(titles).toHaveText(['Casamento recusado']);
+    await chip('declined').locator('button').click();
+    await expect(chip('all')).toHaveClass(/mat-mdc-chip-selected/);
 
     await chip('pending').locator('button').click();
     await chip('past').locator('button').click();
@@ -77,21 +83,51 @@ test.describe('Invites, event states and guests', () => {
 
     const card = (title: string) =>
       page.locator('app-event-summary-card').filter({ hasText: title });
+    const titles = page.locator('.event-summary-card__title');
+    // "Todos" lists only what is still to come; the event that started is under "Realizados".
+    await expect(titles).toHaveText(['Em três dias', 'Daqui a meses']);
     await expect(card('Em três dias').getByTestId('event-status')).toHaveText('Em breve');
     await expect(card('Daqui a meses').getByTestId('event-status')).toHaveText('Agendado');
-    await expect(card('Hoje mais cedo').getByTestId('event-status')).toHaveText('Realizado');
     // The banner skips the event that already started.
     await expect(page.getByTestId('next-event-banner')).toContainText('Em três dias');
 
+    await page.getByTestId('status-filter-past-chip').locator('button').click();
+    await expect(titles).toHaveText(['Hoje mais cedo']);
+    await expect(card('Hoje mais cedo').getByTestId('event-status')).toHaveText('Realizado');
+
     await page.getByTestId('status-filter-scheduled-chip').locator('button').click();
-    await expect(page.locator('.event-summary-card__title')).toHaveText(['Daqui a meses']);
+    await page.getByTestId('status-filter-past-chip').locator('button').click();
+    await expect(titles).toHaveText(['Daqui a meses']);
+  });
+
+  test('an event that already happened can no longer be edited', async ({ page }) => {
+    const owned = (id: string, title: string, date: string) =>
+      buildGuestEvent({ id, title, date, createdBy: GUEST_UID, guests: [], items: [] });
+    await asGuest(page, [
+      owned('evt-past', 'Churrasco passado', hoursAgo(1)),
+      owned('evt-next', 'Festa que vem', inDays(10)),
+    ]);
+
+    await page.goto('/evento/evt-next');
+    await expect(page.getByTestId('edit-event-btn')).toBeVisible();
+
+    await page.goto('/evento/evt-past');
+    await expect(page.locator('h1.event-card__title')).toHaveText('Churrasco passado');
+    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+
+    // Typing the editor address leads back to the event, saying why.
+    await page.goto('/meus-eventos/evento/evt-past');
+    await expect(page).toHaveURL(/\/evento\/evt-past$/);
+    await expect(
+      page.getByText('Este evento já aconteceu e não pode mais ser editado.'),
+    ).toBeVisible();
   });
 
   test('category tags have their own colour, status tags stay filled', async ({ page }) => {
     await asGuest(page, [invite('evt-natal', 'Ceia de Natal', inDays(10), { category: 'Natal' })]);
     await page.goto('/');
 
-    const tags = page.locator('app-event-summary-card .org-badge');
+    const tags = page.locator('app-invite-envelope .org-badge');
     await expect(tags.first()).toHaveClass(/org-badge--category/);
     await expect(tags.nth(1)).toHaveClass(/org-badge--warning/);
   });

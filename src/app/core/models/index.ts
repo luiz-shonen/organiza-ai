@@ -13,6 +13,25 @@ export type {
   EventPixForm,
   NewPartyItem,
 } from './event-editor-form.model';
+export type {
+  RsvpSecretSantaChoice,
+  RsvpSecretSantaData,
+  RsvpSecretSantaKey,
+  SecretSantaDraw,
+  SecretSantaDuplicate,
+  SecretSantaLink,
+  SecretSantaParticipant,
+  SecretSantaParticipantInput,
+  SecretSantaReveal,
+  SecretSantaSettings,
+} from './secret-santa.model';
+export {
+  SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+  SECRET_SANTA_MAX_GIFT_OPTIONS,
+  SECRET_SANTA_MIN_PARTICIPANTS,
+} from './secret-santa.model';
+export type { AppNotification, AppNotificationKind } from './app-notification.model';
+export { secretSantaNotificationId } from './app-notification.model';
 export type { EventInvitation } from './invitation.model';
 export type { Guest, GuestCompanion, GuestCreate, GuestDecline, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';

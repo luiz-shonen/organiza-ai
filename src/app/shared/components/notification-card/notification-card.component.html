@@ -1,0 +1,35 @@
+<article
+  class="notice"
+  role="status"
+  data-testid="notification-card"
+  [class.notice--read]="!!notification().readAt"
+  [attr.aria-label]="notification().title"
+>
+  <span class="notice__icon">
+    <org-icon [name]="notification().kind === 'secret-santa' ? 'redeem' : 'notifications_active'" />
+  </span>
+  <div class="notice__content">
+    <p class="notice__title">{{ notification().title }}</p>
+    @if (notification().readAt && readNote()) {
+      <p class="notice__body" data-testid="notification-read-note">{{ readNote() }}</p>
+    } @else {
+      <p class="notice__body">{{ notification().body }}</p>
+      <org-button
+        icon="visibility"
+        testId="notification-action-btn"
+        [label]="notification().actionLabel"
+        [compact]="true"
+        [gradient]="false"
+        (pressed)="opened.emit(notification())"
+      />
+    }
+  </div>
+  @if (dismissible()) {
+    <org-icon-button
+      icon="close"
+      ariaLabel="Dispensar notificação"
+      testId="notification-dismiss-btn"
+      (pressed)="dismissed.emit(notification())"
+    />
+  }
+</article>

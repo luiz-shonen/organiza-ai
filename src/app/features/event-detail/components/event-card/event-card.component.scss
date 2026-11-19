@@ -8,24 +8,105 @@
   gap: var(--org-space-md);
 }
 
+// The invitation: a sheet of paper with a double gold frame, like a printed card. It keeps its
+// colours in dark mode too, as paper would.
 .event-card__hero {
-  align-items: flex-start;
+  animation: event-card-unfold var(--org-motion-slow) var(--org-motion-ease-emphasized) both;
+  background: var(--org-invite-paper);
+  border-radius: var(--org-radius-md);
+  box-shadow: var(--org-shadow-md);
+  padding: var(--org-space-sm);
+}
+
+.event-card__paper {
+  align-items: center;
+  border: 1.5px solid var(--org-invite-line);
   display: flex;
   flex-direction: column;
-  gap: var(--org-space-sm);
+  gap: var(--org-space-xs);
+  outline: 1px solid var(--org-invite-line);
+  outline-offset: -7px;
+  padding: var(--org-space-xl) var(--org-space-lg);
+  text-align: center;
+}
+
+.event-card__greeting {
+  color: var(--org-invite-ink);
+  font: var(--org-font-weight-regular) 2.25rem / 1.1 var(--org-font-script);
+  margin: var(--org-space-xs) 0 0;
+}
+
+.event-card__lead {
+  color: var(--org-invite-muted);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
 }
 
 .event-card__title {
-  color: var(--org-on-surface);
+  color: var(--org-invite-text);
   font: var(--org-font-weight-semibold) var(--org-font-size-heading) / var(--org-line-height-tight)
     var(--org-font-display);
   margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.event-card__ornament {
+  color: var(--org-invite-ink);
+  letter-spacing: 0.4em;
+  margin: 0;
+}
+
+.event-card__date-box {
+  align-items: center;
+  border-block: 1px solid var(--org-invite-line);
+  display: inline-flex;
+  gap: var(--org-space-md);
+  margin: var(--org-space-xs) 0;
+  padding: var(--org-space-xs) var(--org-space-md);
+}
+
+.event-card__date-side {
+  color: var(--org-invite-muted);
+  font-size: var(--org-font-size-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.event-card__date-day {
+  color: var(--org-invite-ink);
+  font: var(--org-font-weight-semibold) 2.5rem / 1 var(--org-font-display);
 }
 
 .event-card__description {
-  color: var(--org-on-surface-variant);
+  color: var(--org-invite-muted);
   font-size: var(--org-font-size-sm);
   margin: 0;
+  max-inline-size: 42ch;
+}
+
+.event-card__signature {
+  color: var(--org-invite-text);
+  font: var(--org-font-weight-regular) 1.75rem / 1.2 var(--org-font-script);
+  margin: var(--org-space-sm) 0 0;
+}
+
+// Opening the invite: the card unfolds once, unless the person asked for less motion.
+@keyframes event-card-unfold {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-card__hero {
+    animation: none;
+  }
 }
 
 .event-card__row {

@@ -17,6 +17,13 @@
         <app-next-event-banner [event]="event" />
       }
 
+      <h2 class="dashboard__list-title" id="dashboard-list-title">
+        {{ listTitle() }}
+        <span class="dashboard__list-count" data-testid="dashboard-list-count">{{
+          cards().length
+        }}</span>
+      </h2>
+
       <org-filter-bar
         ariaLabel="Filtros de status dos eventos"
         [options]="filters"
@@ -28,7 +35,11 @@
         <org-empty-state
           icon="event"
           title="Nenhum evento encontrado"
-          description="Nenhum evento encontrado para este filtro."
+          [description]="
+            activeFilters().includes('all')
+              ? 'Você não tem eventos criados no momento.'
+              : 'Nenhum evento encontrado para este filtro.'
+          "
         />
       } @else {
         <div class="dashboard__grid">

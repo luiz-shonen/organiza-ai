@@ -63,6 +63,8 @@
               [form]="basicInfoForm"
               [categories]="categories"
               [minDate]="minDate"
+              [canConfigureApproval]="isOwner()"
+              [(requireApproval)]="requireApproval"
               (next)="stepper.next()"
               (cancelled)="cancelEditing()"
             />
@@ -80,6 +82,8 @@
           <org-step [label]="stepLabels[2]">
             <app-event-items-step
               [items]="stepItems()"
+              [enabled]="itemsEnabled()"
+              (enabledChange)="setItemsEnabled($event)"
               (add)="addItem($event)"
               (update)="updateItem($event)"
               (remove)="removeItem($event)"
@@ -88,7 +92,25 @@
             />
           </org-step>
 
-          <org-step [label]="stepLabels[3]" [stepControl]="pixForm">
+          <org-step [label]="stepLabels[3]">
+            <app-event-secret-santa-step
+              [canConfigure]="isOwner()"
+              [participants]="stepParticipants()"
+              [suggestions]="secretSantaSuggestions()"
+              [drawn]="secretSantaDrawn()"
+              [(enabled)]="secretSantaEnabled"
+              [(giftOptions)]="secretSantaGiftOptions"
+              [(maxGiftOptions)]="secretSantaMaxGifts"
+              (add)="addParticipant($event)"
+              (addMany)="addParticipants($event)"
+              (update)="updateParticipant($event)"
+              (remove)="removeParticipant($event)"
+              (back)="stepper.previous()"
+              (next)="stepper.next()"
+            />
+          </org-step>
+
+          <org-step [label]="stepLabels[4]" [stepControl]="pixForm">
             <app-event-pix-step
               [form]="pixForm"
               [canSave]="isOwner()"

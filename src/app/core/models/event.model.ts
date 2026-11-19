@@ -1,3 +1,5 @@
+import type { SecretSantaSettings } from './secret-santa.model';
+
 export interface AddressDetails {
   cep?: string;
   address?: string;
@@ -91,6 +93,13 @@ export interface PartyEvent {
   /** The organizer's display name, saved with the event so guests see who invites them. */
   creatorName?: string;
   collaborators?: string[];
+  /** "Vai ter amigo oculto?" and whether participants list gift options. */
+  secretSanta?: SecretSantaSettings;
+  /**
+   * "Aprovar quem confirma pelo link": each confirmation waits for the owner before it counts.
+   * Off (or missing) means anyone with the link confirms at once.
+   */
+  requireApproval?: boolean;
   createdAt: string;
   updatedAt: string;
 }

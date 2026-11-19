@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  model,
+  output,
+  signal,
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   EventCategory,
@@ -8,7 +17,9 @@ import {
   fieldError,
 } from '../../../../../core/value-objects';
 import { EventBasicInfoForm, EventCategoryOption } from '../../../../../core/models';
+import { joinLabels, revealFirstInvalid } from '../step-validation';
 import {
+  OrgBannerComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgChipComponent,
@@ -18,6 +29,7 @@ import {
   OrgTextFieldComponent,
   OrgTextareaFieldComponent,
   OrgTimeFieldComponent,
+  OrgToggleComponent,
 } from '../../../../../shared/ui';
 
 @Component({
@@ -25,6 +37,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
+    OrgBannerComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgChipComponent,
@@ -34,6 +47,7 @@ import {
     OrgTextFieldComponent,
     OrgTextareaFieldComponent,
     OrgTimeFieldComponent,
+    OrgToggleComponent,
   ],
   templateUrl: './event-basic-info-step.component.html',
   styleUrl: '../event-step.scss',
@@ -42,8 +56,16 @@ export class EventBasicInfoStepComponent {
   readonly form = input.required<EventBasicInfoForm>();
   readonly categories = input.required<readonly EventCategoryOption[]>();
   readonly minDate = input.required<Date>();
+  /** "Aprovar quem confirma pelo link": off by default, anyone with the link confirms. */
+  readonly requireApproval = model(false);
+  /** Only the owner changes it. */
+  readonly canConfigureApproval = input(true);
   readonly next = output<void>();
   readonly cancelled = output<void>();
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  /** Set once "Próximo" was pressed with something missing; the message then follows the form. */
+  private readonly attempted = signal(false);
 
   protected readonly fieldError = fieldError;
   protected readonly titleMaxLength = EventTitle.RULES.max;
@@ -64,6 +86,37 @@ export class EventBasicInfoStepComponent {
     if (date.touched && date.hasError('required')) return 'Data é obrigatória';
     if (form.hasError('pastDateTime')) return EventDateTime.PAST_MESSAGE;
     return '';
+  }
+
+  /** Moves on when the step is complete; otherwise says what is missing and shows the field. */
+  protected tryNext(): void {
+    const form = this.form();
+    if (form.valid) {
+      this.attempted.set(false);
+      this.next.emit();
+      return;
+    }
+    form.markAllAsTouched();
+    this.attempted.set(true);
+    setTimeout(() => revealFirstInvalid(this.host.nativeElement));
+  }
+
+  /** Why "Próximo" does not move on yet, in plain words. */
+  protected missingMessage(): string {
+    if (!this.attempted()) return '';
+    const form = this.form();
+    if (form.valid) return '';
+    const { title, category, date, time } = form.controls;
+    const missing: string[] = [];
+    if (title.invalid) missing.push('o título');
+    if (category.invalid) missing.push('a categoria');
+    if (date.invalid) missing.push('a data');
+    if (time.invalid) missing.push('a hora');
+    if (missing.length) return `Para continuar, preencha ${joinLabels(missing)}.`;
+    if (form.hasError('pastDateTime')) {
+      return 'Para continuar, escolha uma data e hora que ainda não passaram.';
+    }
+    return 'Para continuar, confira os campos marcados em vermelho.';
   }
 
   protected selectCategory(category: string): void {

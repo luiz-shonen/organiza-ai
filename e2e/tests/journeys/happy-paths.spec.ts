@@ -115,10 +115,11 @@ test.describe('Happy paths across the app', () => {
       await expect(eventEditorPage.dateInput).toBeVisible();
       await expect(eventEditorPage.timeInput).toBeVisible();
 
-      // Próximo button is disabled initially
+      // Próximo stays pressable and, with nothing filled, says what is missing
       const nextBtn = eventEditorPage.nextStepBtns.first();
       await expect(nextBtn).toBeVisible();
-      await expect(nextBtn).toBeDisabled();
+      await expect(nextBtn).toBeEnabled();
+      await expect(eventEditorPage.missingFieldsBanner).toHaveCount(0);
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-02-step1-empty');
@@ -211,10 +212,14 @@ test.describe('Happy paths across the app', () => {
       await expect(neighborhoodInput).toBeVisible();
       await expect(cityInput).toBeVisible();
 
-      // Próximo button on Step 2 is disabled initially
+      // Próximo on Step 2 says what is missing instead of moving on
       const step2NextBtn = eventEditorPage.nextStepBtns.nth(1);
       await expect(step2NextBtn).toBeVisible();
-      await expect(step2NextBtn).toBeDisabled();
+      await step2NextBtn.click();
+      await expect(eventEditorPage.missingFieldsBanner).toContainText(
+        'Para continuar, preencha o CEP e o número.',
+      );
+      await expect(neighborhoodInput).toBeVisible();
 
       // Screenshot baseline
       await eventEditorPage.captureScreenshot('13-04-step2-empty');
@@ -313,10 +318,11 @@ test.describe('Happy paths across the app', () => {
         '19:00',
       );
       await eventEditorPage.fillCep('01310100', '1000');
-      // Step 3 (Itens) is optional: skip straight to Pix.
+      // Steps 3 (Itens) and 4 (Amigo oculto) are optional: skip straight to Pix.
+      await eventEditorPage.advanceStep();
       await eventEditorPage.advanceStep();
 
-      // Assert Pix form and key input are visible on Step 4
+      // Assert Pix form and key input are visible on Step 5
       const pixForm = page
         .locator('#pix-form, form[formgroupname="pix"], .editor__pix-section, .editor__step-panel')
         .first();
@@ -332,7 +338,7 @@ test.describe('Happy paths across the app', () => {
         .first();
       await expect(pixField).toBeVisible();
 
-      await assertStepperLayout(page, { isMobile, step: 4, label: 'Pix' });
+      await assertStepperLayout(page, { isMobile, step: 5, label: 'Pix' });
 
       const prevBtn = pixForm
         .locator(
@@ -494,8 +500,10 @@ test.describe('Happy paths across the app', () => {
       await eventEditorPage.addWishlistItem('Bolo de milho', 'Comida', 10);
       await expect(page.getByTestId('item-list')).toContainText('Bolo de milho');
       await eventEditorPage.advanceStep();
+      // Step 4 (Amigo oculto) is optional.
+      await eventEditorPage.advanceStep();
 
-      // Step 4: optionally fill Pix key and click Salvar
+      // Step 5: optionally fill Pix key and click Salvar
       const pixKeyInput = page
         .locator(
           'org-text-field[formcontrolname="pixKey"] input, input[formcontrolname="pixKey"], [data-testid="event-pix-input"] input',
@@ -597,9 +605,11 @@ test.describe('Happy paths across the app', () => {
         .first();
       await expect(titleError).toBeVisible();
 
-      // Assert Next / Step 1 button is disabled
-      const nextBtn = eventEditorPage.nextStepBtns.first();
-      await expect(nextBtn).toBeDisabled();
+      // Próximo does not move on: it says what is missing
+      const nextBtn = eventEditorPage.nextStepBtns.filter({ visible: true }).first();
+      await nextBtn.click();
+      await expect(eventEditorPage.missingFieldsBanner).toContainText('o título');
+      await expect(eventEditorPage.titleInput).toBeVisible();
     });
 
     test('should verify focused title input border color matches theme token', async ({

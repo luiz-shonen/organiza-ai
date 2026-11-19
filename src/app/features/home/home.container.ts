@@ -9,9 +9,22 @@ import {
 } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { of, switchMap } from 'rxjs';
-import { AuthService, ClaimService, ItemService, UserService } from '../../core/services';
-import type { EventClaims, FamilyChecklistRow, PartyEvent, PartyItem } from '../../core/models';
+import { catchError, of, switchMap } from 'rxjs';
+import {
+  AuthService,
+  ClaimService,
+  GuestService,
+  InboxService,
+  ItemService,
+  UserService,
+} from '../../core/services';
+import type {
+  AppNotification,
+  EventClaims,
+  FamilyChecklistRow,
+  PartyEvent,
+  PartyItem,
+} from '../../core/models';
 import { buildFamilyChecklist, hasStarted, toggleBought } from '../../core/utils';
 import {
   FeedbackService,
@@ -24,11 +37,10 @@ import {
   OrgPageLayoutComponent,
   type OrgFilterOption,
 } from '../../shared/ui';
-import {
-  EventSummaryCardComponent,
-  type EventSummaryStatus,
-} from '../../shared/components/event-summary-card/event-summary-card.component';
+import { type EventSummaryStatus } from '../../shared/components/event-summary-card/event-summary-card.component';
+import { InviteEnvelopeComponent } from '../../shared/components/invite-envelope/invite-envelope.component';
 import { FamilyChecklistComponent } from '../../shared/components/family-checklist/family-checklist.component';
+import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { NextEventBannerComponent } from '../../shared/components/next-event-banner/next-event-banner.component';
 
 export type HomeFilter = 'all' | 'pending' | 'confirmed' | 'declined' | 'past';
@@ -52,6 +64,7 @@ interface HomeCard {
   selector: 'app-home',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NotificationCardComponent,
     OrgButtonComponent,
     OrgEmptyStateComponent,
     OrgExpansionPanelComponent,
@@ -59,7 +72,7 @@ interface HomeCard {
     OrgLoadingStateComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
-    EventSummaryCardComponent,
+    InviteEnvelopeComponent,
     FamilyChecklistComponent,
     NextEventBannerComponent,
   ],
@@ -70,9 +83,11 @@ export class HomeContainer {
   private readonly itemService = inject(ItemService);
   private readonly claimService = inject(ClaimService);
   private readonly userService = inject(UserService);
+  private readonly guestService = inject(GuestService);
   private readonly authService = inject(AuthService);
   private readonly feedback = inject(FeedbackService);
   private readonly router = inject(Router);
+  private readonly inbox = inject(InboxService);
 
   /** The filter chips on; `['all']` shows every upcoming event. */
   protected readonly activeFilters = signal<readonly HomeFilter[]>(['all']);
@@ -88,6 +103,34 @@ export class HomeContainer {
     this.authService.loading() ? undefined : (this.member()?.uid ?? null),
   );
 
+  /** New in-app notifications ("Sorteio do amigo oculto feito!"), at the top of the page. */
+  protected readonly notifications = toSignal(
+    toObservable(this.memberUid).pipe(
+      switchMap((uid) =>
+        uid
+          ? // A notice is extra: if it cannot be read, Início still shows the events.
+            this.inbox.watchUnread(uid).pipe(
+              catchError((err: unknown) => {
+                console.error(err);
+                return of([] as AppNotification[]);
+              }),
+            )
+          : of([] as AppNotification[]),
+      ),
+    ),
+    { initialValue: [] as AppNotification[] },
+  );
+
+  protected openNotification(notification: AppNotification): void {
+    this.dismissNotification(notification);
+    void this.router.navigateByUrl(notification.actionUrl);
+  }
+
+  protected dismissNotification(notification: AppNotification): void {
+    const uid = this.memberUid();
+    if (uid) this.inbox.markRead(uid, notification.id).catch(console.error);
+  }
+
   /** Events are private: only the ones the member was invited to or answered (organized ones are left out below). */
   protected readonly events = toSignal(
     toObservable(this.memberUid).pipe(
@@ -102,6 +145,8 @@ export class HomeContainer {
   /** Invites the member said they cannot attend: answered, so not pending. */
   private readonly declinedIds = signal<ReadonlySet<string>>(new Set());
   private readonly households = signal<Readonly<Record<string, Household>>>({});
+  /** Confirmed, but the event asks for approval and the organizer has not approved it yet. */
+  private readonly waitingIds = signal<ReadonlySet<string>>(new Set());
 
   /** The name on the member's profile ("Jéssica Mello"), read with the rest of their data. */
   private readonly profileName = signal('');
@@ -138,7 +183,10 @@ export class HomeContainer {
   );
 
   protected readonly confirmedCount = computed(
-    () => this.upcoming().filter((event) => this.confirmedIds().has(event.id)).length,
+    () =>
+      this.upcoming().filter(
+        (event) => this.confirmedIds().has(event.id) && !this.waitingIds().has(event.id),
+      ).length,
   );
   protected readonly pendingCount = computed(() =>
     this.member() ? this.awaitingAnswer().length : 0,
@@ -176,7 +224,10 @@ export class HomeContainer {
   protected readonly cards = computed<HomeCard[]>(() => {
     const confirmed = this.confirmedIds();
     const byFilter: Record<HomeFilter, PartyEvent[]> = {
-      all: this.upcoming(),
+      // "Todos" is what is still open for the member: declined invites keep to their chip.
+      all: this.upcoming().filter(
+        (event) => confirmed.has(event.id) || !this.declinedIds().has(event.id),
+      ),
       pending: this.awaitingAnswer(),
       confirmed: this.upcoming().filter((event) => confirmed.has(event.id)),
       declined: this.upcoming().filter(
@@ -198,7 +249,9 @@ export class HomeContainer {
       const bring = household ? buildFamilyChecklist(household.items, household.claims) : [];
       let status: EventSummaryStatus | null = null;
       if (isPast) status = { label: 'Realizado', variant: 'default' };
-      else if (isConfirmed) status = { label: 'Confirmado', variant: 'success' };
+      else if (isConfirmed && this.waitingIds().has(event.id)) {
+        status = { label: 'Aguardando aprovação', variant: 'warning' };
+      } else if (isConfirmed) status = { label: 'Confirmado', variant: 'success' };
       else if (isDeclined) status = { label: 'Recusado', variant: 'danger' };
       else if (this.member()) status = { label: 'Pendente', variant: 'warning' };
       return {
@@ -214,7 +267,10 @@ export class HomeContainer {
 
   /** The nearest upcoming event the member confirmed, for the banner at the top. */
   protected readonly nextConfirmed = computed(
-    () => this.upcoming().find((event) => this.confirmedIds().has(event.id)) ?? null,
+    () =>
+      this.upcoming().find(
+        (event) => this.confirmedIds().has(event.id) && !this.waitingIds().has(event.id),
+      ) ?? null,
   );
 
   /** The heading above the list names what the chosen chip shows; several read as one list. */
@@ -245,6 +301,7 @@ export class HomeContainer {
         } else {
           this.confirmedIds.set(new Set());
           this.declinedIds.set(new Set());
+          this.waitingIds.set(new Set());
           this.households.set({});
         }
       });
@@ -260,6 +317,16 @@ export class HomeContainer {
       const attended = await this.userService.getAttendedEvents(uid);
       this.confirmedIds.set(new Set(attended.map((event) => event.id)));
       this.declinedIds.set(new Set(await this.userService.getDeclinedEvents(uid)));
+      // Events that ask for approval: is this member still waiting for the organizer?
+      const waiting = await Promise.all(
+        attended
+          .filter((event) => event.requireApproval)
+          .map(async (event) => {
+            const guest = await this.guestService.getGuest(event.id, uid).catch(() => null);
+            return guest?.approved === false ? event.id : null;
+          }),
+      );
+      this.waitingIds.set(new Set(waiting.filter((id): id is string => !!id)));
       const entries = await Promise.all(
         attended.map(async (event) => {
           const [items, claims] = await Promise.all([

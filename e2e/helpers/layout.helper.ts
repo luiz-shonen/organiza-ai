@@ -44,7 +44,7 @@ export async function assertStepperLayout(
 ): Promise<void> {
   // Compact stepper on every width: numbered dots, only the current step shows its name.
   const headers = page.locator('.mat-step-header');
-  await expect(headers).toHaveCount(4);
+  await expect(headers).toHaveCount(5);
   const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');
   await expect(activeHeader).toBeVisible();
   await expect(activeHeader).toContainText(label);

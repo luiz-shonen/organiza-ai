@@ -45,6 +45,10 @@ How the app behaves for organizers and guests. Data and permissions are in
 
 - Início: Todos · Pendentes (with a count) · Confirmados · Recusados · Realizados.
 - Meus eventos: Todos · Em breve · Agendados · Realizados · Cancelados.
+- On both pages **"Todos" is what is still to come**: events that started (or were cancelled) only
+  show under their own chip, so history never crowds the list. On Início it is also only what is
+  still open for the member, pending and confirmed: a declined invite shows under "Recusados"
+  (where it can still be confirmed).
 - Chips work like Material filter chips (`org-filter-bar`): the chips that are on show a check,
   several can be on together, and the list shows every event any of them matches, once. "Todos" is
   on by default and on its own; turning the last chip off, or picking "Todos", brings it back.
@@ -76,10 +80,49 @@ How the app behaves for organizers and guests. Data and permissions are in
   The invite then shows "Você recusou este convite", with "Confirmar presença" to change one's mind.
 - Início's card offers **Responder convite** on a pending invite and **Ver convite** on an answered one.
 
+## The editor
+
+- Steps: Informações, Endereço, Itens, Amigo oculto, Pix. "Próximo" is never disabled: on a step with
+  something missing it says what ("Para continuar, preencha o título e a hora."), marks the fields and
+  takes the cursor to the first one. The description is optional.
+- "Itens" and "Amigo oculto" open with a question ("Os convidados vão levar alguma coisa?", "Vai ter
+  amigo oculto?"); the rest of the step shows only on yes. The items answer is not stored: it is on
+  when the event has items, and turning it off with items on the list removes them after a confirm.
+- **An event that started is history: it is no longer edited.** The event page hides "Editar
+  evento" (and the amigo oculto card its "Participantes" shortcut) once the start time passes, and
+  opening `/meus-eventos/evento/{id}` of such an event goes back to its page with "Este evento já
+  aconteceu e não pode mais ser editado." Organizers still use the rest of the page (the draw,
+  links). The rules do not block it: the owner still writes the event (e.g. closing sign-ups).
+
+## Invites look like invites
+
+- Início shows each invite as a sealed envelope in the colours of its category, "Para {first
+  name}"; the whole envelope opens the event page. Its top is the invitation itself: paper with a
+  double frame, a handwritten greeting ("Feliz Natal!", "Vem comemorar!"…), title, date block,
+  description and "Com carinho, {organizer}". Themes: Natal, Aniversário (also chá de bebê,
+  batizado), Casamento (also noivado, chá de panela), Festa Junina, and the app colours for the
+  rest. See DESIGN.md, "Invitation themes".
+
+## Approving who confirms (optional)
+
+- Step "Informações" of the editor: **"Aprovar quem confirma pelo link"** (`event.requireApproval`),
+  off by default (anyone with the link confirms at once). Only the owner changes it.
+- On: a guest's first answer is saved with `approved: false`. Their card says "Aguardando
+  aprovação"; they do not count on "Quem vai" or the total, are not offered in "Confirmados no
+  evento", cannot claim items and cannot join the amigo oculto alone (the drawer says they join
+  after the approval). Relatives follow their guest. Guests from before it was turned on count.
+- Organizers see "Aguardando aprovação (N)" at the top of "Quem vai", each with **Aprovar**
+  (`approved: true`) or **Recusar** (confirm dialog; removes the guest, their relatives and the
+  amigo oculto entries they wrote; they may answer again and wait again).
+- Rules: with approval on, a new answer must carry `approved: false`; a guest never changes
+  `approved` on their own answer; only an approved guest writes amigo oculto entries. Not enforced:
+  claims (the screen stops them) and Início, which still shows the invite as "Confirmado".
+
 ## The event page
 
 - Section order: event card, RSVP card (not for the organizer), the family checklist, "Lista do
-  evento" (hidden from guests when the event has no items), **Quem vai**, Pix.
+  evento" (hidden from guests when the event has no items), **Quem vai**, "Amigo oculto" (organizers
+  only, when the event has one; see [secret-santa](secret-santa.md)), Pix.
 - "Eu levo" offers the member and only the relatives confirmed with them for this event.
 - **Quem vai** (`buildGuestHouseholds`): the header says how many people are going ("8 confirmados").
   One panel per household, titled with the guest's name and a short summary ("+2 · 3 itens"); inside,

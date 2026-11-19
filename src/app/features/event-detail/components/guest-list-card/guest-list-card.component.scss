@@ -125,3 +125,58 @@
     display: none;
   }
 }
+
+// "Aguardando aprovação": above the list, one row per guest with Recusar / Aprovar.
+.guest-list__pending {
+  background: var(--org-surface-container-low);
+  border-radius: var(--org-radius-md);
+  display: grid;
+  gap: var(--org-space-xs);
+  padding: var(--org-space-sm) var(--org-space-md);
+}
+
+.guest-list__pending-title {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.guest-list__pending-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guest-list__pending-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-xs) var(--org-space-sm);
+  justify-content: space-between;
+  padding-block: var(--org-space-xs);
+
+  & + & {
+    border-top: 1px solid var(--org-outline-variant);
+  }
+}
+
+.guest-list__pending-name,
+.guest-list__pending-sub {
+  margin: 0;
+}
+
+.guest-list__pending-name {
+  color: var(--org-on-surface);
+  font-weight: var(--org-font-weight-semibold);
+}
+
+.guest-list__pending-sub {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+}
+
+.guest-list__pending-actions {
+  display: flex;
+  gap: var(--org-space-xs);
+}

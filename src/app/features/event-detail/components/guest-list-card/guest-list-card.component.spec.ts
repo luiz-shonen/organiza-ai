@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { GuestHousehold } from '../../../../core/utils';
 import { GuestListCardComponent } from './guest-list-card.component';
 
@@ -69,5 +69,40 @@ describe('GuestListCardComponent', () => {
     expect(text).toContain('Não poderão ir (1)');
     expect(text).toContain('Vou estar viajando.');
     expect(element.querySelector('[aria-label="Baixar a lista em Excel"]')).not.toBeNull();
+  });
+
+  it('lists the confirmations waiting for approval, for organizers only, to approve or refuse', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    const waiting = {
+      id: 'u9',
+      name: 'Primo Carlos',
+      phone: '(11) 97777-0000',
+      people: 2,
+      familyGuestIds: [],
+    };
+    fixture.componentRef.setInput('households', households);
+    fixture.componentRef.setInput('pending', [waiting]);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('[data-testid="guest-pending"]')).toBeNull();
+
+    fixture.componentRef.setInput('forOrganizer', true);
+    fixture.detectChanges();
+    const approve = vi.fn();
+    const refuse = vi.fn();
+    fixture.componentInstance.approve.subscribe(approve);
+    fixture.componentInstance.refuse.subscribe(refuse);
+    const row = element.querySelector('[data-testid="guest-pending-row"]');
+    expect(element.textContent).toContain('Aguardando aprovação (1)');
+    expect(row?.textContent).toContain('Primo Carlos');
+    expect(row?.textContent).toContain('2 pessoas');
+    (element.querySelector('button[data-testid="guest-approve-btn"]') as HTMLButtonElement).click();
+    (element.querySelector('button[data-testid="guest-refuse-btn"]') as HTMLButtonElement).click();
+    expect(approve).toHaveBeenCalledWith(waiting);
+    expect(refuse).toHaveBeenCalledWith(waiting);
   });
 });

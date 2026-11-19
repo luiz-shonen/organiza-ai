@@ -2,7 +2,6 @@
   <section class="guest-list" aria-labelledby="guest-list-title">
     <org-card-header
       id="guest-list-title"
-      icon="group"
       heading="Quem vai"
       [subheading]="households().length ? summary() : 'Ninguém confirmou ainda.'"
     >
@@ -25,6 +24,53 @@
         </div>
       }
     </org-card-header>
+
+    @if (forOrganizer() && pending().length) {
+      <section
+        class="guest-list__pending"
+        data-testid="guest-pending"
+        aria-label="Aguardando aprovação"
+      >
+        <h3 class="guest-list__pending-title">Aguardando aprovação ({{ pending().length }})</h3>
+        <ul class="guest-list__pending-list">
+          @for (guest of pending(); track guest.id) {
+            <li class="guest-list__pending-row" data-testid="guest-pending-row">
+              <div class="guest-list__pending-who">
+                <p class="guest-list__pending-name">{{ guest.name }}</p>
+                <p class="guest-list__pending-sub">
+                  {{ guest.people === 1 ? '1 pessoa' : guest.people + ' pessoas' }}
+                  @if (guest.phone) {
+                    · {{ displayPhone(guest.phone) }}
+                  }
+                </p>
+              </div>
+              <div class="guest-list__pending-actions">
+                <org-button
+                  label="Recusar"
+                  variant="danger-text"
+                  testId="guest-refuse-btn"
+                  [compact]="true"
+                  [gradient]="false"
+                  [disabled]="!!busyGuestId()"
+                  (pressed)="refuse.emit(guest)"
+                />
+                <org-button
+                  label="Aprovar"
+                  icon="how_to_reg"
+                  variant="tonal"
+                  testId="guest-approve-btn"
+                  [compact]="true"
+                  [gradient]="false"
+                  [loading]="busyGuestId() === guest.id"
+                  [disabled]="!!busyGuestId()"
+                  (pressed)="approve.emit(guest)"
+                />
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+    }
 
     @if (households().length) {
       <ul class="guest-list__households" aria-label="Convidados confirmados">

@@ -92,7 +92,7 @@ describe('EventDetailContainer', () => {
     id: 'evt-123',
     title: 'Churrasco da Firma',
     description: 'Comemoração de fim de ano',
-    date: '2026-12-15T18:00:00.000Z',
+    date: '2099-12-15T18:00:00.000Z',
     location: 'Espaço Gourmet',
     pixKey: 'churras@firma.com',
     pixType: 'Email',
@@ -255,6 +255,24 @@ describe('EventDetailContainer', () => {
     currentUserSignal.set({ uid: 'guest-1', displayName: 'Bia', isAnonymous: false });
     fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).querySelector('app-rsvp-card')).toBeTruthy();
+  });
+
+  it('offers "Editar evento" to the organizer only until the event starts', () => {
+    currentUserSignal.set({ uid: 'owner-1', displayName: 'Ana', isAnonymous: false });
+    mockEventService.getEvent.mockReturnValue(of({ ...mockEvent, createdBy: 'owner-1' }));
+    fixture.detectChanges();
+    const editButton = () =>
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="edit-event-btn"]');
+    expect(editButton()).toBeTruthy();
+
+    component['event'].set({
+      ...mockEvent,
+      createdBy: 'owner-1',
+      date: '2020-12-15T18:00:00.000Z',
+    });
+    fixture.detectChanges();
+    expect(editButton()).toBeNull();
+    expect(component['canEdit']()).toBe(true);
   });
 
   it("puts the event on the invited member's Início once, and never for the organizer", () => {
@@ -430,7 +448,9 @@ describe('EventDetailContainer', () => {
         'usr-1',
         'usr-1',
       );
-      expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.');
+      await vi.waitFor(() =>
+        expect(mockFeedback.success).toHaveBeenCalledWith('Sua presença foi cancelada.'),
+      );
       expect(mockUserService.setDeclined).toHaveBeenCalledWith('usr-1', 'evt-123', true);
     });
   });

@@ -60,7 +60,7 @@ Dark mode redefines the semantic roles on `html.dark`; seasonal themes (`html.th
 
 ## 3. Typography
 
-Plus Jakarta Sans for all UI text, Fredoka (semibold) for titles (`--org-font-display`, used by `--org-text-display|heading|title`), JetBrains Mono for code. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
+Plus Jakarta Sans for all UI text, Fredoka (semibold) for titles (`--org-font-display`, used by `--org-text-display|heading|title`), JetBrains Mono for code. Great Vibes (`--org-font-script`) is only for invitations: the handwritten greeting, the signature and the seal letter. Use the composite tokens with the `font` shorthand (`font: var(--org-text-title)`) or the individual scale tokens; literal values fail `npm run lint:contracts`.
 
 ## 4. Breakpoints, Glass and Elevation
 
@@ -118,6 +118,8 @@ Features must use the typed `OrgIcon` API rather than placing raw Material icon 
 40. `person_add` — RSVP attendee dialog
 41. `expand_more` — Expandable accordion / details
 42. `cloud_off` — Offline network banner
+43. `redeem` — Amigo oculto (secret santa) and gift options
+44. `visibility` — Reveal the drawn secret santa
 
 ---
 
@@ -287,7 +289,7 @@ Uso recomendado: `<org-empty-state icon="event" title="Nenhum evento" descriptio
 
 ### OrgCardHeaderComponent
 
-Uso recomendado: `<org-card-header icon="pix" tone="primary" heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card; tones are `info` (default, sky blue), `primary`, `primary-soft`, `tertiary` and `success`. Keep lilac tones for cards whose header is itself the call to action.
+Uso recomendado: `<org-card-header heading="Rachadinha via Pix" subheading="Contribua com o evento!" />` at the top of every card. No icon badge: the heading carries the card; a decorative icon beside every title added noise and looked generic.
 
 ### OrgCopyButtonComponent
 
@@ -340,6 +342,17 @@ Não usar em novo código. As diretivas de compatibilidade foram removidas: `Org
 | `.theme-ano-novo` | #FFFBED        | #17161C       |
 
 To add a theme, add one entry to the map and its id to the service.
+
+### Invitation themes
+
+Invites look like invites. On Início each one is a sealed envelope (`app-invite-envelope`: flap, wax
+seal with the organizer's initial, "Para Jéssica", title, date and tags); opening it opens the event
+page, whose top is a paper invitation (`app-event-card`: double gold frame, handwritten greeting,
+title, ornament, date block, description, "Com carinho, Luiz"). Both take the colours of the event's
+category through one class, `.org-invite--{natal|aniversario|casamento|junina|padrao}`, which sets the
+`--org-invite-*` tokens (`$invite-themes` in `src/app/shared/ui/tokens/_invite-themes.scss`). The
+words come from `inviteTheme()` in `src/app/core/utils/invite.utils.ts`. Paper and envelopes keep
+their colours in dark mode, like printed paper. Meus eventos keeps the plain `app-event-summary-card`.
 
 ---
 

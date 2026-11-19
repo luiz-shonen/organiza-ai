@@ -1,22 +1,27 @@
 <div class="event-step" data-testid="event-editor-step-3">
-  @if (canEdit()) {
-    <org-surface variant="card">
-      <div class="event-step__card">
-        <org-card-header
-          icon="assignment"
-          heading="Itens do evento"
-          subheading="O que os convidados podem levar. Opcional: você também pode adicionar depois, editando o evento."
-        />
+  <org-surface variant="card">
+    <div class="event-step__card">
+      <org-card-header
+        heading="Itens do evento"
+        subheading="Comidas, bebidas, descartáveis… Opcional: dá para mudar depois, editando o evento."
+      />
+      <org-toggle
+        label="Os convidados vão levar alguma coisa?"
+        testId="items-toggle"
+        [disabled]="!canEdit()"
+        [checked]="enabled()"
+        (checkedChange)="enabledChange.emit($event)"
+      />
+      @if (enabled() && canEdit()) {
         <app-item-form (submitted)="add.emit($event)" />
-      </div>
-    </org-surface>
-  }
+      }
+    </div>
+  </org-surface>
 
-  @if (items().length) {
+  @if (enabled() && items().length) {
     <org-surface variant="card" [flush]="true">
       <div class="items-step__added-head">
         <org-card-header
-          icon="assignment"
           heading="Itens adicionados"
           [subheading]="
             items().length === 1

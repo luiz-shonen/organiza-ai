@@ -11,6 +11,18 @@
     [subtitle]="subtitle()"
   />
 
+  @if (notifications().length) {
+    <div class="home__notifications" data-testid="home-notifications">
+      @for (notification of notifications(); track notification.id) {
+        <app-notification-card
+          [notification]="notification"
+          (opened)="openNotification($event)"
+          (dismissed)="dismissNotification($event)"
+        />
+      }
+    </div>
+  }
+
   @if (nextConfirmed(); as next) {
     <app-next-event-banner class="home__next" [event]="next" />
   }
@@ -60,15 +72,15 @@
       } @else {
         <div class="home__grid">
           @for (card of cards(); track card.event.id) {
-            <app-event-summary-card
+            <app-invite-envelope
               [event]="card.event"
               [status]="card.status"
+              [recipient]="greetingName()"
               [link]="['/evento', card.event.id]"
-              [showDetails]="!card.pending && !card.answered"
             >
               @if (card.bring.length) {
                 <org-expansion-panel
-                  eventCardBody
+                  inviteBody
                   icon="assignment"
                   data-testid="family-bring-panel"
                   [heading]="
@@ -93,7 +105,7 @@
 
               @if (card.pending) {
                 <org-button
-                  eventCardFooter
+                  inviteFooter
                   label="Responder convite"
                   variant="tonal"
                   testId="answer-invite-btn"
@@ -103,7 +115,7 @@
               }
               @if (card.answered) {
                 <org-button
-                  eventCardFooter
+                  inviteFooter
                   label="Ver convite"
                   variant="tonal"
                   testId="view-invite-btn"
@@ -111,7 +123,7 @@
                   (pressed)="openEvent(card.event.id)"
                 />
               }
-            </app-event-summary-card>
+            </app-invite-envelope>
           }
         </div>
       }

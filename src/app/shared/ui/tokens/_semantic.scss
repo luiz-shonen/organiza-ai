@@ -1,5 +1,6 @@
 @use 'foundation';
 @use 'themes';
+@use 'invite-themes';
 
 // Canonical Responsive Breakpoints (AD-036)
 $breakpoint-sm: 600px;
@@ -248,4 +249,5 @@ $breakpoint-lg: 1200px;
   }
 
   @include themes.apply;
+  @include invite-themes.apply;
 }

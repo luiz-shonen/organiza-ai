@@ -115,6 +115,30 @@ describe('EventService', () => {
       expect(result?.title).toBe('Single Event');
     });
 
+    it('keeps the amigo oculto setting', () => {
+      mockGateway.docSnapshot.mockReturnValue(
+        of({ id: 'evt-1', title: 'Natal', secretSanta: { enabled: true, giftOptions: false } }),
+      );
+
+      let result = null as PartyEvent | null;
+      service.getEvent('evt-1').subscribe((event) => {
+        result = event;
+      });
+
+      expect(result?.secretSanta).toEqual({ enabled: true, giftOptions: false });
+    });
+
+    it('keeps "Aprovar quem confirma pelo link" only when it is on', () => {
+      mockGateway.docSnapshot.mockReturnValue(of({ id: 'evt-1', requireApproval: true }));
+      let result = null as PartyEvent | null;
+      service.getEvent('evt-1').subscribe((event) => (result = event));
+      expect(result?.requireApproval).toBe(true);
+
+      mockGateway.docSnapshot.mockReturnValue(of({ id: 'evt-1' }));
+      service.getEvent('evt-1').subscribe((event) => (result = event));
+      expect(result).not.toHaveProperty('requireApproval');
+    });
+
     it('returns null when document does not exist', () => {
       mockGateway.docSnapshot.mockReturnValue(of(null));
 

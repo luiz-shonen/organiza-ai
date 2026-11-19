@@ -125,4 +125,78 @@ describe('RsvpDrawerComponent', () => {
       expect.objectContaining({ name: 'Carlos', phone: '(11) 99999-8888' }),
     );
   });
+
+  describe('amigo oculto', () => {
+    const grandma = {
+      id: 'fam-ana',
+      name: 'Ana',
+      relationship: 'relative' as const,
+      phone: '',
+      createdAt: '2026-11-03T00:00:00.000Z',
+    };
+    const open = (joined: Record<string, readonly string[]> = {}, isOpen = true) => {
+      fixture.componentRef.setInput('drawerData', {
+        session: { name: 'Maria', phone: '11999998888' },
+        familyMembers: [grandma],
+        userId: 'uid-maria',
+        existing: { companions: [], familyMemberIds: ['fam-ana'] },
+        secretSanta: { open: isOpen, giftOptions: true, maxGiftOptions: 2, joined },
+      });
+      fixture.detectChanges();
+    };
+    const el = () => fixture.nativeElement as HTMLElement;
+    const confirm = () =>
+      (el().querySelector('[data-testid="rsvp-confirm-btn"] button') as HTMLButtonElement).click();
+
+    it('asks for each person going: the guest and the relatives checked above', () => {
+      open();
+      const labels = [...el().querySelectorAll('[data-testid^="rsvp-santa-person-"]')].map((n) =>
+        n.textContent?.trim(),
+      );
+      expect(labels).toEqual(['Você (Maria)', 'Ana']);
+    });
+
+    it('returns who takes part, each with their own gift options', () => {
+      open();
+      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
+      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      const gifts = el().querySelector(
+        'textarea[data-testid="rsvp-santa-gifts-1"]',
+      ) as HTMLTextAreaElement;
+      gifts.value = 'Manta\nChinelo 37\nTerceira passa do limite';
+      gifts.dispatchEvent(new Event('input'));
+      confirm();
+
+      expect(close).toHaveBeenCalledWith(
+        expect.objectContaining({
+          secretSanta: { self: [], 'f:fam-ana': ['Manta', 'Chinelo 37'] },
+        }),
+      );
+    });
+
+    it('opens an edit with who is already in, and leaves out someone no longer going', () => {
+      open({ self: ['Livro'], 'f:fam-ana': [] });
+      expect(
+        (el().querySelector('textarea[data-testid="rsvp-santa-gifts-0"]') as HTMLTextAreaElement)
+          .value,
+      ).toBe('Livro');
+      fixture.componentInstance['onToggleFamilyMember']('fam-ana');
+      fixture.detectChanges();
+      confirm();
+
+      expect(close).toHaveBeenCalledWith(
+        expect.objectContaining({ secretSanta: { self: ['Livro'] } }),
+      );
+    });
+
+    it('only says sign-ups are closed, and changes nothing', () => {
+      open({ self: [] }, false);
+      expect(el().querySelector('[data-testid="rsvp-santa-closed"]')?.textContent).toContain(
+        'As inscrições do amigo oculto estão fechadas.',
+      );
+      confirm();
+      expect(close.mock.calls[0][0].secretSanta).toBeUndefined();
+    });
+  });
 });

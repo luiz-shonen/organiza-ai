@@ -18,15 +18,16 @@ Organiza AI is a modern festive event planner — it transforms event organizing
 
 ### Feature Domains (`src/app/features/`)
 
-| Domain                                   | Route              | Access            |
-| ---------------------------------------- | ------------------ | ----------------- |
-| `home/`                                  | `/`                | Public            |
-| `auth/`                                  | `/login`           | Public            |
-| `event-detail/`                          | `/evento/:id`      | Public            |
-| `profile/`                               | `/perfil`          | `authGuard`       |
-| `organizer/` (via `organizer.routes.ts`) | `/meus-eventos/**` | `authGuard`       |
-| `admin/` (via `admin.routes.ts`)         | `/admin/**`        | `superAdminGuard` |
-| `design-system/`                         | `/design-system`   | `superAdminGuard` |
+| Domain                                   | Route                  | Access               |
+| ---------------------------------------- | ---------------------- | -------------------- |
+| `home/`                                  | `/`                    | Public               |
+| `auth/`                                  | `/login`               | Public               |
+| `event-detail/`                          | `/evento/:id`          | Public               |
+| `secret-santa/`                          | `/amigo-oculto/:token` | Public (secret link) |
+| `profile/`                               | `/perfil`              | `authGuard`          |
+| `organizer/` (via `organizer.routes.ts`) | `/meus-eventos/**`     | `authGuard`          |
+| `admin/` (via `admin.routes.ts`)         | `/admin/**`            | `superAdminGuard`    |
+| `design-system/`                         | `/design-system`       | `superAdminGuard`    |
 
 > **Important:** `/meus-eventos` is the organizer dashboard (any authenticated user). `/admin` is exclusively for Super Admins (platform metrics and governance). Never confuse the two.
 

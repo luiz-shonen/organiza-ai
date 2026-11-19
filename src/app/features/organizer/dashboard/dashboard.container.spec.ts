@@ -158,8 +158,10 @@ describe('DashboardContainer', () => {
     expect(compiled.textContent).not.toContain('Novo Admin');
   });
 
-  it('lists the events created by the person, upcoming first and cancelled last', () => {
+  it('lists under "Todos" only what is still to come: past and cancelled have their chips', () => {
     expect(mockEventService.getUserEvents).toHaveBeenCalledWith('user-1');
+    expect(component.filteredEvents().map((event) => event.id)).toEqual(['evt-1']);
+    component.activeFilters.set(['soon', 'past', 'cancelled']);
     expect(component.filteredEvents().map((event) => event.id)).toEqual([
       'evt-1',
       'evt-2',
@@ -180,8 +182,8 @@ describe('DashboardContainer', () => {
   });
 
   it('should filter events reactively when activeFilter is changed', () => {
-    // Default 'all'
-    expect(component.filteredEvents().length).toBe(3);
+    // Default 'all': upcoming only
+    expect(component.filteredEvents().length).toBe(1);
 
     // 'soon': five days away at most
     component.activeFilters.set(['soon']);
@@ -206,6 +208,21 @@ describe('DashboardContainer', () => {
     const cancelled = component.filteredEvents();
     expect(cancelled.length).toBe(1);
     expect(cancelled[0].id).toBe('evt-3');
+  });
+
+  it('heads the list like Início: what the chip shows, and how many', () => {
+    fixture.detectChanges();
+    const title = () =>
+      (fixture.nativeElement as HTMLElement).querySelector('#dashboard-list-title')?.textContent;
+    expect(title()).toContain('Próximos eventos');
+    expect(title()).toContain('1');
+    component.activeFilters.set(['past']);
+    fixture.detectChanges();
+    expect(title()).toContain('Eventos realizados');
+    component.activeFilters.set(['past', 'cancelled']);
+    fixture.detectChanges();
+    expect(title()).toContain('Eventos filtrados');
+    expect(title()).toContain('2');
   });
 
   it('tags an event Em breve up to five days away, Agendado further ahead', () => {

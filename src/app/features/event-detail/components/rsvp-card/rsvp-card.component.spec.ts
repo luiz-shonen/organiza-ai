@@ -96,7 +96,7 @@ describe('RsvpCardComponent', () => {
         ) as HTMLButtonElement
       ).click();
 
-      expect(cancelSpy).toHaveBeenCalledWith('Vou estar viajando.');
+      expect(cancelSpy).toHaveBeenCalledWith({ message: 'Vou estar viajando.', santa: null });
     });
   });
 
@@ -172,7 +172,7 @@ describe('RsvpCardComponent', () => {
           '[data-testid="rsvp-decline-send-btn"] button',
         ) as HTMLButtonElement
       ).click();
-      expect(spy).toHaveBeenCalledWith('');
+      expect(spy).toHaveBeenCalledWith({ message: '', santa: null });
     });
 
     it('shows a declined invite with a way back', () => {
@@ -183,5 +183,108 @@ describe('RsvpCardComponent', () => {
       expect(text()).toContain('Confirmar presença');
       expect(fixture.nativeElement.querySelector('[data-testid="rsvp-decline-btn"]')).toBeNull();
     });
+  });
+
+  describe('amigo oculto', () => {
+    const santa = {
+      open: true,
+      giftOptions: true,
+      maxGiftOptions: 3,
+      joined: {} as Record<string, readonly string[]>,
+    };
+    const el = () => fixture.nativeElement as HTMLElement;
+    const click = (testId: string) =>
+      (
+        el().querySelector(
+          `[data-testid="${testId}"] button, button[data-testid="${testId}"]`,
+        ) as HTMLButtonElement
+      ).click();
+    const type = (selector: string, value: string) => {
+      const field = el().querySelector(selector) as HTMLInputElement | HTMLTextAreaElement;
+      field.value = value;
+      field.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+    };
+
+    it('lets someone who is not going stay in the draw, with phone and gift options', () => {
+      componentRef.setInput('canDecline', true);
+      componentRef.setInput('secretSanta', santa);
+      componentRef.setInput('phone', '(11) 98888-1111');
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.declineRsvp.subscribe(spy);
+
+      click('rsvp-decline-btn');
+      fixture.detectChanges();
+      (el().querySelector('[data-testid="rsvp-decline-santa"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      expect(
+        (el().querySelector('input[data-testid="rsvp-santa-phone"]') as HTMLInputElement).value,
+      ).toBe('(11) 98888-1111');
+      type('textarea[data-testid="rsvp-santa-gifts"]', 'Livro\n\nMeia azul');
+      click('rsvp-decline-send-btn');
+
+      expect(spy).toHaveBeenCalledWith({
+        message: '',
+        santa: { phone: '(11) 98888-1111', gifts: ['Livro', 'Meia azul'] },
+      });
+    });
+
+    it('asks for the phone before joining without going', () => {
+      componentRef.setInput('isDeclined', true);
+      componentRef.setInput('secretSanta', santa);
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.joinSanta.subscribe(spy);
+
+      click('rsvp-santa-join-btn');
+      fixture.detectChanges();
+      click('rsvp-santa-join-send-btn');
+      fixture.detectChanges();
+      expect(spy).not.toHaveBeenCalled();
+      expect(el().textContent).toContain('Informe o telefone que vai receber o link');
+
+      type('input[data-testid="rsvp-santa-phone"]', '11977776666');
+      click('rsvp-santa-join-send-btn');
+      expect(spy).toHaveBeenCalledWith({ phone: '(11) 97777-6666', gifts: [] });
+    });
+
+    it('shows a declined member in the draw, with a way out', () => {
+      componentRef.setInput('isDeclined', true);
+      componentRef.setInput('secretSanta', { ...santa, joined: { self: ['Livro'] } });
+      fixture.detectChanges();
+      const spy = vi.fn();
+      component.leaveSanta.subscribe(spy);
+
+      expect(el().textContent).toContain('Você está no amigo oculto, mesmo sem ir.');
+      click('rsvp-santa-leave-btn');
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('says where a confirmed member stands, and offers nothing when sign-ups are closed', () => {
+      componentRef.setInput('isConfirmed', true);
+      componentRef.setInput('secretSanta', { ...santa, open: false });
+      fixture.detectChanges();
+      expect(el().textContent).toContain('Você não está no amigo oculto.');
+
+      componentRef.setInput('isConfirmed', false);
+      componentRef.setInput('isDeclined', true);
+      fixture.detectChanges();
+      expect(el().querySelector('[data-testid="rsvp-santa-join-btn"]')).toBeNull();
+    });
+  });
+
+  it('says a confirmation is waiting for the organizer, still with a way to change it', () => {
+    componentRef.setInput('isConfirmed', true);
+    componentRef.setInput('pendingApproval', true);
+    componentRef.setInput('hasItems', true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.textContent).toContain('Aguardando aprovação');
+    expect(el.querySelector('[data-testid="rsvp-pending-approval"]')?.textContent).toContain(
+      'você entra na lista e pode escolher o que levar.',
+    );
+    expect(el.querySelector('[data-testid="rsvp-edit-btn"]')).not.toBeNull();
+    expect(el.textContent).not.toContain('Você está na lista!');
   });
 });

@@ -1,5 +1,6 @@
 import type { FamilyMember, FamilyMemberCreate } from './family.model';
 import type { GuestCompanion, GuestSession } from './guest.model';
+import type { RsvpSecretSantaChoice, RsvpSecretSantaData } from './secret-santa.model';
 
 export interface RsvpDrawerRequestData {
   session: GuestSession | null;
@@ -11,6 +12,8 @@ export interface RsvpDrawerRequestData {
   savedCompanions?: readonly string[];
   /** Saves a member added in the drawer to the profile's family, so it is kept even before "Confirmar". */
   addFamilyMember?: (member: FamilyMemberCreate) => Promise<FamilyMember>;
+  /** The event has an amigo oculto: the drawer asks who takes part. */
+  secretSanta?: RsvpSecretSantaData;
 }
 
 export interface RsvpDrawerResult {
@@ -18,6 +21,8 @@ export interface RsvpDrawerResult {
   phone: string;
   companions: GuestCompanion[];
   selectedFamilyMembers: FamilyMember[];
+  /** Who takes part in the amigo oculto; missing when the event has none or sign-ups are closed. */
+  secretSanta?: RsvpSecretSantaChoice;
 }
 
 export interface CollaboratorDrawerRequestData {

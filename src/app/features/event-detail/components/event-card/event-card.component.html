@@ -1,22 +1,40 @@
 <div class="event-card">
-  <org-surface variant="card">
-    <header class="event-card__hero">
-      <org-badge
-        class="event-card__category-badge"
-        [label]="categoryName()"
-        [variant]="categoryBadgeVariant()"
-        [hue]="categoryHue()"
-        [gradient]="false"
-      />
-      <h1 class="event-card__title">{{ event().title }}</h1>
-      @if (event().description) {
-        <p class="event-card__description">{{ event().description }}</p>
-      }
-      @if (event().status === 'cancelled') {
-        <org-badge label="Evento cancelado" variant="danger" [gradient]="false" />
-      }
+  <!-- The invitation itself, on paper in the colours of the category (see inviteTheme). -->
+  <div [class]="theme().className">
+    <header class="event-card__hero" data-testid="event-invitation">
+      <div class="event-card__paper">
+        <org-badge
+          class="event-card__category-badge"
+          [label]="categoryName()"
+          [variant]="categoryBadgeVariant()"
+          [hue]="categoryHue()"
+          [gradient]="false"
+        />
+        <p class="event-card__greeting">{{ theme().greeting }}</p>
+        <p class="event-card__lead">{{ theme().lead }}</p>
+        <h1 class="event-card__title">{{ event().title }}</h1>
+        <p class="event-card__ornament" aria-hidden="true">{{ theme().ornament }}</p>
+        @if (dateParts(); as date) {
+          <p class="event-card__date-box" [attr.aria-label]="when()">
+            <span class="event-card__date-side" aria-hidden="true">{{ date.weekday }}</span>
+            <span class="event-card__date-day" aria-hidden="true">{{ date.day }}</span>
+            <span class="event-card__date-side" aria-hidden="true">{{ date.monthTime }}</span>
+          </p>
+        }
+        @if (event().description) {
+          <p class="event-card__description">{{ event().description }}</p>
+        }
+        @if (event().status === 'cancelled') {
+          <org-badge label="Evento cancelado" variant="danger" [gradient]="false" />
+        }
+        @if (signer()) {
+          <p class="event-card__signature" data-testid="event-invitation-signature">
+            Com carinho, {{ signer() }}
+          </p>
+        }
+      </div>
     </header>
-  </org-surface>
+  </div>
 
   <org-surface variant="card" class="event-card__details-card" [flush]="true">
     <div class="event-card__row" data-testid="countdown-timer">

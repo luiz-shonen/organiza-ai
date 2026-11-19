@@ -12,6 +12,8 @@ export interface BatchPrimaryGuestInput {
   photoUrl?: string;
   companions?: GuestCompanion[];
   companionsCount?: number;
+  /** The event asks for approval and this is the guest's first answer. */
+  pendingApproval?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -121,6 +123,8 @@ export class GuestService {
           confirmedAt: now,
           companionsCount,
           ...(primaryGuest.companions ? { companions: primaryGuest.companions } : {}),
+          // A first answer to an event that asks for approval waits for the owner.
+          ...(primaryGuest.pendingApproval ? { approved: false } : {}),
           createdAt: now,
         },
         { merge: true },
@@ -205,6 +209,30 @@ export class GuestService {
       // The household's share of the list goes back to the event with the RSVP.
       if (householdUid) {
         batch.delete(`events/${eventId}/claims/${householdUid}`);
+      }
+    });
+  }
+
+  /** "Aprovar": the guest (and who comes with them) enters the list. Organizers only. */
+  async approveGuest(eventId: string, guestId: string): Promise<void> {
+    await this.gateway.updateDoc(this.guestDocPath(eventId, guestId), { approved: true });
+  }
+
+  /**
+   * "Recusar": the waiting confirmation leaves, with the relatives' documents and the amigo
+   * oculto entries the guest wrote from the invite. Organizers only.
+   */
+  async refuseGuest(
+    eventId: string,
+    guestId: string,
+    familyGuestIds: readonly string[],
+    secretSantaEntryIds: readonly string[] = [],
+  ): Promise<void> {
+    await this.gateway.runBatch((batch) => {
+      batch.delete(this.guestDocPath(eventId, guestId));
+      for (const id of familyGuestIds) batch.delete(this.guestDocPath(eventId, id));
+      for (const id of secretSantaEntryIds) {
+        batch.delete(`events/${eventId}/secretSantaParticipants/${id}`);
       }
     });
   }

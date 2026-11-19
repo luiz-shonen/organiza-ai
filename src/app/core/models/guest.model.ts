@@ -12,6 +12,11 @@ export interface Guest {
   confirmedAt: string;
   primaryGuestId?: string;
   uid?: string;
+  /**
+   * False while an event that asks for approval waits for the owner ("Aguardando aprovação").
+   * Only on the guest's own document; relatives follow it. Missing means approved.
+   */
+  approved?: boolean;
   companions?: GuestCompanion[];
   companionsCount?: number;
   createdAt?: string;

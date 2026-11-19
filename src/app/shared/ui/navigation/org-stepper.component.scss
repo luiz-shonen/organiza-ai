@@ -19,6 +19,8 @@
   --mat-stepper-line-color: var(--org-outline-variant);
   --mat-stepper-header-hover-state-layer-color: var(--org-state-hover);
   --mat-stepper-header-focus-state-layer-color: var(--org-state-hover);
+  --mat-stepper-header-hover-state-layer-shape: var(--org-radius-full);
+  --mat-stepper-header-focus-state-layer-shape: var(--org-radius-full);
 
   background: transparent;
   max-width: 100%;
@@ -35,9 +37,17 @@
       margin-bottom: var(--org-space-md);
     }
 
+    // A step without its name is a 48px circle with the dot in the middle, so the
+    // hover and focus layers sit centred on it.
     .mat-horizontal-stepper-header {
       border-radius: var(--org-radius-full);
-      padding: 0 var(--org-space-xs);
+      justify-content: center;
+      min-inline-size: var(--org-touch);
+      padding: 0;
+    }
+
+    .mat-step-header[aria-selected='false'] .mat-step-icon {
+      margin: 0;
     }
 
     // The current step shows its name inside the pill: the number keeps the same

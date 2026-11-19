@@ -1,5 +1,12 @@
 @use '../../shared/ui/tokens/semantic' as semantic;
 
+.home__notifications {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  margin-block-end: var(--org-space-lg);
+}
+
 .home__next {
   margin-block-end: var(--org-space-lg);
 }

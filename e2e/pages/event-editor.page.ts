@@ -99,6 +99,11 @@ export class EventEditorPage extends BasePage {
     await nextBtn.click();
   }
 
+  /** The message "Próximo" shows when the step still has something missing. */
+  get missingFieldsBanner(): Locator {
+    return this.page.getByTestId('step-missing-fields').filter({ visible: true });
+  }
+
   async advanceStep(): Promise<void> {
     const nextBtn = this.nextStepBtns.filter({ visible: true }).first();
     await expect(nextBtn).toBeEnabled();
@@ -114,6 +119,8 @@ export class EventEditorPage extends BasePage {
   }): Promise<void> {
     if (address.cep) {
       await this.cepInput.fill(address.cep);
+      // "Próximo" is always pressable now: wait for the CEP lookup to fill the street first.
+      await expect(this.streetInput).not.toHaveValue('');
     }
     if (address.number) {
       await this.numberInput.fill(address.number);
@@ -125,6 +132,7 @@ export class EventEditorPage extends BasePage {
 
   async fillCep(cep: string, number: string = '100'): Promise<void> {
     await this.cepInput.fill(cep);
+    await expect(this.streetInput).not.toHaveValue('');
     await this.numberInput.fill(number);
     const nextBtn = this.nextStepBtns.filter({ visible: true }).first();
     await expect(nextBtn).toBeEnabled();
@@ -132,7 +140,9 @@ export class EventEditorPage extends BasePage {
   }
 
   /** Opens a step by its stepper label (editing allows jumping; creating goes in order). */
-  async openStep(label: 'Informações' | 'Endereço' | 'Itens' | 'Pix'): Promise<void> {
+  async openStep(
+    label: 'Informações' | 'Endereço' | 'Itens' | 'Amigo oculto' | 'Pix',
+  ): Promise<void> {
     await this.page.locator('.mat-step-header').filter({ hasText: label }).click();
     await expect(this.page.locator('.mat-step-header[aria-selected="true"]')).toContainText(label);
   }
@@ -146,10 +156,21 @@ export class EventEditorPage extends BasePage {
     await saveButton.click();
   }
 
+  /** Answers "Os convidados vão levar alguma coisa?" with yes, so the item form shows. */
+  async turnOnItems(): Promise<void> {
+    const toggle = this.page
+      .getByTestId('items-toggle')
+      .filter({ visible: true })
+      .getByRole('switch');
+    if ((await toggle.getAttribute('aria-checked')) !== 'true') await toggle.click();
+    await expect(this.itemNameInput).toBeVisible();
+  }
+
   async addWishlistItem(name: string, _category = 'Geral', quantity = 1): Promise<void> {
     if (!(await this.itemNameInput.isVisible())) {
       await this.openStep('Itens');
     }
+    await this.turnOnItems();
     await this.itemNameInput.fill(name);
     await this.itemQtyInput.fill(quantity.toString());
     await this.addItemBtn.click();

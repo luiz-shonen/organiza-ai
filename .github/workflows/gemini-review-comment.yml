@@ -13,8 +13,8 @@ jobs:
       github.event.issue.pull_request &&
       contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association) &&
       (contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/gemini review'))
-    # Two models, three tries each, a 4 min cap per call: up to ~10 min during an outage.
-    timeout-minutes: 20
+    # GEMINI_MODEL + four fallbacks, a 4 min cap per call, 90s of waits: under ~22 min.
+    timeout-minutes: 25
     runs-on: ubuntu-latest
     permissions:
       contents: read

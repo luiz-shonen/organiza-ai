@@ -42,16 +42,24 @@ export const DIFF_EXCLUDES = [
   ':!e2e/screenshots',
 ];
 
-// gemini-3.8-flash is the current stable Flash; the alias keeps reviews running
-// if 3.8 is retired before this list is updated. GEMINI_MODEL overrides both.
-export const FALLBACK_MODELS = ['gemini-3.8-flash', 'gemini-flash-latest'];
+// gemini-3.8-flash is the current stable Flash; the -latest aliases keep reviews running if
+// it is retired before this list is updated. Pro and Flash-Lite have their own capacity, so
+// they still answer when Flash is overloaded (503 "high demand"). GEMINI_MODEL goes first.
+export const FALLBACK_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-flash-latest',
+  'gemini-pro-latest',
+  'gemini-flash-lite-latest',
+];
 
-// Gemini answers 429/5xx when it is overloaded; each model is retried after these waits.
+// Gemini answers 429/5xx when it is overloaded. Every model is tried once per round; the
+// overloaded ones get another round after these waits, so the wait is spent while the
+// other models have a go instead of on one busy model.
 export const RETRYABLE_STATUSES = [429, 500, 503];
-export const RETRY_DELAYS_MS = [10_000, 30_000];
+export const ROUND_DELAYS_MS = [30_000, 60_000];
 // A full review takes up to ~3 min; past 4 min the request is hung (seen during a 503
-// outage, when one call sat 5 min until the job was cancelled). A hung call moves on to
-// the next model instead of retrying the same one.
+// outage, when one call sat 5 min until the job was cancelled). A hung model, or one that
+// answers 4xx (unknown alias, bad request), is dropped from the next rounds.
 export const REQUEST_TIMEOUT_MS = 240_000;
 
 // Gemini 3+ reason best with the default sampling, so only the thinking level is set.
@@ -287,21 +295,29 @@ Por favor, realize o code review completo e rigoroso, aplicando a taxonomia P1/P
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function callGemini(systemInstruction, userPrompt) {
+/**
+ * Tries each model in turn, in rounds: the models that failed with a retryable error are
+ * tried again after the round's wait. `request(model)` resolves to { review } or
+ * { error, retryable }. Throws the last error when every round fails.
+ */
+export async function callGemini(models, request, { delays = ROUND_DELAYS_MS, wait = sleep } = {}) {
   let lastError = null;
+  let pending = [...new Set(models)];
 
-  for (const model of CANDIDATE_MODELS) {
-    for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
-      if (attempt > 0) {
-        const delay = RETRY_DELAYS_MS[attempt - 1];
-        console.log(`⏳ Aguardando ${delay / 1000}s para tentar ${model} de novo...`);
-        await sleep(delay);
-      }
-      const result = await requestGemini(model, systemInstruction, userPrompt);
+  for (let round = 0; round <= delays.length && pending.length; round++) {
+    if (round > 0) {
+      const delay = delays[round - 1];
+      console.log(`⏳ Aguardando ${delay / 1000}s para tentar de novo: ${pending.join(', ')}...`);
+      await wait(delay);
+    }
+    const retry = [];
+    for (const model of pending) {
+      const result = await request(model);
       if (result.review) return result.review;
       lastError = result.error;
-      if (!result.retryable) break;
+      if (result.retryable) retry.push(model);
     }
+    pending = retry;
   }
 
   throw lastError || new Error('Nenhum modelo Gemini respondeu.');
@@ -557,7 +573,9 @@ async function main() {
     // Call Gemini API to generate the code review
     const systemPrompt = buildSystemPrompt();
     const userPrompt = buildUserPrompt(diff, { title: prTitle, body: prBody });
-    let reviewMarkdown = await callGemini(systemPrompt, userPrompt);
+    let reviewMarkdown = await callGemini(CANDIDATE_MODELS, (model) =>
+      requestGemini(model, systemPrompt, userPrompt),
+    );
 
     // Open the out-of-scope issue proposed by Gemini, if any
     const issueProposal = parseIssueProposal(reviewMarkdown);
@@ -614,9 +632,8 @@ async function main() {
   } catch (err) {
     console.error('❌ Falha na execução do Gemini PR Review:');
     console.error(err);
-    // On demand the job fails so the workflow reports it on the PR; the automatic
-    // review stays silent so a Gemini outage never blocks CI.
-    process.exit(IS_ON_DEMAND ? 1 : 0);
+    // The job fails so a review that never ran shows red on the PR, not green.
+    process.exit(1);
   }
 }
 

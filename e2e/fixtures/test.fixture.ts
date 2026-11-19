@@ -29,6 +29,7 @@ export type AppFixtures = {
   confirmDialog: ConfirmDialogHarness;
   makeAxeBuilder: () => AxeBuilder;
   isolatedFirestore: void;
+  demoHold: void;
 };
 
 export const test = base.extend<AppFixtures>({
@@ -38,6 +39,17 @@ export const test = base.extend<AppFixtures>({
     async ({ page }, use) => {
       await mockFirestoreDocuments(page);
       await use();
+    },
+    { auto: true },
+  ],
+  // In the recorded demo projects, hold the last frame so the video ends on the result.
+  demoHold: [
+    async ({ page }, use, testInfo) => {
+      await use();
+      if (testInfo.project.name.startsWith('demo') && !page.isClosed()) {
+        // eslint-disable-next-line playwright/no-wait-for-timeout -- a pause for the viewer, not a sync
+        await page.waitForTimeout(1500);
+      }
     },
     { auto: true },
   ],

@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ci": "playwright test --project=chromium",
     "test:e2e:mobile": "playwright test --project=mobile-chrome",
+    "test:e2e:video": "node scripts/e2e-changed-videos.mjs",
     "lint": "ng lint && eslint \"scripts/**/*.mjs\" \"*.mjs\"",
     "lint:fix": "ng lint --fix && eslint \"scripts/**/*.mjs\" \"*.mjs\" --fix",
     "lint:styles": "stylelint \"src/**/*.scss\"",

@@ -104,6 +104,7 @@ npm run test:rules              # 51 rules tests across 8 suites against the Fir
 npm run test:e2e                # 232 tests across Desktop Chromium + Mobile Chrome (15 suites)
 npm run test:e2e:ci             # Headless mode for CI
 npm run test:e2e:mobile         # Mobile Chrome only (Pixel 5)
+npm run test:e2e:video          # Slowed-down videos of the tests this branch adds or changes → e2e-videos/
 
 # Pull Requests & CI Automation
 npm run pr:create               # Push branch and open Pull Request with personal GitHub token
@@ -158,6 +159,24 @@ The product rules these tests check are written in [`docs/knowledge/decisions/ev
 | `quality/`       | `visual-layout`, `keyboard-a11y`, `offline`, `network-loading`, `visual-regression` (`.spec.ts`) | Zero horizontal overflow, touch targets ≥ 48px, focus trap and Escape, offline cache, throttled network and skeletons, design system baselines                                                                                   |
 | `design-system/` | `showcase.spec.ts`, `tokens/*.spec.ts`                                                           | Showcase page, seasonal theme tokens, token and layout contracts                                                                                                                                                                 |
 
+### Videos of New and Changed Tests
+
+A pull request shows, in one comment, a slowed-down video of every E2E test it adds or changes, so
+the new behaviour can be watched instead of checked by hand. Locally:
+
+```bash
+npm run test:e2e:video                                   # tests changed since origin/main (incl. uncommitted)
+npm run test:e2e:video -- --mobile                       # also record on Pixel 5
+npm run test:e2e:video -- e2e/tests/invites/invites-and-guests.spec.ts   # every test of a file
+```
+
+The script (`scripts/e2e-changed-videos.mjs`) keeps the tests whose lines changed, runs them in the
+`demo` project (`E2E_DEMO=1`: 1280×800, `slowMo` 500 ms, clicks highlighted, the current step on
+screen) and writes `e2e-videos/<area>-<test-title>.webm`, plus `.mp4`/`.gif` when ffmpeg is
+installed. `E2E_DEMO_SLOWMO=800` slows it further. The normal `chromium`/`mobile-chrome` projects
+record nothing and are unchanged. See [testing](docs/knowledge/decisions/testing.md) for how CI
+publishes them.
+
 ### Mocking Strategy
 
 - **Firebase Auth**: `addInitScript` injects a session into IndexedDB before navigation
@@ -176,6 +195,7 @@ Runs on every push and pull request against `main`:
 - **Smart Path Filtering (`dorny/paths-filter@v3`)**: `npm run format:check` runs unconditionally on all commits. Linters, contract checks, build, and E2E tests are skipped when changes only touch markdown (`**/*.md`), completing CI in ~15 seconds.
 - **Quality Gate (`quality`)**: ESLint Flat Config, Stylelint SCSS/tokens, UI Contract validation, and Angular production build.
 - **E2E Testing (`e2e`)**: Runs downstream of `quality` (`needs: quality`) across Chromium and Mobile Chrome with browser and npm caching.
+- **E2E Videos (`e2e-videos`)**: On pull requests, records the added or changed tests in the slowed-down `demo` project and posts one PR comment with an inline GIF, an MP4 link and the `.webm` artifact per test (see [Videos of New and Changed Tests](#videos-of-new-and-changed-tests)).
 
 ### 2. Production CD Pipeline (`.github/workflows/cd.yml`)
 

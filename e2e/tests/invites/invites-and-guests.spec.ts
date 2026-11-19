@@ -86,6 +86,9 @@ test.describe('Invites, event states and guests', () => {
     const titles = page.locator('.event-summary-card__title');
     // "Todos" lists only what is still to come; the event that started is under "Realizados".
     await expect(titles).toHaveText(['Em três dias', 'Daqui a meses']);
+    // The same heading as on Início, with how many are listed.
+    await expect(page.locator('#dashboard-list-title')).toContainText('Próximos eventos');
+    await expect(page.getByTestId('dashboard-list-count')).toHaveText('2');
     await expect(card('Em três dias').getByTestId('event-status')).toHaveText('Em breve');
     await expect(card('Daqui a meses').getByTestId('event-status')).toHaveText('Agendado');
     // The banner skips the event that already started.
@@ -94,10 +97,32 @@ test.describe('Invites, event states and guests', () => {
     await page.getByTestId('status-filter-past-chip').locator('button').click();
     await expect(titles).toHaveText(['Hoje mais cedo']);
     await expect(card('Hoje mais cedo').getByTestId('event-status')).toHaveText('Realizado');
+    await expect(page.locator('#dashboard-list-title')).toContainText('Eventos realizados');
+    await expect(page.getByTestId('dashboard-list-count')).toHaveText('1');
 
     await page.getByTestId('status-filter-scheduled-chip').locator('button').click();
     await page.getByTestId('status-filter-past-chip').locator('button').click();
     await expect(titles).toHaveText(['Daqui a meses']);
+  });
+
+  test('Meus eventos with only past events says there is nothing created now', async ({ page }) => {
+    await asGuest(page, [
+      buildGuestEvent({
+        id: 'evt-old',
+        title: 'Festa antiga',
+        date: inDays(-30),
+        createdBy: GUEST_UID,
+        guests: [],
+        items: [],
+      }),
+    ]);
+    await page.goto('/meus-eventos');
+
+    await expect(page.getByTestId('dashboard-list-count')).toHaveText('0');
+    await expect(page.getByText('Você não tem eventos criados no momento.')).toBeVisible();
+    await expect(page.getByText(/Realizados/).filter({ hasText: 'já aconteceram' })).toHaveCount(0);
+    await page.getByTestId('status-filter-past-chip').locator('button').click();
+    await expect(page.locator('.event-summary-card__title')).toHaveText(['Festa antiga']);
   });
 
   test('an event that already happened can no longer be edited', async ({ page }) => {

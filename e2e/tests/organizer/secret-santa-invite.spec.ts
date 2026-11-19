@@ -204,4 +204,146 @@ test.describe('Amigo oculto pelo convite', () => {
     );
     await expect(page.getByTestId('rsvp-santa-person-0')).toHaveCount(0);
   });
+
+  test('a relative without a phone joins with the guest phone; companions too', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'maria-uid',
+      email: 'maria@organizaai.test',
+      displayName: 'Maria Souza',
+      events: [christmasEvent({ enabled: true, giftOptions: false })],
+      familyMembers: [{ id: 'vo', name: 'Vó Ana', relationship: 'parent', createdAt: '' }],
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    await page.getByTestId('rsvp-action-btn').locator('button').click();
+    const drawer = page.getByTestId('rsvp-drawer');
+    const family = drawer.getByTestId('family-selector');
+    await family.locator('mat-expansion-panel-header').click();
+    await family.getByRole('checkbox', { name: /Vó Ana/ }).check();
+    const companions = drawer.getByTestId('companion-selector');
+    await companions.getByText('Levar acompanhantes?').click();
+    await companions.getByRole('button', { name: 'Novo acompanhante' }).click();
+    await companions.getByLabel('Nome do acompanhante').fill('Bia');
+    await companions.getByRole('button', { name: 'Adicionar' }).click();
+
+    // Only who goes is asked about: Maria, then the relative, then the companion.
+    const santa = drawer.getByTestId('rsvp-santa');
+    await expect(santa.getByTestId('rsvp-santa-person-1')).toContainText('Vó Ana');
+    await expect(santa.getByTestId('rsvp-santa-person-2')).toContainText('Bia (acompanhante)');
+    await santa.getByTestId('rsvp-santa-person-1').locator('input').check();
+    await santa.getByTestId('rsvp-santa-person-2').locator('input').check();
+    await drawer.getByTestId('rsvp-confirm-btn').locator('button').click();
+    await expect(page.getByTestId('rsvp-drawer')).toHaveCount(0);
+
+    await expect
+      .poll(async () => ((await readStore(page))[PARTICIPANTS] ?? []).map((p) => p.id).sort())
+      .toEqual(['rsvp_maria-uid_c_bia', 'rsvp_maria-uid_f_vo']);
+    const store = (await readStore(page))[PARTICIPANTS];
+    expect(store.find((p) => p.id === 'rsvp_maria-uid_f_vo')).toMatchObject({
+      name: 'Vó Ana',
+      phone: '(11) 99999-9999',
+      guestId: 'maria-uid_vo',
+      joinedBy: 'maria-uid',
+    });
+    expect(store.find((p) => p.id === 'rsvp_maria-uid_c_bia')).toMatchObject({
+      name: 'Bia',
+      phone: '(11) 99999-9999',
+      joinedBy: 'maria-uid',
+    });
+  });
+
+  test('someone who declined joins only the amigo oculto later', async ({ page }) => {
+    await setupMockAuthSession(page, {
+      uid: 'tia-uid',
+      email: 'tia@organizaai.test',
+      displayName: 'Tia Lurdes',
+      events: [christmasEvent({ enabled: true, giftOptions: false })],
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    await page.getByTestId('rsvp-decline-btn').locator('button').click();
+    await page.getByTestId('rsvp-decline-send-btn').locator('button').click();
+    await expect(page.getByTestId('rsvp-card')).toContainText('Você recusou este convite');
+    expect((await readStore(page))[PARTICIPANTS] ?? []).toEqual([]);
+
+    await page.getByTestId('rsvp-santa-join-btn').click();
+    const form = page.getByTestId('rsvp-santa-join-form');
+    await expect(form.locator('input[data-testid="rsvp-santa-phone"]')).toHaveValue(
+      '(11) 99999-9999',
+    );
+    await page.getByTestId('rsvp-santa-join-send-btn').click();
+
+    await expect(page.getByTestId('rsvp-santa-status')).toHaveText(
+      'Você está no amigo oculto, mesmo sem ir.',
+    );
+    await expect
+      .poll(async () => (await readStore(page))[PARTICIPANTS]?.map((p) => p.id))
+      .toEqual(['rsvp_tia-uid']);
+  });
+
+  test('two people with the same name stay apart when the organizer says so', async ({ page }) => {
+    await setupMockAuthSession(page, {
+      uid: 'organizer-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent({ enabled: true, giftOptions: false })],
+      collections: {
+        [PARTICIPANTS]: [
+          { id: 'm1', name: 'Ana Souza', phone: '', giftOptions: [], createdAt: '1' },
+          {
+            id: 'rsvp_ana',
+            name: 'Ana Souza',
+            phone: '(11) 96666-3333',
+            giftOptions: [],
+            guestId: 'ana',
+            joinedBy: 'ana',
+            createdAt: '2',
+          },
+        ],
+      },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+    const card = page.getByTestId('secret-santa-card');
+
+    const doubtful = card.getByTestId('secret-santa-duplicate');
+    await expect(doubtful).toHaveCount(1);
+    await doubtful.getByTestId('secret-santa-distinct-btn').click();
+    await expect(doubtful).toHaveCount(0);
+    // Both stay, and the pair is not pointed out again.
+    await expect
+      .poll(async () => {
+        const list = (await readStore(page))[PARTICIPANTS];
+        return {
+          ids: list.map((p) => p.id),
+          marked: list.flatMap((p) => (p['distinctFrom'] as string[] | undefined) ?? []),
+        };
+      })
+      .toEqual({ ids: ['m1', 'rsvp_ana'], marked: [expect.any(String)] });
+    await expect(card).toContainText('2 participantes, 1 pelo convite');
+  });
+
+  test('a guest waiting for approval joins the draw only after being approved', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'primo-uid',
+      email: 'primo@organizaai.test',
+      displayName: 'Primo Carlos',
+      events: [
+        {
+          ...christmasEvent({ enabled: true, giftOptions: false }),
+          requireApproval: true,
+        },
+      ],
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    await page.getByTestId('rsvp-action-btn').locator('button').click();
+    await expect(page.getByTestId('rsvp-santa-closed')).toContainText(
+      'Você entra no amigo oculto depois que quem organiza aprovar a sua presença',
+    );
+    await expect(page.getByTestId('rsvp-santa-person-0')).toHaveCount(0);
+  });
 });

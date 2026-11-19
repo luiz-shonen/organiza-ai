@@ -169,6 +169,10 @@ test.describe('Amigo oculto', () => {
 
     const links = card.getByTestId('secret-santa-links');
     await expect(links.locator('li')).toHaveCount(3);
+    // What to do when a link shows as opened but the person says it was not them.
+    await expect(card.getByTestId('secret-santa-leak-hint')).toContainText(
+      'Então alguém viu o resultado: sorteie de novo. Quem tem conta só abre o link entrando nela.',
+    );
     // The owner sees whom to send each link to, never who drew whom: one name per row.
     const luizRow = links.locator('li').filter({ hasText: 'Luiz' });
     await expect(luizRow).not.toContainText('Jéssica');
@@ -355,6 +359,10 @@ test.describe('Amigo oculto', () => {
     await expect(expired).toContainText('Ele só podia ser aberto uma vez');
     await expect(expired).toContainText('peça um novo link para quem organiza o evento');
     await expect(page.getByTestId('secret-santa-receiver')).toHaveCount(0);
+    // A forwarded link someone else opened first: the giver learns to ask for a new draw.
+    await expect(page.getByTestId('secret-santa-not-me')).toContainText(
+      'Não foi você que abriu? Então alguém viu o seu resultado',
+    );
     await page.screenshot({ path: 'e2e/screenshots/secret-santa-expired.png' });
   });
 

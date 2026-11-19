@@ -117,6 +117,31 @@ test.describe('Aprovar quem confirma pelo link', () => {
     expect(mine?.['approved']).toBe(false);
   });
 
+  test('on Início, a confirmation still waiting is not shown nor counted as confirmed', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'primo-uid',
+      email: 'primo@organizaai.test',
+      displayName: 'Primo Carlos',
+      events: [party({ requireApproval: true }, [approved, waiting])],
+      userProfile: {
+        id: 'primo-uid',
+        name: 'Primo Carlos',
+        phone: '(11) 97777-0000',
+        rsvpEvents: [EVENT_ID],
+        invitedEvents: [EVENT_ID],
+      },
+    });
+    await page.goto('/');
+
+    const envelope = page.locator('app-invite-envelope').filter({ hasText: 'Aniversário da vó' });
+    await expect(envelope.getByTestId('event-status')).toHaveText('Aguardando aprovação');
+    await expect(page.getByTestId('home-hero')).toContainText('Você tem 0 eventos confirmados');
+    await expect(page.getByTestId('next-event-banner')).toHaveCount(0);
+    await envelope.screenshot({ path: 'e2e/screenshots/approval-home-waiting.png' });
+  });
+
   test('the organizer approves or refuses each waiting confirmation', async ({ page }) => {
     const another: MockDocument = {
       ...waiting,

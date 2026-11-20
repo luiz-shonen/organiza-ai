@@ -9,6 +9,26 @@
   }
   <!-- A line break in the message starts a new line. -->
   <p class="org-banner__message">{{ message() }}</p>
+  @if (actionLabel(); as label) {
+    <org-button
+      class="org-banner__action org-banner__action--wide"
+      variant="text"
+      testId="org-banner-action"
+      [label]="label"
+      [icon]="actionIcon()"
+      [compact]="true"
+      (pressed)="action.emit()"
+    />
+    <org-icon-button
+      class="org-banner__action org-banner__action--phone"
+      testId="org-banner-action-phone"
+      variant="primary"
+      [icon]="actionIcon() ?? 'undo'"
+      [ariaLabel]="label"
+      [tooltip]="label"
+      (pressed)="action.emit()"
+    />
+  }
   @if (dismissLabel(); as label) {
     <org-icon-button
       class="org-banner__dismiss"

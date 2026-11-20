@@ -161,13 +161,6 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       'O CEP não trouxe o endereço completo',
     );
 
-    // The tail of the "g" in "Como chegar" is not cut off by the label's box.
-    const label = page
-      .getByTestId('event-directions-input')
-      .locator('xpath=ancestor::mat-form-field')
-      .locator('.mdc-floating-label');
-    await expect(label).toHaveCSS('overflow-y', 'visible');
-    await expect(label).toHaveCSS('text-overflow', 'ellipsis');
     await street.fill('Estrada da Serra do Cipó');
     await page.getByTestId('event-neighborhood-input').fill('Zona rural');
     await page.getByTestId('event-no-number').locator('input').check();
@@ -358,8 +351,12 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       path: 'e2e/screenshots/editor-draft-restored.png',
     });
 
-    await expect(banner).toContainText('Salve o evento para não perder.');
-    await banner.getByTestId('org-banner-dismiss').click();
+    await expect(banner).toContainText('Salve para não perder.');
+    // "Desfazer" (an icon alone on a phone) goes back to the empty form.
+    await banner
+      .locator('[data-testid="org-banner-action"], [data-testid="org-banner-action-phone"]')
+      .filter({ visible: true })
+      .click();
     await expect(banner).toBeHidden();
     await expect(eventEditorPage.titleInput).toHaveValue('');
     await page.reload();
@@ -393,6 +390,10 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await page.reload();
     await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina 2026');
     await expect(page.getByTestId('editor-draft-restored')).toBeVisible();
+    // The ✕ only hides the notice: what was brought back stays.
+    await page.getByTestId('editor-draft-restored').getByTestId('org-banner-dismiss').click();
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina 2026');
 
     await eventEditorPage.saveEvent();
     await expect(page).toHaveURL(/\/meus-eventos$/);

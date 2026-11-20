@@ -205,7 +205,7 @@ export class EventEditorContainer implements OnInit {
     const day = savedAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
     const time = savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     const when = `${day} às ${time}`;
-    return `Recuperamos o que você estava preenchendo (${when}).\nSalve o evento para não perder.`;
+    return `Recuperamos o que você estava preenchendo (${when}).\nSalve para não perder.`;
   });
 
   /** Confirmed guests, their relatives and companions not yet in the amigo oculto. */
@@ -809,7 +809,10 @@ export class EventEditorContainer implements OnInit {
     void this.router.navigate(['/meus-eventos']);
   }
 
-  /** "Descartar": back to the event as saved (or an empty form), and the draft is forgotten. */
+  /**
+   * "Desfazer": back to the event as saved (or an empty form), and the draft is forgotten.
+   * The ✕ of the banner only hides it; what was brought back stays.
+   */
   protected discardDraft(): void {
     if (this.draftBaseline) this.applyDraft(this.draftBaseline);
     this.dropDraft();

@@ -44,9 +44,12 @@
         icon="history"
         class="editor__draft-banner"
         data-testid="editor-draft-restored"
-        dismissLabel="Descartar o que foi recuperado"
+        actionLabel="Desfazer"
+        actionIcon="undo"
+        dismissLabel="Fechar aviso"
         [message]="message"
-        (dismissed)="discardDraft()"
+        (action)="discardDraft()"
+        (dismissed)="restoredDraftAt.set(null)"
       />
     }
 

@@ -43,7 +43,8 @@
   box-shadow: var(--org-shadow-sm);
   color: var(--org-invite-on-seal);
   display: flex;
-  font: var(--org-font-weight-regular) 1.7rem / 1 var(--org-font-script);
+  font: var(--org-font-weight-regular) var(--org-font-size-script-md) / var(--org-line-height-none)
+    var(--org-font-script);
   inline-size: 52px;
   inset-block-start: 78px;
   inset-inline-start: 50%;
@@ -81,8 +82,9 @@
 
 .invite-envelope__to {
   color: var(--org-invite-ink);
-  font: var(--org-font-weight-semibold) var(--org-font-size-xs) / 1.2 var(--org-font-body);
-  letter-spacing: 0.08em;
+  font: var(--org-font-weight-semibold) var(--org-font-size-xs) / var(--org-line-height-tight)
+    var(--org-font-body);
+  letter-spacing: var(--org-letter-spacing-label);
   text-transform: uppercase;
 }
 

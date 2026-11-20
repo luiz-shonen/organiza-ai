@@ -24,6 +24,10 @@
     --org-font-size-display: clamp(2.25rem, 5vw, 4.5rem);
     --org-font-size-heading: clamp(1.625rem, 3vw, 2.5rem);
 
+    // The handwritten lines of an invitation (greeting, signature, seal), in --org-font-script.
+    --org-font-size-script-lg: 2.25rem;
+    --org-font-size-script-md: 1.75rem;
+
     // Font weights
     --org-font-weight-regular: 400;
     --org-font-weight-medium: 500;
@@ -45,6 +49,7 @@
     --org-letter-spacing-snug: -0.01em;
     --org-letter-spacing-wide: 0.04em;
     --org-letter-spacing-label: 0.12em;
+    --org-letter-spacing-ornament: 0.4em;
 
     // Composite text styles for the `font` shorthand. Prettier wraps these after the
     // size/line-height slash, which the SCSS operator rule misreads as division.

@@ -32,7 +32,8 @@
 
 .event-card__greeting {
   color: var(--org-invite-ink);
-  font: var(--org-font-weight-regular) 2.25rem / 1.1 var(--org-font-script);
+  font: var(--org-font-weight-regular) var(--org-font-size-script-lg) / var(--org-line-height-tight)
+    var(--org-font-script);
   margin: var(--org-space-xs) 0 0;
 }
 
@@ -52,7 +53,7 @@
 
 .event-card__ornament {
   color: var(--org-invite-ink);
-  letter-spacing: 0.4em;
+  letter-spacing: var(--org-letter-spacing-ornament);
   margin: 0;
 }
 
@@ -68,13 +69,14 @@
 .event-card__date-side {
   color: var(--org-invite-muted);
   font-size: var(--org-font-size-xs);
-  letter-spacing: 0.12em;
+  letter-spacing: var(--org-letter-spacing-label);
   text-transform: uppercase;
 }
 
 .event-card__date-day {
   color: var(--org-invite-ink);
-  font: var(--org-font-weight-semibold) 2.5rem / 1 var(--org-font-display);
+  font: var(--org-font-weight-semibold) var(--org-font-size-4xl) / var(--org-line-height-none)
+    var(--org-font-display);
 }
 
 .event-card__description {
@@ -86,7 +88,8 @@
 
 .event-card__signature {
   color: var(--org-invite-text);
-  font: var(--org-font-weight-regular) 1.75rem / 1.2 var(--org-font-script);
+  font: var(--org-font-weight-regular) var(--org-font-size-script-md) / var(--org-line-height-snug)
+    var(--org-font-script);
   margin: var(--org-space-sm) 0 0;
 }
 

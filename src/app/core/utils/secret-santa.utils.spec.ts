@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  giftSearchLinks,
   buildSecretSantaMessage,
   buildSecretSantaRevealUrl,
   buildSecretSantaWhatsAppUrl,
@@ -108,6 +109,22 @@ describe('secret santa sharing', () => {
     expect(message).toContain(
       'Se precisar, peça um novo link a Luiz, que organiza o evento. Você continua com a mesma pessoa.',
     );
+  });
+
+  it('searches a gift idea on Mercado Livre and Amazon', () => {
+    expect(giftSearchLinks('  Chinelo, cor verde,  tamanho 36 ')).toEqual([
+      {
+        store: 'Mercado Livre',
+        icon: '/icons/mercado-livre.svg',
+        url: 'https://lista.mercadolivre.com.br/Chinelo%2C-cor-verde%2C-tamanho-36',
+      },
+      {
+        store: 'Amazon',
+        icon: '/icons/amazon.svg',
+        url: 'https://www.amazon.com.br/s?k=Chinelo%2C%20cor%20verde%2C%20tamanho%2036',
+      },
+    ]);
+    expect(giftSearchLinks('   ')).toEqual([]);
   });
 
   it('opens the chat with the participant when the phone is valid', () => {

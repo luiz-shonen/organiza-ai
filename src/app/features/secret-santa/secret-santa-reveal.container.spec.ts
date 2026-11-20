@@ -115,6 +115,16 @@ describe('SecretSantaRevealContainer', () => {
     expect(el().textContent).toContain('Natal 2026 da família');
     expect(byTestId('secret-santa-receiver')?.textContent).toContain('Luiz');
     expect(byTestId('secret-santa-gifts')?.textContent).toContain('Chinelo, cor verde, tamanho 36');
+    // Each idea can be looked up on Mercado Livre and Amazon, in a new tab.
+    const searches = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLAnchorElement>(
+        '[data-testid="secret-santa-gift-search"]',
+      ),
+    );
+    expect(searches.map((link) => link.textContent?.trim())).toEqual(['Mercado Livre', 'Amazon']);
+    expect(searches[0].href).toContain('lista.mercadolivre.com.br/Chinelo');
+    expect(searches[1].href).toContain('amazon.com.br/s?k=Chinelo');
+    expect(searches[1].target).toBe('_blank');
     expect(confetti.fireCelebration).toHaveBeenCalledTimes(1);
   });
 

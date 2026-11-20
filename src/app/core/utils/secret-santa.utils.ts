@@ -253,3 +253,32 @@ export function buildRsvpSecretSantaEntries(params: {
     ];
   });
 }
+
+/** A store where a gift idea can be looked up: its name, its mark and the search address. */
+export interface GiftSearchLink {
+  readonly store: 'Mercado Livre' | 'Amazon';
+  readonly icon: string;
+  readonly url: string;
+}
+
+/**
+ * Searches for a gift idea ("Chinelo, cor verde, tamanho 36") on Mercado Livre and Amazon:
+ * plain links that open each store's search, like "Adicionar ao calendário" opens Google's.
+ */
+export function giftSearchLinks(idea: string): GiftSearchLink[] {
+  const text = idea.trim().replace(/\s+/g, ' ');
+  if (!text) return [];
+  return [
+    {
+      store: 'Mercado Livre',
+      icon: '/icons/mercado-livre.svg',
+      // Mercado Livre's own search pages read the words joined by hyphens.
+      url: `https://lista.mercadolivre.com.br/${encodeURIComponent(text.replace(/ /g, '-'))}`,
+    },
+    {
+      store: 'Amazon',
+      icon: '/icons/amazon.svg',
+      url: `https://www.amazon.com.br/s?k=${encodeURIComponent(text)}`,
+    },
+  ];
+}

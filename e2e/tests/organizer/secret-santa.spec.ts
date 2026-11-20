@@ -365,6 +365,17 @@ test.describe('Amigo oculto', () => {
     await expect(page.getByTestId('secret-santa-gifts')).toContainText(
       'Chinelo, cor verde, tamanho 36',
     );
+    // Each idea can be searched on Mercado Livre and Amazon.
+    const searches = page.getByTestId('secret-santa-gift-search');
+    await expect(searches).toHaveCount(2);
+    await expect(searches.first()).toHaveAttribute(
+      'href',
+      'https://lista.mercadolivre.com.br/Chinelo%2C-cor-verde%2C-tamanho-36',
+    );
+    await expect(searches.first().locator('img')).toHaveJSProperty('complete', true);
+    await page
+      .getByTestId('secret-santa-gifts')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-gift-search.png' });
     await expect(page.locator('canvas').first()).toBeAttached(); // canvas-confetti
     await page.screenshot({ path: 'e2e/screenshots/secret-santa-reveal.png' });
 

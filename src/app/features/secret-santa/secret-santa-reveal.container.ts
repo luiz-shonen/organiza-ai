@@ -15,6 +15,7 @@ import {
   SecretSantaService,
 } from '../../core/services';
 import { secretSantaNotificationId, type SecretSantaReveal } from '../../core/models';
+import { giftSearchLinks } from '../../core/utils/secret-santa.utils';
 import {
   OrgButtonComponent,
   OrgEmptyStateComponent,
@@ -55,6 +56,8 @@ function isPermissionError(error: unknown): boolean {
 })
 export class SecretSantaRevealContainer {
   public readonly token = input.required<string>();
+  /** "Mercado Livre" and "Amazon" searches for a gift idea. */
+  protected readonly searchLinks = giftSearchLinks;
 
   private readonly secretSantaService = inject(SecretSantaService);
   private readonly confetti = inject(ConfettiService);

@@ -70,6 +70,17 @@
         }
       </span>
     </a>
+    @if (event().addressDetails?.directions; as directions) {
+      <div class="event-card__row" data-testid="event-directions">
+        <span class="event-card__row-icon">
+          <org-icon name="directions" color="currentColor" />
+        </span>
+        <span class="event-card__row-text">
+          <span class="event-card__row-title">Como chegar</span>
+          <span class="event-card__row-sub event-card__directions">{{ directions }}</span>
+        </span>
+      </div>
+    }
   </org-surface>
 
   <div class="event-card__host">

@@ -27,9 +27,12 @@ describe('EventAddressStepComponent', () => {
     form = new FormGroup({
       cep: required(),
       address: required(),
-      neighborhood: required(),
+      neighborhood: new FormControl('', { nonNullable: true }),
       city: required(),
       number: required(),
+      noNumber: new FormControl(false, { nonNullable: true }),
+      complement: new FormControl('', { nonNullable: true }),
+      directions: new FormControl('', { nonNullable: true }),
     });
     fixture = TestBed.createComponent(EventAddressStepComponent);
     fixture.componentRef.setInput('form', form);
@@ -47,7 +50,42 @@ describe('EventAddressStepComponent', () => {
 
     form.patchValue({ cep: '01001-000', number: '10' });
     fixture.detectChanges();
-    expect(message()).toContain('Não encontramos a rua desse CEP');
+    expect(message()).toContain('Digite o CEP completo para buscarmos o endereço.');
+  });
+
+  const input = (testId: string) =>
+    el().querySelector(`[data-testid="${testId}"]`) as HTMLInputElement | HTMLTextAreaElement;
+
+  it('locks the fields until the CEP fills them', () => {
+    expect(input('event-street-input').readOnly).toBe(true);
+    expect(input('event-city-input').readOnly).toBe(true);
+    expect(el().querySelector('[data-testid="event-address-partial"]')).toBeNull();
+  });
+
+  it('opens what a rural CEP did not bring, and says so', () => {
+    form.patchValue({ cep: '35830-000', city: 'Jaboticatubas/MG', number: '1' });
+    fixture.componentRef.setInput('found', { address: false, neighborhood: false, city: true });
+    fixture.detectChanges();
+
+    expect(input('event-street-input').readOnly).toBe(false);
+    expect(input('event-neighborhood-input').readOnly).toBe(false);
+    expect(input('event-city-input').readOnly).toBe(true);
+    expect(el().querySelector('[data-testid="event-address-partial"]')?.textContent).toContain(
+      'O CEP não trouxe o endereço completo',
+    );
+    expect(el().textContent).toContain('Bairro (opcional)');
+
+    pressNext();
+    expect(message()).toContain('Para continuar, preencha o endereço.');
+  });
+
+  it('ticks "Sem número" into the form, and shows the complement and directions', () => {
+    const box = el().querySelector('[data-testid="event-no-number"] input') as HTMLInputElement;
+    box.click();
+    fixture.detectChanges();
+    expect(form.controls.noNumber.value).toBe(true);
+    expect(input('event-complement-input')).toBeTruthy();
+    expect(input('event-directions-input')).toBeTruthy();
   });
 
   it('moves on when everything is filled', () => {
@@ -59,6 +97,9 @@ describe('EventAddressStepComponent', () => {
       neighborhood: 'Sé',
       city: 'São Paulo/SP',
       number: '10',
+      noNumber: false,
+      complement: '',
+      directions: '',
     });
     pressNext();
     expect(moved).toHaveLength(1);

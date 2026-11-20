@@ -60,7 +60,21 @@
 
 // Filled by ViaCEP: visible but not editable.
 .event-step__locked {
+  cursor: not-allowed;
   opacity: 0.6;
+}
+
+// "Número" with "Sem número" right below it.
+.event-step__number {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+
+  // Right under the field, over the room Material keeps for its hint line.
+  org-checkbox {
+    justify-self: start;
+    margin-block-start: calc(-1 * var(--org-space-md));
+  }
 }
 
 .event-step__locked-note {

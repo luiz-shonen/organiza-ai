@@ -120,6 +120,125 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(eventEditorPage.nextStepBtns.filter({ visible: true }).first()).toBeEnabled();
   });
 
+  test('a rural CEP opens the street to type, with "Sem número", complement and directions', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    // A rural CEP: ViaCEP knows only the city.
+    await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          cep: '35830-000',
+          logradouro: '',
+          complemento: '',
+          bairro: '',
+          localidade: 'Jaboticatubas',
+          uf: 'MG',
+        }),
+      });
+    });
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+    await eventEditorPage.fillBasicInfo(
+      'Churrasco no sítio',
+      '25/12/2026',
+      'Churrasco de fim de ano na roça.',
+      '12:00',
+    );
+
+    const city = page.getByTestId('event-city-input');
+    const street = page.getByTestId('event-street-input');
+    // Before the CEP, nothing can be typed in the address.
+    await expect(street).not.toBeEditable();
+    await eventEditorPage.cepInput.fill('35830000');
+    await expect(city).toHaveValue('Jaboticatubas/MG');
+    await expect(city).not.toBeEditable();
+    await expect(city).toHaveCSS('cursor', 'not-allowed');
+    await expect(street).toBeEditable();
+    await expect(page.getByTestId('event-address-partial')).toContainText(
+      'O CEP não trouxe o endereço completo',
+    );
+
+    await street.fill('Estrada da Serra do Cipó');
+    await page.getByTestId('event-no-number').locator('input').check();
+    await expect(eventEditorPage.numberInput).toHaveValue('S/N');
+    await expect(eventEditorPage.numberInput).toBeDisabled();
+    await page.getByTestId('event-complement-input').fill('Km 12, sítio Boa Vista');
+    await page
+      .getByTestId('event-directions-input')
+      .fill('Depois da ponte, entre na estrada de terra à direita. Portão azul.');
+    await page
+      .getByTestId('event-editor-step-2')
+      .screenshot({ path: 'e2e/screenshots/address-rural.png' });
+
+    // Endereço, Itens and Amigo oculto, then save on Pix.
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.saveEvent();
+    // A new event opens its share screen.
+    await expect(page).toHaveURL(/\/meus-eventos\/evento\/[^/]+$/);
+    const saved = await page.evaluate(() =>
+      (
+        window as unknown as {
+          __MOCK_DOCUMENTS__: Record<string, { id: string; title?: string }[]>;
+        }
+      ).__MOCK_DOCUMENTS__['events'].find((event) => event.title === 'Churrasco no sítio'),
+    );
+    expect(saved).toMatchObject({
+      location: 'Estrada da Serra do Cipó, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra do Cipó',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12, sítio Boa Vista',
+        directions: 'Depois da ponte, entre na estrada de terra à direita. Portão azul.',
+      },
+    });
+  });
+
+  test('the invite shows a rural address with its complement, and how to get there', async ({
+    page,
+  }) => {
+    const rural = {
+      ...mockSampleEvents[0],
+      id: 'event-rural',
+      title: 'Churrasco no sítio',
+      location: 'Estrada da Serra do Cipó, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra do Cipó',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12, sítio Boa Vista',
+        directions: 'Depois da ponte, entre na estrada de terra à direita.\nPortão azul.',
+      },
+    };
+    await setupMockAuthSession(page, {
+      uid: 'test-organizer-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [rural],
+    });
+    await page.goto('/evento/event-rural');
+
+    const location = page.getByTestId('event-location');
+    await expect(location).toContainText('Estrada da Serra do Cipó, S/N, Km 12, sítio Boa Vista');
+    await expect(location).toContainText('Jaboticatubas/MG · 35830-000');
+    const directions = page.getByTestId('event-directions');
+    await expect(directions).toContainText('Como chegar');
+    await expect(directions).toContainText('Portão azul.');
+    await page
+      .locator('app-event-card org-surface')
+      .filter({ has: location })
+      .screenshot({ path: 'e2e/screenshots/address-rural-invite.png' });
+  });
+
   test.describe('below 600px', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

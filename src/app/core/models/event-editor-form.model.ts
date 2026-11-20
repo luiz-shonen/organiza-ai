@@ -14,7 +14,17 @@ export type EventAddressForm = FormGroup<{
   neighborhood: FormControl<string>;
   city: FormControl<string>;
   number: FormControl<string>;
+  /** "Sem número": the number reads S/N and cannot be typed. */
+  noNumber: FormControl<boolean>;
+  complement: FormControl<string>;
+  directions: FormControl<string>;
 }>;
+
+/**
+ * Which address fields the CEP lookup filled. Those stay locked; the others (a rural CEP has
+ * no street, often no neighbourhood) are typed by the organizer. Null until a full CEP is known.
+ */
+export type AddressFound = Readonly<{ address: boolean; neighborhood: boolean; city: boolean }>;
 
 export type EventPixForm = FormGroup<{
   pixKey: FormControl<string>;

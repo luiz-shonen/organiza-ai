@@ -1,4 +1,8 @@
-<mat-form-field appearance="outline" class="org-text-field">
+<mat-form-field
+  appearance="outline"
+  class="org-text-field"
+  [class.org-text-field--readonly]="readOnly()"
+>
   <mat-label>{{ label() }}</mat-label>
   <input
     matInput

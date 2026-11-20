@@ -23,6 +23,7 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { formatCep, hasStarted, parseLocation, splitGuestsByApproval } from '../../../core/utils';
 import {
   AddressNumber,
@@ -37,6 +38,9 @@ import {
   valueObjectValidator,
 } from '../../../core/value-objects';
 import {
+  ADDRESS_COMPLEMENT_MAX,
+  ADDRESS_DIRECTIONS_MAX,
+  AddressFound,
   EVENT_CATEGORIES,
   Guest,
   NewPartyItem,
@@ -45,6 +49,7 @@ import {
   SecretSantaParticipant,
   SecretSantaParticipantInput,
   SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+  ViaCepResponse,
 } from '../../../core/models';
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
@@ -215,10 +220,18 @@ export class EventEditorContainer implements OnInit {
   protected readonly addressForm = this.fb.nonNullable.group({
     cep: ['', [requiredText, valueObjectValidator(Cep.validate)]],
     address: ['', [requiredText]],
-    neighborhood: ['', [requiredText]],
+    // Optional: a rural CEP often has no neighbourhood, and then the organizer may leave it out.
+    neighborhood: [''],
     city: ['', [requiredText]],
     number: ['', [requiredText, valueObjectValidator(AddressNumber.validate)]],
+    noNumber: [false],
+    complement: ['', [Validators.maxLength(ADDRESS_COMPLEMENT_MAX)]],
+    directions: ['', [Validators.maxLength(ADDRESS_DIRECTIONS_MAX)]],
   });
+  /** Which fields the CEP filled (locked); null until a full CEP was looked up. */
+  protected readonly addressFound = signal<AddressFound | null>(null);
+  /** "Sem número" as the step shows it: ticked, and whether it can be changed. */
+  protected readonly noNumberState = signal({ checked: false, disabled: false });
 
   protected readonly pixForm = this.fb.nonNullable.group({
     pixKey: ['', [valueObjectValidator(PixKey.validate)]],
@@ -232,15 +245,10 @@ export class EventEditorContainer implements OnInit {
         distinctUntilChanged(),
         switchMap((cep) => this.locationService.getViaCep(cep)),
       )
-      .subscribe((res) => {
-        if (res && !res.erro) {
-          this.addressForm.patchValue({
-            address: res.logradouro || '',
-            neighborhood: res.bairro || '',
-            city: res.localidade && res.uf ? `${res.localidade}/${res.uf}` : '',
-          });
-        }
-      });
+      .subscribe((res) => this.applyCepLookup(res));
+    this.addressForm.controls.noNumber.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.syncNoNumber());
 
     const eventId = this.id();
     if (eventId && eventId !== 'novo') {
@@ -271,15 +279,17 @@ export class EventEditorContainer implements OnInit {
             });
 
             // Older events only have the one-line location; split it into the fields.
-            const details = event.addressDetails?.address
-              ? event.addressDetails
-              : parseLocation(event.location);
+            const saved = event.addressDetails;
+            const details = saved?.address || saved?.city ? saved : parseLocation(event.location);
             this.addressForm.patchValue({
               cep: details.cep || '',
               address: details.address || '',
               number: details.number || '',
               neighborhood: details.neighborhood || '',
               city: details.city || '',
+              noNumber: details.number === 'S/N',
+              complement: saved?.complement ?? '',
+              directions: saved?.directions ?? '',
             });
 
             this.pixForm.patchValue({
@@ -318,6 +328,7 @@ export class EventEditorContainer implements OnInit {
               this.addressForm.enable();
               this.pixForm.enable();
             }
+            this.syncNoNumber();
           }
           this.loading.set(false);
         },
@@ -423,6 +434,8 @@ export class EventEditorContainer implements OnInit {
       number,
       neighborhood,
       city,
+      complement: rawAddress.complement.trim(),
+      directions: rawAddress.directions.trim(),
     };
 
     const location = fullAddress || '';
@@ -721,6 +734,48 @@ export class EventEditorContainer implements OnInit {
           this.feedback.error('Erro ao cancelar evento.');
         }
       });
+  }
+
+  /**
+   * What ViaCEP found fills its field and stays locked; what it did not (a rural CEP has no
+   * street) opens for the organizer to type. A CEP it does not know opens every field.
+   */
+  private applyCepLookup(res: ViaCepResponse | null): void {
+    if (this.addressForm.controls.cep.value.replace(/\D/g, '').length !== 8) {
+      this.addressFound.set(null);
+      return;
+    }
+    const found = {
+      address: res?.logradouro?.trim() ?? '',
+      neighborhood: res?.bairro?.trim() ?? '',
+      city: res?.localidade && res.uf ? `${res.localidade}/${res.uf}` : '',
+    };
+    const before = this.addressFound();
+    const patch: Partial<Record<keyof AddressFound, string>> = {};
+    for (const key of ['address', 'neighborhood', 'city'] as const) {
+      if (found[key]) patch[key] = found[key];
+      // A field the previous CEP filled is cleared; one the organizer typed is kept.
+      else if (before?.[key]) patch[key] = '';
+    }
+    this.addressForm.patchValue(patch);
+    this.addressFound.set({
+      address: !!found.address,
+      neighborhood: !!found.neighborhood,
+      city: !!found.city,
+    });
+  }
+
+  /** "Sem número" ticked: the number reads S/N and is not typed; unticked, it is typed again. */
+  private syncNoNumber(): void {
+    const { noNumber, number } = this.addressForm.controls;
+    if (noNumber.value) {
+      number.setValue('S/N', { emitEvent: false });
+      number.disable({ emitEvent: false });
+    } else if (number.disabled && noNumber.enabled) {
+      number.enable({ emitEvent: false });
+      if (number.value === 'S/N') number.setValue('');
+    }
+    this.noNumberState.set({ checked: noNumber.value, disabled: noNumber.disabled });
   }
 
   protected formatCep(value: string): void {

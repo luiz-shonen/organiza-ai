@@ -11,6 +11,13 @@
   width: 100%;
 }
 
+// Read-only: no caret and a "not allowed" pointer, so it is clear the text cannot be typed.
+.org-text-field--readonly input {
+  caret-color: transparent;
+  cursor: not-allowed;
+  user-select: none;
+}
+
 .org-text-field__error {
   color: var(--org-error);
   font-size: var(--org-font-size-xs);

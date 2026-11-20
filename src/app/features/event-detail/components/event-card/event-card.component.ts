@@ -71,12 +71,15 @@ export class EventCardComponent {
     return `${day.charAt(0).toUpperCase()}${day.slice(1)} · ${time}`;
   });
 
-  /** Street on the first line, neighbourhood, city and CEP below it. */
+  /** Street, number and complement on the first line; neighbourhood, city and CEP below. */
   protected readonly address = computed(() => {
     const ev = this.event();
     const details = ev.addressDetails;
-    if (details?.address) {
-      const street = [details.address, details.number].filter(Boolean).join(', ');
+    // A rural CEP may give no street, only the city: the saved fields still win over the line.
+    if (details?.address || details?.city) {
+      const street = [details.address, details.number, details.complement]
+        .filter(Boolean)
+        .join(', ');
       const rest = [details.neighborhood, details.city, details.cep].filter(Boolean).join(' · ');
       return { street, rest };
     }

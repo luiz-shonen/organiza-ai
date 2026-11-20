@@ -189,4 +189,39 @@ describe('event fields', () => {
       setDoc(doc(db, 'events/event-2'), { ...event, description: 'x'.repeat(2001) }),
     );
   });
+
+  it('takes a rural address: no street from the CEP, S/N, a complement and directions', async () => {
+    await seed(`admins/${adminEmail}`, { email: adminEmail });
+    const db = testEnvironment.authenticatedContext('admin-1', { email: adminEmail }).firestore();
+    const addressDetails = {
+      cep: '35830-000',
+      address: 'Estrada da Serra do Cipó',
+      number: 'S/N',
+      neighborhood: '',
+      city: 'Jaboticatubas/MG',
+      complement: 'Km 12, sítio Boa Vista',
+      directions: 'Depois da ponte, estrada de terra à direita. Portão azul.',
+    };
+    const event = { title: 'Churrasco no sítio', addressDetails };
+
+    await assertSucceeds(setDoc(doc(db, 'events/event-1'), event));
+    await assertFails(
+      setDoc(doc(db, 'events/event-2'), {
+        ...event,
+        addressDetails: { ...addressDetails, complement: 'x'.repeat(81) },
+      }),
+    );
+    await assertFails(
+      setDoc(doc(db, 'events/event-2'), {
+        ...event,
+        addressDetails: { ...addressDetails, directions: 'x'.repeat(301) },
+      }),
+    );
+    await assertFails(
+      setDoc(doc(db, 'events/event-2'), {
+        ...event,
+        addressDetails: { ...addressDetails, mapPin: 'x' },
+      }),
+    );
+  });
 });

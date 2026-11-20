@@ -16,7 +16,7 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { MatStepper } from '@angular/material/stepper';
 import { By } from '@angular/platform-browser';
-import { PartyEvent } from '../../../core/models';
+import { PartyEvent, ViaCepResponse } from '../../../core/models';
 import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 
 vi.mock('qrcode', () => ({
@@ -178,6 +178,9 @@ describe('EventEditorContainer', () => {
         number: '100',
         neighborhood: 'Centro',
         city: 'São Paulo/SP',
+        noNumber: false,
+        complement: '',
+        directions: '',
       });
       expect(component['missingSteps']()).toEqual([]);
 
@@ -287,6 +290,105 @@ describe('EventEditorContainer', () => {
       expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')).toBeTruthy();
     });
 
+    describe('a rural address', () => {
+      const lookup = (cep: string, found: Partial<ViaCepResponse> | null) => {
+        component['addressForm'].controls.cep.setValue(cep, { emitEvent: false });
+        component['applyCepLookup'](
+          found
+            ? { cep, logradouro: '', complemento: '', bairro: '', localidade: '', uf: '', ...found }
+            : null,
+        );
+      };
+
+      it('locks what the CEP filled and opens what it did not', () => {
+        expect(component['addressFound']()).toBeNull();
+        lookup('35830-000', { localidade: 'Jaboticatubas', uf: 'MG' });
+
+        expect(component['addressForm'].getRawValue()).toMatchObject({
+          address: '',
+          neighborhood: '',
+          city: 'Jaboticatubas/MG',
+        });
+        expect(component['addressFound']()).toEqual({
+          address: false,
+          neighborhood: false,
+          city: true,
+        });
+      });
+
+      it('keeps what the organizer typed, and clears what the last CEP filled', () => {
+        lookup('30514-160', {
+          logradouro: 'Rua Dom Lara',
+          bairro: 'Vista Alegre',
+          localidade: 'Belo Horizonte',
+          uf: 'MG',
+        });
+        lookup('35830-000', { localidade: 'Jaboticatubas', uf: 'MG' });
+        expect(component['addressForm'].getRawValue()).toMatchObject({
+          address: '',
+          neighborhood: '',
+          city: 'Jaboticatubas/MG',
+        });
+
+        component['addressForm'].patchValue({ address: 'Estrada da Serra' });
+        lookup('35830-000', { localidade: 'Jaboticatubas', uf: 'MG' });
+        expect(component['addressForm'].controls.address.value).toBe('Estrada da Serra');
+      });
+
+      it('opens every field for a CEP the lookup does not know', () => {
+        lookup('99999-999', null);
+        expect(component['addressFound']()).toEqual({
+          address: false,
+          neighborhood: false,
+          city: false,
+        });
+      });
+
+      it('"Sem número" saves S/N, with the complement and directions', async () => {
+        const form = component['addressForm'];
+        form.controls.noNumber.setValue(true);
+        expect(form.controls.number.disabled).toBe(true);
+        expect(form.controls.number.value).toBe('S/N');
+        expect(component['noNumberState']()).toEqual({ checked: true, disabled: false });
+
+        component['basicInfoForm'].setValue({
+          title: 'Churrasco no sítio',
+          category: 'Outros',
+          description: '',
+          date: new Date(Date.now() + 7 * 86_400_000),
+          time: '12:00',
+        });
+        form.patchValue({
+          cep: '35830-000',
+          address: 'Estrada da Serra do Cipó',
+          city: 'Jaboticatubas/MG',
+          complement: ' Km 12, sítio Boa Vista ',
+          directions: 'Depois da ponte, à direita.',
+        });
+        expect(form.valid).toBe(true);
+        await component['saveEvent']();
+
+        expect(mockEventService.createEvent).toHaveBeenCalledWith(
+          expect.objectContaining({
+            location: 'Estrada da Serra do Cipó, S/N - Jaboticatubas/MG - CEP: 35830-000',
+            addressDetails: {
+              cep: '35830-000',
+              address: 'Estrada da Serra do Cipó',
+              number: 'S/N',
+              neighborhood: '',
+              city: 'Jaboticatubas/MG',
+              complement: 'Km 12, sítio Boa Vista',
+              directions: 'Depois da ponte, à direita.',
+            },
+          }),
+        );
+
+        form.controls.noNumber.setValue(false);
+        expect(form.controls.number.enabled).toBe(true);
+        expect(form.controls.number.value).toBe('');
+      });
+    });
+
     it('keeps items typed during creation and saves them with the new event', async () => {
       await component['addItem']({
         name: 'Pipoca',
@@ -309,7 +411,7 @@ describe('EventEditorContainer', () => {
         date,
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514-160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',
@@ -366,7 +468,7 @@ describe('EventEditorContainer', () => {
         date,
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514-160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',
@@ -393,7 +495,7 @@ describe('EventEditorContainer', () => {
         date: new Date(Date.now() + 7 * 86_400_000),
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514-160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',
@@ -416,7 +518,7 @@ describe('EventEditorContainer', () => {
         date,
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',

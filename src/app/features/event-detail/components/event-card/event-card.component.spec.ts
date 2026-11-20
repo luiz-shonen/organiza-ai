@@ -53,6 +53,31 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(text).toContain('Vista Alegre · Belo Horizonte/MG · 30514-160');
   });
 
+  it('shows a rural address with its complement, and how to get there', () => {
+    expect(element().querySelector('[data-testid="event-directions"]')).toBeNull();
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      location: 'Estrada da Serra, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12',
+        directions: 'Depois da ponte, à direita.',
+      },
+    });
+    fixture.detectChanges();
+
+    const text = element().querySelector('.event-card__location-text')?.textContent ?? '';
+    expect(text).toContain('Estrada da Serra, S/N, Km 12');
+    expect(text).toContain('Jaboticatubas/MG · 35830-000');
+    expect(element().querySelector('[data-testid="event-directions"]')?.textContent).toContain(
+      'Depois da ponte, à direita.',
+    );
+  });
+
   it('shows the category, falling back to "Evento"', () => {
     expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
       'Evento',

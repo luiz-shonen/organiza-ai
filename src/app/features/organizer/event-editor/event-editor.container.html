@@ -73,6 +73,8 @@
           <org-step [label]="stepLabels[1]" [stepControl]="addressForm">
             <app-event-address-step
               [form]="addressForm"
+              [found]="addressFound()"
+              [noNumber]="noNumberState()"
               (cepInput)="formatCep($event)"
               (back)="stepper.previous()"
               (next)="stepper.next()"

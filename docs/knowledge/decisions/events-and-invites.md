@@ -93,6 +93,15 @@ How the app behaves for organizers and guests. Data and permissions are in
   opening `/meus-eventos/evento/{id}` of such an event goes back to its page with "Este evento já
   aconteceu e não pode mais ser editado." Organizers still use the rest of the page (the draw,
   links). The rules do not block it: the owner still writes the event (e.g. closing sign-ups).
+- **Endereço comes from the CEP, and what the CEP lacks is typed.** Endereço, Bairro and Cidade/UF
+  are locked (read-only, a lock icon, a "not allowed" pointer, no caret) until a full CEP is looked
+  up. What ViaCEP fills stays locked; what it leaves empty opens to type, with "O CEP não trouxe o
+  endereço completo" above: a rural CEP (e.g. 35830-000, Jaboticatubas/MG) brings only the city,
+  and a CEP ViaCEP does not know opens all three. Changing the CEP clears what the last CEP filled
+  but keeps what the organizer typed. Bairro is optional. "Sem número" saves the number as "S/N".
+  "Complemento" (80 characters, "Km 12, sítio Boa Vista") follows the number on the event page,
+  and "Como chegar" (300) shows below the address for places a map does not find well. The rules
+  cap each field of `addressDetails`.
 
 ## Invites look like invites
 

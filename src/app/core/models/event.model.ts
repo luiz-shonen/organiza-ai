@@ -6,7 +6,15 @@ export interface AddressDetails {
   number?: string;
   neighborhood?: string;
   city?: string;
+  /** "Km 12, sítio Boa Vista": what the street and number do not say. */
+  complement?: string;
+  /** "Como chegar": directions for places a map does not find well, such as rural ones. */
+  directions?: string;
 }
+
+/** Sizes of the optional address fields, in the editor and the rules. */
+export const ADDRESS_COMPLEMENT_MAX = 80;
+export const ADDRESS_DIRECTIONS_MAX = 300;
 
 export type PixType = 'cpf' | 'cnpj' | 'email' | 'phone' | 'random' | string;
 

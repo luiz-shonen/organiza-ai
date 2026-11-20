@@ -38,7 +38,10 @@
             testId="event-no-number"
             [checked]="noNumber().checked"
             [disabled]="noNumber().disabled"
-            (checkedChange)="addressForm.controls.noNumber.setValue($event)"
+            (checkedChange)="
+              addressForm.controls.noNumber.setValue($event);
+              addressForm.controls.noNumber.markAsDirty()
+            "
           />
         </div>
       </div>

@@ -7,8 +7,13 @@ import {
   input,
   OnInit,
   DestroyRef,
+  effect,
+  untracked,
 } from '@angular/core';
+import { merge } from 'rxjs';
+import { FormDraftService } from '../../../core/services/form-draft.service';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
 import {
   EventService,
@@ -109,6 +114,7 @@ function saveErrorMessage(error: unknown): string {
     EventPixStepComponent,
     EventSecretSantaStepComponent,
     OrgBannerComponent,
+    DatePipe,
     OrgButtonComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
@@ -184,6 +190,14 @@ export class EventEditorContainer implements OnInit {
   private secretSantaLoaded = false;
   private itemsLoaded = false;
 
+  private readonly drafts = inject(FormDraftService);
+  /** Bumped on every change in the three forms, so the draft effect sees typing. */
+  private readonly formTick = signal(0);
+  /** The editor as it was before the draft was applied: what "Descartar" goes back to. */
+  private draftBaseline: EventEditorDraft | null = null;
+  /** When the draft that was brought back had been saved; null when none was. */
+  protected readonly restoredDraftAt = signal<Date | null>(null);
+
   /** Confirmed guests, their relatives and companions not yet in the amigo oculto. */
   protected readonly secretSantaSuggestions = computed<SecretSantaSuggestion[]>(() => {
     const taken = new Set(this.stepParticipants().map((p) => p.guestId ?? ''));
@@ -247,7 +261,25 @@ export class EventEditorContainer implements OnInit {
     pixKey: ['', [valueObjectValidator(PixKey.validate)]],
   });
 
+  constructor() {
+    // What is typed is kept in this browser for three days, so a reload does not lose it.
+    effect(() => {
+      this.formTick();
+      this.requireApproval();
+      this.itemsEnabled();
+      this.draftItems();
+      this.secretSantaEnabled();
+      this.secretSantaGiftOptions();
+      this.secretSantaMaxGifts();
+      this.draftParticipants();
+      untracked(() => this.persistDraft());
+    });
+  }
+
   ngOnInit(): void {
+    merge(this.basicInfoForm.valueChanges, this.addressForm.valueChanges, this.pixForm.valueChanges)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.formTick.update((tick) => tick + 1));
     // ViaCEP listener
     this.addressForm.controls.cep.valueChanges
       .pipe(
@@ -340,6 +372,8 @@ export class EventEditorContainer implements OnInit {
               this.pixForm.enable();
             }
             this.syncNoNumber();
+            // The first time the owner opens it: bring back what they had typed and not saved.
+            if (isEventOwner && !this.draftBaseline) this.startDraft();
           }
           this.loading.set(false);
         },
@@ -377,6 +411,8 @@ export class EventEditorContainer implements OnInit {
         participantsSub.unsubscribe();
         guestsSub.unsubscribe();
       });
+    } else {
+      this.startDraft();
     }
   }
 
@@ -483,10 +519,12 @@ export class EventEditorContainer implements OnInit {
       const eventId = this.id();
       if (this.isEditing() && eventId) {
         await this.eventService.updateEvent(eventId, eventData);
+        this.dropDraft();
         this.feedback.success('Evento atualizado!');
         await this.router.navigate(['/meus-eventos']);
       } else {
         const newId = await this.eventService.createEvent(eventData);
+        this.dropDraft();
         for (const item of this.draftItems()) {
           await this.itemService.addItem(newId, item);
         }
@@ -723,7 +761,106 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected cancelEditing(): void {
+    // "Cancelar" is a choice to leave without saving: the draft goes too.
+    this.dropDraft();
     void this.router.navigate(['/meus-eventos']);
+  }
+
+  /** "Descartar": back to the event as saved (or an empty form), and the draft is forgotten. */
+  protected discardDraft(): void {
+    if (this.draftBaseline) this.applyDraft(this.draftBaseline);
+    this.dropDraft();
+    this.basicInfoForm.markAsPristine();
+    this.addressForm.markAsPristine();
+    this.pixForm.markAsPristine();
+  }
+
+  /** Where this editor's draft is kept: per account and per event ("novo" while creating). */
+  private draftKey(): string {
+    const uid = this.authService.currentUser()?.uid ?? 'anon';
+    const eventId = this.id();
+    return `event:${uid}:${eventId && eventId !== 'novo' ? eventId : 'novo'}`;
+  }
+
+  /** Remembers the editor as loaded, then applies a draft kept from an earlier visit. */
+  private startDraft(): void {
+    this.draftBaseline = this.draftSnapshot();
+    const stored = this.drafts.load<EventEditorDraft>(this.draftKey());
+    if (stored) {
+      this.applyDraft(stored.value);
+      // It holds what was typed and not saved: it stays a draft until saved or discarded.
+      this.basicInfoForm.markAsDirty();
+      this.addressForm.markAsDirty();
+      this.pixForm.markAsDirty();
+      this.restoredDraftAt.set(new Date(stored.savedAt));
+    }
+  }
+
+  /**
+   * Keeps the editor in the browser while the organizer changed it from how it was loaded.
+   * Fields only count once typed in (dirty): the CEP lookup filling them is not a change.
+   */
+  private persistDraft(): void {
+    const baseline = this.draftBaseline;
+    if (!baseline) return;
+    const snapshot = this.draftSnapshot();
+    const typed = this.basicInfoForm.dirty || this.addressForm.dirty || this.pixForm.dirty;
+    const compared = (draft: EventEditorDraft) =>
+      JSON.stringify(typed ? draft : { ...draft, basicInfo: null, address: null, pixKey: null });
+    if (compared(snapshot) === compared(baseline)) {
+      this.drafts.clear(this.draftKey());
+    } else {
+      this.drafts.save(this.draftKey(), snapshot);
+    }
+  }
+
+  private dropDraft(): void {
+    this.drafts.clear(this.draftKey());
+    this.restoredDraftAt.set(null);
+    this.draftBaseline = this.draftSnapshot();
+  }
+
+  private draftSnapshot(): EventEditorDraft {
+    const basic = this.basicInfoForm.getRawValue();
+    const day = (date: Date | null) =>
+      date instanceof Date && !isNaN(date.getTime()) ? date.toISOString() : null;
+    return {
+      basicInfo: { ...basic, date: day(basic.date), endDate: day(basic.endDate) },
+      address: this.addressForm.getRawValue(),
+      pixKey: this.pixForm.getRawValue().pixKey,
+      requireApproval: this.requireApproval(),
+      // Editing, items are saved as they are added, and the list loads on its own time.
+      itemsEnabled: this.isEditing() ? false : this.itemsEnabled(),
+      items: this.isEditing() ? [] : this.draftItems(),
+      secretSanta: {
+        enabled: this.secretSantaEnabled(),
+        giftOptions: this.secretSantaGiftOptions(),
+        maxGiftOptions: this.secretSantaMaxGifts(),
+      },
+      participants: this.isEditing() ? [] : this.draftParticipants(),
+    };
+  }
+
+  private applyDraft(draft: EventEditorDraft): void {
+    const day = (iso: string | null) => (iso ? new Date(iso) : null);
+    this.basicInfoForm.patchValue({
+      ...draft.basicInfo,
+      date: day(draft.basicInfo.date),
+      endDate: day(draft.basicInfo.endDate),
+    });
+    // The CEP first: its lookup locks what it fills, and the rest keeps what was typed.
+    this.addressForm.patchValue(draft.address);
+    this.pixForm.patchValue({ pixKey: draft.pixKey });
+    this.requireApproval.set(draft.requireApproval);
+    this.secretSantaEnabled.set(draft.secretSanta.enabled);
+    this.secretSantaGiftOptions.set(draft.secretSanta.giftOptions);
+    this.secretSantaMaxGifts.set(draft.secretSanta.maxGiftOptions);
+    if (!this.isEditing()) {
+      this.itemsEnabled.set(draft.itemsEnabled);
+      this.draftItems.set([...draft.items]);
+      this.draftParticipants.set([...draft.participants]);
+    }
+    this.syncNoNumber();
   }
 
   protected async cancelEvent(): Promise<void> {
@@ -799,4 +936,32 @@ export class EventEditorContainer implements OnInit {
       this.addressForm.controls.cep.setValue(formattedValue);
     }
   }
+}
+
+/** What the editor keeps in the browser between visits (dates as ISO text). */
+interface EventEditorDraft {
+  basicInfo: {
+    title: string;
+    category: string;
+    description: string;
+    date: string | null;
+    endDate: string | null;
+    time: string;
+  };
+  address: {
+    cep: string;
+    address: string;
+    neighborhood: string;
+    city: string;
+    number: string;
+    noNumber: boolean;
+    complement: string;
+    directions: string;
+  };
+  pixKey: string;
+  requireApproval: boolean;
+  itemsEnabled: boolean;
+  items: NewPartyItem[];
+  secretSanta: { enabled: boolean; giftOptions: boolean; maxGiftOptions: number };
+  participants: SecretSantaParticipantInput[];
 }

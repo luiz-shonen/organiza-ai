@@ -38,6 +38,28 @@
       }
     </org-page-header>
 
+    @if (restoredDraftAt(); as savedAt) {
+      <org-banner
+        variant="info"
+        icon="history"
+        class="editor__draft-banner"
+        data-testid="editor-draft-restored"
+        [message]="
+          'Recuperamos o que você estava preenchendo (salvo ' +
+          (savedAt | date: 'dd/MM \'às\' HH:mm') +
+          '). Salve o evento para não perder.'
+        "
+      >
+        <org-button
+          label="Descartar"
+          variant="text"
+          testId="editor-draft-discard"
+          [compact]="true"
+          (pressed)="discardDraft()"
+        />
+      </org-banner>
+    }
+
     @if (isEditing() && !isOwner()) {
       <org-banner
         variant="info"

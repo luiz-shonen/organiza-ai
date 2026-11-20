@@ -139,12 +139,14 @@ export class EventBasicInfoStepComponent {
     const control = this.form().controls.category;
     control.setValue(category);
     control.markAsTouched();
+    control.markAsDirty();
   }
 
   protected clearCategory(): void {
     const control = this.form().controls.category;
     control.setValue('');
     control.markAsTouched();
+    control.markAsDirty();
   }
 
   private isPreset(value: string): boolean {

@@ -90,6 +90,8 @@ describe('EventEditorContainer', () => {
       removeCollaborator: vi.fn().mockResolvedValue(undefined),
     };
 
+    // Drafts live in localStorage: each test starts without one.
+    localStorage.clear();
     mockItemService = {
       listItems: vi.fn().mockReturnValue(of([])),
       addItem: vi.fn().mockResolvedValue('item-1'),
@@ -268,6 +270,64 @@ describe('EventEditorContainer', () => {
       component = fixture.componentInstance;
       fixture.componentRef.setInput('id', 'novo');
       fixture.detectChanges();
+    });
+
+    describe('a draft kept in the browser', () => {
+      const reopen = () => {
+        fixture.destroy();
+        fixture = TestBed.createComponent(EventEditorContainer);
+        component = fixture.componentInstance;
+        fixture.componentRef.setInput('id', 'novo');
+        fixture.detectChanges();
+      };
+      const type = (title: string) => {
+        const control = component['basicInfoForm'].controls.title;
+        control.setValue(title);
+        control.markAsDirty();
+        fixture.detectChanges();
+      };
+
+      it('brings back what was typed after a reload, with items, until discarded', async () => {
+        expect(component['restoredDraftAt']()).toBeNull();
+        type('Natal da família');
+        component['basicInfoForm'].patchValue({ date: new Date(2099, 11, 24) });
+        await component['addItem']({ name: 'Farofa', quantity: 1 });
+        fixture.detectChanges();
+
+        reopen();
+        expect(component['basicInfoForm'].controls.title.value).toBe('Natal da família');
+        expect(component['basicInfoForm'].controls.date.value).toEqual(new Date(2099, 11, 24));
+        expect(component['draftItems']().map((item) => item.name)).toEqual(['Farofa']);
+        expect(component['restoredDraftAt']()).toBeInstanceOf(Date);
+        expect(
+          (fixture.nativeElement as HTMLElement).querySelector(
+            '[data-testid="editor-draft-restored"]',
+          ),
+        ).toBeTruthy();
+
+        component['discardDraft']();
+        fixture.detectChanges();
+        expect(component['basicInfoForm'].controls.title.value).toBe('');
+        expect(component['draftItems']()).toEqual([]);
+        reopen();
+        expect(component['restoredDraftAt']()).toBeNull();
+      });
+
+      it('keeps nothing when the form was only opened, or after "Cancelar"', () => {
+        reopen();
+        expect(component['restoredDraftAt']()).toBeNull();
+        type('Churrasco');
+        component['cancelEditing']();
+        reopen();
+        expect(component['basicInfoForm'].controls.title.value).toBe('');
+      });
+
+      it('is kept per account', () => {
+        type('Natal da família');
+        mockCurrentUserSignal.set({ uid: 'someone-else', email: 'other@test.com' });
+        reopen();
+        expect(component['basicInfoForm'].controls.title.value).toBe('');
+      });
     });
 
     it('should compute isOwner as true for new event creation', () => {

@@ -331,6 +331,57 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(page.locator('org-date-badge').first()).toContainText('23–25');
   });
 
+  test('a reload keeps what was being typed, until it is saved or discarded', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+    await eventEditorPage.titleInput.fill('Natal da família');
+    await eventEditorPage.descriptionInput.fill('Amigo oculto e ceia');
+    await eventEditorPage.dateInput.fill('24/12/2026');
+
+    await page.reload();
+    await eventEditorPage.assertLoaded();
+    const banner = page.getByTestId('editor-draft-restored');
+    await expect(banner).toContainText('Recuperamos o que você estava preenchendo');
+    await expect(eventEditorPage.titleInput).toHaveValue('Natal da família');
+    await expect(eventEditorPage.descriptionInput).toHaveValue('Amigo oculto e ceia');
+    await expect(eventEditorPage.dateInput).toHaveValue('24/12/2026');
+    await page.getByTestId('editor-draft-restored').screenshot({
+      path: 'e2e/screenshots/editor-draft-restored.png',
+    });
+
+    await page.getByTestId('editor-draft-discard').click();
+    await expect(banner).toBeHidden();
+    await expect(eventEditorPage.titleInput).toHaveValue('');
+    await page.reload();
+    await eventEditorPage.assertLoaded();
+    await expect(eventEditorPage.titleInput).toHaveValue('');
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+  });
+
+  test('editing an event, a reload keeps the change until it is saved', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.goto('/meus-eventos/evento/event-1');
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina da Comunidade');
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+    await eventEditorPage.titleInput.fill('Festa Junina 2026');
+
+    await page.reload();
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina 2026');
+    await expect(page.getByTestId('editor-draft-restored')).toBeVisible();
+
+    await eventEditorPage.saveEvent();
+    await expect(page).toHaveURL(/\/meus-eventos$/);
+    await page.goto('/meus-eventos/evento/event-1');
+    // The mock store starts over on navigation; what matters is that no draft is offered.
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina da Comunidade');
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+  });
+
   test.describe('below 600px', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

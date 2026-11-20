@@ -93,6 +93,12 @@ How the app behaves for organizers and guests. Data and permissions are in
   opening `/meus-eventos/evento/{id}` of such an event goes back to its page with "Este evento já
   aconteceu e não pode mais ser editado." Organizers still use the rest of the page (the draw,
   links). The rules do not block it: the owner still writes the event (e.g. closing sign-ups).
+- **A reload does not lose what is being typed.** The editor keeps a draft in the browser
+  (`FormDraftService`, localStorage, per account and per event, "novo" while creating) for three
+  days: the three forms, the switches and, while creating, the items and amigo oculto list. It
+  is kept only once the organizer typed or switched something (the CEP lookup filling fields
+  does not count). Opening the editor again brings it back with "Recuperamos o que você estava
+  preenchendo (salvo 20/11 às 15:05)" and **Descartar**. Saving or "Cancelar" drops it.
 - **An event may run over several days.** Step "Informações" has "Data de início" and an optional
   "Data de término"; empty (or the same day) is a one-day event, and a last day before the first
   one does not move on. It is saved as `endDate` ("2026-12-25") only when it is after the start

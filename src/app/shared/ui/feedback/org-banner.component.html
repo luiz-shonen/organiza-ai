@@ -8,4 +8,6 @@
     <org-icon class="org-banner__icon" [name]="icon" color="currentColor" />
   }
   <p class="org-banner__message">{{ message() }}</p>
+  <!-- An optional action ("Descartar") at the end of the banner. -->
+  <ng-content />
 </section>

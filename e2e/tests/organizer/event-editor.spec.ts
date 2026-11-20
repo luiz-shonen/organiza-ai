@@ -403,6 +403,28 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
   });
 
+  test('the back arrow returns to the screen before, not to a fixed parent', async ({ page }) => {
+    await page.goto('/meus-eventos');
+    await page.getByRole('link', { name: 'Ver detalhes de Festa Junina da Comunidade' }).click();
+    await expect(page).toHaveURL(/\/evento\/event-1$/);
+    await page.getByTestId('edit-event-btn').click();
+    await expect(page).toHaveURL(/\/meus-eventos\/evento\/event-1$/);
+
+    const back = page.getByTestId('header-back-btn');
+    await back.click();
+    await expect(page).toHaveURL(/\/evento\/event-1$/);
+    await back.click();
+    await expect(page).toHaveURL(/\/meus-eventos$/);
+  });
+
+  test('opened straight from a link, the editor arrow leads to the event page', async ({
+    page,
+  }) => {
+    await page.goto('/meus-eventos/evento/event-1');
+    await page.getByTestId('header-back-btn').click();
+    await expect(page).toHaveURL(/\/evento\/event-1$/);
+  });
+
   test.describe('below 600px', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

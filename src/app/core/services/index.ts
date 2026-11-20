@@ -22,3 +22,4 @@ export { SecretSantaService } from './secret-santa.service';
 export { FormDraftService } from './form-draft.service';
 export type { StoredDraft } from './form-draft.service';
 export { KnownPeopleService } from './known-people.service';
+export { NavigationHistoryService } from './navigation-history.service';

@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  * records nothing. scripts/e2e-changed-videos.mjs sets it; see docs/knowledge/decisions/testing.md.
  */
 const demo = !!process.env['E2E_DEMO'];
-const slowMo = Number(process.env['E2E_DEMO_SLOWMO'] ?? 500);
+const slowMo = Number(process.env['E2E_DEMO_SLOWMO'] ?? 1500);
 
 const desktopDemo = { width: 1280, height: 800 };
 const mobileDemo = devices['Pixel 5'].viewport;
@@ -29,7 +29,7 @@ const recorded = (size: { width: number; height: number }) => ({
 
 export default defineConfig({
   testDir: './e2e/tests',
-  timeout: (demo ? 5 * 60 : 45) * 1000,
+  timeout: (demo ? 10 * 60 : 45) * 1000,
   expect: {
     timeout: (demo ? 30 : 10) * 1000,
     toHaveScreenshot: {

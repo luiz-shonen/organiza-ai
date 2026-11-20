@@ -162,7 +162,7 @@ test('e2e-videos: videoName is <area>-<title>, readable and unique', () => {
 
 test('e2e-videos: buildComment embeds the GIF and links the MP4 and artifact', () => {
   const manifest = {
-    slowMo: 500,
+    slowMo: 1500,
     selected: 1,
     truncated: false,
     videos: [
@@ -196,6 +196,6 @@ test('e2e-videos: buildComment embeds the GIF and links the MP4 and artifact', (
 });
 
 test('e2e-videos: buildComment says so when no test changed', () => {
-  const body = buildComment({ slowMo: 500, selected: 0, truncated: false, videos: [] });
+  const body = buildComment({ slowMo: 1500, selected: 0, truncated: false, videos: [] });
   assert.match(body, /No test in `e2e\/tests\/` was added or changed/);
 });

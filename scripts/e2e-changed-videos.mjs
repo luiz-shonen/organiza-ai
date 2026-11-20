@@ -326,7 +326,7 @@ function record(options) {
       )
     : findChanges(options.base);
   const projects = ['--project=demo', ...(options.mobile ? ['--project=demo-mobile'] : [])];
-  const slowMo = Number(process.env['E2E_DEMO_SLOWMO'] ?? 500);
+  const slowMo = Number(process.env['E2E_DEMO_SLOWMO'] ?? 1500);
   const manifest = { slowMo, selected: 0, truncated: false, videos: [] };
 
   const specs = [...changes.keys()].filter((path) => path.endsWith('.spec.ts'));

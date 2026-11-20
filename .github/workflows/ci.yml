@@ -145,7 +145,7 @@ jobs:
     name: E2E Videos of Changed Tests
     needs: quality
     if: github.event_name == 'pull_request' && needs.quality.outputs.has_code_changes == 'true' && github.event.pull_request.head.repo.full_name == github.repository
-    timeout-minutes: 30
+    timeout-minutes: 60 # at slowMo 500 ms the job took ~10 min; 1500 ms makes each action 3x slower
     runs-on: ubuntu-latest
     permissions:
       contents: write # push the GIF/MP4 files to the e2e-videos branch

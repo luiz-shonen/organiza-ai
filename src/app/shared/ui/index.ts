@@ -10,7 +10,7 @@ export { OrgDateFieldComponent } from './forms/org-date-field.component';
 export { OrgTimeFieldComponent } from './forms/org-time-field.component';
 export type { OrgTimeOption } from './forms/org-time-field.component';
 export { OrgTextFieldComponent } from './forms/org-text-field.component';
-export type { OrgTextFieldType } from './forms/org-text-field.component';
+export type { OrgTextFieldType, OrgTextSuggestion } from './forms/org-text-field.component';
 export { OrgTextareaFieldComponent } from './forms/org-textarea-field.component';
 export { OrgSelectFieldComponent } from './forms/org-select-field.component';
 export type { OrgSelectOption } from './forms/org-select-field.component';

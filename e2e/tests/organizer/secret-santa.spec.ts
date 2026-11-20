@@ -68,6 +68,45 @@ function readStore(page: import('@playwright/test').Page) {
 }
 
 test.describe('Amigo oculto', () => {
+  test('typing a name offers people from my other events, with their phone', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    const lastYear = {
+      ...christmasEvent(),
+      id: 'natal-2025',
+      title: 'Natal 2025',
+      date: new Date(Date.now() - 86400000 * 330).toISOString(),
+      guests: [
+        {
+          id: 'guest-gustavo',
+          name: 'Gustavo Pereira',
+          phone: '(31) 99999-0000',
+          isConfirmed: true,
+          companions: [{ name: 'Bia' }],
+        },
+      ],
+    };
+    await setupMockAuthSession(page, {
+      uid: 'test-user-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent(), lastYear],
+    });
+    await page.goto(`/meus-eventos/evento/${EVENT_ID}`);
+    await eventEditorPage.openStep('Amigo oculto');
+    const step = page.getByTestId('event-editor-step-secret-santa');
+    await step.getByTestId('secret-santa-toggle').locator('button').click();
+
+    await step.getByTestId('santa-name-input').fill('gus');
+    const option = page.getByTestId('org-text-field-suggestion').filter({ hasText: 'Gustavo' });
+    await expect(option).toContainText('(31) 99999-0000');
+    await page.screenshot({ path: 'e2e/screenshots/secret-santa-known-people.png' });
+    await option.click();
+    await expect(step.getByTestId('santa-name-input')).toHaveValue('Gustavo Pereira');
+    await expect(step.getByTestId('santa-phone-input')).toHaveValue('(31) 99999-0000');
+  });
+
   test('the organizer turns it on in the editor and adds who takes part', async ({
     page,
     eventEditorPage,
@@ -114,18 +153,22 @@ test.describe('Amigo oculto', () => {
 
     await step.getByTestId('santa-name-input').fill('Vó Maria');
     await step.getByTestId('santa-phone-input').fill('11977772222');
-    // More than one gift option: one field each.
-    const gifts = step.getByTestId('santa-gift-input');
-    await gifts.nth(0).fill('Chinelo, cor verde, tamanho 36');
-    await gifts.nth(0).press('Enter');
-    await step
-      .getByTestId('santa-gift-list')
-      .screenshot({ path: 'e2e/screenshots/secret-santa-gift-fields.png' });
-    await expect(gifts).toHaveCount(2);
-    await gifts.nth(1).fill('Livro de receitas');
+    // Gift ideas: each one typed and added with Enter (or +) joins the list above the field.
+    const gift = step.getByTestId('santa-gift-input');
+    await gift.fill('Chinelo, cor verde, tamanho 36');
+    await gift.press('Enter');
+    await expect(step.getByTestId('santa-gift-item')).toHaveCount(1);
+    await expect(gift).toHaveValue('');
+    await expect(step.getByTestId('santa-gift-list')).toContainText('1 de 4');
+    // One still typed goes with the participant.
+    await gift.fill('Livro de receitas');
     await step
       .getByTestId('santa-gift-list')
       .screenshot({ path: 'e2e/screenshots/secret-santa-gift-options.png' });
+    await step
+      .locator('app-secret-santa-participant-form')
+      .first()
+      .screenshot({ path: 'e2e/screenshots/secret-santa-participant-form.png' });
     await step.getByTestId('santa-submit-btn').click();
 
     const list = step.getByTestId('secret-santa-participants');

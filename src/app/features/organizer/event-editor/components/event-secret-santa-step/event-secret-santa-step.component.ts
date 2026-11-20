@@ -1,3 +1,4 @@
+import type { KnownPerson } from '../../../../../core/utils/known-people.utils';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -69,6 +70,8 @@ export class EventSecretSantaStepComponent {
   public readonly canConfigure = input(true);
   public readonly participants = input<readonly SecretSantaParticipantInput[]>([]);
   public readonly suggestions = input<readonly SecretSantaSuggestion[]>([]);
+  /** People from the organizer's other events and family, offered while typing a name. */
+  public readonly knownPeople = input<readonly KnownPerson[]>([]);
   /** The draw already happened: changing the list asks for a new one. */
   public readonly drawn = input(false);
   /**

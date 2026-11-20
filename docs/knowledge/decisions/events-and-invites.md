@@ -98,7 +98,15 @@ How the app behaves for organizers and guests. Data and permissions are in
   days: the three forms, the switches and, while creating, the items and amigo oculto list. It
   is kept only once the organizer typed or switched something (the CEP lookup filling fields
   does not count). Opening the editor again brings it back with "Recuperamos o que você estava
-  preenchendo (salvo 20/11 às 15:05)" and **Descartar**. Saving or "Cancelar" drops it.
+  preenchendo (20/11 às 15:05)", only when it differs from the event as saved, with a discreet
+  ✕ that discards it. Saving or "Cancelar" drops it. The step the organizer was on is kept too:
+  a reload opens it (creating, only once the steps before it are filled in).
+- **Amigo oculto participants.** Typing a name offers people the organizer already knows
+  (`KnownPeopleService`): their family and the guests, companions and participants of up to 20
+  other events they own or help organize, never events they were only invited to. Picking one
+  fills the phone. Gift ideas are a list: one "Nova opção" field adds each with + or Enter,
+  each idea has a ✕, and one still typed goes with the participant. A failed add keeps what was
+  typed, and every error says why (`explainError`).
 - **An event may run over several days.** Step "Informações" has "Data de início" and an optional
   "Data de término"; empty (or the same day) is a one-day event, and a last day before the first
   one does not move on. It is saved as `endDate` ("2026-12-25") only when it is after the start

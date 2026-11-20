@@ -1,3 +1,5 @@
+import { KnownPeopleService } from '../../../core/services/known-people.service';
+import { personKey, type KnownPerson } from '../../../core/utils/known-people.utils';
 import { explainError } from '../../../core/utils/error.utils';
 import {
   Component,
@@ -14,7 +16,6 @@ import {
 import { merge } from 'rxjs';
 import { FormDraftService } from '../../../core/services/form-draft.service';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
 import {
   EventService,
@@ -103,7 +104,6 @@ import { DrawerService } from '../../../core/services/drawer.service';
     EventPixStepComponent,
     EventSecretSantaStepComponent,
     OrgBannerComponent,
-    DatePipe,
     OrgButtonComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
@@ -180,12 +180,33 @@ export class EventEditorContainer implements OnInit {
   private itemsLoaded = false;
 
   private readonly drafts = inject(FormDraftService);
+  private readonly knownPeopleService = inject(KnownPeopleService);
+  /** People the organizer knows from other events and family; read once the amigo oculto is on. */
+  private readonly knownPeopleAll = signal<KnownPerson[]>([]);
+  private knownPeopleRequested = false;
+  /** Those not in this amigo oculto yet. */
+  protected readonly knownPeople = computed(() => {
+    const taken = new Set(this.stepParticipants().map((p) => personKey(p.name)));
+    return this.knownPeopleAll().filter((person) => !taken.has(personKey(person.name)));
+  });
   /** Bumped on every change in the three forms, so the draft effect sees typing. */
   private readonly formTick = signal(0);
   /** The editor as it was before the draft was applied: what "Descartar" goes back to. */
   private draftBaseline: EventEditorDraft | null = null;
   /** When the draft that was brought back had been saved; null when none was. */
   protected readonly restoredDraftAt = signal<Date | null>(null);
+  /** The step is remembered only once the one from before the reload was brought back. */
+  private stepRestored = false;
+  private restoringStep = false;
+  /** "Recuperamos o que você estava preenchendo (20/11 às 15:55)." and, below, what to do. */
+  protected readonly draftMessage = computed(() => {
+    const savedAt = this.restoredDraftAt();
+    if (!savedAt) return '';
+    const day = savedAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    const time = savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const when = `${day} às ${time}`;
+    return `Recuperamos o que você estava preenchendo (${when}).\nSalve o evento para não perder.`;
+  });
 
   /** Confirmed guests, their relatives and companions not yet in the amigo oculto. */
   protected readonly secretSantaSuggestions = computed<SecretSantaSuggestion[]>(() => {
@@ -262,6 +283,24 @@ export class EventEditorContainer implements OnInit {
       this.secretSantaMaxGifts();
       this.draftParticipants();
       untracked(() => this.persistDraft());
+    });
+    // The people to offer are read the first time the amigo oculto is on, and only once.
+    effect(() => {
+      if (!this.secretSantaEnabled() || this.knownPeopleRequested) return;
+      const uid = this.authService.currentUser()?.uid;
+      if (!uid) return;
+      this.knownPeopleRequested = true;
+      void this.knownPeopleService
+        .list(uid, this.id() === 'novo' ? null : this.id())
+        .then((people) => this.knownPeopleAll.set(people))
+        .catch(() => undefined);
+    });
+    // Where the organizer is, so a reload opens the same step.
+    effect(() => {
+      const step = this.activeStepIndex();
+      untracked(() => {
+        if (this.stepRestored && !this.restoringStep) this.drafts.save(this.stepKey(), step);
+      });
     });
   }
 
@@ -793,9 +832,7 @@ export class EventEditorContainer implements OnInit {
     // A draft that matches the event as saved has nothing to bring back.
     if (stored && JSON.stringify(stored.value) === JSON.stringify(this.draftBaseline)) {
       this.drafts.clear(this.draftKey());
-      return;
-    }
-    if (stored) {
+    } else if (stored) {
       this.applyDraft(stored.value);
       // It holds what was typed and not saved: it stays a draft until saved or discarded.
       this.basicInfoForm.markAsDirty();
@@ -803,6 +840,29 @@ export class EventEditorContainer implements OnInit {
       this.pixForm.markAsDirty();
       this.restoredDraftAt.set(new Date(stored.savedAt));
     }
+    this.restoreStep();
+  }
+
+  /**
+   * Back on the step the organizer was on before the reload. Creating an event, a step opens
+   * only when the ones before it are filled in, as the stepper itself asks.
+   */
+  private restoreStep(): void {
+    const saved = this.drafts.load<number>(this.stepKey())?.value ?? 0;
+    const last = this.stepLabels.length - 1;
+    let step = Math.min(Math.max(Math.trunc(Number(saved)) || 0, 0), last);
+    if (!this.isEditing()) {
+      if (this.basicInfoForm.invalid) step = 0;
+      else if (this.addressForm.invalid) step = Math.min(step, 1);
+    }
+    this.restoringStep = true;
+    this.activeStepIndex.set(step);
+    this.restoringStep = false;
+    this.stepRestored = true;
+  }
+
+  private stepKey(): string {
+    return `${this.draftKey()}:step`;
   }
 
   /**
@@ -825,6 +885,7 @@ export class EventEditorContainer implements OnInit {
 
   private dropDraft(): void {
     this.drafts.clear(this.draftKey());
+    this.drafts.clear(this.stepKey());
     this.restoredDraftAt.set(null);
     this.draftBaseline = this.draftSnapshot();
   }

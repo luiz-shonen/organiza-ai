@@ -358,13 +358,27 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       path: 'e2e/screenshots/editor-draft-restored.png',
     });
 
-    await page.getByTestId('editor-draft-discard').click();
+    await expect(banner).toContainText('Salve o evento para não perder.');
+    await banner.getByTestId('org-banner-dismiss').click();
     await expect(banner).toBeHidden();
     await expect(eventEditorPage.titleInput).toHaveValue('');
     await page.reload();
     await eventEditorPage.assertLoaded();
     await expect(eventEditorPage.titleInput).toHaveValue('');
     await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+  });
+
+  test('a reload opens the step the organizer was on', async ({ page, eventEditorPage }) => {
+    await page.goto('/meus-eventos/evento/event-1');
+    await eventEditorPage.openStep('Amigo oculto');
+    await page.reload();
+    // The phone header names the step; wider screens the selected numbered header.
+    await expect(
+      page
+        .locator('.org-stepper__name, .mat-step-header[aria-selected="true"]')
+        .filter({ visible: true }),
+    ).toContainText('Amigo oculto');
+    await expect(page.getByTestId('event-editor-step-secret-santa')).toBeVisible();
   });
 
   test('editing an event, a reload keeps the change until it is saved', async ({

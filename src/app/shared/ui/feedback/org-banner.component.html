@@ -7,9 +7,16 @@
   @if (icon(); as icon) {
     <org-icon class="org-banner__icon" [name]="icon" color="currentColor" />
   }
-  <div class="org-banner__body">
-    <p class="org-banner__message">{{ message() }}</p>
-    <!-- An optional action ("Descartar"), on its own line under the message. -->
-    <div class="org-banner__actions"><ng-content /></div>
-  </div>
+  <!-- A line break in the message starts a new line. -->
+  <p class="org-banner__message">{{ message() }}</p>
+  @if (dismissLabel(); as label) {
+    <org-icon-button
+      class="org-banner__dismiss"
+      icon="close"
+      testId="org-banner-dismiss"
+      [ariaLabel]="label"
+      [tooltip]="label"
+      (pressed)="dismissed.emit()"
+    />
+  }
 </section>

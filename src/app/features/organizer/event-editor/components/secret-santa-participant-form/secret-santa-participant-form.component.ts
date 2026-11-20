@@ -13,19 +13,22 @@ import {
   SECRET_SANTA_MAX_GIFT_OPTIONS,
   type SecretSantaParticipantInput,
 } from '../../../../../core/models';
+import { type KnownPerson } from '../../../../../core/utils/known-people.utils';
 import { GiftOption, PersonName, Phone } from '../../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgIconButtonComponent,
   OrgTextFieldComponent,
+  type OrgTextSuggestion,
 } from '../../../../../shared/ui';
 
 /**
  * Name, phone and (when the event asks for them) gift options of one amigo oculto participant.
  * The "Amigo oculto" step uses it to add, and the edit sheet to change one.
  *
- * Gift options are a list of fields, one per option ("Opção 1", "Opção 2"…), so it is plain that
- * a person can suggest more than one; "Adicionar outra opção" (or Enter) opens the next field.
+ * Typing a name offers the people the organizer already knows (`knownPeople`); picking one
+ * brings their phone. Gift options are a short list: one field with "+" (or Enter) adds each
+ * idea under it, where it can be removed, as wish lists in gift-exchange apps do.
  */
 @Component({
   selector: 'app-secret-santa-participant-form',
@@ -41,6 +44,8 @@ export class SecretSantaParticipantFormComponent {
   public readonly showGiftOptions = input(false);
   /** How many options the organizer allows per person (1 to 10). */
   public readonly maxGiftOptions = input(SECRET_SANTA_MAX_GIFT_OPTIONS);
+  /** People to offer while typing the name; picking one fills in the phone. */
+  public readonly knownPeople = input<readonly KnownPerson[]>([]);
   public readonly submitLabel = input('Adicionar participante');
   public readonly cancelLabel = input<string | null>(null);
   public readonly testIdPrefix = input('santa');
@@ -52,19 +57,22 @@ export class SecretSantaParticipantFormComponent {
     ((participant: SecretSantaParticipantInput) => Promise<boolean>) | null
   >(null);
   public readonly submitted = output<SecretSantaParticipantInput>();
+  public readonly cancelled = output<void>();
   /** A save is running: the button waits. */
   protected readonly saving = signal(false);
-  public readonly cancelled = output<void>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly name = signal('');
   protected readonly phone = signal('');
-  /** One entry per gift field, empty ones included; always at least one field. */
-  protected readonly gifts = signal<readonly string[]>(['']);
+  /** The ideas already added, in order. */
+  protected readonly gifts = signal<readonly string[]>([]);
+  /** The idea being typed in "Nova opção", not added yet. */
+  protected readonly newGift = signal('');
   private readonly guestId = signal<string | undefined>(undefined);
 
   protected readonly showErrors = signal(false);
+  protected readonly newGiftError = signal('');
   protected readonly maskPhone = Phone.mask;
   protected readonly nameMaxLength = PersonName.MAX;
   protected readonly giftMaxLength = GiftOption.RULES.max;
@@ -78,64 +86,76 @@ export class SecretSantaParticipantFormComponent {
     this.showErrors() ? (Phone.validate(this.phone()) ?? '') : '',
   );
   protected readonly giftsFull = computed(() => this.gifts().length >= this.maxGiftOptions());
+  /** "1 de 3" beside the title, while more than one is allowed. */
+  protected readonly giftCount = computed(() =>
+    this.maxGiftOptions() > 1 ? `${this.gifts().length} de ${this.maxGiftOptions()}` : '',
+  );
+  /** Known people offered under "Nome" (the field filters them by what is typed). */
+  protected readonly nameSuggestions = computed<OrgTextSuggestion[]>(() =>
+    this.knownPeople().map((person) => ({ label: person.name, detail: person.phone })),
+  );
 
   constructor() {
     effect(() => this.load(this.participant()));
   }
 
-  /** The error of one gift field; an empty field is simply left out. */
-  protected giftError(index: number): string {
-    if (!this.showErrors()) return '';
-    const raw = this.gifts()[index] ?? '';
-    return raw.trim() ? (GiftOption.validate(raw) ?? '') : '';
+  /** A known person was picked: their phone comes along when the field is still empty. */
+  protected pickPerson(suggestion: OrgTextSuggestion): void {
+    if (suggestion.detail && !this.phone().trim()) this.phone.set(suggestion.detail);
   }
 
-  protected setGift(index: number, value: string): void {
-    this.gifts.update((list) => list.map((gift, i) => (i === index ? value : gift)));
+  /** Adds the typed idea to the list; an invalid one stays in the field with its error. */
+  protected addGift(): boolean {
+    const raw = this.newGift();
+    if (!raw.trim() || this.giftsFull()) return true;
+    const gift = GiftOption.create(raw);
+    if (!gift) {
+      this.newGiftError.set(GiftOption.validate(raw) ?? 'Opção inválida');
+      return false;
+    }
+    this.gifts.update((list) => [...list, gift.value]);
+    this.newGift.set('');
+    this.newGiftError.set('');
+    setTimeout(() =>
+      this.host.nativeElement
+        .querySelector<HTMLInputElement>('.santa-form__new-gift input')
+        ?.focus(),
+    );
+    return true;
   }
 
-  /** Opens one more gift field and puts the cursor in it. */
-  protected addGiftField(): void {
-    if (this.giftsFull()) return;
-    this.gifts.update((list) => [...list, '']);
-    setTimeout(() => {
-      const fields = this.host.nativeElement.querySelectorAll<HTMLInputElement>(
-        '.santa-form__gift-field input',
-      );
-      fields[fields.length - 1]?.focus();
-    });
+  protected setNewGift(value: string): void {
+    this.newGift.set(value);
+    if (this.newGiftError()) this.newGiftError.set('');
   }
 
   protected removeGift(index: number): void {
-    this.gifts.update((list) => {
-      const next = list.filter((_, i) => i !== index);
-      return next.length ? next : [''];
-    });
+    this.gifts.update((list) => list.filter((_, i) => i !== index));
   }
 
-  /** Enter in a gift field opens the next one instead of submitting the participant. */
+  /** Enter in "Nova opção" adds the idea instead of submitting the participant. */
   protected onEnter(event: Event): void {
     const target = event.target as HTMLElement | null;
-    if (!target?.closest('.santa-form__gift-field')) return;
+    if (!target?.closest('.santa-form__new-gift')) return;
     event.preventDefault();
-    if (this.gifts().every((gift) => gift.trim())) this.addGiftField();
+    this.addGift();
   }
 
   protected async submit(): Promise<void> {
     if (this.saving()) return;
+    // An idea typed but not added yet goes with the participant.
+    const pendingAdded = this.showGiftOptions() ? this.addGift() : true;
     const name = PersonName.create(this.name());
     const phoneText = this.phone().trim();
     const phone = phoneText ? Phone.create(phoneText) : null;
-    const typed = this.showGiftOptions() ? this.gifts().filter((gift) => gift.trim()) : [];
-    const options = typed.map((gift) => GiftOption.create(gift));
-    if (!name || (phoneText && !phone) || options.some((option) => !option)) {
+    if (!name || (phoneText && !phone) || !pendingAdded) {
       this.showErrors.set(true);
       return;
     }
     const participant: SecretSantaParticipantInput = {
       name: name.value,
       phone: phone?.formatted ?? '',
-      giftOptions: options.flatMap((option) => (option ? [option.value] : [])),
+      giftOptions: this.showGiftOptions() ? [...this.gifts()] : [],
       ...(this.guestId() ? { guestId: this.guestId() } : {}),
     };
     const save = this.save();
@@ -152,8 +172,9 @@ export class SecretSantaParticipantFormComponent {
   private load(participant: SecretSantaParticipantInput | null): void {
     this.name.set(participant?.name ?? '');
     this.phone.set(participant?.phone ?? '');
-    const gifts = participant?.giftOptions ?? [];
-    this.gifts.set(gifts.length ? [...gifts] : ['']);
+    this.gifts.set([...(participant?.giftOptions ?? [])]);
+    this.newGift.set('');
+    this.newGiftError.set('');
     this.guestId.set(participant?.guestId);
     this.showErrors.set(false);
   }

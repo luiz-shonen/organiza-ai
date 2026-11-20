@@ -16,6 +16,24 @@
   ::ng-deep .mdc-floating-label {
     overflow: clip visible;
   }
+
+  // The outline is three pieces: rounded ends and the middle under the label. Material gives
+  // the middle a transparent left border, and at a zoom that is not 100% the pieces' edges
+  // land between pixels: each join showed a dark tick, so the part around the label looked
+  // like a separate piece. Without that border, and with each piece overlapping the one
+  // before, the line runs on in one colour. Material sets the border with six repeated
+  // classes, so this needs seven; the padding keeps the label where it was.
+  &.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field
+    ::ng-deep
+    .mdc-notched-outline__notch {
+    border-inline-start-width: 0;
+    margin-inline-start: -2px;
+    padding-inline-start: 2px;
+  }
+
+  ::ng-deep .mdc-notched-outline__trailing {
+    margin-inline-start: -1px;
+  }
 }
 
 // The message under a field, pulled up into Material's empty subscript space.

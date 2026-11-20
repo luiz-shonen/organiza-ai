@@ -38,26 +38,16 @@
       }
     </org-page-header>
 
-    @if (restoredDraftAt(); as savedAt) {
+    @if (draftMessage(); as message) {
       <org-banner
         variant="info"
         icon="history"
         class="editor__draft-banner"
         data-testid="editor-draft-restored"
-        [message]="
-          'Recuperamos o que você estava preenchendo (salvo ' +
-          (savedAt | date: 'dd/MM \'às\' HH:mm') +
-          '). Salve o evento para não perder.'
-        "
-      >
-        <org-button
-          label="Descartar"
-          variant="text"
-          testId="editor-draft-discard"
-          [compact]="true"
-          (pressed)="discardDraft()"
-        />
-      </org-banner>
+        dismissLabel="Descartar o que foi recuperado"
+        [message]="message"
+        (dismissed)="discardDraft()"
+      />
     }
 
     @if (isEditing() && !isOwner()) {
@@ -78,6 +68,7 @@
           ariaLabel="Etapas de criação do evento"
           [linear]="!isEditing()"
           [compact]="true"
+          [selectedIndex]="activeStepIndex()"
           (selectionChange)="activeStepIndex.set($event)"
         >
           <org-step [label]="stepLabels[0]" [stepControl]="basicInfoForm">
@@ -121,6 +112,7 @@
               [canConfigure]="isOwner()"
               [participants]="stepParticipants()"
               [suggestions]="secretSantaSuggestions()"
+              [knownPeople]="knownPeople()"
               [drawn]="secretSantaDrawn()"
               [(enabled)]="secretSantaEnabled"
               [(giftOptions)]="secretSantaGiftOptions"

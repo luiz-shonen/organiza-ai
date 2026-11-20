@@ -14,10 +14,27 @@
   flex: 0 0 auto;
 }
 
-.org-banner__message {
+.org-banner__body {
+  display: grid;
   flex: 1 1 auto;
+  gap: var(--org-space-xs);
+  min-inline-size: 0;
+}
+
+.org-banner__message {
   font: inherit;
   margin: 0;
+}
+
+// The action sits under the text, its label lined up with it; no room taken when there is none.
+.org-banner__actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  margin-inline-start: calc(-1 * var(--org-space-md));
+
+  &:empty {
+    display: none;
+  }
 }
 
 .org-banner--success {
@@ -33,4 +50,9 @@
 .org-banner--info {
   background: var(--org-info-container);
   color: var(--org-on-info-container);
+}
+
+// With an action under the text, the icon stays level with the first line.
+.org-banner:has(.org-banner__actions:not(:empty)) {
+  align-items: flex-start;
 }

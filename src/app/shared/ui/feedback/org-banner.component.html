@@ -7,7 +7,9 @@
   @if (icon(); as icon) {
     <org-icon class="org-banner__icon" [name]="icon" color="currentColor" />
   }
-  <p class="org-banner__message">{{ message() }}</p>
-  <!-- An optional action ("Descartar") at the end of the banner. -->
-  <ng-content />
+  <div class="org-banner__body">
+    <p class="org-banner__message">{{ message() }}</p>
+    <!-- An optional action ("Descartar"), on its own line under the message. -->
+    <div class="org-banner__actions"><ng-content /></div>
+  </div>
 </section>

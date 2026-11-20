@@ -790,6 +790,11 @@ export class EventEditorContainer implements OnInit {
   private startDraft(): void {
     this.draftBaseline = this.draftSnapshot();
     const stored = this.drafts.load<EventEditorDraft>(this.draftKey());
+    // A draft that matches the event as saved has nothing to bring back.
+    if (stored && JSON.stringify(stored.value) === JSON.stringify(this.draftBaseline)) {
+      this.drafts.clear(this.draftKey());
+      return;
+    }
     if (stored) {
       this.applyDraft(stored.value);
       // It holds what was typed and not saved: it stays a draft until saved or discarded.

@@ -1,3 +1,4 @@
+import { FormDraftService } from '../../../core/services/form-draft.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, provideRouter } from '@angular/router';
@@ -311,6 +312,14 @@ describe('EventEditorContainer', () => {
         expect(component['draftItems']()).toEqual([]);
         reopen();
         expect(component['restoredDraftAt']()).toBeNull();
+      });
+
+      it('does not offer a draft that matches the event as it is', () => {
+        const drafts = TestBed.inject(FormDraftService);
+        drafts.save('event:new-creator-uid:novo', component['draftSnapshot']());
+        reopen();
+        expect(component['restoredDraftAt']()).toBeNull();
+        expect(drafts.load('event:new-creator-uid:novo')).toBeNull();
       });
 
       it('keeps nothing when the form was only opened, or after "Cancelar"', () => {

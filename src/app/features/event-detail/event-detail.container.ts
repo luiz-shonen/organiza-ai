@@ -567,6 +567,7 @@ export class EventDetailContainer implements OnInit {
       phone: link.phone,
       eventTitle: this.event()?.title ?? '',
       url: link.url,
+      organizerName: this.event()?.creatorName ?? '',
     });
     window.open(url, '_blank', 'noopener,noreferrer');
   }

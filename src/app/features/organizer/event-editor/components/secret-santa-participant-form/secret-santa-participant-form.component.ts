@@ -36,7 +36,7 @@ import {
   imports: [OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   templateUrl: './secret-santa-participant-form.component.html',
   styleUrls: ['../event-step.scss', './secret-santa-participant-form.component.scss'],
-  host: { '(keydown.enter)': 'onEnter($event)' },
+  host: { '(keydown.enter)': 'onEnter($event)', '(keydown.escape)': 'onEscape($event)' },
 })
 export class SecretSantaParticipantFormComponent {
   /** The participant being edited; null to add a new one. */
@@ -67,6 +67,10 @@ export class SecretSantaParticipantFormComponent {
   protected readonly phone = signal('');
   /** The ideas already added, in order. */
   protected readonly gifts = signal<readonly string[]>([]);
+  /** The idea being edited in place (its index), and its text while typed. */
+  protected readonly editingGift = signal<number | null>(null);
+  protected readonly editingGiftText = signal('');
+  protected readonly editingGiftError = signal('');
   /** The idea being typed in "Nova opção", not added yet. */
   protected readonly newGift = signal('');
   private readonly guestId = signal<string | undefined>(undefined);
@@ -131,11 +135,67 @@ export class SecretSantaParticipantFormComponent {
 
   protected removeGift(index: number): void {
     this.gifts.update((list) => list.filter((_, i) => i !== index));
+    if (this.editingGift() === index) this.cancelGiftEdit();
   }
 
-  /** Enter in "Nova opção" adds the idea instead of submitting the participant. */
+  /** Opens an idea already added for editing, in place, with the cursor in it. */
+  protected editGift(index: number): void {
+    this.editingGift.set(index);
+    this.editingGiftText.set(this.gifts()[index] ?? '');
+    this.editingGiftError.set('');
+    setTimeout(() =>
+      this.host.nativeElement
+        .querySelector<HTMLInputElement>('.santa-form__gift-edit input')
+        ?.focus(),
+    );
+  }
+
+  protected setEditingGift(value: string): void {
+    this.editingGiftText.set(value);
+    if (this.editingGiftError()) this.editingGiftError.set('');
+  }
+
+  /** Keeps the edited idea; emptied, it is taken out. False when it is not valid. */
+  protected saveGiftEdit(): boolean {
+    const index = this.editingGift();
+    if (index === null) return true;
+    const raw = this.editingGiftText();
+    if (!raw.trim()) {
+      this.removeGift(index);
+      return true;
+    }
+    const gift = GiftOption.create(raw);
+    if (!gift) {
+      this.editingGiftError.set(GiftOption.validate(raw) ?? 'Opção inválida');
+      return false;
+    }
+    this.gifts.update((list) => list.map((current, i) => (i === index ? gift.value : current)));
+    this.cancelGiftEdit();
+    return true;
+  }
+
+  protected cancelGiftEdit(): void {
+    this.editingGift.set(null);
+    this.editingGiftText.set('');
+    this.editingGiftError.set('');
+  }
+
+  /** Esc while editing an idea leaves it as it was. */
+  protected onEscape(event: Event): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('.santa-form__gift-edit')) return;
+    event.preventDefault();
+    this.cancelGiftEdit();
+  }
+
+  /** Enter in a gift field adds (or keeps the edit of) the idea, never the participant. */
   protected onEnter(event: Event): void {
     const target = event.target as HTMLElement | null;
+    if (target?.closest('.santa-form__gift-edit')) {
+      event.preventDefault();
+      this.saveGiftEdit();
+      return;
+    }
     if (!target?.closest('.santa-form__new-gift')) return;
     event.preventDefault();
     this.addGift();
@@ -143,8 +203,8 @@ export class SecretSantaParticipantFormComponent {
 
   protected async submit(): Promise<void> {
     if (this.saving()) return;
-    // An idea typed but not added yet goes with the participant.
-    const pendingAdded = this.showGiftOptions() ? this.addGift() : true;
+    // An idea typed but not added yet, or being edited, goes with the participant.
+    const pendingAdded = this.showGiftOptions() ? this.saveGiftEdit() && this.addGift() : true;
     const name = PersonName.create(this.name());
     const phoneText = this.phone().trim();
     const phone = phoneText ? Phone.create(phoneText) : null;
@@ -175,6 +235,7 @@ export class SecretSantaParticipantFormComponent {
     this.gifts.set([...(participant?.giftOptions ?? [])]);
     this.newGift.set('');
     this.newGiftError.set('');
+    this.cancelGiftEdit();
     this.guestId.set(participant?.guestId);
     this.showErrors.set(false);
   }

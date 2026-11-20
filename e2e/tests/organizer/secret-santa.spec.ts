@@ -160,6 +160,12 @@ test.describe('Amigo oculto', () => {
     await expect(step.getByTestId('santa-gift-item')).toHaveCount(1);
     await expect(gift).toHaveValue('');
     await expect(step.getByTestId('santa-gift-list')).toContainText('1 de 4');
+    // An idea added can be changed in place: the pencil opens it, Enter keeps it.
+    await step.getByTestId('santa-gift-edit-btn').click();
+    const editing = step.getByTestId('santa-gift-edit-input');
+    await editing.fill('Chinelo, cor verde, tamanho 37');
+    await editing.press('Enter');
+    await expect(step.getByTestId('santa-gift-item')).toContainText('tamanho 37');
     // One still typed goes with the participant.
     await gift.fill('Livro de receitas');
     await step
@@ -191,7 +197,7 @@ test.describe('Amigo oculto', () => {
     const people = store[`events/${EVENT_ID}/secretSantaParticipants`];
     expect(people.map((p) => p['name'])).toEqual(['Jéssica Melo', 'Vó Maria']);
     expect(people[1]['giftOptions']).toEqual([
-      'Chinelo, cor verde, tamanho 36',
+      'Chinelo, cor verde, tamanho 37',
       'Livro de receitas',
     ]);
     expect(people[1]['phone']).toBe('(11) 97777-2222');
@@ -262,6 +268,7 @@ test.describe('Amigo oculto', () => {
     expect(message).toContain('*Natal 2026 da família*');
     expect(message).toMatch(/\/amigo-oculto\/[\w-]+$/);
     expect(message).toContain('o link só abre uma vez');
+    expect(message).toContain('Se precisar, peça um novo link');
     // The link is a random UUID, never a name.
     const luizToken = message.split('/amigo-oculto/')[1];
     expect(luizToken).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);

@@ -131,9 +131,73 @@ describe('SecretSantaParticipantFormComponent', () => {
     typeGift('Caneca');
     addGiftButton()!.click();
     fixture.detectChanges();
-    (el().querySelector('[data-testid="santa-gift-item"] button') as HTMLButtonElement).click();
+    el()
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="santa-gift-item"] [aria-label="Remover Caneca"]',
+      )!
+      .click();
     fixture.detectChanges();
     expect(giftItems()).toEqual([]);
+  });
+
+  const editInput = () =>
+    el().querySelector<HTMLInputElement>('input[data-testid="santa-gift-edit-input"]');
+  const typeEdit = (value: string) => {
+    editInput()!.value = value;
+    editInput()!.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  };
+  const key = (target: HTMLElement, name: string) => {
+    target.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true }));
+    fixture.detectChanges();
+  };
+
+  it('edits an idea in place: the pencil or the text opens it, Enter keeps it', () => {
+    fixture.componentRef.setInput('showGiftOptions', true);
+    fixture.detectChanges();
+    typeGift('Chinelo Kenner, Marrom, Tamanho 38');
+    addGiftButton()!.click();
+    fixture.detectChanges();
+
+    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(editInput()!.value).toBe('Chinelo Kenner, Marrom, Tamanho 38');
+    typeEdit('Chinelo Kenner, Marrom, Tamanho 39');
+    key(editInput()!, 'Enter');
+    expect(emitted).toEqual([]);
+    expect(giftItems()).toEqual(['Chinelo Kenner, Marrom, Tamanho 39']);
+
+    (
+      el().querySelector(
+        '[data-testid="santa-gift-edit-btn"] button, button[data-testid="santa-gift-edit-btn"]',
+      ) as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
+    typeEdit('Outra coisa');
+    key(editInput()!, 'Escape');
+    expect(giftItems()).toEqual(['Chinelo Kenner, Marrom, Tamanho 39']);
+  });
+
+  it('an idea emptied while editing is taken out, and one being edited goes with the person', () => {
+    fixture.componentRef.setInput('showGiftOptions', true);
+    fixture.detectChanges();
+    type('santa-name-input', 'Carlos');
+    for (const gift of ['Caneca', 'Livro']) {
+      typeGift(gift);
+      addGiftButton()!.click();
+      fixture.detectChanges();
+    }
+    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    fixture.detectChanges();
+    typeEdit('');
+    key(editInput()!, 'Enter');
+    expect(giftItems()).toEqual(['Livro']);
+
+    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    fixture.detectChanges();
+    typeEdit('Livro de receitas');
+    submit();
+    expect(emitted[0].giftOptions).toEqual(['Livro de receitas']);
   });
 
   it('stops at the number of options the organizer allows', () => {

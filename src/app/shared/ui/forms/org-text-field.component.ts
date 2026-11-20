@@ -21,7 +21,11 @@ export interface OrgTextSuggestion {
 }
 
 function searchText(value: string): string {
-  return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLocaleLowerCase('pt-BR').trim();
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR')
+    .trim();
 }
 
 export type OrgTextFieldType = 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';

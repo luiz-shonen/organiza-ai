@@ -23,6 +23,20 @@ describe('known-people.utils', () => {
     ]);
   });
 
+  it('one phone is one person, under the fullest name; another phone stays apart', () => {
+    expect(
+      buildKnownPeople([
+        { name: 'Jéssica', phone: '(31) 99267-7624' },
+        { name: 'Jéssica Melo', phone: '(31) 99267-7624' },
+        { name: 'Jéssica Melo', phone: '(31) 99259-1290' },
+        { name: 'Jéssica', phone: '' },
+      ]),
+    ).toEqual([
+      { name: 'Jéssica Melo', phone: '(31) 99267-7624' },
+      { name: 'Jéssica Melo', phone: '(31) 99259-1290' },
+    ]);
+  });
+
   it('finds people by any part of the name, up to a limit', () => {
     const people = buildKnownPeople([
       { name: 'Jéssica Melo', phone: '' },

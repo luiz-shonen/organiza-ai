@@ -27,7 +27,7 @@ describe('EventAddressStepComponent', () => {
     form = new FormGroup({
       cep: required(),
       address: required(),
-      neighborhood: new FormControl('', { nonNullable: true }),
+      neighborhood: new FormControl('', { nonNullable: true, validators: Validators.required }),
       city: required(),
       number: required(),
       noNumber: new FormControl(false, { nonNullable: true }),
@@ -73,10 +73,10 @@ describe('EventAddressStepComponent', () => {
     expect(el().querySelector('[data-testid="event-address-partial"]')?.textContent).toContain(
       'O CEP não trouxe o endereço completo',
     );
-    expect(el().textContent).toContain('Bairro (opcional)');
+    expect(el().textContent).not.toContain('Bairro (opcional)');
 
     pressNext();
-    expect(message()).toContain('Para continuar, preencha o endereço.');
+    expect(message()).toContain('Para continuar, preencha o endereço e o bairro.');
   });
 
   it('ticks "Sem número" into the form, and shows the complement and directions', () => {

@@ -162,6 +162,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     );
 
     await street.fill('Estrada da Serra do Cipó');
+    await page.getByTestId('event-neighborhood-input').fill('Zona rural');
     await page.getByTestId('event-no-number').locator('input').check();
     await expect(eventEditorPage.numberInput).toHaveValue('S/N');
     await expect(eventEditorPage.numberInput).toBeDisabled();
@@ -188,12 +189,12 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       ).__MOCK_DOCUMENTS__['events'].find((event) => event.title === 'Churrasco no sítio'),
     );
     expect(saved).toMatchObject({
-      location: 'Estrada da Serra do Cipó, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      location: 'Estrada da Serra do Cipó, S/N - Zona rural - Jaboticatubas/MG - CEP: 35830-000',
       addressDetails: {
         cep: '35830-000',
         address: 'Estrada da Serra do Cipó',
         number: 'S/N',
-        neighborhood: '',
+        neighborhood: 'Zona rural',
         city: 'Jaboticatubas/MG',
         complement: 'Km 12, sítio Boa Vista',
         directions: 'Depois da ponte, entre na estrada de terra à direita. Portão azul.',
@@ -237,6 +238,97 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       .locator('app-event-card org-surface')
       .filter({ has: location })
       .screenshot({ path: 'e2e/screenshots/address-rural-invite.png' });
+  });
+
+  test('an event over several days: an optional end date, never before the start', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          cep: '30514-160',
+          logradouro: 'Rua Dom Lara',
+          bairro: 'Vista Alegre',
+          localidade: 'Belo Horizonte',
+          uf: 'MG',
+        }),
+      });
+    });
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+
+    await eventEditorPage.titleInput.fill('Retiro de fim de ano');
+    await page.locator('[data-testid="category-options"] org-chip').first().click();
+    await eventEditorPage.dateInput.fill('23/12/2026');
+    await eventEditorPage.timeInput.fill('17:00');
+    const endDate = page.getByTestId('event-end-date-input');
+    await endDate.fill('20/12/2026');
+    await endDate.blur();
+    await expect(page.getByText('O término não pode ser antes do início')).toBeVisible();
+    await eventEditorPage.advanceStep();
+    await expect(eventEditorPage.missingFieldsBanner).toContainText(
+      'escolha um término no dia do início ou depois',
+    );
+
+    await endDate.fill('25/12/2026');
+    await expect(page.getByText('O término não pode ser antes do início')).toBeHidden();
+    await page
+      .getByTestId('event-editor-step-1')
+      .locator('.event-step__row--dates')
+      .screenshot({ path: 'e2e/screenshots/event-end-date.png' });
+    await eventEditorPage.advanceStep();
+
+    await eventEditorPage.cepInput.fill('30514160');
+    await expect(eventEditorPage.streetInput).toHaveValue('Rua Dom Lara');
+    await eventEditorPage.numberInput.fill('135');
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.saveEvent();
+    await expect(page).toHaveURL(/\/meus-eventos\/evento\/[^/]+$/);
+    const saved = await page.evaluate(() =>
+      (
+        window as unknown as {
+          __MOCK_DOCUMENTS__: Record<string, { id: string; title?: string }[]>;
+        }
+      ).__MOCK_DOCUMENTS__['events'].find((event) => event.title === 'Retiro de fim de ano'),
+    );
+    expect(saved).toMatchObject({ endDate: '2026-12-25' });
+  });
+
+  test('the invite and Meus eventos show the days of an event over several days', async ({
+    page,
+  }) => {
+    const retreat = {
+      ...mockSampleEvents[0],
+      id: 'event-retreat',
+      title: 'Retiro de fim de ano',
+      date: new Date(2026, 11, 23, 17, 0).toISOString(),
+      endDate: '2026-12-25',
+    };
+    await setupMockAuthSession(page, {
+      uid: 'test-organizer-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [retreat],
+    });
+    await page.goto('/evento/event-retreat');
+    const box = page.locator('.event-card__date-box');
+    await expect(box).toContainText('23–25');
+    await expect(box).toContainText('Quarta a sexta');
+    await expect(page.getByTestId('countdown-timer')).toContainText(
+      'De 23 a 25 de dezembro · 17:00',
+    );
+    await page
+      .locator('app-event-card header')
+      .first()
+      .screenshot({ path: 'e2e/screenshots/event-end-date-invite.png' });
+
+    await page.goto('/meus-eventos');
+    await expect(page.locator('org-date-badge').first()).toContainText('23–25');
   });
 
   test.describe('below 600px', () => {

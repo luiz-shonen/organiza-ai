@@ -90,6 +90,11 @@ export interface PartyEvent {
   category?: string;
   description: string;
   date: string;
+  /**
+   * The last day ("2026-12-25") of an event that runs over several days, starting on `date`.
+   * Missing or null: a one-day event.
+   */
+  endDate?: string | null;
   location: string;
   addressDetails?: AddressDetails;
   pixKey: string | null;

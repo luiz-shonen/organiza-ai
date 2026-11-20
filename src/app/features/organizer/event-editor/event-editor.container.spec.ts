@@ -290,6 +290,49 @@ describe('EventEditorContainer', () => {
       expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')).toBeTruthy();
     });
 
+    describe('an event over several days', () => {
+      const fill = (endDate: Date | null) => {
+        component['basicInfoForm'].patchValue({
+          title: 'Retiro de fim de ano',
+          category: 'Outros',
+          description: '',
+          date: new Date(2027, 11, 23),
+          endDate,
+          time: '17:00',
+        });
+        component['addressForm'].patchValue({
+          cep: '30514-160',
+          address: 'Rua Dom Lara',
+          number: '135',
+          neighborhood: 'Vista Alegre',
+          city: 'Belo Horizonte/MG',
+        });
+      };
+
+      it('saves the last day when it comes after the first', async () => {
+        fill(new Date(2027, 11, 25));
+        await component['saveEvent']();
+        expect(mockEventService.createEvent).toHaveBeenCalledWith(
+          expect.objectContaining({ endDate: '2027-12-25' }),
+        );
+      });
+
+      it('saves no last day when it is empty or the same day', async () => {
+        fill(new Date(2027, 11, 23));
+        await component['saveEvent']();
+        expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+          expect.objectContaining({ endDate: null }),
+        );
+      });
+
+      it('does not let the last day come before the first', () => {
+        fill(new Date(2027, 11, 20));
+        expect(component['basicInfoForm'].hasError('endBeforeStart')).toBe(true);
+        fill(null);
+        expect(component['basicInfoForm'].valid).toBe(true);
+      });
+    });
+
     describe('a rural address', () => {
       const lookup = (cep: string, found: Partial<ViaCepResponse> | null) => {
         component['addressForm'].controls.cep.setValue(cep, { emitEvent: false });
@@ -351,7 +394,7 @@ describe('EventEditorContainer', () => {
         expect(form.controls.number.value).toBe('S/N');
         expect(component['noNumberState']()).toEqual({ checked: true, disabled: false });
 
-        component['basicInfoForm'].setValue({
+        component['basicInfoForm'].patchValue({
           title: 'Churrasco no sítio',
           category: 'Outros',
           description: '',
@@ -361,6 +404,7 @@ describe('EventEditorContainer', () => {
         form.patchValue({
           cep: '35830-000',
           address: 'Estrada da Serra do Cipó',
+          neighborhood: 'Zona rural',
           city: 'Jaboticatubas/MG',
           complement: ' Km 12, sítio Boa Vista ',
           directions: 'Depois da ponte, à direita.',
@@ -370,12 +414,13 @@ describe('EventEditorContainer', () => {
 
         expect(mockEventService.createEvent).toHaveBeenCalledWith(
           expect.objectContaining({
-            location: 'Estrada da Serra do Cipó, S/N - Jaboticatubas/MG - CEP: 35830-000',
+            location:
+              'Estrada da Serra do Cipó, S/N - Zona rural - Jaboticatubas/MG - CEP: 35830-000',
             addressDetails: {
               cep: '35830-000',
               address: 'Estrada da Serra do Cipó',
               number: 'S/N',
-              neighborhood: '',
+              neighborhood: 'Zona rural',
               city: 'Jaboticatubas/MG',
               complement: 'Km 12, sítio Boa Vista',
               directions: 'Depois da ponte, à direita.',
@@ -404,7 +449,7 @@ describe('EventEditorContainer', () => {
       ]);
 
       const date = new Date(Date.now() + 7 * 86_400_000);
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: 'Festa',
         category: 'Outros',
         description: 'Descrição',
@@ -431,7 +476,7 @@ describe('EventEditorContainer', () => {
 
     it('blocks step 1 right away for a date and time in the past or a typed non-date', () => {
       const form = component['basicInfoForm'];
-      form.setValue({
+      form.patchValue({
         title: 'Festa',
         category: 'Outros',
         description: 'Arraiá com quentão',
@@ -449,7 +494,7 @@ describe('EventEditorContainer', () => {
     });
 
     it('accepts the event without a description', () => {
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: 'Festa',
         category: 'Outros',
         description: '',
@@ -461,7 +506,7 @@ describe('EventEditorContainer', () => {
 
     it('refuses markup in the title, a bad house number and an invalid Pix key', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: '<script>Festa</script>',
         category: 'Outros',
         description: 'Arraiá com quentão',
@@ -488,7 +533,7 @@ describe('EventEditorContainer', () => {
     });
 
     it('saves a category typed by the organizer', async () => {
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: 'Festa',
         category: '  Chá   revelação ',
         description: 'Arraiá com quentão',
@@ -511,7 +556,7 @@ describe('EventEditorContainer', () => {
 
     it('saves tidied text and the CEP formatted', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: '  Festa   Junina ',
         category: 'Outros',
         description: 'Arraiá com quentão',

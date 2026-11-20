@@ -41,3 +41,19 @@ export function notInPast(now: () => Date = () => new Date()): ValidatorFn {
     return combined && combined < now() ? { pastDateTime: true } : null;
   };
 }
+
+export const END_BEFORE_START_MESSAGE = 'O término não pode ser antes do início';
+
+/**
+ * Group validator for `date` + `endDate`: `endBeforeStart` when the optional last day falls
+ * before the first one. The same day is fine: it is a one-day event.
+ */
+export const endNotBeforeStart: ValidatorFn = (group: AbstractControl) => {
+  const start = group.get('date')?.value as Date | null;
+  const end = group.get('endDate')?.value as Date | null;
+  if (!(start instanceof Date) || !(end instanceof Date)) return null;
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+  const startDay = new Date(start).setHours(0, 0, 0, 0);
+  const endDay = new Date(end).setHours(0, 0, 0, 0);
+  return endDay < startDay ? { endBeforeStart: true } : null;
+};

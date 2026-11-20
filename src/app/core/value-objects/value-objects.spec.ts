@@ -15,6 +15,7 @@ import {
   fieldError,
   normalizePlainText,
   notInPast,
+  endNotBeforeStart,
   requiredText,
   validDate,
   valueObjectValidator,
@@ -173,6 +174,22 @@ describe('form helpers', () => {
     expect(control.valid).toBe(true);
     const required = new FormControl('', [Validators.required]);
     expect(required.valid).toBe(false);
+  });
+});
+
+describe('endNotBeforeStart', () => {
+  const check = (date: Date | null, endDate: Date | null) =>
+    endNotBeforeStart({
+      get: (name: string) => ({ value: name === 'date' ? date : endDate }),
+    } as never);
+
+  it('lets the last day be empty, the same day or later, never earlier', () => {
+    const start = new Date(2026, 11, 23, 17, 0);
+    expect(check(start, null)).toBeNull();
+    expect(check(start, new Date(2026, 11, 23))).toBeNull();
+    expect(check(start, new Date(2026, 11, 25))).toBeNull();
+    expect(check(start, new Date(2026, 11, 22))).toEqual({ endBeforeStart: true });
+    expect(check(start, new Date(NaN))).toBeNull();
   });
 });
 

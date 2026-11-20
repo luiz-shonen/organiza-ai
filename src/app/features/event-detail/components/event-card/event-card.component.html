@@ -17,7 +17,12 @@
         @if (dateParts(); as date) {
           <p class="event-card__date-box" [attr.aria-label]="when()">
             <span class="event-card__date-side" aria-hidden="true">{{ date.weekday }}</span>
-            <span class="event-card__date-day" aria-hidden="true">{{ date.day }}</span>
+            <span
+              class="event-card__date-day"
+              [class.event-card__date-day--span]="date.isSpan"
+              aria-hidden="true"
+              >{{ date.day }}</span
+            >
             <span class="event-card__date-side" aria-hidden="true">{{ date.monthTime }}</span>
           </p>
         }

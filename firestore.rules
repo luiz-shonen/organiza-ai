@@ -236,6 +236,8 @@ service cloud.firestore {
         return (!changes('title') || isFilledText(data.get('title', null), 200))
             && (!changes('category') || isOptionalString(data.get('category', null), 60))
             && (!changes('description') || isOptionalString(data.get('description', null), 2000))
+            && (!changes('endDate') || data.get('endDate', null) == null
+                || (data.endDate is string && data.endDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))

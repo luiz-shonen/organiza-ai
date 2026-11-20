@@ -31,6 +31,12 @@
     &--wide-narrow {
       grid-template-columns: 2fr 1fr;
     }
+
+    // Início and término (opcional) side by side, the hora below: three across left
+    // too little room once the share panel sits beside the form.
+    &--dates {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 }
 

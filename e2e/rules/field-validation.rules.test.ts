@@ -190,6 +190,17 @@ describe('event fields', () => {
     );
   });
 
+  it('takes the last day of an event over several days as "AAAA-MM-DD", or null', async () => {
+    await seed(`admins/${adminEmail}`, { email: adminEmail });
+    const db = testEnvironment.authenticatedContext('admin-1', { email: adminEmail }).firestore();
+    const event = { title: 'Retiro', date: '2026-12-23T20:00:00.000Z' };
+
+    await assertSucceeds(setDoc(doc(db, 'events/event-1'), { ...event, endDate: '2026-12-25' }));
+    await assertSucceeds(setDoc(doc(db, 'events/event-1'), { ...event, endDate: null }));
+    await assertFails(setDoc(doc(db, 'events/event-2'), { ...event, endDate: '25/12/2026' }));
+    await assertFails(setDoc(doc(db, 'events/event-2'), { ...event, endDate: 20261225 }));
+  });
+
   it('takes a rural address: no street from the CEP, S/N, a complement and directions', async () => {
     await seed(`admins/${adminEmail}`, { email: adminEmail });
     const db = testEnvironment.authenticatedContext('admin-1', { email: adminEmail }).firestore();

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { getCategoryClass, getCategoryHue, type PartyEvent } from '../../../core/models';
-import { inviteInitial, inviteTheme } from '../../../core/utils';
+import { formatDaySpan, inviteInitial, inviteTheme } from '../../../core/utils';
 import { OrgBadgeComponent, OrgSurfaceComponent, type OrgBadgeVariant } from '../../ui';
 import type { EventSummaryStatus } from '../event-summary-card/event-summary-card.component';
 
@@ -42,15 +42,14 @@ export class InviteEnvelopeComponent {
   );
   protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
 
-  /** "sáb., 20 de abr. · 19:30". */
+  /** "sáb., 20 de abr. · 19:30"; over several days "23 a 25 de dez. · 17:00". */
   protected readonly when = computed(() => {
-    const date = new Date(this.event().date);
+    const { date: iso, endDate } = this.event();
+    const date = new Date(iso);
     if (isNaN(date.getTime())) return '';
-    const day = date.toLocaleDateString('pt-BR', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-    });
+    const day =
+      formatDaySpan(iso, endDate, 'short') ||
+      date.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
     const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     return `${day} · ${time}`;
   });

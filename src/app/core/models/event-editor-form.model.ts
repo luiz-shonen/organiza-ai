@@ -5,6 +5,8 @@ export type EventBasicInfoForm = FormGroup<{
   category: FormControl<string>;
   description: FormControl<string>;
   date: FormControl<Date | null>;
+  /** "Data de término (opcional)": the last day of an event that runs over several days. */
+  endDate: FormControl<Date | null>;
   time: FormControl<string>;
 }>;
 

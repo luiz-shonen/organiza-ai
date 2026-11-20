@@ -32,6 +32,8 @@ export class SharePanelComponent {
   readonly eventTitle = input('');
   /** ISO date and time, shown in the invitation. */
   readonly eventDate = input<string | null>(null);
+  /** Last day of an event that runs over several days. */
+  readonly eventEndDate = input<string | null>(null);
   readonly eventLocation = input<string | null>(null);
 
   private readonly qrCanvas = viewChild<ElementRef<HTMLCanvasElement>>('qrCanvas');
@@ -54,6 +56,7 @@ export class SharePanelComponent {
     shareWhatsApp({
       title: this.eventTitle(),
       date: this.eventDate(),
+      endDate: this.eventEndDate(),
       location: this.eventLocation(),
       url: this.eventUrl(),
     });

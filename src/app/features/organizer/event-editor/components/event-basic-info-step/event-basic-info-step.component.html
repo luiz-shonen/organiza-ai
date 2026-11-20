@@ -63,14 +63,23 @@
         testId="event-description-input"
       />
 
-      <div class="event-step__row event-step__row--wide-narrow">
+      <div class="event-step__row event-step__row--dates">
         <org-date-field
-          label="Data do evento"
+          label="Data de início"
           [min]="minDate()"
           [required]="true"
           [error]="dateError()"
           formControlName="date"
           testId="event-date-input"
+        />
+
+        <org-date-field
+          label="Data de término (opcional)"
+          hint="Vazio: o evento é de um dia só."
+          [min]="basicInfoForm.controls.date.value || minDate()"
+          [error]="endDateError()"
+          formControlName="endDate"
+          testId="event-end-date-input"
         />
 
         <org-time-field

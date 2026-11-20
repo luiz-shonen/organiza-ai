@@ -93,12 +93,19 @@ How the app behaves for organizers and guests. Data and permissions are in
   opening `/meus-eventos/evento/{id}` of such an event goes back to its page with "Este evento já
   aconteceu e não pode mais ser editado." Organizers still use the rest of the page (the draw,
   links). The rules do not block it: the owner still writes the event (e.g. closing sign-ups).
+- **An event may run over several days.** Step "Informações" has "Data de início" and an optional
+  "Data de término"; empty (or the same day) is a one-day event, and a last day before the first
+  one does not move on. It is saved as `endDate` ("2026-12-25") only when it is after the start
+  day, otherwise null. The invite reads "Quarta a sexta · 23–25 · Dez · 17:00" and "De 23 a 25
+  de dezembro · 17:00", the envelope "23 a 25 de dez.", Meus eventos' badge "23–25", WhatsApp
+  "23 a 25 de dezembro", and "Adicionar ao calendário" runs to the end of the last day. The
+  states above still follow the start: such an event is "Realizado" once it begins.
 - **Endereço comes from the CEP, and what the CEP lacks is typed.** Endereço, Bairro and Cidade/UF
   are locked (read-only, a lock icon, a "not allowed" pointer, no caret) until a full CEP is looked
   up. What ViaCEP fills stays locked; what it leaves empty opens to type, with "O CEP não trouxe o
   endereço completo" above: a rural CEP (e.g. 35830-000, Jaboticatubas/MG) brings only the city,
   and a CEP ViaCEP does not know opens all three. Changing the CEP clears what the last CEP filled
-  but keeps what the organizer typed. Bairro is optional. "Sem número" saves the number as "S/N".
+  but keeps what the organizer typed. Bairro is required ("Zona rural" when there is none). "Sem número" saves the number as "S/N".
   "Complemento" (80 characters, "Km 12, sítio Boa Vista") follows the number on the event page,
   and "Como chegar" (300) shows below the address for places a map does not find well. The rules
   cap each field of `addressDetails`.

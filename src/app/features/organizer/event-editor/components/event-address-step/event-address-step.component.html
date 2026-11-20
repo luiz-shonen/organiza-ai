@@ -68,11 +68,18 @@
 
       <div class="event-step__row event-step__row--wide-narrow">
         <org-text-field
-          [label]="isLocked('neighborhood') ? 'Bairro' : 'Bairro (opcional)'"
+          label="Bairro"
           [class.event-step__locked]="isLocked('neighborhood')"
           [placeholder]="isLocked('neighborhood') ? 'Preenchido pelo CEP' : 'Ex: Zona rural'"
           [readOnly]="isLocked('neighborhood')"
           [suffixIcon]="isLocked('neighborhood') ? 'lock' : null"
+          [required]="true"
+          [error]="
+            addressForm.controls.neighborhood.hasError('required') &&
+            addressForm.controls.neighborhood.touched
+              ? 'Bairro é obrigatório'
+              : ''
+          "
           formControlName="neighborhood"
           testId="event-neighborhood-input"
         />

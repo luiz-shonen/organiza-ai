@@ -75,8 +75,15 @@
 
 .event-card__date-day {
   color: var(--org-invite-ink);
+  flex: none;
   font: var(--org-font-weight-semibold) var(--org-font-size-4xl) / var(--org-line-height-none)
     var(--org-font-display);
+  white-space: nowrap;
+
+  // "23–25": an event over several days stays on one line, one step smaller.
+  &--span {
+    font-size: var(--org-font-size-3xl);
+  }
 }
 
 .event-card__description {

@@ -24,7 +24,14 @@ import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { formatCep, hasStarted, parseLocation, splitGuestsByApproval } from '../../../core/utils';
+import {
+  formatCep,
+  hasStarted,
+  parseDay,
+  parseLocation,
+  splitGuestsByApproval,
+  toDayString,
+} from '../../../core/utils';
 import {
   AddressNumber,
   Cep,
@@ -32,6 +39,7 @@ import {
   EventDescription,
   EventTitle,
   PixKey,
+  endNotBeforeStart,
   notInPast,
   validDate,
   requiredText,
@@ -212,16 +220,18 @@ export class EventEditorContainer implements OnInit {
       // Optional: an event can go out with just a title, date and place.
       description: ['', [valueObjectValidator(EventDescription.validate)]],
       date: [null as Date | null, [Validators.required, validDate]],
+      // Optional: empty is a one-day event.
+      endDate: [null as Date | null, [validDate]],
       time: ['', [Validators.required]],
     },
-    { validators: notInPast() },
+    { validators: [notInPast(), endNotBeforeStart] },
   );
 
   protected readonly addressForm = this.fb.nonNullable.group({
     cep: ['', [requiredText, valueObjectValidator(Cep.validate)]],
     address: ['', [requiredText]],
-    // Optional: a rural CEP often has no neighbourhood, and then the organizer may leave it out.
-    neighborhood: [''],
+    // Required: when the CEP does not bring it (a rural one), the organizer types it.
+    neighborhood: ['', [requiredText]],
     city: ['', [requiredText]],
     number: ['', [requiredText, valueObjectValidator(AddressNumber.validate)]],
     noNumber: [false],
@@ -275,6 +285,7 @@ export class EventEditorContainer implements OnInit {
               category: event.category || '',
               description: event.description,
               date: d,
+              endDate: parseDay(event.endDate),
               time: timeStr,
             });
 
@@ -394,7 +405,7 @@ export class EventEditorContainer implements OnInit {
     this.saving.set(true);
 
     const raw = this.basicInfoForm.getRawValue();
-    const { date, time } = raw;
+    const { date, endDate, time } = raw;
     const category = EventCategory.create(raw.category)?.value ?? raw.category.trim();
     // The forms are valid here, so each value object exists; they save the tidied text.
     const title = EventTitle.create(raw.title)?.value ?? raw.title.trim();
@@ -418,6 +429,9 @@ export class EventEditorContainer implements OnInit {
       }
     }
     const dateStr = finalDate.toISOString();
+    // Saved only when the event runs past its first day; null clears an earlier last day.
+    const lastDay = endDate ? toDayString(endDate) : '';
+    const endDateStr = lastDay > toDayString(finalDate) ? lastDay : null;
 
     const fullAddress = [
       address && number ? `${address}, ${number}` : address || number,
@@ -447,6 +461,7 @@ export class EventEditorContainer implements OnInit {
       category,
       description,
       date: dateStr,
+      endDate: endDateStr,
       location,
       addressDetails,
       pixKey: pixKey || null,

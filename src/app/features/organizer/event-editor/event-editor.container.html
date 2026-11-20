@@ -132,6 +132,7 @@
             [eventUrl]="eventUrl()"
             [eventTitle]="basicInfoForm.controls.title.value"
             [eventDate]="currentEvent()?.date ?? null"
+            [eventEndDate]="currentEvent()?.endDate ?? null"
             [eventLocation]="currentEvent()?.location ?? null"
           />
         </div>

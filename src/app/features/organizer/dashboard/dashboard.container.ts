@@ -327,7 +327,13 @@ export class DashboardContainer {
 
   protected shareWhatsApp(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
-    shareWhatsApp({ title: event.title, date: event.date, location: event.location, url });
+    shareWhatsApp({
+      title: event.title,
+      date: event.date,
+      endDate: event.endDate,
+      location: event.location,
+      url,
+    });
   }
 
   protected copyLink(event: PartyEvent): void {

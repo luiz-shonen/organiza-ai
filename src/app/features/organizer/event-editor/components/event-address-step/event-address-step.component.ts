@@ -92,14 +92,15 @@ export class EventAddressStepComponent {
     if (!this.attempted()) return '';
     const form = this.form();
     if (form.valid) return '';
-    const { cep, number, address, city } = form.controls;
+    const { cep, number, address, neighborhood, city } = form.controls;
     const missing: string[] = [];
     if (cep.invalid) missing.push('o CEP');
     if (number.invalid) missing.push('o número');
     if (address.invalid && !this.isLocked('address')) missing.push('o endereço');
+    if (neighborhood.invalid && !this.isLocked('neighborhood')) missing.push('o bairro');
     if (city.invalid && !this.isLocked('city')) missing.push('a cidade');
     if (missing.length) return `Para continuar, preencha ${joinLabels(missing)}.`;
-    if (address.invalid || city.invalid) {
+    if (address.invalid || neighborhood.invalid || city.invalid) {
       return 'Digite o CEP completo para buscarmos o endereço.';
     }
     return 'Para continuar, confira os campos marcados em vermelho.';

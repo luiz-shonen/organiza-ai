@@ -47,6 +47,23 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(link.href).toContain('Churrasco%20de%20Domingo');
   });
 
+  it('shows the days of an event over several days, and adds them all to the calendar', () => {
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      date: new Date(2026, 11, 23, 17, 0).toISOString(),
+      endDate: '2026-12-25',
+    });
+    fixture.detectChanges();
+
+    const box = element().querySelector('.event-card__date-box') as HTMLElement;
+    expect(box.getAttribute('aria-label')).toBe('De 23 a 25 de dezembro · 17:00');
+    expect(box.textContent).toContain('23–25');
+    expect(box.textContent).toContain('Quarta a sexta');
+    const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
+    const end = new Date(2026, 11, 25, 23, 59).toISOString().replace(/-|:|\.\d\d\d/g, '');
+    expect(decodeURIComponent(link.href)).toContain(`/${end}`);
+  });
+
   it('splits the address into street and the rest', () => {
     const text = element().querySelector('.event-card__location-text')?.textContent ?? '';
     expect(text).toContain('Rua Dom Lara, 135');

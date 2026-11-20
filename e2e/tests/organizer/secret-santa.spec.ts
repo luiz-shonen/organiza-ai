@@ -118,6 +118,9 @@ test.describe('Amigo oculto', () => {
     const gifts = step.getByTestId('santa-gift-input');
     await gifts.nth(0).fill('Chinelo, cor verde, tamanho 36');
     await gifts.nth(0).press('Enter');
+    await step
+      .getByTestId('santa-gift-list')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-gift-fields.png' });
     await expect(gifts).toHaveCount(2);
     await gifts.nth(1).fill('Livro de receitas');
     await step

@@ -385,16 +385,30 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
   test.describe('below 600px', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
-    test('should show the compact stepper with only the current step named', async ({
+    test('the stepper says "Etapa 1 de 5", the whole step name, and a bar per step', async ({
       page,
       eventEditorPage,
     }) => {
       await page.goto('/meus-eventos/evento/novo');
       await eventEditorPage.assertLoaded();
 
-      const active = page.locator('.mat-step-header[aria-selected="true"]');
-      await expect(active).toContainText('Informações');
-      await expect(page.locator('.mat-step-header')).toHaveCount(5);
+      const header = page.getByTestId('stepper-phone');
+      await expect(header).toContainText('Etapa 1 de 5');
+      await expect(header).toContainText('Informações');
+      await expect(header.locator('.org-stepper__bar')).toHaveCount(5);
+      await expect(page.locator('.mat-horizontal-stepper-header-container')).toBeHidden();
+      // A step not reached yet stays shut in a new event.
+      await header.getByRole('button', { name: 'Etapa 5: Pix' }).click();
+      await expect(header).toContainText('Etapa 1 de 5');
+      await header.screenshot({ path: 'e2e/screenshots/stepper-phone.png' });
+    });
+
+    test('editing, a bar opens its step', async ({ page }) => {
+      await page.goto('/meus-eventos/evento/event-1');
+      const header = page.getByTestId('stepper-phone');
+      await header.getByRole('button', { name: 'Etapa 4: Amigo oculto' }).click();
+      await expect(header).toContainText('Etapa 4 de 5');
+      await expect(header).toContainText('Amigo oculto');
     });
   });
 

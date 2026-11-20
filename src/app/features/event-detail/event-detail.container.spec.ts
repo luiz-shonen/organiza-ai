@@ -560,7 +560,9 @@ describe('EventDetailContainer', () => {
 
       await component['onConfirmClaim']({ itemId: 'item-1', quantity: 1, memberId: null, who: '' });
 
-      expect(mockFeedback.error).toHaveBeenCalledWith('Erro ao assumir item. Tente novamente.');
+      expect(mockFeedback.error).toHaveBeenCalledWith(
+        'Não foi possível assumir o item: erro inesperado (Claim failed).',
+      );
     });
   });
 });

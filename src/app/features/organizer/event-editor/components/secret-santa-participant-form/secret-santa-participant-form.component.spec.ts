@@ -40,6 +40,30 @@ describe('SecretSantaParticipantFormComponent', () => {
     expect(emitted).toEqual([{ name: 'Jéssica Melo', phone: '(11) 98888-1111', giftOptions: [] }]);
   });
 
+  it('with a save, keeps what was typed when it fails and clears when it works', async () => {
+    let result = false;
+    const saved: SecretSantaParticipantInput[] = [];
+    fixture.componentRef.setInput('save', async (participant: SecretSantaParticipantInput) => {
+      saved.push(participant);
+      return result;
+    });
+    type('santa-name-input', 'Gustavo');
+    type('santa-phone-input', '11988881111');
+    submit();
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+    expect(saved).toHaveLength(1);
+    expect(emitted).toEqual([]);
+    expect(input('santa-name-input')!.value).toBe('Gustavo');
+
+    result = true;
+    submit();
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+    expect(saved).toHaveLength(2);
+    expect(input('santa-name-input')!.value).toBe('');
+  });
+
   it('refuses an empty name or an invalid phone', () => {
     submit();
     type('santa-name-input', 'Ana');

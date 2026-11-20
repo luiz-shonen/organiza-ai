@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   contentChildren,
+  computed,
   input,
   model,
   output,
@@ -29,6 +30,15 @@ export class OrgStepperComponent {
   public readonly selectionChange = output<number>();
   protected readonly steps = contentChildren(OrgStepComponent);
   private readonly materialStepper = viewChild.required(MatStepper);
+  /** The current step's name, whole ("Amigo oculto"), for the phone header. */
+  protected readonly currentLabel = computed(
+    () => this.steps()[this.selectedIndex()]?.label() ?? '',
+  );
+
+  /** A bar of the phone header: in a linear stepper, a step not reached yet stays shut. */
+  protected select(index: number): void {
+    this.materialStepper().selectedIndex = index;
+  }
 
   public next(): void {
     this.materialStepper().next();

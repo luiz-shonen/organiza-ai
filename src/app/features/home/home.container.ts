@@ -1,3 +1,4 @@
+import { explainError } from '../../core/utils/error.utils';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -354,9 +355,9 @@ export class HomeContainer {
     this.households.update((all) => ({ ...all, [eventId]: { ...household, claims } }));
     try {
       await this.claimService.saveClaims(eventId, user.uid, claims.name, claims.entries);
-    } catch {
+    } catch (error) {
       this.households.update((all) => ({ ...all, [eventId]: household }));
-      this.feedback.error('Não foi possível salvar. Tente novamente.');
+      this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', error));
     }
   }
 

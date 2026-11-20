@@ -1,3 +1,4 @@
+import { explainError } from '../../../core/utils/error.utils';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -92,18 +93,6 @@ import {
 import { DrawerService } from '../../../core/services/drawer.service';
 
 /** Firestore puts the code in the message ("Missing or insufficient permissions." is permission-denied). */
-function saveErrorMessage(error: unknown): string {
-  const text =
-    error instanceof Error ? `${(error as { code?: string }).code ?? ''} ${error.message}` : '';
-  if (/permission-denied|insufficient permissions/i.test(text)) {
-    return 'Sua conta não tem permissão para salvar este evento.';
-  }
-  if (/unavailable|network/i.test(text)) {
-    return 'Sem conexão com o servidor. Verifique sua internet e tente de novo.';
-  }
-  return 'Erro ao salvar evento. Tente novamente.';
-}
-
 @Component({
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -380,7 +369,7 @@ export class EventEditorContainer implements OnInit {
         error: (err) => {
           console.error(err);
           this.loading.set(false);
-          this.feedback.error('Erro ao carregar evento');
+          this.feedback.error(explainError('Não foi possível carregar o evento', err));
         },
       });
 
@@ -540,7 +529,7 @@ export class EventEditorContainer implements OnInit {
         await this.router.navigate(['/meus-eventos/evento', newId]);
       }
     } catch (error: unknown) {
-      this.feedback.error(saveErrorMessage(error));
+      this.feedback.error(explainError('Não foi possível salvar o evento', error));
     } finally {
       this.saving.set(false);
     }
@@ -567,8 +556,8 @@ export class EventEditorContainer implements OnInit {
               this.authService.currentUser()?.email || '',
             );
             this.feedback.success(`Convite enviado para ${action.email}`);
-          } catch {
-            this.feedback.error('Erro ao enviar convite.');
+          } catch (error) {
+            this.feedback.error(explainError('Não foi possível enviar o convite', error));
           }
           return;
         }
@@ -585,8 +574,8 @@ export class EventEditorContainer implements OnInit {
         try {
           await this.eventService.removeCollaborator(eventId, action.collaboratorId);
           this.feedback.success('Colaborador removido');
-        } catch {
-          this.feedback.error('Erro ao remover colaborador.');
+        } catch (error) {
+          this.feedback.error(explainError('Não foi possível remover o colaborador', error));
         }
       },
     });
@@ -623,9 +612,10 @@ export class EventEditorContainer implements OnInit {
     const results = await Promise.allSettled(
       this.items().map((item) => this.itemService.deleteItem(eventId, item.id)),
     );
-    if (results.some((result) => result.status === 'rejected')) {
+    const failed = results.find((result) => result.status === 'rejected');
+    if (failed) {
       this.itemsEnabled.set(true);
-      this.feedback.error('Erro ao remover itens.');
+      this.feedback.error(explainError('Não foi possível remover os itens', failed.reason));
     }
   }
 
@@ -638,8 +628,8 @@ export class EventEditorContainer implements OnInit {
 
     try {
       await this.itemService.addItem(eventId, item);
-    } catch {
-      this.feedback.error('Erro ao adicionar item.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível adicionar o item', error));
     }
   }
 
@@ -655,8 +645,8 @@ export class EventEditorContainer implements OnInit {
     try {
       await this.itemService.updateItem(eventId, saved.id, item);
       this.feedback.success('Item atualizado');
-    } catch {
-      this.feedback.error('Erro ao atualizar item.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível atualizar o item', error));
     }
   }
 
@@ -686,29 +676,43 @@ export class EventEditorContainer implements OnInit {
 
     try {
       await this.itemService.deleteItem(eventId, item.id);
-    } catch {
-      this.feedback.error('Erro ao remover item.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível remover o item', error));
     }
   }
 
-  protected async addParticipant(participant: SecretSantaParticipantInput): Promise<void> {
-    await this.addParticipants([participant]);
+  /** Handed to the "Novo participante" form: it is cleared only once the person was added. */
+  protected readonly saveNewParticipant = (participant: SecretSantaParticipantInput) =>
+    this.addParticipants([participant]);
+
+  protected async addParticipant(participant: SecretSantaParticipantInput): Promise<boolean> {
+    return this.addParticipants([participant]);
   }
 
+  /** True when every participant was added. */
   protected async addParticipants(
     participants: readonly SecretSantaParticipantInput[],
-  ): Promise<void> {
+  ): Promise<boolean> {
     const eventId = this.id();
     if (!this.isEditing() || !eventId) {
       this.draftParticipants.update((list) => [...list, ...participants]);
-      return;
+      return true;
     }
     try {
       for (const participant of participants) {
         await this.secretSantaService.addParticipant(eventId, participant);
       }
-    } catch {
-      this.feedback.error('Erro ao adicionar participante.');
+      return true;
+    } catch (error) {
+      this.feedback.error(
+        explainError(
+          participants.length > 1
+            ? 'Não foi possível adicionar os participantes'
+            : 'Não foi possível adicionar o participante',
+          error,
+        ),
+      );
+      return false;
     }
   }
 
@@ -728,8 +732,8 @@ export class EventEditorContainer implements OnInit {
     try {
       await this.secretSantaService.updateParticipant(eventId, saved.id, participant);
       this.feedback.success('Participante atualizado');
-    } catch {
-      this.feedback.error('Erro ao atualizar participante.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível atualizar o participante', error));
     }
   }
 
@@ -755,8 +759,8 @@ export class EventEditorContainer implements OnInit {
     }
     try {
       await this.secretSantaService.removeParticipant(eventId, saved.id);
-    } catch {
-      this.feedback.error('Erro ao remover participante.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível remover o participante', error));
     }
   }
 
@@ -882,8 +886,8 @@ export class EventEditorContainer implements OnInit {
           await this.eventService.cancelEvent(eventId);
           this.feedback.success('Evento cancelado com sucesso!');
           await this.router.navigate(['/meus-eventos']);
-        } catch {
-          this.feedback.error('Erro ao cancelar evento.');
+        } catch (error) {
+          this.feedback.error(explainError('Não foi possível cancelar o evento', error));
         }
       });
   }

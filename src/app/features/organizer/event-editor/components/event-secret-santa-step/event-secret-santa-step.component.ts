@@ -71,6 +71,13 @@ export class EventSecretSantaStepComponent {
   public readonly suggestions = input<readonly SecretSantaSuggestion[]>([]);
   /** The draw already happened: changing the list asks for a new one. */
   public readonly drawn = input(false);
+  /**
+   * Saves a person typed in "Novo participante"; resolves true when added. With it, the form is
+   * cleared only on success, so a failed save keeps what was typed. Without it, `add` is emitted.
+   */
+  public readonly saveNew = input<
+    ((participant: SecretSantaParticipantInput) => Promise<boolean>) | null
+  >(null);
   public readonly add = output<SecretSantaParticipantInput>();
   public readonly addMany = output<readonly SecretSantaParticipantInput[]>();
   public readonly update = output<SecretSantaParticipantUpdate>();

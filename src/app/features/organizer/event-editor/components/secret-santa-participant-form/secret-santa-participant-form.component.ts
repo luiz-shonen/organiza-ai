@@ -44,7 +44,16 @@ export class SecretSantaParticipantFormComponent {
   public readonly submitLabel = input('Adicionar participante');
   public readonly cancelLabel = input<string | null>(null);
   public readonly testIdPrefix = input('santa');
+  /**
+   * Saves the person and resolves true when it worked. Given, the form waits for it and keeps
+   * what was typed when it fails; otherwise `submitted` is emitted and the form clears at once.
+   */
+  public readonly save = input<
+    ((participant: SecretSantaParticipantInput) => Promise<boolean>) | null
+  >(null);
   public readonly submitted = output<SecretSantaParticipantInput>();
+  /** A save is running: the button waits. */
+  protected readonly saving = signal(false);
   public readonly cancelled = output<void>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -112,7 +121,8 @@ export class SecretSantaParticipantFormComponent {
     if (this.gifts().every((gift) => gift.trim())) this.addGiftField();
   }
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
+    if (this.saving()) return;
     const name = PersonName.create(this.name());
     const phoneText = this.phone().trim();
     const phone = phoneText ? Phone.create(phoneText) : null;
@@ -122,12 +132,20 @@ export class SecretSantaParticipantFormComponent {
       this.showErrors.set(true);
       return;
     }
-    this.submitted.emit({
+    const participant: SecretSantaParticipantInput = {
       name: name.value,
       phone: phone?.formatted ?? '',
       giftOptions: options.flatMap((option) => (option ? [option.value] : [])),
       ...(this.guestId() ? { guestId: this.guestId() } : {}),
-    });
+    };
+    const save = this.save();
+    if (save) {
+      this.saving.set(true);
+      const saved = await save(participant).finally(() => this.saving.set(false));
+      if (saved && !this.participant()) this.load(null);
+      return;
+    }
+    this.submitted.emit(participant);
     if (!this.participant()) this.load(null);
   }
 

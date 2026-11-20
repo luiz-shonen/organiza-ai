@@ -161,6 +161,13 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       'O CEP não trouxe o endereço completo',
     );
 
+    // The tail of the "g" in "Como chegar" is not cut off by the label's box.
+    const label = page
+      .getByTestId('event-directions-input')
+      .locator('xpath=ancestor::mat-form-field')
+      .locator('.mdc-floating-label');
+    await expect(label).toHaveCSS('overflow-y', 'visible');
+    await expect(label).toHaveCSS('text-overflow', 'ellipsis');
     await street.fill('Estrada da Serra do Cipó');
     await page.getByTestId('event-neighborhood-input').fill('Zona rural');
     await page.getByTestId('event-no-number').locator('input').check();
@@ -173,7 +180,6 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await page
       .getByTestId('event-editor-step-2')
       .screenshot({ path: 'e2e/screenshots/address-rural.png' });
-
     // Endereço, Itens and Amigo oculto, then save on Pix.
     await eventEditorPage.advanceStep();
     await eventEditorPage.advanceStep();

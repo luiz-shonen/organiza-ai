@@ -42,13 +42,18 @@ export const DIFF_EXCLUDES = [
   ':!e2e/screenshots',
 ];
 
-// gemini-3.8-flash is the current stable Flash; the -latest aliases keep reviews running if
-// it is retired before this list is updated. Pro and Flash-Lite have their own capacity, so
-// they still answer when Flash is overloaded (503 "high demand"). GEMINI_MODEL goes first.
+// Gemini 4 first: Hydrogen (fast, made for coding) and Argon (efficient reasoning). Then the
+// stable 3.x Flash models, and the -latest aliases, which keep reviews running if a model is
+// retired before this list is updated. Pro and Flash-Lite have their own capacity, so they
+// still answer when Flash is overloaded (503 "high demand"). GEMINI_MODEL goes first.
 export const FALLBACK_MODELS = [
+  'gemini-4-hydrogen',
+  'gemini-4-argon',
   'gemini-3.8-flash',
+  'gemini-3.6-flash',
   'gemini-flash-latest',
   'gemini-pro-latest',
+  'gemini-3.5-flash-lite',
   'gemini-flash-lite-latest',
 ];
 

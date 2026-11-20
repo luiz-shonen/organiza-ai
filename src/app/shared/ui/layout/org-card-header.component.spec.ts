@@ -7,7 +7,6 @@ describe('OrgCardHeaderComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(OrgCardHeaderComponent);
-    fixture.componentRef.setInput('icon', 'pix');
     fixture.componentRef.setInput('heading', 'Rachadinha via Pix');
     fixture.detectChanges();
   });
@@ -22,12 +21,5 @@ describe('OrgCardHeaderComponent', () => {
     fixture.componentRef.setInput('subheading', 'Contribua com o evento!');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('p')?.textContent).toContain('Contribua');
-  });
-
-  it('applies the requested tone to the icon badge', () => {
-    fixture.componentRef.setInput('tone', 'success');
-    fixture.detectChanges();
-    const badge = fixture.nativeElement.querySelector('.org-card-header__badge') as HTMLElement;
-    expect(badge.classList.contains('org-card-header__badge--success')).toBe(true);
   });
 });

@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+// A new notification: lilac tint and outline, so it stands out above the event list.
+.notice {
+  align-items: flex-start;
+  background: var(--org-state-selected);
+  border: 1px solid var(--org-primary);
+  border-radius: var(--org-radius-md);
+  color: var(--org-on-surface);
+  display: flex;
+  gap: var(--org-space-md);
+  padding: var(--org-space-md);
+
+  &--read {
+    background: var(--org-surface);
+    border-color: var(--org-outline-variant);
+  }
+}
+
+.notice__icon {
+  align-items: center;
+  background: var(--org-primary);
+  block-size: 40px;
+  border-radius: var(--org-radius-sm);
+  color: var(--org-on-primary);
+  display: inline-flex;
+  flex: none;
+  inline-size: 40px;
+  justify-content: center;
+}
+
+.notice__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--org-space-xs);
+  min-inline-size: 0;
+}
+
+.notice__title {
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-bold);
+  margin: 0;
+}
+
+.notice__body {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.notice org-button {
+  align-self: flex-start;
+}

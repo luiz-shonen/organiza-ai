@@ -1,0 +1,131 @@
+:host {
+  display: block;
+}
+
+.invite-envelope {
+  display: flex;
+  flex-direction: column;
+}
+
+// The envelope itself: the whole front opens the invitation.
+.invite-envelope__front {
+  background: var(--org-invite-envelope);
+  border-radius: var(--org-radius-card) var(--org-radius-card) 0 0;
+  color: var(--org-invite-text);
+  display: block;
+  min-block-size: 196px;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+
+  &:focus-visible {
+    outline: 3px solid var(--org-invite-seal);
+    outline-offset: -3px;
+  }
+}
+
+.invite-envelope__flap {
+  background: var(--org-invite-flap);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  inset: 0 0 auto;
+  block-size: 104px;
+  position: absolute;
+  transform-origin: top center;
+  transition: transform var(--org-motion-base) var(--org-motion-ease);
+}
+
+.invite-envelope__seal {
+  align-items: center;
+  background: var(--org-invite-seal);
+  block-size: 52px;
+  border-radius: var(--org-radius-full);
+  border: 3px solid color-mix(in srgb, var(--org-invite-on-seal) 22%, var(--org-invite-seal));
+  box-shadow: var(--org-shadow-sm);
+  color: var(--org-invite-on-seal);
+  display: flex;
+  font: var(--org-font-weight-regular) var(--org-font-size-script-md) / var(--org-line-height-none)
+    var(--org-font-script);
+  inline-size: 52px;
+  inset-block-start: 78px;
+  inset-inline-start: 50%;
+  justify-content: center;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: transform var(--org-motion-base) var(--org-motion-ease);
+}
+
+.invite-envelope__front:hover,
+.invite-envelope__front:focus-visible {
+  .invite-envelope__flap {
+    transform: scaleY(0.9);
+  }
+
+  .invite-envelope__seal {
+    transform: translateX(-50%) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .invite-envelope__flap,
+  .invite-envelope__seal {
+    transition: none;
+  }
+}
+
+// "Para Jéssica", the title and the date, written on the envelope below the seal.
+.invite-envelope__address {
+  display: grid;
+  gap: var(--org-space-2xs);
+  padding: 140px var(--org-space-md) var(--org-space-sm);
+  position: relative;
+}
+
+.invite-envelope__to {
+  color: var(--org-invite-ink);
+  font: var(--org-font-weight-semibold) var(--org-font-size-xs) / var(--org-line-height-tight)
+    var(--org-font-body);
+  letter-spacing: var(--org-letter-spacing-label);
+  text-transform: uppercase;
+}
+
+.invite-envelope__title {
+  color: var(--org-invite-text);
+  font: var(--org-font-weight-semibold) var(--org-font-size-lg) / var(--org-line-height-snug)
+    var(--org-font-display);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.invite-envelope__when {
+  color: var(--org-invite-muted);
+  font-size: var(--org-font-size-sm);
+}
+
+.invite-envelope__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-xs);
+  inset-block-start: var(--org-space-sm);
+  inset-inline-end: var(--org-space-sm);
+  position: absolute;
+}
+
+// What the page adds: the family checklist, "Responder convite".
+.invite-envelope__extras {
+  display: grid;
+  gap: var(--org-space-sm);
+  padding: var(--org-space-sm) var(--org-space-md) var(--org-space-md);
+
+  &:not(:has(> *:not(:empty))) {
+    display: none;
+  }
+}
+
+.invite-envelope__actions {
+  display: flex;
+  justify-content: flex-end;
+
+  &:empty {
+    display: none;
+  }
+}

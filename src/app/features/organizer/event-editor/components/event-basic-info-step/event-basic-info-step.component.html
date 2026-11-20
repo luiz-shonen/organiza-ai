@@ -7,11 +7,7 @@
 >
   <org-surface variant="card">
     <div class="event-step__card">
-      <org-card-header
-        icon="edit_note"
-        heading="Informações do evento"
-        subheading="O básico para seus convidados"
-      />
+      <org-card-header heading="Informações do evento" subheading="O básico para seus convidados" />
       <org-text-field
         label="Título do evento"
         placeholder="Ex: Festa Junina 2026"
@@ -58,10 +54,9 @@
       </div>
 
       <org-textarea-field
-        label="Descrição"
+        label="Descrição (opcional)"
         placeholder="Descreva o evento..."
         [rows]="4"
-        [required]="true"
         [maxLength]="descriptionMaxLength"
         [error]="fieldError(basicInfoForm.controls.description, 'Descrição é obrigatória')"
         formControlName="description"
@@ -91,15 +86,38 @@
         />
       </div>
     </div>
+
+    <!-- Who may confirm: anyone with the link (default), or only after the owner approves. -->
+    <div class="event-step__approval" data-testid="event-approval">
+      <org-toggle
+        label="Aprovar quem confirma pelo link"
+        testId="event-approval-toggle"
+        [disabled]="!canConfigureApproval()"
+        [checked]="requireApproval()"
+        (checkedChange)="requireApproval.set($event)"
+      />
+      <p class="event-step__approval-hint">
+        @if (requireApproval()) {
+          Cada confirmação fica esperando você aprovar antes de entrar na lista, no amigo oculto e
+          nos itens. Use se o link pode chegar a quem não foi convidado.
+        } @else {
+          Qualquer pessoa com o link confirma presença na hora. Ligue para aprovar cada uma antes.
+        }
+      </p>
+    </div>
   </org-surface>
+  @if (missingMessage(); as message) {
+    <div class="event-step__blocked" data-testid="step-missing-fields">
+      <org-banner variant="error" icon="info" [message]="message" />
+    </div>
+  }
   <div class="event-step__actions">
     <org-button label="Cancelar" variant="text" (pressed)="cancelled.emit()" />
     <org-button
       label="Próximo"
       testId="stepper-next-btn"
       [gradient]="false"
-      [disabled]="basicInfoForm.invalid"
-      (pressed)="next.emit()"
+      (pressed)="tryNext()"
     />
   </div>
 </form>

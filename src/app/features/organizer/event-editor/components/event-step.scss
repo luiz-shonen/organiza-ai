@@ -79,9 +79,29 @@
   justify-content: space-between;
 }
 
+// Why "Próximo" did not move on: what is still missing on this step.
+.event-step__blocked {
+  margin-block-start: var(--org-space-md);
+}
+
 // Why "Salvar" is disabled on the last step: the steps still to fill in.
 .event-step__missing {
   color: var(--org-warning-ink);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+// "Aprovar quem confirma pelo link" (step 1): the switch, then what it means.
+.event-step__approval {
+  border-block-start: 1px solid var(--org-outline-variant);
+  display: grid;
+  gap: var(--org-space-xs);
+  margin-block-start: var(--org-space-md);
+  padding-block-start: var(--org-space-md);
+}
+
+.event-step__approval-hint {
+  color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-sm);
   margin: 0;
 }

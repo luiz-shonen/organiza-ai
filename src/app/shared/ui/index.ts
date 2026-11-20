@@ -6,7 +6,6 @@ export { OrgPageHeaderComponent } from './layout/org-page-header.component';
 export { OrgSectionComponent } from './layout/org-section.component';
 export { OrgExpansionPanelComponent } from './layout/org-expansion-panel.component';
 export { OrgCardHeaderComponent } from './layout/org-card-header.component';
-export type { OrgCardHeaderTone } from './layout/org-card-header.component';
 export { OrgDateFieldComponent } from './forms/org-date-field.component';
 export { OrgTimeFieldComponent } from './forms/org-time-field.component';
 export type { OrgTimeOption } from './forms/org-time-field.component';

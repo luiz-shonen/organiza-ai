@@ -8,7 +8,6 @@
   <org-surface variant="card">
     <div class="event-step__card">
       <org-card-header
-        icon="place"
         heading="Endereço do evento"
         subheading="Digite o CEP e completamos o resto"
       />
@@ -82,14 +81,18 @@
       </div>
     </div>
   </org-surface>
+  @if (missingMessage(); as message) {
+    <div class="event-step__blocked" data-testid="step-missing-fields">
+      <org-banner variant="error" icon="info" [message]="message" />
+    </div>
+  }
   <div class="event-step__actions">
     <org-button label="Voltar" variant="text" (pressed)="back.emit()" />
     <org-button
       label="Próximo"
       testId="stepper-next-btn"
       [gradient]="false"
-      [disabled]="addressForm.invalid"
-      (pressed)="next.emit()"
+      (pressed)="tryNext()"
     />
   </div>
 </form>

@@ -13,6 +13,14 @@ export const routes: Routes = [
       import('./features/event-detail/event-detail.container').then((m) => m.EventDetailContainer),
   },
   {
+    // The secret link of the amigo oculto: opens without signing in.
+    path: 'amigo-oculto/:token',
+    loadComponent: () =>
+      import('./features/secret-santa/secret-santa-reveal.container').then(
+        (m) => m.SecretSantaRevealContainer,
+      ),
+  },
+  {
     path: 'perfil',
     canActivate: [authGuard],
     loadComponent: () =>

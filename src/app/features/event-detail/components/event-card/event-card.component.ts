@@ -1,3 +1,4 @@
+import { inviteTheme } from '../../../../core/utils';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { PartyEvent, getCategoryClass, getCategoryHue } from '../../../../core/models';
 import {
@@ -34,6 +35,23 @@ export class EventCardComponent {
   public readonly edit = output<void>();
 
   protected readonly categoryName = computed(() => this.event().category || 'Evento');
+  /** The colours and words of the invitation, from the category. */
+  protected readonly theme = computed(() => inviteTheme(this.event().category));
+
+  /** "Quinta", "24", "Dez · 20:00": the date block of the invitation. */
+  protected readonly dateParts = computed(() => {
+    const date = new Date(this.event().date);
+    if (isNaN(date.getTime())) return null;
+    const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' }).split('-')[0];
+    const month = date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+    const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+    return {
+      weekday: capital(weekday),
+      day: String(date.getDate()),
+      monthTime: `${capital(month)} · ${time}`,
+    };
+  });
 
   protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
   protected readonly categoryBadgeVariant = computed<OrgBadgeVariant>(
@@ -76,6 +94,9 @@ export class EventCardComponent {
     const { creatorName, creatorEmail } = this.event();
     return creatorName?.trim() || (creatorEmail ? creatorEmail.split('@')[0] : '');
   });
+  /** "Com carinho, Luiz": who signs the invitation (always the name, never "Você"). */
+  protected readonly signer = computed(() => this.creatorName());
+
   /** "Você" for the organizer; otherwise the organizer's name. */
   protected readonly organizerName = computed(() =>
     this.isOwner() ? 'Você' : this.creatorName() || 'Organizador(a)',

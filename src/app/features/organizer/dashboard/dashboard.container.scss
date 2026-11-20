@@ -51,3 +51,23 @@
 .dashboard__skeleton-card {
   block-size: 220px;
 }
+
+// "Próximos eventos 3": the same heading as Início.
+.dashboard__list-title {
+  align-items: center;
+  color: var(--org-on-surface);
+  display: flex;
+  font: var(--org-font-weight-semibold) var(--org-font-size-md) / var(--org-line-height-snug)
+    var(--org-font-display);
+  gap: var(--org-space-sm);
+  margin: 0;
+}
+
+.dashboard__list-count {
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface-variant);
+  font: var(--org-font-weight-semibold) var(--org-font-size-xs) / var(--org-line-height-none)
+    var(--org-font-body);
+  padding: var(--org-space-xs) var(--org-space-sm);
+}

@@ -14,7 +14,7 @@
         [guestCount]="guestCount()"
         [isOwner]="isOwner()"
         [viewerName]="currentGuestName()"
-        [canEdit]="canEdit()"
+        [canEdit]="canEditEvent()"
         (edit)="editEvent()"
       />
 
@@ -22,6 +22,7 @@
       @if (!isOwner()) {
         <app-rsvp-card
           [isConfirmed]="isUserConfirmed()"
+          [pendingApproval]="isUserPending()"
           [isDeclined]="isDeclined()"
           [canDecline]="!!memberUid()"
           [bringsSomething]="checklist().length > 0"
@@ -29,10 +30,24 @@
           [guestCount]="guestCount()"
           [isLoading]="rsvpLoading()"
           [guestName]="currentGuestName()"
+          [secretSanta]="mySecretSanta()"
+          [phone]="myPhone()"
           (confirmRsvp)="onConfirmRsvp()"
           (editRsvp)="onEditRsvp()"
           (cancelRsvp)="onCancelRsvp($event)"
           (declineRsvp)="onDeclineRsvp($event)"
+          (joinSanta)="onJoinSecretSantaOnly($event)"
+          (leaveSanta)="onLeaveSecretSanta()"
+        />
+      }
+
+      @if (secretSantaNotice(); as notice) {
+        <app-notification-card
+          data-testid="event-secret-santa-notice"
+          readNote="Você já abriu seu resultado do amigo oculto. Se não anotou o nome, peça um novo link para quem organiza o evento."
+          [notification]="notice"
+          [dismissible]="false"
+          (opened)="openSecretSantaNotice($event)"
         />
       }
 
@@ -54,9 +69,36 @@
         [households]="households()"
         [forOrganizer]="canEdit()"
         [declines]="declines()"
+        [pending]="pendingGuests()"
+        [busyGuestId]="approvingGuestId()"
+        (approve)="onApproveGuest($event)"
+        (refuse)="onRefuseGuest($event)"
         (exportCsv)="exportGuests()"
         (print)="printGuests()"
       />
+
+      @if (showSecretSanta()) {
+        <app-secret-santa-card
+          [participants]="secretSantaParticipants()"
+          [isOwner]="isOwner()"
+          [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
+          [links]="secretSantaLinks()"
+          [outdated]="secretSantaOutdated()"
+          [drawing]="secretSantaDrawing()"
+          [resendingId]="secretSantaResendingId()"
+          [canEditParticipants]="canEditEvent()"
+          [selfJoinOpen]="secretSantaSelfJoinOpen()"
+          [duplicates]="secretSantaDoubtful()"
+          [busyDuplicateId]="secretSantaBusyDuplicate()"
+          (selfJoinChange)="onSecretSantaSelfJoin($event)"
+          (merge)="onMergeSecretSanta($event)"
+          (distinct)="onDistinctSecretSanta($event)"
+          (draw)="onDrawSecretSanta()"
+          (send)="onSendSecretSanta($event)"
+          (resend)="onResendSecretSanta($event)"
+          (editParticipants)="onEditSecretSanta()"
+        />
+      }
 
       @if (event.pixKey) {
         <app-pix-card

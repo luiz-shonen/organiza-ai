@@ -13,6 +13,8 @@ export interface MockDocumentsOptions {
   events?: MockEvent[];
   userProfile?: MockDocument;
   familyMembers?: MockDocument[];
+  /** Any other collection, by path (e.g. `secretSantaReveals`, `events/{id}/secretSanta`). */
+  collections?: Record<string, MockDocument[]>;
 }
 
 export interface MockUserSessionOptions extends MockDocumentsOptions {
@@ -61,6 +63,10 @@ function buildMockDocumentStore(
   for (const event of events) {
     store[`events/${event.id}/items`] = [...(event.items ?? [])];
     store[`events/${event.id}/guests`] = [...(event.guests ?? [])];
+  }
+
+  for (const [path, docs] of Object.entries(options.collections ?? {})) {
+    store[path] = [...docs];
   }
 
   return store;

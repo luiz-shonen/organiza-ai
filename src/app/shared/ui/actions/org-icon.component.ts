@@ -64,7 +64,9 @@ export type OrgIconName =
   | 'check'
   | 'chevron_right'
   | 'event_available'
-  | 'calendar_today';
+  | 'calendar_today'
+  | 'redeem'
+  | 'visibility';
 
 export type OrgIconSize = 'sm' | 'md' | 'lg';
 
@@ -132,6 +134,8 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   chevron_right: 'chevron_right',
   event_available: 'event_available',
   calendar_today: 'calendar_today',
+  redeem: 'redeem',
+  visibility: 'visibility',
 };
 
 @Component({

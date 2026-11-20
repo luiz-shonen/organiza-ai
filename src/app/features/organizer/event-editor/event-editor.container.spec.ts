@@ -40,7 +40,7 @@ describe('EventEditorContainer', () => {
     title: 'Festa Junina',
     category: 'Festa Junina',
     description: 'Arraiá com quentão',
-    date: '2026-12-20T19:00:00.000Z',
+    date: '2099-12-20T19:00:00.000Z',
     location: 'Rua das Flores, 100 - Centro - São Paulo/SP - CEP: 01001-000',
     addressDetails: {
       cep: '01001-000',
@@ -185,6 +185,23 @@ describe('EventEditorContainer', () => {
       expect(component['missingSteps']()).toEqual(['Endereço']);
     });
 
+    it('does not edit an event that already happened: back to its page, saying why', () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      mockEventService.getEvent.mockReturnValue(
+        of({ ...mockOwnerEvent, date: '2020-12-24T20:00:00.000Z' }),
+      );
+      fixture = TestBed.createComponent(EventEditorContainer);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('id', 'evt-123');
+      fixture.detectChanges();
+
+      expect(mockFeedback.info).toHaveBeenCalledWith(
+        'Este evento já aconteceu e não pode mais ser editado.',
+      );
+      expect(navigate).toHaveBeenCalledWith(['/evento', 'evt-123'], { replaceUrl: true });
+      expect(component['basicInfoForm'].getRawValue().title).toBe('');
+    });
+
     it('opens a typed collaborator drawer for the event owner', () => {
       const drawer = TestBed.inject(DrawerService);
       component['openCollaboratorsDialog']();
@@ -255,13 +272,14 @@ describe('EventEditorContainer', () => {
       expect(component['basicInfoForm'].enabled).toBe(true);
     });
 
-    it('has four steps, with the optional items step before Pix', () => {
+    it('has five steps, with the optional items and amigo oculto steps before Pix', () => {
       const stepper = fixture.debugElement.query(By.directive(MatStepper))
         .componentInstance as MatStepper;
       expect(stepper.steps.map((step) => step.label)).toEqual([
         'Informações',
         'Endereço',
         'Itens',
+        'Amigo oculto',
         'Pix',
       ]);
       const element = fixture.nativeElement as HTMLElement;
@@ -326,6 +344,17 @@ describe('EventEditorContainer', () => {
 
       form.controls.date.setValue(new Date(Date.now() + 7 * 86_400_000));
       expect(form.valid).toBe(true);
+    });
+
+    it('accepts the event without a description', () => {
+      component['basicInfoForm'].setValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      expect(component['basicInfoForm'].valid).toBe(true);
     });
 
     it('refuses markup in the title, a bad house number and an invalid Pix key', async () => {

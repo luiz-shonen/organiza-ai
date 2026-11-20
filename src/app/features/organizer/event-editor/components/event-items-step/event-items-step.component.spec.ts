@@ -20,8 +20,22 @@ describe('EventItemsStepComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(EventItemsStepComponent);
     fixture.componentRef.setInput('items', ITEMS);
+    fixture.componentRef.setInput('enabled', true);
     fixture.detectChanges();
     element = fixture.nativeElement as HTMLElement;
+  });
+
+  it('asks first whether guests bring something; the form and list show only on yes', () => {
+    const answers: boolean[] = [];
+    fixture.componentInstance.enabledChange.subscribe((on) => answers.push(on));
+    fixture.componentRef.setInput('enabled', false);
+    fixture.detectChanges();
+    expect(element.textContent).toContain('Os convidados vão levar alguma coisa?');
+    expect(element.querySelector('[data-testid="item-name-input"]')).toBeNull();
+    expect(element.querySelector('[data-testid="item-list"]')).toBeNull();
+
+    (element.querySelector('[data-testid="items-toggle"] button') as HTMLButtonElement).click();
+    expect(answers).toEqual([true]);
   });
 
   it('lists each item with its quantity and an edit and a remove button', () => {

@@ -24,9 +24,13 @@ test('gemini-pr-review: constants and markers are properly defined', () => {
   assert.ok(NOTICE_COMMENT_BODY.includes(NOTICE_COMMENT_MARKER));
   assert.ok(NOTICE_COMMENT_BODY.includes('/review'));
   assert.deepEqual(FALLBACK_MODELS, [
+    'gemini-4-hydrogen',
+    'gemini-4-argon',
     'gemini-3.8-flash',
+    'gemini-3.6-flash',
     'gemini-flash-latest',
     'gemini-pro-latest',
+    'gemini-3.5-flash-lite',
     'gemini-flash-lite-latest',
   ]);
   assert.deepEqual(GENERATION_CONFIG, { thinkingConfig: { thinkingLevel: 'high' } });
@@ -35,13 +39,13 @@ test('gemini-pr-review: constants and markers are properly defined', () => {
   assert.equal(ISSUE_PROPOSAL_MARKER, '#### 🚀 Proposta para Nova Issue');
 });
 
-test('gemini-pr-review: a hung call is cut off well inside the 25 min job', () => {
+test('gemini-pr-review: a hung call is cut off well inside the 45 min job', () => {
   assert.equal(REQUEST_TIMEOUT_MS, 240_000);
   // Worst case: GEMINI_MODEL plus every fallback hangs once until the cap (a hung model is
   // dropped), on top of every round's wait.
   const waits = ROUND_DELAYS_MS.reduce((total, delay) => total + delay, 0);
   const worstCaseMs = (FALLBACK_MODELS.length + 1) * REQUEST_TIMEOUT_MS + waits;
-  assert.ok(worstCaseMs < 23 * 60_000);
+  assert.ok(worstCaseMs < 43 * 60_000);
 });
 
 const fakeGemini = (answers) => {

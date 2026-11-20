@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import type { GuestDecline } from '../../../../core/models';
-import type { GuestHousehold } from '../../../../core/utils';
+import type { GuestHousehold, PendingGuest } from '../../../../core/utils';
 import { Phone } from '../../../../core/value-objects';
 import {
   OrgAvatarComponent,
+  OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgExpansionPanelComponent,
   OrgIconButtonComponent,
@@ -20,6 +21,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     OrgAvatarComponent,
+    OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgExpansionPanelComponent,
     OrgIconButtonComponent,
@@ -33,6 +35,12 @@ export class GuestListCardComponent {
   /** Organizers only: phones, "Não poderão ir", Excel and print. */
   readonly forOrganizer = input(false);
   readonly declines = input<readonly GuestDecline[]>([]);
+  /** Organizers only: confirmations waiting for approval ("Aprovar quem confirma pelo link"). */
+  readonly pending = input<readonly PendingGuest[]>([]);
+  /** The waiting guest being approved or refused, while it saves. */
+  readonly busyGuestId = input<string | null>(null);
+  readonly approve = output<PendingGuest>();
+  readonly refuse = output<PendingGuest>();
 
   readonly exportCsv = output<void>();
   readonly print = output<void>();

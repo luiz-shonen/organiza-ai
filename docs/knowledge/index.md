@@ -20,6 +20,7 @@ A rule that has `enforced_by` is checked by a script or a test; the check is the
 | [styling-rules](decisions/styling-rules.md)               | BEM, no `!important`, no literal typography or motion, mobile-first                       |
 | [firebase-and-auth](decisions/firebase-and-auth.md)       | Modular SDK, accounts only, owner and collaborator rules, runtime key, stored invite data |
 | [events-and-invites](decisions/events-and-invites.md)     | Invite states, event states by start time, filter chips, tags, RSVP drawer, "Quem vai"    |
+| [secret-santa](decisions/secret-santa.md)                 | Amigo oculto: participants, invite sign-ups, duplicates, owner-only draw, secret links    |
 | [household-claims](decisions/household-claims.md)         | What each family brings: claims per household, units, fixed quantity, bought              |
 | [routes-and-domains](decisions/routes-and-domains.md)     | `/meus-eventos` vs `/admin`, feature folders                                              |
 | [testing](decisions/testing.md)                           | Vitest, Firestore rules tests, atomic Playwright E2E                                      |

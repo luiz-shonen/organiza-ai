@@ -85,3 +85,19 @@ export class EventCategory {
     return text ? new EventCategory(text) : null;
   }
 }
+
+/** A gift option of the secret santa ("Chinelo, cor verde, tamanho 36"): 2 to 120 characters. */
+export class GiftOption {
+  static readonly RULES: PlainTextRules = { min: 2, max: 120 };
+
+  private constructor(readonly value: string) {}
+
+  static validate(raw: string | null | undefined): string | null {
+    return validatePlainText(raw, GiftOption.RULES);
+  }
+
+  static create(raw: string | null | undefined): GiftOption | null {
+    const text = createText(raw, GiftOption.RULES);
+    return text ? new GiftOption(text) : null;
+  }
+}

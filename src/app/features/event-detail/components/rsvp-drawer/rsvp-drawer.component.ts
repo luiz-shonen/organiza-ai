@@ -9,8 +9,10 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { FamilyMember } from '../../../../core/models';
+import { FamilyMember, type RsvpSecretSantaKey } from '../../../../core/models';
+import { parseGiftLines } from '../../../../core/utils';
 import {
+  GiftOption,
   Phone,
   fieldError,
   requiredText,
@@ -24,9 +26,18 @@ import {
 import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
 import {
   OrgButtonComponent,
+  OrgCheckboxComponent,
   OrgIconButtonComponent,
   OrgTextFieldComponent,
+  OrgTextareaFieldComponent,
 } from '../../../../shared/ui';
+
+/** One person the guest can put in the amigo oculto: themself, a relative or a companion. */
+export interface RsvpSantaPerson {
+  readonly key: RsvpSecretSantaKey;
+  readonly name: string;
+  readonly label: string;
+}
 
 export type RsvpDrawerData = RsvpDrawerRequestData;
 
@@ -38,8 +49,10 @@ export type RsvpDrawerData = RsvpDrawerRequestData;
     CompanionSelectorComponent,
     FamilySelectorComponent,
     OrgButtonComponent,
+    OrgCheckboxComponent,
     OrgIconButtonComponent,
     OrgTextFieldComponent,
+    OrgTextareaFieldComponent,
   ],
   templateUrl: './rsvp-drawer.component.html',
   styleUrl: './rsvp-drawer.component.scss',
@@ -72,6 +85,28 @@ export class RsvpDrawerComponent {
   /** The name comes from the profile; it is changed there, not here. */
   protected readonly guestName = computed(() => this.drawerData().session?.name ?? '');
 
+  /** "Quem vai participar do amigo oculto?": who is checked, and each one's gift options. */
+  protected readonly santa = computed(() => this.drawerData().secretSanta ?? null);
+  protected readonly santaChecked = signal<readonly RsvpSecretSantaKey[]>([]);
+  protected readonly santaGifts = signal<Readonly<Record<RsvpSecretSantaKey, string>>>({});
+  private readonly santaGiftsError = signal(false);
+  protected readonly giftLineMax = GiftOption.RULES.max;
+  /** The guest, then the relatives and companions checked above: only who is going. */
+  protected readonly santaPeople = computed<RsvpSantaPerson[]>(() => {
+    const name = this.guestName();
+    return [
+      { key: 'self', name, label: name ? `Você (${name})` : 'Você' },
+      ...this.familyMembers()
+        .filter((member) => this.selectedFamilyMemberIds().includes(member.id))
+        .map((member) => ({ key: `f:${member.id}`, name: member.name, label: member.name })),
+      ...this.selectedCompanions().map((companion) => ({
+        key: `c:${companion}`,
+        name: companion,
+        label: `${companion} (acompanhante)`,
+      })),
+    ];
+  });
+
   constructor() {
     effect(() => {
       const data = this.drawerData();
@@ -86,7 +121,60 @@ export class RsvpDrawerComponent {
         this.selectedFamilyMemberIds.set(existing.familyMemberIds.filter((id) => known.has(id)));
         this.selectedCompanions.set([...existing.companions]);
       }
+
+      const joined = data.secretSanta?.joined ?? {};
+      this.santaChecked.set(Object.keys(joined));
+      this.santaGifts.set(
+        Object.fromEntries(Object.entries(joined).map(([key, gifts]) => [key, gifts.join('\n')])),
+      );
     });
+  }
+
+  protected isSantaChecked(key: RsvpSecretSantaKey): boolean {
+    return this.santaChecked().includes(key);
+  }
+
+  protected setSantaChecked(key: RsvpSecretSantaKey, checked: boolean): void {
+    this.santaChecked.update((keys) =>
+      checked ? [...keys.filter((k) => k !== key), key] : keys.filter((k) => k !== key),
+    );
+  }
+
+  protected setSantaGifts(key: RsvpSecretSantaKey, text: string): void {
+    this.santaGifts.update((all) => ({ ...all, [key]: text }));
+  }
+
+  /** The error of one person's gift options: the first line too short or too long. */
+  protected santaGiftError(key: RsvpSecretSantaKey): string {
+    if (!this.santaGiftsError()) return '';
+    const max = this.santa()?.maxGiftOptions ?? 1;
+    const lines = parseGiftLines(this.santaGifts()[key] ?? '', max);
+    const bad = lines.find((line) => GiftOption.validate(line));
+    return bad ? `"${bad}": ${GiftOption.validate(bad)}` : '';
+  }
+
+  protected santaGiftLabel(person: RsvpSantaPerson): string {
+    const max = this.santa()?.maxGiftOptions ?? 1;
+    const self = person.key === 'self';
+    if (max === 1) return `Opção de presente ${self ? 'sua' : `de ${person.name}`} (opcional)`;
+    return `Opções de presente ${self ? 'suas' : `de ${person.name}`}, uma por linha, até ${max} (opcional)`;
+  }
+
+  /** Who is in the draw, among the people still going; null when the drawer does not ask. */
+  private santaChoice(): Record<RsvpSecretSantaKey, string[]> | null {
+    const santa = this.santa();
+    if (!santa?.open) return null;
+    const going = new Set(this.santaPeople().map((person) => person.key));
+    return Object.fromEntries(
+      this.santaChecked()
+        .filter((key) => going.has(key))
+        .map((key) => [
+          key,
+          santa.giftOptions
+            ? parseGiftLines(this.santaGifts()[key] ?? '', santa.maxGiftOptions)
+            : [],
+        ]),
+    );
   }
 
   protected onToggleCompanion(name: string): void {
@@ -138,6 +226,14 @@ export class RsvpDrawerComponent {
       this.form.markAllAsTouched();
       return;
     }
+    const santa = this.santaChoice();
+    const badGift = Object.values(santa ?? {}).some((gifts) =>
+      gifts.some((gift) => GiftOption.validate(gift)),
+    );
+    if (badGift) {
+      this.santaGiftsError.set(true);
+      return;
+    }
 
     const raw = this.form.getRawValue();
     const result: RsvpDrawerResult = {
@@ -147,6 +243,7 @@ export class RsvpDrawerComponent {
       selectedFamilyMembers: this.familyMembers().filter((member) =>
         this.selectedFamilyMemberIds().includes(member.id),
       ),
+      ...(santa ? { secretSanta: santa } : {}),
     };
     this.submitted.emit(result);
   }

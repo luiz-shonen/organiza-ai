@@ -17,11 +17,13 @@ import {
   HeaderService,
   AuthService,
   UserService,
+  GuestService,
+  SecretSantaService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
-import { formatCep, parseLocation } from '../../../core/utils';
+import { formatCep, hasStarted, parseLocation, splitGuestsByApproval } from '../../../core/utils';
 import {
   AddressNumber,
   Cep,
@@ -34,7 +36,16 @@ import {
   requiredText,
   valueObjectValidator,
 } from '../../../core/value-objects';
-import { EVENT_CATEGORIES, NewPartyItem, PartyEvent, PartyItem } from '../../../core/models';
+import {
+  EVENT_CATEGORIES,
+  Guest,
+  NewPartyItem,
+  PartyEvent,
+  PartyItem,
+  SecretSantaParticipant,
+  SecretSantaParticipantInput,
+  SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+} from '../../../core/models';
 import { EventAddressStepComponent } from './components/event-address-step/event-address-step.component';
 import { EventBasicInfoStepComponent } from './components/event-basic-info-step/event-basic-info-step.component';
 import {
@@ -42,6 +53,11 @@ import {
   type ItemUpdate,
 } from './components/event-items-step/event-items-step.component';
 import { EventPixStepComponent } from './components/event-pix-step/event-pix-step.component';
+import {
+  EventSecretSantaStepComponent,
+  type SecretSantaParticipantUpdate,
+  type SecretSantaSuggestion,
+} from './components/event-secret-santa-step/event-secret-santa-step.component';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
@@ -78,6 +94,7 @@ function saveErrorMessage(error: unknown): string {
     EventBasicInfoStepComponent,
     EventItemsStepComponent,
     EventPixStepComponent,
+    EventSecretSantaStepComponent,
     OrgBannerComponent,
     OrgButtonComponent,
     OrgPageHeaderComponent,
@@ -105,6 +122,8 @@ export class EventEditorContainer implements OnInit {
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly guestService = inject(GuestService);
+  private readonly secretSantaService = inject(SecretSantaService);
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -117,13 +136,61 @@ export class EventEditorContainer implements OnInit {
   protected readonly items = signal<PartyItem[]>([]);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
-  protected readonly stepLabels = ['Informações', 'Endereço', 'Itens', 'Pix'] as const;
+  protected readonly stepLabels = [
+    'Informações',
+    'Endereço',
+    'Itens',
+    'Amigo oculto',
+    'Pix',
+  ] as const;
   /** Items typed while creating the event; saved right after the event exists. */
   protected readonly draftItems = signal<NewPartyItem[]>([]);
   protected readonly stepItems = computed<readonly NewPartyItem[]>(() =>
     this.isEditing() ? this.items() : this.draftItems(),
   );
+  /** "Os convidados vão levar alguma coisa?": on by itself when the event already has items. */
+  protected readonly itemsEnabled = signal(false);
   protected readonly categories = EVENT_CATEGORIES;
+
+  /** "Vai ter amigo oculto?" and "Incluir opções de presente", saved with the event. */
+  protected readonly secretSantaEnabled = signal(false);
+  protected readonly secretSantaGiftOptions = signal(false);
+  protected readonly secretSantaMaxGifts = signal(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);
+  /** "Aprovar quem confirma pelo link": off by default. */
+  protected readonly requireApproval = signal(false);
+  private readonly savedParticipants = signal<SecretSantaParticipant[]>([]);
+  /** Participants typed while creating the event; saved right after the event exists. */
+  protected readonly draftParticipants = signal<SecretSantaParticipantInput[]>([]);
+  protected readonly stepParticipants = computed<readonly SecretSantaParticipantInput[]>(() =>
+    this.isEditing() ? this.savedParticipants() : this.draftParticipants(),
+  );
+  private readonly guests = signal<Guest[]>([]);
+  /** The owner already drew: changing the list asks for a new draw. */
+  protected readonly secretSantaDrawn = signal(false);
+  private drawWatched = false;
+  private secretSantaLoaded = false;
+  private itemsLoaded = false;
+
+  /** Confirmed guests, their relatives and companions not yet in the amigo oculto. */
+  protected readonly secretSantaSuggestions = computed<SecretSantaSuggestion[]>(() => {
+    const taken = new Set(this.stepParticipants().map((p) => p.guestId ?? ''));
+    const names = new Set(this.stepParticipants().map((p) => p.name.trim().toLowerCase()));
+    const people: SecretSantaSuggestion[] = [];
+    // Guests still waiting for approval are not offered.
+    const { approved } = splitGuestsByApproval(
+      this.guests(),
+      !!this.currentEvent()?.requireApproval,
+    );
+    for (const guest of approved) {
+      people.push({ guestId: guest.id, name: guest.name, phone: guest.phone ?? '' });
+      (guest.companions ?? []).forEach((companion, i) =>
+        people.push({ guestId: `${guest.id}#${i}`, name: companion.name, phone: '' }),
+      );
+    }
+    return people.filter(
+      (p) => p.name.trim() && !taken.has(p.guestId) && !names.has(p.name.trim().toLowerCase()),
+    );
+  });
 
   public readonly isOwner = computed(() => {
     if (!this.isEditing()) return true;
@@ -137,7 +204,8 @@ export class EventEditorContainer implements OnInit {
     {
       title: ['', [requiredText, valueObjectValidator(EventTitle.validate)]],
       category: ['', [requiredText, valueObjectValidator(EventCategory.validate)]],
-      description: ['', [requiredText, valueObjectValidator(EventDescription.validate)]],
+      // Optional: an event can go out with just a title, date and place.
+      description: ['', [valueObjectValidator(EventDescription.validate)]],
       date: [null as Date | null, [Validators.required, validDate]],
       time: ['', [Validators.required]],
     },
@@ -182,6 +250,12 @@ export class EventEditorContainer implements OnInit {
 
       const eventSub = this.eventService.getEvent(eventId).subscribe({
         next: (event) => {
+          // An event that already happened is history: it is no longer edited.
+          if (event && hasStarted(event.date)) {
+            this.feedback.info('Este evento já aconteceu e não pode mais ser editado.');
+            void this.router.navigate(['/evento', eventId], { replaceUrl: true });
+            return;
+          }
           if (event) {
             this.currentEvent.set(event);
             let d = new Date(event.date);
@@ -212,8 +286,29 @@ export class EventEditorContainer implements OnInit {
               pixKey: event.pixKey ?? '',
             });
 
+            // Read once: a later snapshot of the event must not undo switches not saved yet.
+            if (!this.secretSantaLoaded) {
+              this.secretSantaLoaded = true;
+              this.secretSantaEnabled.set(event.secretSanta?.enabled ?? false);
+              this.requireApproval.set(event.requireApproval ?? false);
+              this.secretSantaGiftOptions.set(event.secretSanta?.giftOptions ?? false);
+              this.secretSantaMaxGifts.set(
+                event.secretSanta?.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+              );
+            }
+
             const isEventOwner =
               !event.createdBy || event.createdBy === this.authService.currentUser()?.uid;
+            // Only the owner may read the draw; it tells whether the list changed after it.
+            if (isEventOwner && !this.drawWatched) {
+              this.drawWatched = true;
+              const drawSub = this.secretSantaService.watchDraw(eventId).subscribe({
+                next: (draw) => this.secretSantaDrawn.set(!!draw),
+                error: () => this.secretSantaDrawn.set(false),
+              });
+              this.destroyRef.onDestroy(() => drawSub.unsubscribe());
+            }
+
             if (!isEventOwner) {
               this.basicInfoForm.disable();
               this.addressForm.disable();
@@ -234,12 +329,31 @@ export class EventEditorContainer implements OnInit {
       });
 
       const itemsSub = this.itemService.listItems(eventId).subscribe({
-        next: (items) => this.items.set(items),
+        next: (items) => {
+          this.items.set(items);
+          // Only the first list sets the question; later ones follow what the organizer chose.
+          if (!this.itemsLoaded) {
+            this.itemsLoaded = true;
+            if (items.length) this.itemsEnabled.set(true);
+          }
+        },
+      });
+
+      const participantsSub = this.secretSantaService.listParticipants(eventId).subscribe({
+        next: (participants) => this.savedParticipants.set(participants),
+        error: () => this.savedParticipants.set([]),
+      });
+
+      const guestsSub = this.guestService.listGuests(eventId).subscribe({
+        next: (guests) => this.guests.set(guests),
+        error: () => this.guests.set([]),
       });
 
       this.destroyRef.onDestroy(() => {
         eventSub.unsubscribe();
         itemsSub.unsubscribe();
+        participantsSub.unsubscribe();
+        guestsSub.unsubscribe();
       });
     }
   }
@@ -249,7 +363,7 @@ export class EventEditorContainer implements OnInit {
     const missing: string[] = [];
     if (this.basicInfoForm.invalid) missing.push(this.stepLabels[0]);
     if (this.addressForm.invalid) missing.push(this.stepLabels[1]);
-    if (this.pixForm.invalid) missing.push(this.stepLabels[3]);
+    if (this.pixForm.invalid) missing.push(this.stepLabels[4]);
     return missing;
   }
 
@@ -327,6 +441,14 @@ export class EventEditorContainer implements OnInit {
       creatorEmail: user?.email ?? '',
       creatorName: profileName || user?.displayName || this.currentEvent()?.creatorName || '',
       collaborators: this.currentEvent()?.collaborators ?? [],
+      requireApproval: this.requireApproval(),
+      secretSanta: {
+        enabled: this.secretSantaEnabled(),
+        giftOptions: this.secretSantaGiftOptions(),
+        maxGiftOptions: this.secretSantaMaxGifts(),
+        // Closing sign-ups is done on the event page; saving here keeps that choice.
+        ...(this.currentEvent()?.secretSanta?.selfJoin === false ? { selfJoin: false } : {}),
+      },
     };
 
     try {
@@ -341,6 +463,12 @@ export class EventEditorContainer implements OnInit {
           await this.itemService.addItem(newId, item);
         }
         this.draftItems.set([]);
+        if (this.secretSantaEnabled()) {
+          for (const participant of this.draftParticipants()) {
+            await this.secretSantaService.addParticipant(newId, participant);
+          }
+        }
+        this.draftParticipants.set([]);
         this.confetti.fireSuccessConfetti();
         this.feedback.success('Evento criado com sucesso!');
         await this.router.navigate(['/meus-eventos/evento', newId]);
@@ -396,6 +524,43 @@ export class EventEditorContainer implements OnInit {
         }
       },
     });
+  }
+
+  /** Turning the question off with items on the list removes them, after asking. */
+  protected async setItemsEnabled(enabled: boolean): Promise<void> {
+    this.itemsEnabled.set(enabled);
+    const items = this.stepItems();
+    if (enabled || !items.length) return;
+
+    const eventId = this.id();
+    const saved = this.isEditing() && !!eventId;
+    const count =
+      items.length === 1 ? 'O item adicionado sai' : `Os ${items.length} itens adicionados saem`;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Tirar a lista de itens?',
+        message: saved
+          ? `${count} da lista do evento, e quem já escolheu algum deixa de levá-lo.`
+          : `${count} da lista deste evento.`,
+        confirmLabel: 'Tirar itens',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) {
+      this.itemsEnabled.set(true);
+      return;
+    }
+    if (!saved) {
+      this.draftItems.set([]);
+      return;
+    }
+    const results = await Promise.allSettled(
+      this.items().map((item) => this.itemService.deleteItem(eventId, item.id)),
+    );
+    if (results.some((result) => result.status === 'rejected')) {
+      this.itemsEnabled.set(true);
+      this.feedback.error('Erro ao remover itens.');
+    }
   }
 
   protected async addItem(item: NewPartyItem): Promise<void> {
@@ -457,6 +622,75 @@ export class EventEditorContainer implements OnInit {
       await this.itemService.deleteItem(eventId, item.id);
     } catch {
       this.feedback.error('Erro ao remover item.');
+    }
+  }
+
+  protected async addParticipant(participant: SecretSantaParticipantInput): Promise<void> {
+    await this.addParticipants([participant]);
+  }
+
+  protected async addParticipants(
+    participants: readonly SecretSantaParticipantInput[],
+  ): Promise<void> {
+    const eventId = this.id();
+    if (!this.isEditing() || !eventId) {
+      this.draftParticipants.update((list) => [...list, ...participants]);
+      return;
+    }
+    try {
+      for (const participant of participants) {
+        await this.secretSantaService.addParticipant(eventId, participant);
+      }
+    } catch {
+      this.feedback.error('Erro ao adicionar participante.');
+    }
+  }
+
+  protected async updateParticipant({
+    index,
+    participant,
+  }: SecretSantaParticipantUpdate): Promise<void> {
+    const eventId = this.id();
+    if (!this.isEditing() || !eventId) {
+      this.draftParticipants.update((list) =>
+        list.map((current, i) => (i === index ? participant : current)),
+      );
+      return;
+    }
+    const saved = this.savedParticipants()[index];
+    if (!saved) return;
+    try {
+      await this.secretSantaService.updateParticipant(eventId, saved.id, participant);
+      this.feedback.success('Participante atualizado');
+    } catch {
+      this.feedback.error('Erro ao atualizar participante.');
+    }
+  }
+
+  protected async removeParticipant(index: number): Promise<void> {
+    const eventId = this.id();
+    const saved = this.isEditing() && eventId ? this.savedParticipants()[index] : null;
+    const participant = saved ?? this.draftParticipants()[index];
+    if (!participant) return;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Remover participante',
+        message: this.secretSantaDrawn()
+          ? `${participant.name} sai do amigo oculto. O sorteio já foi feito: será preciso sortear de novo.`
+          : `${participant.name} sai do amigo oculto deste evento.`,
+        confirmLabel: 'Remover',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) return;
+    if (!saved || !eventId) {
+      this.draftParticipants.update((list) => list.filter((_, i) => i !== index));
+      return;
+    }
+    try {
+      await this.secretSantaService.removeParticipant(eventId, saved.id);
+    } catch {
+      this.feedback.error('Erro ao remover participante.');
     }
   }
 

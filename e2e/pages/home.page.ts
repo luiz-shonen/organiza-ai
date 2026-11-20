@@ -15,7 +15,7 @@ export class HomePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.pageRoot = page.getByTestId('home-page').or(page.locator('section.home'));
-    this.eventCards = page.getByTestId('event-card').or(page.locator('a.home__card-link'));
+    this.eventCards = page.getByTestId('invite-envelope').or(page.getByTestId('event-card'));
     this.emptyState = page.getByTestId('home-empty-state').or(page.locator('.home__empty'));
     // No hamburger: visitors get an "Entrar" button, members the bottom bar (phone) or
     // the header navigation (desktop). Both expose the same nav-* test ids.

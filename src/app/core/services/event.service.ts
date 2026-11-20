@@ -9,6 +9,7 @@ import {
   EventInvitation,
   AddressDetails,
   PixType,
+  SecretSantaSettings,
 } from '../models';
 
 @Injectable({ providedIn: 'root' })
@@ -272,6 +273,8 @@ export class EventService {
       creatorEmail: (data['creatorEmail'] as string) ?? '',
       creatorName: (data['creatorName'] as string) ?? '',
       collaborators: (data['collaborators'] as string[]) ?? [],
+      ...(data['secretSanta'] ? { secretSanta: data['secretSanta'] as SecretSantaSettings } : {}),
+      ...(data['requireApproval'] === true ? { requireApproval: true } : {}),
       createdAt: (data['createdAt'] as string) ?? '',
       updatedAt: (data['updatedAt'] as string) ?? '',
     };

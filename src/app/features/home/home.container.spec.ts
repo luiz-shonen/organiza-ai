@@ -2,10 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { HomeContainer } from './home.container';
-import { AuthService, ClaimService, ItemService, UserService } from '../../core/services';
+import {
+  AuthService,
+  ClaimService,
+  GuestService,
+  InboxService,
+  ItemService,
+  UserService,
+} from '../../core/services';
 import type { EventClaims, PartyEvent } from '../../core/models';
 
 const inDays = (days: number): string => new Date(Date.now() + 86_400_000 * days).toISOString();
@@ -46,6 +53,9 @@ describe('HomeContainer', () => {
     entries: [{ itemId: 'i1', memberId: 'f1', who: 'Pedro', quantity: 2, bought: false }],
   };
 
+  const guestService = { getGuest: vi.fn().mockResolvedValue(null) };
+  const inbox = { watchUnread: vi.fn(), markRead: vi.fn().mockResolvedValue(undefined) };
+
   const element = () => fixture.nativeElement as HTMLElement;
 
   beforeEach(async () => {
@@ -57,6 +67,9 @@ describe('HomeContainer', () => {
     userService.getVisibleEvents.mockReset();
     userService.getVisibleEvents.mockImplementation(() => eventsSubject.asObservable());
     claimService.getClaims.mockResolvedValue(household);
+    inbox.watchUnread.mockReset();
+    inbox.watchUnread.mockReturnValue(of([]));
+    guestService.getGuest.mockReset().mockResolvedValue(null);
 
     await TestBed.configureTestingModule({
       imports: [HomeContainer],
@@ -76,6 +89,8 @@ describe('HomeContainer', () => {
           },
         },
         { provide: ClaimService, useValue: claimService },
+        { provide: InboxService, useValue: inbox },
+        { provide: GuestService, useValue: guestService },
       ],
     }).compileComponents();
 
@@ -98,12 +113,26 @@ describe('HomeContainer', () => {
     );
   });
 
+  it('still lists the events when the notices cannot be read', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    inbox.watchUnread.mockReturnValue(
+      throwError(() => new Error('Missing or insufficient permissions.')),
+    );
+    currentUser.set({ uid: 'u1', displayName: 'Jéssica Souza', isAnonymous: false });
+    fixture.detectChanges();
+    eventsSubject.next([pending]);
+    fixture.detectChanges();
+
+    expect(element().querySelector('org-loading-state')).toBeNull();
+    expect(element().querySelectorAll('app-invite-envelope')).toHaveLength(1);
+  });
+
   it('greets visitors with the discovery title and lists no events, since events are private', () => {
     fixture.detectChanges();
 
     expect(element().querySelector('h1')?.textContent).toContain('Descubra');
     expect(element().querySelector('org-filter-bar')).toBeNull();
-    expect(element().querySelectorAll('app-event-summary-card')).toHaveLength(0);
+    expect(element().querySelectorAll('app-invite-envelope')).toHaveLength(0);
     expect(element().querySelector('[data-testid="home-empty-state"]')).not.toBeNull();
     expect(userService.getVisibleEvents).not.toHaveBeenCalled();
   });
@@ -147,7 +176,7 @@ describe('HomeContainer', () => {
 
     it('combines the filter chips, and "Todos" clears them', () => {
       const titles = () =>
-        Array.from(element().querySelectorAll('.event-summary-card__title')).map((title) =>
+        Array.from(element().querySelectorAll('.invite-envelope__title')).map((title) =>
           title.textContent?.trim(),
         );
       // A chip toggles: Material's primary action is the button inside the chip.
@@ -195,8 +224,15 @@ describe('HomeContainer', () => {
       ]);
     });
 
+    it('shows each invite as an envelope for the member, in the colours of its category', () => {
+      const envelope = element().querySelector('app-invite-envelope');
+      expect(envelope?.textContent).toContain('Para Jéssica');
+      expect(envelope?.querySelector('article')?.className).toContain('org-invite--');
+      expect(envelope?.querySelector('a[data-testid="event-card-link"]')).not.toBeNull();
+    });
+
     it('offers "Ver convite" on an answered invite instead of "Responder convite"', () => {
-      const confirmedCard = element().querySelectorAll('app-event-summary-card')[0];
+      const confirmedCard = element().querySelectorAll('app-invite-envelope')[0];
       expect(confirmedCard.querySelector('[data-testid="view-invite-btn"]')).not.toBeNull();
       expect(confirmedCard.querySelector('[data-testid="answer-invite-btn"]')).toBeNull();
     });
@@ -212,7 +248,7 @@ describe('HomeContainer', () => {
       eventsSubject.next([confirmed, { ...pending, createdBy: 'u1' }, past]);
       fixture.detectChanges();
 
-      const titles = Array.from(element().querySelectorAll('.event-summary-card__title')).map(
+      const titles = Array.from(element().querySelectorAll('.invite-envelope__title')).map(
         (title) => title.textContent?.trim(),
       );
       expect(titles).toEqual(['Festa Junina']);
@@ -222,7 +258,7 @@ describe('HomeContainer', () => {
     });
   });
 
-  it('shows a declined invite as "Recusado", out of the pending count', async () => {
+  it('keeps a declined invite out of "Todos" and the pending count, under "Recusados"', async () => {
     userService.getDeclinedEvents.mockResolvedValue(['evt-2']);
     currentUser.set({ uid: 'u1', displayName: 'Jéssica Souza', isAnonymous: false });
     fixture.detectChanges();
@@ -233,10 +269,35 @@ describe('HomeContainer', () => {
     const statuses = Array.from(element().querySelectorAll('[data-testid="event-status"]')).map(
       (badge) => badge.textContent?.trim(),
     );
-    expect(statuses).toEqual(['Confirmado', 'Recusado']);
+    expect(statuses).toEqual(['Confirmado']);
     expect(element().querySelector('[data-testid="answer-invite-btn"]')).toBeNull();
+    fixture.componentInstance['activeFilters'].set(['declined']);
+    fixture.detectChanges();
+    const declined = Array.from(element().querySelectorAll('[data-testid="event-status"]')).map(
+      (badge) => badge.textContent?.trim(),
+    );
+    expect(declined).toEqual(['Recusado']);
     expect(element().querySelector('.org-page-header__subtitle')?.textContent).toContain(
       '0 convites esperando resposta',
+    );
+  });
+
+  it('says a confirmation is waiting for approval, and does not count it as confirmed yet', async () => {
+    const waiting = { ...confirmed, requireApproval: true };
+    userService.getAttendedEvents.mockResolvedValue([waiting]);
+    guestService.getGuest.mockResolvedValue({ id: 'u1', approved: false });
+    currentUser.set({ uid: 'u1', displayName: 'Jéssica Souza', isAnonymous: false });
+    fixture.detectChanges();
+    eventsSubject.next([waiting]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(guestService.getGuest).toHaveBeenCalledWith('evt-1', 'u1');
+    expect(element().querySelector('[data-testid="event-status"]')?.textContent?.trim()).toBe(
+      'Aguardando aprovação',
+    );
+    expect(element().querySelector('.org-page-header__subtitle')?.textContent).toContain(
+      '0 eventos confirmados',
     );
   });
 });

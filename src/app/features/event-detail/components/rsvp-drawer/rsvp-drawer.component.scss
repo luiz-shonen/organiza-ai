@@ -103,6 +103,35 @@
     min-height: 48px;
   }
 
+  // "Amigo oculto": one checkbox per person going, each with their gift options below it.
+  &__santa {
+    border-block-start: 1px solid var(--org-outline-variant);
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-sm);
+    margin-block-start: var(--org-space-md);
+    padding-block-start: var(--org-space-md);
+  }
+
+  &__santa-title {
+    color: var(--org-on-surface);
+    font-size: var(--org-font-size-md);
+    font-weight: var(--org-font-weight-semibold);
+    margin: 0;
+  }
+
+  &__santa-text {
+    color: var(--org-on-surface-variant);
+    font-size: var(--org-font-size-sm);
+    margin: 0;
+  }
+
+  &__santa-person {
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-xs);
+  }
+
   @include semantic.tablet {
     &__header,
     &__actions {

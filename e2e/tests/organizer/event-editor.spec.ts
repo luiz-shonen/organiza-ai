@@ -132,7 +132,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
       const active = page.locator('.mat-step-header[aria-selected="true"]');
       await expect(active).toContainText('Informações');
-      await expect(page.locator('.mat-step-header')).toHaveCount(4);
+      await expect(page.locator('.mat-step-header')).toHaveCount(5);
     });
   });
 
@@ -146,7 +146,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Verify stepper step labels are rendered
     await expect(
       page.locator('.mat-step-header, .mat-step-label, .editor__step-progress-title, org-step'),
-    ).toContainText(['Informações', 'Endereço', 'Itens', 'Pix']);
+    ).toContainText(['Informações', 'Endereço', 'Itens', 'Amigo oculto', 'Pix']);
 
     // Touch and blur title input without value to trigger validation
     await eventEditorPage.titleInput.focus();
@@ -166,8 +166,11 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       .first();
     await expect(dateError).toBeVisible();
 
-    // Next step button should remain disabled when form is invalid
-    await expect(eventEditorPage.nextStepBtns.filter({ visible: true }).first()).toBeDisabled();
+    // Próximo does not move on while the form is invalid: it lists what is missing
+    await eventEditorPage.nextStepBtns.filter({ visible: true }).first().click();
+    await expect(eventEditorPage.missingFieldsBanner).toContainText('Para continuar, preencha');
+    await expect(eventEditorPage.missingFieldsBanner).toContainText('a data');
+    await expect(eventEditorPage.titleInput).toBeFocused();
 
     // Fill required fields and verify errors clear
     await eventEditorPage.titleInput.fill('Formatura Universitária');

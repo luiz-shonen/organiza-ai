@@ -57,4 +57,19 @@ describe('ConfettiService', () => {
 
     expect(rafSpy).not.toHaveBeenCalled();
   });
+
+  it('celebrates with a burst from the middle and streams from both sides', () => {
+    vi.spyOn(window, 'requestAnimationFrame').mockReturnValue(1);
+
+    service.fireCelebration();
+
+    expect(confetti).toHaveBeenCalledWith(
+      expect.objectContaining({ particleCount: 140, origin: { x: 0.5, y: 0.35 } }),
+    );
+    expect(confetti).toHaveBeenCalledWith(expect.objectContaining({ angle: 60 }));
+    expect(confetti).toHaveBeenCalledWith(expect.objectContaining({ angle: 120 }));
+    for (const [options] of vi.mocked(confetti).mock.calls) {
+      expect(options).toEqual(expect.objectContaining({ disableForReducedMotion: true }));
+    }
+  });
 });

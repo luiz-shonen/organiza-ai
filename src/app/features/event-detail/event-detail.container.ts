@@ -20,6 +20,8 @@ import {
   SeasonalThemeService,
   DrawerService,
   ClaimService,
+  SecretSantaService,
+  InboxService,
 } from '../../core/services';
 import {
   PartyEvent,
@@ -31,12 +33,30 @@ import {
   type GuestDecline,
   type ItemClaimRequest,
   type RsvpDrawerResult,
+  type RsvpSecretSantaData,
+  type AppNotification,
+  SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+  type SecretSantaDuplicate,
+  secretSantaNotificationId,
+  type SecretSantaDraw,
+  type SecretSantaParticipant,
 } from '../../core/models';
 import {
   addClaimEntry,
   buildFamilyChecklist,
   buildGuestHouseholds,
   buildItemProgress,
+  buildSecretSantaRevealUrl,
+  buildSecretSantaWhatsAppUrl,
+  buildRsvpSecretSantaEntries,
+  findSecretSantaDuplicates,
+  hasStarted,
+  splitGuestsByApproval,
+  type PendingGuest,
+  isSecretSantaDrawOutdated,
+  isSecretSantaSelfJoinOpen,
+  rsvpSecretSantaEntryId,
+  secretSantaRsvpId,
   removeClaimEntry,
   toggleBought,
 } from '../../core/utils';
@@ -49,7 +69,11 @@ import {
 } from '../../shared/ui';
 
 import { EventCardComponent } from './components/event-card/event-card.component';
-import { RsvpCardComponent } from './components/rsvp-card/rsvp-card.component';
+import {
+  RsvpCardComponent,
+  type RsvpDeclineResult,
+  type RsvpSantaJoin,
+} from './components/rsvp-card/rsvp-card.component';
 import { ItemListCardComponent } from './components/item-list-card/item-list-card.component';
 import { PixCardComponent } from './components/pix-card/pix-card.component';
 import { FamilyChecklistCardComponent } from './components/family-checklist-card/family-checklist-card.component';
@@ -58,7 +82,13 @@ import {
   ClaimSheetComponent,
   type ClaimPerson,
 } from './components/claim-sheet/claim-sheet.component';
+import {
+  SecretSantaCardComponent,
+  type SecretSantaShareLink,
+} from './components/secret-santa-card/secret-santa-card.component';
+import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-event-detail',
@@ -74,6 +104,8 @@ import { Router } from '@angular/router';
     FamilyChecklistCardComponent,
     GuestListCardComponent,
     ClaimSheetComponent,
+    SecretSantaCardComponent,
+    NotificationCardComponent,
   ],
   templateUrl: './event-detail.container.html',
   styleUrl: './event-detail.container.scss',
@@ -95,6 +127,29 @@ export class EventDetailContainer implements OnInit {
   private readonly drawerService = inject(DrawerService);
   private readonly claimService = inject(ClaimService);
   private readonly router = inject(Router);
+  private readonly secretSantaService = inject(SecretSantaService);
+  private readonly inbox = inject(InboxService);
+
+  /** "Sorteio do amigo oculto feito!" for this member, when they take part with their account. */
+  protected readonly secretSantaNotice = signal<AppNotification | null>(null);
+  private readonly loadSecretSantaNotice = effect((onCleanup) => {
+    const uid = this.memberUid();
+    if (!uid || this.isOwner()) {
+      this.secretSantaNotice.set(null);
+      return;
+    }
+    const sub = this.inbox.watch(uid, secretSantaNotificationId(this.id())).subscribe({
+      next: (notice) => this.secretSantaNotice.set(notice),
+      error: () => this.secretSantaNotice.set(null),
+    });
+    onCleanup(() => sub.unsubscribe());
+  });
+
+  protected openSecretSantaNotice(notice: AppNotification): void {
+    const uid = this.memberUid();
+    if (uid) this.inbox.markRead(uid, notice.id).catch(console.error);
+    void this.router.navigateByUrl(notice.actionUrl);
+  }
 
   protected readonly event = signal<PartyEvent | null>(null);
   protected readonly items = signal<PartyItem[]>([]);
@@ -131,9 +186,31 @@ export class EventDetailContainer implements OnInit {
 
   protected readonly isDeclined = computed(() => this.declined() && !this.isUserConfirmed());
 
+  /**
+   * "Aprovar quem confirma pelo link": only approved guests count (the list, the total, the
+   * amigo oculto); the ones waiting go to the organizers' "Aguardando aprovação".
+   */
+  private readonly guestSplit = computed(() =>
+    splitGuestsByApproval(this.guests(), !!this.event()?.requireApproval),
+  );
+  private readonly listedGuests = computed(() => this.guestSplit().approved);
+  protected readonly pendingGuests = computed<PendingGuest[]>(() =>
+    this.canEdit() ? this.guestSplit().pending : [],
+  );
+  protected readonly approvingGuestId = signal<string | null>(null);
+  /** The member confirmed, and the owner has not approved it yet. */
+  protected readonly isUserPending = computed(() => {
+    const uid = this.memberUid();
+    return (
+      !!uid &&
+      !!this.event()?.requireApproval &&
+      this.guests().some((g) => (g.id === uid || g.uid === uid) && g.approved === false)
+    );
+  });
+
   /** "Quem vai": every confirmed household, who comes with them and what they bring. */
   protected readonly households = computed(() =>
-    buildGuestHouseholds(this.guests(), this.items(), this.claims()),
+    buildGuestHouseholds(this.listedGuests(), this.items(), this.claims()),
   );
 
   /** Who said "Não poderei ir"; only the organizers may read it, so it loads for them only. */
@@ -156,6 +233,151 @@ export class EventDetailContainer implements OnInit {
       this.declinesLoadedFor = null;
     });
   });
+
+  /** Amigo oculto: the organizers see the participants; only the owner reads the draw. */
+  protected readonly showSecretSanta = computed(
+    () => !!this.event()?.secretSanta?.enabled && this.canEdit(),
+  );
+  protected readonly secretSantaParticipants = signal<SecretSantaParticipant[]>([]);
+  protected readonly secretSantaDraw = signal<SecretSantaDraw | null>(null);
+  protected readonly secretSantaDrawing = signal(false);
+  private readonly loadSecretSantaParticipants = effect((onCleanup) => {
+    if (!this.showSecretSanta()) {
+      this.secretSantaParticipants.set([]);
+      return;
+    }
+    const sub = this.secretSantaService.listParticipants(this.id()).subscribe({
+      next: (participants) => this.secretSantaParticipants.set(participants),
+      error: () => this.secretSantaParticipants.set([]),
+    });
+    onCleanup(() => sub.unsubscribe());
+  });
+  private readonly loadSecretSantaDraw = effect((onCleanup) => {
+    if (!this.showSecretSanta() || !this.isOwner()) {
+      this.secretSantaDraw.set(null);
+      return;
+    }
+    const sub = this.secretSantaService.watchDraw(this.id()).subscribe({
+      next: (draw) => this.secretSantaDraw.set(draw),
+      error: () => this.secretSantaDraw.set(null),
+    });
+    onCleanup(() => sub.unsubscribe());
+  });
+  /** When each link was opened (by token), live: links open once. */
+  private readonly secretSantaOpenedAt = signal<Record<string, string | null>>({});
+  private readonly watchSecretSantaOpened = effect((onCleanup) => {
+    const tokens = (this.secretSantaDraw()?.links ?? []).map((link) => link.token);
+    this.secretSantaOpenedAt.set({});
+    const subs = tokens.map((token) =>
+      this.secretSantaService.watchOpenedAt(token).subscribe({
+        next: (openedAt) =>
+          this.secretSantaOpenedAt.update((all) => ({ ...all, [token]: openedAt })),
+        error: () => undefined,
+      }),
+    );
+    onCleanup(() => subs.forEach((sub) => sub.unsubscribe()));
+  });
+  protected readonly secretSantaResendingId = signal<string | null>(null);
+  /**
+   * Participants added from a confirmed guest with an account, by participant id: the draw
+   * also tells them in the app. Relatives and companions have no account of their own.
+   */
+  private readonly secretSantaAccounts = computed<Record<string, string>>(() => {
+    const uidByGuest = new Map(
+      this.guests()
+        .filter((guest) => guest.uid)
+        .map((guest) => [guest.id, guest.uid!] as const),
+    );
+    const accounts: Record<string, string> = {};
+    for (const participant of this.secretSantaParticipants()) {
+      const own =
+        participant.joinedBy && participant.id === secretSantaRsvpId(participant.joinedBy)
+          ? participant.joinedBy
+          : undefined;
+      const uid = own ?? (participant.guestId ? uidByGuest.get(participant.guestId) : undefined);
+      if (uid) accounts[participant.id] = uid;
+    }
+    return accounts;
+  });
+  /** The same person twice: sure pairs are joined at once, doubtful ones go to the card. */
+  private readonly secretSantaDuplicates = computed(() =>
+    findSecretSantaDuplicates(this.secretSantaParticipants()),
+  );
+  protected readonly secretSantaDoubtful = computed(() =>
+    this.secretSantaDuplicates().filter((pair) => !pair.sure),
+  );
+  protected readonly secretSantaBusyDuplicate = signal<string | null>(null);
+  private readonly mergingSecretSanta = new Set<string>();
+  /**
+   * Someone typed by the organizer joined from the invite too (same guest, or same phone and
+   * first name): the two entries become one, tied to the account. Each pair is tried once per
+   * visit; another organizer's page may have merged it already.
+   */
+  private readonly autoMergeSecretSanta = effect(() => {
+    if (!this.canEdit()) return;
+    for (const pair of this.secretSantaDuplicates()) {
+      if (!pair.sure || this.mergingSecretSanta.has(pair.drop.id)) continue;
+      this.mergingSecretSanta.add(pair.drop.id);
+      this.secretSantaService.mergeDuplicate(this.id(), pair).catch(console.error);
+    }
+  });
+  protected readonly secretSantaSelfJoinOpen = computed(() =>
+    isSecretSantaSelfJoinOpen(this.event()?.secretSanta),
+  );
+
+  /**
+   * Where the member stands in the amigo oculto (only their own entry: they cannot read the
+   * list), for the presence card. Reloaded after they change it.
+   */
+  protected readonly mySecretSanta = signal<RsvpSecretSantaData | null>(null);
+  protected readonly myPhone = signal('');
+  private readonly mySecretSantaVersion = signal(0);
+  private readonly loadMySecretSanta = effect((onCleanup) => {
+    const uid = this.memberUid();
+    const settings = this.event()?.secretSanta;
+    this.mySecretSantaVersion();
+    if (!uid || !settings?.enabled) {
+      this.mySecretSanta.set(null);
+      return;
+    }
+    let active = true;
+    onCleanup(() => (active = false));
+    Promise.all([
+      this.secretSantaService.getOwnEntries(this.id(), [secretSantaRsvpId(uid)]),
+      this.userService.getProfile(uid).catch(() => null),
+    ])
+      .then(([entries, profile]) => {
+        if (!active) return;
+        this.myPhone.set(profile?.phone || this.authService.currentUser()?.phoneNumber || '');
+        this.mySecretSanta.set({
+          open: isSecretSantaSelfJoinOpen(settings) && this.mayJoinSecretSanta(uid),
+          ...(this.waitsForApproval(uid) ? { waitingApproval: true } : {}),
+          giftOptions: settings.giftOptions,
+          maxGiftOptions: settings.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+          joined: Object.fromEntries(entries.map((entry) => ['self', entry.giftOptions])),
+        });
+      })
+      .catch(console.error);
+  });
+
+  protected readonly secretSantaLinks = computed<SecretSantaShareLink[]>(() => {
+    const origin = typeof location === 'undefined' ? '' : location.origin;
+    const opened = this.secretSantaOpenedAt();
+    return (this.secretSantaDraw()?.links ?? []).map((link) => ({
+      participantId: link.participantId,
+      name: link.name,
+      phone: link.phone,
+      url: buildSecretSantaRevealUrl(origin, link.token),
+      openedAt: opened[link.token] ?? null,
+      notifiedInApp: !!link.uid,
+    }));
+  });
+  protected readonly secretSantaOutdated = computed(() =>
+    isSecretSantaDrawOutdated(
+      this.secretSantaDraw(),
+      this.secretSantaParticipants().map((p) => p.id),
+    ),
+  );
 
   /**
    * Início finds confirmed events in the profile's rsvpEvents. A presence confirmed before that
@@ -239,8 +461,13 @@ export class EventDetailContainer implements OnInit {
     );
   });
 
+  /** Organizers edit the event only until it starts; afterwards it is history. */
+  protected readonly canEditEvent = computed(
+    () => this.canEdit() && !hasStarted(this.event()?.date),
+  );
+
   protected readonly guestCount = computed(() => {
-    return this.guests().reduce(
+    return this.listedGuests().reduce(
       (sum, guest) => sum + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
       0,
     );
@@ -294,20 +521,245 @@ export class EventDetailContainer implements OnInit {
     });
   }
 
+  protected async onDrawSecretSanta(): Promise<void> {
+    const event = this.event();
+    if (!event || !this.isOwner() || this.secretSantaDrawing()) return;
+    const previous = this.secretSantaDraw();
+    if (previous) {
+      const confirmed = await firstValueFrom(
+        this.dialogs.confirm({
+          title: 'Sortear de novo?',
+          message:
+            'Os links enviados antes deixam de funcionar e cada pessoa recebe um novo link. Você vai precisar enviar os links de novo.',
+          confirmLabel: 'Sortear de novo',
+          cancelLabel: 'Manter sorteio',
+          tone: 'danger',
+          icon: 'cancel',
+        }),
+      );
+      if (!confirmed) return;
+    }
+    this.secretSantaDrawing.set(true);
+    try {
+      const draw = await this.secretSantaService.draw(
+        event,
+        this.secretSantaParticipants(),
+        previous,
+        this.secretSantaAccounts(),
+      );
+      const inApp = draw.links.filter((link) => link.uid).length;
+      this.feedback.success(
+        inApp
+          ? `Sorteio feito! ${inApp === 1 ? '1 pessoa foi avisada' : inApp + ' pessoas foram avisadas'} no app. Envie também o link pelo WhatsApp.`
+          : 'Sorteio feito! Agora envie o link de cada pessoa.',
+      );
+    } catch {
+      this.feedback.error('Não foi possível fazer o sorteio. Tente de novo.');
+    } finally {
+      this.secretSantaDrawing.set(false);
+    }
+  }
+
+  protected onSendSecretSanta(link: SecretSantaShareLink): void {
+    const url = buildSecretSantaWhatsAppUrl({
+      name: link.name,
+      phone: link.phone,
+      eventTitle: this.event()?.title ?? '',
+      url: link.url,
+    });
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  /** A new link for one person, with the same person drawn; the old link stops working. */
+  protected async onResendSecretSanta(link: SecretSantaShareLink): Promise<void> {
+    const event = this.event();
+    const draw = this.secretSantaDraw();
+    if (!event || !draw || !this.isOwner() || this.secretSantaResendingId()) return;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: `Novo link para ${link.name}?`,
+        message: `O link atual de ${link.name} deixa de funcionar. ${link.name} continua com a mesma pessoa sorteada; depois é só enviar o novo link.`,
+        confirmLabel: 'Criar novo link',
+        cancelLabel: 'Voltar',
+      }),
+    );
+    if (!confirmed) return;
+    this.secretSantaResendingId.set(link.participantId);
+    try {
+      await this.secretSantaService.resendLink(
+        event,
+        draw,
+        link.participantId,
+        this.secretSantaParticipants(),
+        this.secretSantaAccounts(),
+      );
+      this.feedback.success(`Novo link de ${link.name} pronto. Toque em WhatsApp para enviar.`);
+    } catch (error) {
+      this.feedback.error(
+        error instanceof Error && error.message.includes('sorteie de novo')
+          ? error.message
+          : 'Não foi possível criar o novo link. Tente de novo.',
+      );
+    } finally {
+      this.secretSantaResendingId.set(null);
+    }
+  }
+
+  protected async onMergeSecretSanta(pair: SecretSantaDuplicate): Promise<void> {
+    this.secretSantaBusyDuplicate.set(pair.drop.id);
+    try {
+      await this.secretSantaService.mergeDuplicate(this.id(), pair);
+      this.feedback.success(`${pair.keep.name} agora aparece uma vez só.`);
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Não foi possível juntar. Tente novamente.');
+    } finally {
+      this.secretSantaBusyDuplicate.set(null);
+    }
+  }
+
+  protected async onDistinctSecretSanta(pair: SecretSantaDuplicate): Promise<void> {
+    this.secretSantaBusyDuplicate.set(pair.drop.id);
+    try {
+      await this.secretSantaService.markDistinct(this.id(), pair);
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Não foi possível salvar. Tente novamente.');
+    } finally {
+      this.secretSantaBusyDuplicate.set(null);
+    }
+  }
+
+  protected async onSecretSantaSelfJoin(open: boolean): Promise<void> {
+    const event = this.event();
+    if (!event?.secretSanta || !this.isOwner()) return;
+    try {
+      await this.secretSantaService.setSelfJoin(event.id, event.secretSanta, open);
+      this.feedback.success(
+        open
+          ? 'Os convidados podem entrar no amigo oculto pelo convite.'
+          : 'Inscrições pelo convite fechadas.',
+      );
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Não foi possível mudar as inscrições. Tente novamente.');
+    }
+  }
+
+  /** "Quero participar só do amigo oculto": in the draw without going. */
+  protected async onJoinSecretSantaOnly(join: RsvpSantaJoin): Promise<void> {
+    const uid = this.memberUid();
+    if (!uid) return;
+    this.rsvpLoading.set(true);
+    try {
+      await this.saveOwnSecretSanta(uid, join);
+      this.feedback.success('Você entrou no amigo oculto!');
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Não foi possível entrar no amigo oculto. Tente novamente.');
+    } finally {
+      this.rsvpLoading.set(false);
+    }
+  }
+
+  protected async onLeaveSecretSanta(): Promise<void> {
+    const uid = this.memberUid();
+    if (!uid) return;
+    this.rsvpLoading.set(true);
+    try {
+      await this.secretSantaService.saveOwnEntries(this.id(), uid, [], [secretSantaRsvpId(uid)]);
+      this.mySecretSantaVersion.update((v) => v + 1);
+      this.feedback.success('Você saiu do amigo oculto.');
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Não foi possível sair do amigo oculto. Tente novamente.');
+    } finally {
+      this.rsvpLoading.set(false);
+    }
+  }
+
+  /**
+   * The member's own entry, for someone not going: in the draw with `join`, or out of it (null).
+   * Relatives and companions only take part with a confirmed presence, so they always leave.
+   */
+  private async saveOwnSecretSanta(
+    uid: string,
+    join: RsvpSantaJoin | null,
+    others: readonly string[] = this.ownSecretSantaOthers(uid),
+  ): Promise<void> {
+    if (!this.mySecretSanta()?.open) return;
+    const selfId = secretSantaRsvpId(uid);
+    const entries = join
+      ? [
+          {
+            id: selfId,
+            input: {
+              name: this.declineName(),
+              phone: join.phone,
+              giftOptions: [...join.gifts],
+              guestId: uid,
+            },
+          },
+        ]
+      : [];
+    const wasIn = !!this.mySecretSanta()?.joined['self'];
+    await this.secretSantaService.saveOwnEntries(
+      this.id(),
+      uid,
+      entries,
+      join ? others : [selfId, ...others],
+      wasIn ? [selfId] : [],
+    );
+    this.mySecretSantaVersion.update((v) => v + 1);
+  }
+
+  /** The entries of the relatives and companions confirmed with the member's presence. */
+  private ownSecretSantaOthers(uid: string): string[] {
+    const mine = this.guests().find((guest) => guest.id === uid || guest.uid === uid);
+    return [
+      ...this.guests()
+        .filter((guest) => guest.primaryGuestId === uid)
+        .map((guest) => rsvpSecretSantaEntryId(uid, `f:${guest.id.replace(`${uid}_`, '')}`)),
+      ...(mine?.companions ?? []).map((c) => rsvpSecretSantaEntryId(uid, `c:${c.name}`)),
+    ];
+  }
+
+  /** After "Não poderei ir": stays in (or leaves) the amigo oculto; never fails the answer. */
+  private async afterDeclineSecretSanta(
+    uid: string,
+    result: RsvpDeclineResult,
+    others?: readonly string[],
+  ): Promise<void> {
+    try {
+      await this.saveOwnSecretSanta(uid, result.santa, others);
+      if (result.santa) this.feedback.success('Você continua no amigo oculto.');
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Sua resposta foi salva, mas não deu para salvar o amigo oculto.');
+    }
+  }
+
+  protected onEditSecretSanta(): void {
+    void this.router.navigate(['/meus-eventos/evento', this.id()]);
+  }
+
   protected onEditRsvp(): Promise<void> {
     return this.onConfirmRsvp(undefined, true);
   }
 
   /** "Não poderei ir" on an invite not answered yet: nothing to cancel, only the answer. */
-  protected async onDeclineRsvp(message = ''): Promise<void> {
+  protected async onDeclineRsvp(
+    result: RsvpDeclineResult = { message: '', santa: null },
+  ): Promise<void> {
     const uid = this.memberUid();
     if (!uid) return;
     this.rsvpLoading.set(true);
     try {
-      await this.guestService.saveDecline(this.id(), uid, this.declineName(), message);
+      await this.guestService.saveDecline(this.id(), uid, this.declineName(), result.message);
       await this.userService.setDeclined(uid, this.id(), true);
       this.declined.set(true);
       this.feedback.success('Tudo bem, avisamos que você não poderá ir.');
+      await this.afterDeclineSecretSanta(uid, result);
     } catch (err: unknown) {
       console.error(err);
       this.feedback.error('Não foi possível recusar o convite. Tente novamente.');
@@ -350,6 +802,11 @@ export class EventDetailContainer implements OnInit {
             }
           : undefined;
 
+      const santa = await this.loadDrawerSecretSanta(user.uid, familyMembers, [
+        ...(profile?.savedCompanions ?? []),
+        ...(existing?.companions ?? []),
+      ]);
+
       this.drawerService.open({
         kind: 'rsvp',
         trigger: event?.currentTarget as HTMLElement | undefined,
@@ -359,6 +816,7 @@ export class EventDetailContainer implements OnInit {
           familyMembers,
           userId: user.uid,
           existing,
+          ...(santa ? { secretSanta: santa.data } : {}),
           addFamilyMember: async (member) => {
             try {
               const saved = await this.familyService.addFamilyMember(user.uid, member);
@@ -389,6 +847,7 @@ export class EventDetailContainer implements OnInit {
                 phone: newPhone,
                 photoUrl,
                 companions: result.companions,
+                pendingApproval: !!this.event()?.requireApproval && !mine,
               },
               result.selectedFamilyMembers ?? [],
               confirmedFamilyIds.filter(
@@ -412,8 +871,14 @@ export class EventDetailContainer implements OnInit {
               this.userService.upsertProfile(user.uid, { phone: newPhone }).catch(console.error);
             }
 
+            if (result.secretSanta && santa) {
+              await this.saveDrawerSecretSanta(user.uid, name, newPhone, result, santa.existingIds);
+            }
+
             if (existing) {
               this.feedback.success('Presença atualizada!');
+            } else if (this.event()?.requireApproval) {
+              this.feedback.success('Pronto! Agora é só esperar quem organiza aprovar.');
             } else {
               this.confetti.fireSuccessConfetti();
               this.feedback.success('Presença confirmada!');
@@ -436,6 +901,124 @@ export class EventDetailContainer implements OnInit {
     }
   }
 
+  /**
+   * What the drawer needs to ask "Quem vai participar do amigo oculto?": the entries this member
+   * already wrote (themself, relatives, companions), read one by one. Null without amigo oculto.
+   */
+  private async loadDrawerSecretSanta(
+    uid: string,
+    familyMembers: readonly FamilyMember[],
+    companions: readonly string[],
+  ): Promise<{ data: RsvpSecretSantaData; existingIds: string[] } | null> {
+    const settings = this.event()?.secretSanta;
+    if (!settings?.enabled) return null;
+    const keys = [
+      'self',
+      ...familyMembers.map((member) => `f:${member.id}`),
+      ...[...new Set(companions)].map((name) => `c:${name}`),
+    ];
+    const idToKey = new Map(keys.map((key) => [rsvpSecretSantaEntryId(uid, key), key]));
+    const entries = await this.secretSantaService.getOwnEntries(this.id(), [...idToKey.keys()]);
+    return {
+      existingIds: entries.map((entry) => entry.id),
+      data: {
+        open: isSecretSantaSelfJoinOpen(settings) && this.mayJoinSecretSanta(uid),
+        ...(this.waitsForApproval(uid) ? { waitingApproval: true } : {}),
+        giftOptions: settings.giftOptions,
+        maxGiftOptions: settings.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+        joined: Object.fromEntries(
+          entries.map((entry) => [idToKey.get(entry.id) ?? 'self', entry.giftOptions]),
+        ),
+      },
+    };
+  }
+
+  /** An event that asks for approval: only an approved guest joins the amigo oculto alone. */
+  private mayJoinSecretSanta(uid: string): boolean {
+    if (!this.event()?.requireApproval) return true;
+    const mine = this.guests().find((g) => g.id === uid || g.uid === uid);
+    return !!mine && mine.approved !== false;
+  }
+
+  private waitsForApproval(uid: string): boolean {
+    return !!this.event()?.requireApproval && !this.mayJoinSecretSanta(uid);
+  }
+
+  protected async onApproveGuest(guest: PendingGuest): Promise<void> {
+    this.approvingGuestId.set(guest.id);
+    try {
+      await this.guestService.approveGuest(this.id(), guest.id);
+      this.feedback.success(`${guest.name} entrou na lista.`);
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Não foi possível aprovar. Tente novamente.');
+    } finally {
+      this.approvingGuestId.set(null);
+    }
+  }
+
+  protected onRefuseGuest(guest: PendingGuest): void {
+    this.dialogs
+      .confirm({
+        title: `Recusar ${guest.name}?`,
+        message:
+          'A confirmação sai da lista de espera, com quem vinha junto. A pessoa pode confirmar de novo pelo link, e você decide outra vez.',
+        confirmLabel: 'Recusar',
+        cancelLabel: 'Voltar',
+        tone: 'danger',
+        icon: 'cancel',
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        this.approvingGuestId.set(guest.id);
+        try {
+          const uid = this.guests().find((g) => g.id === guest.id)?.uid ?? guest.id;
+          const santaIds = this.secretSantaParticipants()
+            .filter((p) => p.joinedBy === uid)
+            .map((p) => p.id);
+          await this.guestService.refuseGuest(this.id(), guest.id, guest.familyGuestIds, santaIds);
+          this.feedback.success(`A confirmação de ${guest.name} foi recusada.`);
+        } catch (err) {
+          console.error(err);
+          this.feedback.error('Não foi possível recusar. Tente novamente.');
+        } finally {
+          this.approvingGuestId.set(null);
+        }
+      });
+  }
+
+  /** Writes who the member put in the draw; the presence is saved even if this fails. */
+  private async saveDrawerSecretSanta(
+    uid: string,
+    name: string,
+    phone: string,
+    result: RsvpDrawerResult,
+    existingIds: readonly string[],
+  ): Promise<void> {
+    try {
+      const entries = buildRsvpSecretSantaEntries({
+        uid,
+        name,
+        phone,
+        familyMembers: result.selectedFamilyMembers,
+        companions: result.companions.map((companion) => companion.name),
+        choice: result.secretSanta ?? {},
+      });
+      const keep = new Set(entries.map((entry) => entry.id));
+      await this.secretSantaService.saveOwnEntries(
+        this.id(),
+        uid,
+        entries,
+        existingIds.filter((id) => !keep.has(id)),
+        existingIds,
+      );
+      this.mySecretSantaVersion.update((v) => v + 1);
+    } catch (err) {
+      console.error(err);
+      this.feedback.error('Sua presença foi salva, mas não deu para salvar o amigo oculto.');
+    }
+  }
+
   /** Asks before the RSVP changes the profile phone as well. */
   private confirmPhoneChange(newPhone: string): Promise<boolean> {
     return new Promise((resolve) => {
@@ -451,7 +1034,10 @@ export class EventDetailContainer implements OnInit {
     });
   }
 
-  protected async onCancelRsvp(message = ''): Promise<void> {
+  protected async onCancelRsvp(
+    answer: RsvpDeclineResult = { message: '', santa: null },
+  ): Promise<void> {
+    const message = answer.message;
     this.dialogs
       .confirm({
         title: 'Cancelar Presença',
@@ -469,6 +1055,8 @@ export class EventDetailContainer implements OnInit {
             const targetUid = this.memberUid();
 
             if (targetUid) {
+              // Read before the presence goes: the relatives leave the amigo oculto with it.
+              const santaOthers = this.ownSecretSantaOthers(targetUid);
               await this.guestService.cancelRsvp(this.id(), targetUid, targetUid, targetUid);
               // Remembered as declined, so Início shows it as "Recusado" and the organizer sees why.
               this.declined.set(true);
@@ -477,6 +1065,7 @@ export class EventDetailContainer implements OnInit {
               this.guestService
                 .saveDecline(this.id(), targetUid, this.declineName(), message)
                 .catch(console.error);
+              await this.afterDeclineSecretSanta(targetUid, answer, santaOthers);
             }
 
             this.feedback.success('Sua presença foi cancelada.');
@@ -493,6 +1082,10 @@ export class EventDetailContainer implements OnInit {
   protected async onClaimItemById(itemId: string): Promise<void> {
     if (!this.isUserConfirmed() || !this.memberUid()) {
       this.feedback.info('Por favor, confirme sua presença primeiro.');
+      return;
+    }
+    if (this.isUserPending()) {
+      this.feedback.info('Sua presença ainda espera a aprovação de quem organiza.');
       return;
     }
     if (!this.familyLoaded) {

@@ -1,0 +1,63 @@
+@use 'sass:map';
+
+// Invitations (the envelope on Início, the paper card on the event page) take the colours of
+// the event's category. They are objects, like printed paper: the same in light and dark mode.
+// A theme is one entry here plus its key in `inviteTheme` (core/utils/invite.utils.ts).
+$invite-themes: (
+  'natal': (
+    envelope: #f3e6df,
+    flap: #c8473f,
+    seal: #a8322c,
+    paper: #fffaf2,
+    line: #c9a24d,
+    ink: #a8322c,
+  ),
+  'aniversario': (
+    envelope: #efe9fb,
+    flap: #7c5ce0,
+    seal: #6a45d8,
+    paper: #fffdf8,
+    line: #e6a23c,
+    ink: #6a45d8,
+  ),
+  'casamento': (
+    envelope: #f4f1ea,
+    flap: #d8cfbd,
+    seal: #9a7b3f,
+    paper: #fffefb,
+    line: #b89a5a,
+    ink: #8a6d33,
+  ),
+  'junina': (
+    envelope: #fbeedc,
+    flap: #e8590c,
+    seal: #c2410c,
+    paper: #fffaf0,
+    line: #e8a33c,
+    ink: #b3400b,
+  ),
+  'padrao': (
+    envelope: #efecfb,
+    flap: #8b74e8,
+    seal: #6d4fd8,
+    paper: #fffdf9,
+    line: #b9a8ee,
+    ink: #5b3fc4,
+  ),
+);
+
+@mixin apply() {
+  @each $name, $theme in $invite-themes {
+    .org-invite--#{$name} {
+      --org-invite-envelope: #{map.get($theme, envelope)};
+      --org-invite-flap: #{map.get($theme, flap)};
+      --org-invite-seal: #{map.get($theme, seal)};
+      --org-invite-paper: #{map.get($theme, paper)};
+      --org-invite-line: #{map.get($theme, line)};
+      --org-invite-ink: #{map.get($theme, ink)};
+      --org-invite-on-seal: #fff;
+      --org-invite-text: #2b2320;
+      --org-invite-muted: #5a4d46;
+    }
+  }
+}

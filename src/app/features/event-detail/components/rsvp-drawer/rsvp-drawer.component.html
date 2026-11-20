@@ -64,6 +64,57 @@
         (toggleCompanion)="onToggleCompanion($event)"
         (add)="onAddCompanion($event)"
       />
+
+      @if (santa(); as santa) {
+        <section
+          class="rsvp-drawer__santa"
+          data-testid="rsvp-santa"
+          aria-labelledby="rsvp-santa-title"
+        >
+          <h3 id="rsvp-santa-title" class="rsvp-drawer__santa-title">Amigo oculto</h3>
+          @if (santa.open) {
+            <p class="rsvp-drawer__santa-text">
+              Quem vai participar do sorteio? Marque cada pessoa. Quem não tem telefone recebe o
+              link no seu WhatsApp, com o nome dela na mensagem.
+            </p>
+            @for (person of santaPeople(); track person.key; let i = $index) {
+              <div class="rsvp-drawer__santa-person">
+                <org-checkbox
+                  [label]="person.label"
+                  [testId]="'rsvp-santa-person-' + i"
+                  [checked]="isSantaChecked(person.key)"
+                  (checkedChange)="setSantaChecked(person.key, $event)"
+                />
+                @if (santa.giftOptions && isSantaChecked(person.key)) {
+                  <org-textarea-field
+                    [label]="santaGiftLabel(person)"
+                    placeholder="Ex: Chinelo, cor verde, tamanho 36"
+                    [testId]="'rsvp-santa-gifts-' + i"
+                    [rows]="santa.maxGiftOptions === 1 ? 1 : 3"
+                    [maxLength]="santa.maxGiftOptions * (giftLineMax + 1)"
+                    [error]="santaGiftError(person.key)"
+                    [value]="santaGifts()[person.key] ?? ''"
+                    (valueChange)="setSantaGifts(person.key, $event)"
+                  />
+                }
+              </div>
+            }
+          } @else {
+            <p class="rsvp-drawer__santa-text" data-testid="rsvp-santa-closed">
+              @if (santa.waitingApproval) {
+                Você entra no amigo oculto depois que quem organiza aprovar a sua presença: é só
+                voltar aqui em "Editar presença".
+              } @else {
+                As inscrições do amigo oculto estão fechadas.
+                @if (santaChecked().length) {
+                  Quem já estava no sorteio continua.
+                }
+                Para entrar ou sair, fale com quem organiza.
+              }
+            </p>
+          }
+        </section>
+      }
     </div>
 
     <footer class="rsvp-drawer__actions">

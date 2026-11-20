@@ -77,6 +77,11 @@ interface DashboardCard {
   } | null;
 }
 
+/** Not cancelled and not started yet: what "Todos" lists. */
+function isUpcoming(event: PartyEvent): boolean {
+  return event.status !== 'cancelled' && !hasStarted(event.date);
+}
+
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,6 +139,19 @@ export class DashboardContainer {
     { id: 'cancelled', label: 'Cancelados', testId: 'status-filter-cancelled-chip' },
   ];
 
+  /** The heading above the list names what the chosen chip shows, as on Início. */
+  protected readonly listTitle = computed(() => {
+    const picked = this.activeFilters();
+    if (picked.length > 1) return 'Eventos filtrados';
+    return {
+      all: 'Próximos eventos',
+      soon: 'Eventos em breve',
+      scheduled: 'Eventos agendados',
+      past: 'Eventos realizados',
+      cancelled: 'Eventos cancelados',
+    }[picked[0] ?? 'all'];
+  });
+
   protected readonly subtitle = computed(() => {
     const count = this.events()?.length ?? 0;
     return count === 1 ? '1 evento que você organiza' : `${count} eventos que você organiza`;
@@ -142,7 +160,8 @@ export class DashboardContainer {
   readonly filteredEvents = computed(() => {
     const all = this.events() ?? [];
     const picked = this.activeFilters();
-    if (picked.includes('all')) return this.allSorted(all);
+    // "Todos" is what is still to come; past and cancelled events have their own chips.
+    if (picked.includes('all')) return this.allSorted(all).filter((e) => isUpcoming(e));
     // Several chips on: every event any of them matches, once, in the same order as "Todos".
     const matches = (e: PartyEvent, id: EventStatusFilter): boolean => {
       switch (id) {

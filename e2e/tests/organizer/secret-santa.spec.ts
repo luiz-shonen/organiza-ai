@@ -257,7 +257,7 @@ test.describe('Amigo oculto', () => {
     await links
       .locator('li')
       .filter({ hasText: 'Luiz' })
-      .getByRole('button', { name: 'WhatsApp' })
+      .getByRole('button', { name: 'Enviar no WhatsApp' })
       .click();
     const opened = await page.evaluate(
       () => (window as unknown as { __openedUrls: string[] }).__openedUrls[0] ?? '',

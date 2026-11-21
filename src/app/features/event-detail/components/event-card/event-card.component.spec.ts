@@ -95,15 +95,16 @@ describe('EventCardComponent (Event Detail)', () => {
     );
   });
 
-  it('shows the category, falling back to "Evento"', () => {
-    expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
-      'Evento',
-    );
+  it('names the party only when the greeting does not ("Feliz Natal!" needs no tag)', () => {
+    const category = () => element().querySelector('.event-card__category')?.textContent?.trim();
+    expect(category()).toBeUndefined();
     fixture.componentRef.setInput('event', { ...mockEvent, category: 'Churrasco' });
     fixture.detectChanges();
-    expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
-      'Churrasco',
-    );
+    expect(category()).toBe('Churrasco');
+    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Natal' });
+    fixture.detectChanges();
+    expect(category()).toBeUndefined();
+    expect(element().querySelector('.event-card__greeting')?.textContent).toContain('Feliz Natal!');
   });
 
   it('names the organiser, or "Você" for the owner', () => {

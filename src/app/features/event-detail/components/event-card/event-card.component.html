@@ -1,21 +1,82 @@
+<ng-template #corner>
+  <!-- The frame turns in around the corner; a diamond sits in the cut, two scrolls and a leaf
+       grow from it along the edges. -->
+  <svg class="event-card__corner-art" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+    <path class="event-card__draw" pathLength="1" d="M0.5 80V24A23.5 23.5 0 0 0 24 0.5H80" />
+    <path class="event-card__draw" pathLength="1" d="M6.5 80V30A23.5 23.5 0 0 0 30 6.5H80" />
+    <path
+      class="event-card__draw"
+      pathLength="1"
+      d="M21 21C29 14 41 13 49 17C55 20 54 27 48 27C44 27 43 23 46 21.5"
+    />
+    <path
+      class="event-card__draw"
+      pathLength="1"
+      d="M21 21C14 29 13 41 17 49C20 55 27 54 27 48C27 44 23 43 21.5 46"
+    />
+    <path class="event-card__leaf" d="M21 21Q33 24 36 36Q24 33 21 21Z" />
+    <path class="event-card__leaf" d="M7 2L12 7L7 12L2 7Z" />
+  </svg>
+</ng-template>
+
+<ng-template #medallion>
+  <svg class="event-card__medallion-art" viewBox="0 0 64 16" aria-hidden="true">
+    <rect class="event-card__medallion-gap" x="8" y="0" width="48" height="16" />
+    <circle class="event-card__leaf" cx="17" cy="8" r="1.6" />
+    <path class="event-card__leaf" d="M32 1L39 8L32 15L25 8Z" />
+    <circle class="event-card__leaf" cx="47" cy="8" r="1.6" />
+  </svg>
+</ng-template>
+
 <div class="event-card">
-  <!-- The invitation itself, on paper in the colours of the category (see inviteTheme). -->
+  <!--
+    The invitation itself, on paper in the colours of the category (see inviteTheme), light or
+    dark with the app. Each time it opens it unfolds, its frame is drawn and the words come in.
+  -->
   <div [class]="theme().className">
     <header class="event-card__hero" data-testid="event-invitation">
       <div class="event-card__paper">
-        <org-badge
-          class="event-card__category-badge"
-          [label]="categoryName()"
-          [variant]="categoryBadgeVariant()"
-          [hue]="categoryHue()"
-          [gradient]="false"
-        />
+        <span class="event-card__frame" aria-hidden="true"></span>
+        @for (place of corners; track place) {
+          <span class="event-card__corner event-card__corner--{{ place }}" aria-hidden="true">
+            <ng-container [ngTemplateOutlet]="corner" />
+          </span>
+        }
+        @for (place of ['top', 'bottom']; track place) {
+          <span class="event-card__medallion event-card__medallion--{{ place }}" aria-hidden="true">
+            <ng-container [ngTemplateOutlet]="medallion" />
+          </span>
+        }
+
+        @if (categoryLine(); as category) {
+          <p class="event-card__category event-card__reveal">
+            {{ category }}
+          </p>
+        }
         <p class="event-card__greeting">{{ theme().greeting }}</p>
-        <p class="event-card__lead">{{ theme().lead }}</p>
+        <p class="event-card__lead event-card__reveal">
+          {{ theme().lead }}
+        </p>
         <h1 class="event-card__title">{{ event().title }}</h1>
-        <p class="event-card__ornament" aria-hidden="true">{{ theme().ornament }}</p>
+        <p class="event-card__divider" aria-hidden="true">
+          <svg class="event-card__swash" viewBox="0 0 96 12" fill="none">
+            <path
+              class="event-card__draw event-card__draw--late"
+              pathLength="1"
+              d="M2 6C30 6 50 2 76 6C84 7 90 9 86 11"
+            />
+          </svg>
+          <span class="event-card__motif">{{ theme().ornament }}</span>
+          <svg class="event-card__swash event-card__swash--end" viewBox="0 0 96 12" fill="none">
+            <path
+              class="event-card__draw event-card__draw--late"
+              pathLength="1"
+              d="M2 6C30 6 50 2 76 6C84 7 90 9 86 11"
+            />
+          </svg>
+        </p>
         @if (dateParts(); as date) {
-          <p class="event-card__date-box" [attr.aria-label]="when()">
+          <p class="event-card__date-box event-card__reveal" [attr.aria-label]="when()">
             <span class="event-card__date-side" aria-hidden="true">{{ date.weekday }}</span>
             <span
               class="event-card__date-day"
@@ -27,7 +88,9 @@
           </p>
         }
         @if (event().description) {
-          <p class="event-card__description">{{ event().description }}</p>
+          <p class="event-card__description event-card__reveal">
+            {{ event().description }}
+          </p>
         }
         @if (event().status === 'cancelled') {
           <org-badge label="Evento cancelado" variant="danger" [gradient]="false" />

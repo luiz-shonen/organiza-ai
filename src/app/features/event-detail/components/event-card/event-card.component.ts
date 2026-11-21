@@ -1,10 +1,10 @@
 import { eventLastDay, formatDaySpan, inviteTheme } from '../../../../core/utils';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { PartyEvent, getCategoryClass, getCategoryHue } from '../../../../core/models';
+import { NgTemplateOutlet } from '@angular/common';
+import { PartyEvent } from '../../../../core/models';
 import {
   OrgAvatarComponent,
   OrgBadgeComponent,
-  OrgBadgeVariant,
   OrgButtonComponent,
   OrgIconComponent,
   OrgSurfaceComponent,
@@ -15,6 +15,7 @@ import {
   selector: 'app-event-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NgTemplateOutlet,
     OrgAvatarComponent,
     OrgBadgeComponent,
     OrgButtonComponent,
@@ -34,9 +35,19 @@ export class EventCardComponent {
   public readonly viewerName = input<string | null>(null);
   public readonly edit = output<void>();
 
-  protected readonly categoryName = computed(() => this.event().category || 'Evento');
   /** The colours and words of the invitation, from the category. */
   protected readonly theme = computed(() => inviteTheme(this.event().category));
+  /**
+   * "Churrasco", in small capitals above the greeting: only when the greeting does not already
+   * say what the party is ("Feliz Natal!" needs no "Natal" tag), and never a bare "Outros".
+   */
+  protected readonly categoryLine = computed(() => {
+    const category = (this.event().category ?? '').trim();
+    if (this.theme().key !== 'padrao' || !category || /^outros?$/i.test(category)) return null;
+    return category;
+  });
+  /** The four corners of the frame, each with the same flourish turned to face its corner. */
+  protected readonly corners = ['top-start', 'top-end', 'bottom-start', 'bottom-end'] as const;
 
   /**
    * "Quinta", "24", "Dez · 20:00": the date block of the invitation. Over several days:
@@ -69,11 +80,6 @@ export class EventCardComponent {
       isSpan: true,
     };
   });
-
-  protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
-  protected readonly categoryBadgeVariant = computed<OrgBadgeVariant>(
-    () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
-  );
 
   /** "Domingo, 23 de agosto · 20:00"; over several days "De 23 a 25 de dezembro · 17:00". */
   protected readonly when = computed(() => {

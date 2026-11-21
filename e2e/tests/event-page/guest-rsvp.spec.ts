@@ -173,7 +173,7 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await expect(page.locator('app-item-list-card')).toHaveCount(0);
   });
 
-  test('should render dynamic category badge matching event category tokens and activate seasonal theme overlay', async ({
+  test('should open the junina invitation without a category tag and activate the seasonal theme overlay', async ({
     page,
     eventDetailPage,
   }) => {
@@ -200,11 +200,9 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await page.goto('/evento/event-junina-e2e');
     await eventDetailPage.assertLoaded();
 
-    await expect(eventDetailPage.categoryBadge).toBeVisible();
-    await expect(eventDetailPage.categoryBadge).toHaveText('Festa Junina');
-    await expect(eventDetailPage.categoryBadge.locator('.org-badge')).toHaveClass(
-      /org-badge--festa/,
-    );
+    // "Bora pro arraiá!" already says what the party is: the invitation carries no tag.
+    await expect(page.getByTestId('event-invitation')).toContainText('Bora pro arraiá!');
+    await expect(eventDetailPage.categoryLine).toHaveCount(0);
 
     await expect(page.locator('.seasonal-overlay__junina')).toBeVisible();
     await expect(page.locator('html')).toHaveClass(/theme-junina/);

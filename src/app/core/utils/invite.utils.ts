@@ -9,31 +9,31 @@ export interface InviteTheme {
   readonly greeting: string;
   /** Small line before the title. */
   readonly lead: string;
-  /** Between the title and the date. */
+  /** The motif in the middle of the flourish between the title and the date. */
   readonly ornament: string;
 }
 
 const THEMES: Record<InviteThemeKey, Omit<InviteTheme, 'className' | 'key'>> = {
-  natal: { greeting: 'Feliz Natal!', lead: 'Venha celebrar com a gente', ornament: '✦ ✦ ✦' },
+  natal: { greeting: 'Feliz Natal!', lead: 'Venha celebrar com a gente', ornament: '✦' },
   aniversario: {
     greeting: 'Vem comemorar!',
     lead: 'Sua presença é o melhor presente',
-    ornament: '• ★ •',
+    ornament: '★',
   },
   casamento: {
     greeting: 'Com muita alegria',
     lead: 'convidamos você para celebrar',
-    ornament: '— ❦ —',
+    ornament: '❦',
   },
   junina: {
     greeting: 'Bora pro arraiá!',
     lead: 'Tem quentão, quadrilha e você',
-    ornament: '✿ ✿ ✿',
+    ornament: '✿',
   },
   padrao: {
     greeting: 'Um convite para você',
     lead: 'Venha celebrar com a gente',
-    ornament: '✦ ✦ ✦',
+    ornament: '✦',
   },
 };
 

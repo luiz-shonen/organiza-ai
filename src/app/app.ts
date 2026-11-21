@@ -1,3 +1,4 @@
+import { NavigationHistoryService } from './core/services/navigation-history.service';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -82,6 +83,8 @@ export class App {
   private readonly authService = inject(AuthService);
   protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  // Created with the app, so it records from the first screen.
+  private readonly navigationHistory = inject(NavigationHistoryService);
   protected readonly drawerService = inject(DrawerService);
 
   private readonly seasonalService = inject(SeasonalThemeService);
@@ -153,6 +156,11 @@ export class App {
 
   protected navigate(route: string): void {
     this.router.navigateByUrl(route).catch(console.error);
+  }
+
+  /** The header arrow: the screen before in this tab, or the parent when there is none. */
+  protected goBack(fallback: string): void {
+    this.navigationHistory.back(fallback);
   }
 
   protected completeRsvp(result: RsvpDrawerResult): void {

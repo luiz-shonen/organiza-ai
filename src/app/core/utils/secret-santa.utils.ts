@@ -67,20 +67,31 @@ export interface SecretSantaShare {
   readonly name: string;
   readonly eventTitle: string;
   readonly url: string;
+  /** Who organizes the event ("Luiz Rodrigues"): the person to ask for a new link. */
+  readonly organizerName?: string;
 }
 
 /**
- * "Olá, Jéssica! ... toque no link". The link goes alone on the last line, and there is no
- * emoji, for the same reasons as the event invitation (see `buildShareMessage`).
+ * "Olá, Jéssica! ... toque no link". It says the link opens once and that whoever organizes
+ * can make a new one (same person drawn). The link goes alone on the last line, and there is
+ * no emoji, for the same reasons as the event invitation (see `buildShareMessage`).
  */
-export function buildSecretSantaMessage({ name, eventTitle, url }: SecretSantaShare): string {
+export function buildSecretSantaMessage({
+  name,
+  eventTitle,
+  url,
+  organizerName,
+}: SecretSantaShare): string {
   const firstName = name.trim().split(/\s+/)[0] || name.trim();
+  const organizer = organizerName?.trim().split(/\s+/)[0];
+  const askWhom = organizer ? `a ${organizer}, que organiza o evento` : 'a quem organiza o evento';
   return [
     `Olá, *${firstName}*!`,
     `O sorteio do amigo oculto de *${eventTitle.trim() || 'nosso evento'}* foi feito.`,
     '',
     'Toque no link para descobrir quem você tirou. É segredo, não conte para ninguém!',
     '*Atenção:* o link só abre uma vez. Tenha papel e caneta para anotar o nome.',
+    `Se precisar, peça um novo link ${askWhom}. Você continua com a mesma pessoa.`,
     url,
   ].join('\n');
 }
@@ -241,4 +252,33 @@ export function buildRsvpSecretSantaEntries(params: {
       },
     ];
   });
+}
+
+/** A store where a gift idea can be looked up: its name, its mark and the search address. */
+export interface GiftSearchLink {
+  readonly store: 'Mercado Livre' | 'Amazon';
+  readonly icon: string;
+  readonly url: string;
+}
+
+/**
+ * Searches for a gift idea ("Chinelo, cor verde, tamanho 36") on Mercado Livre and Amazon:
+ * plain links that open each store's search, like "Adicionar ao calendário" opens Google's.
+ */
+export function giftSearchLinks(idea: string): GiftSearchLink[] {
+  const text = idea.trim().replace(/\s+/g, ' ');
+  if (!text) return [];
+  return [
+    {
+      store: 'Mercado Livre',
+      icon: '/icons/mercado-livre.svg',
+      // Mercado Livre's own search pages read the words joined by hyphens.
+      url: `https://lista.mercadolivre.com.br/${encodeURIComponent(text.replace(/ /g, '-'))}`,
+    },
+    {
+      store: 'Amazon',
+      icon: '/icons/amazon.svg',
+      url: `https://www.amazon.com.br/s?k=${encodeURIComponent(text)}`,
+    },
+  ];
 }

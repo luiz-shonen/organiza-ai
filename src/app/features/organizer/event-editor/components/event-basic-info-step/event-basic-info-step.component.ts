@@ -14,6 +14,7 @@ import {
   EventDateTime,
   EventDescription,
   EventTitle,
+  END_BEFORE_START_MESSAGE,
   fieldError,
 } from '../../../../../core/value-objects';
 import { EventBasicInfoForm, EventCategoryOption } from '../../../../../core/models';
@@ -56,7 +57,7 @@ export class EventBasicInfoStepComponent {
   readonly form = input.required<EventBasicInfoForm>();
   readonly categories = input.required<readonly EventCategoryOption[]>();
   readonly minDate = input.required<Date>();
-  /** "Aprovar quem confirma pelo link": off by default, anyone with the link confirms. */
+  /** "Aprovar presenças": off by default, anyone with the link confirms. */
   readonly requireApproval = model(false);
   /** Only the owner changes it. */
   readonly canConfigureApproval = input(true);
@@ -88,6 +89,17 @@ export class EventBasicInfoStepComponent {
     return '';
   }
 
+  /** "Data de término" is optional; when typed it must be a real day, not before the start. */
+  protected endDateError(): string {
+    const form = this.form();
+    const endDate = form.controls.endDate;
+    if (endDate.touched && endDate.hasError('invalidDate')) {
+      return EventDateTime.INVALID_DATE_MESSAGE;
+    }
+    if (form.hasError('endBeforeStart')) return END_BEFORE_START_MESSAGE;
+    return '';
+  }
+
   /** Moves on when the step is complete; otherwise says what is missing and shows the field. */
   protected tryNext(): void {
     const form = this.form();
@@ -106,15 +118,19 @@ export class EventBasicInfoStepComponent {
     if (!this.attempted()) return '';
     const form = this.form();
     if (form.valid) return '';
-    const { title, category, date, time } = form.controls;
+    const { title, category, date, endDate, time } = form.controls;
     const missing: string[] = [];
     if (title.invalid) missing.push('o título');
     if (category.invalid) missing.push('a categoria');
     if (date.invalid) missing.push('a data');
     if (time.invalid) missing.push('a hora');
+    if (endDate.invalid) missing.push('a data de término (ou deixe vazia)');
     if (missing.length) return `Para continuar, preencha ${joinLabels(missing)}.`;
     if (form.hasError('pastDateTime')) {
       return 'Para continuar, escolha uma data e hora que ainda não passaram.';
+    }
+    if (form.hasError('endBeforeStart')) {
+      return 'Para continuar, escolha um término no dia do início ou depois.';
     }
     return 'Para continuar, confira os campos marcados em vermelho.';
   }
@@ -123,12 +139,14 @@ export class EventBasicInfoStepComponent {
     const control = this.form().controls.category;
     control.setValue(category);
     control.markAsTouched();
+    control.markAsDirty();
   }
 
   protected clearCategory(): void {
     const control = this.form().controls.category;
     control.setValue('');
     control.markAsTouched();
+    control.markAsDirty();
   }
 
   private isPreset(value: string): boolean {

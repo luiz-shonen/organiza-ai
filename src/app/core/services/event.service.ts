@@ -258,6 +258,7 @@ export class EventService {
       category: (data['category'] as string) ?? '',
       description: (data['description'] as string) ?? '',
       date: dateVal ? dateVal.toISOString() : ((data['date'] as string) ?? ''),
+      ...(typeof data['endDate'] === 'string' ? { endDate: data['endDate'] } : {}),
       location: (data['location'] as string) ?? '',
       addressDetails: (data['addressDetails'] as AddressDetails | undefined) ?? undefined,
       pixKey: (data['pixKey'] as string | null) ?? null,

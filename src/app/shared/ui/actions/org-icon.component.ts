@@ -15,6 +15,9 @@ export type OrgIconName =
   | 'content_copy'
   | 'event'
   | 'place'
+  | 'directions'
+  | 'history'
+  | 'undo'
   | 'schedule'
   | 'delete'
   | 'edit'
@@ -84,6 +87,9 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   content_copy: 'content_copy',
   event: 'event',
   place: 'place',
+  directions: 'directions',
+  history: 'history',
+  undo: 'undo',
   schedule: 'schedule',
   delete: 'delete',
   edit: 'edit',

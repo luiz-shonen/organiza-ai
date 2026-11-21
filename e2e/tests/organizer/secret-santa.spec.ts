@@ -68,6 +68,47 @@ function readStore(page: import('@playwright/test').Page) {
 }
 
 test.describe('Amigo oculto', () => {
+  test('typing a name offers people from my other events, with their phone', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    const lastYear = {
+      ...christmasEvent(),
+      id: 'natal-2025',
+      title: 'Natal 2025',
+      date: new Date(Date.now() - 86400000 * 330).toISOString(),
+      guests: [
+        {
+          id: 'guest-gustavo',
+          name: 'Gustavo Pereira',
+          phone: '(31) 99999-0000',
+          isConfirmed: true,
+          companions: [{ name: 'Bia' }],
+        },
+      ],
+    };
+    await setupMockAuthSession(page, {
+      uid: 'test-user-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent(), lastYear],
+    });
+    await page.goto(`/meus-eventos/evento/${EVENT_ID}`);
+    await eventEditorPage.openStep('Amigo oculto');
+    const step = page.getByTestId('event-editor-step-secret-santa');
+    await step.getByTestId('secret-santa-toggle').locator('button').click();
+
+    // By hand is the exception, behind "Adicionar alguém à mão".
+    await step.getByTestId('secret-santa-manual-btn').click();
+    await step.getByTestId('santa-name-input').fill('gus');
+    const option = page.getByTestId('org-text-field-suggestion').filter({ hasText: 'Gustavo' });
+    await expect(option).toContainText('(31) 99999-0000');
+    await page.screenshot({ path: 'e2e/screenshots/secret-santa-known-people.png' });
+    await option.click();
+    await expect(step.getByTestId('santa-name-input')).toHaveValue('Gustavo Pereira');
+    await expect(step.getByTestId('santa-phone-input')).toHaveValue('(31) 99999-0000');
+  });
+
   test('the organizer turns it on in the editor and adds who takes part', async ({
     page,
     eventEditorPage,
@@ -112,17 +153,34 @@ test.describe('Amigo oculto', () => {
       .getByRole('button', { name: 'Jéssica Melo' })
       .click();
 
+    await step
+      .getByTestId('secret-santa-manual')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-manual-closed.png' });
+    await step.getByTestId('secret-santa-manual-btn').click();
     await step.getByTestId('santa-name-input').fill('Vó Maria');
     await step.getByTestId('santa-phone-input').fill('11977772222');
-    // More than one gift option: one field each.
-    const gifts = step.getByTestId('santa-gift-input');
-    await gifts.nth(0).fill('Chinelo, cor verde, tamanho 36');
-    await gifts.nth(0).press('Enter');
-    await expect(gifts).toHaveCount(2);
-    await gifts.nth(1).fill('Livro de receitas');
+    // Gift ideas: each one typed and added with Enter (or +) joins the list above the field.
+    const gift = step.getByTestId('santa-gift-input');
+    await gift.fill('Chinelo, cor verde, tamanho 36');
+    await gift.press('Enter');
+    await expect(step.getByTestId('santa-gift-item')).toHaveCount(1);
+    await expect(gift).toHaveValue('');
+    await expect(step.getByTestId('santa-gift-list')).toContainText('1 de 4');
+    // An idea added can be changed in place: the pencil opens it, Enter keeps it.
+    await step.getByTestId('santa-gift-edit-btn').click();
+    const editing = step.getByTestId('santa-gift-edit-input');
+    await editing.fill('Chinelo, cor verde, tamanho 37');
+    await editing.press('Enter');
+    await expect(step.getByTestId('santa-gift-item')).toContainText('tamanho 37');
+    // One still typed goes with the participant.
+    await gift.fill('Livro de receitas');
     await step
       .getByTestId('santa-gift-list')
       .screenshot({ path: 'e2e/screenshots/secret-santa-gift-options.png' });
+    await step
+      .locator('app-secret-santa-participant-form')
+      .first()
+      .screenshot({ path: 'e2e/screenshots/secret-santa-participant-form.png' });
     await step.getByTestId('santa-submit-btn').click();
 
     const list = step.getByTestId('secret-santa-participants');
@@ -145,7 +203,7 @@ test.describe('Amigo oculto', () => {
     const people = store[`events/${EVENT_ID}/secretSantaParticipants`];
     expect(people.map((p) => p['name'])).toEqual(['Jéssica Melo', 'Vó Maria']);
     expect(people[1]['giftOptions']).toEqual([
-      'Chinelo, cor verde, tamanho 36',
+      'Chinelo, cor verde, tamanho 37',
       'Livro de receitas',
     ]);
     expect(people[1]['phone']).toBe('(11) 97777-2222');
@@ -205,7 +263,7 @@ test.describe('Amigo oculto', () => {
     await links
       .locator('li')
       .filter({ hasText: 'Luiz' })
-      .getByRole('button', { name: 'WhatsApp' })
+      .getByRole('button', { name: 'Enviar no WhatsApp' })
       .click();
     const opened = await page.evaluate(
       () => (window as unknown as { __openedUrls: string[] }).__openedUrls[0] ?? '',
@@ -216,6 +274,7 @@ test.describe('Amigo oculto', () => {
     expect(message).toContain('*Natal 2026 da família*');
     expect(message).toMatch(/\/amigo-oculto\/[\w-]+$/);
     expect(message).toContain('o link só abre uma vez');
+    expect(message).toContain('Se precisar, peça um novo link');
     // The link is a random UUID, never a name.
     const luizToken = message.split('/amigo-oculto/')[1];
     expect(luizToken).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
@@ -312,6 +371,17 @@ test.describe('Amigo oculto', () => {
     await expect(page.getByTestId('secret-santa-gifts')).toContainText(
       'Chinelo, cor verde, tamanho 36',
     );
+    // Each idea can be searched on Mercado Livre and Amazon.
+    const searches = page.getByTestId('secret-santa-gift-search');
+    await expect(searches).toHaveCount(2);
+    await expect(searches.first()).toHaveAttribute(
+      'href',
+      'https://lista.mercadolivre.com.br/Chinelo%2C-cor-verde%2C-tamanho-36',
+    );
+    await expect(searches.first().locator('img')).toHaveJSProperty('complete', true);
+    await page
+      .getByTestId('secret-santa-gifts')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-gift-search.png' });
     await expect(page.locator('canvas').first()).toBeAttached(); // canvas-confetti
     await page.screenshot({ path: 'e2e/screenshots/secret-santa-reveal.png' });
 

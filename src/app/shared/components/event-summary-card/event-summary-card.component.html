@@ -34,7 +34,7 @@
           </p>
         }
       </div>
-      <org-date-badge [date]="event().date" />
+      <org-date-badge [date]="event().date" [endDate]="event().endDate" />
     </div>
 
     @if (event().description) {

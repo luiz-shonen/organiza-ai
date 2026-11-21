@@ -1,13 +1,69 @@
-// Shared outlined-field tokens for every Org* form control that wraps mat-form-field.
+// Every Org* form control that wraps mat-form-field uses Material's outline as it comes.
 @mixin outlined-tokens() {
-  --mat-form-field-outlined-outline-color: var(--org-outline);
-  --mat-form-field-outlined-focus-outline-color: var(--org-primary);
-  --mat-form-field-outlined-focus-label-text-color: var(--org-primary);
+  // Colours come from the theme (--mat-sys-outline, --mat-sys-primary, bridged from --org-*).
+  // One fix only: while the label rests inside an empty field, Material draws the outline in
+  // three pieces (rounded ends, straight middle under the label). When the field lands between
+  // device pixels (125% zoom and the like) Chrome shades the middle differently from the ends,
+  // and the part around the label looked like a separate strip. At rest there is no gap to keep,
+  // so the outline is drawn as one rounded line instead, in Material's own colour for the state.
+  // With the label up (focused or filled) Material's pieces stay, except the bottom line.
+  ::ng-deep .mdc-text-field--outlined {
+    --org-field-outline: var(--mat-form-field-outlined-outline-color, var(--mat-sys-outline));
+    --org-field-outline-width: var(--mat-form-field-outlined-outline-width, 1px);
 
-  // Material leaves no room after a suffix icon button (password eye, calendar, clock):
-  // the icon sat 8px from the border while the text starts 16px in. Match the text inset.
-  ::ng-deep .mat-mdc-form-field-icon-suffix {
-    padding-inline-end: var(--org-space-sm);
+    &:not(.mdc-text-field--disabled, .mdc-text-field--focused):hover {
+      --org-field-outline: var(
+        --mat-form-field-outlined-hover-outline-color,
+        var(--mat-sys-on-surface)
+      );
+    }
+
+    &:not(.mdc-text-field--disabled).mdc-text-field--invalid {
+      --org-field-outline: var(--mat-form-field-outlined-error-outline-color, var(--mat-sys-error));
+    }
+
+    &:not(.mdc-text-field--disabled).mdc-text-field--focused {
+      --org-field-outline: var(
+        --mat-form-field-outlined-focus-outline-color,
+        var(--mat-sys-primary)
+      );
+      --org-field-outline-width: var(--mat-form-field-outlined-focus-outline-width, 2px);
+    }
+
+    &:not(.mdc-text-field--disabled).mdc-text-field--invalid.mdc-text-field--focused {
+      --org-field-outline: var(
+        --mat-form-field-outlined-error-focus-outline-color,
+        var(--mat-sys-error)
+      );
+    }
+
+    &.mdc-text-field--disabled {
+      --org-field-outline: var(
+        --mat-form-field-outlined-disabled-outline-color,
+        color-mix(in srgb, var(--mat-sys-on-surface) 12%, transparent)
+      );
+    }
+
+    .mdc-notched-outline:not(.mdc-notched-outline--notched) {
+      border-radius: var(--mat-form-field-outlined-container-shape, 4px);
+      box-shadow: inset 0 0 0 var(--mat-form-field-outlined-outline-width, 1px)
+        var(--org-field-outline);
+
+      .mat-mdc-notch-piece.mat-mdc-notch-piece {
+        border-color: transparent;
+      }
+    }
+
+    // Label up: the same shading showed as a thicker line under the label. The middle piece
+    // keeps no bottom line of its own; one line runs along the whole bottom instead.
+    .mdc-notched-outline--notched {
+      border-radius: var(--mat-form-field-outlined-container-shape, 4px);
+      box-shadow: inset 0 calc(-1 * var(--org-field-outline-width)) 0 0 var(--org-field-outline);
+
+      .mdc-notched-outline__notch.mdc-notched-outline__notch {
+        border-bottom-color: transparent;
+      }
+    }
   }
 }
 

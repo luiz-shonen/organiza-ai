@@ -31,6 +31,12 @@
     &--wide-narrow {
       grid-template-columns: 2fr 1fr;
     }
+
+    // Início and término (opcional) side by side, the hora below: three across left
+    // too little room once the share panel sits beside the form.
+    &--dates {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 }
 
@@ -60,7 +66,21 @@
 
 // Filled by ViaCEP: visible but not editable.
 .event-step__locked {
+  cursor: not-allowed;
   opacity: 0.6;
+}
+
+// "Número" with "Sem número" right below it.
+.event-step__number {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-inline-size: 0;
+
+  // Right under the field, over the room Material keeps for its hint line.
+  org-checkbox {
+    justify-self: start;
+    margin-block-start: calc(-1 * var(--org-space-md));
+  }
 }
 
 .event-step__locked-note {
@@ -91,7 +111,7 @@
   margin: 0;
 }
 
-// "Aprovar quem confirma pelo link" (step 1): the switch, then what it means.
+// "Aprovar presenças" (step 1): the switch, then what it means.
 .event-step__approval {
   border-block-start: 1px solid var(--org-outline-variant);
   display: grid;

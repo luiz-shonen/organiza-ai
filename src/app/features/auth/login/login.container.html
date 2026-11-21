@@ -1,13 +1,41 @@
 <main class="login" data-testid="login-page">
   <div class="login__header">
-    <h1 class="login__brand">
+    <p class="login__brand">
       <org-logo size="lg" />
-    </h1>
-    <p class="login__subtitle">Acesse ou crie sua conta para continuar</p>
+    </p>
   </div>
 
   <org-surface variant="card" class="login__card">
     <div class="login__card-content">
+      <!-- Someone sent here by an invite is told so; anyone else hears what the app does. -->
+      <div class="login__intro">
+        @if (invited()) {
+          <span class="login__intro-icon" aria-hidden="true">
+            <org-icon name="mail" color="currentColor" />
+          </span>
+          <h1 class="login__title" data-testid="login-title">Você recebeu um convite!</h1>
+          <p class="login__lead">Entre com sua conta Google para ver o convite e responder.</p>
+        } @else {
+          <h1 class="login__title" data-testid="login-title">
+            Suas festas em família, organizadas
+          </h1>
+          <p class="login__lead">Do convite ao amigo oculto, tudo num lugar só.</p>
+        }
+      </div>
+
+      @if (!invited()) {
+        <ul class="login__features" aria-label="O que dá para fazer">
+          @for (feature of features; track feature.icon) {
+            <li class="login__feature">
+              <span class="login__feature-icon" aria-hidden="true">
+                <org-icon [name]="feature.icon" size="sm" color="currentColor" />
+              </span>
+              {{ feature.text }}
+            </li>
+          }
+        </ul>
+      }
+
       @if (errorMessage(); as error) {
         <div class="login__error" role="alert" data-testid="login-error-alert">
           <org-icon name="error" color="currentColor" />
@@ -15,60 +43,62 @@
         </div>
       }
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
-        <!-- Validation messages wait for the field to be touched, so a fresh page shows none. -->
-        <org-text-field
-          class="login__form-field"
-          label="E-mail"
-          type="email"
-          placeholder="seu@email.com"
-          testId="login-email-input"
-          formControlName="email"
-          [error]="
-            !form.controls.email.touched
-              ? ''
-              : form.controls.email.hasError('required')
-                ? 'E-mail é obrigatório'
-                : form.controls.email.hasError('valueObject')
-                  ? 'Digite um e-mail válido'
-                  : ''
-          "
-        />
+      @if (emailSignIn()) {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
+          <!-- Validation messages wait for the field to be touched, so a fresh page shows none. -->
+          <org-text-field
+            class="login__form-field"
+            label="E-mail"
+            type="email"
+            placeholder="seu@email.com"
+            testId="login-email-input"
+            formControlName="email"
+            [error]="
+              !form.controls.email.touched
+                ? ''
+                : form.controls.email.hasError('required')
+                  ? 'E-mail é obrigatório'
+                  : form.controls.email.hasError('valueObject')
+                    ? 'Digite um e-mail válido'
+                    : ''
+            "
+          />
 
-        <org-text-field
-          class="login__form-field"
-          label="Senha"
-          type="password"
-          placeholder="Sua senha"
-          testId="login-password-input"
-          formControlName="password"
-          [passwordVisible]="!hidePassword()"
-          (togglePasswordVisibility)="hidePassword.set(!hidePassword())"
-          [error]="
-            !form.controls.password.touched
-              ? ''
-              : form.controls.password.hasError('required')
-                ? 'Senha é obrigatória'
-                : form.controls.password.hasError('minlength')
-                  ? 'Mínimo 6 caracteres'
-                  : ''
-          "
-        />
+          <org-text-field
+            class="login__form-field"
+            label="Senha"
+            type="password"
+            placeholder="Sua senha"
+            testId="login-password-input"
+            formControlName="password"
+            [passwordVisible]="!hidePassword()"
+            (togglePasswordVisibility)="hidePassword.set(!hidePassword())"
+            [error]="
+              !form.controls.password.touched
+                ? ''
+                : form.controls.password.hasError('required')
+                  ? 'Senha é obrigatória'
+                  : form.controls.password.hasError('minlength')
+                    ? 'Mínimo 6 caracteres'
+                    : ''
+            "
+          />
 
-        <org-button
-          type="submit"
-          class="login__submit-btn"
-          data-testid="login-submit-btn"
-          label="Entrar"
-          [disabled]="form.invalid || loading()"
-          [loading]="loading()"
-          [fullWidth]="true"
-        />
-      </form>
+          <org-button
+            type="submit"
+            class="login__submit-btn"
+            data-testid="login-submit-btn"
+            label="Entrar"
+            [disabled]="form.invalid || loading()"
+            [loading]="loading()"
+            [fullWidth]="true"
+          />
+        </form>
 
-      <div class="login__divider">
-        <span class="login__divider-text">ou</span>
-      </div>
+        <div class="login__divider">
+          <span class="login__divider-text">ou</span>
+        </div>
+      }
 
       <org-button
         [disabled]="loading()"
@@ -80,6 +110,10 @@
         imageSrc="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
         (pressed)="loginWithGoogle()"
       />
+      <p class="login__note">
+        <org-icon name="lock" size="sm" color="currentColor" />
+        Sem senha nova: é só usar a sua conta Google.
+      </p>
     </div>
   </org-surface>
 </main>

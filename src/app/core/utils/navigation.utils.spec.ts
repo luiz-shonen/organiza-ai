@@ -13,7 +13,8 @@ describe('navigation utils', () => {
   it('sends sub-pages back to their parent destination', () => {
     expect(resolveBackRoute('/evento/abc')).toBe('/');
     expect(resolveBackRoute('/meus-eventos/evento/novo')).toBe('/meus-eventos');
-    expect(resolveBackRoute('/meus-eventos/evento/abc?passo=2')).toBe('/meus-eventos');
+    expect(resolveBackRoute('/meus-eventos/evento/abc')).toBe('/evento/abc');
+    expect(resolveBackRoute('/meus-eventos/evento/abc?passo=2')).toBe('/evento/abc');
     expect(resolveBackRoute('/admin')).toBe('/perfil');
   });
 

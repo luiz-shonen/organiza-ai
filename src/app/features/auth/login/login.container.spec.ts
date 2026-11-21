@@ -47,7 +47,32 @@ describe('LoginContainer', () => {
     expect(component['hidePassword']()).toBe(true);
   });
 
+  it('says what the app does, or that an invite is waiting when one sent the guest here', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const title = () => compiled.querySelector('[data-testid="login-title"]')?.textContent?.trim();
+    expect(title()).toBe('Suas festas em família, organizadas');
+    expect(compiled.textContent).not.toContain('Acesse ou crie sua conta');
+    expect(compiled.querySelectorAll('.login__feature').length).toBe(4);
+
+    fixture.componentRef.setInput('redirect', '/evento/abc');
+    fixture.detectChanges();
+    expect(title()).toBe('Você recebeu um convite!');
+    expect(compiled.querySelectorAll('.login__feature').length).toBe(0);
+  });
+
+  it('offers Google only, unless the address asks for the password form (?senha)', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('[data-testid="google-login-btn"]')).toBeTruthy();
+    expect(compiled.querySelector('#login-form')).toBeNull();
+
+    fixture.componentRef.setInput('senha', '');
+    fixture.detectChanges();
+    expect(compiled.querySelector('#login-form')).toBeTruthy();
+  });
+
   it('shows no validation errors on a fresh page, only after the field is touched', () => {
+    fixture.componentRef.setInput('senha', '');
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelectorAll('.org-text-field__error').length).toBe(0);
 

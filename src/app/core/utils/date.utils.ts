@@ -71,3 +71,49 @@ export function formatWeekdayTime(dateStr: string, locale = 'pt-BR'): string {
   const weekday = date.toLocaleDateString(locale, { weekday: 'short' });
   return `${weekday} · ${formatTime(dateStr, locale)}`;
 }
+
+/** "2026-12-25" read as that calendar day at local midnight; null when it is not one. */
+export function parseDay(day: string | null | undefined): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day ?? '');
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return date.getMonth() === Number(match[2]) - 1 ? date : null;
+}
+
+/** The local calendar day of a date as "2026-12-25". */
+export function toDayString(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/**
+ * The last day of an event that runs over several days (local midnight), or null for a
+ * one-day event: no end date, or one that is not after the start day.
+ */
+export function eventLastDay(startIso: string, endDay: string | null | undefined): Date | null {
+  const start = new Date(startIso);
+  const end = parseDay(endDay);
+  if (!end || isNaN(start.getTime())) return null;
+  start.setHours(0, 0, 0, 0);
+  return end > start ? end : null;
+}
+
+/**
+ * The days of an event that runs over several days: "23 a 25 de dezembro", "30 de dezembro
+ * a 2 de janeiro" ("23 a 25 de dez." when short); '' for a one-day event.
+ */
+export function formatDaySpan(
+  startIso: string,
+  endDay: string | null | undefined,
+  month: 'long' | 'short' = 'long',
+): string {
+  const last = eventLastDay(startIso, endDay);
+  if (!last) return '';
+  const start = new Date(startIso);
+  const dayMonth = (date: Date) => date.toLocaleDateString('pt-BR', { day: 'numeric', month });
+  const sameMonth =
+    start.getMonth() === last.getMonth() && start.getFullYear() === last.getFullYear();
+  return sameMonth
+    ? `${start.getDate()} a ${dayMonth(last)}`
+    : `${dayMonth(start)} a ${dayMonth(last)}`;
+}

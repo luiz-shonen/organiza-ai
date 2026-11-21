@@ -1,3 +1,4 @@
+import { explainError } from '../../core/utils/error.utils';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -126,8 +127,10 @@ export class ProfileContainer implements OnInit {
         phone: phone || undefined,
       });
       this.feedback.success('Perfil atualizado com sucesso!');
-    } catch {
-      this.feedback.error('Não foi possível atualizar o perfil. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(
+        explainError('Não foi possível atualizar o perfil. Tente novamente.', error),
+      );
     } finally {
       this.updating.set(false);
     }
@@ -142,8 +145,10 @@ export class ProfileContainer implements OnInit {
       const newMember = await this.familyService.addFamilyMember(user.uid, data);
       this.familyMembers.update((list) => [...list, newMember]);
       this.feedback.success('Familiar adicionado com sucesso!');
-    } catch {
-      this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(
+        explainError('Não foi possível adicionar o familiar. Tente novamente.', error),
+      );
     } finally {
       this.savingFamilyMember.set(false);
     }
@@ -160,8 +165,10 @@ export class ProfileContainer implements OnInit {
         list.map((member) => (member.id === id ? { ...member, ...changes } : member)),
       );
       this.feedback.success('Familiar atualizado com sucesso!');
-    } catch {
-      this.feedback.error('Não foi possível atualizar o familiar. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(
+        explainError('Não foi possível atualizar o familiar. Tente novamente.', error),
+      );
     } finally {
       this.savingFamilyMember.set(false);
     }
@@ -185,8 +192,10 @@ export class ProfileContainer implements OnInit {
       await this.familyService.deleteFamilyMember(user.uid, memberId);
       this.familyMembers.update((list) => list.filter((m) => m.id !== memberId));
       this.feedback.success('Familiar removido com sucesso!');
-    } catch {
-      this.feedback.error('Não foi possível remover o familiar. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(
+        explainError('Não foi possível remover o familiar. Tente novamente.', error),
+      );
     }
   }
 
@@ -230,9 +239,11 @@ export class ProfileContainer implements OnInit {
     try {
       await this.userService.upsertProfile(user.uid, { savedCompanions: names });
       this.feedback.success(success);
-    } catch {
+    } catch (error) {
       this.companions.set(previous);
-      this.feedback.error('Não foi possível salvar os acompanhantes. Tente novamente.');
+      this.feedback.error(
+        explainError('Não foi possível salvar os acompanhantes. Tente novamente.', error),
+      );
     } finally {
       this.savingCompanions.set(false);
     }

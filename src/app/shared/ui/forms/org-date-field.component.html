@@ -1,4 +1,8 @@
-<mat-form-field appearance="outline" class="org-date-field">
+<mat-form-field
+  appearance="outline"
+  class="org-date-field"
+  [subscriptSizing]="hint() && !error() ? 'dynamic' : 'fixed'"
+>
   <mat-label>{{ label() }}</mat-label>
   <input
     matInput

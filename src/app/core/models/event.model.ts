@@ -6,7 +6,15 @@ export interface AddressDetails {
   number?: string;
   neighborhood?: string;
   city?: string;
+  /** "Km 12, sítio Boa Vista": what the street and number do not say. */
+  complement?: string;
+  /** "Como chegar": directions for places a map does not find well, such as rural ones. */
+  directions?: string;
 }
+
+/** Sizes of the optional address fields, in the editor and the rules. */
+export const ADDRESS_COMPLEMENT_MAX = 80;
+export const ADDRESS_DIRECTIONS_MAX = 300;
 
 export type PixType = 'cpf' | 'cnpj' | 'email' | 'phone' | 'random' | string;
 
@@ -82,6 +90,11 @@ export interface PartyEvent {
   category?: string;
   description: string;
   date: string;
+  /**
+   * The last day ("2026-12-25") of an event that runs over several days, starting on `date`.
+   * Missing or null: a one-day event.
+   */
+  endDate?: string | null;
   location: string;
   addressDetails?: AddressDetails;
   pixKey: string | null;
@@ -96,7 +109,7 @@ export interface PartyEvent {
   /** "Vai ter amigo oculto?" and whether participants list gift options. */
   secretSanta?: SecretSantaSettings;
   /**
-   * "Aprovar quem confirma pelo link": each confirmation waits for the owner before it counts.
+   * "Aprovar presenças": each confirmation waits for the owner before it counts.
    * Off (or missing) means anyone with the link confirms at once.
    */
   requireApproval?: boolean;

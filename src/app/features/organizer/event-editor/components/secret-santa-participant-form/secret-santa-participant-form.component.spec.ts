@@ -40,6 +40,30 @@ describe('SecretSantaParticipantFormComponent', () => {
     expect(emitted).toEqual([{ name: 'Jéssica Melo', phone: '(11) 98888-1111', giftOptions: [] }]);
   });
 
+  it('with a save, keeps what was typed when it fails and clears when it works', async () => {
+    let result = false;
+    const saved: SecretSantaParticipantInput[] = [];
+    fixture.componentRef.setInput('save', async (participant: SecretSantaParticipantInput) => {
+      saved.push(participant);
+      return result;
+    });
+    type('santa-name-input', 'Gustavo');
+    type('santa-phone-input', '11988881111');
+    submit();
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+    expect(saved).toHaveLength(1);
+    expect(emitted).toEqual([]);
+    expect(input('santa-name-input')!.value).toBe('Gustavo');
+
+    result = true;
+    submit();
+    await new Promise((resolve) => setTimeout(resolve));
+    fixture.detectChanges();
+    expect(saved).toHaveLength(2);
+    expect(input('santa-name-input')!.value).toBe('');
+  });
+
   it('refuses an empty name or an invalid phone', () => {
     submit();
     type('santa-name-input', 'Ana');
@@ -56,58 +80,137 @@ describe('SecretSantaParticipantFormComponent', () => {
     expect(input('santa-gift-input')).not.toBeNull();
   });
 
-  it('takes several gift options, one field each; Enter opens the next field', async () => {
+  const giftInput = () =>
+    el().querySelector<HTMLInputElement>('input[data-testid="santa-gift-input"]');
+  const typeGift = (value: string) => {
+    const field = giftInput()!;
+    field.value = value;
+    field.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  };
+  const addGiftButton = () =>
+    el().querySelector(
+      '[data-testid="santa-add-gift-btn"] button, button[data-testid="santa-add-gift-btn"]',
+    ) as HTMLButtonElement | null;
+  const giftItems = () =>
+    Array.from(el().querySelectorAll('[data-testid="santa-gift-item"]')).map((item) =>
+      item.querySelector('.santa-form__gift-text')!.textContent!.trim(),
+    );
+
+  it('adds gift ideas to a list with + or Enter, and sends one still typed', () => {
     fixture.componentRef.setInput('showGiftOptions', true);
     fixture.detectChanges();
-    const giftInputs = () =>
-      Array.from(el().querySelectorAll<HTMLInputElement>('input[data-testid="santa-gift-input"]'));
-    const typeGift = (index: number, value: string) => {
-      const field = giftInputs()[index];
-      field.value = value;
-      field.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
-    };
-    expect(giftInputs()).toHaveLength(1);
-
     type('santa-name-input', 'Ana');
-    typeGift(0, 'Chinelo, cor verde, tamanho 36');
-    giftInputs()[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    typeGift('Chinelo, cor verde, tamanho 36');
+    giftInput()!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     fixture.detectChanges();
     expect(emitted).toEqual([]);
-    expect(giftInputs()).toHaveLength(2);
+    expect(giftItems()).toEqual(['Chinelo, cor verde, tamanho 36']);
+    expect(giftInput()!.value).toBe('');
 
-    typeGift(1, 'Livro de receitas');
-    (
-      el().querySelector(
-        '[data-testid="santa-add-gift-btn"] button, button[data-testid="santa-add-gift-btn"]',
-      ) as HTMLButtonElement
-    ).click();
+    typeGift('Livro de receitas');
+    addGiftButton()!.click();
     fixture.detectChanges();
-    typeGift(2, 'Caneca');
+    expect(el().textContent).toContain('2 de 10');
+
+    typeGift('Caneca');
     submit();
     expect(emitted[0].giftOptions).toEqual([
       'Chinelo, cor verde, tamanho 36',
       'Livro de receitas',
       'Caneca',
     ]);
-    // The form is ready for the next person: one empty field again.
-    expect(giftInputs()).toHaveLength(1);
-    expect(giftInputs()[0].value).toBe('');
+    // Ready for the next person: no ideas, an empty field.
+    expect(giftItems()).toEqual([]);
+    expect(giftInput()!.value).toBe('');
+  });
+
+  it('takes an idea out of the list', () => {
+    fixture.componentRef.setInput('showGiftOptions', true);
+    fixture.detectChanges();
+    typeGift('Caneca');
+    addGiftButton()!.click();
+    fixture.detectChanges();
+    el()
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="santa-gift-item"] [aria-label="Remover Caneca"]',
+      )!
+      .click();
+    fixture.detectChanges();
+    expect(giftItems()).toEqual([]);
+  });
+
+  const editInput = () =>
+    el().querySelector<HTMLInputElement>('input[data-testid="santa-gift-edit-input"]');
+  const typeEdit = (value: string) => {
+    editInput()!.value = value;
+    editInput()!.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+  };
+  const key = (target: HTMLElement, name: string) => {
+    target.dispatchEvent(new KeyboardEvent('keydown', { key: name, bubbles: true }));
+    fixture.detectChanges();
+  };
+
+  it('edits an idea in place: the pencil or the text opens it, Enter keeps it', () => {
+    fixture.componentRef.setInput('showGiftOptions', true);
+    fixture.detectChanges();
+    typeGift('Chinelo Kenner, Marrom, Tamanho 38');
+    addGiftButton()!.click();
+    fixture.detectChanges();
+
+    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    fixture.detectChanges();
+    expect(editInput()!.value).toBe('Chinelo Kenner, Marrom, Tamanho 38');
+    typeEdit('Chinelo Kenner, Marrom, Tamanho 39');
+    key(editInput()!, 'Enter');
+    expect(emitted).toEqual([]);
+    expect(giftItems()).toEqual(['Chinelo Kenner, Marrom, Tamanho 39']);
+
+    (
+      el().querySelector(
+        '[data-testid="santa-gift-edit-btn"] button, button[data-testid="santa-gift-edit-btn"]',
+      ) as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
+    typeEdit('Outra coisa');
+    key(editInput()!, 'Escape');
+    expect(giftItems()).toEqual(['Chinelo Kenner, Marrom, Tamanho 39']);
+  });
+
+  it('an idea emptied while editing is taken out, and one being edited goes with the person', () => {
+    fixture.componentRef.setInput('showGiftOptions', true);
+    fixture.detectChanges();
+    type('santa-name-input', 'Carlos');
+    for (const gift of ['Caneca', 'Livro']) {
+      typeGift(gift);
+      addGiftButton()!.click();
+      fixture.detectChanges();
+    }
+    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    fixture.detectChanges();
+    typeEdit('');
+    key(editInput()!, 'Enter');
+    expect(giftItems()).toEqual(['Livro']);
+
+    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    fixture.detectChanges();
+    typeEdit('Livro de receitas');
+    submit();
+    expect(emitted[0].giftOptions).toEqual(['Livro de receitas']);
   });
 
   it('stops at the number of options the organizer allows', () => {
     fixture.componentRef.setInput('showGiftOptions', true);
     fixture.componentRef.setInput('maxGiftOptions', 2);
     fixture.detectChanges();
-    const addButton = () => el().querySelector('[data-testid="santa-add-gift-btn"]');
-    const field = el().querySelector<HTMLInputElement>('input[data-testid="santa-gift-input"]')!;
-    field.value = 'Caneca';
-    field.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-    (addButton()!.querySelector('button') ?? (addButton() as HTMLButtonElement)).click();
-    fixture.detectChanges();
-    expect(el().querySelectorAll('input[data-testid="santa-gift-input"]')).toHaveLength(2);
-    expect(addButton()).toBeNull();
+    for (const gift of ['Caneca', 'Livro']) {
+      typeGift(gift);
+      addGiftButton()!.click();
+      fixture.detectChanges();
+    }
+    expect(giftItems()).toEqual(['Caneca', 'Livro']);
+    expect(giftInput()).toBeNull();
     expect(el().textContent).toContain('Limite de 2 opções atingido.');
   });
 
@@ -116,15 +219,34 @@ describe('SecretSantaParticipantFormComponent', () => {
     fixture.componentRef.setInput('maxGiftOptions', 1);
     fixture.detectChanges();
     expect(el().textContent).toContain('Opção de presente');
-    expect(el().querySelector('[data-testid="santa-add-gift-btn"]')).toBeNull();
+    expect(el().textContent).not.toContain('0 de 1');
   });
 
-  it('leaves empty gift fields out', () => {
+  it('sends no ideas when none were typed', () => {
     fixture.componentRef.setInput('showGiftOptions', true);
     fixture.detectChanges();
     type('santa-name-input', 'Ana');
     submit();
     expect(emitted[0].giftOptions).toEqual([]);
+  });
+
+  it('offers people the organizer knows, and their phone comes along', () => {
+    fixture.componentRef.setInput('knownPeople', [
+      { name: 'Gustavo Lima', phone: '(31) 99999-0000' },
+      { name: 'Ana Souza', phone: '' },
+    ]);
+    type('santa-name-input', 'gus');
+    const component = fixture.componentInstance as unknown as {
+      nameSuggestions: () => { label: string; detail?: string }[];
+      pickPerson: (s: { label: string; detail?: string }) => void;
+    };
+    expect(component.nameSuggestions()).toContainEqual({
+      label: 'Gustavo Lima',
+      detail: '(31) 99999-0000',
+    });
+    component.pickPerson({ label: 'Gustavo Lima', detail: '(31) 99999-0000' });
+    fixture.detectChanges();
+    expect(input('santa-phone-input')!.value).toBe('(31) 99999-0000');
   });
 
   it('fills in the participant being edited', () => {

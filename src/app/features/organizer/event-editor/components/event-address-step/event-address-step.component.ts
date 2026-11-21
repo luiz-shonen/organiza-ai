@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   inject,
   input,
@@ -9,13 +10,21 @@ import {
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { fieldError } from '../../../../../core/value-objects';
-import { EventAddressForm } from '../../../../../core/models';
+import {
+  ADDRESS_COMPLEMENT_MAX,
+  ADDRESS_DIRECTIONS_MAX,
+  AddressFound,
+  EventAddressForm,
+} from '../../../../../core/models';
 import { joinLabels, revealFirstInvalid } from '../step-validation';
 import {
   OrgBannerComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
+  OrgCheckboxComponent,
+  OrgIconComponent,
   OrgSurfaceComponent,
+  OrgTextareaFieldComponent,
   OrgTextFieldComponent,
 } from '../../../../../shared/ui';
 
@@ -27,7 +36,10 @@ import {
     OrgBannerComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
+    OrgCheckboxComponent,
+    OrgIconComponent,
     OrgSurfaceComponent,
+    OrgTextareaFieldComponent,
     OrgTextFieldComponent,
   ],
   templateUrl: './event-address-step.component.html',
@@ -35,6 +47,10 @@ import {
 })
 export class EventAddressStepComponent {
   readonly form = input.required<EventAddressForm>();
+  /** Which fields the CEP filled; those stay locked. Null until a full CEP was looked up. */
+  readonly found = input<AddressFound | null>(null);
+  /** "Sem número": ticked, and whether it can be changed (not for collaborators). */
+  readonly noNumber = input({ checked: false, disabled: false });
   readonly cepInput = output<string>();
   readonly back = output<void>();
   readonly next = output<void>();
@@ -44,6 +60,19 @@ export class EventAddressStepComponent {
   private readonly attempted = signal(false);
 
   protected readonly fieldError = fieldError;
+  protected readonly complementMax = ADDRESS_COMPLEMENT_MAX;
+  protected readonly directionsMax = ADDRESS_DIRECTIONS_MAX;
+
+  /** The CEP was found but left something out, as a rural CEP does: say what to do. */
+  protected readonly partlyFound = computed(() => {
+    const found = this.found();
+    return !!found && !(found.address && found.neighborhood && found.city);
+  });
+
+  /** Locked: filled by the CEP, or no full CEP yet. Open: the CEP did not bring it. */
+  protected isLocked(field: keyof AddressFound): boolean {
+    return this.found()?.[field] ?? true;
+  }
 
   /** Moves on when the step is complete; otherwise says what is missing and shows the field. */
   protected tryNext(): void {
@@ -67,9 +96,12 @@ export class EventAddressStepComponent {
     const missing: string[] = [];
     if (cep.invalid) missing.push('o CEP');
     if (number.invalid) missing.push('o número');
+    if (address.invalid && !this.isLocked('address')) missing.push('o endereço');
+    if (neighborhood.invalid && !this.isLocked('neighborhood')) missing.push('o bairro');
+    if (city.invalid && !this.isLocked('city')) missing.push('a cidade');
     if (missing.length) return `Para continuar, preencha ${joinLabels(missing)}.`;
     if (address.invalid || neighborhood.invalid || city.invalid) {
-      return 'Não encontramos a rua desse CEP. Confira os números do CEP.';
+      return 'Digite o CEP completo para buscarmos o endereço.';
     }
     return 'Para continuar, confira os campos marcados em vermelho.';
   }

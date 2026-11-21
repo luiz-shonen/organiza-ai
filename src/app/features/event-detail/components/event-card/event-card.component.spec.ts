@@ -47,21 +47,67 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(link.href).toContain('Churrasco%20de%20Domingo');
   });
 
+  it('shows the days of an event over several days, and adds them all to the calendar', () => {
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      date: new Date(2026, 11, 23, 17, 0).toISOString(),
+      endDate: '2026-12-25',
+    });
+    fixture.detectChanges();
+
+    const box = element().querySelector('.event-card__date-box') as HTMLElement;
+    expect(box.getAttribute('aria-label')).toBe('De 23 a 25 de dezembro · 17:00');
+    expect(box.textContent).toContain('23–25');
+    expect(box.textContent).toContain('Quarta a sexta');
+    const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
+    const end = new Date(2026, 11, 25, 23, 59).toISOString().replace(/-|:|\.\d\d\d/g, '');
+    expect(decodeURIComponent(link.href)).toContain(`/${end}`);
+  });
+
   it('splits the address into street and the rest', () => {
     const text = element().querySelector('.event-card__location-text')?.textContent ?? '';
     expect(text).toContain('Rua Dom Lara, 135');
     expect(text).toContain('Vista Alegre · Belo Horizonte/MG · 30514-160');
   });
 
-  it('shows the category, falling back to "Evento"', () => {
-    expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
-      'Evento',
+  it('shows a rural address with its complement, and how to get there', () => {
+    expect(element().querySelector('[data-testid="event-directions"]')).toBeNull();
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      location: 'Estrada da Serra, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12',
+        directions: 'Depois da ponte, à direita.',
+      },
+    });
+    fixture.detectChanges();
+
+    const text = element().querySelector('.event-card__location-text')?.textContent ?? '';
+    expect(text).toContain('Estrada da Serra, S/N, Km 12');
+    expect(text).toContain('Jaboticatubas/MG · 35830-000');
+    expect(element().querySelector('[data-testid="event-directions"]')?.textContent).toContain(
+      'Depois da ponte, à direita.',
     );
+  });
+
+  it('names the party only when the greeting does not ("Boas Festas!" needs no tag)', () => {
+    const category = () => element().querySelector('.event-card__category')?.textContent?.trim();
+    expect(category()).toBeUndefined();
+    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Sarau' });
+    fixture.detectChanges();
+    expect(category()).toBe('Sarau');
     fixture.componentRef.setInput('event', { ...mockEvent, category: 'Churrasco' });
     fixture.detectChanges();
-    expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
-      'Churrasco',
-    );
+    expect(category()).toBeUndefined();
+    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Natal' });
+    fixture.detectChanges();
+    expect(category()).toBeUndefined();
+    expect(element().querySelector('.event-card__greeting')?.textContent).toContain('Boas Festas!');
   });
 
   it('names the organiser, or "Você" for the owner', () => {

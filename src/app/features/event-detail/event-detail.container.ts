@@ -1,3 +1,4 @@
+import { explainError } from '../../core/utils/error.utils';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -187,7 +188,7 @@ export class EventDetailContainer implements OnInit {
   protected readonly isDeclined = computed(() => this.declined() && !this.isUserConfirmed());
 
   /**
-   * "Aprovar quem confirma pelo link": only approved guests count (the list, the total, the
+   * "Aprovar presenças": only approved guests count (the list, the total, the
    * amigo oculto); the ones waiting go to the organizers' "Aguardando aprovação".
    */
   private readonly guestSplit = computed(() =>
@@ -553,8 +554,8 @@ export class EventDetailContainer implements OnInit {
           ? `Sorteio feito! ${inApp === 1 ? '1 pessoa foi avisada' : inApp + ' pessoas foram avisadas'} no app. Envie também o link pelo WhatsApp.`
           : 'Sorteio feito! Agora envie o link de cada pessoa.',
       );
-    } catch {
-      this.feedback.error('Não foi possível fazer o sorteio. Tente de novo.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível fazer o sorteio. Tente de novo.', error));
     } finally {
       this.secretSantaDrawing.set(false);
     }
@@ -566,6 +567,7 @@ export class EventDetailContainer implements OnInit {
       phone: link.phone,
       eventTitle: this.event()?.title ?? '',
       url: link.url,
+      organizerName: this.event()?.creatorName ?? '',
     });
     window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -612,7 +614,7 @@ export class EventDetailContainer implements OnInit {
       this.feedback.success(`${pair.keep.name} agora aparece uma vez só.`);
     } catch (err) {
       console.error(err);
-      this.feedback.error('Não foi possível juntar. Tente novamente.');
+      this.feedback.error(explainError('Não foi possível juntar. Tente novamente.', err));
     } finally {
       this.secretSantaBusyDuplicate.set(null);
     }
@@ -624,7 +626,7 @@ export class EventDetailContainer implements OnInit {
       await this.secretSantaService.markDistinct(this.id(), pair);
     } catch (err) {
       console.error(err);
-      this.feedback.error('Não foi possível salvar. Tente novamente.');
+      this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', err));
     } finally {
       this.secretSantaBusyDuplicate.set(null);
     }
@@ -642,7 +644,9 @@ export class EventDetailContainer implements OnInit {
       );
     } catch (err) {
       console.error(err);
-      this.feedback.error('Não foi possível mudar as inscrições. Tente novamente.');
+      this.feedback.error(
+        explainError('Não foi possível mudar as inscrições. Tente novamente.', err),
+      );
     }
   }
 
@@ -656,7 +660,9 @@ export class EventDetailContainer implements OnInit {
       this.feedback.success('Você entrou no amigo oculto!');
     } catch (err) {
       console.error(err);
-      this.feedback.error('Não foi possível entrar no amigo oculto. Tente novamente.');
+      this.feedback.error(
+        explainError('Não foi possível entrar no amigo oculto. Tente novamente.', err),
+      );
     } finally {
       this.rsvpLoading.set(false);
     }
@@ -672,7 +678,9 @@ export class EventDetailContainer implements OnInit {
       this.feedback.success('Você saiu do amigo oculto.');
     } catch (err) {
       console.error(err);
-      this.feedback.error('Não foi possível sair do amigo oculto. Tente novamente.');
+      this.feedback.error(
+        explainError('Não foi possível sair do amigo oculto. Tente novamente.', err),
+      );
     } finally {
       this.rsvpLoading.set(false);
     }
@@ -735,12 +743,17 @@ export class EventDetailContainer implements OnInit {
       if (result.santa) this.feedback.success('Você continua no amigo oculto.');
     } catch (err) {
       console.error(err);
-      this.feedback.error('Sua resposta foi salva, mas não deu para salvar o amigo oculto.');
+      this.feedback.error(
+        explainError('Sua resposta foi salva, mas não deu para salvar o amigo oculto.', err),
+      );
     }
   }
 
   protected onEditSecretSanta(): void {
-    void this.router.navigate(['/meus-eventos/evento', this.id()]);
+    // Always the amigo oculto step, not the step left open last time.
+    void this.router.navigate(['/meus-eventos/evento', this.id()], {
+      queryParams: { passo: 'amigo-oculto' },
+    });
   }
 
   protected onEditRsvp(): Promise<void> {
@@ -761,8 +774,7 @@ export class EventDetailContainer implements OnInit {
       this.feedback.success('Tudo bem, avisamos que você não poderá ir.');
       await this.afterDeclineSecretSanta(uid, result);
     } catch (err: unknown) {
-      console.error(err);
-      this.feedback.error('Não foi possível recusar o convite. Tente novamente.');
+      this.feedback.error(explainError('Não foi possível recusar o convite', err));
     } finally {
       this.rsvpLoading.set(false);
     }
@@ -824,7 +836,9 @@ export class EventDetailContainer implements OnInit {
               return saved;
             } catch (err) {
               console.error(err);
-              this.feedback.error('Não foi possível adicionar o familiar. Tente novamente.');
+              this.feedback.error(
+                explainError('Não foi possível adicionar o familiar. Tente novamente.', err),
+              );
               throw err;
             }
           },
@@ -885,7 +899,9 @@ export class EventDetailContainer implements OnInit {
             }
           } catch (err) {
             console.error(err);
-            this.feedback.error('Erro ao confirmar presença.', { duration: 4000 });
+            this.feedback.error(explainError('Não foi possível confirmar a presença', err), {
+              duration: 4000,
+            });
           } finally {
             this.rsvpLoading.set(false);
           }
@@ -893,9 +909,12 @@ export class EventDetailContainer implements OnInit {
       });
     } catch (err: unknown) {
       console.error(err);
-      this.feedback.error('Não foi possível abrir a confirmação. Tente novamente.', {
-        duration: 4000,
-      });
+      this.feedback.error(
+        explainError('Não foi possível abrir a confirmação. Tente novamente.', err),
+        {
+          duration: 4000,
+        },
+      );
     } finally {
       this.rsvpLoading.set(false);
     }
@@ -951,7 +970,7 @@ export class EventDetailContainer implements OnInit {
       this.feedback.success(`${guest.name} entrou na lista.`);
     } catch (err) {
       console.error(err);
-      this.feedback.error('Não foi possível aprovar. Tente novamente.');
+      this.feedback.error(explainError('Não foi possível aprovar. Tente novamente.', err));
     } finally {
       this.approvingGuestId.set(null);
     }
@@ -980,7 +999,7 @@ export class EventDetailContainer implements OnInit {
           this.feedback.success(`A confirmação de ${guest.name} foi recusada.`);
         } catch (err) {
           console.error(err);
-          this.feedback.error('Não foi possível recusar. Tente novamente.');
+          this.feedback.error(explainError('Não foi possível recusar. Tente novamente.', err));
         } finally {
           this.approvingGuestId.set(null);
         }
@@ -1015,7 +1034,9 @@ export class EventDetailContainer implements OnInit {
       this.mySecretSantaVersion.update((v) => v + 1);
     } catch (err) {
       console.error(err);
-      this.feedback.error('Sua presença foi salva, mas não deu para salvar o amigo oculto.');
+      this.feedback.error(
+        explainError('Sua presença foi salva, mas não deu para salvar o amigo oculto.', err),
+      );
     }
   }
 
@@ -1070,8 +1091,7 @@ export class EventDetailContainer implements OnInit {
 
             this.feedback.success('Sua presença foi cancelada.');
           } catch (err: unknown) {
-            console.error(err);
-            this.feedback.error('Erro ao cancelar presença.');
+            this.feedback.error(explainError('Não foi possível cancelar a presença', err));
           } finally {
             this.rsvpLoading.set(false);
           }
@@ -1115,8 +1135,8 @@ export class EventDetailContainer implements OnInit {
       this.claimingItemId.set(null);
       this.confetti.fireSuccessConfetti();
       this.feedback.success('Item assumido com sucesso!');
-    } catch {
-      this.feedback.error('Erro ao assumir item. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível assumir o item', error));
     } finally {
       this.claimSaving.set(false);
     }
@@ -1127,8 +1147,8 @@ export class EventDetailContainer implements OnInit {
       await this.saveMyClaims(
         toggleBought(this.myClaims()?.entries ?? [], row.itemId, row.memberId),
       );
-    } catch {
-      this.feedback.error('Não foi possível salvar. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', error));
     }
   }
 
@@ -1138,8 +1158,8 @@ export class EventDetailContainer implements OnInit {
         removeClaimEntry(this.myClaims()?.entries ?? [], row.itemId, row.memberId),
       );
       this.feedback.success('Item liberado.');
-    } catch {
-      this.feedback.error('Erro ao liberar item. Tente novamente.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível liberar o item', error));
     }
   }
 

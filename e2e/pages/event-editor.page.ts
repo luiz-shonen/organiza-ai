@@ -143,6 +143,13 @@ export class EventEditorPage extends BasePage {
   async openStep(
     label: 'Informações' | 'Endereço' | 'Itens' | 'Amigo oculto' | 'Pix',
   ): Promise<void> {
+    // On a phone the steps are bars under "Etapa N de 5"; wider, the numbered headers.
+    const phone = this.page.getByTestId('stepper-phone');
+    if (await phone.isVisible()) {
+      await phone.getByRole('button', { name: new RegExp(`: ${label}$`) }).click();
+      await expect(phone.locator('.org-stepper__name')).toHaveText(label);
+      return;
+    }
     await this.page.locator('.mat-step-header').filter({ hasText: label }).click();
     await expect(this.page.locator('.mat-step-header[aria-selected="true"]')).toContainText(label);
   }

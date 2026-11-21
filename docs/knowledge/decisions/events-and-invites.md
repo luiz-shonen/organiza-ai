@@ -93,19 +93,61 @@ How the app behaves for organizers and guests. Data and permissions are in
   opening `/meus-eventos/evento/{id}` of such an event goes back to its page with "Este evento já
   aconteceu e não pode mais ser editado." Organizers still use the rest of the page (the draw,
   links). The rules do not block it: the owner still writes the event (e.g. closing sign-ups).
+- **A reload does not lose what is being typed.** The editor keeps a draft in the browser
+  (`FormDraftService`, localStorage, per account and per event, "novo" while creating) for three
+  days: the three forms, the switches and, while creating, the items and amigo oculto list. It
+  is kept only once the organizer typed or switched something (the CEP lookup filling fields
+  does not count). Opening the editor again brings it back with "Recuperamos o que você estava
+  preenchendo (20/11 às 15:05)", only when it differs from the event as saved, with **Desfazer** (an
+  undo icon alone on a phone) to go back to the event as saved, and a ✕ that only hides the
+  notice. Saving or "Cancelar" drops it. The step the organizer was on is kept too:
+  a reload opens it (creating, only once the steps before it are filled in).
+- **Amigo oculto participants.** Typing a name offers people the organizer already knows
+  (`KnownPeopleService`): their family and the guests, companions and participants of up to 20
+  other events they own or help organize, never events they were only invited to. Picking one
+  fills the phone. Gift ideas are a list: one "Nova opção" field adds each with + or Enter,
+  each idea has a ✕, and one still typed goes with the participant. A failed add keeps what was
+  typed, and every error says why (`explainError`).
+- **An event may run over several days.** Step "Informações" has "Data de início" and an optional
+  "Data de término"; empty (or the same day) is a one-day event, and a last day before the first
+  one does not move on. It is saved as `endDate` ("2026-12-25") only when it is after the start
+  day, otherwise null. The invite reads "Quarta a sexta · 23–25 · Dez · 17:00" and "De 23 a 25
+  de dezembro · 17:00", the envelope "23 a 25 de dez.", Meus eventos' badge "23–25", WhatsApp
+  "23 a 25 de dezembro", and "Adicionar ao calendário" runs to the end of the last day. The
+  states above still follow the start: such an event is "Realizado" once it begins.
+- **Endereço comes from the CEP, and what the CEP lacks is typed.** Endereço, Bairro and Cidade/UF
+  are locked (read-only, a lock icon, a "not allowed" pointer, no caret) until a full CEP is looked
+  up. What ViaCEP fills stays locked; what it leaves empty opens to type, with "O CEP não trouxe o
+  endereço completo" above: a rural CEP (e.g. 35830-000, Jaboticatubas/MG) brings only the city,
+  and a CEP ViaCEP does not know opens all three. Changing the CEP clears what the last CEP filled
+  but keeps what the organizer typed. Bairro is required ("Zona rural" when there is none). "Sem número" saves the number as "S/N".
+  "Complemento" (80 characters, "Km 12, sítio Boa Vista") follows the number on the event page,
+  and "Como chegar" (300) shows below the address for places a map does not find well. The rules
+  cap each field of `addressDetails`.
 
 ## Invites look like invites
 
 - Início shows each invite as a sealed envelope in the colours of its category, "Para {first
   name}"; the whole envelope opens the event page. Its top is the invitation itself: paper with a
-  double frame, a handwritten greeting ("Feliz Natal!", "Vem comemorar!"…), title, date block,
-  description and "Com carinho, {organizer}". Themes: Natal, Aniversário (also chá de bebê,
-  batizado), Casamento (also noivado, chá de panela), Festa Junina, and the app colours for the
-  rest. See DESIGN.md, "Invitation themes".
+  double frame, scrolled corners and medallions, a handwritten greeting and a line in the tone of
+  a formal printed invitation, a little over the top on purpose ("Boas Festas!", "Rogamos a honra
+  de vossa presença à mesa natalina"), title, date block, description and "Cordialmente,
+  {organizer}". Every ready-made category (and a few often typed: noivado, mesversário,
+  réveillon) has its own greeting and line, so a Batizado never says a birthday's words; any other
+  category says the "Outros" words ("Prezadíssimo convidado"). Colours come in five palettes:
+  Natal, Aniversário (also mesversário, chá de bebê, batizado), Casamento (also noivado, chá de
+  panela), Festa Junina, and the app colours for the rest. See DESIGN.md, "Invitation themes".
+- The paper is light in the light theme and dark in the dark one, each theme with its own dark
+  tone (`$invite-themes-dark`); the envelopes follow.
+- The category shows only where the words do not already say it: a typed "Sarau" in small
+  capitals over "Prezadíssimo convidado" (never a bare "Outros"); none for the known ones.
+- Each time the invitation opens it unfolds, its frame draws itself, greeting and signature are
+  written in and the rest comes in in reading order (about 3 s); with reduced motion it is simply
+  there.
 
 ## Approving who confirms (optional)
 
-- Step "Informações" of the editor: **"Aprovar quem confirma pelo link"** (`event.requireApproval`),
+- Step "Informações" of the editor: **"Aprovar presenças"** (`event.requireApproval`),
   off by default (anyone with the link confirms at once). Only the owner changes it.
 - On: a guest's first answer is saved with `approved: false`. Their card says "Aguardando
   aprovação"; they do not count on "Quem vai" or the total, are not offered in "Confirmados no

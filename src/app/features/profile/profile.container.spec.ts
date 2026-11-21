@@ -196,7 +196,7 @@ describe('ProfileContainer', () => {
     await component.onUpdateDetails({ displayName: 'Novo Nome', phone: '' });
 
     expect(mockFeedback.error).toHaveBeenCalledWith(
-      'Não foi possível atualizar o perfil. Tente novamente.',
+      'Não foi possível atualizar o perfil: erro inesperado (Update failed).',
     );
   });
 
@@ -250,7 +250,7 @@ describe('ProfileContainer', () => {
     await component.onAddFamilyMember({ name: 'Mariana Silva', relationship: 'spouse' });
 
     expect(mockFeedback.error).toHaveBeenCalledWith(
-      'Não foi possível adicionar o familiar. Tente novamente.',
+      'Não foi possível adicionar o familiar: erro inesperado (Add failed).',
     );
   });
 
@@ -260,7 +260,7 @@ describe('ProfileContainer', () => {
     await component.onRemoveFamilyMember('fam-1');
 
     expect(mockFeedback.error).toHaveBeenCalledWith(
-      'Não foi possível remover o familiar. Tente novamente.',
+      'Não foi possível remover o familiar: erro inesperado (Remove failed).',
     );
   });
 

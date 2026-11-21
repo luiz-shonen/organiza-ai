@@ -6,7 +6,7 @@ import { FirestoreGateway } from './firestore.gateway';
 import { createMockFirestoreGateway, MockFirestoreGateway } from '../../testing/mocks';
 import type { SecretSantaParticipant, SecretSantaReveal } from '../models';
 
-/** "Aprovar quem confirma pelo link", and the amigo oculto links tied to an account. */
+/** "Aprovar presenças", and the amigo oculto links tied to an account. */
 describe('Approval and account-only links', () => {
   let gateway: MockFirestoreGateway;
 

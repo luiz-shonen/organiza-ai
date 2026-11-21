@@ -1,3 +1,4 @@
+import type { KnownPerson } from '../../../../../core/utils/known-people.utils';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -69,8 +70,17 @@ export class EventSecretSantaStepComponent {
   public readonly canConfigure = input(true);
   public readonly participants = input<readonly SecretSantaParticipantInput[]>([]);
   public readonly suggestions = input<readonly SecretSantaSuggestion[]>([]);
+  /** People from the organizer's other events and family, offered while typing a name. */
+  public readonly knownPeople = input<readonly KnownPerson[]>([]);
   /** The draw already happened: changing the list asks for a new one. */
   public readonly drawn = input(false);
+  /**
+   * Saves a person typed in "Novo participante"; resolves true when added. With it, the form is
+   * cleared only on success, so a failed save keeps what was typed. Without it, `add` is emitted.
+   */
+  public readonly saveNew = input<
+    ((participant: SecretSantaParticipantInput) => Promise<boolean>) | null
+  >(null);
   public readonly add = output<SecretSantaParticipantInput>();
   public readonly addMany = output<readonly SecretSantaParticipantInput[]>();
   public readonly update = output<SecretSantaParticipantUpdate>();
@@ -80,6 +90,8 @@ export class EventSecretSantaStepComponent {
 
   protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly editingIndex = signal<number | null>(null);
+  /** "Adicionar alguém à mão" opens the form; it stays open to add several in a row. */
+  protected readonly manualOpen = signal(false);
   protected readonly editingParticipant = computed(() => {
     const index = this.editingIndex();
     return index === null ? null : (this.participants()[index] ?? null);

@@ -236,10 +236,28 @@ service cloud.firestore {
         return (!changes('title') || isFilledText(data.get('title', null), 200))
             && (!changes('category') || isOptionalString(data.get('category', null), 60))
             && (!changes('description') || isOptionalString(data.get('description', null), 2000))
+            && (!changes('endDate') || data.get('endDate', null) == null
+                || (data.endDate is string && data.endDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
-            && (!changes('requireApproval') || data.get('requireApproval', null) is bool);
+            && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
+            && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)));
+      }
+
+      // CEP, street, number, neighbourhood and city, plus the optional complement ("Km 12")
+      // and "Como chegar" directions typed for places a map does not find well.
+      function isAddressDetails(value) {
+        return value is map
+            && value.keys().hasOnly(['cep', 'address', 'number', 'neighborhood', 'city',
+                                     'complement', 'directions'])
+            && isOptionalString(value.get('cep', null), 9)
+            && isOptionalString(value.get('address', null), 200)
+            && isOptionalString(value.get('number', null), 7)
+            && isOptionalString(value.get('neighborhood', null), 120)
+            && isOptionalString(value.get('city', null), 120)
+            && isOptionalString(value.get('complement', null), 80)
+            && isOptionalString(value.get('directions', null), 300);
       }
 
       // "Vai ter amigo oculto?", "Incluir opções de presente", how many per person (1 to 10) and

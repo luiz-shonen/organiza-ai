@@ -1,4 +1,8 @@
-<mat-form-field appearance="outline" class="org-text-field">
+<mat-form-field
+  appearance="outline"
+  class="org-text-field"
+  [class.org-text-field--readonly]="readOnly()"
+>
   <mat-label>{{ label() }}</mat-label>
   <input
     matInput
@@ -13,6 +17,8 @@
     [type]="type() === 'password' && passwordVisible() ? 'text' : type()"
     [value]="value()"
     [attr.data-testid]="testId() || null"
+    [matAutocomplete]="suggestionPanel"
+    [matAutocompleteDisabled]="!suggestions().length"
     (input)="updateValue($event)"
     (blur)="markTouched()"
   />
@@ -39,6 +45,21 @@
   @if (hint() && !error()) {
     <mat-hint>{{ hint() }}</mat-hint>
   }
+  <mat-autocomplete
+    #suggestionPanel="matAutocomplete"
+    class="org-text-field__suggestions"
+    [displayWith]="suggestionLabel"
+    (optionSelected)="pickSuggestion($event.option.value)"
+  >
+    @for (suggestion of matchingSuggestions(); track suggestion.label + (suggestion.detail ?? '')) {
+      <mat-option [value]="suggestion" data-testid="org-text-field-suggestion">
+        <span class="org-text-field__suggestion">{{ suggestion.label }}</span>
+        @if (suggestion.detail) {
+          <span class="org-text-field__suggestion-detail">{{ suggestion.detail }}</span>
+        }
+      </mat-option>
+    }
+  </mat-autocomplete>
 </mat-form-field>
 @if (error()) {
   <p class="org-text-field__error" role="alert">{{ error() }}</p>

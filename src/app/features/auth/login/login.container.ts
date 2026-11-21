@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services';
@@ -55,6 +55,22 @@ export class LoginContainer {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+
+  /**
+   * For now people sign in with Google only. `/login?senha` still shows the e-mail and password
+   * form, for test accounts; the form and its flows stay as they are.
+   */
+  readonly senha = input<string>();
+  protected readonly emailSignIn = computed(() => this.senha() !== undefined);
+  /** Where to go after signing in (`?redirect=/evento/abc`); an invite says so on the page. */
+  readonly redirect = input<string>();
+  protected readonly invited = computed(() => /^\/evento\/[^/]/.test(this.redirect() ?? ''));
+  protected readonly features = [
+    { icon: 'mail', text: 'Convites com cara de convite' },
+    { icon: 'how_to_reg', text: 'Quem vai, confirmado com um toque' },
+    { icon: 'checklist', text: 'O que cada família leva' },
+    { icon: 'redeem', text: 'Amigo oculto sorteado e entregue no WhatsApp' },
+  ] as const;
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [requiredText, valueObjectValidator(Email.validate)]],

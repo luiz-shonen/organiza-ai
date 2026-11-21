@@ -65,7 +65,9 @@ describe('SecretSantaCardComponent', () => {
     expect(list.querySelectorAll('li')).toHaveLength(3);
     expect(list.textContent).toContain('(11) 98888-1111');
     expect(list.textContent).toContain('Sem telefone');
-    (list.querySelector('org-button[label="WhatsApp"] button') as HTMLButtonElement).click();
+    (
+      list.querySelector('org-button[label="Enviar no WhatsApp"] button') as HTMLButtonElement
+    ).click();
     expect(sent[0].name).toBe('Ana');
     expect(button('secret-santa-redraw-btn')).not.toBeNull();
   });

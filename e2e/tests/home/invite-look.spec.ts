@@ -73,10 +73,10 @@ test.describe('Convites com cara de convite', () => {
     await natal.getByTestId('event-card-link').click();
     await expect(page).toHaveURL(/\/evento\/evt-natal$/);
     const invitation = page.getByTestId('event-invitation');
-    await expect(invitation).toContainText('Feliz Natal!');
+    await expect(invitation).toContainText('Boas Festas!');
     await expect(invitation.locator('h1')).toHaveText('Natal da família');
     await expect(invitation.getByTestId('event-invitation-signature')).toHaveText(
-      'Com carinho, Luiz Rodrigues',
+      'Cordialmente, Luiz Rodrigues',
     );
     await assertNoHorizontalOverflow(page);
     await invitation.screenshot({ path: 'e2e/screenshots/invite-paper-natal.png' });
@@ -87,6 +87,93 @@ test.describe('Convites com cara de convite', () => {
       await page
         .getByTestId('event-invitation')
         .screenshot({ path: `e2e/screenshots/invite-paper-${id.slice(4)}.png` });
+    }
+  });
+
+  test('the invitation follows the theme, says the party once, and draws itself in', async ({
+    page,
+  }) => {
+    // Six invitations in two themes, each drawn in for about 3 s.
+    test.setTimeout(150_000);
+    const churrasco = buildGuestEvent({
+      id: 'evt-churrasco',
+      title: 'Churrasco do Pedro',
+      category: 'Churrasco',
+      description: 'Traga sua bebida preferida.',
+      date: inDays(30),
+      creatorName: 'Pedro',
+      guests: [],
+    });
+    const batizado = buildGuestEvent({
+      id: 'evt-batizado',
+      title: 'Batizado do Theo',
+      category: 'Batizado',
+      description: 'Missa às 10h e almoço em seguida.',
+      date: inDays(35),
+      creatorName: 'Carla',
+      guests: [],
+    });
+    // A category typed by the organizer, with no words of its own.
+    const sarau = buildGuestEvent({
+      id: 'evt-sarau',
+      title: 'Sarau de poesia',
+      category: 'Sarau',
+      description: 'Traga um poema.',
+      date: inDays(45),
+      creatorName: 'Bia',
+      guests: [],
+    });
+    const events = [...invites, churrasco, batizado, sarau];
+    // Each kind of party says its own words; the typed one says the "Outros" words.
+    const greetings: Record<string, string> = {
+      'evt-natal': 'Boas Festas!',
+      'evt-aniversario': 'Celebremos!',
+      'evt-casamento': 'Com júbilo',
+      'evt-churrasco': 'Às brasas!',
+      'evt-batizado': 'Com fé e alegria',
+      'evt-sarau': 'Prezadíssimo convidado',
+    };
+    await setupMockAuthSession(page, {
+      uid: GUEST_UID,
+      email: 'convidada@exemplo.com',
+      displayName: 'Jéssica Melo',
+      events,
+      userProfile: {
+        id: GUEST_UID,
+        name: 'Jéssica Melo',
+        phone: '(11) 93333-3333',
+        invitedEvents: events.map((event) => event.id),
+      },
+    });
+
+    for (const mode of ['light', 'dark'] as const) {
+      await page.addInitScript((value) => localStorage.setItem('theme_mode', value), mode);
+      for (const [id, greeting] of Object.entries(greetings)) {
+        await page.goto(`/evento/${id}`);
+        const invitation = page.getByTestId('event-invitation');
+        await expect(invitation.locator('.event-card__greeting')).toHaveText(greeting);
+        // "Boas Festas!" already says it: no "Natal" tag. "Prezadíssimo convidado" does not.
+        await expect(invitation.locator('.event-card__category')).toHaveCount(
+          id === 'evt-sarau' ? 1 : 0,
+        );
+        // The signature is the last line written in: once it is all there, the paper is done.
+        await invitation.evaluate((el) =>
+          Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+        );
+        const paper = await invitation.evaluate((el) => getComputedStyle(el).backgroundColor);
+        const [r, g, b] = paper.match(/\d+/g)!.map(Number);
+        const light = (r + g + b) / 3 > 128;
+        expect(light, `${id} paper in the ${mode} theme`).toBe(mode === 'light');
+        await invitation.screenshot({
+          path: `e2e/screenshots/invite-paper-${id.slice(4)}-${mode}.png`,
+        });
+      }
+      // The envelopes on Início take the same light or dark paper.
+      await page.goto('/');
+      await expect(page.locator('app-invite-envelope')).toHaveCount(events.length);
+      await page
+        .locator('.home__grid')
+        .screenshot({ path: `e2e/screenshots/invite-envelopes-${mode}.png` });
     }
   });
 });

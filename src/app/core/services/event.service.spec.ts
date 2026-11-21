@@ -128,7 +128,7 @@ describe('EventService', () => {
       expect(result?.secretSanta).toEqual({ enabled: true, giftOptions: false });
     });
 
-    it('keeps "Aprovar quem confirma pelo link" only when it is on', () => {
+    it('keeps "Aprovar presenças" only when it is on', () => {
       mockGateway.docSnapshot.mockReturnValue(of({ id: 'evt-1', requireApproval: true }));
       let result = null as PartyEvent | null;
       service.getEvent('evt-1').subscribe((event) => (result = event));

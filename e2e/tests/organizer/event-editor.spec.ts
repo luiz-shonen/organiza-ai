@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures/test.fixture';
 import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
+import { NEXT_YEAR, nextYearDate } from '../../helpers/dates.helper';
 
 const mockSampleEvents = [
   {
@@ -102,7 +103,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Fill Step 1 (Basic Info) to unlock Step 2 (Address)
     await eventEditorPage.fillBasicInfo(
       'Festa de Integração 2026',
-      '25/12/2026',
+      nextYearDate('25/12'),
       'Comemoração de final de ano da equipe.',
       '19:00',
     );
@@ -120,19 +121,342 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(eventEditorPage.nextStepBtns.filter({ visible: true }).first()).toBeEnabled();
   });
 
+  test('a rural CEP opens the street to type, with "Sem número", complement and directions', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    // A rural CEP: ViaCEP knows only the city.
+    await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          cep: '35830-000',
+          logradouro: '',
+          complemento: '',
+          bairro: '',
+          localidade: 'Jaboticatubas',
+          uf: 'MG',
+        }),
+      });
+    });
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+    await eventEditorPage.fillBasicInfo(
+      'Churrasco no sítio',
+      nextYearDate('25/12'),
+      'Churrasco de fim de ano na roça.',
+      '12:00',
+    );
+
+    const city = page.getByTestId('event-city-input');
+    const street = page.getByTestId('event-street-input');
+    // Before the CEP, nothing can be typed in the address.
+    await expect(street).not.toBeEditable();
+    await eventEditorPage.cepInput.fill('35830000');
+    await expect(city).toHaveValue('Jaboticatubas/MG');
+    await expect(city).not.toBeEditable();
+    await expect(city).toHaveCSS('cursor', 'not-allowed');
+    await expect(street).toBeEditable();
+    await expect(page.getByTestId('event-address-partial')).toContainText(
+      'O CEP não trouxe o endereço completo',
+    );
+
+    await street.fill('Estrada da Serra do Cipó');
+    await page.getByTestId('event-neighborhood-input').fill('Zona rural');
+    await page.getByTestId('event-no-number').locator('input').check();
+    await expect(eventEditorPage.numberInput).toHaveValue('S/N');
+    await expect(eventEditorPage.numberInput).toBeDisabled();
+    await page.getByTestId('event-complement-input').fill('Km 12, sítio Boa Vista');
+    await page
+      .getByTestId('event-directions-input')
+      .fill('Depois da ponte, entre na estrada de terra à direita. Portão azul.');
+    await page
+      .getByTestId('event-editor-step-2')
+      .screenshot({ path: 'e2e/screenshots/address-rural.png' });
+    // Endereço, Itens and Amigo oculto, then save on Pix.
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.saveEvent();
+    // A new event opens its share screen.
+    await expect(page).toHaveURL(/\/meus-eventos\/evento\/[^/]+$/);
+    const saved = await page.evaluate(() =>
+      (
+        window as unknown as {
+          __MOCK_DOCUMENTS__: Record<string, { id: string; title?: string }[]>;
+        }
+      ).__MOCK_DOCUMENTS__['events'].find((event) => event.title === 'Churrasco no sítio'),
+    );
+    expect(saved).toMatchObject({
+      location: 'Estrada da Serra do Cipó, S/N - Zona rural - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra do Cipó',
+        number: 'S/N',
+        neighborhood: 'Zona rural',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12, sítio Boa Vista',
+        directions: 'Depois da ponte, entre na estrada de terra à direita. Portão azul.',
+      },
+    });
+  });
+
+  test('the invite shows a rural address with its complement, and how to get there', async ({
+    page,
+  }) => {
+    const rural = {
+      ...mockSampleEvents[0],
+      id: 'event-rural',
+      title: 'Churrasco no sítio',
+      location: 'Estrada da Serra do Cipó, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra do Cipó',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12, sítio Boa Vista',
+        directions: 'Depois da ponte, entre na estrada de terra à direita.\nPortão azul.',
+      },
+    };
+    await setupMockAuthSession(page, {
+      uid: 'test-organizer-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [rural],
+    });
+    await page.goto('/evento/event-rural');
+
+    const location = page.getByTestId('event-location');
+    await expect(location).toContainText('Estrada da Serra do Cipó, S/N, Km 12, sítio Boa Vista');
+    await expect(location).toContainText('Jaboticatubas/MG · 35830-000');
+    const directions = page.getByTestId('event-directions');
+    await expect(directions).toContainText('Como chegar');
+    await expect(directions).toContainText('Portão azul.');
+    await page
+      .locator('app-event-card org-surface')
+      .filter({ has: location })
+      .screenshot({ path: 'e2e/screenshots/address-rural-invite.png' });
+  });
+
+  test('an event over several days: an optional end date, never before the start', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.route('https://viacep.com.br/ws/**/json/', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          cep: '30514-160',
+          logradouro: 'Rua Dom Lara',
+          bairro: 'Vista Alegre',
+          localidade: 'Belo Horizonte',
+          uf: 'MG',
+        }),
+      });
+    });
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+
+    await eventEditorPage.titleInput.fill('Retiro de fim de ano');
+    await page.locator('[data-testid="category-options"] org-chip').first().click();
+    await eventEditorPage.dateInput.fill(nextYearDate('23/12'));
+    await eventEditorPage.timeInput.fill('17:00');
+    const endDate = page.getByTestId('event-end-date-input');
+    await endDate.fill(nextYearDate('20/12'));
+    await endDate.blur();
+    await expect(page.getByText('O término não pode ser antes do início')).toBeVisible();
+    await eventEditorPage.advanceStep();
+    await expect(eventEditorPage.missingFieldsBanner).toContainText(
+      'escolha um término no dia do início ou depois',
+    );
+
+    await endDate.fill(nextYearDate('25/12'));
+    await expect(page.getByText('O término não pode ser antes do início')).toBeHidden();
+    await page
+      .getByTestId('event-editor-step-1')
+      .locator('.event-step__row--dates')
+      .screenshot({ path: 'e2e/screenshots/event-end-date.png' });
+    await eventEditorPage.advanceStep();
+
+    await eventEditorPage.cepInput.fill('30514160');
+    await expect(eventEditorPage.streetInput).toHaveValue('Rua Dom Lara');
+    await eventEditorPage.numberInput.fill('135');
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.advanceStep();
+    await eventEditorPage.saveEvent();
+    await expect(page).toHaveURL(/\/meus-eventos\/evento\/[^/]+$/);
+    const saved = await page.evaluate(() =>
+      (
+        window as unknown as {
+          __MOCK_DOCUMENTS__: Record<string, { id: string; title?: string }[]>;
+        }
+      ).__MOCK_DOCUMENTS__['events'].find((event) => event.title === 'Retiro de fim de ano'),
+    );
+    expect(saved).toMatchObject({ endDate: `${NEXT_YEAR}-12-25` });
+  });
+
+  test('the invite and Meus eventos show the days of an event over several days', async ({
+    page,
+  }) => {
+    const retreat = {
+      ...mockSampleEvents[0],
+      id: 'event-retreat',
+      title: 'Retiro de fim de ano',
+      date: new Date(NEXT_YEAR, 11, 23, 17, 0).toISOString(),
+      endDate: `${NEXT_YEAR}-12-25`,
+    };
+    await setupMockAuthSession(page, {
+      uid: 'test-organizer-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [retreat],
+    });
+    await page.goto('/evento/event-retreat');
+    const box = page.locator('.event-card__date-box');
+    await expect(box).toContainText('23–25');
+    // The weekdays move with the year: 23 to 25 December, said as "Quarta a sexta" in 2026.
+    const weekdays = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+    const first = weekdays[new Date(NEXT_YEAR, 11, 23).getDay()];
+    const last = weekdays[new Date(NEXT_YEAR, 11, 25).getDay()];
+    await expect(box).toContainText(`${first[0].toUpperCase()}${first.slice(1)} a ${last}`);
+    await expect(page.getByTestId('countdown-timer')).toContainText(
+      'De 23 a 25 de dezembro · 17:00',
+    );
+    await page
+      .locator('app-event-card header')
+      .first()
+      .screenshot({ path: 'e2e/screenshots/event-end-date-invite.png' });
+
+    await page.goto('/meus-eventos');
+    await expect(page.locator('org-date-badge').first()).toContainText('23–25');
+  });
+
+  test('a reload keeps what was being typed, until it is saved or discarded', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+    await eventEditorPage.titleInput.fill('Natal da família');
+    await eventEditorPage.descriptionInput.fill('Amigo oculto e ceia');
+    await eventEditorPage.dateInput.fill(nextYearDate('24/12'));
+
+    await page.reload();
+    await eventEditorPage.assertLoaded();
+    const banner = page.getByTestId('editor-draft-restored');
+    await expect(banner).toContainText('Recuperamos o que você estava preenchendo');
+    await expect(eventEditorPage.titleInput).toHaveValue('Natal da família');
+    await expect(eventEditorPage.descriptionInput).toHaveValue('Amigo oculto e ceia');
+    await expect(eventEditorPage.dateInput).toHaveValue(nextYearDate('24/12'));
+    await page.getByTestId('editor-draft-restored').screenshot({
+      path: 'e2e/screenshots/editor-draft-restored.png',
+    });
+
+    await expect(banner).toContainText('Salve para não perder.');
+    // "Desfazer" (an icon alone on a phone) goes back to the empty form.
+    await banner
+      .locator('[data-testid="org-banner-action"], [data-testid="org-banner-action-phone"]')
+      .filter({ visible: true })
+      .click();
+    await expect(banner).toBeHidden();
+    await expect(eventEditorPage.titleInput).toHaveValue('');
+    await page.reload();
+    await eventEditorPage.assertLoaded();
+    await expect(eventEditorPage.titleInput).toHaveValue('');
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+  });
+
+  test('a reload opens the step the organizer was on', async ({ page, eventEditorPage }) => {
+    await page.goto('/meus-eventos/evento/event-1');
+    await eventEditorPage.openStep('Amigo oculto');
+    await page.reload();
+    // The phone header names the step; wider screens the selected numbered header.
+    await expect(
+      page
+        .locator('.org-stepper__name, .mat-step-header[aria-selected="true"]')
+        .filter({ visible: true }),
+    ).toContainText('Amigo oculto');
+    await expect(page.getByTestId('event-editor-step-secret-santa')).toBeVisible();
+  });
+
+  test('editing an event, a reload keeps the change until it is saved', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.goto('/meus-eventos/evento/event-1');
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina da Comunidade');
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+    await eventEditorPage.titleInput.fill('Festa Junina 2026');
+
+    await page.reload();
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina 2026');
+    await expect(page.getByTestId('editor-draft-restored')).toBeVisible();
+    // The ✕ only hides the notice: what was brought back stays.
+    await page.getByTestId('editor-draft-restored').getByTestId('org-banner-dismiss').click();
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina 2026');
+
+    await eventEditorPage.saveEvent();
+    await expect(page).toHaveURL(/\/meus-eventos$/);
+    await page.goto('/meus-eventos/evento/event-1');
+    // The mock store starts over on navigation; what matters is that no draft is offered.
+    await expect(eventEditorPage.titleInput).toHaveValue('Festa Junina da Comunidade');
+    await expect(page.getByTestId('editor-draft-restored')).toBeHidden();
+  });
+
+  test('the back arrow returns to the screen before, not to a fixed parent', async ({ page }) => {
+    await page.goto('/meus-eventos');
+    await page.getByRole('link', { name: 'Ver detalhes de Festa Junina da Comunidade' }).click();
+    await expect(page).toHaveURL(/\/evento\/event-1$/);
+    await page.getByTestId('edit-event-btn').click();
+    await expect(page).toHaveURL(/\/meus-eventos\/evento\/event-1$/);
+
+    const back = page.getByTestId('header-back-btn');
+    await back.click();
+    await expect(page).toHaveURL(/\/evento\/event-1$/);
+    await back.click();
+    await expect(page).toHaveURL(/\/meus-eventos$/);
+  });
+
+  test('opened straight from a link, the editor arrow leads to the event page', async ({
+    page,
+  }) => {
+    await page.goto('/meus-eventos/evento/event-1');
+    await page.getByTestId('header-back-btn').click();
+    await expect(page).toHaveURL(/\/evento\/event-1$/);
+  });
+
   test.describe('below 600px', () => {
     test.use({ viewport: { width: 390, height: 844 } });
 
-    test('should show the compact stepper with only the current step named', async ({
+    test('the stepper says "Etapa 1 de 5", the whole step name, and a bar per step', async ({
       page,
       eventEditorPage,
     }) => {
       await page.goto('/meus-eventos/evento/novo');
       await eventEditorPage.assertLoaded();
 
-      const active = page.locator('.mat-step-header[aria-selected="true"]');
-      await expect(active).toContainText('Informações');
-      await expect(page.locator('.mat-step-header')).toHaveCount(5);
+      const header = page.getByTestId('stepper-phone');
+      await expect(header).toContainText('Etapa 1 de 5');
+      await expect(header).toContainText('Informações');
+      await expect(header.locator('.org-stepper__bar')).toHaveCount(5);
+      await expect(page.locator('.mat-horizontal-stepper-header-container')).toBeHidden();
+      // A step not reached yet stays shut in a new event.
+      await header.getByRole('button', { name: 'Etapa 5: Pix' }).click();
+      await expect(header).toContainText('Etapa 1 de 5');
+      await header.screenshot({ path: 'e2e/screenshots/stepper-phone.png' });
+    });
+
+    test('editing, a bar opens its step', async ({ page }) => {
+      await page.goto('/meus-eventos/evento/event-1');
+      const header = page.getByTestId('stepper-phone');
+      await header.getByRole('button', { name: 'Etapa 4: Amigo oculto' }).click();
+      await expect(header).toContainText('Etapa 4 de 5');
+      await expect(header).toContainText('Amigo oculto');
     });
   });
 
@@ -174,7 +498,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     // Fill required fields and verify errors clear
     await eventEditorPage.titleInput.fill('Formatura Universitária');
-    await eventEditorPage.dateInput.fill('20/11/2026');
+    await eventEditorPage.dateInput.fill(nextYearDate('20/11'));
 
     await expect(titleError).toBeHidden();
     await expect(dateError).toBeHidden();

@@ -6,9 +6,16 @@ export type {
   PixType,
   EventCategoryOption,
 } from './event.model';
-export { EVENT_CATEGORIES, getCategoryClass, getCategoryHue } from './event.model';
+export {
+  ADDRESS_COMPLEMENT_MAX,
+  ADDRESS_DIRECTIONS_MAX,
+  EVENT_CATEGORIES,
+  getCategoryClass,
+  getCategoryHue,
+} from './event.model';
 export type {
   EventAddressForm,
+  AddressFound,
   EventBasicInfoForm,
   EventPixForm,
   NewPartyItem,

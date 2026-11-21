@@ -1,23 +1,28 @@
 /**
  * Pure sharing and clipboard helpers.
  */
+import { formatDaySpan } from './date.utils';
 
 export interface EventShare {
   readonly title: string;
   /** ISO date and time of the event. */
   readonly date?: string | null;
+  /** Last day ("2026-12-25") of an event that runs over several days. */
+  readonly endDate?: string | null;
   readonly location?: string | null;
   readonly url?: string | null;
 }
 
 /**
- * "terça-feira, 10 de novembro · 19:30", as the event page shows it; '' when the date
- * is missing or not a date.
+ * "terça-feira, 10 de novembro · 19:30", as the event page shows it ("23 a 25 de dezembro ·
+ * 17:00" over several days); '' when the date is missing or not a date.
  */
-export function formatShareDate(iso: string | null | undefined): string {
+export function formatShareDate(iso: string | null | undefined, endDay?: string | null): string {
   const date = new Date(iso ?? '');
   if (!iso || isNaN(date.getTime())) return '';
-  const day = date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const day =
+    formatDaySpan(iso, endDay) ||
+    date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
   const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   return `${day} · ${time}`;
 }
@@ -30,9 +35,9 @@ export function formatShareDate(iso: string | null | undefined): string {
  * every character beyond U+07FF into "�" on the way to the app, emoji included, and the
  * extra characters then shift where it thinks the link starts and ends.
  */
-export function buildShareMessage({ title, date, location, url }: EventShare): string {
+export function buildShareMessage({ title, date, endDate, location, url }: EventShare): string {
   const lines = [`*${title.trim() || 'Nosso evento'}*`, 'Você está convidado(a)!'];
-  const when = formatShareDate(date);
+  const when = formatShareDate(date, endDate);
   if (when || location) {
     lines.push('');
     if (when) lines.push(`*Quando:* ${when}`);

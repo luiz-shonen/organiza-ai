@@ -35,14 +35,22 @@ interface StepperLayoutExpectation {
 }
 
 /**
- * Below 600px the editor hides the Material step header and shows a compact
- * "Etapa N de 3" progress; above it the header scrolls horizontally.
+ * Below 600px the editor hides the Material step header and shows "Etapa N de 5", the step's
+ * whole name and one bar per step; above it, numbered dots with only the current step named.
  */
 export async function assertStepperLayout(
   page: Page,
-  { step, label }: StepperLayoutExpectation,
+  { step, label, isMobile }: StepperLayoutExpectation,
 ): Promise<void> {
-  // Compact stepper on every width: numbered dots, only the current step shows its name.
+  if (isMobile) {
+    const phone = page.getByTestId('stepper-phone');
+    await expect(phone).toContainText(`Etapa ${step} de 5`);
+    await expect(phone.locator('.org-stepper__name')).toHaveText(label);
+    await expect(phone.locator('.org-stepper__bar')).toHaveCount(5);
+    await expect(page.locator('.mat-horizontal-stepper-header-container')).toBeHidden();
+    await assertWithinViewport(page, phone);
+    return;
+  }
   const headers = page.locator('.mat-step-header');
   await expect(headers).toHaveCount(5);
   const activeHeader = page.locator('.mat-step-header[aria-selected="true"]');

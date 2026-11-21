@@ -8,33 +8,163 @@
   gap: var(--org-space-md);
 }
 
-// The invitation: a sheet of paper with a double gold frame, like a printed card. It keeps its
-// colours in dark mode too, as paper would.
+// The invitation: a sheet of paper with a fine frame, flourishes in the corners and a medallion
+// on the top and bottom rules, in the colours of the category. Light paper in the light theme,
+// dark paper in the dark one (both in _invite-themes.scss).
 .event-card__hero {
-  animation: event-card-unfold var(--org-motion-slow) var(--org-motion-ease-emphasized) both;
+  animation: event-card-unfold 0.7s var(--org-motion-ease-emphasized) both;
   background: var(--org-invite-paper);
   border-radius: var(--org-radius-md);
   box-shadow: var(--org-shadow-md);
   padding: var(--org-space-sm);
+  transform-origin: top center;
 }
 
 .event-card__paper {
+  --event-card-frame: 10px;
+  --event-card-corner: 80px;
+
   align-items: center;
-  border: 1.5px solid var(--org-invite-line);
   display: flex;
   flex-direction: column;
   gap: var(--org-space-xs);
-  outline: 1px solid var(--org-invite-line);
-  outline-offset: -7px;
-  padding: var(--org-space-xl) var(--org-space-lg);
+  padding: calc(var(--org-space-xl) + var(--org-space-md)) var(--org-space-xl);
+  position: relative;
   text-align: center;
 }
 
+// The straight rules of the frame, two fine lines 6px apart like the corners draw; the corners
+// draw the rest.
+.event-card__frame {
+  --event-card-rule: calc(100% - 2 * (var(--event-card-corner) - 12px));
+  --event-card-ink-line: linear-gradient(var(--org-invite-line), var(--org-invite-line));
+
+  animation: event-card-frame 0.9s 0.35s var(--org-motion-ease-emphasized) both;
+  background-image:
+    var(--event-card-ink-line), var(--event-card-ink-line), var(--event-card-ink-line),
+    var(--event-card-ink-line), var(--event-card-ink-line), var(--event-card-ink-line),
+    var(--event-card-ink-line), var(--event-card-ink-line);
+  background-position:
+    center 0,
+    center 6px,
+    center 100%,
+    center calc(100% - 6px),
+    0 center,
+    6px center,
+    100% center,
+    calc(100% - 6px) center;
+  background-repeat: no-repeat;
+  background-size:
+    var(--event-card-rule) 1px,
+    var(--event-card-rule) 1px,
+    var(--event-card-rule) 1px,
+    var(--event-card-rule) 1px,
+    1px var(--event-card-rule),
+    1px var(--event-card-rule),
+    1px var(--event-card-rule),
+    1px var(--event-card-rule);
+  inset: var(--event-card-frame);
+  pointer-events: none;
+  position: absolute;
+}
+
+.event-card__corner {
+  block-size: var(--event-card-corner);
+  color: var(--org-invite-line);
+  inline-size: var(--event-card-corner);
+  pointer-events: none;
+  position: absolute;
+
+  &--top-start {
+    inset-block-start: var(--event-card-frame);
+    inset-inline-start: var(--event-card-frame);
+  }
+
+  &--top-end {
+    inset-block-start: var(--event-card-frame);
+    inset-inline-end: var(--event-card-frame);
+    transform: scaleX(-1);
+  }
+
+  &--bottom-start {
+    inset-block-end: var(--event-card-frame);
+    inset-inline-start: var(--event-card-frame);
+    transform: scaleY(-1);
+  }
+
+  &--bottom-end {
+    inset-block-end: var(--event-card-frame);
+    inset-inline-end: var(--event-card-frame);
+    transform: scale(-1);
+  }
+}
+
+.event-card__corner-art,
+.event-card__medallion-art {
+  display: block;
+  inline-size: 100%;
+}
+
+// A line that draws itself: its length is 1 (pathLength), hidden by a dash as long, then shown.
+.event-card__draw {
+  animation: event-card-draw 1.1s 0.45s var(--org-motion-ease-emphasized) both;
+  stroke: currentcolor;
+  stroke-dasharray: 1;
+  stroke-linecap: round;
+  stroke-width: 1.1;
+
+  &--late {
+    animation-delay: 1.45s;
+  }
+}
+
+.event-card__leaf {
+  animation: event-card-pop 0.5s 1.2s var(--org-motion-ease-emphasized) both;
+  fill: currentcolor;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+// On the top and bottom rules, in the middle: a diamond between two dots, over a gap in them.
+.event-card__medallion {
+  color: var(--org-invite-line);
+  inline-size: 64px;
+  inset-inline-start: 50%;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+
+  &--top {
+    inset-block-start: calc(var(--event-card-frame) - 4.5px);
+  }
+
+  &--bottom {
+    inset-block-end: calc(var(--event-card-frame) - 4.5px);
+  }
+}
+
+.event-card__medallion-gap {
+  fill: var(--org-invite-paper);
+}
+
+// "Churrasco": what the party is, when the greeting does not say it.
+.event-card__category {
+  color: var(--org-invite-ink);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  letter-spacing: var(--org-letter-spacing-label);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+// The handwritten lines appear as if written, from left to right.
 .event-card__greeting {
+  animation: event-card-write 1.2s 0.6s cubic-bezier(0.55, 0, 0.35, 1) both;
   color: var(--org-invite-ink);
   font: var(--org-font-weight-regular) var(--org-font-size-script-lg) / var(--org-line-height-tight)
     var(--org-font-script);
   margin: var(--org-space-xs) 0 0;
+  padding-inline: var(--org-space-xs);
 }
 
 .event-card__lead {
@@ -43,18 +173,46 @@
   margin: 0;
 }
 
+// The name of the party comes in from a wide, soft spacing to its own.
 .event-card__title {
+  animation: event-card-title 1s 1.25s var(--org-motion-ease-emphasized) both;
   color: var(--org-invite-text);
-  font: var(--org-font-weight-semibold) var(--org-font-size-heading) / var(--org-line-height-tight)
-    var(--org-font-display);
+  font-family: var(--org-font-invite);
+
+  // The serif runs small for its size: a fifth larger than the app's headings.
+  font-size: calc(var(--org-font-size-heading) * 1.2);
+  font-weight: var(--org-font-weight-bold);
+  font-variant-numeric: lining-nums;
+  line-height: var(--org-line-height-tight);
   margin: 0;
   overflow-wrap: anywhere;
 }
 
-.event-card__ornament {
+// Two swashes and the motif of the theme (✦, ★, ❦, ✿) between the title and the date.
+.event-card__divider {
+  align-items: center;
+  color: var(--org-invite-line);
+  display: flex;
+  gap: var(--org-space-xs);
+  justify-content: center;
+  margin: var(--org-space-xs) 0;
+}
+
+.event-card__swash {
+  block-size: 12px;
+  inline-size: 72px;
+
+  &--end {
+    transform: scaleX(-1);
+  }
+}
+
+.event-card__motif {
+  animation: event-card-motif 0.6s 1.6s var(--org-motion-ease-emphasized) both;
   color: var(--org-invite-ink);
-  letter-spacing: var(--org-letter-spacing-ornament);
-  margin: 0;
+  display: inline-block;
+  font-size: var(--org-font-size-md);
+  line-height: var(--org-line-height-none);
 }
 
 .event-card__date-box {
@@ -75,8 +233,18 @@
 
 .event-card__date-day {
   color: var(--org-invite-ink);
-  font: var(--org-font-weight-semibold) var(--org-font-size-4xl) / var(--org-line-height-none)
-    var(--org-font-display);
+  flex: none;
+  font: var(--org-font-weight-bold) var(--org-font-size-4xl) / var(--org-line-height-none)
+    var(--org-font-invite);
+
+  // The serif's old-style figures make "10" read "IO": upright figures for the day.
+  font-variant-numeric: lining-nums;
+  white-space: nowrap;
+
+  // "23–25": an event over several days stays on one line, one step smaller.
+  &--span {
+    font-size: var(--org-font-size-3xl);
+  }
 }
 
 .event-card__description {
@@ -87,17 +255,39 @@
 }
 
 .event-card__signature {
+  animation: event-card-write 1.3s 2.1s cubic-bezier(0.55, 0, 0.35, 1) both;
   color: var(--org-invite-text);
   font: var(--org-font-weight-regular) var(--org-font-size-script-md) / var(--org-line-height-snug)
     var(--org-font-script);
   margin: var(--org-space-sm) 0 0;
+  padding-inline: var(--org-space-xs);
 }
 
-// Opening the invite: the card unfolds once, unless the person asked for less motion.
+// The printed lines rise into place one after the other, in reading order.
+.event-card__reveal {
+  animation: event-card-rise 0.6s var(--org-motion-ease-emphasized) both;
+}
+
+.event-card__category {
+  animation-delay: 0.45s;
+}
+
+.event-card__lead {
+  animation-delay: 1.05s;
+}
+
+.event-card__date-box {
+  animation-delay: 1.75s;
+}
+
+.event-card__description {
+  animation-delay: 1.95s;
+}
+
 @keyframes event-card-unfold {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
+    transform: perspective(900px) rotateX(-14deg) translateY(16px) scale(0.97);
   }
 
   to {
@@ -106,9 +296,97 @@
   }
 }
 
+@keyframes event-card-frame {
+  from {
+    clip-path: inset(50% 50%);
+    opacity: 0;
+  }
+
+  to {
+    clip-path: inset(0);
+    opacity: 1;
+  }
+}
+
+@keyframes event-card-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes event-card-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes event-card-write {
+  from {
+    clip-path: inset(-20% 100% -20% 0);
+  }
+
+  to {
+    clip-path: inset(-20% -5% -20% 0);
+  }
+}
+
+@keyframes event-card-title {
+  from {
+    filter: blur(6px);
+    letter-spacing: 0.35em;
+    opacity: 0;
+  }
+
+  to {
+    filter: none;
+    letter-spacing: normal;
+    opacity: 1;
+  }
+}
+
+@keyframes event-card-motif {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(-120deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes event-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Less motion asked for: the invitation is simply there, drawn and written.
 @media (prefers-reduced-motion: reduce) {
-  .event-card__hero {
+  .event-card__hero,
+  .event-card__hero * {
     animation: none;
+  }
+
+  .event-card__draw {
+    stroke-dasharray: none;
   }
 }
 
@@ -212,4 +490,9 @@
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-sm);
   margin: 0;
+}
+
+// "Como chegar" keeps the organizer's line breaks.
+.event-card__directions {
+  white-space: pre-line;
 }

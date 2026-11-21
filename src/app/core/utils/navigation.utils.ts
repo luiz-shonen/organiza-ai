@@ -12,13 +12,19 @@ export function isPrimaryDestination(url: string): boolean {
 }
 
 /**
- * Where the header back arrow leads from a sub-page, or null on primary
- * destinations and on screens with their own navigation (login, design system).
+ * Where the header back arrow leads from a sub-page when there is no screen before it in the
+ * tab (opened from a link), or null on primary destinations and on screens with their own
+ * navigation (login, design system). Otherwise the arrow returns to the screen before.
  */
 export function resolveBackRoute(url: string): string | null {
   const path = pathOf(url);
   if (isPrimaryDestination(path) || path === '/login' || path.startsWith('/design-system')) {
     return null;
+  }
+  // Editing an event that exists: its page. Creating one: Meus eventos.
+  const editing = /^\/meus-eventos\/evento\/([^/]+)$/.exec(path);
+  if (editing && editing[1] !== 'novo') {
+    return `/evento/${editing[1]}`;
   }
   if (path.startsWith('/meus-eventos/')) {
     return '/meus-eventos';

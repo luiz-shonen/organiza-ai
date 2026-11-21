@@ -7,6 +7,10 @@ import {
   buildShareMessage,
   buildWhatsAppShareUrl,
   formatShareDate,
+  formatDaySpan,
+  eventLastDay,
+  parseDay,
+  toDayString,
   shareWhatsApp,
   copyToClipboard,
   generateId,
@@ -69,7 +73,42 @@ describe('Core Utilities', () => {
     });
   });
 
+  describe('days of an event over several days', () => {
+    const start = new Date(2026, 11, 23, 17, 0).toISOString();
+
+    it('parseDay and toDayString read and write a local calendar day', () => {
+      expect(parseDay('2026-12-25')).toEqual(new Date(2026, 11, 25));
+      expect(parseDay('2026-02-30')).toBeNull();
+      expect(parseDay('25/12/2026')).toBeNull();
+      expect(parseDay(null)).toBeNull();
+      expect(toDayString(new Date(2026, 0, 5, 23, 59))).toBe('2026-01-05');
+    });
+
+    it('eventLastDay is the last day only when it comes after the first', () => {
+      expect(eventLastDay(start, '2026-12-25')).toEqual(new Date(2026, 11, 25));
+      expect(eventLastDay(start, '2026-12-23')).toBeNull();
+      expect(eventLastDay(start, '2026-12-20')).toBeNull();
+      expect(eventLastDay(start, null)).toBeNull();
+    });
+
+    it('formatDaySpan says the days, naming both months when they differ', () => {
+      expect(formatDaySpan(start, '2026-12-25')).toBe('23 a 25 de dezembro');
+      expect(formatDaySpan(start, '2026-12-25', 'short')).toBe('23 a 25 de dez.');
+      expect(formatDaySpan(start, '2027-01-02')).toBe('23 de dezembro a 2 de janeiro');
+      expect(formatDaySpan(start, null)).toBe('');
+    });
+  });
+
   describe('sharing.utils', () => {
+    it('buildShareMessage gives the days of an event over several days', () => {
+      const message = buildShareMessage({
+        title: 'Retiro',
+        date: new Date(2026, 11, 23, 17, 0).toISOString(),
+        endDate: '2026-12-25',
+      });
+      expect(message).toContain('*Quando:* 23 a 25 de dezembro · 17:00');
+    });
+
     it('buildShareMessage puts the title, when, where and the link alone on the last line', () => {
       const date = new Date(2026, 10, 10, 19, 30).toISOString();
       const message = buildShareMessage({

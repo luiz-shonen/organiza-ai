@@ -13,6 +13,7 @@ import {
   assertSurfaceBlockPadding,
   assertWithinViewport,
 } from '../../helpers/layout.helper';
+import { nextYearDate } from '../../helpers/dates.helper';
 
 const mockHappyPathEvent = {
   id: 'happy-event-1',
@@ -140,7 +141,7 @@ test.describe('Happy paths across the app', () => {
       await eventEditorPage.descriptionInput.fill(
         'Uma comemoração inesquecível com amigos e família.',
       );
-      await eventEditorPage.dateInput.fill('20/11/2026');
+      await eventEditorPage.dateInput.fill(nextYearDate('20/11'));
       await eventEditorPage.timeInput.fill('19:00');
 
       // Próximo button becomes enabled
@@ -187,7 +188,7 @@ test.describe('Happy paths across the app', () => {
       await eventEditorPage.assertLoaded();
       await eventEditorPage.fillBasicInfo(
         'Aniversário dos Sonhos 2026',
-        '20/11/2026',
+        nextYearDate('20/11'),
         'Uma comemoração inesquecível com amigos e família.',
         '19:00',
       );
@@ -313,7 +314,7 @@ test.describe('Happy paths across the app', () => {
       await eventEditorPage.assertLoaded();
       await eventEditorPage.fillBasicInfo(
         'Aniversário dos Sonhos 2026',
-        '20/11/2026',
+        nextYearDate('20/11'),
         'Uma comemoração inesquecível com amigos e família.',
         '19:00',
       );
@@ -488,7 +489,7 @@ test.describe('Happy paths across the app', () => {
       await eventEditorPage.assertLoaded();
       await eventEditorPage.fillBasicInfo(
         'Aniversário dos Sonhos 2026',
-        '20/11/2026',
+        nextYearDate('20/11'),
         'Uma comemoração inesquecível com amigos e família.',
         '19:00',
       );

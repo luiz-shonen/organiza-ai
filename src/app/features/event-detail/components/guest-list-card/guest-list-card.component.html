@@ -90,7 +90,6 @@
 
               @let holder = household.members[0];
               <div class="guest-list__holder">
-                <span class="guest-list__role guest-list__role--host">Convidado(a)</span>
                 @if (holder.bring.length) {
                   <p class="guest-list__bring">Leva:</p>
                   <ul
@@ -107,6 +106,8 @@
               </div>
 
               @if (household.members.length > 1) {
+                <!-- Who comes along: the guest is the panel's title already, no role of their own. -->
+                <p class="guest-list__together">Vão juntos</p>
                 <ul class="guest-list__people" [attr.aria-label]="'Quem vai com ' + household.name">
                   @for (person of household.members.slice(1); track $index) {
                     <li class="guest-list__person">

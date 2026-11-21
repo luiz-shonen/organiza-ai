@@ -72,10 +72,15 @@
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-xs);
   font-weight: var(--org-font-weight-medium);
+}
 
-  &--host {
-    color: var(--org-primary);
-  }
+.guest-list__together {
+  color: var(--org-primary);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  letter-spacing: var(--org-letter-spacing-label);
+  margin: var(--org-space-sm) 0 0;
+  text-transform: uppercase;
 }
 
 .guest-list__bring,

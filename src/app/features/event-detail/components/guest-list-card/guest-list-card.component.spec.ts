@@ -71,6 +71,9 @@ describe('GuestListCardComponent', () => {
     expect(lines).toEqual(['3 L de Sorvete', '2 garrafas de Refrigerante']);
     expect(text).toContain('Família');
     expect(text).toContain('Não leva nada da lista');
+    // Whoever comes along is under "Vão juntos"; the guest gets no "Convidado(a)" label.
+    expect(text).toContain('Vão juntos');
+    expect(text).not.toContain('Convidado(a)');
     expect(text).not.toContain('99267');
     expect(text).not.toContain('Não poderão ir');
   });

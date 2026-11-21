@@ -1,4 +1,7 @@
-/** The look and words of an invitation, from the event's category. */
+/**
+ * The look and words of an invitation, from the event's category. The words are those of a formal
+ * printed invitation, a little over the top on purpose ("Rogamos a honra de vossa presença").
+ */
 export type InviteThemeKey = 'natal' | 'aniversario' | 'casamento' | 'junina' | 'padrao';
 
 export interface InviteTheme {
@@ -14,25 +17,29 @@ export interface InviteTheme {
 }
 
 const THEMES: Record<InviteThemeKey, Omit<InviteTheme, 'className' | 'key'>> = {
-  natal: { greeting: 'Feliz Natal!', lead: 'Venha celebrar com a gente', ornament: '✦' },
+  natal: {
+    greeting: 'Boas Festas!',
+    lead: 'Rogamos a honra de vossa presença à mesa natalina',
+    ornament: '✦',
+  },
   aniversario: {
-    greeting: 'Vem comemorar!',
-    lead: 'Sua presença é o melhor presente',
+    greeting: 'Celebremos!',
+    lead: 'Mais uma volta ao Sol requer vossa ilustre presença',
     ornament: '★',
   },
   casamento: {
-    greeting: 'Com muita alegria',
-    lead: 'convidamos você para celebrar',
+    greeting: 'Com júbilo',
+    lead: 'temos a honra de convidar Vossa Senhoria',
     ornament: '❦',
   },
   junina: {
-    greeting: 'Bora pro arraiá!',
-    lead: 'Tem quentão, quadrilha e você',
+    greeting: 'Arraiá de gala',
+    lead: 'Rogamos vossa distinta presença na quadrilha e no quentão',
     ornament: '✿',
   },
   padrao: {
-    greeting: 'Um convite para você',
-    lead: 'Venha celebrar com a gente',
+    greeting: 'Prezadíssimo convidado',
+    lead: 'Rogamos a honra de vossa presença',
     ornament: '✦',
   },
 };

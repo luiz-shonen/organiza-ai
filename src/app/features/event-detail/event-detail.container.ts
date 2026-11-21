@@ -188,7 +188,7 @@ export class EventDetailContainer implements OnInit {
   protected readonly isDeclined = computed(() => this.declined() && !this.isUserConfirmed());
 
   /**
-   * "Aprovar quem confirma pelo link": only approved guests count (the list, the total, the
+   * "Aprovar presenças": only approved guests count (the list, the total, the
    * amigo oculto); the ones waiting go to the organizers' "Aguardando aprovação".
    */
   private readonly guestSplit = computed(() =>

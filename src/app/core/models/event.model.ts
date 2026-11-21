@@ -109,7 +109,7 @@ export interface PartyEvent {
   /** "Vai ter amigo oculto?" and whether participants list gift options. */
   secretSanta?: SecretSantaSettings;
   /**
-   * "Aprovar quem confirma pelo link": each confirmation waits for the owner before it counts.
+   * "Aprovar presenças": each confirmation waits for the owner before it counts.
    * Off (or missing) means anyone with the link confirms at once.
    */
   requireApproval?: boolean;

@@ -129,14 +129,23 @@ How the app behaves for organizers and guests. Data and permissions are in
 
 - Início shows each invite as a sealed envelope in the colours of its category, "Para {first
   name}"; the whole envelope opens the event page. Its top is the invitation itself: paper with a
-  double frame, a handwritten greeting ("Feliz Natal!", "Vem comemorar!"…), title, date block,
-  description and "Com carinho, {organizer}". Themes: Natal, Aniversário (also chá de bebê,
-  batizado), Casamento (also noivado, chá de panela), Festa Junina, and the app colours for the
-  rest. See DESIGN.md, "Invitation themes".
+  double frame, scrolled corners and medallions, a handwritten greeting and a line in the tone of
+  a formal printed invitation, a little over the top on purpose ("Boas Festas!", "Rogamos a honra
+  de vossa presença à mesa natalina"), title, date block, description and "Cordialmente,
+  {organizer}". Themes: Natal, Aniversário (also chá de bebê, batizado), Casamento (also noivado,
+  chá de panela), Festa Junina, and the app colours for the rest. See DESIGN.md, "Invitation
+  themes".
+- The paper is light in the light theme and dark in the dark one, each theme with its own dark
+  tone (`$invite-themes-dark`); the envelopes follow.
+- The category shows only where the greeting does not already say it: none on "Boas Festas!",
+  "Churrasco" in small capitals over "Prezadíssimo convidado" (never a bare "Outros").
+- Each time the invitation opens it unfolds, its frame draws itself, greeting and signature are
+  written in and the rest comes in in reading order (about 3 s); with reduced motion it is simply
+  there.
 
 ## Approving who confirms (optional)
 
-- Step "Informações" of the editor: **"Aprovar quem confirma pelo link"** (`event.requireApproval`),
+- Step "Informações" of the editor: **"Aprovar presenças"** (`event.requireApproval`),
   off by default (anyone with the link confirms at once). Only the owner changes it.
 - On: a guest's first answer is saved with `approved: false`. Their card says "Aguardando
   aprovação"; they do not count on "Quem vai" or the total, are not offered in "Confirmados no

@@ -95,7 +95,7 @@ describe('EventCardComponent (Event Detail)', () => {
     );
   });
 
-  it('names the party only when the greeting does not ("Feliz Natal!" needs no tag)', () => {
+  it('names the party only when the greeting does not ("Boas Festas!" needs no tag)', () => {
     const category = () => element().querySelector('.event-card__category')?.textContent?.trim();
     expect(category()).toBeUndefined();
     fixture.componentRef.setInput('event', { ...mockEvent, category: 'Churrasco' });
@@ -104,7 +104,7 @@ describe('EventCardComponent (Event Detail)', () => {
     fixture.componentRef.setInput('event', { ...mockEvent, category: 'Natal' });
     fixture.detectChanges();
     expect(category()).toBeUndefined();
-    expect(element().querySelector('.event-card__greeting')?.textContent).toContain('Feliz Natal!');
+    expect(element().querySelector('.event-card__greeting')?.textContent).toContain('Boas Festas!');
   });
 
   it('names the organiser, or "Você" for the owner', () => {

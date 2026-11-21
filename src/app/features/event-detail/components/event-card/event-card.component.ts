@@ -39,7 +39,7 @@ export class EventCardComponent {
   protected readonly theme = computed(() => inviteTheme(this.event().category));
   /**
    * "Churrasco", in small capitals above the greeting: only when the greeting does not already
-   * say what the party is ("Feliz Natal!" needs no "Natal" tag), and never a bare "Outros".
+   * say what the party is ("Arraiá de gala" needs no "Festa Junina" tag), and never a bare "Outros".
    */
   protected readonly categoryLine = computed(() => {
     const category = (this.event().category ?? '').trim();
@@ -122,7 +122,7 @@ export class EventCardComponent {
     const { creatorName, creatorEmail } = this.event();
     return creatorName?.trim() || (creatorEmail ? creatorEmail.split('@')[0] : '');
   });
-  /** "Com carinho, Luiz": who signs the invitation (always the name, never "Você"). */
+  /** "Cordialmente, Luiz": who signs the invitation (always the name, never "Você"). */
   protected readonly signer = computed(() => this.creatorName());
 
   /** "Você" for the organizer; otherwise the organizer's name. */

@@ -73,10 +73,10 @@ test.describe('Convites com cara de convite', () => {
     await natal.getByTestId('event-card-link').click();
     await expect(page).toHaveURL(/\/evento\/evt-natal$/);
     const invitation = page.getByTestId('event-invitation');
-    await expect(invitation).toContainText('Feliz Natal!');
+    await expect(invitation).toContainText('Boas Festas!');
     await expect(invitation.locator('h1')).toHaveText('Natal da família');
     await expect(invitation.getByTestId('event-invitation-signature')).toHaveText(
-      'Com carinho, Luiz Rodrigues',
+      'Cordialmente, Luiz Rodrigues',
     );
     await assertNoHorizontalOverflow(page);
     await invitation.screenshot({ path: 'e2e/screenshots/invite-paper-natal.png' });
@@ -122,7 +122,7 @@ test.describe('Convites com cara de convite', () => {
         await page.goto(`/evento/${id}`);
         const invitation = page.getByTestId('event-invitation');
         await expect(invitation).toBeVisible();
-        // "Feliz Natal!" already says it: no "Natal" tag. "Um convite para você" does not.
+        // "Boas Festas!" already says it: no "Natal" tag. "Prezadíssimo convidado" does not.
         await expect(invitation.locator('.event-card__category')).toHaveCount(
           id === 'evt-churrasco' ? 1 : 0,
         );

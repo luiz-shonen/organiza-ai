@@ -347,12 +347,15 @@ To add a theme, add one entry to the map and its id to the service.
 
 Invites look like invites. On Início each one is a sealed envelope (`app-invite-envelope`: flap, wax
 seal with the organizer's initial, "Para Jéssica", title, date and tags); opening it opens the event
-page, whose top is a paper invitation (`app-event-card`: double gold frame, handwritten greeting,
-title, ornament, date block, description, "Com carinho, Luiz"). Both take the colours of the event's
+page, whose top is a paper invitation (`app-event-card`: double frame with scrolled corners and
+medallions drawn in SVG, handwritten greeting, title, a drawn divider with the theme's motif, date
+block, description, "Cordialmente, Luiz"). Opening it plays a short entrance (unfold, frame drawn,
+greeting and signature written in), skipped under reduced motion. Both take the colours of the event's
 category through one class, `.org-invite--{natal|aniversario|casamento|junina|padrao}`, which sets the
 `--org-invite-*` tokens (`$invite-themes` in `src/app/shared/ui/tokens/_invite-themes.scss`). The
-words come from `inviteTheme()` in `src/app/core/utils/invite.utils.ts`. Paper and envelopes keep
-their colours in dark mode, like printed paper. Meus eventos keeps the plain `app-event-summary-card`.
+words come from `inviteTheme()` in `src/app/core/utils/invite.utils.ts`, in the tone of a formal
+printed invitation. In dark mode paper and envelopes take each theme's dark tone
+(`$invite-themes-dark`, set under `html.dark`). Meus eventos keeps the plain `app-event-summary-card`.
 
 ---
 

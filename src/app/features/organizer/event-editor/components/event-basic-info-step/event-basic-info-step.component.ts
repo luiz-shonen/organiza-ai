@@ -57,7 +57,7 @@ export class EventBasicInfoStepComponent {
   readonly form = input.required<EventBasicInfoForm>();
   readonly categories = input.required<readonly EventCategoryOption[]>();
   readonly minDate = input.required<Date>();
-  /** "Aprovar quem confirma pelo link": off by default, anyone with the link confirms. */
+  /** "Aprovar presenças": off by default, anyone with the link confirms. */
   readonly requireApproval = model(false);
   /** Only the owner changes it. */
   readonly canConfigureApproval = input(true);

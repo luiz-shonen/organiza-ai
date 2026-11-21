@@ -7,7 +7,7 @@ describe('inviteTheme', () => {
     expect(inviteTheme('Ceia de Natal').className).toBe('org-invite--natal');
     expect(inviteTheme('ANIVERSÁRIO').key).toBe('aniversario');
     expect(inviteTheme('Chá de bebê').key).toBe('aniversario');
-    expect(inviteTheme('Casamento').greeting).toBe('Com muita alegria');
+    expect(inviteTheme('Casamento').greeting).toBe('Com júbilo');
     expect(inviteTheme('Chá de panela').key).toBe('casamento');
     expect(inviteTheme('Festa Junina').key).toBe('junina');
   });

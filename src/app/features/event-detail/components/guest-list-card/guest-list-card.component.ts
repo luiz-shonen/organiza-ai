@@ -35,7 +35,7 @@ export class GuestListCardComponent {
   /** Organizers only: phones, "Não poderão ir", Excel and print. */
   readonly forOrganizer = input(false);
   readonly declines = input<readonly GuestDecline[]>([]);
-  /** Organizers only: confirmations waiting for approval ("Aprovar quem confirma pelo link"). */
+  /** Organizers only: confirmations waiting for approval ("Aprovar presenças"). */
   readonly pending = input<readonly PendingGuest[]>([]);
   /** The waiting guest being approved or refused, while it saves. */
   readonly busyGuestId = input<string | null>(null);

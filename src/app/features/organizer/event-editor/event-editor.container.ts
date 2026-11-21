@@ -178,7 +178,7 @@ export class EventEditorContainer implements OnInit {
   protected readonly secretSantaEnabled = signal(false);
   protected readonly secretSantaGiftOptions = signal(false);
   protected readonly secretSantaMaxGifts = signal(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);
-  /** "Aprovar quem confirma pelo link": off by default. */
+  /** "Aprovar presenças": off by default. */
   protected readonly requireApproval = signal(false);
   private readonly savedParticipants = signal<SecretSantaParticipant[]>([]);
   /** Participants typed while creating the event; saved right after the event exists. */

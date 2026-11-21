@@ -200,8 +200,8 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await page.goto('/evento/event-junina-e2e');
     await eventDetailPage.assertLoaded();
 
-    // "Bora pro arraiá!" already says what the party is: the invitation carries no tag.
-    await expect(page.getByTestId('event-invitation')).toContainText('Bora pro arraiá!');
+    // "Arraiá de gala" already says what the party is: the invitation carries no tag.
+    await expect(page.getByTestId('event-invitation')).toContainText('Arraiá de gala');
     await expect(eventDetailPage.categoryLine).toHaveCount(0);
 
     await expect(page.locator('.seasonal-overlay__junina')).toBeVisible();

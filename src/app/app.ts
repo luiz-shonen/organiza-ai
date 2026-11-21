@@ -13,7 +13,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { AuthService, ThemeService, DrawerService, SeasonalThemeService } from './core/services';
+import {
+  AuthService,
+  ThemeService,
+  DrawerService,
+  SeasonalThemeService,
+  UserService,
+} from './core/services';
 import { isPrimaryDestination, resolveBackRoute } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
@@ -83,6 +89,7 @@ const PROFILE_ITEM: OrgNavBarItem = {
 })
 export class App {
   private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
   protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   // Created with the app, so it records from the first screen.
@@ -100,6 +107,15 @@ export class App {
     PROFILE_ITEM,
   ];
   protected readonly headerNavItems: readonly OrgNavBarItem[] = [HOME_ITEM, MY_EVENTS_ITEM];
+
+  /** Whoever signs in keeps their public name (the organizer name guests see) up to date. */
+  private publicNameSyncedFor: string | null = null;
+  private readonly syncPublicName = effect(() => {
+    const user = this.authService.currentUser();
+    if (!user || user.isAnonymous || this.publicNameSyncedFor === user.uid) return;
+    this.publicNameSyncedFor = user.uid;
+    void this.userService.syncPublicName(user.uid, user.displayName).catch(() => undefined);
+  });
 
   constructor() {
     effect(() => {

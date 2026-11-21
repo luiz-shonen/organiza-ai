@@ -134,7 +134,10 @@ describe('UserService', () => {
           updatedAt: expect.any(String),
         }),
       );
-      expect(mockEventService.renameCreator).toHaveBeenCalledWith('user-123', 'Updated Name');
+      expect(mockGateway.setDoc).toHaveBeenCalledWith(
+        'publicProfiles/user-123',
+        expect.objectContaining({ name: 'Updated Name' }),
+      );
     });
 
     it('creates a new user document when document does not exist yet', async () => {

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, combineLatest, map, of } from 'rxjs';
+import { Observable, catchError, combineLatest, map, of, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
 import {
@@ -27,21 +27,6 @@ export class EventService {
   }
 
   /** Keeps "Organizado por" in step with the owner's profile name on every event they own. */
-  async renameCreator(uid: string, creatorName: string): Promise<void> {
-    if (!uid || !creatorName) return;
-    const owned = await this.gateway.getDocs<{ id: string; creatorName?: string }>(
-      this.collectionName,
-      this.gateway.where('createdBy', '==', uid),
-    );
-    const stale = owned.filter((event) => event.creatorName !== creatorName);
-    if (stale.length === 0) return;
-    await this.gateway.runBatch((batch) => {
-      for (const event of stale) {
-        batch.update(`${this.collectionName}/${event.id}`, { creatorName });
-      }
-    });
-  }
-
   getUserEvents(uid: string): Observable<PartyEvent[]> {
     if (!uid) {
       return of([]);
@@ -71,10 +56,31 @@ export class EventService {
     );
   }
 
+  /**
+   * One event, live, with its organizer's current name: read by `createdBy` from that account's
+   * public profile (`publicProfiles/{uid}`), so a renamed organizer shows the new name everywhere.
+   * The `creatorName` saved on older events is only a fallback.
+   */
   getEvent(eventId: string): Observable<PartyEvent | null> {
     return this.gateway
       .docSnapshot<Record<string, unknown>>(`${this.collectionName}/${eventId}`)
-      .pipe(map((doc) => (doc ? this.mapEventData(doc) : null)));
+      .pipe(
+        map((doc) => (doc ? this.mapEventData(doc) : null)),
+        switchMap((event) => {
+          if (!event?.createdBy) return of(event);
+          return this.organizerName(event.createdBy).pipe(
+            map((name) => (name ? { ...event, creatorName: name } : event)),
+          );
+        }),
+      );
+  }
+
+  /** The public name of an account, live; null when it has none yet. */
+  private organizerName(uid: string): Observable<string | null> {
+    return this.gateway.docSnapshot<{ name?: string }>(`publicProfiles/${uid}`).pipe(
+      map((profile) => profile?.name?.trim() || null),
+      catchError(() => of(null)),
+    );
   }
 
   async createEvent(data: PartyEventCreate): Promise<string> {

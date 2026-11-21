@@ -58,8 +58,8 @@ export class UserService {
       }
       const newName = (data.name ?? data.displayName)?.trim();
       if (newName) {
-        // Guests read the organizer's name from each event, not from this private profile.
-        this.eventService.renameCreator(uid, newName).catch(console.error);
+        // Guests read the organizer's name from the public profile, never this private one.
+        this.publishName(uid, newName).catch(console.error);
       }
       if (existing) {
         await this.gateway.updateDoc(this.userPath(uid), updateData);
@@ -74,6 +74,31 @@ export class UserService {
       console.error('Error updating profile:', err);
       throw err;
     }
+  }
+
+  /**
+   * The name others see for this account (`publicProfiles/{uid}`: the name only, readable by
+   * anyone). Events show their organizer by `createdBy` through it.
+   */
+  async publishName(uid: string, name: string): Promise<void> {
+    const clean = name.trim().slice(0, 120);
+    if (!uid || !clean) return;
+    await this.gateway.setDoc(`publicProfiles/${uid}`, {
+      name: clean,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  /** Once per sign-in: the public name matches the profile's (or the Google account's). */
+  async syncPublicName(uid: string, fallback: string | null | undefined): Promise<void> {
+    if (!uid) return;
+    const profile = await this.getProfile(uid);
+    const name = (profile?.name || fallback || '').trim();
+    if (!name) return;
+    const current = await this.gateway
+      .getDoc<{ name?: string }>(`publicProfiles/${uid}`)
+      .catch(() => null);
+    if (current?.name !== name) await this.publishName(uid, name);
   }
 
   async upsertProfile(uid: string, data: Partial<UserProfile>): Promise<void> {

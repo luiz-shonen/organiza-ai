@@ -124,14 +124,13 @@ export class DashboardContainer {
   private readonly notificationService = inject(NotificationService);
   private readonly eventNotificationService = inject(EventNotificationService);
 
-  /** Events the person created or helps organise (super admins see every event). */
+  /** Events the person created or helps organise. */
   protected readonly events = toSignal(
     toObservable(this.authService.currentUser).pipe(
       switchMap((user) => {
         if (!user) return of([] as PartyEvent[]);
-        return this.authService.isSuperAdmin()
-          ? this.eventService.listEvents()
-          : this.eventService.getUserEvents(user.uid);
+        // Also for a super admin: only theirs; every event is in the admin area.
+        return this.eventService.getUserEvents(user.uid);
       }),
     ),
   );
@@ -262,26 +261,7 @@ export class DashboardContainer {
     return event ? daysUntil(event.date) : null;
   });
 
-  /** Events saved before "Organizado por" used the profile name get it once, here. */
-  private creatorNamesChecked = false;
-
   constructor() {
-    effect(() => {
-      const user = this.authService.currentUser();
-      const all = this.events();
-      if (!user || !all?.length || this.creatorNamesChecked) return;
-      this.creatorNamesChecked = true;
-      untracked(async () => {
-        const name = (await this.userService.getProfile(user.uid))?.name?.trim();
-        if (
-          name &&
-          all.some((event) => event.createdBy === user.uid && event.creatorName !== name)
-        ) {
-          await this.eventService.renameCreator(user.uid, name);
-        }
-      });
-    });
-
     effect(() => {
       const all = this.events();
       if (all && all.length > 0) {

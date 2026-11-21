@@ -508,11 +508,9 @@ export class EventDetailContainer implements OnInit {
     const uid = this.memberUid();
     const event = this.event();
     if (!uid || !event) return false;
-    return (
-      event.createdBy === uid ||
-      (event.collaborators ?? []).includes(uid) ||
-      this.authService.isSuperAdmin()
-    );
+    // Only the owner and the collaborators organise; a super admin is a guest here like anyone,
+    // and looks after other people's events from the admin area.
+    return event.createdBy === uid || (event.collaborators ?? []).includes(uid);
   });
 
   /** Organizers edit the event only until it starts; afterwards it is history. */

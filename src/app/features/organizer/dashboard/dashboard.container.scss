@@ -61,6 +61,22 @@
   justify-content: space-between;
 }
 
+.dashboard__filters {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-sm);
+
+  // On a phone the chips scroll sideways; the order button stays put at the right.
+  .dashboard__chips {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  org-icon-button {
+    flex: none;
+  }
+}
+
 .dashboard__list-title {
   align-items: center;
   color: var(--org-on-surface);

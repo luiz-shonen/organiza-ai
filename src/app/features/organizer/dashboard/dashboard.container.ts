@@ -49,6 +49,8 @@ import { NextEventBannerComponent } from '../../../shared/components/next-event-
 export type EventStatusFilter = 'all' | 'soon' | 'scheduled' | 'past' | 'cancelled';
 /** By the event's date: earliest first (the default) or latest first. */
 export type EventDateOrder = 'oldest' | 'newest';
+/** Whose events: all of them, the ones the person created, or the ones they help organise. */
+export type EventRoleFilter = 'all' | 'owner' | 'collaborator';
 
 /** "Em breve" means really close: at most this many days away. Further ahead is "Agendado". */
 export const SOON_DAYS = 5;
@@ -70,6 +72,8 @@ export interface EventStats {
 }
 
 interface DashboardCard {
+  /** "Colaborador(a)" on an event someone else created. */
+  role: string | null;
   readonly event: PartyEvent;
   readonly status: EventSummaryStatus;
   readonly stats: EventStats | null;
@@ -135,10 +139,26 @@ export class DashboardContainer {
   /** The filter chips on; `['all']` shows every event. */
   readonly activeFilters = signal<readonly EventStatusFilter[]>(['all']);
   readonly dateOrder = signal<EventDateOrder>('oldest');
-  protected readonly dateOrders: readonly OrgSegmentedOption<EventDateOrder>[] = [
-    { value: 'oldest', label: 'Mais antigos', testId: 'date-order-oldest' },
-    { value: 'newest', label: 'Mais recentes', testId: 'date-order-newest' },
+  readonly roleFilter = signal<EventRoleFilter>('all');
+  protected readonly roleOptions: readonly OrgSegmentedOption<EventRoleFilter>[] = [
+    { value: 'all', label: 'Ambos', testId: 'role-filter-all' },
+    { value: 'owner', label: 'Organizo', testId: 'role-filter-owner' },
+    { value: 'collaborator', label: 'Colaboro', testId: 'role-filter-collaborator' },
   ];
+
+  /** The person's part in an event: created it, or was invited to help organise it. */
+  protected roleOf(event: PartyEvent): EventRoleFilter | null {
+    const uid = this.authService.currentUser()?.uid;
+    if (!uid) return null;
+    if (event.createdBy === uid) return 'owner';
+    return (event.collaborators ?? []).includes(uid) ? 'collaborator' : null;
+  }
+
+  private readonly collaborationCount = computed(
+    () => (this.events() ?? []).filter((e) => this.roleOf(e) === 'collaborator').length,
+  );
+  /** "Organizo / Colaboro" only for someone who helps organise someone else's event. */
+  protected readonly showRoleFilter = computed(() => this.collaborationCount() > 0);
   private readonly stats = signal<Readonly<Record<string, EventStats>>>({});
 
   protected readonly filters: readonly OrgFilterOption<EventStatusFilter>[] = [
@@ -163,15 +183,22 @@ export class DashboardContainer {
   });
 
   protected readonly subtitle = computed(() => {
-    const count = this.events()?.length ?? 0;
-    return count === 1 ? '1 evento que você organiza' : `${count} eventos que você organiza`;
+    const helping = this.collaborationCount();
+    const own = (this.events()?.length ?? 0) - helping;
+    const owned = own === 1 ? '1 evento que você organiza' : `${own} eventos que você organiza`;
+    if (!helping) return owned;
+    const helped = helping === 1 ? '1 em que você colabora' : `${helping} em que você colabora`;
+    return `${owned} · ${helped}`;
   });
 
   /** The chosen chips, in the chosen date order. */
   readonly filteredEvents = computed(() => {
     const byDate = (a: PartyEvent, b: PartyEvent) =>
       new Date(a.date).getTime() - new Date(b.date).getTime();
-    const list = [...this.statusFiltered()].sort(byDate);
+    const role = this.roleFilter();
+    const list = this.statusFiltered()
+      .filter((e) => role === 'all' || this.roleOf(e) === role)
+      .sort(byDate);
     return this.dateOrder() === 'newest' ? list.reverse() : list;
   });
 
@@ -218,6 +245,7 @@ export class DashboardContainer {
       return {
         event,
         status,
+        role: this.roleOf(event) === 'collaborator' ? 'Colaborador(a)' : null,
         stats,
         insight: live && stats ? this.buildInsight(days, stats) : null,
       };
@@ -331,8 +359,12 @@ export class DashboardContainer {
     };
   }
 
-  protected setDateOrder(order: string): void {
-    this.dateOrder.set(order === 'newest' ? 'newest' : 'oldest');
+  protected toggleDateOrder(): void {
+    this.dateOrder.update((order) => (order === 'oldest' ? 'newest' : 'oldest'));
+  }
+
+  protected setRoleFilter(role: string): void {
+    this.roleFilter.set(role === 'owner' || role === 'collaborator' ? role : 'all');
   }
 
   protected setFilters(ids: string[]): void {

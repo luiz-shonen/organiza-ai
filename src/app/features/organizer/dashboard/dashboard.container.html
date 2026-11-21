@@ -24,20 +24,38 @@
             cards().length
           }}</span>
         </h2>
-        <org-segmented-control
-          ariaLabel="Ordem dos eventos por data"
-          [options]="dateOrders"
-          [value]="dateOrder()"
-          (valueChange)="setDateOrder($event)"
-        />
+        @if (showRoleFilter()) {
+          <org-segmented-control
+            class="dashboard__roles"
+            ariaLabel="Eventos que você organiza ou em que colabora"
+            [options]="roleOptions"
+            [value]="roleFilter()"
+            (valueChange)="setRoleFilter($event)"
+          />
+        }
       </div>
 
-      <org-filter-bar
-        ariaLabel="Filtros de status dos eventos"
-        [options]="filters"
-        [values]="activeFilters()"
-        (valuesChange)="setFilters($event)"
-      />
+      <!-- The status chips, and at their right the date order: up for oldest first. -->
+      <div class="dashboard__filters">
+        <org-filter-bar
+          class="dashboard__chips"
+          ariaLabel="Filtros de status dos eventos"
+          [options]="filters"
+          [values]="activeFilters()"
+          (valuesChange)="setFilters($event)"
+        />
+        <org-icon-button
+          testId="date-order-btn"
+          [icon]="dateOrder() === 'oldest' ? 'arrow_upward' : 'arrow_downward'"
+          [ariaLabel]="
+            dateOrder() === 'oldest'
+              ? 'Mais antigos primeiro. Mostrar os mais recentes primeiro'
+              : 'Mais recentes primeiro. Mostrar os mais antigos primeiro'
+          "
+          [tooltip]="dateOrder() === 'oldest' ? 'Mais antigos primeiro' : 'Mais recentes primeiro'"
+          (pressed)="toggleDateOrder()"
+        />
+      </div>
 
       @if (cards().length === 0) {
         <org-empty-state
@@ -56,6 +74,7 @@
               testId="organizer-event-card"
               [event]="card.event"
               [status]="card.status"
+              [role]="card.role"
               [link]="['/evento', card.event.id]"
             >
               @if (card.insight; as insight) {

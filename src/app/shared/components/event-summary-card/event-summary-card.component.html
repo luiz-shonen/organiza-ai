@@ -17,6 +17,15 @@
               [gradient]="false"
             />
           }
+          @if (role(); as role) {
+            <org-badge
+              data-testid="event-role"
+              icon="group"
+              variant="default"
+              [label]="role"
+              [gradient]="false"
+            />
+          }
         </div>
         <h3 class="event-summary-card__title" [id]="titleId()">
           @if (link(); as link) {

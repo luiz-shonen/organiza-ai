@@ -69,7 +69,9 @@ export type OrgIconName =
   | 'event_available'
   | 'calendar_today'
   | 'redeem'
-  | 'visibility';
+  | 'visibility'
+  | 'arrow_upward'
+  | 'arrow_downward';
 
 export type OrgIconSize = 'sm' | 'md' | 'lg';
 
@@ -142,6 +144,8 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   calendar_today: 'calendar_today',
   redeem: 'redeem',
   visibility: 'visibility',
+  arrow_upward: 'arrow_upward',
+  arrow_downward: 'arrow_downward',
 };
 
 @Component({

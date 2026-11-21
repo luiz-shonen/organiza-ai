@@ -177,8 +177,13 @@
 .event-card__title {
   animation: event-card-title 1s 1.25s var(--org-motion-ease-emphasized) both;
   color: var(--org-invite-text);
-  font: var(--org-font-weight-semibold) var(--org-font-size-heading) / var(--org-line-height-tight)
-    var(--org-font-display);
+  font-family: var(--org-font-invite);
+
+  // The serif runs small for its size: a fifth larger than the app's headings.
+  font-size: calc(var(--org-font-size-heading) * 1.2);
+  font-weight: var(--org-font-weight-bold);
+  font-variant-numeric: lining-nums;
+  line-height: var(--org-line-height-tight);
   margin: 0;
   overflow-wrap: anywhere;
 }
@@ -229,8 +234,11 @@
 .event-card__date-day {
   color: var(--org-invite-ink);
   flex: none;
-  font: var(--org-font-weight-semibold) var(--org-font-size-4xl) / var(--org-line-height-none)
-    var(--org-font-display);
+  font: var(--org-font-weight-bold) var(--org-font-size-4xl) / var(--org-line-height-none)
+    var(--org-font-invite);
+
+  // The serif's old-style figures make "10" read "IO": upright figures for the day.
+  font-variant-numeric: lining-nums;
   white-space: nowrap;
 
   // "23–25": an event over several days stays on one line, one step smaller.

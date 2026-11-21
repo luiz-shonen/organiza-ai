@@ -24,7 +24,7 @@ const THEMES: Record<InviteThemeKey, Omit<InviteTheme, 'className' | 'key'>> = {
   },
   aniversario: {
     greeting: 'Celebremos!',
-    lead: 'Mais uma volta ao Sol requer vossa ilustre presença',
+    lead: 'Mais uma volta ao sol requer vossa ilustre presença',
     ornament: '★',
   },
   casamento: {

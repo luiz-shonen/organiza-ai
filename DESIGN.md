@@ -348,7 +348,8 @@ To add a theme, add one entry to the map and its id to the service.
 Invites look like invites. On Início each one is a sealed envelope (`app-invite-envelope`: flap, wax
 seal with the organizer's initial, "Para Jéssica", title, date and tags); opening it opens the event
 page, whose top is a paper invitation (`app-event-card`: double frame with scrolled corners and
-medallions drawn in SVG, handwritten greeting, title, a drawn divider with the theme's motif, date
+medallions drawn in SVG, handwritten greeting (`--org-font-script`), the party's name and the
+day in an engraved serif (`--org-font-invite`, Cormorant Garamond, upright figures), a drawn divider with the theme's motif, date
 block, description, "Cordialmente, Luiz"). Opening it plays a short entrance (unfold, frame drawn,
 greeting and signature written in), skipped under reduced motion. Both take the colours of the event's
 category through one class, `.org-invite--{natal|aniversario|casamento|junina|padrao}`, which sets the

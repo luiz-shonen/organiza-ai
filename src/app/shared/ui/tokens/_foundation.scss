@@ -8,8 +8,10 @@
     --org-font-display: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
     --org-font-mono: 'JetBrains Mono', monospace;
 
-    // Invitations only: the handwritten greeting and signature.
+    // Invitations only: the handwritten greeting and signature, and the engraved serif of the
+    // party's name and the day, as on a printed invitation.
     --org-font-script: 'Great Vibes', 'Fredoka', cursive;
+    --org-font-invite: 'Cormorant Garamond', georgia, serif;
 
     // Font sizes
     --org-font-size-2xs: 0.625rem;

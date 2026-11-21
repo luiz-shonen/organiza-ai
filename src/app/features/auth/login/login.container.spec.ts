@@ -75,18 +75,20 @@ describe('LoginContainer', () => {
         title: 'Natal da família',
         category: 'Natal',
         date: '2027-12-24T20:00:00.000Z',
-        creatorName: 'Luiz Rodrigues',
+        creatorName: 'Luiz Carlos da Silva Rodrigues',
       } as PartyEvent),
     );
     fixture.componentRef.setInput('redirect', '/evento/abc');
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(getEvent).toHaveBeenCalledWith('abc');
-    expect(compiled.querySelector('[data-testid="login-invite-envelope"]')?.textContent).toContain(
-      'Natal da família',
-    );
+    // Only who invites: the party and its day are inside, after signing in.
+    expect(
+      compiled.querySelector('[data-testid="login-invite-envelope"]')?.textContent,
+    ).not.toContain('Natal da família');
     expect(compiled.querySelector('.login__sealed-seal')?.textContent?.trim()).toBe('L');
     const title = compiled.querySelector('[data-testid="login-title"]')?.textContent ?? '';
+    // First and last name only ("Luiz Carlos da Silva Rodrigues").
     expect(title.replace(/\s+/g, ' ').trim()).toBe('Luiz Rodrigues convida você');
     expect(compiled.querySelector('[data-testid="google-login-btn"]')).toBeTruthy();
   });

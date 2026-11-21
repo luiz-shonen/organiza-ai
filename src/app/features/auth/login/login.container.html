@@ -22,8 +22,8 @@
 
 @if (invitedEvent(); as event) {
   <!--
-    Sent here by an invite: that invite's envelope, sealed, floating on the page; who sends it
-    below, in the invitation's lettering, and the way in. It opens once they sign in.
+    Sent here by an invite: that invite's envelope, sealed, floating on the page, with who sends
+    it written on it; below, the way in. The party and its day are inside, once they sign in.
   -->
   <main class="login login--invite" data-testid="login-page">
     <p class="login__brand">
@@ -34,17 +34,18 @@
       class="login__sealed"
       data-testid="login-invite-envelope"
       [class]="sealedTheme().className"
-      role="img"
-      [attr.aria-label]="'Convite: ' + event.title + (sealedWhen() ? ', ' + sealedWhen() : '')"
     >
       <div class="login__sealed-body">
         <span class="login__sealed-frame" aria-hidden="true"></span>
-        <div class="login__sealed-address" aria-hidden="true">
-          <span class="login__sealed-title">{{ event.title }}</span>
-          @if (sealedWhen(); as when) {
-            <span class="login__sealed-when">{{ when }}</span>
+        <!-- Written in the bottom-right corner as the page opens. -->
+        <h1 class="login__sealed-address" data-testid="login-title">
+          @if (inviterName(); as name) {
+            <span class="login__sealed-from">{{ name }}</span>
+            <span class="login__sealed-verb">{{ ' ' }}convida você</span>
+          } @else {
+            <span class="login__sealed-verb">Você recebeu um convite</span>
           }
-        </div>
+        </h1>
       </div>
       <span class="login__sealed-flap-trim" aria-hidden="true"></span>
       <span class="login__sealed-flap" aria-hidden="true"></span>
@@ -52,15 +53,6 @@
     </div>
 
     <div class="login__invite-body">
-      <!-- In the lettering of the invitation: the name engraved, "convida você" handwritten. -->
-      <h1 class="login__from" data-testid="login-title">
-        @if (inviterName(); as name) {
-          <span class="login__from-name">{{ name }}</span>
-          <span class="login__from-verb">{{ ' ' }}convida você</span>
-        } @else {
-          <span class="login__from-verb">Você recebeu um convite!</span>
-        }
-      </h1>
       <p class="login__lead">Entre com sua conta Google para abrir o convite e responder.</p>
       <ng-container [ngTemplateOutlet]="signInError" />
       <ng-container [ngTemplateOutlet]="googleButton" />

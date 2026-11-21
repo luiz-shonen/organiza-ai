@@ -5,7 +5,7 @@ import { catchError, of, switchMap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService, EventService } from '../../../core/services';
-import { formatDaySpan, inviteInitial, inviteTheme } from '../../../core/utils';
+import { inviteInitial, inviteTheme } from '../../../core/utils';
 import { Email, requiredText, valueObjectValidator } from '../../../core/value-objects';
 import {
   OrgButtonComponent,
@@ -83,23 +83,16 @@ export class LoginContainer {
     { initialValue: null },
   );
   /** Who sends the invite ("Luiz Rodrigues convida você"); empty when the event has no name. */
-  protected readonly inviterName = computed(() => this.invitedEvent()?.creatorName?.trim() || '');
-  /** The sealed envelope: the invite's colours, the organizer's initial on the seal, its day. */
+  /** Who invites, first and last name only ("Jéssica Cristina de Melo" → "Jéssica Melo"). */
+  protected readonly inviterName = computed(() => {
+    const words = (this.invitedEvent()?.creatorName ?? '').trim().split(/\s+/).filter(Boolean);
+    return words.length > 2 ? `${words[0]} ${words[words.length - 1]}` : words.join(' ');
+  });
+  /** The sealed envelope: the invite's colours and the organizer's initial on the seal. */
   protected readonly sealedTheme = computed(() => inviteTheme(this.invitedEvent()?.category));
   protected readonly sealedInitial = computed(() =>
     inviteInitial(this.invitedEvent()?.creatorName || this.invitedEvent()?.title),
   );
-  /** "Dom., 20 de dez. · 19:30"; over several days "23 a 25 de dez. · 17:00". */
-  protected readonly sealedWhen = computed(() => {
-    const event = this.invitedEvent();
-    const date = event ? new Date(event.date) : null;
-    if (!event || !date || isNaN(date.getTime())) return '';
-    const day =
-      formatDaySpan(event.date, event.endDate, 'short') ||
-      date.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
-    const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return `${day} · ${time}`;
-  });
   protected readonly features = [
     { icon: 'mail', text: 'Convites com cara de convite' },
     { icon: 'how_to_reg', text: 'Quem vai, confirmado com um toque' },

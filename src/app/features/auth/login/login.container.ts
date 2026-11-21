@@ -5,7 +5,7 @@ import { catchError, of, switchMap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService, EventService } from '../../../core/services';
-import { InviteEnvelopeComponent } from '../../../shared/components/invite-envelope/invite-envelope.component';
+import { formatDaySpan, inviteInitial, inviteTheme } from '../../../core/utils';
 import { Email, requiredText, valueObjectValidator } from '../../../core/value-objects';
 import {
   OrgButtonComponent,
@@ -44,7 +44,6 @@ function authErrorMessage(message: string, fallback: string): string {
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    InviteEnvelopeComponent,
     NgTemplateOutlet,
     ReactiveFormsModule,
     OrgButtonComponent,
@@ -85,6 +84,22 @@ export class LoginContainer {
   );
   /** Who sends the invite ("Luiz Rodrigues convida você"); empty when the event has no name. */
   protected readonly inviterName = computed(() => this.invitedEvent()?.creatorName?.trim() || '');
+  /** The sealed envelope: the invite's colours, the organizer's initial on the seal, its day. */
+  protected readonly sealedTheme = computed(() => inviteTheme(this.invitedEvent()?.category));
+  protected readonly sealedInitial = computed(() =>
+    inviteInitial(this.invitedEvent()?.creatorName || this.invitedEvent()?.title),
+  );
+  /** "Dom., 20 de dez. · 19:30"; over several days "23 a 25 de dez. · 17:00". */
+  protected readonly sealedWhen = computed(() => {
+    const event = this.invitedEvent();
+    const date = event ? new Date(event.date) : null;
+    if (!event || !date || isNaN(date.getTime())) return '';
+    const day =
+      formatDaySpan(event.date, event.endDate, 'short') ||
+      date.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
+    const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return `${day} · ${time}`;
+  });
   protected readonly features = [
     { icon: 'mail', text: 'Convites com cara de convite' },
     { icon: 'how_to_reg', text: 'Quem vai, confirmado com um toque' },

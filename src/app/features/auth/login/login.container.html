@@ -21,32 +21,50 @@
 </ng-template>
 
 @if (invitedEvent(); as event) {
-  <!-- Sent here by an invite: the envelope of that invite, sealed until they sign in. -->
-  <main class="login" data-testid="login-page">
+  <!--
+    Sent here by an invite: that invite's envelope, sealed, floating on the page; who sends it
+    below, in the invitation's lettering, and the way in. It opens once they sign in.
+  -->
+  <main class="login login--invite" data-testid="login-page">
     <p class="login__brand">
       <org-logo size="lg" />
     </p>
-    <app-invite-envelope
-      class="login__envelope"
-      testId="login-invite-envelope"
-      [event]="event"
-      [link]="['/evento', event.id]"
+
+    <div
+      class="login__sealed"
+      data-testid="login-invite-envelope"
+      [class]="sealedTheme().className"
+      role="img"
+      [attr.aria-label]="'Convite: ' + event.title + (sealedWhen() ? ', ' + sealedWhen() : '')"
     >
-      <div inviteBody class="login__invite-body">
-        <!-- In the lettering of the invitation: the name engraved, "convida você" handwritten. -->
-        <h1 class="login__from" data-testid="login-title">
-          @if (inviterName(); as name) {
-            <span class="login__from-name">{{ name }}</span>
-            <span class="login__from-verb">{{ ' ' }}convida você</span>
-          } @else {
-            <span class="login__from-verb">Você recebeu um convite!</span>
+      <div class="login__sealed-body">
+        <span class="login__sealed-frame" aria-hidden="true"></span>
+        <div class="login__sealed-address" aria-hidden="true">
+          <span class="login__sealed-title">{{ event.title }}</span>
+          @if (sealedWhen(); as when) {
+            <span class="login__sealed-when">{{ when }}</span>
           }
-        </h1>
-        <p class="login__lead">Entre com sua conta Google para abrir o convite e responder.</p>
-        <ng-container [ngTemplateOutlet]="signInError" />
-        <ng-container [ngTemplateOutlet]="googleButton" />
+        </div>
       </div>
-    </app-invite-envelope>
+      <span class="login__sealed-flap-trim" aria-hidden="true"></span>
+      <span class="login__sealed-flap" aria-hidden="true"></span>
+      <span class="login__sealed-seal" aria-hidden="true">{{ sealedInitial() }}</span>
+    </div>
+
+    <div class="login__invite-body">
+      <!-- In the lettering of the invitation: the name engraved, "convida você" handwritten. -->
+      <h1 class="login__from" data-testid="login-title">
+        @if (inviterName(); as name) {
+          <span class="login__from-name">{{ name }}</span>
+          <span class="login__from-verb">{{ ' ' }}convida você</span>
+        } @else {
+          <span class="login__from-verb">Você recebeu um convite!</span>
+        }
+      </h1>
+      <p class="login__lead">Entre com sua conta Google para abrir o convite e responder.</p>
+      <ng-container [ngTemplateOutlet]="signInError" />
+      <ng-container [ngTemplateOutlet]="googleButton" />
+    </div>
   </main>
 } @else {
   <main class="login" data-testid="login-page">

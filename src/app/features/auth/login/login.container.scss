@@ -8,18 +8,118 @@
   padding: 40px var(--org-space-md);
   box-sizing: border-box;
 
-  // The envelope of the invite that sent them here, as wide as the sign-in card.
-  &__envelope {
+  // The invite that sent them here: an envelope on its own, sealed, floating; a real envelope's
+  // proportions, the flap with a gilt edge, a wax seal, the address centred on the front.
+  &__sealed {
+    animation:
+      login-sealed-arrive 0.8s var(--org-motion-ease-emphasized) both,
+      login-sealed-float 5s 0.8s ease-in-out infinite;
+
+    --login-flap: 42%;
+
+    aspect-ratio: 1.5;
+    filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--org-invite-flap) 22%, transparent));
     max-inline-size: 420px;
+    position: relative;
     width: 100%;
+  }
+
+  &__sealed-body {
+    background: var(--org-invite-envelope);
+    border-radius: var(--org-radius-md);
+    inset: 0;
+    position: absolute;
+  }
+
+  &__sealed-frame {
+    border: 1px solid var(--org-invite-line);
+    border-radius: var(--org-radius-sm);
+    inset: 10px;
+    outline: 1px solid var(--org-invite-line);
+    outline-offset: -5px;
+    position: absolute;
+  }
+
+  &__sealed-address {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-2xs);
+    inset: calc(var(--login-flap) + 30px) var(--org-space-xl) 0;
+    justify-content: center;
+    padding-block-end: var(--org-space-md);
+    position: absolute;
+    text-align: center;
+  }
+
+  &__sealed-title {
+    color: var(--org-invite-text);
+    font-family: var(--org-font-invite);
+    font-size: var(--org-font-size-2xl);
+    font-variant-numeric: lining-nums;
+    font-weight: var(--org-font-weight-bold);
+    line-height: var(--org-line-height-tight);
+    overflow-wrap: anywhere;
+  }
+
+  &__sealed-when {
+    color: var(--org-invite-muted);
+    font-size: var(--org-font-size-xs);
+    letter-spacing: var(--org-letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  // The flap and its gilt edge: triangles cut by a mask, rounded like the envelope at the top.
+  &__sealed-flap,
+  &__sealed-flap-trim {
+    border-radius: var(--org-radius-md) var(--org-radius-md) 0 0;
+    inset: 0 0 auto;
+    mask:
+      linear-gradient(to bottom left, var(--org-invite-flap) 50%, transparent 50%) left / 51% 100%
+        no-repeat,
+      linear-gradient(to bottom right, var(--org-invite-flap) 50%, transparent 50%) right / 51% 100%
+        no-repeat;
+    position: absolute;
+  }
+
+  &__sealed-flap {
+    background: var(--org-invite-flap);
+    block-size: var(--login-flap);
+  }
+
+  &__sealed-flap-trim {
+    background: var(--org-invite-line);
+    block-size: calc(var(--login-flap) + 3px);
+  }
+
+  &__sealed-seal {
+    align-items: center;
+    animation: login-sealed-glow 2.8s 1s ease-in-out infinite;
+    background: var(--org-invite-seal);
+    block-size: 64px;
+    border: 3px solid var(--org-invite-line);
+    border-radius: var(--org-radius-full);
+    box-shadow: var(--org-shadow-md);
+    color: var(--org-invite-on-seal);
+    display: flex;
+    font-family: var(--org-font-script);
+    font-size: var(--org-font-size-script-lg);
+    inline-size: 64px;
+    inset-block-start: calc(var(--login-flap) - 34px);
+    inset-inline-start: 50%;
+    justify-content: center;
+    line-height: var(--org-line-height-none);
+    margin-inline-start: -32px;
+    position: absolute;
   }
 
   &__invite-body {
     display: flex;
     flex-direction: column;
     gap: var(--org-space-md);
-    padding-block-start: var(--org-space-xs);
+    max-inline-size: 420px;
     text-align: center;
+    width: 100%;
   }
 
   // Below the envelope, in the invitation's lettering.
@@ -153,5 +253,53 @@
       height: 1px;
       background: var(--org-outline-variant);
     }
+  }
+}
+
+// Arriving: dropped onto the page with a little turn; then it floats, the seal softly glowing.
+@keyframes login-sealed-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) rotate(-6deg) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(-1.5deg);
+  }
+}
+
+@keyframes login-sealed-float {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(-0.5deg) translateY(-6px);
+  }
+}
+
+@keyframes login-sealed-glow {
+  0%,
+  100% {
+    box-shadow: var(--org-shadow-md);
+  }
+
+  50% {
+    box-shadow:
+      var(--org-shadow-md),
+      0 0 0 6px color-mix(in srgb, var(--org-invite-line) 30%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login__sealed,
+  .login__sealed-seal {
+    animation: none;
+  }
+
+  .login__sealed {
+    transform: rotate(-1.5deg);
   }
 }

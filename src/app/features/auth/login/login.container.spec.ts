@@ -85,6 +85,7 @@ describe('LoginContainer', () => {
     expect(compiled.querySelector('[data-testid="login-invite-envelope"]')?.textContent).toContain(
       'Natal da família',
     );
+    expect(compiled.querySelector('.login__sealed-seal')?.textContent?.trim()).toBe('L');
     const title = compiled.querySelector('[data-testid="login-title"]')?.textContent ?? '';
     expect(title.replace(/\s+/g, ' ').trim()).toBe('Luiz Rodrigues convida você');
     expect(compiled.querySelector('[data-testid="google-login-btn"]')).toBeTruthy();

@@ -11,6 +11,7 @@ export { ItemService } from './item.service';
 export { ClaimService } from './claim.service';
 export { LocationService } from './location.service';
 export { ConfettiService } from './confetti.service';
+export { CelebrationSoundService } from './celebration-sound.service';
 export { SeasonalThemeService } from './seasonal-theme.service';
 export { DrawerService } from './drawer.service';
 

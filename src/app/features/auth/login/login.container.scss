@@ -12,7 +12,8 @@
 
   // The welcome never runs past the screen: exactly its height, spacing that shrinks with it,
   // and the extras left out on a short screen.
-  &--welcome {
+  &--welcome,
+  &--invite {
     block-size: 100dvh;
     min-height: 0;
     overflow: hidden;
@@ -33,12 +34,13 @@
     container-type: inline-size;
     filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--org-invite-flap) 22%, transparent));
 
-    // Big enough to read the address, never more than the screen: 560px at most, and short
-    // enough to leave room for the logo and the button above and below.
-    max-inline-size: min(560px, (100dvh - 340px) * 1.5);
+    // As wide as the screen lets it, 760px at most, and short enough for the logo, the line
+    // and the button to fit above and below without scrolling.
+    flex: none;
+    max-inline-size: min(760px, (100dvh - 300px) * 1.5);
     min-inline-size: min(100%, 300px);
     position: relative;
-    width: 80%;
+    width: 90%;
 
     // On a phone the whole width, and a little taller, for the address to breathe.
     @media (width < 600px) {
@@ -153,8 +155,10 @@
   }
 
   &__invite-body {
+    align-items: center;
     animation: login-rise 0.5s 2s var(--org-motion-ease-emphasized) both;
     display: flex;
+    flex: none;
     flex-direction: column;
     gap: var(--org-space-md);
     max-inline-size: 420px;
@@ -205,6 +209,15 @@
   &--welcome &__feature-icon {
     animation: login-pop 0.5s calc(0.55s + var(--login-i, 0) * 0.12s)
       var(--org-motion-ease-emphasized) both;
+  }
+
+  // The invite's button: narrower, the envelope is what matters here.
+  &--invite .login__google-btn {
+    inline-size: min(100%, 300px);
+  }
+
+  &--invite {
+    gap: clamp(var(--org-space-md), 3dvh, 28px);
   }
 
   &--welcome .login__google-btn {

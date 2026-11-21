@@ -18,6 +18,7 @@ import {
   UserService,
   FamilyService,
   ConfettiService,
+  CelebrationSoundService,
   SeasonalThemeService,
   DrawerService,
   ClaimService,
@@ -140,6 +141,7 @@ export class EventDetailContainer implements OnInit {
   private readonly userService = inject(UserService);
   private readonly familyService = inject(FamilyService);
   private readonly confetti = inject(ConfettiService);
+  private readonly celebrationSound = inject(CelebrationSoundService);
   private readonly seasonalThemeService = inject(SeasonalThemeService);
   private readonly dialogs = inject(OrgDialogService);
   private readonly drawerService = inject(DrawerService);
@@ -1052,6 +1054,7 @@ export class EventDetailContainer implements OnInit {
               this.feedback.success('Pronto! Agora é só esperar quem organiza aprovar.');
             } else {
               this.confetti.fireSuccessConfetti();
+              this.celebrationSound.play(this.event()?.category);
               this.feedback.success('Presença confirmada!');
             }
           } catch (err) {

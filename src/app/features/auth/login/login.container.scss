@@ -10,6 +10,16 @@
   padding: 40px var(--org-space-md);
   box-sizing: border-box;
 
+  // The welcome never runs past the screen: exactly its height, spacing that shrinks with it,
+  // and the extras left out on a short screen.
+  &--welcome {
+    block-size: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding-block: clamp(var(--org-space-sm), 4dvh, 40px);
+    position: relative;
+  }
+
   // The invite that sent them here: an envelope on its own, sealed, floating; a real envelope's
   // proportions, the flap with a gilt edge, a wax seal, the address centred on the front.
   &__sealed {
@@ -157,15 +167,109 @@
   }
 
   &__card {
-    width: 100%;
+    animation: login-card-in 0.6s var(--org-motion-ease-emphasized) both;
+    flex: none;
     max-width: 420px;
+    position: relative;
+    width: 100%;
   }
 
   &__card-content {
     display: flex;
     flex-direction: column;
-    gap: var(--org-space-lg);
-    padding: var(--org-space-lg) var(--org-space-md);
+    gap: clamp(var(--org-space-sm), 3dvh, var(--org-space-lg));
+    padding: clamp(var(--org-space-sm), 3dvh, var(--org-space-lg)) var(--org-space-md);
+  }
+
+  &--welcome &__brand {
+    animation: login-hop 4.5s 1.2s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+
+  &--welcome &__title {
+    animation: login-rise 0.5s 0.2s var(--org-motion-ease-emphasized) both;
+    font-size: var(--org-font-size-2xl);
+  }
+
+  // "organizadas" keeps a slow shine running through its gradient.
+  &--welcome &__highlight {
+    animation: login-shine 4s linear infinite;
+    background-size: 200% 100%;
+  }
+
+  &--welcome &__feature {
+    animation: login-slide 0.45s calc(0.35s + var(--login-i, 0) * 0.12s)
+      var(--org-motion-ease-emphasized) both;
+  }
+
+  &--welcome &__feature-icon {
+    animation: login-pop 0.5s calc(0.55s + var(--login-i, 0) * 0.12s)
+      var(--org-motion-ease-emphasized) both;
+  }
+
+  &--welcome .login__google-btn {
+    animation: login-rise 0.5s 0.85s var(--org-motion-ease-emphasized) both;
+  }
+
+  // A short screen keeps the logo, the headline and the button.
+  @media (height < 600px) {
+    &--welcome &__features {
+      display: none;
+    }
+  }
+
+  // Balloons and confetti rising behind the card, clipped by the page.
+  &__party {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  &__bit {
+    animation: login-drift linear infinite;
+    inset-block-start: 100%;
+    opacity: 0.55;
+    position: absolute;
+
+    &--balloon {
+      animation-name: login-balloon;
+      block-size: 46px;
+      border-radius: var(--org-radius-full);
+      inline-size: 38px;
+
+      // The string.
+      &::after {
+        background: var(--org-outline);
+        block-size: 40px;
+        content: '';
+        inline-size: 1px;
+        inset-block-start: 100%;
+        inset-inline-start: 50%;
+        position: absolute;
+      }
+    }
+
+    &--confetti {
+      block-size: 14px;
+      border-radius: var(--org-radius-xs);
+      inline-size: 8px;
+    }
+
+    &--primary {
+      background: var(--org-primary);
+    }
+
+    &--secondary {
+      background: var(--org-secondary);
+    }
+
+    &--tertiary {
+      background: var(--org-tertiary);
+    }
+
+    &--success {
+      background: var(--org-success);
+    }
   }
 
   &__intro {
@@ -298,11 +402,112 @@
   }
 }
 
+@keyframes login-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Every few seconds the logo gives a little hop.
+@keyframes login-hop {
+  0%,
+  78%,
+  100% {
+    transform: none;
+  }
+
+  84% {
+    transform: translateY(-8px) rotate(-6deg);
+  }
+
+  90% {
+    transform: translateY(0) rotate(4deg);
+  }
+
+  95% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes login-shine {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes login-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes login-pop {
+  0% {
+    transform: scale(0);
+  }
+
+  70% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Balloons rise swaying, upright; confetti tumbles.
+@keyframes login-balloon {
+  0% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  50% {
+    transform: translateY(calc(-50dvh - 60px)) translateX(18px) rotate(5deg);
+  }
+
+  100% {
+    transform: translateY(calc(-100dvh - 120px)) rotate(-4deg);
+  }
+}
+
+@keyframes login-drift {
+  from {
+    transform: translateY(0) rotate(0);
+  }
+
+  to {
+    transform: translateY(calc(-100dvh - 120px)) rotate(200deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .login__sealed,
   .login__sealed *,
-  .login__invite-body {
+  .login__invite-body,
+  .login__card,
+  .login__brand,
+  .login__title,
+  .login__highlight,
+  .login__feature,
+  .login__feature-icon,
+  .login__google-btn {
     animation: none;
+  }
+
+  .login__party {
+    display: none;
   }
 
   .login__sealed {

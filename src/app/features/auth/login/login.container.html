@@ -59,7 +59,19 @@
     </div>
   </main>
 } @else {
-  <main class="login" data-testid="login-page">
+  <main class="login" data-testid="login-page" [class.login--welcome]="!emailSignIn()">
+    <!-- Party bits drifting up behind the card; decoration only. -->
+    <div class="login__party" aria-hidden="true">
+      @for (bit of partyBits; track $index) {
+        <span
+          [class]="'login__bit login__bit--' + bit.shape + ' login__bit--' + bit.tone"
+          [style.inset-inline-start.%]="bit.x"
+          [style.animation-delay.s]="bit.delay"
+          [style.animation-duration.s]="bit.duration"
+        ></span>
+      }
+    </div>
+
     <org-surface variant="card" class="login__card">
       <div class="login__card-content">
         <!-- Someone sent here by an invite is told so; anyone else hears what the app does. -->
@@ -76,14 +88,13 @@
               Suas festas em família,
               <span class="login__highlight">organizadas</span>
             </h1>
-            <p class="login__lead">Menos bagunça no grupo, mais festa.</p>
           }
         </div>
 
         @if (!invited()) {
           <ul class="login__features" aria-label="O que dá para fazer">
             @for (feature of features; track feature.icon) {
-              <li class="login__feature">
+              <li class="login__feature" [style.--login-i]="$index">
                 <span class="login__feature-icon" aria-hidden="true">
                   <org-icon [name]="feature.icon" size="sm" color="currentColor" />
                 </span>

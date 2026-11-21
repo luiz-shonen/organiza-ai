@@ -1,3 +1,4 @@
+import { revealFirstInvalidSoon } from '../../../../../shared/ui';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -210,6 +211,7 @@ export class SecretSantaParticipantFormComponent {
     const phone = phoneText ? Phone.create(phoneText) : null;
     if (!name || (phoneText && !phone) || !pendingAdded) {
       this.showErrors.set(true);
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
     const participant: SecretSantaParticipantInput = {

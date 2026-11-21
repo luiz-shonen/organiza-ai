@@ -1,16 +1,18 @@
+import { revealFirstInvalidSoon } from '../../../shared/ui';
 import { KnownPeopleService } from '../../../core/services/known-people.service';
 import { personKey, type KnownPerson } from '../../../core/utils/known-people.utils';
 import { explainError } from '../../../core/utils/error.utils';
 import {
-  Component,
   ChangeDetectionStrategy,
-  inject,
-  signal,
+  Component,
   computed,
-  input,
-  OnInit,
   DestroyRef,
   effect,
+  ElementRef,
+  inject,
+  input,
+  OnInit,
+  signal,
   untracked,
 } from '@angular/core';
 import { merge } from 'rxjs';
@@ -138,6 +140,7 @@ export class EventEditorContainer implements OnInit {
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
   private readonly location = inject(Location);
+  private readonly editorHost = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly feedback = inject(FeedbackService);
   private readonly drawerService = inject(DrawerService);
   private readonly dialogs = inject(OrgDialogService);
@@ -477,6 +480,15 @@ export class EventEditorContainer implements OnInit {
       this.basicInfoForm.markAllAsTouched();
       this.addressForm.markAllAsTouched();
       this.pixForm.markAllAsTouched();
+      // Open the first step with something missing and take the person to that field.
+      this.activeStepIndex.set(
+        this.basicInfoForm.invalid
+          ? 0
+          : this.addressForm.invalid
+            ? 1
+            : EDITOR_STEP_SLUGS.indexOf('pix'),
+      );
+      setTimeout(() => revealFirstInvalidSoon(this.editorHost.nativeElement), 250);
       return;
     }
 

@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   input,
   output,
@@ -30,6 +31,7 @@ import {
   OrgIconButtonComponent,
   OrgTextFieldComponent,
   OrgTextareaFieldComponent,
+  revealFirstInvalidSoon,
 } from '../../../../shared/ui';
 
 /** One person the guest can put in the amigo oculto: themself, a relative or a companion. */
@@ -58,6 +60,7 @@ export type RsvpDrawerData = RsvpDrawerRequestData;
   styleUrl: './rsvp-drawer.component.scss',
 })
 export class RsvpDrawerComponent {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly fb = inject(FormBuilder);
 
   readonly drawerData = input<RsvpDrawerData>({ session: null, familyMembers: [], userId: '' });
@@ -255,6 +258,7 @@ export class RsvpDrawerComponent {
   protected submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
     const santa = this.santaChoice();
@@ -263,6 +267,7 @@ export class RsvpDrawerComponent {
     );
     if (badGift) {
       this.santaGiftsError.set(true);
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
     const badPhone = Object.keys(santa ?? {}).some((key) => {
@@ -271,6 +276,7 @@ export class RsvpDrawerComponent {
     });
     if (badPhone) {
       this.santaPhonesError.set(true);
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
 

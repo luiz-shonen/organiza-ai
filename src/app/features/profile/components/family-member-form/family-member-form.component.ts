@@ -1,8 +1,11 @@
+import { revealFirstInvalidSoon } from '../../../../shared/ui';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
+  ElementRef,
+  inject,
   input,
   output,
   signal,
@@ -34,6 +37,7 @@ export interface AddFamilyMemberPayload {
   styleUrl: './family-member-form.component.scss',
 })
 export class FamilyMemberFormComponent {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   /** The member being edited; null to add a new one. */
   readonly member = input<FamilyMember | null>(null);
   readonly saving = input(false);
@@ -80,6 +84,7 @@ export class FamilyMemberFormComponent {
     const relationship = this.relationship();
     if (!name || !relationship || Phone.validate(this.phone())) {
       this.showErrors.set(true);
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
     this.submitted.emit({

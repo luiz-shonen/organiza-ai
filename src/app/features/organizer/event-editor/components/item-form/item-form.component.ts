@@ -1,8 +1,11 @@
+import { revealFirstInvalidSoon } from '../../../../../shared/ui';
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
+  ElementRef,
+  inject,
   input,
   output,
   signal,
@@ -50,6 +53,7 @@ export const ITEM_UNITS: readonly OrgSelectOption[] = [
   styleUrls: ['../event-step.scss', './item-form.component.scss'],
 })
 export class ItemFormComponent {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   /** The item being edited; null to add a new one. */
   public readonly item = input<NewPartyItem | null>(null);
   public readonly submitLabel = input('Adicionar item');
@@ -94,6 +98,7 @@ export class ItemFormComponent {
     const unit = this.unit();
     if (!name || !quantity || !unit) {
       this.showErrors.set(true);
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
     this.submitted.emit({

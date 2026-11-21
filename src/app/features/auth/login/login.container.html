@@ -15,60 +15,62 @@
         </div>
       }
 
-      <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
-        <!-- Validation messages wait for the field to be touched, so a fresh page shows none. -->
-        <org-text-field
-          class="login__form-field"
-          label="E-mail"
-          type="email"
-          placeholder="seu@email.com"
-          testId="login-email-input"
-          formControlName="email"
-          [error]="
-            !form.controls.email.touched
-              ? ''
-              : form.controls.email.hasError('required')
-                ? 'E-mail é obrigatório'
-                : form.controls.email.hasError('valueObject')
-                  ? 'Digite um e-mail válido'
-                  : ''
-          "
-        />
+      @if (emailSignIn()) {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" id="login-form">
+          <!-- Validation messages wait for the field to be touched, so a fresh page shows none. -->
+          <org-text-field
+            class="login__form-field"
+            label="E-mail"
+            type="email"
+            placeholder="seu@email.com"
+            testId="login-email-input"
+            formControlName="email"
+            [error]="
+              !form.controls.email.touched
+                ? ''
+                : form.controls.email.hasError('required')
+                  ? 'E-mail é obrigatório'
+                  : form.controls.email.hasError('valueObject')
+                    ? 'Digite um e-mail válido'
+                    : ''
+            "
+          />
 
-        <org-text-field
-          class="login__form-field"
-          label="Senha"
-          type="password"
-          placeholder="Sua senha"
-          testId="login-password-input"
-          formControlName="password"
-          [passwordVisible]="!hidePassword()"
-          (togglePasswordVisibility)="hidePassword.set(!hidePassword())"
-          [error]="
-            !form.controls.password.touched
-              ? ''
-              : form.controls.password.hasError('required')
-                ? 'Senha é obrigatória'
-                : form.controls.password.hasError('minlength')
-                  ? 'Mínimo 6 caracteres'
-                  : ''
-          "
-        />
+          <org-text-field
+            class="login__form-field"
+            label="Senha"
+            type="password"
+            placeholder="Sua senha"
+            testId="login-password-input"
+            formControlName="password"
+            [passwordVisible]="!hidePassword()"
+            (togglePasswordVisibility)="hidePassword.set(!hidePassword())"
+            [error]="
+              !form.controls.password.touched
+                ? ''
+                : form.controls.password.hasError('required')
+                  ? 'Senha é obrigatória'
+                  : form.controls.password.hasError('minlength')
+                    ? 'Mínimo 6 caracteres'
+                    : ''
+            "
+          />
 
-        <org-button
-          type="submit"
-          class="login__submit-btn"
-          data-testid="login-submit-btn"
-          label="Entrar"
-          [disabled]="form.invalid || loading()"
-          [loading]="loading()"
-          [fullWidth]="true"
-        />
-      </form>
+          <org-button
+            type="submit"
+            class="login__submit-btn"
+            data-testid="login-submit-btn"
+            label="Entrar"
+            [disabled]="form.invalid || loading()"
+            [loading]="loading()"
+            [fullWidth]="true"
+          />
+        </form>
 
-      <div class="login__divider">
-        <span class="login__divider-text">ou</span>
-      </div>
+        <div class="login__divider">
+          <span class="login__divider-text">ou</span>
+        </div>
+      }
 
       <org-button
         [disabled]="loading()"

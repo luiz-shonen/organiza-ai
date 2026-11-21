@@ -47,7 +47,19 @@ describe('LoginContainer', () => {
     expect(component['hidePassword']()).toBe(true);
   });
 
+  it('offers Google only, unless the address asks for the password form (?senha)', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('[data-testid="google-login-btn"]')).toBeTruthy();
+    expect(compiled.querySelector('#login-form')).toBeNull();
+
+    fixture.componentRef.setInput('senha', '');
+    fixture.detectChanges();
+    expect(compiled.querySelector('#login-form')).toBeTruthy();
+  });
+
   it('shows no validation errors on a fresh page, only after the field is touched', () => {
+    fixture.componentRef.setInput('senha', '');
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelectorAll('.org-text-field__error').length).toBe(0);
 

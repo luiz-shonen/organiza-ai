@@ -90,7 +90,8 @@ test.describe('Keyboard navigation, focus management and drawer focus trap', () 
   test('should activate form controls and buttons via Space and Enter keys on login form', async ({
     loginPage,
   }) => {
-    await loginPage.goto('/login');
+    // The e-mail form is hidden for now; `?senha` shows it.
+    await loginPage.goto('/login?senha');
     await loginPage.assertLoaded();
 
     // 1. Fill email and password to enable submit button

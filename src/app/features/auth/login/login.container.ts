@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services';
@@ -55,6 +55,13 @@ export class LoginContainer {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+
+  /**
+   * For now people sign in with Google only. `/login?senha` still shows the e-mail and password
+   * form, for test accounts; the form and its flows stay as they are.
+   */
+  readonly senha = input<string>();
+  protected readonly emailSignIn = computed(() => this.senha() !== undefined);
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [requiredText, valueObjectValidator(Email.validate)]],

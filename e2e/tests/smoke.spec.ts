@@ -12,7 +12,8 @@ test.describe('Smoke Journey', () => {
   });
 
   test('should navigate to login page and display authentication forms', async ({ loginPage }) => {
-    await loginPage.goto('/login');
+    // The e-mail form is hidden for now; `?senha` shows it.
+    await loginPage.goto('/login?senha');
     await loginPage.assertLoaded();
 
     await expect(loginPage.emailInput).toBeVisible();

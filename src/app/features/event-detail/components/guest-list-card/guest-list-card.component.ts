@@ -42,6 +42,11 @@ export class GuestListCardComponent {
   /** Organizers only: who of each household is in the amigo oculto, by household id. */
   readonly secretSanta = input<Readonly<Record<string, readonly string[]>>>({});
 
+  /** "Jéssica Melo" → "Jéssica": whom the family and companions come with. */
+  protected firstName(name: string): string {
+    return name.trim().split(/\s+/)[0] ?? name;
+  }
+
   /** "Jéssica e Romero", "Ana, Bia e Caio": the household's names in the draw, or empty. */
   protected santaNames(householdId: string): string {
     const names = this.secretSanta()[householdId] ?? [];

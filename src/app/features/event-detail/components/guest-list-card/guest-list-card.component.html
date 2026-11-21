@@ -95,25 +95,28 @@
                   <span><strong>Amigo oculto:</strong> {{ santa }}</span>
                 </p>
               }
-              <div class="guest-list__holder">
-                @if (holder.bring.length) {
-                  <p class="guest-list__bring">Leva:</p>
-                  <ul
-                    class="guest-list__items"
-                    [attr.aria-label]="'O que ' + holder.name + ' leva'"
-                  >
-                    @for (line of holder.bring; track line) {
-                      <li>{{ line }}</li>
-                    }
-                  </ul>
-                } @else if (hasItems()) {
-                  <p class="guest-list__bring">Não leva nada da lista</p>
-                }
-              </div>
+              <!-- What the guest brings; nothing at all when the event has no list. -->
+              @if (holder.bring.length || hasItems()) {
+                <div class="guest-list__holder">
+                  @if (holder.bring.length) {
+                    <p class="guest-list__bring">Leva:</p>
+                    <ul
+                      class="guest-list__items"
+                      [attr.aria-label]="'O que ' + holder.name + ' leva'"
+                    >
+                      @for (line of holder.bring; track line) {
+                        <li>{{ line }}</li>
+                      }
+                    </ul>
+                  } @else if (hasItems()) {
+                    <p class="guest-list__bring">Não leva nada da lista</p>
+                  }
+                </div>
+              }
 
               @if (household.members.length > 1) {
-                <!-- Who comes along: the guest is the panel's title already, no role of their own. -->
-                <p class="guest-list__together">Vão juntos</p>
+                <!-- Who comes through the guest: their family and companions ("Vão com Jéssica"). -->
+                <p class="guest-list__together">Vão com {{ firstName(household.name) }}</p>
                 <ul class="guest-list__people" [attr.aria-label]="'Quem vai com ' + household.name">
                   @for (person of household.members.slice(1); track $index) {
                     <li class="guest-list__person">

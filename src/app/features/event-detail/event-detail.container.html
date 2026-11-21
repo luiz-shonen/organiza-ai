@@ -144,6 +144,13 @@
           </app-secret-santa-card>
         }
 
+        @if (showSecretSantaRoster()) {
+          <app-secret-santa-roster-card
+            [entries]="secretSantaRoster()"
+            [giftOptions]="!!event.secretSanta?.giftOptions"
+          />
+        }
+
         @if (event.pixKey) {
           <app-pix-card
             [pixKey]="event.pixKey"

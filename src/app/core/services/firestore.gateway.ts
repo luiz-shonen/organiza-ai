@@ -205,6 +205,14 @@ export class FirestoreGateway {
     await deleteDoc(docRef);
   }
 
+  /** A fresh document id in `collectionPath`, for writing a document and its mirror in one batch. */
+  newId(collectionPath: string): string {
+    if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
+      return 'doc_' + Math.random().toString(36).substring(2, 9);
+    }
+    return doc(collection(this.firestore, collectionPath)).id;
+  }
+
   async addDoc<T extends DocumentData = DocumentData>(
     path: string,
     data: T | WithFieldValue<T>,

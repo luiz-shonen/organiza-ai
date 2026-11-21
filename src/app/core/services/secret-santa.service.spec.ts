@@ -45,9 +45,14 @@ describe('SecretSantaService', () => {
       giftOptions: ['Livro'],
       guestId: 'g1',
     });
-    expect(gateway.addDoc).toHaveBeenCalledWith(
-      'events/evt-1/secretSantaParticipants',
+    expect(gateway.batchOps.set).toHaveBeenCalledWith(
+      'events/evt-1/secretSantaParticipants/mock-new-doc-id',
       expect.objectContaining({ name: 'Ana', phone: '', giftOptions: ['Livro'], guestId: 'g1' }),
+    );
+    // The guests' roster gets the same person, without the phone, in the same batch.
+    expect(gateway.batchOps.set).toHaveBeenCalledWith(
+      'events/evt-1/secretSantaRoster/mock-new-doc-id',
+      { name: 'Ana', giftOptions: ['Livro'], createdAt: expect.any(String) },
     );
   });
 

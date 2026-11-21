@@ -109,6 +109,13 @@ export interface SecretSantaReveal {
   readonly openedAt?: string;
 }
 
+/** One person in the amigo oculto as the guests see it: no phone, only the name and the ideas. */
+export interface SecretSantaRosterEntry {
+  readonly id: string;
+  readonly name: string;
+  readonly giftOptions: readonly string[];
+}
+
 /** Fewer people than this and everyone could guess who drew whom. */
 export const SECRET_SANTA_MIN_PARTICIPANTS = 3;
 /** Gift options per participant. */

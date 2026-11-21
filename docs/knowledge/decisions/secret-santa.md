@@ -44,6 +44,19 @@ everyone, the organizer included.
   site. Duplicates from both ways are joined as below.
 - Guests may also join themselves from the invite (next section).
 
+## What guests see (`secretSantaRoster`)
+
+- The participants hold phones, so only organizers read them. Guests read a roster beside them,
+  `events/{id}/secretSantaRoster/{same id}`: only `name`, `giftOptions` and `createdAt`. Any
+  signed-in account reads it; organizers write any entry; a guest writes only `rsvp_{uid}…`
+  entries, in the same batch as their participant entry (the rules check it with `getAfter`).
+- Every write to a participant (add, edit, remove, invite sign-ups, merge) writes its roster entry
+  in the same batch. When an organizer opens the event page, `syncRoster` fills in or removes
+  entries that drifted (participants from before the roster existed).
+- On the event page a signed-in guest who is not an organizer sees the card "Amigo oculto": "N
+  pessoas no sorteio", each name and, when the event asks for them, the gift ideas. No phones, no
+  editing, no draw.
+
 ## Joining from the invite
 
 - Confirming presence alone puts nobody in the draw; the RSVP drawer asks "Quem vai participar do

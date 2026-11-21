@@ -30,6 +30,7 @@ export type {
   SecretSantaParticipant,
   SecretSantaParticipantInput,
   SecretSantaReveal,
+  SecretSantaRosterEntry,
   SecretSantaSettings,
 } from './secret-santa.model';
 export {

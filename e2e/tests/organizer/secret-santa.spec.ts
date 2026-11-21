@@ -355,6 +355,35 @@ test.describe('Amigo oculto', () => {
     await expect(card.getByTestId('secret-santa-draw-btn')).toHaveCount(0);
   });
 
+  test('a guest sees who is in the amigo oculto and their gift ideas, never the phones', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'guest-jessica',
+      email: 'jessica@organizaai.test',
+      displayName: 'Jéssica Melo',
+      events: [christmasEvent({ enabled: true, giftOptions: true })],
+      collections: {
+        [`events/${EVENT_ID}/secretSantaRoster`]: [
+          { id: 'p1', name: 'Jéssica Melo', giftOptions: [], createdAt: '1' },
+          { id: 'p2', name: 'Luiz', giftOptions: ['Livro'], createdAt: '2' },
+        ],
+      },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    const roster = page.getByTestId('secret-santa-roster');
+    await expect(roster).toContainText('2 pessoas no sorteio');
+    await expect(roster.getByTestId('secret-santa-roster-person')).toHaveCount(2);
+    await expect(roster).toContainText('Livro');
+    await expect(roster).not.toContainText('(11)');
+    // Managing the draw is the organizers' side: none of it here.
+    await expect(page.getByTestId('secret-santa-card')).toHaveCount(0);
+    await expect(page.getByTestId('secret-santa-people')).toHaveCount(0);
+    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+    await roster.screenshot({ path: 'e2e/screenshots/secret-santa-roster-guest.png' });
+  });
+
   test('a participant opens the secret link without signing in and reveals whom they drew', async ({
     page,
   }) => {

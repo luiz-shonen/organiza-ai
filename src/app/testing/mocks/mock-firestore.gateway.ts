@@ -23,6 +23,7 @@ export interface MockFirestoreGateway {
   updateDoc: ReturnType<typeof vi.fn>;
   deleteDoc: ReturnType<typeof vi.fn>;
   addDoc: ReturnType<typeof vi.fn>;
+  newId: ReturnType<typeof vi.fn>;
   collectionSnapshot: ReturnType<typeof vi.fn>;
   docSnapshot: ReturnType<typeof vi.fn>;
   runBatch: ReturnType<typeof vi.fn>;
@@ -58,6 +59,7 @@ export function createMockFirestoreGateway(): MockFirestoreGateway {
     updateDoc: vi.fn().mockResolvedValue(undefined),
     deleteDoc: vi.fn().mockResolvedValue(undefined),
     addDoc: vi.fn().mockResolvedValue('mock-new-doc-id'),
+    newId: vi.fn().mockReturnValue('mock-new-doc-id'),
     collectionSnapshot: vi.fn().mockReturnValue(of([])),
     docSnapshot: vi.fn().mockReturnValue(of(null)),
     runBatch: vi

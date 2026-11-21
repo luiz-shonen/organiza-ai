@@ -42,6 +42,7 @@ import {
   type SecretSantaDraw,
   type SecretSantaParticipant,
   type SecretSantaParticipantInput,
+  type SecretSantaRosterEntry,
 } from '../../core/models';
 import {
   addClaimEntry,
@@ -91,6 +92,7 @@ import {
 import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { SecretSantaRosterCardComponent } from './components/secret-santa-roster-card/secret-santa-roster-card.component';
 import { SharePanelComponent } from '../organizer/event-editor/components/share-panel/share-panel.component';
 import { KnownPeopleService } from '../../core/services/known-people.service';
 import { personKey, type KnownPerson } from '../../core/utils/known-people.utils';
@@ -117,6 +119,7 @@ import {
     SecretSantaCardComponent,
     SecretSantaParticipantsComponent,
     SharePanelComponent,
+    SecretSantaRosterCardComponent,
     NotificationCardComponent,
   ],
   templateUrl: './event-detail.container.html',
@@ -264,6 +267,39 @@ export class EventDetailContainer implements OnInit {
     });
     onCleanup(() => sub.unsubscribe());
   });
+  /**
+   * The organizers keep the guests' roster (names and gift ideas) in line with the participants
+   * once per visit: participants added before the roster existed show up for the guests too.
+   */
+  private rosterSyncedFor: string | null = null;
+  private readonly syncSecretSantaRoster = effect(() => {
+    const participants = this.secretSantaParticipants();
+    if (!this.canEditEvent() || !participants.length || this.rosterSyncedFor === this.id()) return;
+    this.rosterSyncedFor = this.id();
+    void this.secretSantaService.syncRoster(this.id(), participants).catch(() => undefined);
+  });
+
+  /** A signed-in guest's view of the amigo oculto: who takes part and their gift ideas. */
+  protected readonly secretSantaRoster = signal<SecretSantaRosterEntry[]>([]);
+  protected readonly showSecretSantaRoster = computed(
+    () =>
+      !!this.event()?.secretSanta?.enabled &&
+      !this.canEdit() &&
+      !!this.memberUid() &&
+      this.secretSantaRoster().length > 0,
+  );
+  private readonly loadSecretSantaRoster = effect((onCleanup) => {
+    if (!this.event()?.secretSanta?.enabled || this.canEdit() || !this.memberUid()) {
+      this.secretSantaRoster.set([]);
+      return;
+    }
+    const sub = this.secretSantaService.listRoster(this.id()).subscribe({
+      next: (entries) => this.secretSantaRoster.set(entries),
+      error: () => this.secretSantaRoster.set([]),
+    });
+    onCleanup(() => sub.unsubscribe());
+  });
+
   private readonly loadSecretSantaDraw = effect((onCleanup) => {
     if (!this.showSecretSanta() || !this.isOwner()) {
       this.secretSantaDraw.set(null);

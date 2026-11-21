@@ -324,6 +324,36 @@ service cloud.firestore {
         }
       }
 
+      // The amigo oculto as guests see it: the same ids as the participants, only the name and
+      // the gift options (no phones). Any signed-in account reads it. Organizers write any entry;
+      // a guest writes only their own (`rsvp_{uid}…`), in the same batch as the participant entry.
+      match /secretSantaRoster/{participantId} {
+        allow read: if isAdmin() || isAccountHolder();
+        allow create, update: if (isAdmin() || managesEvent(eventData(eventId))) && isValidRosterEntry();
+        allow delete: if isAdmin() || managesEvent(eventData(eventId));
+        allow create, update: if isOwnRosterEntry(true) && isValidRosterEntry();
+        allow delete: if isOwnRosterEntry(false);
+
+        // Writing: the participant entry exists after the batch and is this account's. Deleting:
+        // it is gone after the batch, or still this account's.
+        function isOwnRosterEntry(writing) {
+          let participant = /databases/$(database)/documents/events/$(eventId)/secretSantaParticipants/$(participantId);
+          return isAccountHolder()
+              && participantId.matches('rsvp_' + request.auth.uid + '(_.+)?')
+              && (existsAfter(participant)
+                    ? getAfter(participant).data.get('joinedBy', '') == request.auth.uid
+                    : !writing);
+        }
+
+        function isValidRosterEntry() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['name', 'giftOptions', 'createdAt'])
+              && isFilledText(data.get('name', null), 120)
+              && data.get('giftOptions', null) is list && data.get('giftOptions', null).size() <= 10
+              && (!changes('createdAt') || isOptionalString(data.get('createdAt', null), 40));
+        }
+      }
+
       // The latest amigo oculto draw holds every secret link; only the owner sends them.
       match /secretSanta/{docId} {
         allow read, write: if ownsEvent(eventData(eventId));

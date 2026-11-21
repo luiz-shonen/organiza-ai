@@ -77,16 +77,17 @@
         @for (household of households(); track household.id) {
           <li data-testid="guest-household">
             <org-expansion-panel
-              icon="how_to_reg"
+              [prominent]="true"
               [heading]="household.name"
               [ariaLabel]="'Quem vai com ' + household.name"
               [expanded]="$first || households().length <= 3"
             >
-              <span orgExpansionSummary>{{ householdSummary(household) }}</span>
-
               @if (forOrganizer() && household.phone) {
-                <p class="guest-list__phone">{{ displayPhone(household.phone) }}</p>
+                <span orgExpansionTitleMeta class="guest-list__phone">
+                  {{ displayPhone(household.phone) }}
+                </span>
               }
+              <span orgExpansionSummary>{{ householdSummary(household) }}</span>
 
               @let holder = household.members[0];
               <!-- What the guest brings; nothing at all when the event has no list. -->

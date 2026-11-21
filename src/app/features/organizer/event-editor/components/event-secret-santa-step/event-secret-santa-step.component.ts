@@ -6,6 +6,7 @@ import {
 import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
+  OrgDateFieldComponent,
   OrgSurfaceComponent,
   OrgToggleComponent,
   OrgQuantityStepperComponent,
@@ -27,6 +28,7 @@ export type {
   imports: [
     OrgButtonComponent,
     OrgCardHeaderComponent,
+    OrgDateFieldComponent,
     OrgSurfaceComponent,
     OrgToggleComponent,
     OrgQuantityStepperComponent,
@@ -40,6 +42,9 @@ export class EventSecretSantaStepComponent {
   /** How many gift options each participant may list. */
   public readonly maxGiftOptions = model(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);
   protected readonly giftLimit = SECRET_SANTA_MAX_GIFT_OPTIONS;
+  /** The day of the draw: until then each guest joins or leaves on their own. Optional. */
+  public readonly drawDate = model<Date | null>(null);
+  protected readonly today = new Date();
   /** Only the owner turns the amigo oculto on or off. */
   public readonly canConfigure = input(true);
   public readonly back = output<void>();

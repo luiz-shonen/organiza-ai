@@ -3,6 +3,7 @@ import type { SecretSantaParticipant } from '../models';
 import {
   buildRsvpSecretSantaEntries,
   findSecretSantaDuplicates,
+  isSecretSantaOpen,
   isSecretSantaSelfJoinOpen,
   normalizePersonName,
   parseGiftLines,
@@ -137,6 +138,16 @@ describe('isSecretSantaSelfJoinOpen and parseGiftLines', () => {
     expect(isSecretSantaSelfJoinOpen({ enabled: true, selfJoin: false })).toBe(false);
     expect(isSecretSantaSelfJoinOpen({ enabled: false })).toBe(false);
     expect(isSecretSantaSelfJoinOpen(null)).toBe(false);
+  });
+
+  it('closes, for joining and leaving, once drawn or when the draw day starts in Brasília', () => {
+    const settings = { enabled: true, drawDate: '2026-12-20' };
+    expect(isSecretSantaOpen(settings, new Date('2026-12-20T02:59:00Z'))).toBe(true);
+    expect(isSecretSantaOpen(settings, new Date('2026-12-20T03:00:00Z'))).toBe(false);
+    expect(isSecretSantaOpen({ enabled: true, drawnAt: '2026-12-01T10:00:00Z' })).toBe(false);
+    // Closing the sign-ups stops joining, not leaving.
+    expect(isSecretSantaOpen({ enabled: true, selfJoin: false })).toBe(true);
+    expect(isSecretSantaSelfJoinOpen({ enabled: true, selfJoin: false })).toBe(false);
   });
 
   it('reads one option per line, up to the limit', () => {

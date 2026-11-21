@@ -185,11 +185,48 @@ export function findSecretSantaDuplicates(
   return found;
 }
 
-/** Guests may join the draw from the invite: amigo oculto on and sign-ups not closed. */
-export function isSecretSantaSelfJoinOpen(
-  settings: { enabled: boolean; selfJoin?: boolean } | null | undefined,
+interface SecretSantaWindow {
+  enabled: boolean;
+  selfJoin?: boolean;
+  drawDate?: string;
+  drawnAt?: string;
+}
+
+/** The draw day starts at midnight in Brasília (UTC−3): sign-ups close then. */
+export function secretSantaDrawDeadline(drawDate: string | null | undefined): Date | null {
+  if (!drawDate || !/^\d{4}-\d{2}-\d{2}$/.test(drawDate)) return null;
+  return new Date(`${drawDate}T00:00:00-03:00`);
+}
+
+/** Guests may still join or leave on their own: amigo oculto on, not drawn, draw day not come. */
+export function isSecretSantaOpen(
+  settings: SecretSantaWindow | null | undefined,
+  now: Date = new Date(),
 ): boolean {
-  return !!settings?.enabled && settings.selfJoin !== false;
+  if (!settings?.enabled || settings.drawnAt) return false;
+  const deadline = secretSantaDrawDeadline(settings.drawDate);
+  return !deadline || now < deadline;
+}
+
+/** Guests may join the draw from the invite: open (above) and the owner has not closed it. */
+export function isSecretSantaSelfJoinOpen(
+  settings: SecretSantaWindow | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  return isSecretSantaOpen(settings, now) && settings?.selfJoin !== false;
+}
+
+/** A `Date` as the `YYYY-MM-DD` of that calendar day (local time). */
+export function toDrawDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** `YYYY-MM-DD` back to a local `Date` at midnight, for the date field. */
+export function fromDrawDate(drawDate: string | null | undefined): Date | null {
+  if (!drawDate || !/^\d{4}-\d{2}-\d{2}$/.test(drawDate)) return null;
+  const [y, m, d] = drawDate.split('-').map(Number);
+  return new Date(y, m - 1, d);
 }
 
 /** Gift options typed one per line, blank lines left out, at most `max`. */

@@ -119,13 +119,13 @@ describe('amigo oculto sign-ups from the invite', () => {
     await assertFails(updateDoc(doc(accountDb('maria'), path('rsvp_maria')), { phone: '' }));
   });
 
-  it('closes when the owner turns sign-ups off, or there is no amigo oculto', async () => {
+  it('closing the sign-ups stops joining and changes, not leaving; no amigo oculto closes all', async () => {
     const maria = accountDb('maria');
     await assertSucceeds(setDoc(doc(maria, path('rsvp_maria')), entry('maria')));
     await setSettings({ enabled: true, giftOptions: true, selfJoin: false });
     await assertFails(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: [] }));
-    await assertFails(deleteDoc(doc(maria, path('rsvp_maria'))));
     await assertFails(setDoc(doc(maria, path('rsvp_maria_c_bia')), entry('maria')));
+    await assertSucceeds(deleteDoc(doc(maria, path('rsvp_maria'))));
     await setSettings({ enabled: false, giftOptions: false });
     await assertFails(setDoc(doc(maria, path('rsvp_maria_c_bia')), entry('maria')));
   });

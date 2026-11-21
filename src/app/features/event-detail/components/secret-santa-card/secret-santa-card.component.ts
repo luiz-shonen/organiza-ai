@@ -5,6 +5,7 @@ import {
   type SecretSantaParticipant,
 } from '../../../../core/models';
 import {
+  OrgBadgeComponent,
   OrgBannerComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
@@ -43,6 +44,7 @@ export function linkStatus(openedAt: string | null): string {
   selector: 'app-secret-santa-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    OrgBadgeComponent,
     OrgBannerComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
@@ -90,12 +92,14 @@ export class SecretSantaCardComponent {
   protected readonly canDraw = computed(
     () => this.participants().length >= SECRET_SANTA_MIN_PARTICIPANTS,
   );
+  /** Everyone in the draw: who joined from the invitation plus who was added by hand. */
   protected readonly subheading = computed(() => {
     const count = this.participants().length;
-    const total = count === 1 ? '1 participante' : `${count} participantes`;
-    const joined = this.participants().filter((p) => p.joinedBy).length;
-    return joined ? `${total}, ${joined} pelo convite` : total;
+    return count === 1 ? '1 pessoa no sorteio' : `${count} pessoas no sorteio`;
   });
+  protected readonly joinedCount = computed(
+    () => this.participants().filter((p) => p.joinedBy).length,
+  );
   protected readonly drawnLabel = computed(() => {
     const iso = this.drawnAt();
     const date = new Date(iso ?? '');

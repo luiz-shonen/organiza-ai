@@ -10,6 +10,13 @@ export interface SecretSantaSettings {
    * Missing means open; the owner closes it, for instance after the draw.
    */
   readonly selfJoin?: boolean;
+  /**
+   * The day of the draw (`YYYY-MM-DD`), chosen when creating the event. Guests join and leave
+   * on their own until that day starts (Brasília time).
+   */
+  readonly drawDate?: string;
+  /** When the owner drew: from then on the guests no longer join or leave on their own. */
+  readonly drawnAt?: string;
 }
 
 /** Someone who takes part in the draw; not necessarily a guest with an account. */
@@ -45,6 +52,8 @@ export type RsvpSecretSantaKey = string;
 export interface RsvpSecretSantaData {
   /** Sign-ups from the invite are open; closed, the guest only reads where they stand. */
   readonly open: boolean;
+  /** The guest may still take themself out: true until the draw (or its day) comes. */
+  readonly canLeave?: boolean;
   /** Closed for this guest because the owner has not approved their presence yet. */
   readonly waitingApproval?: boolean;
   readonly giftOptions: boolean;

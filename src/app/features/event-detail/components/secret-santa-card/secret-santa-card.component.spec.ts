@@ -34,8 +34,7 @@ describe('SecretSantaCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('tells collaborators that only the owner draws', () => {
-    expect(el().textContent).toContain('Só quem criou o evento faz o sorteio');
+  it('gives collaborators no draw button', () => {
     expect(button('secret-santa-draw-btn')).toBeNull();
   });
 
@@ -106,7 +105,10 @@ describe('SecretSantaCardComponent', () => {
       { id: 'rsvp_u1', name: 'Maria', phone: '', giftOptions: [], joinedBy: 'u1' },
     ]);
     fixture.detectChanges();
-    expect(el().textContent).toContain('4 participantes, 1 pelo convite');
+    expect(el().textContent).toContain('4 pessoas no sorteio');
+    expect(el().querySelector('[data-testid="secret-santa-joined-tag"]')?.textContent).toContain(
+      '1 pelo convite',
+    );
   });
 
   it('points out a possible duplicate, to join or to keep apart', () => {
@@ -146,6 +148,6 @@ describe('SecretSantaCardComponent', () => {
 
     fixture.componentRef.setInput('selfJoinOpen', false);
     fixture.detectChanges();
-    expect(el().textContent).toContain('Fechado: só você e quem organiza mudam a lista');
+    expect(el().textContent).toContain('Fechado: ninguém novo entra pelo convite');
   });
 });

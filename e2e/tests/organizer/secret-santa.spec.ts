@@ -241,7 +241,7 @@ test.describe('Amigo oculto', () => {
     await page.goto(`/evento/${EVENT_ID}`);
 
     const card = page.getByTestId('secret-santa-card');
-    await expect(card).toContainText('3 participantes');
+    await expect(card).toContainText('3 pessoas no sorteio');
     await card.getByTestId('secret-santa-draw-btn').click();
 
     const links = card.getByTestId('secret-santa-links');
@@ -351,7 +351,7 @@ test.describe('Amigo oculto', () => {
     await page.goto(`/evento/${EVENT_ID}`);
 
     const card = page.getByTestId('secret-santa-card');
-    await expect(card).toContainText('Só quem criou o evento faz o sorteio');
+    await expect(card).toBeVisible();
     await expect(card.getByTestId('secret-santa-draw-btn')).toHaveCount(0);
   });
 

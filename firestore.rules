@@ -264,7 +264,10 @@ service cloud.firestore {
       // whether guests may still join from the invite (`selfJoin`, missing means open).
       function isSecretSantaSettings(value) {
         return value is map
-            && value.keys().hasOnly(['enabled', 'giftOptions', 'maxGiftOptions', 'selfJoin'])
+            && value.keys().hasOnly(['enabled', 'giftOptions', 'maxGiftOptions', 'selfJoin', 'drawDate', 'drawnAt'])
+            && (!('drawDate' in value)
+                || (value.drawDate is string && value.drawDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
+            && isOptionalString(value.get('drawnAt', null), 40)
             && value.get('enabled', false) is bool
             && value.get('giftOptions', false) is bool
             && value.get('selfJoin', true) is bool
@@ -276,13 +279,14 @@ service cloud.firestore {
 
       // Amigo oculto participants: names and phones, so only the owner and collaborators read
       // the list. A guest also writes, reads and removes the entries they joined from the invite
-      // (`rsvp_{uid}…`: themself, relatives and companions), while sign-ups are open.
+      // (`rsvp_{uid}…`: themself, relatives and companions): joining while sign-ups are open,
+      // leaving at any time until the draw (or the day set for it).
       match /secretSantaParticipants/{participantId} {
         allow read, delete: if isAdmin() || managesEvent(eventData(eventId));
         allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
                               && isValidSecretSantaParticipant();
         allow get: if isOwnRsvpEntry();
-        allow delete: if isOwnRsvpEntry() && isSelfJoinOpen();
+        allow delete: if isOwnRsvpEntry() && isBeforeDraw();
         allow create, update: if isOwnRsvpEntry()
                               && isSelfJoinOpen()
                               && isValidSecretSantaParticipant()
@@ -296,11 +300,22 @@ service cloud.firestore {
               && (resource == null || resource.data.get('joinedBy', '') == request.auth.uid);
         }
 
+        // Not drawn yet and the draw day (midnight in Brasília, 03:00 UTC) not come.
+        function isBeforeDraw() {
+          let settings = eventData(eventId).get('secretSanta', {});
+          let day = settings.get('drawDate', '');
+          return settings.get('enabled', false) == true
+              && !exists(/databases/$(database)/documents/events/$(eventId)/secretSanta/draw)
+              && (day == ''
+                  || request.time < timestamp.date(int(day[0:4]), int(day[5:7]), int(day[8:10]))
+                                      + duration.value(3, 'h'));
+        }
+
         // When the event asks for approval, only a guest the owner approved joins.
         function isSelfJoinOpen() {
           let event = eventData(eventId);
           let settings = event.get('secretSanta', {});
-          return settings.get('enabled', false) == true
+          return isBeforeDraw()
               && settings.get('selfJoin', true) != false
               && (event.get('requireApproval', false) != true
                   || get(/databases/$(database)/documents/events/$(eventId)/guests/$(request.auth.uid))

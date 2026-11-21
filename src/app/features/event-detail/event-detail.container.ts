@@ -57,6 +57,7 @@ import {
   splitGuestsByApproval,
   type PendingGuest,
   isSecretSantaDrawOutdated,
+  isSecretSantaOpen,
   isSecretSantaSelfJoinOpen,
   rsvpSecretSantaEntryId,
   secretSantaRsvpId,
@@ -92,6 +93,7 @@ import {
 import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { EventOrnamentComponent } from './components/event-ornament/event-ornament.component';
 import { SecretSantaRosterCardComponent } from './components/secret-santa-roster-card/secret-santa-roster-card.component';
 import { SharePanelComponent } from '../organizer/event-editor/components/share-panel/share-panel.component';
 import { KnownPeopleService } from '../../core/services/known-people.service';
@@ -119,6 +121,7 @@ import {
     SecretSantaCardComponent,
     SecretSantaParticipantsComponent,
     SharePanelComponent,
+    EventOrnamentComponent,
     SecretSantaRosterCardComponent,
     NotificationCardComponent,
   ],
@@ -399,6 +402,7 @@ export class EventDetailContainer implements OnInit {
         this.myPhone.set(profile?.phone || this.authService.currentUser()?.phoneNumber || '');
         this.mySecretSanta.set({
           open: isSecretSantaSelfJoinOpen(settings) && this.mayJoinSecretSanta(uid),
+          canLeave: isSecretSantaOpen(settings),
           ...(this.waitsForApproval(uid) ? { waitingApproval: true } : {}),
           giftOptions: settings.giftOptions,
           maxGiftOptions: settings.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
@@ -1102,6 +1106,7 @@ export class EventDetailContainer implements OnInit {
       existingIds: entries.map((entry) => entry.id),
       data: {
         open: isSecretSantaSelfJoinOpen(settings) && this.mayJoinSecretSanta(uid),
+        canLeave: isSecretSantaOpen(settings),
         ...(this.waitsForApproval(uid) ? { waitingApproval: true } : {}),
         giftOptions: settings.giftOptions,
         maxGiftOptions: settings.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,

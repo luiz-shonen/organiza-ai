@@ -109,6 +109,17 @@
             Você não está no amigo oculto.
           }
         </p>
+        <!-- Sign-ups closed, but leaving stays theirs until the draw. -->
+        @if (inSanta() && !santaOpen() && santaCanLeave()) {
+          <org-button
+            label="Sair do amigo oculto"
+            variant="danger-text"
+            testId="rsvp-santa-leave-btn"
+            [gradient]="false"
+            [disabled]="isLoading()"
+            (pressed)="leaveSanta.emit()"
+          />
+        }
       }
       <div class="rsvp-card__actions">
         <org-button
@@ -193,7 +204,7 @@
           <p class="rsvp-card__text" data-testid="rsvp-santa-status">
             Você está no amigo oculto, mesmo sem ir.
           </p>
-          @if (santaOpen()) {
+          @if (santaCanLeave()) {
             <org-button
               label="Sair do amigo oculto"
               variant="danger-text"

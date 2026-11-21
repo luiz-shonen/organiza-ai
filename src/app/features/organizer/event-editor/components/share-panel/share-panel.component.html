@@ -1,7 +1,10 @@
 @if (eventUrl()) {
   <org-surface variant="card">
     <article class="share-panel">
-      <org-card-header heading="Compartilhar" subheading="Convide seus amigos!" />
+      <org-card-header
+        heading="Compartilhar"
+        subheading="Compartilhe o QR Code com quem você quer convidar"
+      />
       <div class="share-panel__qr-container">
         <canvas #qrCanvas class="share-panel__qr" aria-label="QR Code do evento"></canvas>
       </div>

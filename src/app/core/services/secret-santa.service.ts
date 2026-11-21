@@ -287,7 +287,7 @@ export class SecretSantaService {
    * participant gets a new secret link, and the draw keeps those links for the owner to send.
    */
   async draw(
-    event: Pick<PartyEvent, 'id' | 'title' | 'date'>,
+    event: Pick<PartyEvent, 'id' | 'title' | 'date' | 'secretSanta'>,
     participants: readonly SecretSantaParticipant[],
     previous: SecretSantaDraw | null,
     /** Participants with an account (confirmed guests), by participant id: told in the app. */
@@ -320,6 +320,13 @@ export class SecretSantaService {
         );
       });
       batch.set(this.drawPath(event.id), draw);
+      // Guests read it on the event: from now on they no longer join or leave on their own.
+      if (event.secretSanta) {
+        batch.update(`events/${event.id}`, {
+          secretSanta: { ...event.secretSanta, drawnAt: now },
+          updatedAt: now,
+        });
+      }
     });
     await this.notify(event, links, false);
     return draw;

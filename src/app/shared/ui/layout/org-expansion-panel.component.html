@@ -5,12 +5,16 @@
   (opened)="expanded.set(true)"
   (closed)="expanded.set(false)"
 >
-  <mat-expansion-panel-header class="org-expansion-panel__header">
+  <mat-expansion-panel-header
+    class="org-expansion-panel__header"
+    [class.org-expansion-panel__header--prominent]="prominent()"
+  >
     <mat-panel-title class="org-expansion-panel__title">
       @if (icon(); as icon) {
         <org-icon [name]="icon" color="var(--org-success)" />
       }
       <span class="org-expansion-panel__heading">{{ heading() }}</span>
+      <ng-content select="[orgExpansionTitleMeta]" />
     </mat-panel-title>
     <mat-panel-description class="org-expansion-panel__summary">
       <ng-content select="[orgExpansionSummary]" />

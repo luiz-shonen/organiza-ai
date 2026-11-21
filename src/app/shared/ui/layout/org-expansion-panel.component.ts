@@ -17,5 +17,7 @@ export class OrgExpansionPanelComponent {
   public readonly heading = input.required<string>();
   public readonly icon = input<OrgIconName | null>(null);
   public readonly ariaLabel = input<string | null>(null);
+  /** A larger title, for a panel that names a person. Extra detail beside it: `[orgExpansionTitleMeta]`. */
+  public readonly prominent = input(false);
   public readonly expanded = model(false);
 }

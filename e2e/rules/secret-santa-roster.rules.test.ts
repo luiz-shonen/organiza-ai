@@ -107,6 +107,36 @@ describe('amigo oculto roster', () => {
     await assertFails(setDoc(doc(maria, rosterPath('rsvp_joao')), roster('João')));
   });
 
+  it('a guest leaves even with sign-ups closed, but not after the draw or its day', async () => {
+    const seed = async (secretSanta: Record<string, unknown>, drawn = false) =>
+      testEnvironment.withSecurityRulesDisabled(async (context) => {
+        const db = context.firestore();
+        await setDoc(doc(db, 'events/e'), {
+          title: 'Natal 2026',
+          createdBy: 'owner-uid',
+          collaborators: [],
+          secretSanta: { enabled: true, giftOptions: true, maxGiftOptions: 3, ...secretSanta },
+        });
+        await setDoc(doc(db, participantPath('rsvp_maria')), participant('maria'));
+        await setDoc(doc(db, rosterPath('rsvp_maria')), roster('Maria'));
+        if (drawn) await setDoc(doc(db, 'events/e/secretSanta/draw'), { links: [] });
+      });
+    const leave = () => {
+      const maria = accountDb('maria');
+      const batch = writeBatch(maria);
+      batch.delete(doc(maria, participantPath('rsvp_maria')));
+      batch.delete(doc(maria, rosterPath('rsvp_maria')));
+      return batch.commit();
+    };
+
+    await seed({ selfJoin: false, drawDate: '2099-12-20' });
+    await assertSucceeds(leave());
+    await seed({}, true);
+    await assertFails(leave());
+    await seed({ drawDate: '2020-01-01' });
+    await assertFails(leave());
+  });
+
   it('a guest leaving takes their roster entry out in the same batch', async () => {
     const maria = accountDb('maria');
     const join = writeBatch(maria);

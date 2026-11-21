@@ -4,6 +4,10 @@
   display: block;
 }
 
+:host(.org-surface-host--fill) {
+  block-size: 100%;
+}
+
 .org-surface {
   backdrop-filter: var(--org-glass-blur, blur(24px));
   -webkit-backdrop-filter: var(--org-glass-blur, blur(24px));
@@ -88,4 +92,8 @@
     overflow: hidden;
     padding: 0;
   }
+}
+
+.org-surface--fill {
+  block-size: 100%;
 }

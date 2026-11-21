@@ -85,6 +85,10 @@ export class RsvpCardComponent {
   /** The member is in the draw themself. */
   protected readonly inSanta = computed(() => !!this.secretSanta()?.joined['self']);
   protected readonly santaOpen = computed(() => !!this.secretSanta()?.open);
+  /** Leaving is up to the guest until the draw, even with sign-ups closed. */
+  protected readonly santaCanLeave = computed(
+    () => this.santaOpen() || !!this.secretSanta()?.canLeave,
+  );
   /** "Mesmo sem ir, quero participar do amigo oculto" in the decline form. */
   protected readonly santaWanted = signal(false);
   protected readonly santaPhone = signal('');

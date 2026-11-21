@@ -28,10 +28,12 @@
   gap: var(--org-space-sm);
 }
 
+// Beside the guest's name in the panel title, quieter than it.
 .guest-list__phone {
   color: var(--org-on-surface-variant);
+  flex: none;
   font-size: var(--org-font-size-sm);
-  margin: 0;
+  font-weight: var(--org-font-weight-regular);
 }
 
 // The guest is the panel title, so their part starts right under it, without the name again.

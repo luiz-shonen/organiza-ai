@@ -1,42 +1,32 @@
-// The invitation, then the sections; organizers have the share panel beside them on a wide
-// screen (sticky, like the editor's), right under the invitation on a phone.
-.event-detail__grid {
+// The guest's RSVP with the organizers' share panel beside it on a wide screen; stacked on a phone.
+.event-detail__top {
   display: grid;
   gap: var(--org-space-md);
-  grid-template-areas:
-    'card'
-    'aside'
-    'stack';
   grid-template-columns: minmax(0, 1fr);
 
-  &--aside {
+  &--pair {
     @media (width >= 960px) {
-      grid-template-areas:
-        'card aside'
-        'stack aside';
       grid-template-columns: minmax(0, 1fr) 380px;
     }
   }
 }
 
-.event-detail__card {
-  grid-area: card;
+// The RSVP card on top; under it, a festive scene fills the height the share panel leaves.
+.event-detail__lead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
 }
 
-.event-detail__aside {
-  align-self: start;
-  grid-area: aside;
+.event-detail__ornament {
+  display: none;
 
-  @media (width >= 960px) {
-    position: sticky;
-
-    // The page scrolls inside the content area, under the header: offset from its top.
-    top: var(--org-space-md);
+  .event-detail__top--pair & {
+    @media (width >= 960px) {
+      display: block;
+      flex: 1 1 0;
+    }
   }
-}
-
-.event-detail__stack {
-  grid-area: stack;
 }
 
 .event-detail__stack,

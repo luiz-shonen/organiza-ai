@@ -1,0 +1,172 @@
+// Fills whatever height the grid row leaves; below a useful height the scene is not drawn.
+:host {
+  container-type: size;
+  display: block;
+  min-block-size: 0;
+}
+
+.ornament-frame {
+  @container (height < 140px) {
+    display: none;
+  }
+}
+
+// A lilac sky inside the card's own frame.
+.ornament {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--org-primary-container) 80%, transparent),
+    transparent 80%
+  );
+  block-size: 100%;
+  display: flex;
+}
+
+.ornament__scene {
+  block-size: 100%;
+  inline-size: 100%;
+
+  // The hill and the bunting run past the scene to the card's edges; the card clips them.
+  overflow: visible;
+}
+
+.ornament__string,
+.ornament__line {
+  fill: none;
+  stroke: var(--org-outline);
+  stroke-width: 1.5;
+}
+
+.ornament__hill {
+  fill: var(--org-primary-container);
+}
+
+.ornament__flag,
+.ornament__fill--primary {
+  fill: var(--org-primary);
+}
+
+.ornament__flag {
+  animation: ornament-sway 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: top center;
+
+  &--secondary {
+    fill: var(--org-secondary);
+  }
+
+  &--tertiary {
+    fill: var(--org-tertiary);
+  }
+
+  &--success {
+    fill: var(--org-success);
+  }
+}
+
+.ornament__fill--primary-deep {
+  fill: var(--org-primary);
+  filter: brightness(0.85);
+}
+
+.ornament__fill--secondary {
+  fill: var(--org-secondary);
+}
+
+.ornament__fill--tertiary {
+  fill: var(--org-tertiary);
+}
+
+.ornament__fill--success {
+  fill: var(--org-success);
+}
+
+.ornament__bow {
+  fill: var(--org-secondary);
+}
+
+.ornament__shine {
+  fill: var(--org-surface);
+  opacity: 0.45;
+}
+
+.ornament__balloon {
+  animation: ornament-float 4.5s ease-in-out infinite;
+}
+
+.ornament__lid {
+  animation: ornament-hop 3.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.ornament__confetti {
+  animation: ornament-drift 5s ease-in-out infinite;
+  opacity: 0.8;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ornament__sparkle {
+  animation: ornament-twinkle 2.4s ease-in-out infinite;
+  fill: var(--org-primary);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes ornament-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes ornament-sway {
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes ornament-hop {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  80% {
+    transform: translateY(-6px) rotate(-3deg);
+  }
+
+  90% {
+    transform: translateY(-2px) rotate(2deg);
+  }
+}
+
+@keyframes ornament-drift {
+  50% {
+    transform: translateY(10px) rotate(160deg);
+  }
+}
+
+@keyframes ornament-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ornament__flag,
+  .ornament__balloon,
+  .ornament__lid,
+  .ornament__confetti,
+  .ornament__sparkle {
+    animation: none;
+  }
+}

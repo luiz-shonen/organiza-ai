@@ -41,6 +41,8 @@ import {
   parseLocation,
   splitGuestsByApproval,
   toDayString,
+  fromDrawDate,
+  toDrawDate,
 } from '../../../core/utils';
 import {
   AddressNumber,
@@ -179,6 +181,8 @@ export class EventEditorContainer implements OnInit {
   protected readonly secretSantaEnabled = signal(false);
   protected readonly secretSantaGiftOptions = signal(false);
   protected readonly secretSantaMaxGifts = signal(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);
+  /** "Data do sorteio": guests join and leave on their own until that day. */
+  protected readonly secretSantaDrawDate = signal<Date | null>(null);
   /** "Aprovar presenças": off by default. */
   protected readonly requireApproval = signal(false);
   private readonly savedParticipants = signal<SecretSantaParticipant[]>([]);
@@ -296,6 +300,7 @@ export class EventEditorContainer implements OnInit {
       this.secretSantaEnabled();
       this.secretSantaGiftOptions();
       this.secretSantaMaxGifts();
+      this.secretSantaDrawDate();
       this.draftParticipants();
       untracked(() => this.persistDraft());
     });
@@ -391,6 +396,7 @@ export class EventEditorContainer implements OnInit {
               this.secretSantaMaxGifts.set(
                 event.secretSanta?.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
               );
+              this.secretSantaDrawDate.set(fromDrawDate(event.secretSanta?.drawDate));
             }
 
             const isEventOwner =
@@ -562,8 +568,14 @@ export class EventEditorContainer implements OnInit {
         enabled: this.secretSantaEnabled(),
         giftOptions: this.secretSantaGiftOptions(),
         maxGiftOptions: this.secretSantaMaxGifts(),
-        // Closing sign-ups is done on the event page; saving here keeps that choice.
+        ...(this.secretSantaDrawDate()
+          ? { drawDate: toDrawDate(this.secretSantaDrawDate()!) }
+          : {}),
+        // Closing sign-ups and drawing happen on the event page; saving here keeps them.
         ...(this.currentEvent()?.secretSanta?.selfJoin === false ? { selfJoin: false } : {}),
+        ...(this.currentEvent()?.secretSanta?.drawnAt
+          ? { drawnAt: this.currentEvent()!.secretSanta!.drawnAt }
+          : {}),
       },
     };
 
@@ -939,6 +951,7 @@ export class EventEditorContainer implements OnInit {
         enabled: this.secretSantaEnabled(),
         giftOptions: this.secretSantaGiftOptions(),
         maxGiftOptions: this.secretSantaMaxGifts(),
+        drawDate: this.secretSantaDrawDate() ? toDrawDate(this.secretSantaDrawDate()!) : null,
       },
       participants: this.isEditing() ? [] : this.draftParticipants(),
     };
@@ -958,6 +971,7 @@ export class EventEditorContainer implements OnInit {
     this.secretSantaEnabled.set(draft.secretSanta.enabled);
     this.secretSantaGiftOptions.set(draft.secretSanta.giftOptions);
     this.secretSantaMaxGifts.set(draft.secretSanta.maxGiftOptions);
+    this.secretSantaDrawDate.set(fromDrawDate(draft.secretSanta.drawDate));
     if (!this.isEditing()) {
       this.itemsEnabled.set(draft.itemsEnabled);
       this.draftItems.set([...draft.items]);
@@ -1065,6 +1079,11 @@ interface EventEditorDraft {
   requireApproval: boolean;
   itemsEnabled: boolean;
   items: NewPartyItem[];
-  secretSanta: { enabled: boolean; giftOptions: boolean; maxGiftOptions: number };
+  secretSanta: {
+    enabled: boolean;
+    giftOptions: boolean;
+    maxGiftOptions: number;
+    drawDate?: string | null;
+  };
   participants: SecretSantaParticipantInput[];
 }

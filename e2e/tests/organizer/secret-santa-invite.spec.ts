@@ -179,11 +179,12 @@ test.describe('Amigo oculto pelo convite', () => {
     await expect
       .poll(async () => (await readStore(page))[PARTICIPANTS].map((p) => p.id))
       .toEqual(['m3', 'rsvp_jess', 'rsvp_ana', 'rsvp_maria']);
-    await expect(card).toContainText('4 participantes, 3 pelo convite');
+    await expect(card).toContainText('4 pessoas no sorteio');
+    await expect(card.getByTestId('secret-santa-joined-tag')).toHaveText('3 pelo convite');
 
     // The owner closes the sign-ups, keeping the other settings.
     await card.getByTestId('secret-santa-self-join').locator('button').click();
-    await expect(card).toContainText('Fechado: só você e quem organiza mudam a lista');
+    await expect(card).toContainText('Fechado: ninguém novo entra pelo convite');
     await expect
       .poll(async () => (await readStore(page))['events'][0]['secretSanta'])
       .toEqual({ enabled: true, giftOptions: true, maxGiftOptions: 3, selfJoin: false });
@@ -321,7 +322,8 @@ test.describe('Amigo oculto pelo convite', () => {
         };
       })
       .toEqual({ ids: ['m1', 'rsvp_ana'], marked: [expect.any(String)] });
-    await expect(card).toContainText('2 participantes, 1 pelo convite');
+    await expect(card).toContainText('2 pessoas no sorteio');
+    await expect(card.getByTestId('secret-santa-joined-tag')).toHaveText('1 pelo convite');
   });
 
   test('a guest waiting for approval joins the draw only after being approved', async ({

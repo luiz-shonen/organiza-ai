@@ -38,6 +38,15 @@
   white-space: nowrap;
 }
 
+.org-expansion-panel__header--prominent {
+  --mat-expansion-header-collapsed-state-height: calc(var(--org-touch) + var(--org-space-sm));
+  --mat-expansion-header-expanded-state-height: calc(var(--org-touch) + var(--org-space-sm));
+
+  .org-expansion-panel__title {
+    font-size: var(--org-font-size-md);
+  }
+}
+
 .org-expansion-panel__heading {
   min-inline-size: 0;
   overflow: hidden;

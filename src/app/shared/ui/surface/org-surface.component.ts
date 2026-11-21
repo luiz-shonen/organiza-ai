@@ -7,6 +7,7 @@ export type OrgSurfaceVariant = 'card' | 'panel' | 'drawer' | 'dialog' | 'hero';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-surface.component.html',
   styleUrl: './org-surface.component.scss',
+  host: { '[class.org-surface-host--fill]': 'fill()' },
 })
 export class OrgSurfaceComponent {
   public readonly variant = input<OrgSurfaceVariant>('card');
@@ -20,5 +21,7 @@ export class OrgSurfaceComponent {
   public readonly interactive = input(false);
   /** No inner padding: for cards made of full-width rows separated by dividers. */
   public readonly flush = input(false);
+  /** Takes the full height its parent gives it (a flex or grid item that stretches). */
+  public readonly fill = input(false);
   public readonly testId = input<string | null>(null);
 }

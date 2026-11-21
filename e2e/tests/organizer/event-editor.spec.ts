@@ -1,5 +1,6 @@
 import { test, expect } from '../../fixtures/test.fixture';
 import { setupMockAuthSession } from '../../helpers/auth-mock.helper';
+import { NEXT_YEAR, nextYearDate } from '../../helpers/dates.helper';
 
 const mockSampleEvents = [
   {
@@ -102,7 +103,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     // Fill Step 1 (Basic Info) to unlock Step 2 (Address)
     await eventEditorPage.fillBasicInfo(
       'Festa de Integração 2026',
-      '25/12/2026',
+      nextYearDate('25/12'),
       'Comemoração de final de ano da equipe.',
       '19:00',
     );
@@ -143,7 +144,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await eventEditorPage.assertLoaded();
     await eventEditorPage.fillBasicInfo(
       'Churrasco no sítio',
-      '25/12/2026',
+      nextYearDate('25/12'),
       'Churrasco de fim de ano na roça.',
       '12:00',
     );
@@ -261,10 +262,10 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     await eventEditorPage.titleInput.fill('Retiro de fim de ano');
     await page.locator('[data-testid="category-options"] org-chip').first().click();
-    await eventEditorPage.dateInput.fill('23/12/2026');
+    await eventEditorPage.dateInput.fill(nextYearDate('23/12'));
     await eventEditorPage.timeInput.fill('17:00');
     const endDate = page.getByTestId('event-end-date-input');
-    await endDate.fill('20/12/2026');
+    await endDate.fill(nextYearDate('20/12'));
     await endDate.blur();
     await expect(page.getByText('O término não pode ser antes do início')).toBeVisible();
     await eventEditorPage.advanceStep();
@@ -272,7 +273,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       'escolha um término no dia do início ou depois',
     );
 
-    await endDate.fill('25/12/2026');
+    await endDate.fill(nextYearDate('25/12'));
     await expect(page.getByText('O término não pode ser antes do início')).toBeHidden();
     await page
       .getByTestId('event-editor-step-1')
@@ -295,7 +296,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
         }
       ).__MOCK_DOCUMENTS__['events'].find((event) => event.title === 'Retiro de fim de ano'),
     );
-    expect(saved).toMatchObject({ endDate: '2026-12-25' });
+    expect(saved).toMatchObject({ endDate: `${NEXT_YEAR}-12-25` });
   });
 
   test('the invite and Meus eventos show the days of an event over several days', async ({
@@ -305,8 +306,8 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       ...mockSampleEvents[0],
       id: 'event-retreat',
       title: 'Retiro de fim de ano',
-      date: new Date(2026, 11, 23, 17, 0).toISOString(),
-      endDate: '2026-12-25',
+      date: new Date(NEXT_YEAR, 11, 23, 17, 0).toISOString(),
+      endDate: `${NEXT_YEAR}-12-25`,
     };
     await setupMockAuthSession(page, {
       uid: 'test-organizer-uid',
@@ -317,7 +318,11 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await page.goto('/evento/event-retreat');
     const box = page.locator('.event-card__date-box');
     await expect(box).toContainText('23–25');
-    await expect(box).toContainText('Quarta a sexta');
+    // The weekdays move with the year: 23 to 25 December, said as "Quarta a sexta" in 2026.
+    const weekdays = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+    const first = weekdays[new Date(NEXT_YEAR, 11, 23).getDay()];
+    const last = weekdays[new Date(NEXT_YEAR, 11, 25).getDay()];
+    await expect(box).toContainText(`${first[0].toUpperCase()}${first.slice(1)} a ${last}`);
     await expect(page.getByTestId('countdown-timer')).toContainText(
       'De 23 a 25 de dezembro · 17:00',
     );
@@ -338,7 +343,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await eventEditorPage.assertLoaded();
     await eventEditorPage.titleInput.fill('Natal da família');
     await eventEditorPage.descriptionInput.fill('Amigo oculto e ceia');
-    await eventEditorPage.dateInput.fill('24/12/2026');
+    await eventEditorPage.dateInput.fill(nextYearDate('24/12'));
 
     await page.reload();
     await eventEditorPage.assertLoaded();
@@ -346,7 +351,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await expect(banner).toContainText('Recuperamos o que você estava preenchendo');
     await expect(eventEditorPage.titleInput).toHaveValue('Natal da família');
     await expect(eventEditorPage.descriptionInput).toHaveValue('Amigo oculto e ceia');
-    await expect(eventEditorPage.dateInput).toHaveValue('24/12/2026');
+    await expect(eventEditorPage.dateInput).toHaveValue(nextYearDate('24/12'));
     await page.getByTestId('editor-draft-restored').screenshot({
       path: 'e2e/screenshots/editor-draft-restored.png',
     });
@@ -493,7 +498,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
 
     // Fill required fields and verify errors clear
     await eventEditorPage.titleInput.fill('Formatura Universitária');
-    await eventEditorPage.dateInput.fill('20/11/2026');
+    await eventEditorPage.dateInput.fill(nextYearDate('20/11'));
 
     await expect(titleError).toBeHidden();
     await expect(dateError).toBeHidden();

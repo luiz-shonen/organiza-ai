@@ -360,13 +360,18 @@ test.describe('Amigo oculto', () => {
 
     // First, whose link it is: nothing is shown or spent before "Sou Jéssica, mostrar".
     const confirm = page.getByTestId('secret-santa-confirm');
-    await expect(confirm).toContainText('Este link é de Jéssica Melo');
+    await expect(confirm).toContainText('Este link é de');
+    await expect(page.getByTestId('secret-santa-owner')).toHaveText('Jéssica Melo');
     await expect(page.getByTestId('secret-santa-receiver')).toHaveCount(0);
+    // The envelope unfolds and writes itself in: the picture waits for the paper to be done.
+    await confirm.evaluate((el) =>
+      Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+    );
     await page.screenshot({ path: 'e2e/screenshots/secret-santa-confirm.png' });
     await page.getByTestId('secret-santa-confirm-btn').click();
 
     // Then the reveal: the party, the name in large type, gift options below.
-    await expect(page.getByTestId('secret-santa-greeting')).toHaveText('Olá, Jéssica!');
+    await expect(page.getByTestId('secret-santa-greeting')).toHaveText('Salve, Jéssica!');
     await expect(page.getByTestId('secret-santa-receiver')).toHaveText('Luiz');
     await expect(page.getByTestId('secret-santa-gifts')).toContainText(
       'Chinelo, cor verde, tamanho 36',
@@ -383,7 +388,14 @@ test.describe('Amigo oculto', () => {
       .getByTestId('secret-santa-gifts')
       .screenshot({ path: 'e2e/screenshots/secret-santa-gift-search.png' });
     await expect(page.locator('canvas').first()).toBeAttached(); // canvas-confetti
-    await page.screenshot({ path: 'e2e/screenshots/secret-santa-reveal.png' });
+    await page
+      .getByTestId('secret-santa-result')
+      .evaluate((el) =>
+        Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+      );
+    await page
+      .getByTestId('secret-santa-result')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-reveal.png' });
 
     // "Esconder" covers the name when someone is looking; "Mostrar de novo" brings it back.
     await page.getByTestId('secret-santa-hide-btn').click();

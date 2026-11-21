@@ -1,0 +1,238 @@
+// Unscoped (ViewEncapsulation.None): every rule starts with `.invite-letter`.
+
+// The timeline, about 2 s before the paper writes itself in:
+// 0.0 s  the sealed envelope comes in;
+// 0.5 s  the seal breaks away;
+// 0.7 s  the flap opens (it goes behind the letter halfway through);
+// 1.1 s  the letter rises out of the pocket (the paper's row grows from nothing, and the envelope
+//        slides down under it), until only the bottom of the envelope shows below;
+// 1.9 s  the paper draws its frame and writes its words (`--invite-start`).
+.invite-letter {
+  --invite-letter-envelope: 200px;
+  --invite-letter-flap: 110px;
+  --invite-letter-peek: 64px;
+  --invite-letter-overlap: calc(var(--invite-letter-envelope) - var(--invite-letter-peek));
+
+  // Room above the closed envelope for its flap to open into; the letter takes it as it rises.
+  animation: invite-letter-room 0.9s 1.1s cubic-bezier(0.3, 0, 0.2, 1) both;
+  cursor: pointer;
+  display: block;
+  position: relative;
+
+  &:focus-visible {
+    border-radius: var(--org-radius-md);
+    outline: 2px solid var(--org-primary);
+    outline-offset: 4px;
+  }
+
+  .invite-paper {
+    // The envelope brings the paper in: no unfolding of its own, and the frame and the words
+    // wait for it to be out.
+    --invite-start: 1.9s;
+
+    animation: none;
+  }
+}
+
+// The letter's row grows from nothing to its full height: the paper seems to rise out.
+.invite-letter__paper {
+  animation: invite-letter-rise 0.9s 1.1s cubic-bezier(0.3, 0, 0.2, 1) both;
+  display: grid;
+  margin-inline: var(--org-space-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.invite-letter__paper-inner {
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+// The envelope, under the letter: back, flap, pocket and seal, in the theme's colours.
+.invite-letter__envelope {
+  animation:
+    invite-letter-arrive 0.5s var(--org-motion-ease-emphasized) both,
+    invite-letter-tuck 0.9s 1.1s cubic-bezier(0.3, 0, 0.2, 1) both;
+  block-size: var(--invite-letter-envelope);
+  position: relative;
+}
+
+.invite-letter__back,
+.invite-letter__pocket {
+  border-radius: var(--org-radius-md);
+  inset: 0;
+  position: absolute;
+}
+
+.invite-letter__back {
+  background: var(--org-invite-envelope);
+  box-shadow: var(--org-shadow-md);
+  z-index: 0;
+}
+
+// The front of the envelope: the two side folds and the bottom one, a V open at the top, with a
+// gold trim along the opening. Over the letter while it rises, under it once it is out.
+.invite-letter__pocket {
+  animation: invite-letter-pocket 0.9s 1.1s step-end both;
+  background:
+    linear-gradient(
+        to bottom right,
+        transparent calc(50% - 1px),
+        var(--org-invite-line) 50%,
+        transparent calc(50% + 1px)
+      )
+      left top / 50% 55% no-repeat,
+    linear-gradient(
+        to bottom left,
+        transparent calc(50% - 1px),
+        var(--org-invite-line) 50%,
+        transparent calc(50% + 1px)
+      )
+      right top / 50% 55% no-repeat,
+    color-mix(in srgb, var(--org-invite-flap) 16%, var(--org-invite-envelope));
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+  z-index: 2;
+}
+
+// The flap, hinged at the top edge: closed it hangs over the front; open it points up, behind.
+.invite-letter__flap {
+  animation: invite-letter-open 0.6s 0.7s var(--org-motion-ease-emphasized) both;
+  background: var(--org-invite-flap);
+  block-size: var(--invite-letter-flap);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  inset: 0 0 auto;
+  position: absolute;
+  transform-origin: top center;
+  z-index: 3;
+}
+
+.invite-letter__seal {
+  align-items: center;
+  animation: invite-letter-break 0.4s 0.5s ease-in both;
+  background: var(--org-invite-seal);
+  block-size: 52px;
+  border: 3px solid var(--org-invite-line);
+  border-radius: var(--org-radius-full);
+  box-shadow: var(--org-shadow-sm);
+  color: var(--org-invite-on-seal);
+  display: flex;
+  font: var(--org-font-weight-regular) var(--org-font-size-script-md) / var(--org-line-height-none)
+    var(--org-font-script);
+  inline-size: 52px;
+  inset-block-start: calc(var(--invite-letter-flap) - 30px);
+  inset-inline-start: 50%;
+  justify-content: center;
+  margin-inline-start: -26px;
+  position: absolute;
+  z-index: 4;
+}
+
+@keyframes invite-letter-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes invite-letter-break {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.4) rotate(18deg);
+  }
+}
+
+@keyframes invite-letter-open {
+  0% {
+    transform: perspective(700px) rotateX(0);
+    z-index: 3;
+  }
+
+  50% {
+    z-index: 0;
+  }
+
+  100% {
+    transform: perspective(700px) rotateX(180deg);
+    z-index: 0;
+  }
+}
+
+@keyframes invite-letter-rise {
+  from {
+    grid-template-rows: 0fr;
+  }
+
+  to {
+    grid-template-rows: 1fr;
+  }
+}
+
+// As the letter grows, the envelope slides under it, until only its bottom shows.
+@keyframes invite-letter-tuck {
+  from {
+    margin-block-start: 0;
+  }
+
+  to {
+    margin-block-start: calc(-1 * var(--invite-letter-overlap));
+  }
+}
+
+@keyframes invite-letter-room {
+  from {
+    padding-block-start: var(--invite-letter-flap);
+  }
+
+  to {
+    padding-block-start: 0;
+  }
+}
+
+@keyframes invite-letter-pocket {
+  from {
+    z-index: 2;
+  }
+
+  to {
+    z-index: 0;
+  }
+}
+
+// Less motion asked for: the envelope is open, the letter out and written.
+@media (prefers-reduced-motion: reduce) {
+  .invite-letter,
+  .invite-letter * {
+    animation: none;
+  }
+
+  .invite-letter .invite-paper {
+    --invite-start: 0s;
+  }
+
+  .invite-letter__envelope {
+    margin-block-start: calc(-1 * var(--invite-letter-overlap));
+  }
+
+  .invite-letter__flap {
+    transform: rotateX(180deg);
+    z-index: 0;
+  }
+
+  .invite-letter__pocket {
+    z-index: 0;
+  }
+
+  .invite-letter__seal {
+    display: none;
+  }
+}

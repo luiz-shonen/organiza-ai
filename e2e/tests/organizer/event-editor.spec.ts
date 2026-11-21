@@ -327,8 +327,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
       'De 23 a 25 de dezembro · 17:00',
     );
     await page
-      .locator('app-event-card header')
-      .first()
+      .getByTestId('event-invitation')
       .screenshot({ path: 'e2e/screenshots/event-end-date-invite.png' });
 
     await page.goto('/meus-eventos');

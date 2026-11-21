@@ -4,12 +4,15 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { signal } from '@angular/core';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { LoginContainer } from './login.container';
-import { AuthService } from '../../../core/services';
+import { of } from 'rxjs';
+import { AuthService, EventService } from '../../../core/services';
+import type { PartyEvent } from '../../../core/models';
 
 describe('LoginContainer', () => {
   let fixture: ComponentFixture<LoginContainer>;
   let component: LoginContainer;
   let router: Router;
+  let getEvent: ReturnType<typeof vi.fn>;
 
   let mockAuthService: {
     login: ReturnType<typeof vi.fn>;
@@ -19,6 +22,7 @@ describe('LoginContainer', () => {
   };
 
   beforeEach(async () => {
+    getEvent = vi.fn().mockReturnValue(of(null));
     mockAuthService = {
       login: vi.fn().mockResolvedValue(undefined),
       register: vi.fn().mockResolvedValue(undefined),
@@ -28,7 +32,11 @@ describe('LoginContainer', () => {
 
     await TestBed.configureTestingModule({
       imports: [LoginContainer, NoopAnimationsModule],
-      providers: [provideRouter([]), { provide: AuthService, useValue: mockAuthService }],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: EventService, useValue: { getEvent } },
+      ],
     }).compileComponents();
 
     router = TestBed.inject(Router);
@@ -58,6 +66,28 @@ describe('LoginContainer', () => {
     fixture.detectChanges();
     expect(title()).toBe('Você recebeu um convite!');
     expect(compiled.querySelectorAll('.login__feature').length).toBe(0);
+  });
+
+  it('shows the envelope of the invite that sent the guest here, with who sends it', () => {
+    getEvent.mockReturnValue(
+      of({
+        id: 'abc',
+        title: 'Natal da família',
+        category: 'Natal',
+        date: '2027-12-24T20:00:00.000Z',
+        creatorName: 'Luiz Rodrigues',
+      } as PartyEvent),
+    );
+    fixture.componentRef.setInput('redirect', '/evento/abc');
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(getEvent).toHaveBeenCalledWith('abc');
+    expect(compiled.querySelector('[data-testid="login-invite-envelope"]')?.textContent).toContain(
+      'Natal da família',
+    );
+    const title = compiled.querySelector('[data-testid="login-title"]')?.textContent ?? '';
+    expect(title.replace(/\s+/g, ' ').trim()).toBe('Luiz Rodrigues convida você');
+    expect(compiled.querySelector('[data-testid="google-login-btn"]')).toBeTruthy();
   });
 
   it('offers Google only, unless the address asks for the password form (?senha)', () => {

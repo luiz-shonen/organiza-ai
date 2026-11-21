@@ -24,12 +24,17 @@ import {
   OrgPageLayoutComponent,
   OrgSurfaceComponent,
 } from '../../shared/ui';
+import {
+  InviteDividerComponent,
+  InvitePaperComponent,
+} from '../../shared/components/invite-paper/invite-paper.component';
 
 /**
  * The secret link of the amigo oculto (`/amigo-oculto/:token`). Opens without signing in,
  * because many participants (grandparents included) only get the link by WhatsApp.
  *
- * Against a forwarded link: the page first says whose link it is ("Este link é da Ana") and shows
+ * Both steps are on invitation paper (`app-invite-paper`), in formal words like the invitations.
+ * Against a forwarded link: the page first says whose link it is ("Este link é de Ana") and shows
  * nothing until they tap "Sou a Ana, mostrar"; a participant with an account must be signed in to
  * it (the rules refuse anyone else), and is not asked. Then the reveal: a celebration with
  * confetti, the name they drew in large type, and the gift options below. "Esconder" covers it
@@ -44,6 +49,8 @@ function isPermissionError(error: unknown): boolean {
   selector: 'app-secret-santa-reveal',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    InviteDividerComponent,
+    InvitePaperComponent,
     OrgButtonComponent,
     OrgEmptyStateComponent,
     OrgIconComponent,

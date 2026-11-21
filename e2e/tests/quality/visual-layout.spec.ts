@@ -79,9 +79,9 @@ test.describe('Visual layout baselines and heuristic inspection', () => {
         await loginPage.goto('/login');
         await loginPage.assertLoaded();
 
-        // Verify presence of branded login header and glass card
-        await expect(page.locator('.login__header')).toBeVisible();
+        // The card carries the brand (the animated logo) and the Google button.
         await expect(page.locator('.login__card')).toBeVisible();
+        await expect(page.locator('.login__card org-logo')).toBeVisible();
 
         // Verify zero horizontal overflow on Login
         await assertNoHorizontalOverflow(page);

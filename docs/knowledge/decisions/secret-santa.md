@@ -77,6 +77,16 @@ A person typed by hand may later join from the invite. Pairs are always an entry
   them (they hold phones, so nobody else reads them). While creating, they are drafts saved right
   after the event, like the items.
 
+## The reveal page looks like an invitation
+
+- `/amigo-oculto/:token` is on invitation paper (`app-invite-paper`, palette `segredo`), in the
+  formal words of the invitations: first the sealed envelope ("Envelope lacrado", "Este link é
+  de" and the name, then the plain warning and "Sou Ana, mostrar"); then "Salve, Ana!", "Por
+  decreto da sorte, coube a Vossa Senhoria presentear", the name drawn in large engraved type,
+  and "Guardai segredo até a troca de presentes", with confetti. The "abre uma vez" warning,
+  the gift ideas and the buttons stay plain, outside the paper; so do the expired and locked
+  states.
+
 ## The draw (event page, card "Amigo oculto", organizers only)
 
 - Only the **owner** draws and draws again; a collaborator sees "Só quem criou o evento faz o sorteio".

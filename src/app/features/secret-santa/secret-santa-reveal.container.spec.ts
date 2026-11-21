@@ -76,7 +76,8 @@ describe('SecretSantaRevealContainer', () => {
   it('first says whose link it is, and shows or spends nothing before they confirm', async () => {
     getReveal.mockResolvedValue(reveal);
     await open('tok-1');
-    expect(byTestId('secret-santa-confirm')?.textContent).toContain('Este link é de Jéssica Melo');
+    expect(byTestId('secret-santa-confirm')?.textContent).toContain('Este link é de');
+    expect(byTestId('secret-santa-owner')?.textContent?.trim()).toBe('Jéssica Melo');
     expect(byTestId('secret-santa-confirm')?.textContent).toContain(
       'Se você não é Jéssica, não toque no botão',
     );
@@ -111,7 +112,7 @@ describe('SecretSantaRevealContainer', () => {
     getReveal.mockResolvedValue(reveal);
     await openAsGiver('tok-1');
     expect(getReveal).toHaveBeenCalledWith('tok-1');
-    expect(byTestId('secret-santa-greeting')?.textContent).toContain('Olá, Jéssica!');
+    expect(byTestId('secret-santa-greeting')?.textContent).toContain('Salve, Jéssica!');
     expect(el().textContent).toContain('Natal 2026 da família');
     expect(byTestId('secret-santa-receiver')?.textContent).toContain('Luiz');
     expect(byTestId('secret-santa-gifts')?.textContent).toContain('Chinelo, cor verde, tamanho 36');

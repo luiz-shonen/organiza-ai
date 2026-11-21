@@ -176,4 +176,44 @@ test.describe('Convites com cara de convite', () => {
         .screenshot({ path: `e2e/screenshots/invite-envelopes-${mode}.png` });
     }
   });
+
+  test('a tap closes the invitation back into its envelope, another opens it again', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: GUEST_UID,
+      email: 'convidada@exemplo.com',
+      displayName: 'Jéssica Melo',
+      events: invites,
+      userProfile: {
+        id: GUEST_UID,
+        name: 'Jéssica Melo',
+        phone: '(11) 93333-3333',
+        invitedEvents: invites.map((event) => event.id),
+      },
+    });
+    await page.goto('/evento/evt-natal');
+    const letter = page.locator('app-invite-letter');
+    const settled = () =>
+      letter.evaluate((el) =>
+        Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished)),
+      );
+    const paperHeight = () =>
+      letter.locator('.invite-letter__paper').evaluate((el) => el.getBoundingClientRect().height);
+    await settled();
+    expect(await paperHeight()).toBeGreaterThan(200);
+    await expect(letter).toHaveAttribute('aria-expanded', 'true');
+
+    await letter.click();
+    await settled();
+    await expect(letter).toHaveAttribute('aria-expanded', 'false');
+    expect(await paperHeight()).toBeLessThan(2);
+    await letter.screenshot({ path: 'e2e/screenshots/invite-letter-closed.png' });
+
+    await letter.press('Enter');
+    await settled();
+    await expect(letter).toHaveAttribute('aria-expanded', 'true');
+    expect(await paperHeight()).toBeGreaterThan(200);
+    await expect(page.getByTestId('event-invitation-signature')).toBeVisible();
+  });
 });

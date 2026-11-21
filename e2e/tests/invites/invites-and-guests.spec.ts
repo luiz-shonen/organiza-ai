@@ -149,12 +149,20 @@ test.describe('Invites, event states and guests', () => {
   });
 
   test('category tags have their own colour, status tags stay filled', async ({ page }) => {
-    await asGuest(page, [invite('evt-natal', 'Ceia de Natal', inDays(10), { category: 'Natal' })]);
+    // "Natal" says itself on the envelope (its colours and words): it carries no category tag.
+    // A category typed by the organizer has no words of its own, so it keeps its tag.
+    await asGuest(page, [
+      invite('evt-natal', 'Ceia de Natal', inDays(10), { category: 'Natal' }),
+      invite('evt-sarau', 'Sarau de poesia', inDays(12), { category: 'Sarau' }),
+    ]);
     await page.goto('/');
 
-    const tags = page.locator('app-invite-envelope .org-badge');
-    await expect(tags.first()).toHaveClass(/org-badge--category/);
-    await expect(tags.nth(1)).toHaveClass(/org-badge--warning/);
+    const natal = page.locator('app-invite-envelope').filter({ hasText: 'Ceia de Natal' });
+    await expect(natal.locator('.org-badge')).toHaveCount(1);
+    await expect(natal.locator('.org-badge')).toHaveClass(/org-badge--warning/);
+    const sarau = page.locator('app-invite-envelope').filter({ hasText: 'Sarau de poesia' });
+    await expect(sarau.locator('.org-badge').first()).toHaveClass(/org-badge--category/);
+    await expect(sarau.locator('.org-badge').nth(1)).toHaveClass(/org-badge--warning/);
   });
 
   test('a visitor is sent to sign in and back to the invite', async ({ page }) => {

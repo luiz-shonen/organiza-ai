@@ -356,7 +356,14 @@ category through one class, `.org-invite--{natal|aniversario|casamento|junina|pa
 `--org-invite-*` tokens (`$invite-themes` in `src/app/shared/ui/tokens/_invite-themes.scss`). The
 words come from `inviteTheme()` in `src/app/core/utils/invite.utils.ts`, in the tone of a formal
 printed invitation. In dark mode paper and envelopes take each theme's dark tone
-(`$invite-themes-dark`, set under `html.dark`). Meus eventos keeps the plain `app-event-summary-card`.
+(`$invite-themes-dark`, set under `html.dark`). The paper is one shared piece, `app-invite-paper` (frame, corners, medallions, and the lettering
+classes `invite-paper__greeting`, `__title`, `__signature`…), used by the event page and by the
+amigo oculto reveal (its own `segredo` palette: the app's lilac with the gold frame). On the event
+page it comes in `app-invite-letter`: the sealed envelope arrives, the seal breaks, the flap opens
+and the letter rises out before writing itself in. The envelope cover (`app-invite-envelope`, on
+Início and on the login page an invite sends people to) wears the same dress: a gold double rule,
+a gilt flap edge and seal ring, "Para Jéssica" handwritten and the name in the engraved serif.
+Meus eventos keeps the plain `app-event-summary-card`.
 
 ---
 

@@ -38,6 +38,15 @@ $invite-themes: (
     line: #e8a33c,
     ink: #b3400b,
   ),
+  // The amigo oculto reveal: the app's lilac on cream, with the gold frame.
+  'segredo': (
+      envelope: #f1ecfb,
+      flap: #6d4fd8,
+      seal: #5b3fc4,
+      paper: #fffcf6,
+      line: #c9a24d,
+      ink: #5b3fc4,
+    ),
   'padrao': (
     envelope: #efecfb,
     flap: #8b74e8,
@@ -89,6 +98,16 @@ $invite-themes-dark: (
     ink: #ffa46b,
     text: #f9efe5,
     muted: #d1bda9,
+  ),
+  'segredo': (
+    envelope: #221e39,
+    flap: #5f46c4,
+    seal: #6d4fd8,
+    paper: #17142a,
+    line: #d4b062,
+    ink: #c4b2ff,
+    text: #f0edfb,
+    muted: #b6aed4,
   ),
   'padrao': (
     envelope: #221e39,

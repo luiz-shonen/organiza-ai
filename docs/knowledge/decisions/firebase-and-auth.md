@@ -24,6 +24,7 @@ What the screens do with this data (invite states, filters, "Quem vai") is in
 - The editor shows "Sua conta não tem permissão para salvar este evento." when Firestore refuses a save.
 - Signing in locally needs `public/runtime-config.js` (gitignored, copied from `runtime-config.example.js`) with the real web API key; without it the app falls back to the E2E placeholder key and every sign-in returns 400.
 - `runtime-config.js` stays out of the service worker cache and is served with `Cache-Control: no-cache`; when it fails to load, `ensureRuntimeConfig` (in `main.ts`) loads it again before the app starts, so the first sign-in never goes out with the placeholder key.
+- Sent to sign in by an invite (`/login?redirect=/evento/{id}`), the login page shows that invite's envelope (events are readable signed out), "{organizer} convida você" and the Google button.
 - For now the login page offers Google only. The e-mail and password form is hidden, not removed: `/login?senha` shows it (the manual test account signs in there).
 - The login page turns Firebase error codes into plain messages: "E-mail ou senha incorretos." (wrong password, or an e-mail that already has an account), too many attempts, no connection, and a missing API key.
 - Each event has one owner (creator) and zero or more collaborators. Owners edit core data, cancel and delete; collaborators manage items and see guests.

@@ -8,17 +8,47 @@
   padding: 40px var(--org-space-md);
   box-sizing: border-box;
 
-  &__header {
+  // The envelope of the invite that sent them here, as wide as the sign-in card.
+  &__envelope {
+    max-inline-size: 420px;
+    width: 100%;
+  }
+
+  &__invite-body {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: var(--org-space-sm);
-    width: 100%;
+    gap: var(--org-space-md);
+    padding-block-start: var(--org-space-xs);
     text-align: center;
   }
 
-  &__brand {
+  // Below the envelope, in the invitation's lettering.
+  &__from {
+    display: flex;
+    flex-direction: column;
     margin: 0;
+  }
+
+  &__from-name {
+    color: var(--org-on-surface);
+    font-family: var(--org-font-invite);
+    font-size: var(--org-font-size-3xl);
+    font-variant-numeric: lining-nums;
+    font-weight: var(--org-font-weight-bold);
+    line-height: var(--org-line-height-tight);
+    overflow-wrap: anywhere;
+  }
+
+  &__from-verb {
+    color: var(--org-primary);
+    font-family: var(--org-font-script);
+    font-size: var(--org-font-size-script-lg);
+    font-weight: var(--org-font-weight-regular);
+    line-height: var(--org-line-height-tight);
+  }
+
+  &__brand {
+    margin: 0 0 var(--org-space-xs);
   }
 
   &__card {
@@ -41,23 +71,24 @@
     text-align: center;
   }
 
-  &__intro-icon {
-    align-items: center;
-    background: var(--org-primary-container);
-    block-size: 56px;
-    border-radius: var(--org-radius-full);
-    color: var(--org-on-primary-container);
-    display: inline-flex;
-    inline-size: 56px;
-    justify-content: center;
-  }
-
   &__title {
     color: var(--org-on-surface);
-    font: var(--org-font-weight-semibold) var(--org-font-size-2xl) / var(--org-line-height-tight)
-      var(--org-font-display);
+    font-family: var(--org-font-display);
+    font-size: var(--org-font-size-heading);
+    font-weight: var(--org-font-weight-semibold);
+    letter-spacing: var(--org-letter-spacing-tight);
+    line-height: var(--org-line-height-tight);
     margin: 0;
     text-wrap: balance;
+  }
+
+  // Like "Descubra, Participe e Celebre" on Início.
+  &__highlight {
+    background: var(--org-gradient-highlight);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
 
   &__lead {
@@ -67,16 +98,15 @@
     text-wrap: balance;
   }
 
-  // What the app does, one line each, under a soft lilac icon.
+  // What the app does, one line each, with the icon squares of the rest of the app.
   &__features {
+    border-block: 1px solid var(--org-outline-variant);
     display: flex;
     flex-direction: column;
     gap: var(--org-space-sm);
     list-style: none;
     margin: 0;
-    padding: var(--org-space-md);
-    background: var(--org-surface-container-low, var(--org-surface-variant));
-    border-radius: var(--org-radius-md);
+    padding: var(--org-space-md) var(--org-space-xs);
   }
 
   &__feature {
@@ -90,39 +120,13 @@
   &__feature-icon {
     align-items: center;
     background: var(--org-secondary-container);
-    block-size: 32px;
+    block-size: 36px;
     border-radius: var(--org-radius-sm);
     color: var(--org-on-secondary-container);
     display: inline-flex;
     flex: none;
-    inline-size: 32px;
+    inline-size: 36px;
     justify-content: center;
-  }
-
-  // The lock runs with the text, so a wrapped line keeps it at its start.
-  &__note {
-    color: var(--org-on-surface-variant);
-    font: var(--org-text-body-sm);
-    margin: calc(-1 * var(--org-space-sm)) 0 0;
-    text-align: center;
-
-    org-icon {
-      display: inline-flex;
-      margin-inline-end: var(--org-space-2xs);
-      vertical-align: -3px;
-    }
-  }
-
-  &__error {
-    display: flex;
-    align-items: center;
-    gap: var(--org-space-sm);
-    padding: 12px var(--org-space-md);
-    border-radius: var(--org-radius-sm);
-    background: var(--org-error-container);
-    color: var(--org-on-error-container);
-    font: var(--org-text-body-sm);
-    font-weight: var(--org-font-weight-semibold);
   }
 
   &__form {

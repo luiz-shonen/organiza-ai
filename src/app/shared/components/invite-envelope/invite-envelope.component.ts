@@ -41,6 +41,7 @@ export class InviteEnvelopeComponent {
     () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
   );
   protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
+  protected readonly showCategory = computed(() => this.theme().wordsKey === 'outros');
 
   /** "sáb., 20 de abr. · 19:30"; over several days "23 a 25 de dez. · 17:00". */
   protected readonly when = computed(() => {

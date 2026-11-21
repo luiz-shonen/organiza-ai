@@ -65,6 +65,9 @@ $breakpoint-lg: 1200px;
 
     // Backing for other brands' marks (Mercado Livre, Amazon): none on light surfaces.
     --org-brand-mark-badge: transparent;
+
+    // Behind a brand mark on a filled button (the "G" of "Entrar com Google").
+    --org-brand-mark-disc: #fff;
     --org-error-container: #ffe3e3;
     --org-on-error-container: #a51111;
     --org-warning: #e8a200;

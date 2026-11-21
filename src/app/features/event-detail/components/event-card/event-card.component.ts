@@ -1,6 +1,5 @@
-import { eventLastDay, formatDaySpan, inviteTheme } from '../../../../core/utils';
+import { eventLastDay, formatDaySpan, inviteInitial, inviteTheme } from '../../../../core/utils';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
 import { PartyEvent } from '../../../../core/models';
 import {
   OrgAvatarComponent,
@@ -9,13 +8,20 @@ import {
   OrgIconComponent,
   OrgSurfaceComponent,
 } from '../../../../shared/ui';
+import {
+  InviteDividerComponent,
+  InvitePaperComponent,
+} from '../../../../shared/components/invite-paper/invite-paper.component';
+import { InviteLetterComponent } from '../../../../shared/components/invite-paper/invite-letter.component';
 
 /** Top of the event page: title card, date and place, and who organises it. */
 @Component({
   selector: 'app-event-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    NgTemplateOutlet,
+    InviteDividerComponent,
+    InviteLetterComponent,
+    InvitePaperComponent,
     OrgAvatarComponent,
     OrgBadgeComponent,
     OrgButtonComponent,
@@ -37,6 +43,10 @@ export class EventCardComponent {
 
   /** The colours and words of the invitation, from the category. */
   protected readonly theme = computed(() => inviteTheme(this.event().category));
+  /** The organizer's initial on the envelope's wax seal. */
+  protected readonly sealInitial = computed(() =>
+    inviteInitial(this.event().creatorName || this.event().title),
+  );
   /**
    * The party's name in small capitals above the greeting, only for a category the invitation
    * has no words of its own for ("Sarau", over "Prezadíssimo convidado"), never a bare "Outros".
@@ -48,8 +58,6 @@ export class EventCardComponent {
     }
     return category;
   });
-  /** The four corners of the frame, each with the same flourish turned to face its corner. */
-  protected readonly corners = ['top-start', 'top-end', 'bottom-start', 'bottom-end'] as const;
 
   /**
    * "Quinta", "24", "Dez · 20:00": the date block of the invitation. Over several days:

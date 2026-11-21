@@ -134,6 +134,14 @@
   width: 20px;
 }
 
+// A brand mark (Google's "G") on a filled button sits on a white disc, or it sinks into the fill.
+.org-button__control--primary .org-button__image {
+  background: var(--org-brand-mark-disc);
+  border-radius: var(--org-radius-full);
+  box-sizing: content-box;
+  padding: 3px;
+}
+
 .org-button__icon {
   display: inline-flex;
   margin-right: var(--org-space-md);

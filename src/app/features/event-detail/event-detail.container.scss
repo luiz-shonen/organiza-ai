@@ -1,3 +1,44 @@
+// The invitation, then the sections; organizers have the share panel beside them on a wide
+// screen (sticky, like the editor's), right under the invitation on a phone.
+.event-detail__grid {
+  display: grid;
+  gap: var(--org-space-md);
+  grid-template-areas:
+    'card'
+    'aside'
+    'stack';
+  grid-template-columns: minmax(0, 1fr);
+
+  &--aside {
+    @media (width >= 960px) {
+      grid-template-areas:
+        'card aside'
+        'stack aside';
+      grid-template-columns: minmax(0, 1fr) 380px;
+    }
+  }
+}
+
+.event-detail__card {
+  grid-area: card;
+}
+
+.event-detail__aside {
+  align-self: start;
+  grid-area: aside;
+
+  @media (width >= 960px) {
+    position: sticky;
+
+    // The page scrolls inside the content area, under the header: offset from its top.
+    top: var(--org-space-md);
+  }
+}
+
+.event-detail__stack {
+  grid-area: stack;
+}
+
 .event-detail__stack,
 .event-detail__loading {
   display: flex;

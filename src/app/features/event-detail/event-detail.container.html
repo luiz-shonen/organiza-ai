@@ -7,9 +7,21 @@
     </div>
   </org-page-layout>
 } @else if (event(); as event) {
-  <org-page-layout maxWidth="narrow" data-testid="event-detail-page">
-    <div class="event-detail__stack" data-testid="event-detail">
+  <!--
+    Organizers get a side column with the share panel, as in the editor: beside the sections on a
+    wide screen, right under the invitation on a phone.
+  -->
+  <org-page-layout
+    [maxWidth]="canEditEvent() ? 'default' : 'narrow'"
+    data-testid="event-detail-page"
+  >
+    <div
+      class="event-detail__grid"
+      data-testid="event-detail"
+      [class.event-detail__grid--aside]="canEditEvent()"
+    >
       <app-event-card
+        class="event-detail__card"
         [event]="event"
         [guestCount]="guestCount()"
         [isOwner]="isOwner()"
@@ -20,123 +32,127 @@
 
       <!-- Organizers share the invite from here: link, QR code and WhatsApp. -->
       @if (canEditEvent()) {
-        <app-share-panel
-          [eventUrl]="eventUrl()"
-          [eventTitle]="event.title"
-          [eventDate]="event.date"
-          [eventEndDate]="event.endDate ?? null"
-          [eventLocation]="event.location"
-        />
+        <aside class="event-detail__aside">
+          <app-share-panel
+            [eventUrl]="eventUrl()"
+            [eventTitle]="event.title"
+            [eventDate]="event.date"
+            [eventEndDate]="event.endDate ?? null"
+            [eventLocation]="event.location"
+          />
+        </aside>
       }
 
-      <!-- The organizer hosts the event; there is no presence for them to confirm. -->
-      @if (!isOwner()) {
-        <app-rsvp-card
-          [isConfirmed]="isUserConfirmed()"
-          [pendingApproval]="isUserPending()"
-          [isDeclined]="isDeclined()"
-          [canDecline]="!!memberUid()"
-          [bringsSomething]="checklist().length > 0"
+      <div class="event-detail__stack">
+        <!-- The organizer hosts the event; there is no presence for them to confirm. -->
+        @if (!isOwner()) {
+          <app-rsvp-card
+            [isConfirmed]="isUserConfirmed()"
+            [pendingApproval]="isUserPending()"
+            [isDeclined]="isDeclined()"
+            [canDecline]="!!memberUid()"
+            [bringsSomething]="checklist().length > 0"
+            [hasItems]="progress().length > 0"
+            [guestCount]="guestCount()"
+            [isLoading]="rsvpLoading()"
+            [guestName]="currentGuestName()"
+            [secretSanta]="mySecretSanta()"
+            [phone]="myPhone()"
+            (confirmRsvp)="onConfirmRsvp()"
+            (editRsvp)="onEditRsvp()"
+            (cancelRsvp)="onCancelRsvp($event)"
+            (declineRsvp)="onDeclineRsvp($event)"
+            (joinSanta)="onJoinSecretSantaOnly($event)"
+            (leaveSanta)="onLeaveSecretSanta()"
+          />
+        }
+
+        @if (secretSantaNotice(); as notice) {
+          <app-notification-card
+            data-testid="event-secret-santa-notice"
+            readNote="Você já abriu seu resultado do amigo oculto. Se não anotou o nome, peça um novo link para quem organiza o evento."
+            [notification]="notice"
+            [dismissible]="false"
+            (opened)="openSecretSantaNotice($event)"
+          />
+        }
+
+        @if (checklist().length) {
+          <app-family-checklist-card
+            [rows]="checklist()"
+            (boughtToggle)="onToggleBought($event)"
+            (removeRow)="onRemoveClaim($event)"
+          />
+        }
+
+        <!-- An event with nothing to bring shows no list, to guests and organizers alike. -->
+        @if (progress().length) {
+          <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
+        }
+
+        <app-guest-list-card
+          class="print-section"
+          [households]="households()"
+          [forOrganizer]="canEdit()"
+          [declines]="declines()"
           [hasItems]="progress().length > 0"
-          [guestCount]="guestCount()"
-          [isLoading]="rsvpLoading()"
-          [guestName]="currentGuestName()"
-          [secretSanta]="mySecretSanta()"
-          [phone]="myPhone()"
-          (confirmRsvp)="onConfirmRsvp()"
-          (editRsvp)="onEditRsvp()"
-          (cancelRsvp)="onCancelRsvp($event)"
-          (declineRsvp)="onDeclineRsvp($event)"
-          (joinSanta)="onJoinSecretSantaOnly($event)"
-          (leaveSanta)="onLeaveSecretSanta()"
+          [pending]="pendingGuests()"
+          [busyGuestId]="approvingGuestId()"
+          (approve)="onApproveGuest($event)"
+          (refuse)="onRefuseGuest($event)"
+          (exportCsv)="exportGuests()"
+          (print)="printGuests()"
         />
-      }
 
-      @if (secretSantaNotice(); as notice) {
-        <app-notification-card
-          data-testid="event-secret-santa-notice"
-          readNote="Você já abriu seu resultado do amigo oculto. Se não anotou o nome, peça um novo link para quem organiza o evento."
-          [notification]="notice"
-          [dismissible]="false"
-          (opened)="openSecretSantaNotice($event)"
-        />
-      }
+        @if (showSecretSanta()) {
+          <app-secret-santa-card
+            [participants]="secretSantaParticipants()"
+            [isOwner]="isOwner()"
+            [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
+            [links]="secretSantaLinks()"
+            [outdated]="secretSantaOutdated()"
+            [drawing]="secretSantaDrawing()"
+            [resendingId]="secretSantaResendingId()"
+            [canEditParticipants]="false"
+            [selfJoinOpen]="secretSantaSelfJoinOpen()"
+            [duplicates]="secretSantaDoubtful()"
+            [busyDuplicateId]="secretSantaBusyDuplicate()"
+            (selfJoinChange)="onSecretSantaSelfJoin($event)"
+            (merge)="onMergeSecretSanta($event)"
+            (distinct)="onDistinctSecretSanta($event)"
+            (draw)="onDrawSecretSanta()"
+            (send)="onSendSecretSanta($event)"
+            (resend)="onResendSecretSanta($event)"
+            (editParticipants)="onEditSecretSanta()"
+          >
+            <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
+            @if (canEditEvent()) {
+              <app-secret-santa-participants
+                [participants]="secretSantaParticipants()"
+                [suggestions]="secretSantaSuggestions()"
+                [knownPeople]="secretSantaKnownPeople()"
+                [giftOptions]="!!event.secretSanta?.giftOptions"
+                [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+                [drawn]="!!secretSantaDraw()"
+                [saveNew]="saveNewSecretSantaParticipant"
+                (add)="addSecretSantaParticipants([$event])"
+                (addMany)="addSecretSantaParticipants($event)"
+                (update)="updateSecretSantaParticipant($event)"
+                (remove)="removeSecretSantaParticipant($event)"
+              />
+            }
+          </app-secret-santa-card>
+        }
 
-      @if (checklist().length) {
-        <app-family-checklist-card
-          [rows]="checklist()"
-          (boughtToggle)="onToggleBought($event)"
-          (removeRow)="onRemoveClaim($event)"
-        />
-      }
-
-      <!-- An event with nothing to bring shows no list, to guests and organizers alike. -->
-      @if (progress().length) {
-        <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
-      }
-
-      <app-guest-list-card
-        class="print-section"
-        [households]="households()"
-        [forOrganizer]="canEdit()"
-        [declines]="declines()"
-        [hasItems]="progress().length > 0"
-        [pending]="pendingGuests()"
-        [busyGuestId]="approvingGuestId()"
-        (approve)="onApproveGuest($event)"
-        (refuse)="onRefuseGuest($event)"
-        (exportCsv)="exportGuests()"
-        (print)="printGuests()"
-      />
-
-      @if (showSecretSanta()) {
-        <app-secret-santa-card
-          [participants]="secretSantaParticipants()"
-          [isOwner]="isOwner()"
-          [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
-          [links]="secretSantaLinks()"
-          [outdated]="secretSantaOutdated()"
-          [drawing]="secretSantaDrawing()"
-          [resendingId]="secretSantaResendingId()"
-          [canEditParticipants]="false"
-          [selfJoinOpen]="secretSantaSelfJoinOpen()"
-          [duplicates]="secretSantaDoubtful()"
-          [busyDuplicateId]="secretSantaBusyDuplicate()"
-          (selfJoinChange)="onSecretSantaSelfJoin($event)"
-          (merge)="onMergeSecretSanta($event)"
-          (distinct)="onDistinctSecretSanta($event)"
-          (draw)="onDrawSecretSanta()"
-          (send)="onSendSecretSanta($event)"
-          (resend)="onResendSecretSanta($event)"
-          (editParticipants)="onEditSecretSanta()"
-        >
-          <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
-          @if (canEditEvent()) {
-            <app-secret-santa-participants
-              [participants]="secretSantaParticipants()"
-              [suggestions]="secretSantaSuggestions()"
-              [knownPeople]="secretSantaKnownPeople()"
-              [giftOptions]="!!event.secretSanta?.giftOptions"
-              [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
-              [drawn]="!!secretSantaDraw()"
-              [saveNew]="saveNewSecretSantaParticipant"
-              (add)="addSecretSantaParticipants([$event])"
-              (addMany)="addSecretSantaParticipants($event)"
-              (update)="updateSecretSantaParticipant($event)"
-              (remove)="removeSecretSantaParticipant($event)"
-            />
-          }
-        </app-secret-santa-card>
-      }
-
-      @if (event.pixKey) {
-        <app-pix-card
-          [pixKey]="event.pixKey"
-          [pixType]="event.pixType"
-          [estimatedBudget]="event.estimatedBudget ?? null"
-          [guestCount]="guestCount()"
-        />
-      }
+        @if (event.pixKey) {
+          <app-pix-card
+            [pixKey]="event.pixKey"
+            [pixType]="event.pixType"
+            [estimatedBudget]="event.estimatedBudget ?? null"
+            [guestCount]="guestCount()"
+          />
+        }
+      </div>
     </div>
 
     <app-claim-sheet

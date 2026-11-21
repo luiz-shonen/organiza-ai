@@ -75,7 +75,7 @@
 
         <org-date-field
           label="Data de término (opcional)"
-          hint="Vazio: o evento é de um dia só."
+          [hint]="basicInfoForm.controls.endDate.value ? '' : 'O evento será de um dia só.'"
           [min]="basicInfoForm.controls.date.value || minDate()"
           [error]="endDateError()"
           formControlName="endDate"

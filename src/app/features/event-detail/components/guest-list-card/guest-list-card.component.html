@@ -89,6 +89,12 @@
               }
 
               @let holder = household.members[0];
+              @if (santaNames(household.id); as santa) {
+                <p class="guest-list__santa" data-testid="guest-list-santa">
+                  <org-icon name="redeem" size="sm" color="currentColor" />
+                  <span><strong>Amigo oculto:</strong> {{ santa }}</span>
+                </p>
+              }
               <div class="guest-list__holder">
                 @if (holder.bring.length) {
                   <p class="guest-list__bring">Leva:</p>

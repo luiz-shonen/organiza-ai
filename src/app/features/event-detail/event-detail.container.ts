@@ -214,6 +214,30 @@ export class EventDetailContainer implements OnInit {
     buildGuestHouseholds(this.listedGuests(), this.items(), this.claims()),
   );
 
+  /**
+   * Organizers only (the list holds phones): who of each household is in the amigo oculto, by
+   * household id — the guest, the relatives and companions they put in, or typed for them.
+   */
+  protected readonly householdSecretSanta = computed(() => {
+    const participants = this.secretSantaParticipants();
+    if (!participants.length) return {};
+    return Object.fromEntries(
+      this.households().map((household) => {
+        const uid = household.uid;
+        const names = participants
+          .filter(
+            (p) =>
+              p.joinedBy === uid ||
+              p.guestId === uid ||
+              p.guestId?.startsWith(`${uid}_`) ||
+              p.guestId?.startsWith(`${uid}#`),
+          )
+          .map((p) => p.name);
+        return [household.id, names];
+      }),
+    );
+  });
+
   /** Who said "Não poderei ir"; only the organizers may read it, so it loads for them only. */
   protected readonly declines = signal<GuestDecline[]>([]);
   private declinesLoadedFor: string | null = null;

@@ -7,6 +7,7 @@ import { GuestListCardComponent } from './guest-list-card.component';
 const households: GuestHousehold[] = [
   {
     id: 'u1',
+    uid: 'u1',
     name: 'Jéssica Melo',
     phone: '(31) 99267-7624',
     people: ['Luiz Rodrigues'],
@@ -18,6 +19,7 @@ const households: GuestHousehold[] = [
   },
   {
     id: 'u2',
+    uid: 'u2',
     name: 'Fernanda',
     phone: '',
     people: [],
@@ -42,6 +44,26 @@ async function render(forOrganizer: boolean) {
 }
 
 describe('GuestListCardComponent', () => {
+  it('tells organizers who of each household is in the amigo oculto', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    fixture.componentRef.setInput('households', households);
+    fixture.componentRef.setInput('forOrganizer', true);
+    fixture.componentRef.setInput('secretSanta', {
+      [households[0].id]: ['Jéssica Melo', 'Romero'],
+    });
+    fixture.detectChanges();
+    const lines = [
+      ...(fixture.nativeElement as HTMLElement).querySelectorAll(
+        '[data-testid="guest-list-santa"]',
+      ),
+    ].map((line) => line.querySelector('span')?.textContent?.replace(/\s+/g, ' ').trim());
+    expect(lines).toEqual(['Amigo oculto: Jéssica Melo e Romero']);
+  });
+
   it('says nothing about the list when the event has none to bring', async () => {
     await TestBed.configureTestingModule({
       imports: [GuestListCardComponent],

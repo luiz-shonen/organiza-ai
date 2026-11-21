@@ -70,6 +70,7 @@
         [forOrganizer]="canEdit()"
         [declines]="declines()"
         [hasItems]="progress().length > 0"
+        [secretSanta]="householdSecretSanta()"
         [pending]="pendingGuests()"
         [busyGuestId]="approvingGuestId()"
         (approve)="onApproveGuest($event)"

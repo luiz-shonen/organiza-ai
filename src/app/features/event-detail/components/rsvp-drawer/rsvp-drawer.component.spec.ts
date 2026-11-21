@@ -175,6 +175,43 @@ describe('RsvpDrawerComponent', () => {
       );
     });
 
+    it('asks the WhatsApp of a relative in the draw, filled from the profile, optional', () => {
+      open();
+      expect(el().querySelector('[data-testid="rsvp-santa-phone-1"]')).toBeNull();
+      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
+      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      // Not for the guest: their own number is the field above.
+      expect(el().querySelector('[data-testid="rsvp-santa-phone-0"]')).toBeNull();
+      const phone = el().querySelector(
+        'input[data-testid="rsvp-santa-phone-1"]',
+      ) as HTMLInputElement;
+      expect(phone).toBeTruthy();
+      phone.value = '21988880000';
+      phone.dispatchEvent(new Event('input'));
+      confirm();
+
+      expect(close).toHaveBeenCalledWith(
+        expect.objectContaining({ secretSantaPhones: { 'f:fam-ana': '(21) 98888-0000' } }),
+      );
+    });
+
+    it('refuses a WhatsApp typed for a relative that is not a phone', () => {
+      open();
+      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      const phone = el().querySelector(
+        'input[data-testid="rsvp-santa-phone-1"]',
+      ) as HTMLInputElement;
+      phone.value = '2198';
+      phone.dispatchEvent(new Event('input'));
+      confirm();
+      fixture.detectChanges();
+
+      expect(close).not.toHaveBeenCalled();
+      expect(el().textContent).toContain('Telefone inválido');
+    });
+
     it('opens an edit with who is already in, and leaves out someone no longer going', () => {
       open({ self: ['Livro'], 'f:fam-ana': [] });
       expect(

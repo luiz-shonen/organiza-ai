@@ -143,3 +143,37 @@ describe('isSecretSantaSelfJoinOpen and parseGiftLines', () => {
     expect(parseGiftLines(' Livro \r\n\nMeia\nCaneca', 2)).toEqual(['Livro', 'Meia']);
   });
 });
+
+describe('buildRsvpSecretSantaEntries: whose WhatsApp each link goes to', () => {
+  const build = (phones?: Record<string, string>) =>
+    buildRsvpSecretSantaEntries({
+      uid: 'u1',
+      name: 'Maria',
+      phone: '(11) 99999-8888',
+      familyMembers: [
+        { id: 'ana', name: 'Ana', phone: '(11) 97777-1111' },
+        { id: 'vo', name: 'Vó Lurdes' },
+      ],
+      companions: ['Romero'],
+      choice: { self: [], 'f:ana': [], 'f:vo': [], 'c:Romero': [] },
+      phones,
+    }).map((entry) => [entry.input.name, entry.input.phone]);
+
+  it('uses the number typed in the invite first, then the family profile, then the guest', () => {
+    expect(build({ 'f:vo': '11966665555', 'c:Romero': '(21) 98888-0000' })).toEqual([
+      ['Maria', '(11) 99999-8888'],
+      ['Ana', '(11) 97777-1111'],
+      ['Vó Lurdes', '(11) 96666-5555'],
+      ['Romero', '(21) 98888-0000'],
+    ]);
+  });
+
+  it('sends the link to the guest when nobody typed a number', () => {
+    expect(build()).toEqual([
+      ['Maria', '(11) 99999-8888'],
+      ['Ana', '(11) 97777-1111'],
+      ['Vó Lurdes', '(11) 99999-8888'],
+      ['Romero', '(11) 99999-8888'],
+    ]);
+  });
+});

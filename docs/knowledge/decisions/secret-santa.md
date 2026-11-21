@@ -47,8 +47,10 @@ everyone, the organizer included.
 - **Who a person is comes from the RSVP, never from the phone.** Each one gets a fixed entry id
   under the guest's account (`rsvp_{uid}`, `rsvp_{uid}_f_{familyId}`, `rsvp_{uid}_c_{name}`,
   `secretSantaRsvpId`), with `joinedBy: uid`; answering again updates it, never adds a second one.
-  The phone is only where the link goes: a relative without a phone of their own gets the guest's
-  (a grandmother's link on her daughter's WhatsApp, with "Olá, Ana!"), so two people may share it.
+  The phone is only where the link goes. Each relative or companion checked gets an optional
+  "WhatsApp de {nome}" (filled from the family profile, or from what was typed before); without
+  one the guest's is used (a grandmother's link on her daughter's WhatsApp, with "Olá, Ana!"), so
+  two people may share it.
 - "Não poderei ir" offers "Mesmo sem ir, quero participar do amigo oculto" (phone and gift options);
   after declining, the card shows "Quero participar só do amigo oculto" or "Sair do amigo oculto".
   Cancelling a presence takes the relatives and companions out with it.

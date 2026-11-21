@@ -209,8 +209,9 @@ export function rsvpSecretSantaEntryId(uid: string, key: string): string {
 }
 
 /**
- * The entries a guest writes from the invite. Relatives and companions without a phone of their
- * own get the guest's phone: their links go to the guest's WhatsApp, with their own name.
+ * The entries a guest writes from the invite. A relative or companion gets the WhatsApp typed for
+ * them in the invite, else (a relative) the one in the family profile, else the guest's: then
+ * their link goes to the guest's WhatsApp, with their own name.
  */
 export function buildRsvpSecretSantaEntries(params: {
   readonly uid: string;
@@ -219,8 +220,11 @@ export function buildRsvpSecretSantaEntries(params: {
   readonly familyMembers: readonly { id: string; name: string; phone?: string }[];
   readonly companions: readonly string[];
   readonly choice: Readonly<Record<string, readonly string[]>>;
+  /** WhatsApp typed in the invite for a relative or companion, by key. */
+  readonly phones?: Readonly<Record<string, string>>;
 }): { id: string; input: SecretSantaParticipantInput }[] {
   const { uid, name, phone, familyMembers, companions, choice } = params;
+  const typed = (key: string) => Phone.create(params.phones?.[key] ?? '')?.formatted;
   return Object.entries(choice).flatMap(([key, gifts]) => {
     const giftOptions = [...gifts];
     const id = rsvpSecretSantaEntryId(uid, key);
@@ -236,7 +240,7 @@ export function buildRsvpSecretSantaEntries(params: {
           id,
           input: {
             name: member.name,
-            phone: own || phone,
+            phone: typed(key) || own || phone,
             giftOptions,
             guestId: `${uid}_${member.id}`,
           },
@@ -248,7 +252,12 @@ export function buildRsvpSecretSantaEntries(params: {
     return [
       {
         id,
-        input: { name: companions[index], phone, giftOptions, guestId: `${uid}#${index}` },
+        input: {
+          name: companions[index],
+          phone: typed(key) || phone,
+          giftOptions,
+          guestId: `${uid}#${index}`,
+        },
       },
     ];
   });

@@ -90,6 +90,9 @@ export class RsvpDrawerComponent {
   protected readonly santaChecked = signal<readonly RsvpSecretSantaKey[]>([]);
   protected readonly santaGifts = signal<Readonly<Record<RsvpSecretSantaKey, string>>>({});
   private readonly santaGiftsError = signal(false);
+  /** A relative's or companion's own WhatsApp, for their link; empty, it goes to the guest's. */
+  protected readonly santaPhones = signal<Readonly<Record<RsvpSecretSantaKey, string>>>({});
+  private readonly santaPhonesError = signal(false);
   protected readonly giftLineMax = GiftOption.RULES.max;
   /** The guest, then the relatives and companions checked above: only who is going. */
   protected readonly santaPeople = computed<RsvpSantaPerson[]>(() => {
@@ -127,6 +130,13 @@ export class RsvpDrawerComponent {
       this.santaGifts.set(
         Object.fromEntries(Object.entries(joined).map(([key, gifts]) => [key, gifts.join('\n')])),
       );
+      // Typed before, else the relative's phone in the family profile.
+      const profilePhones = Object.fromEntries(
+        (data.familyMembers ?? [])
+          .filter((member) => member.phone)
+          .map((member) => [`f:${member.id}`, Phone.mask(member.phone ?? '')]),
+      );
+      this.santaPhones.set({ ...profilePhones, ...(data.secretSanta?.phones ?? {}) });
     });
   }
 
@@ -142,6 +152,27 @@ export class RsvpDrawerComponent {
 
   protected setSantaGifts(key: RsvpSecretSantaKey, text: string): void {
     this.santaGifts.update((all) => ({ ...all, [key]: text }));
+  }
+
+  protected setSantaPhone(key: RsvpSecretSantaKey, phone: string): void {
+    this.santaPhones.update((all) => ({ ...all, [key]: phone }));
+  }
+
+  /** A number typed but not a phone; empty is fine (the link goes to the guest). */
+  protected santaPhoneError(key: RsvpSecretSantaKey): string {
+    if (!this.santaPhonesError()) return '';
+    const typed = (this.santaPhones()[key] ?? '').trim();
+    return typed && !Phone.create(typed) ? 'Telefone inválido: confira o DDD e o número.' : '';
+  }
+
+  /** The WhatsApp of the relatives and companions checked, formatted; empty ones left out. */
+  private santaPhoneChoice(choice: Readonly<Record<RsvpSecretSantaKey, unknown>>) {
+    return Object.fromEntries(
+      Object.keys(choice)
+        .filter((key) => key !== 'self')
+        .map((key) => [key, Phone.create(this.santaPhones()[key] ?? '')?.formatted ?? ''] as const)
+        .filter(([, phone]) => phone),
+    );
   }
 
   /** The error of one person's gift options: the first line too short or too long. */
@@ -234,6 +265,14 @@ export class RsvpDrawerComponent {
       this.santaGiftsError.set(true);
       return;
     }
+    const badPhone = Object.keys(santa ?? {}).some((key) => {
+      const typed = (this.santaPhones()[key] ?? '').trim();
+      return key !== 'self' && typed && !Phone.create(typed);
+    });
+    if (badPhone) {
+      this.santaPhonesError.set(true);
+      return;
+    }
 
     const raw = this.form.getRawValue();
     const result: RsvpDrawerResult = {
@@ -243,7 +282,7 @@ export class RsvpDrawerComponent {
       selectedFamilyMembers: this.familyMembers().filter((member) =>
         this.selectedFamilyMemberIds().includes(member.id),
       ),
-      ...(santa ? { secretSanta: santa } : {}),
+      ...(santa ? { secretSanta: santa, secretSantaPhones: this.santaPhoneChoice(santa) } : {}),
     };
     this.submitted.emit(result);
   }

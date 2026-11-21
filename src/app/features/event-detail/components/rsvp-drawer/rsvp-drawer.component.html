@@ -73,10 +73,7 @@
         >
           <h3 id="rsvp-santa-title" class="rsvp-drawer__santa-title">Amigo oculto</h3>
           @if (santa.open) {
-            <p class="rsvp-drawer__santa-text">
-              Quem vai participar do sorteio? Marque cada pessoa. Quem não tem telefone recebe o
-              link no seu WhatsApp, com o nome dela na mensagem.
-            </p>
+            <p class="rsvp-drawer__santa-text">Quem vai participar do sorteio?</p>
             @for (person of santaPeople(); track person.key; let i = $index) {
               <div class="rsvp-drawer__santa-person">
                 <org-checkbox
@@ -85,6 +82,19 @@
                   [checked]="isSantaChecked(person.key)"
                   (checkedChange)="setSantaChecked(person.key, $event)"
                 />
+                @if (person.key !== 'self' && isSantaChecked(person.key)) {
+                  <org-text-field
+                    type="tel"
+                    placeholder="(11) 99999-9999"
+                    hint="Opcional: sem número, o link vai para o seu WhatsApp."
+                    [label]="'WhatsApp de ' + person.name"
+                    [mask]="maskPhone"
+                    [testId]="'rsvp-santa-phone-' + i"
+                    [error]="santaPhoneError(person.key)"
+                    [value]="santaPhones()[person.key] ?? ''"
+                    (valueChange)="setSantaPhone(person.key, $event)"
+                  />
+                }
                 @if (santa.giftOptions && isSantaChecked(person.key)) {
                   <org-textarea-field
                     [label]="santaGiftLabel(person)"

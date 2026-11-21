@@ -938,6 +938,13 @@ export class EventDetailContainer implements OnInit {
     ];
     const idToKey = new Map(keys.map((key) => [rsvpSecretSantaEntryId(uid, key), key]));
     const entries = await this.secretSantaService.getOwnEntries(this.id(), [...idToKey.keys()]);
+    // A relative's or companion's own WhatsApp, typed before; the guest's phone was only a fallback.
+    const ownPhone = entries.find((entry) => idToKey.get(entry.id) === 'self')?.phone;
+    const phones = Object.fromEntries(
+      entries
+        .map((entry) => [idToKey.get(entry.id) ?? 'self', entry.phone ?? ''] as const)
+        .filter(([key, phone]) => key !== 'self' && phone && phone !== ownPhone),
+    );
     return {
       existingIds: entries.map((entry) => entry.id),
       data: {
@@ -948,6 +955,7 @@ export class EventDetailContainer implements OnInit {
         joined: Object.fromEntries(
           entries.map((entry) => [idToKey.get(entry.id) ?? 'self', entry.giftOptions]),
         ),
+        phones,
       },
     };
   }
@@ -1022,6 +1030,7 @@ export class EventDetailContainer implements OnInit {
         familyMembers: result.selectedFamilyMembers,
         companions: result.companions.map((companion) => companion.name),
         choice: result.secretSanta ?? {},
+        phones: result.secretSantaPhones,
       });
       const keep = new Set(entries.map((entry) => entry.id));
       await this.secretSantaService.saveOwnEntries(

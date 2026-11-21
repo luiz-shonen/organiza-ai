@@ -23,6 +23,8 @@ export interface RsvpDrawerResult {
   selectedFamilyMembers: FamilyMember[];
   /** Who takes part in the amigo oculto; missing when the event has none or sign-ups are closed. */
   secretSanta?: RsvpSecretSantaChoice;
+  /** A WhatsApp for a relative or companion in the draw; without one, the guest's is used. */
+  secretSantaPhones?: Readonly<Record<string, string>>;
 }
 
 export interface CollaboratorDrawerRequestData {

@@ -99,7 +99,15 @@
   animation: invite-letter-open 0.6s 0.7s var(--org-motion-ease-emphasized) both;
   background: var(--org-invite-flap);
   block-size: var(--invite-letter-flap);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
+
+  // Rounded top corners like the envelope's; the triangle is cut by a mask (a clip-path would
+  // square the corners off and let them stick out past the envelope's).
+  border-radius: var(--org-radius-md) var(--org-radius-md) 0 0;
+  mask:
+    linear-gradient(to bottom left, var(--org-invite-flap) 50%, transparent 50%) left / 50% 100%
+      no-repeat,
+    linear-gradient(to bottom right, var(--org-invite-flap) 50%, transparent 50%) right / 50% 100%
+      no-repeat;
   inset: 0 0 auto;
   position: absolute;
   transform-origin: top center;

@@ -239,9 +239,13 @@ Uso recomendado: `<org-avatar [name]="user.displayName" [photoUrl]="user.photoUR
 
 Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the login screen. Calendar mark plus the gradient wordmark; the surrounding link provides the accessible name. The mark is an inline SVG animated with CSS only: every 6s the calendar hops, the check is drawn and confetti bursts from it; `[animated]="false"` and `prefers-reduced-motion` keep it still. `public/icons/favicon.svg` is the same mark, and the PNG/ICO icons are rendered from it.
 
+### OrgPartyDriftComponent
+
+Uso recomendado: `<org-party-drift />` inside a positioned, full-size layer, as the app shell does on the confetti backdrop (`.app-backdrop--festive`). A few balloons and confetti in the palette colours drift slowly up behind the content, clipped by the layer. Decorative (`aria-hidden`), no pointer events, hidden under `prefers-reduced-motion`.
+
 ### OrgSegmentedControlComponent
 
-Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
+Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil, or "Mais antigos / Mais recentes" in Meus eventos. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
 
 ### OrgDateBadgeComponent
 

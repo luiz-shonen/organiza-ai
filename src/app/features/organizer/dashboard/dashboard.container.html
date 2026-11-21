@@ -17,12 +17,20 @@
         <app-next-event-banner [event]="event" />
       }
 
-      <h2 class="dashboard__list-title" id="dashboard-list-title">
-        {{ listTitle() }}
-        <span class="dashboard__list-count" data-testid="dashboard-list-count">{{
-          cards().length
-        }}</span>
-      </h2>
+      <div class="dashboard__list-head">
+        <h2 class="dashboard__list-title" id="dashboard-list-title">
+          {{ listTitle() }}
+          <span class="dashboard__list-count" data-testid="dashboard-list-count">{{
+            cards().length
+          }}</span>
+        </h2>
+        <org-segmented-control
+          ariaLabel="Ordem dos eventos por data"
+          [options]="dateOrders"
+          [value]="dateOrder()"
+          (valueChange)="setDateOrder($event)"
+        />
+      </div>
 
       <org-filter-bar
         ariaLabel="Filtros de status dos eventos"

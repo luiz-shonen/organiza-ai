@@ -53,6 +53,14 @@
 }
 
 // "Próximos eventos 3": the same heading as Início.
+.dashboard__list-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm) var(--org-space-md);
+  justify-content: space-between;
+}
+
 .dashboard__list-title {
   align-items: center;
   color: var(--org-on-surface);

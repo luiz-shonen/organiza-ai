@@ -939,16 +939,32 @@ export class EventDetailContainer implements OnInit {
     }
   }
 
+  /** Google sign-in from the invite itself; null when they closed it or were sent to log in. */
+  private async signInToAnswer(): Promise<ReturnType<AuthService['currentUser']>> {
+    try {
+      await this.authService.loginWithGoogle();
+      return this.authService.currentUser();
+    } catch (err: unknown) {
+      const code = (err as { code?: string } | null)?.code ?? '';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        return null;
+      }
+      await this.router.navigate(['/login'], {
+        queryParams: { redirect: '/evento/' + this.id() },
+      });
+      return null;
+    }
+  }
+
   protected async onConfirmRsvp(event?: Event, editing = false): Promise<void> {
     this.rsvpLoading.set(true);
     try {
-      const user = this.authService.currentUser();
+      let user = this.authService.currentUser();
       if (!user || user.isAnonymous) {
-        // Answering needs an account: sign in, then come back to this invite.
-        await this.router.navigate(['/login'], {
-          queryParams: { redirect: '/evento/' + this.id() },
-        });
-        return;
+        // Answering needs an account: Google right here, then on with the answer. Only when the
+        // pop-up cannot open does the sign-in page take over (and bring them back).
+        user = await this.signInToAnswer();
+        if (!user) return;
       }
 
       // The guest is named as on their profile; the RSVP never edits the name.

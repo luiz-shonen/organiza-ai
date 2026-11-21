@@ -72,6 +72,7 @@ export { OrgAvatarComponent } from './data-display/org-avatar.component';
 export type { OrgAvatarSize } from './data-display/org-avatar.component';
 export { OrgLogoComponent } from './brand/org-logo.component';
 export type { OrgLogoSize } from './brand/org-logo.component';
+export { OrgPartyDriftComponent } from './brand/org-party-drift.component';
 export { OrgSegmentedControlComponent } from './selection/org-segmented-control.component';
 export type { OrgSegmentedOption } from './selection/org-segmented-control.component';
 export { OrgDateBadgeComponent } from './data-display/org-date-badge.component';

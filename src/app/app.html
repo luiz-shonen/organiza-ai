@@ -48,7 +48,12 @@
       class="app-backdrop"
       [class.app-backdrop--festive]="isFestiveBackdrop()"
       aria-hidden="true"
-    ></div>
+    >
+      <!-- On the confetti backdrop, balloons and confetti drift slowly up. -->
+      @if (isFestiveBackdrop()) {
+        <org-party-drift />
+      }
+    </div>
     <app-seasonal-overlay />
     @if (showHeader()) {
       <mat-toolbar class="app-toolbar" role="banner">

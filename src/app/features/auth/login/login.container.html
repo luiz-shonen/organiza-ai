@@ -60,18 +60,6 @@
   </main>
 } @else {
   <main class="login" data-testid="login-page" [class.login--welcome]="!emailSignIn()">
-    <!-- Party bits drifting up behind the card; decoration only. -->
-    <div class="login__party" aria-hidden="true">
-      @for (bit of partyBits; track $index) {
-        <span
-          [class]="'login__bit login__bit--' + bit.shape + ' login__bit--' + bit.tone"
-          [style.inset-inline-start.%]="bit.x"
-          [style.animation-delay.s]="bit.delay"
-          [style.animation-duration.s]="bit.duration"
-        ></span>
-      }
-    </div>
-
     <org-surface variant="card" class="login__card">
       <div class="login__card-content">
         <!-- Someone sent here by an invite is told so; anyone else hears what the app does. -->

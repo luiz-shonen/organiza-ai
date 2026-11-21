@@ -231,60 +231,6 @@
     }
   }
 
-  // Balloons and confetti rising behind the card, clipped by the page.
-  &__party {
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-  }
-
-  &__bit {
-    animation: login-drift linear infinite;
-    inset-block-start: 100%;
-    opacity: 0.55;
-    position: absolute;
-
-    &--balloon {
-      animation-name: login-balloon;
-      block-size: 46px;
-      border-radius: var(--org-radius-full);
-      inline-size: 38px;
-
-      // The string.
-      &::after {
-        background: var(--org-outline);
-        block-size: 40px;
-        content: '';
-        inline-size: 1px;
-        inset-block-start: 100%;
-        inset-inline-start: 50%;
-        position: absolute;
-      }
-    }
-
-    &--confetti {
-      block-size: 14px;
-      border-radius: var(--org-radius-xs);
-      inline-size: 8px;
-    }
-
-    &--primary {
-      background: var(--org-primary);
-    }
-
-    &--secondary {
-      background: var(--org-secondary);
-    }
-
-    &--tertiary {
-      background: var(--org-tertiary);
-    }
-
-    &--success {
-      background: var(--org-success);
-    }
-  }
-
   &__intro {
     align-items: center;
     display: flex;
@@ -480,31 +426,6 @@
   }
 }
 
-// Balloons rise swaying, upright; confetti tumbles.
-@keyframes login-balloon {
-  0% {
-    transform: translateY(0) rotate(-4deg);
-  }
-
-  50% {
-    transform: translateY(calc(-50dvh - 60px)) translateX(18px) rotate(5deg);
-  }
-
-  100% {
-    transform: translateY(calc(-100dvh - 120px)) rotate(-4deg);
-  }
-}
-
-@keyframes login-drift {
-  from {
-    transform: translateY(0) rotate(0);
-  }
-
-  to {
-    transform: translateY(calc(-100dvh - 120px)) rotate(200deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .login__sealed,
   .login__sealed *,
@@ -517,10 +438,6 @@
   .login__feature-icon,
   .login__google-btn {
     animation: none;
-  }
-
-  .login__party {
-    display: none;
   }
 
   .login__sealed {

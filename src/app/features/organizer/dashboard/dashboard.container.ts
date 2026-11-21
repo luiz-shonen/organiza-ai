@@ -29,6 +29,7 @@ import {
   OrgEmptyStateComponent,
   OrgExpansionPanelComponent,
   OrgFilterBarComponent,
+  OrgSegmentedControlComponent,
   OrgIconButtonComponent,
   OrgInsightCardComponent,
   OrgPageHeaderComponent,
@@ -36,6 +37,7 @@ import {
   OrgProgressComponent,
   OrgSkeletonComponent,
   type OrgFilterOption,
+  type OrgSegmentedOption,
   type OrgInsightTone,
 } from '../../../shared/ui';
 import {
@@ -45,6 +47,8 @@ import {
 import { NextEventBannerComponent } from '../../../shared/components/next-event-banner/next-event-banner.component';
 
 export type EventStatusFilter = 'all' | 'soon' | 'scheduled' | 'past' | 'cancelled';
+/** By the event's date: earliest first (the default) or latest first. */
+export type EventDateOrder = 'oldest' | 'newest';
 
 /** "Em breve" means really close: at most this many days away. Further ahead is "Agendado". */
 export const SOON_DAYS = 5;
@@ -90,6 +94,7 @@ function isUpcoming(event: PartyEvent): boolean {
     OrgEmptyStateComponent,
     OrgExpansionPanelComponent,
     OrgFilterBarComponent,
+    OrgSegmentedControlComponent,
     OrgIconButtonComponent,
     OrgInsightCardComponent,
     OrgPageHeaderComponent,
@@ -129,6 +134,11 @@ export class DashboardContainer {
 
   /** The filter chips on; `['all']` shows every event. */
   readonly activeFilters = signal<readonly EventStatusFilter[]>(['all']);
+  readonly dateOrder = signal<EventDateOrder>('oldest');
+  protected readonly dateOrders: readonly OrgSegmentedOption<EventDateOrder>[] = [
+    { value: 'oldest', label: 'Mais antigos', testId: 'date-order-oldest' },
+    { value: 'newest', label: 'Mais recentes', testId: 'date-order-newest' },
+  ];
   private readonly stats = signal<Readonly<Record<string, EventStats>>>({});
 
   protected readonly filters: readonly OrgFilterOption<EventStatusFilter>[] = [
@@ -157,7 +167,15 @@ export class DashboardContainer {
     return count === 1 ? '1 evento que você organiza' : `${count} eventos que você organiza`;
   });
 
+  /** The chosen chips, in the chosen date order. */
   readonly filteredEvents = computed(() => {
+    const byDate = (a: PartyEvent, b: PartyEvent) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime();
+    const list = [...this.statusFiltered()].sort(byDate);
+    return this.dateOrder() === 'newest' ? list.reverse() : list;
+  });
+
+  private readonly statusFiltered = computed(() => {
     const all = this.events() ?? [];
     const picked = this.activeFilters();
     // "Todos" is what is still to come; past and cancelled events have their own chips.
@@ -311,6 +329,10 @@ export class DashboardContainer {
       strong: stats.guests === 1 ? '1 pessoa confirmada' : `${stats.guests} pessoas confirmadas`,
       rest: ' até agora. Que tal lembrar quem ainda não respondeu?',
     };
+  }
+
+  protected setDateOrder(order: string): void {
+    this.dateOrder.set(order === 'newest' ? 'newest' : 'oldest');
   }
 
   protected setFilters(ids: string[]): void {

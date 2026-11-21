@@ -327,7 +327,32 @@ describe('EventDetailContainer', () => {
   });
 
   describe('RSVP 1-Touch flow', () => {
-    it('sends a visitor without an account to sign in, and back to the invite', async () => {
+    it('signs a visitor in with Google right there, then goes on to the answer', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      fixture.detectChanges();
+
+      await component['onConfirmRsvp']();
+      await settle();
+
+      expect(mockAuthService.loginWithGoogle).toHaveBeenCalled();
+      expect(navigate).not.toHaveBeenCalledWith(['/login'], expect.anything());
+      expect(mockDrawerService.open).toHaveBeenCalled();
+    });
+
+    it('stays put when the visitor closes the Google pop-up', async () => {
+      mockAuthService.loginWithGoogle.mockRejectedValueOnce({ code: 'auth/popup-closed-by-user' });
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      fixture.detectChanges();
+
+      await component['onConfirmRsvp']();
+      await settle();
+
+      expect(navigate).not.toHaveBeenCalled();
+      expect(mockDrawerService.open).not.toHaveBeenCalled();
+    });
+
+    it('falls back to the sign-in page when the pop-up cannot open', async () => {
+      mockAuthService.loginWithGoogle.mockRejectedValueOnce({ code: 'auth/popup-blocked' });
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       fixture.detectChanges();
 
@@ -338,7 +363,6 @@ describe('EventDetailContainer', () => {
         queryParams: { redirect: '/evento/evt-123' },
       });
       expect(mockDrawerService.open).not.toHaveBeenCalled();
-      expect(mockGuestService.batchConfirmRsvp).not.toHaveBeenCalled();
     });
 
     it('opens the RSVP drawer and persists the verified attendee through the batch contract', async () => {

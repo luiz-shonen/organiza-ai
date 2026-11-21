@@ -93,18 +93,6 @@ export class LoginContainer {
   protected readonly sealedInitial = computed(() =>
     inviteInitial(this.invitedEvent()?.creatorName || this.invitedEvent()?.title),
   );
-  /** Balloons and confetti drifting up behind the welcome card. */
-  protected readonly partyBits = [
-    { shape: 'balloon', tone: 'primary', x: 8, delay: 0, duration: 14 },
-    { shape: 'confetti', tone: 'secondary', x: 18, delay: -6, duration: 11 },
-    { shape: 'balloon', tone: 'success', x: 27, delay: -3, duration: 16 },
-    { shape: 'confetti', tone: 'tertiary', x: 38, delay: -9, duration: 12 },
-    { shape: 'confetti', tone: 'primary', x: 62, delay: -2, duration: 13 },
-    { shape: 'balloon', tone: 'tertiary', x: 72, delay: -8, duration: 15 },
-    { shape: 'confetti', tone: 'success', x: 82, delay: -4, duration: 10 },
-    { shape: 'balloon', tone: 'secondary', x: 91, delay: -11, duration: 17 },
-  ] as const;
-
   protected readonly features = [
     { icon: 'mail', text: 'Convites com cara de convite' },
     { icon: 'how_to_reg', text: 'Quem vai, confirmado com um toque' },

@@ -1,0 +1,13 @@
+@for (bit of bits; track $index) {
+  <span
+    [class]="
+      'org-party-drift__bit org-party-drift__bit--' +
+      bit.shape +
+      ' org-party-drift__bit--' +
+      bit.tone
+    "
+    [style.inset-inline-start.%]="bit.x"
+    [style.animation-delay.s]="bit.delay"
+    [style.animation-duration.s]="bit.duration"
+  ></span>
+}

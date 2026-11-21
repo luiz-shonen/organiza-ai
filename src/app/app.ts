@@ -23,6 +23,7 @@ import { OrgButtonComponent } from './shared/ui/actions/org-button.component';
 import { OrgAvatarComponent } from './shared/ui/data-display/org-avatar.component';
 import { OrgThemeToggleComponent } from './shared/ui/actions/org-theme-toggle.component';
 import { OrgLogoComponent } from './shared/ui/brand/org-logo.component';
+import { OrgPartyDriftComponent } from './shared/ui/brand/org-party-drift.component';
 import {
   OrgNavBarComponent,
   type OrgNavBarItem,
@@ -68,6 +69,7 @@ const PROFILE_ITEM: OrgNavBarItem = {
     OrgAvatarComponent,
     OrgThemeToggleComponent,
     OrgLogoComponent,
+    OrgPartyDriftComponent,
     OrgNavBarComponent,
     RsvpDrawerComponent,
     CollaboratorDrawerComponent,

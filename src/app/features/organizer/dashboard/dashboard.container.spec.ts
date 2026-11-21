@@ -162,10 +162,17 @@ describe('DashboardContainer', () => {
     expect(mockEventService.getUserEvents).toHaveBeenCalledWith('user-1');
     expect(component.filteredEvents().map((event) => event.id)).toEqual(['evt-1']);
     component.activeFilters.set(['soon', 'past', 'cancelled']);
+    // By date, earliest first unless "Mais recentes" is picked.
     expect(component.filteredEvents().map((event) => event.id)).toEqual([
+      'evt-2',
+      'evt-1',
+      'evt-3',
+    ]);
+    component.dateOrder.set('newest');
+    expect(component.filteredEvents().map((event) => event.id)).toEqual([
+      'evt-3',
       'evt-1',
       'evt-2',
-      'evt-3',
     ]);
   });
 

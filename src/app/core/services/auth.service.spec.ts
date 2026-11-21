@@ -23,7 +23,13 @@ const mocks = vi.hoisted(() => {
     mockSignInWithPopup: vi.fn(),
     mockSignOut: vi.fn(),
     mockSendEmailVerification: vi.fn(),
-    MockGoogleAuthProvider: class MockGoogleAuthProvider {},
+    MockGoogleAuthProvider: class MockGoogleAuthProvider {
+      customParameters: Record<string, string> = {};
+      setCustomParameters(params: Record<string, string>) {
+        this.customParameters = params;
+        return this;
+      }
+    },
   };
 });
 
@@ -209,6 +215,15 @@ describe('AuthService', () => {
       expect(mocks.mockSendEmailVerification).toHaveBeenCalledWith(superAdminUser);
       expect(service.currentUser()).toEqual(superAdminUser);
       expect(service.isSuperAdmin()).toBe(true);
+    });
+
+    it('always lets the person pick the Google account, also right after signing out', async () => {
+      mocks.mockSignInWithPopup.mockResolvedValue({ user: superAdminUser } as UserCredential);
+      await service.loginWithGoogle();
+      const provider = mocks.mockSignInWithPopup.mock.calls.at(-1)?.[1] as {
+        customParameters: Record<string, string>;
+      };
+      expect(provider.customParameters).toEqual({ prompt: 'select_account' });
     });
   });
 

@@ -72,6 +72,9 @@ export class AuthService {
 
   async loginWithGoogle(): Promise<void> {
     const provider = new GoogleAuthProvider();
+    // Always ask which Google account: after signing out, the next sign-in must let the person
+    // stay with the same account or pick another, not reuse the last one silently.
+    provider.setCustomParameters({ prompt: 'select_account' });
     const result = await signInWithPopup(this.auth, provider);
     this._currentUser.set(result.user);
     this._isSuperAdmin.set(this.isSuperAdminEmail(result.user.email));

@@ -132,13 +132,15 @@ How the app behaves for organizers and guests. Data and permissions are in
   double frame, scrolled corners and medallions, a handwritten greeting and a line in the tone of
   a formal printed invitation, a little over the top on purpose ("Boas Festas!", "Rogamos a honra
   de vossa presença à mesa natalina"), title, date block, description and "Cordialmente,
-  {organizer}". Themes: Natal, Aniversário (also chá de bebê, batizado), Casamento (also noivado,
-  chá de panela), Festa Junina, and the app colours for the rest. See DESIGN.md, "Invitation
-  themes".
+  {organizer}". Every ready-made category (and a few often typed: noivado, mesversário,
+  réveillon) has its own greeting and line, so a Batizado never says a birthday's words; any other
+  category says the "Outros" words ("Prezadíssimo convidado"). Colours come in five palettes:
+  Natal, Aniversário (also mesversário, chá de bebê, batizado), Casamento (also noivado, chá de
+  panela), Festa Junina, and the app colours for the rest. See DESIGN.md, "Invitation themes".
 - The paper is light in the light theme and dark in the dark one, each theme with its own dark
   tone (`$invite-themes-dark`); the envelopes follow.
-- The category shows only where the greeting does not already say it: none on "Boas Festas!",
-  "Churrasco" in small capitals over "Prezadíssimo convidado" (never a bare "Outros").
+- The category shows only where the words do not already say it: a typed "Sarau" in small
+  capitals over "Prezadíssimo convidado" (never a bare "Outros"); none for the known ones.
 - Each time the invitation opens it unfolds, its frame draws itself, greeting and signature are
   written in and the rest comes in in reading order (about 3 s); with reduced motion it is simply
   there.

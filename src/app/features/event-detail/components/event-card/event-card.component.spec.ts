@@ -98,9 +98,12 @@ describe('EventCardComponent (Event Detail)', () => {
   it('names the party only when the greeting does not ("Boas Festas!" needs no tag)', () => {
     const category = () => element().querySelector('.event-card__category')?.textContent?.trim();
     expect(category()).toBeUndefined();
+    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Sarau' });
+    fixture.detectChanges();
+    expect(category()).toBe('Sarau');
     fixture.componentRef.setInput('event', { ...mockEvent, category: 'Churrasco' });
     fixture.detectChanges();
-    expect(category()).toBe('Churrasco');
+    expect(category()).toBeUndefined();
     fixture.componentRef.setInput('event', { ...mockEvent, category: 'Natal' });
     fixture.detectChanges();
     expect(category()).toBeUndefined();

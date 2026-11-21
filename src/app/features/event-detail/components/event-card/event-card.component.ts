@@ -38,12 +38,14 @@ export class EventCardComponent {
   /** The colours and words of the invitation, from the category. */
   protected readonly theme = computed(() => inviteTheme(this.event().category));
   /**
-   * "Churrasco", in small capitals above the greeting: only when the greeting does not already
-   * say what the party is ("Arraiá de gala" needs no "Festa Junina" tag), and never a bare "Outros".
+   * The party's name in small capitals above the greeting, only for a category the invitation
+   * has no words of its own for ("Sarau", over "Prezadíssimo convidado"), never a bare "Outros".
    */
   protected readonly categoryLine = computed(() => {
     const category = (this.event().category ?? '').trim();
-    if (this.theme().key !== 'padrao' || !category || /^outros?$/i.test(category)) return null;
+    if (this.theme().wordsKey !== 'outros' || !category || /^outros?$/i.test(category)) {
+      return null;
+    }
     return category;
   });
   /** The four corners of the frame, each with the same flourish turned to face its corner. */

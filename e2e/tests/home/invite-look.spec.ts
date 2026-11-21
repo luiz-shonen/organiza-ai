@@ -93,6 +93,8 @@ test.describe('Convites com cara de convite', () => {
   test('the invitation follows the theme, says the party once, and draws itself in', async ({
     page,
   }) => {
+    // Six invitations in two themes, each drawn in for about 3 s.
+    test.setTimeout(150_000);
     const churrasco = buildGuestEvent({
       id: 'evt-churrasco',
       title: 'Churrasco do Pedro',
@@ -102,7 +104,35 @@ test.describe('Convites com cara de convite', () => {
       creatorName: 'Pedro',
       guests: [],
     });
-    const events = [...invites, churrasco];
+    const batizado = buildGuestEvent({
+      id: 'evt-batizado',
+      title: 'Batizado do Theo',
+      category: 'Batizado',
+      description: 'Missa às 10h e almoço em seguida.',
+      date: inDays(35),
+      creatorName: 'Carla',
+      guests: [],
+    });
+    // A category typed by the organizer, with no words of its own.
+    const sarau = buildGuestEvent({
+      id: 'evt-sarau',
+      title: 'Sarau de poesia',
+      category: 'Sarau',
+      description: 'Traga um poema.',
+      date: inDays(45),
+      creatorName: 'Bia',
+      guests: [],
+    });
+    const events = [...invites, churrasco, batizado, sarau];
+    // Each kind of party says its own words; the typed one says the "Outros" words.
+    const greetings: Record<string, string> = {
+      'evt-natal': 'Boas Festas!',
+      'evt-aniversario': 'Celebremos!',
+      'evt-casamento': 'Com júbilo',
+      'evt-churrasco': 'Às brasas!',
+      'evt-batizado': 'Com fé e alegria',
+      'evt-sarau': 'Prezadíssimo convidado',
+    };
     await setupMockAuthSession(page, {
       uid: GUEST_UID,
       email: 'convidada@exemplo.com',
@@ -118,13 +148,13 @@ test.describe('Convites com cara de convite', () => {
 
     for (const mode of ['light', 'dark'] as const) {
       await page.addInitScript((value) => localStorage.setItem('theme_mode', value), mode);
-      for (const id of ['evt-natal', 'evt-aniversario', 'evt-casamento', 'evt-churrasco']) {
+      for (const [id, greeting] of Object.entries(greetings)) {
         await page.goto(`/evento/${id}`);
         const invitation = page.getByTestId('event-invitation');
-        await expect(invitation).toBeVisible();
+        await expect(invitation.locator('.event-card__greeting')).toHaveText(greeting);
         // "Boas Festas!" already says it: no "Natal" tag. "Prezadíssimo convidado" does not.
         await expect(invitation.locator('.event-card__category')).toHaveCount(
-          id === 'evt-churrasco' ? 1 : 0,
+          id === 'evt-sarau' ? 1 : 0,
         );
         // The signature is the last line written in: once it is all there, the paper is done.
         await invitation.evaluate((el) =>

@@ -81,7 +81,6 @@ import {
   type SecretSantaParticipantUpdate,
   type SecretSantaSuggestion,
 } from './components/event-secret-santa-step/event-secret-santa-step.component';
-import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
   OrgDialogService,
@@ -124,7 +123,6 @@ export type EditorStepSlug = (typeof EDITOR_STEP_SLUGS)[number];
     OrgStepComponent,
     OrgStepperComponent,
     OrgSurfaceComponent,
-    SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
   styleUrl: './event-editor.container.scss',
@@ -591,7 +589,8 @@ export class EventEditorContainer implements OnInit {
         this.draftParticipants.set([]);
         this.confetti.fireSuccessConfetti();
         this.feedback.success('Evento criado com sucesso!');
-        await this.router.navigate(['/meus-eventos/evento', newId]);
+        // Straight to the new event's page, where it is shared; the editor is only for edits.
+        await this.router.navigate(['/evento', newId], { replaceUrl: true });
       }
     } catch (error: unknown) {
       this.feedback.error(explainError('Não foi possível salvar o evento', error));

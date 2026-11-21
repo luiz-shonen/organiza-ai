@@ -11,7 +11,6 @@ import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconButtonComponent,
-  OrgSurfaceComponent,
 } from '../../../../../shared/ui';
 import { SecretSantaParticipantFormComponent } from '../secret-santa-participant-form/secret-santa-participant-form.component';
 
@@ -41,7 +40,6 @@ export interface SecretSantaParticipantUpdate {
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgIconButtonComponent,
-    OrgSurfaceComponent,
     SecretSantaParticipantFormComponent,
   ],
   templateUrl: './secret-santa-participants.component.html',

@@ -162,7 +162,11 @@ How the app behaves for organizers and guests. Data and permissions are in
 
 ## The event page
 
-- Section order: event card, RSVP card (not for the organizer), the family checklist, "Lista do
+- Creating an event opens its page (not the editor). Sharing the invite (link, QR code, WhatsApp)
+  is on the event page, for organizers, right under the invitation; the editor only edits.
+- The amigo oculto is one card: its settings and draw, then (organizers) "Confirmados no evento",
+  "Participantes" and "Quem não vai entrar pelo convite", split by fine rules like "Quem vai".
+- Section order: event card, share panel (organizers), RSVP card (not for the organizer), the family checklist, "Lista do
   evento" (hidden when the event has no items, to organizers too), **Quem vai**, "Amigo oculto" (organizers
   only, when the event has one; see [secret-santa](secret-santa.md)), Pix.
 - "Eu levo" offers the member and only the relatives confirmed with them for this event.

@@ -31,10 +31,9 @@ test.describe('QR code and WhatsApp share link', () => {
   test('should render QR Code canvas with accessible attributes and valid rendering dimensions', async ({
     page,
     sharePanel,
-    eventEditorPage,
   }) => {
-    await page.goto('/meus-eventos/evento/event-qr-share-123');
-    await eventEditorPage.assertLoaded();
+    // Sharing lives on the event page, for organizers.
+    await page.goto('/evento/event-qr-share-123');
 
     await sharePanel.assertLoaded();
     await expect(sharePanel.panelRoot.first()).toBeVisible();
@@ -53,10 +52,9 @@ test.describe('QR code and WhatsApp share link', () => {
   test('should generate WhatsApp share URL schema with event metadata and deep link', async ({
     page,
     sharePanel,
-    eventEditorPage,
   }) => {
-    await page.goto('/meus-eventos/evento/event-qr-share-123');
-    await eventEditorPage.assertLoaded();
+    // Sharing lives on the event page, for organizers.
+    await page.goto('/evento/event-qr-share-123');
 
     await sharePanel.assertLoaded();
 
@@ -73,10 +71,9 @@ test.describe('QR code and WhatsApp share link', () => {
   test('should copy event deep link to clipboard with user feedback confirmation', async ({
     page,
     sharePanel,
-    eventEditorPage,
   }) => {
-    await page.goto('/meus-eventos/evento/event-qr-share-123');
-    await eventEditorPage.assertLoaded();
+    // Sharing lives on the event page, for organizers.
+    await page.goto('/evento/event-qr-share-123');
 
     await sharePanel.assertLoaded();
 

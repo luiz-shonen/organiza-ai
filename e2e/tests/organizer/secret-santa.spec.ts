@@ -214,7 +214,9 @@ test.describe('Amigo oculto', () => {
     await expect(list).toContainText('Vó Maria');
     await expect(list).toContainText('2 opções');
     await expect(people.getByTestId('secret-santa-missing')).toContainText('Falta 1');
-    await people.screenshot({ path: 'e2e/screenshots/secret-santa-event-people.png' });
+    await page
+      .getByTestId('secret-santa-card')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-event-people.png' });
 
     const store = await readStore(page);
     const saved = store[`events/${EVENT_ID}/secretSantaParticipants`];

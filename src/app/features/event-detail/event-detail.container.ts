@@ -91,6 +91,7 @@ import {
 import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { SharePanelComponent } from '../organizer/event-editor/components/share-panel/share-panel.component';
 import { KnownPeopleService } from '../../core/services/known-people.service';
 import { personKey, type KnownPerson } from '../../core/utils/known-people.utils';
 import {
@@ -115,6 +116,7 @@ import {
     ClaimSheetComponent,
     SecretSantaCardComponent,
     SecretSantaParticipantsComponent,
+    SharePanelComponent,
     NotificationCardComponent,
   ],
   templateUrl: './event-detail.container.html',
@@ -763,6 +765,9 @@ export class EventDetailContainer implements OnInit {
    * (one tap adds them), people known from other events while typing a name, and add, edit or
    * remove. The guests join from the invite; this covers everyone else.
    */
+  /** The invite's address, for the organizers' share panel. */
+  protected readonly eventUrl = computed(() => `${location.origin}/evento/${this.id()}`);
+
   protected readonly secretSantaSuggestions = computed<SecretSantaSuggestion[]>(() => {
     const participants = this.secretSantaParticipants();
     const taken = new Set(participants.map((p) => p.guestId ?? ''));

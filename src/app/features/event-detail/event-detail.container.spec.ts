@@ -10,6 +10,13 @@ import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
+
+// The organizers' share panel draws a QR code on a canvas, which the test DOM does not have.
+vi.mock('qrcode', () => ({
+  default: {
+    toCanvas: vi.fn().mockResolvedValue(undefined),
+  },
+}));
 import {
   EventService,
   ItemService,

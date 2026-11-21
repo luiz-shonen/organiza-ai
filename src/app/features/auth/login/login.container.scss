@@ -5,7 +5,7 @@
   justify-content: center;
   gap: 28px;
   min-height: 100dvh;
-  padding: 40px 28px;
+  padding: 40px var(--org-space-md);
   box-sizing: border-box;
 
   &__header {
@@ -21,22 +21,96 @@
     margin: 0;
   }
 
-  &__subtitle {
-    color: var(--org-on-surface-variant);
-    font: var(--org-text-body-sm);
-    margin: 0;
-  }
-
   &__card {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
   }
 
   &__card-content {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    padding: var(--org-space-sm) var(--org-space-xs);
+    gap: var(--org-space-lg);
+    padding: var(--org-space-lg) var(--org-space-md);
+  }
+
+  &__intro {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-sm);
+    text-align: center;
+  }
+
+  &__intro-icon {
+    align-items: center;
+    background: var(--org-primary-container);
+    block-size: 56px;
+    border-radius: var(--org-radius-full);
+    color: var(--org-on-primary-container);
+    display: inline-flex;
+    inline-size: 56px;
+    justify-content: center;
+  }
+
+  &__title {
+    color: var(--org-on-surface);
+    font: var(--org-font-weight-semibold) var(--org-font-size-2xl) / var(--org-line-height-tight)
+      var(--org-font-display);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  &__lead {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-body);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  // What the app does, one line each, under a soft lilac icon.
+  &__features {
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-sm);
+    list-style: none;
+    margin: 0;
+    padding: var(--org-space-md);
+    background: var(--org-surface-container-low, var(--org-surface-variant));
+    border-radius: var(--org-radius-md);
+  }
+
+  &__feature {
+    align-items: center;
+    color: var(--org-on-surface);
+    display: flex;
+    font: var(--org-text-body);
+    gap: var(--org-space-sm);
+  }
+
+  &__feature-icon {
+    align-items: center;
+    background: var(--org-secondary-container);
+    block-size: 32px;
+    border-radius: var(--org-radius-sm);
+    color: var(--org-on-secondary-container);
+    display: inline-flex;
+    flex: none;
+    inline-size: 32px;
+    justify-content: center;
+  }
+
+  // The lock runs with the text, so a wrapped line keeps it at its start.
+  &__note {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-body-sm);
+    margin: calc(-1 * var(--org-space-sm)) 0 0;
+    text-align: center;
+
+    org-icon {
+      display: inline-flex;
+      margin-inline-end: var(--org-space-2xs);
+      vertical-align: -3px;
+    }
   }
 
   &__error {

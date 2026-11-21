@@ -1,13 +1,41 @@
 <main class="login" data-testid="login-page">
   <div class="login__header">
-    <h1 class="login__brand">
+    <p class="login__brand">
       <org-logo size="lg" />
-    </h1>
-    <p class="login__subtitle">Acesse ou crie sua conta para continuar</p>
+    </p>
   </div>
 
   <org-surface variant="card" class="login__card">
     <div class="login__card-content">
+      <!-- Someone sent here by an invite is told so; anyone else hears what the app does. -->
+      <div class="login__intro">
+        @if (invited()) {
+          <span class="login__intro-icon" aria-hidden="true">
+            <org-icon name="mail" color="currentColor" />
+          </span>
+          <h1 class="login__title" data-testid="login-title">Você recebeu um convite!</h1>
+          <p class="login__lead">Entre com sua conta Google para ver o convite e responder.</p>
+        } @else {
+          <h1 class="login__title" data-testid="login-title">
+            Suas festas em família, organizadas
+          </h1>
+          <p class="login__lead">Do convite ao amigo oculto, tudo num lugar só.</p>
+        }
+      </div>
+
+      @if (!invited()) {
+        <ul class="login__features" aria-label="O que dá para fazer">
+          @for (feature of features; track feature.icon) {
+            <li class="login__feature">
+              <span class="login__feature-icon" aria-hidden="true">
+                <org-icon [name]="feature.icon" size="sm" color="currentColor" />
+              </span>
+              {{ feature.text }}
+            </li>
+          }
+        </ul>
+      }
+
       @if (errorMessage(); as error) {
         <div class="login__error" role="alert" data-testid="login-error-alert">
           <org-icon name="error" color="currentColor" />
@@ -82,6 +110,10 @@
         imageSrc="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
         (pressed)="loginWithGoogle()"
       />
+      <p class="login__note">
+        <org-icon name="lock" size="sm" color="currentColor" />
+        Sem senha nova: é só usar a sua conta Google.
+      </p>
     </div>
   </org-surface>
 </main>

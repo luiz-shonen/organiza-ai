@@ -62,6 +62,15 @@ export class LoginContainer {
    */
   readonly senha = input<string>();
   protected readonly emailSignIn = computed(() => this.senha() !== undefined);
+  /** Where to go after signing in (`?redirect=/evento/abc`); an invite says so on the page. */
+  readonly redirect = input<string>();
+  protected readonly invited = computed(() => /^\/evento\/[^/]/.test(this.redirect() ?? ''));
+  protected readonly features = [
+    { icon: 'mail', text: 'Convites com cara de convite' },
+    { icon: 'how_to_reg', text: 'Quem vai, confirmado com um toque' },
+    { icon: 'checklist', text: 'O que cada família leva' },
+    { icon: 'redeem', text: 'Amigo oculto sorteado e entregue no WhatsApp' },
+  ] as const;
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [requiredText, valueObjectValidator(Email.validate)]],

@@ -185,22 +185,3 @@
   display: flex;
   gap: var(--org-space-xs);
 }
-
-// "Amigo oculto: Jéssica e Romero": who of the household is in the draw (organizers only).
-.guest-list__santa {
-  align-items: center;
-  color: var(--org-on-surface-variant);
-  display: flex;
-  font-size: var(--org-font-size-sm);
-  gap: var(--org-space-xs);
-  margin: var(--org-space-xs) 0 0;
-
-  org-icon {
-    color: var(--org-primary);
-  }
-
-  strong {
-    color: var(--org-on-surface);
-    font-weight: var(--org-font-weight-semibold);
-  }
-}

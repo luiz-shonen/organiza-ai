@@ -9,7 +9,6 @@ import {
   OrgExpansionPanelComponent,
   OrgIconButtonComponent,
   OrgSurfaceComponent,
-  OrgIconComponent,
 } from '../../../../shared/ui';
 
 /**
@@ -26,7 +25,6 @@ import {
     OrgCardHeaderComponent,
     OrgExpansionPanelComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
     OrgSurfaceComponent,
   ],
   templateUrl: './guest-list-card.component.html',
@@ -39,19 +37,9 @@ export class GuestListCardComponent {
   readonly declines = input<readonly GuestDecline[]>([]);
   /** The event has a list of things to bring: without one, "Não leva nada da lista" is not said. */
   readonly hasItems = input(true);
-  /** Organizers only: who of each household is in the amigo oculto, by household id. */
-  readonly secretSanta = input<Readonly<Record<string, readonly string[]>>>({});
-
   /** "Jéssica Melo" → "Jéssica": whom the family and companions come with. */
   protected firstName(name: string): string {
     return name.trim().split(/\s+/)[0] ?? name;
-  }
-
-  /** "Jéssica e Romero", "Ana, Bia e Caio": the household's names in the draw, or empty. */
-  protected santaNames(householdId: string): string {
-    const names = this.secretSanta()[householdId] ?? [];
-    if (names.length <= 1) return names[0] ?? '';
-    return `${names.slice(0, -1).join(', ')} e ${names[names.length - 1]}`;
   }
   /** Organizers only: confirmations waiting for approval ("Aprovar presenças"). */
   readonly pending = input<readonly PendingGuest[]>([]);

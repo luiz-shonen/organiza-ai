@@ -14,8 +14,6 @@ export interface GuestPerson {
 /** One confirmed household on the event page: who comes and what they bring. */
 export interface GuestHousehold {
   id: string;
-  /** The account holder's uid: what their amigo oculto entries are tied to. */
-  uid: string;
   name: string;
   phone: string;
   /** Companions and family members coming with the account holder. */
@@ -118,7 +116,6 @@ export function buildGuestHouseholds(
 
       return {
         id: guest.id,
-        uid,
         name: guest.name,
         phone: guest.phone ?? '',
         people: [...family, ...companions].map((person) => person.name),

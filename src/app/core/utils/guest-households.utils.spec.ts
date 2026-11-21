@@ -37,7 +37,6 @@ describe('buildGuestHouseholds', () => {
     expect(buildGuestHouseholds(guests, items, claims)).toEqual([
       {
         id: 'u1',
-        uid: 'u1',
         name: 'Jéssica',
         phone: '(31) 99267-7624',
         people: ['Pedro', 'Soraya'],
@@ -54,7 +53,6 @@ describe('buildGuestHouseholds', () => {
       },
       {
         id: 'u2',
-        uid: 'u2',
         name: 'Bia',
         phone: '',
         people: ['2 acompanhantes'],

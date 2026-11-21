@@ -10,9 +10,6 @@
       data-testid="event-invitation"
       [themeClass]="theme().className"
     >
-      @if (categoryLine(); as category) {
-        <p class="invite-paper__eyebrow event-card__category">{{ category }}</p>
-      }
       <p class="invite-paper__greeting event-card__greeting">{{ theme().greeting }}</p>
       <p class="invite-paper__lead">{{ theme().lead }}</p>
       <h1 class="invite-paper__title event-card__title">{{ event().title }}</h1>
@@ -58,6 +55,15 @@
           >Adicionar ao calendário</a
         >
       </div>
+      <!-- What kind of party this is, always: a typed category shows as typed. -->
+      <org-badge
+        class="event-card__kind"
+        data-testid="event-category"
+        [label]="categoryLabel()"
+        [variant]="categoryVariant()"
+        [hue]="categoryHue()"
+        [gradient]="false"
+      />
     </div>
 
     <a

@@ -41,6 +41,12 @@
   }
 }
 
+.event-card__kind {
+  align-self: flex-start;
+  flex: none;
+  margin-inline-start: auto;
+}
+
 .event-card__row {
   align-items: center;
   color: var(--org-on-surface);

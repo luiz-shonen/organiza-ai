@@ -95,15 +95,15 @@
   }
 }
 
-// "Para Jéssica", the title and the date, written on the envelope below the seal, centred
-// like an address and well inside the gold frame.
+// "Para Jéssica", the title and the date, written on the envelope below the seal and to the
+// right, as an address is, well inside the gold frame.
 .invite-envelope__address {
   display: grid;
   gap: var(--org-space-2xs);
-  justify-items: center;
-  padding: 140px var(--org-space-xl) var(--org-space-lg);
+  justify-items: end;
+  padding: 140px var(--org-space-xl) var(--org-space-lg) 30%;
   position: relative;
-  text-align: center;
+  text-align: end;
 }
 
 // The lettering of the invitations: "Para Jéssica" handwritten, the party's name engraved.

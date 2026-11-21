@@ -41,6 +41,17 @@ describe('EventCardComponent (Event Detail)', () => {
     );
   });
 
+  it('tags the kind of party beside the date, also a category the organizer typed', () => {
+    const tag = () =>
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="event-category"]');
+    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Sarau' });
+    fixture.detectChanges();
+    expect(tag()?.textContent).toContain('Sarau');
+    fixture.componentRef.setInput('event', { ...mockEvent, category: '' });
+    fixture.detectChanges();
+    expect(tag()?.textContent).toContain('Evento');
+  });
+
   it('links to Google Calendar with the event data', () => {
     const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
     expect(link.href).toContain('https://calendar.google.com');
@@ -93,21 +104,6 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(element().querySelector('[data-testid="event-directions"]')?.textContent).toContain(
       'Depois da ponte, à direita.',
     );
-  });
-
-  it('names the party only when the greeting does not ("Boas Festas!" needs no tag)', () => {
-    const category = () => element().querySelector('.event-card__category')?.textContent?.trim();
-    expect(category()).toBeUndefined();
-    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Sarau' });
-    fixture.detectChanges();
-    expect(category()).toBe('Sarau');
-    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Churrasco' });
-    fixture.detectChanges();
-    expect(category()).toBeUndefined();
-    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Natal' });
-    fixture.detectChanges();
-    expect(category()).toBeUndefined();
-    expect(element().querySelector('.event-card__greeting')?.textContent).toContain('Boas Festas!');
   });
 
   it('names the organiser, or "Você" for the owner', () => {

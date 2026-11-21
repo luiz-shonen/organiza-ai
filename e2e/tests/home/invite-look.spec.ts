@@ -152,10 +152,9 @@ test.describe('Convites com cara de convite', () => {
         await page.goto(`/evento/${id}`);
         const invitation = page.getByTestId('event-invitation');
         await expect(invitation.locator('.event-card__greeting')).toHaveText(greeting);
-        // "Boas Festas!" already says it: no "Natal" tag. "Prezadíssimo convidado" does not.
-        await expect(invitation.locator('.event-card__category')).toHaveCount(
-          id === 'evt-sarau' ? 1 : 0,
-        );
+        // The kind of party is a tag beside the date, never written again on the invitation.
+        await expect(invitation.locator('.event-card__category')).toHaveCount(0);
+        await expect(page.getByTestId('event-category')).toBeVisible();
         // The signature is the last line written in: once it is all there, the paper is done.
         await invitation.evaluate((el) =>
           Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished)),

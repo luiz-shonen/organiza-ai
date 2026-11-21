@@ -1,9 +1,10 @@
 import { eventLastDay, formatDaySpan, inviteInitial, inviteTheme } from '../../../../core/utils';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { PartyEvent } from '../../../../core/models';
+import { getCategoryClass, getCategoryHue, PartyEvent } from '../../../../core/models';
 import {
   OrgAvatarComponent,
   OrgBadgeComponent,
+  type OrgBadgeVariant,
   OrgButtonComponent,
   OrgIconComponent,
   OrgSurfaceComponent,
@@ -32,6 +33,13 @@ import { InviteLetterComponent } from '../../../../shared/components/invite-pape
   styleUrl: './event-card.component.scss',
 })
 export class EventCardComponent {
+  /** The event's kind, as a tag beside its date: "Casamento", or what the organizer typed. */
+  protected readonly categoryLabel = computed(() => this.event().category?.trim() || 'Evento');
+  protected readonly categoryVariant = computed(
+    () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
+  );
+  protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
+
   public readonly event = input.required<PartyEvent>();
   public readonly guestCount = input<number>(0);
   /** The viewer created or helps organise the event: shows "Editar evento". */
@@ -47,18 +55,6 @@ export class EventCardComponent {
   protected readonly sealInitial = computed(() =>
     inviteInitial(this.event().creatorName || this.event().title),
   );
-  /**
-   * The party's name in small capitals above the greeting, only for a category the invitation
-   * has no words of its own for ("Sarau", over "Prezadíssimo convidado"), never a bare "Outros".
-   */
-  protected readonly categoryLine = computed(() => {
-    const category = (this.event().category ?? '').trim();
-    if (this.theme().wordsKey !== 'outros' || !category || /^outros?$/i.test(category)) {
-      return null;
-    }
-    return category;
-  });
-
   /**
    * "Quinta", "24", "Dez · 20:00": the date block of the invitation. Over several days:
    * "Quarta a sexta", "23–25", "Dez · 17:00" ("Dez–Jan" across months).

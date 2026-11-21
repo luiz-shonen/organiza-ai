@@ -101,7 +101,7 @@
                       <li>{{ line }}</li>
                     }
                   </ul>
-                } @else {
+                } @else if (hasItems()) {
                   <p class="guest-list__bring">Não leva nada da lista</p>
                 }
               </div>
@@ -126,7 +126,7 @@
                               <li>{{ line }}</li>
                             }
                           </ul>
-                        } @else {
+                        } @else if (hasItems()) {
                           <p class="guest-list__bring">Não leva nada da lista</p>
                         }
                       </div>

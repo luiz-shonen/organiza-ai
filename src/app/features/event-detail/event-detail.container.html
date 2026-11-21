@@ -69,6 +69,7 @@
         [households]="households()"
         [forOrganizer]="canEdit()"
         [declines]="declines()"
+        [hasItems]="progress().length > 0"
         [pending]="pendingGuests()"
         [busyGuestId]="approvingGuestId()"
         (approve)="onApproveGuest($event)"

@@ -42,6 +42,20 @@ async function render(forOrganizer: boolean) {
 }
 
 describe('GuestListCardComponent', () => {
+  it('says nothing about the list when the event has none to bring', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    fixture.componentRef.setInput('households', households);
+    fixture.componentRef.setInput('hasItems', false);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain(
+      'Não leva nada da lista',
+    );
+  });
+
   it('shows each person, their role and what they bring, without phones', async () => {
     const element = await render(false);
     const text = element.textContent ?? '';

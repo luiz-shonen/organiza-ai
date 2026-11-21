@@ -18,11 +18,26 @@ describe('EventSecretSantaStepComponent', () => {
 
   it('asks "Vai ter amigo oculto?" and shows the participants only when it is on', () => {
     expect(el().textContent).toContain('Vai ter amigo oculto?');
-    expect(el().textContent).not.toContain('Novo participante');
+    expect(byTestId('secret-santa-manual')).toBeNull();
     fixture.componentRef.setInput('enabled', true);
     fixture.detectChanges();
     expect(el().textContent).toContain('Incluir opções de presente');
-    expect(el().textContent).toContain('Novo participante');
+    expect(byTestId('secret-santa-manual')).toBeTruthy();
+  });
+
+  it('keeps adding by hand behind a button: guests come in through the invite', () => {
+    fixture.componentRef.setInput('enabled', true);
+    fixture.detectChanges();
+    expect(el().textContent).toContain('Os convidados entram no sorteio sozinhos');
+    expect(el().querySelector('app-secret-santa-participant-form')).toBeNull();
+
+    (byTestId('secret-santa-manual-btn') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(el().querySelector('app-secret-santa-participant-form')).toBeTruthy();
+
+    (byTestId('secret-santa-manual-close-btn') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(el().querySelector('app-secret-santa-participant-form')).toBeNull();
   });
 
   it('says how many people are still missing for a draw', () => {

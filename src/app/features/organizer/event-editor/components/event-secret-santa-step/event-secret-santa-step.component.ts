@@ -90,6 +90,8 @@ export class EventSecretSantaStepComponent {
 
   protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly editingIndex = signal<number | null>(null);
+  /** "Adicionar alguém à mão" opens the form; it stays open to add several in a row. */
+  protected readonly manualOpen = signal(false);
   protected readonly editingParticipant = computed(() => {
     const index = this.editingIndex();
     return index === null ? null : (this.participants()[index] ?? null);

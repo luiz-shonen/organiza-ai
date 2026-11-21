@@ -98,6 +98,8 @@ test.describe('Amigo oculto', () => {
     const step = page.getByTestId('event-editor-step-secret-santa');
     await step.getByTestId('secret-santa-toggle').locator('button').click();
 
+    // By hand is the exception, behind "Adicionar alguém à mão".
+    await step.getByTestId('secret-santa-manual-btn').click();
     await step.getByTestId('santa-name-input').fill('gus');
     const option = page.getByTestId('org-text-field-suggestion').filter({ hasText: 'Gustavo' });
     await expect(option).toContainText('(31) 99999-0000');
@@ -151,6 +153,10 @@ test.describe('Amigo oculto', () => {
       .getByRole('button', { name: 'Jéssica Melo' })
       .click();
 
+    await step
+      .getByTestId('secret-santa-manual')
+      .screenshot({ path: 'e2e/screenshots/secret-santa-manual-closed.png' });
+    await step.getByTestId('secret-santa-manual-btn').click();
     await step.getByTestId('santa-name-input').fill('Vó Maria');
     await step.getByTestId('santa-phone-input').fill('11977772222');
     // Gift ideas: each one typed and added with Enter (or +) joins the list above the field.

@@ -27,7 +27,12 @@ everyone, the organizer included.
   `secretSanta: { enabled, giftOptions, maxGiftOptions }`. With gift options on, the owner picks how
   many each person may list ("Quantas opções cada pessoa pode sugerir?", 1 to 10, 3 by default;
   the rules enforce the range). Only the owner changes these; collaborators see them locked.
-- The organizer adds participants by hand: name, phone (for WhatsApp, optional) and, when the
+- The invite is the main way in (next section): the step says guests join by themselves when they
+  confirm, each marking which relatives take part. Adding by hand is the exception, for whoever
+  will not come in through the invite (not going, or not confirming by the link): the card "Quem
+  não vai entrar pelo convite" keeps the form behind "Adicionar alguém à mão" (it stays open to add
+  several; "Fechar" folds it). Duplicates from both ways are joined as below.
+- By hand the organizer types: name, phone (for WhatsApp, optional) and, when the
   event asks for them, gift options ("Chinelo, cor verde, tamanho 36"), one field each, "Adicionar
   outra opção" up to the event's number. Lowering the number later keeps what participants already
   have. "Confirmados no evento" offers confirmed guests, their relatives and companions with one

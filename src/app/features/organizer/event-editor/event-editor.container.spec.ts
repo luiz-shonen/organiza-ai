@@ -191,6 +191,18 @@ describe('EventEditorContainer', () => {
       expect(component['missingSteps']()).toEqual(['Endereço']);
     });
 
+    it('?passo=amigo-oculto opens the amigo oculto step, not the step left open last time', () => {
+      fixture = TestBed.createComponent(EventEditorContainer);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('id', 'evt-123');
+      fixture.componentRef.setInput('passo', 'amigo-oculto');
+      // Pix was the step open last time.
+      TestBed.inject(FormDraftService).save(component['stepKey'](), 4);
+      fixture.detectChanges();
+
+      expect(component['activeStepIndex']()).toBe(3);
+    });
+
     it('does not edit an event that already happened: back to its page, saying why', () => {
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       mockEventService.getEvent.mockReturnValue(
@@ -326,6 +338,8 @@ describe('EventEditorContainer', () => {
         reopen();
         expect(component['restoredDraftAt']()).toBeNull();
         type('Churrasco');
+        // "Cancelar" leaves for Meus eventos, a screen these tests do not route to.
+        vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
         component['cancelEditing']();
         reopen();
         expect(component['basicInfoForm'].controls.title.value).toBe('');

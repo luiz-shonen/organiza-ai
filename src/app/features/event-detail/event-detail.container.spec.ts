@@ -311,6 +311,14 @@ describe('EventDetailContainer', () => {
     expect(component['guestCount']()).toBe(6);
   });
 
+  it('"Participantes" opens the editor on the amigo oculto step', () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    component['onEditSecretSanta']();
+    expect(navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-123'], {
+      queryParams: { passo: 'amigo-oculto' },
+    });
+  });
+
   describe('RSVP 1-Touch flow', () => {
     it('sends a visitor without an account to sign in, and back to the invite', async () => {
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);

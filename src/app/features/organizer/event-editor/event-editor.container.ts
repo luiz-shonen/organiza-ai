@@ -16,6 +16,7 @@ import {
 import { merge } from 'rxjs';
 import { FormDraftService } from '../../../core/services/form-draft.service';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { FormBuilder, Validators } from '@angular/forms';
 import {
   EventService,
@@ -94,6 +95,16 @@ import {
 import { DrawerService } from '../../../core/services/drawer.service';
 
 /** Firestore puts the code in the message ("Missing or insufficient permissions." is permission-denied). */
+/** The editor's steps as links name them (`?passo=…`), in the stepper's order. */
+export const EDITOR_STEP_SLUGS = [
+  'informacoes',
+  'endereco',
+  'itens',
+  'amigo-oculto',
+  'pix',
+] as const;
+export type EditorStepSlug = (typeof EDITOR_STEP_SLUGS)[number];
+
 @Component({
   selector: 'app-event-editor',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -118,12 +129,15 @@ import { DrawerService } from '../../../core/services/drawer.service';
 })
 export class EventEditorContainer implements OnInit {
   readonly id = input<string>();
+  /** `?passo=amigo-oculto`: a link that opens one step, whatever step was open last time. */
+  readonly passo = input<string>();
 
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
   private readonly locationService = inject(LocationService);
   private readonly confetti = inject(ConfettiService);
   protected readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly feedback = inject(FeedbackService);
   private readonly drawerService = inject(DrawerService);
   private readonly dialogs = inject(OrgDialogService);
@@ -851,7 +865,12 @@ export class EventEditorContainer implements OnInit {
    * only when the ones before it are filled in, as the stepper itself asks.
    */
   private restoreStep(): void {
-    const saved = this.drafts.load<number>(this.stepKey())?.value ?? 0;
+    const asked = EDITOR_STEP_SLUGS.indexOf(this.passo() as EditorStepSlug);
+    const saved = asked >= 0 ? asked : (this.drafts.load<number>(this.stepKey())?.value ?? 0);
+    if (asked >= 0) {
+      // Asked once: a reload from here opens the step the organizer moved to, not this one.
+      this.location.replaceState(this.location.path().replace(/[?&]passo=[^&]*/, ''));
+    }
     const last = this.stepLabels.length - 1;
     let step = Math.min(Math.max(Math.trunc(Number(saved)) || 0, 0), last);
     if (!this.isEditing()) {

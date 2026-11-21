@@ -750,7 +750,10 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected onEditSecretSanta(): void {
-    void this.router.navigate(['/meus-eventos/evento', this.id()]);
+    // Always the amigo oculto step, not the step left open last time.
+    void this.router.navigate(['/meus-eventos/evento', this.id()], {
+      queryParams: { passo: 'amigo-oculto' },
+    });
   }
 
   protected onEditRsvp(): Promise<void> {

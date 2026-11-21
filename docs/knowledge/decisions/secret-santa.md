@@ -21,22 +21,27 @@ related: [events-and-invites.md, firebase-and-auth.md]
 An event can have an amigo oculto: a draw of who gives a gift to whom, kept secret from
 everyone, the organizer included.
 
-## Setting it up (editor, step "Amigo oculto", before Pix)
+## Setting it up (editor, step "Amigo oculto", before Pix: settings only)
 
 - "Vai ter amigo oculto?" and "Incluir opções de presente" are saved on the event as
   `secretSanta: { enabled, giftOptions, maxGiftOptions }`. With gift options on, the owner picks how
   many each person may list ("Quantas opções cada pessoa pode sugerir?", 1 to 10, 3 by default;
   the rules enforce the range). Only the owner changes these; collaborators see them locked.
-- The invite is the main way in (next section): the step says guests join by themselves when they
-  confirm, each marking which relatives take part. Adding by hand is the exception, for whoever
-  will not come in through the invite (not going, or not confirming by the link): the card "Quem
-  não vai entrar pelo convite" keeps the form behind "Adicionar alguém à mão" (it stays open to add
-  several; "Fechar" folds it). Duplicates from both ways are joined as below.
-- By hand the organizer types: name, phone (for WhatsApp, optional) and, when the
-  event asks for them, gift options ("Chinelo, cor verde, tamanho 36"), one field each, "Adicionar
-  outra opção" up to the event's number. Lowering the number later keeps what participants already
-  have. "Confirmados no evento" offers confirmed guests, their relatives and companions with one
-  tap ("Adicionar todos" for every one). Hand entry stays: many people never open the site.
+- The editor step holds only these settings; its note says the guests join by themselves when
+  they confirm, and that the participants, adding by hand and the draw are on the event page.
+
+## Participants (event page, organizers who can still edit)
+
+- Under the "Amigo oculto" card, `app-secret-santa-participants`: "Confirmados no evento" (confirmed
+  guests and their companions not in yet, one tap, "Adicionar todos"), the list "Participantes" (N
+  pessoas no sorteio, what is still missing for a draw, edit in a side sheet, remove with a
+  confirmation, warning to draw again after a draw), then "Quem não vai entrar pelo convite" with
+  the form behind "Adicionar alguém à mão" (it stays open to add several; "Fechar" folds it).
+  Typing a name offers people from the organizer's other events and family.
+- By hand the organizer types: name, phone (for WhatsApp, optional) and, when the event asks for
+  them, gift options ("Chinelo, cor verde, tamanho 36"), up to the event's number. Lowering the
+  number later keeps what participants already have. Hand entry stays: many people never open the
+  site. Duplicates from both ways are joined as below.
 - Guests may also join themselves from the invite (next section).
 
 ## Joining from the invite

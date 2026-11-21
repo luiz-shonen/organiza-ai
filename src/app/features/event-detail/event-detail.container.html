@@ -59,8 +59,8 @@
         />
       }
 
-      <!-- An event with nothing to bring shows no list to guests; organizers still see it. -->
-      @if (progress().length || canEdit()) {
+      <!-- An event with nothing to bring shows no list, to guests and organizers alike. -->
+      @if (progress().length) {
         <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
       }
 
@@ -87,7 +87,7 @@
           [outdated]="secretSantaOutdated()"
           [drawing]="secretSantaDrawing()"
           [resendingId]="secretSantaResendingId()"
-          [canEditParticipants]="canEditEvent()"
+          [canEditParticipants]="false"
           [selfJoinOpen]="secretSantaSelfJoinOpen()"
           [duplicates]="secretSantaDoubtful()"
           [busyDuplicateId]="secretSantaBusyDuplicate()"
@@ -99,6 +99,22 @@
           (resend)="onResendSecretSanta($event)"
           (editParticipants)="onEditSecretSanta()"
         />
+        <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
+        @if (canEditEvent()) {
+          <app-secret-santa-participants
+            [participants]="secretSantaParticipants()"
+            [suggestions]="secretSantaSuggestions()"
+            [knownPeople]="secretSantaKnownPeople()"
+            [giftOptions]="!!event.secretSanta?.giftOptions"
+            [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+            [drawn]="!!secretSantaDraw()"
+            [saveNew]="saveNewSecretSantaParticipant"
+            (add)="addSecretSantaParticipants([$event])"
+            (addMany)="addSecretSantaParticipants($event)"
+            (update)="updateSecretSantaParticipant($event)"
+            (remove)="removeSecretSantaParticipant($event)"
+          />
+        }
       }
 
       @if (event.pixKey) {

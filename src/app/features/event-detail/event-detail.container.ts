@@ -41,6 +41,7 @@ import {
   secretSantaNotificationId,
   type SecretSantaDraw,
   type SecretSantaParticipant,
+  type SecretSantaParticipantInput,
 } from '../../core/models';
 import {
   addClaimEntry,
@@ -90,6 +91,13 @@ import {
 import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { KnownPeopleService } from '../../core/services/known-people.service';
+import { personKey, type KnownPerson } from '../../core/utils/known-people.utils';
+import {
+  SecretSantaParticipantsComponent,
+  type SecretSantaParticipantUpdate,
+  type SecretSantaSuggestion,
+} from '../organizer/event-editor/components/secret-santa-participants/secret-santa-participants.component';
 
 @Component({
   selector: 'app-event-detail',
@@ -106,6 +114,7 @@ import { firstValueFrom } from 'rxjs';
     GuestListCardComponent,
     ClaimSheetComponent,
     SecretSantaCardComponent,
+    SecretSantaParticipantsComponent,
     NotificationCardComponent,
   ],
   templateUrl: './event-detail.container.html',
@@ -746,6 +755,109 @@ export class EventDetailContainer implements OnInit {
       this.feedback.error(
         explainError('Sua resposta foi salva, mas não deu para salvar o amigo oculto.', err),
       );
+    }
+  }
+
+  /**
+   * The organizer's side of the participants, on this page: confirmed guests not in the draw yet
+   * (one tap adds them), people known from other events while typing a name, and add, edit or
+   * remove. The guests join from the invite; this covers everyone else.
+   */
+  protected readonly secretSantaSuggestions = computed<SecretSantaSuggestion[]>(() => {
+    const participants = this.secretSantaParticipants();
+    const taken = new Set(participants.map((p) => p.guestId ?? ''));
+    const names = new Set(participants.map((p) => p.name.trim().toLowerCase()));
+    const { approved } = splitGuestsByApproval(this.guests(), !!this.event()?.requireApproval);
+    const people: SecretSantaSuggestion[] = [];
+    for (const guest of approved) {
+      if (guest.primaryGuestId) continue;
+      people.push({ guestId: guest.uid || guest.id, name: guest.name, phone: guest.phone ?? '' });
+      (guest.companions ?? []).forEach((companion, i) =>
+        people.push({ guestId: `${guest.uid || guest.id}#${i}`, name: companion.name, phone: '' }),
+      );
+    }
+    return people.filter(
+      (p) => p.name.trim() && !taken.has(p.guestId) && !names.has(p.name.trim().toLowerCase()),
+    );
+  });
+
+  private readonly knownPeopleService = inject(KnownPeopleService);
+  private readonly knownPeopleAll = signal<KnownPerson[]>([]);
+  private knownPeopleRequested = false;
+  /** People the organizer knows from other events and family, not in this draw yet. */
+  protected readonly secretSantaKnownPeople = computed(() => {
+    const taken = new Set(this.secretSantaParticipants().map((p) => personKey(p.name)));
+    return this.knownPeopleAll().filter((person) => !taken.has(personKey(person.name)));
+  });
+  private readonly loadKnownPeople = effect(() => {
+    if (this.knownPeopleRequested || !this.canEditEvent() || !this.showSecretSanta()) return;
+    const uid = this.authService.currentUser()?.uid;
+    if (!uid) return;
+    this.knownPeopleRequested = true;
+    void this.knownPeopleService
+      .list(uid, this.id())
+      .then((people) => this.knownPeopleAll.set(people))
+      .catch(() => undefined);
+  });
+
+  /** Handed to "Adicionar alguém à mão": the form clears only once the person was added. */
+  protected readonly saveNewSecretSantaParticipant = (participant: SecretSantaParticipantInput) =>
+    this.addSecretSantaParticipants([participant]);
+
+  /** True when every participant was added. */
+  protected async addSecretSantaParticipants(
+    participants: readonly SecretSantaParticipantInput[],
+  ): Promise<boolean> {
+    try {
+      for (const participant of participants) {
+        await this.secretSantaService.addParticipant(this.id(), participant);
+      }
+      return true;
+    } catch (error) {
+      this.feedback.error(
+        explainError(
+          participants.length > 1
+            ? 'Não foi possível adicionar os participantes'
+            : 'Não foi possível adicionar o participante',
+          error,
+        ),
+      );
+      return false;
+    }
+  }
+
+  protected async updateSecretSantaParticipant({
+    index,
+    participant,
+  }: SecretSantaParticipantUpdate): Promise<void> {
+    const saved = this.secretSantaParticipants()[index];
+    if (!saved) return;
+    try {
+      await this.secretSantaService.updateParticipant(this.id(), saved.id, participant);
+      this.feedback.success('Participante atualizado');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível atualizar o participante', error));
+    }
+  }
+
+  protected async removeSecretSantaParticipant(index: number): Promise<void> {
+    const saved = this.secretSantaParticipants()[index];
+    if (!saved) return;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Remover participante',
+        message: this.secretSantaDraw()
+          ? `${saved.name} sai do amigo oculto. O sorteio já foi feito: será preciso sortear de novo.`
+          : `${saved.name} sai do amigo oculto deste evento.`,
+        confirmLabel: 'Remover',
+        tone: 'danger',
+      }),
+    );
+    if (!confirmed) return;
+    try {
+      await this.secretSantaService.removeParticipant(this.id(), saved.id);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível remover o participante', error));
     }
   }
 

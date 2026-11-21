@@ -113,18 +113,9 @@
           <org-step [label]="stepLabels[3]">
             <app-event-secret-santa-step
               [canConfigure]="isOwner()"
-              [participants]="stepParticipants()"
-              [suggestions]="secretSantaSuggestions()"
-              [knownPeople]="knownPeople()"
-              [drawn]="secretSantaDrawn()"
               [(enabled)]="secretSantaEnabled"
               [(giftOptions)]="secretSantaGiftOptions"
               [(maxGiftOptions)]="secretSantaMaxGifts"
-              [saveNew]="saveNewParticipant"
-              (add)="addParticipant($event)"
-              (addMany)="addParticipants($event)"
-              (update)="updateParticipant($event)"
-              (remove)="removeParticipant($event)"
               (back)="stepper.previous()"
               (next)="stepper.next()"
             />

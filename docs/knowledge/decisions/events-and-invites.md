@@ -163,7 +163,7 @@ How the app behaves for organizers and guests. Data and permissions are in
 ## The event page
 
 - Section order: event card, RSVP card (not for the organizer), the family checklist, "Lista do
-  evento" (hidden from guests when the event has no items), **Quem vai**, "Amigo oculto" (organizers
+  evento" (hidden when the event has no items, to organizers too), **Quem vai**, "Amigo oculto" (organizers
   only, when the event has one; see [secret-santa](secret-santa.md)), Pix.
 - "Eu levo" offers the member and only the relatives confirmed with them for this event.
 - **Quem vai** (`buildGuestHouseholds`): the header says how many people are going ("8 confirmados").

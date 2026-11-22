@@ -49,8 +49,8 @@
       [class.app-backdrop--festive]="isFestiveBackdrop()"
       aria-hidden="true"
     >
-      <!-- On the confetti backdrop, balloons and confetti drift slowly up. -->
-      @if (isFestiveBackdrop()) {
+      <!-- Balloons and confetti drift up on the sign-in page only: elsewhere it tires the eye. -->
+      @if (isFestiveBackdrop() && !showHeader()) {
         <org-party-drift />
       }
     </div>

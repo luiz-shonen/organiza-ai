@@ -241,7 +241,7 @@ Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the l
 
 ### OrgPartyDriftComponent
 
-Uso recomendado: `<org-party-drift />` inside a positioned, full-size layer, as the app shell does on the confetti backdrop (`.app-backdrop--festive`). A few balloons and confetti in the palette colours drift slowly up behind the content, clipped by the layer. Decorative (`aria-hidden`), no pointer events, hidden under `prefers-reduced-motion`.
+Uso recomendado: `<org-party-drift />` inside a positioned, full-size layer, as the app shell does on the login page's confetti backdrop (`.app-backdrop--festive`); elsewhere the backdrop stays still, so reading is not tiring. A few balloons and confetti in the palette colours drift slowly up behind the content, clipped by the layer. Decorative (`aria-hidden`), no pointer events, hidden under `prefers-reduced-motion`.
 
 ### OrgSegmentedControlComponent
 

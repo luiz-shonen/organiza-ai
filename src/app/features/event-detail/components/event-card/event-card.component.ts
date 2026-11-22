@@ -4,6 +4,7 @@ import { getCategoryClass, getCategoryHue, PartyEvent } from '../../../../core/m
 import {
   OrgAvatarComponent,
   OrgBadgeComponent,
+  OrgBannerComponent,
   type OrgBadgeVariant,
   OrgButtonComponent,
   OrgIconComponent,
@@ -20,6 +21,7 @@ import { InviteLetterComponent } from '../../../../shared/components/invite-pape
   selector: 'app-event-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    OrgBannerComponent,
     InviteDividerComponent,
     InviteLetterComponent,
     InvitePaperComponent,

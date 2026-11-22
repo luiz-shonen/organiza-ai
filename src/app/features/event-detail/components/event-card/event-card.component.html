@@ -96,6 +96,18 @@
     }
   </org-surface>
 
+  <!-- A collaborator is told here too, as in the editor, what they can and cannot change. -->
+  @if (canEdit() && !isOwner()) {
+    <org-banner
+      variant="info"
+      icon="info"
+      role="status"
+      data-testid="collaborator-banner"
+      aria-label="Permissões de colaborador"
+      message="Modo colaborador: você pode gerenciar a lista de itens e ver os convidados. As informações principais só podem ser alteradas pelo organizador."
+    />
+  }
+
   <div class="event-card__host">
     <div class="event-card__host-info">
       <p class="event-card__host-label">Organizado por</p>

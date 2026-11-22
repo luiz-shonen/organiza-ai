@@ -1,3 +1,4 @@
+import type { Signal } from '@angular/core';
 import type { FamilyMember, FamilyMemberCreate } from './family.model';
 import type { GuestCompanion, GuestSession } from './guest.model';
 import type { RsvpSecretSantaChoice, RsvpSecretSantaData } from './secret-santa.model';
@@ -28,18 +29,21 @@ export interface RsvpDrawerResult {
 }
 
 export interface CollaboratorDrawerRequestData {
-  /** Each collaborator: their account id (to remove them) and how they are shown (e-mail). */
-  collaborators: readonly { id: string; label: string }[];
-  /** E-mails invited who have not signed in yet. */
-  pendingInvites: string[];
+  /** Each collaborator, live: their account id (to remove them) and their e-mail to show. */
+  collaborators: Signal<readonly { id: string; label: string }[]>;
+  /** E-mails invited who have not signed in yet, live. */
+  pendingInvites: Signal<readonly string[]>;
 }
 
 export type CollaboratorDrawerResult =
   | { action: 'invite'; email: string }
+  | { action: 'cancelInvite'; email: string }
   | { action: 'remove'; collaboratorId: string };
 
 interface DrawerRequestBase {
   trigger?: HTMLElement | null;
+  /** Called once the drawer closes (or another replaces it): stop what it was following. */
+  onClose?: () => void;
 }
 
 export interface NavigationDrawerRequest extends DrawerRequestBase {

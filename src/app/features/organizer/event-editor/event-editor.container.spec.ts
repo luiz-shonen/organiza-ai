@@ -64,6 +64,8 @@ describe('EventEditorContainer', () => {
     createEvent: ReturnType<typeof vi.fn>;
     updateEvent: ReturnType<typeof vi.fn>;
     inviteCollaborator: ReturnType<typeof vi.fn>;
+    collaboratorEmails$: ReturnType<typeof vi.fn>;
+    listPendingInvitations: ReturnType<typeof vi.fn>;
     removeCollaborator: ReturnType<typeof vi.fn>;
   };
 
@@ -88,6 +90,8 @@ describe('EventEditorContainer', () => {
       createEvent: vi.fn().mockResolvedValue('new-id'),
       updateEvent: vi.fn().mockResolvedValue(undefined),
       inviteCollaborator: vi.fn().mockResolvedValue(undefined),
+      collaboratorEmails$: vi.fn().mockReturnValue(of({})),
+      listPendingInvitations: vi.fn().mockReturnValue(of([])),
       removeCollaborator: vi.fn().mockResolvedValue(undefined),
     };
 

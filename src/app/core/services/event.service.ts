@@ -279,23 +279,24 @@ export class EventService {
     }
   }
 
-  /** Each collaborator's e-mail by account id (organizers only). */
-  async collaboratorEmails(eventId: string): Promise<Record<string, string>> {
-    const docs = await this.gateway
-      .getDocs<{ id: string; email?: string }>(`${this.collectionName}/${eventId}/collaborators`)
-      .catch(() => [] as { id: string; email?: string }[]);
-    return Object.fromEntries(docs.filter((d) => d.email).map((d) => [d.id, d.email as string]));
+  /** Each collaborator's e-mail by account id, live (organizers only). */
+  collaboratorEmails$(eventId: string): Observable<Record<string, string>> {
+    return this.gateway
+      .collectionSnapshot<{ email?: string }>(`${this.collectionName}/${eventId}/collaborators`)
+      .pipe(
+        map((docs) =>
+          Object.fromEntries(docs.filter((d) => d.email).map((d) => [d.id, d.email as string])),
+        ),
+        catchError(() => of({} as Record<string, string>)),
+      );
   }
 
-  /** The e-mails invited to help organise who have not signed in yet. */
-  async pendingInvitationEmails(eventId: string): Promise<string[]> {
-    const docs = await this.gateway
-      .getDocs<{
-        id: string;
-        invitedEmail?: string;
-      }>(`${this.collectionName}/${eventId}/invitations`)
-      .catch(() => [] as { id: string; invitedEmail?: string }[]);
-    return docs.map((d) => d.invitedEmail || d.id);
+  /** The owner withdraws an e-mail invite that was not accepted yet. */
+  async cancelInvitation(eventId: string, email: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
+    await this.gateway.deleteDoc(
+      `${this.collectionName}/${eventId}/invitations/${normalizedEmail}`,
+    );
   }
 
   async getEventById(eventId: string): Promise<PartyEvent | null> {

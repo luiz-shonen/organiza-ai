@@ -25,12 +25,11 @@
   }
 }
 
+// The icon alone, in orange: no tile behind it.
 .next-event__icon {
   align-items: center;
-  background: var(--org-accent-container);
   block-size: 40px;
-  border-radius: var(--org-radius-sm);
-  color: var(--org-on-accent-container);
+  color: var(--org-accent);
   display: inline-flex;
   flex: none;
   inline-size: 40px;

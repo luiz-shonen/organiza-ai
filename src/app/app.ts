@@ -126,6 +126,7 @@ export class App {
     // Invites to help organise wait in the bell until accepted on the event's page.
     void this.collaboratorInvites.refresh();
     this.collaboratorInvites.watch();
+    void this.collaboratorInvites.backfillHistory().catch(() => undefined);
     if (user.email) {
       void this.eventService.recordCollaboratorEmail(user.email, user.uid).catch(() => undefined);
     }

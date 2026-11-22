@@ -45,6 +45,7 @@ describe('App', () => {
             invites: signal([]),
             refresh: vi.fn().mockResolvedValue(undefined),
             watch: vi.fn(),
+            backfillHistory: vi.fn().mockResolvedValue(undefined),
           },
         },
         {

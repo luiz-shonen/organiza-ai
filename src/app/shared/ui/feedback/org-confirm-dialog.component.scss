@@ -1,48 +1,12 @@
-@use '../tokens/semantic' as semantic;
-
-// Badge and text side by side from tablet up; stacked and centred on phones.
+// Like the app's cards: a plain surface, the card title, a short message, and the actions on
+// the right in one row, compact, on every screen.
 .org-confirm-dialog {
-  --org-confirm-accent: var(--org-primary);
-  --org-confirm-badge-bg: var(--org-primary-container);
-  --org-confirm-badge-color: var(--org-on-primary-container);
-
-  background: var(--org-glass-bg-strong);
-  border-top: 4px solid var(--org-confirm-accent);
+  background: var(--org-surface);
   color: var(--org-on-surface);
-  display: grid;
-  gap: var(--org-space-md) var(--org-space-lg);
-  grid-template-columns: auto 1fr;
-  padding: var(--org-space-xl) var(--org-space-xl) var(--org-space-lg);
-
-  &--danger {
-    --org-confirm-accent: var(--org-error);
-    --org-confirm-badge-bg: var(--org-error-container);
-    --org-confirm-badge-color: var(--org-on-error-container);
-  }
-
-  @include semantic.mobile {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    padding: var(--org-space-lg) var(--org-space-md) var(--org-space-md);
-    text-align: center;
-  }
-}
-
-.org-confirm-dialog__badge {
-  align-items: center;
-  background: var(--org-confirm-badge-bg);
-  block-size: var(--org-space-3xl);
-  border-radius: var(--org-radius-circle);
-  color: var(--org-confirm-badge-color);
-  display: inline-flex;
-  inline-size: var(--org-space-3xl);
-  justify-content: center;
-}
-
-.org-confirm-dialog__text {
-  align-self: center;
-  display: grid;
-  gap: var(--org-space-xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  padding: var(--org-space-lg);
 }
 
 .org-confirm-dialog__title,
@@ -51,39 +15,27 @@
 }
 
 .org-confirm-dialog__title {
-  font: var(--org-font-weight-extrabold) var(--org-font-size-xl) / var(--org-line-height-snug)
-    var(--org-font-display);
+  font: var(--org-text-title);
 }
 
 .org-confirm-dialog__message {
   color: var(--org-on-surface-variant);
-  font-size: var(--org-font-size-sm);
+  font: var(--org-text-body-sm);
   line-height: var(--org-line-height-normal);
 }
 
 .org-confirm-dialog__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--org-space-sm);
-  grid-column: 1 / -1;
   justify-content: flex-end;
   margin-top: var(--org-space-sm);
-
-  // Thumb reach: the confirm button on top, full width.
-  @include semantic.mobile {
-    flex-direction: column-reverse;
-    width: 100%;
-
-    .org-confirm-dialog__action,
-    .org-confirm-dialog__action .org-button__control {
-      width: 100%;
-    }
-  }
 }
 
 .org-confirm-dialog-panel .mat-mdc-dialog-surface {
   background: transparent;
-  border: 0;
-  border-radius: var(--org-radius-lg);
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-card);
   box-shadow: var(--org-shadow-lg);
   overflow: hidden;
 }

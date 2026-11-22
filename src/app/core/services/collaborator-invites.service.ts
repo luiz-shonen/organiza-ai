@@ -106,6 +106,34 @@ export class CollaboratorInvitesService {
     await this.remember(invite, false);
   }
 
+  /**
+   * Events the person already helps organise, joined before the history existed (or when it
+   * could not be saved): each gets its line in the bell's history, once.
+   */
+  async backfillHistory(): Promise<void> {
+    const uid = this.auth.currentUser()?.uid;
+    if (!uid) return;
+    const events = await this.events.collaboratingOn(uid).catch(() => []);
+    for (const event of events) {
+      const id = collaboratorNotificationId(event.id);
+      if (await this.inbox.has(uid, id)) continue;
+      const by = event.organizerName ? ` · por ${event.organizerName}` : '';
+      await this.inbox
+        .record(uid, {
+          id,
+          kind: 'collaborator',
+          eventId: event.id,
+          eventTitle: event.title,
+          title: 'Você colabora neste evento',
+          body: `${event.title || 'Um evento'}${by}`,
+          actionLabel: 'Ver evento',
+          actionUrl: `/evento/${event.id}`,
+          createdAt: new Date().toISOString(),
+        })
+        .catch(() => undefined);
+    }
+  }
+
   /** The answered invite stays in the bell's history; best effort, never undoing the answer. */
   private async remember(invite: EventInvitation, accepted: boolean): Promise<void> {
     const uid = this.auth.currentUser()?.uid;

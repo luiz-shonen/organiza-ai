@@ -7,29 +7,24 @@
   aria-describedby="org-confirm-dialog-message"
   [class.org-confirm-dialog--danger]="isDanger"
 >
-  <span class="org-confirm-dialog__badge" aria-hidden="true">
-    <org-icon [name]="icon" size="lg" color="currentColor" />
-  </span>
-  <div class="org-confirm-dialog__text">
-    <h2 id="org-confirm-dialog-title" class="org-confirm-dialog__title">{{ data.title }}</h2>
-    <p id="org-confirm-dialog-message" class="org-confirm-dialog__message">{{ data.message }}</p>
-  </div>
+  <h2 id="org-confirm-dialog-title" class="org-confirm-dialog__title">{{ data.title }}</h2>
+  <p id="org-confirm-dialog-message" class="org-confirm-dialog__message">{{ data.message }}</p>
   <div class="org-confirm-dialog__actions">
     <org-button
-      class="org-confirm-dialog__action"
-      variant="secondary"
+      variant="text"
       testId="org-confirm-cancel"
       [label]="data.cancelLabel ?? 'Voltar'"
+      [compact]="true"
       [gradient]="false"
       (pressed)="cancel()"
     />
     <org-button
-      class="org-confirm-dialog__action"
       testId="org-confirm-submit"
       [label]="data.confirmLabel ?? 'Confirmar'"
       [variant]="isDanger ? 'danger' : 'primary'"
       [icon]="isDanger ? icon : null"
-      [gradient]="!isDanger"
+      [compact]="true"
+      [gradient]="false"
       (pressed)="confirm()"
     />
   </div>

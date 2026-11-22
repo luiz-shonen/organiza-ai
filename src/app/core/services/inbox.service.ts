@@ -44,6 +44,12 @@ export class InboxService {
       .pipe(map((d) => (d ? this.toNotification(d) : null)));
   }
 
+  /** Whether this notification is in the member's inbox already. */
+  async has(uid: string, id: string): Promise<boolean> {
+    const doc = await this.gateway.getDoc(`${this.path(uid)}/${id}`).catch(() => null);
+    return !!doc;
+  }
+
   async markRead(uid: string, id: string): Promise<void> {
     await this.gateway.updateDoc(`${this.path(uid)}/${id}`, { readAt: new Date().toISOString() });
   }

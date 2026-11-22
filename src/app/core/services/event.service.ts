@@ -213,6 +213,35 @@ export class EventService {
     });
   }
 
+  /** The events this account helps organise, with their title and organizer's name. */
+  async collaboratingOn(
+    uid: string,
+  ): Promise<{ id: string; title: string; organizerName: string }[]> {
+    if (!uid) return [];
+    const events = await this.gateway.getDocs<{
+      title?: string;
+      createdBy?: string;
+      creatorName?: string;
+      collaborators?: string[];
+    }>(this.collectionName, this.gateway.where('collaborators', 'array-contains', uid));
+    return Promise.all(
+      events
+        .filter((event) => (event.collaborators ?? []).includes(uid))
+        .map(async (event) => {
+          const profile = event.createdBy
+            ? await this.gateway
+                .getDoc<{ name?: string }>(`publicProfiles/${event.createdBy}`)
+                .catch(() => null)
+            : null;
+          return {
+            id: event.id,
+            title: event.title ?? '',
+            organizerName: profile?.name || event.creatorName || '',
+          };
+        }),
+    );
+  }
+
   /** "Sair da colaboração": the collaborator takes their own account out of the event. */
   async leaveCollaboration(eventId: string, uid: string): Promise<void> {
     await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {

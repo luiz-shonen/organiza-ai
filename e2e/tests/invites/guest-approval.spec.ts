@@ -112,7 +112,9 @@ test.describe('Aprovar quem confirma pelo link', () => {
       .getByTestId('rsvp-card')
       .screenshot({ path: 'e2e/screenshots/approval-waiting.png' });
     // Only Tia Lurdes counts on "Quem vai".
-    await expect(page.getByTestId('guest-list-card')).toContainText('1 confirmado');
+    await expect(page.getByTestId('guest-list-card').getByTestId('card-header-count')).toHaveText(
+      '1',
+    );
     const mine = (await readStore(page))[`events/${EVENT_ID}/guests`].find(
       (g) => g.id === 'primo-uid',
     );
@@ -164,13 +166,13 @@ test.describe('Aprovar quem confirma pelo link', () => {
     const card = page.getByTestId('guest-list-card');
     const pending = card.getByTestId('guest-pending');
     await expect(pending).toContainText('Aguardando aprovação (2)');
-    await expect(card).toContainText('1 confirmado');
+    await expect(card.getByTestId('card-header-count')).toHaveText('1');
     await pending.screenshot({ path: 'e2e/screenshots/approval-pending-list.png' });
 
     const primo = pending.getByTestId('guest-pending-row').filter({ hasText: 'Primo Carlos' });
     await expect(primo).toContainText('2 pessoas');
     await primo.getByTestId('guest-approve-btn').click();
-    await expect(card).toContainText('3 confirmados');
+    await expect(card.getByTestId('card-header-count')).toHaveText('3');
 
     const fulano = pending.getByTestId('guest-pending-row').filter({ hasText: 'Fulano' });
     await fulano.getByTestId('guest-refuse-btn').click();

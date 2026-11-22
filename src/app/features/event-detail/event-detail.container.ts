@@ -1407,6 +1407,29 @@ export class EventDetailContainer implements OnInit {
   }
 
   /** "Colaboradores" beside "Editar evento": the same drawer as in the editor. */
+  /** A collaborator steps back: after confirming, they are a guest of the event again. */
+  protected async onLeaveCollaboration(): Promise<void> {
+    const uid = this.memberUid();
+    const event = this.event();
+    if (!uid || !event || this.isOwner()) return;
+    const confirmed = await firstValueFrom(
+      this.dialogs.confirm({
+        title: 'Sair da colaboração?',
+        message: `Você deixa de ajudar a organizar "${event.title}": a lista de itens, os convidados e o amigo oculto. Para voltar, quem organiza precisa convidar você de novo.`,
+        confirmLabel: 'Sair',
+        tone: 'danger',
+        icon: 'logout',
+      }),
+    );
+    if (!confirmed) return;
+    try {
+      await this.eventService.leaveCollaboration(event.id, uid);
+      this.feedback.success('Você saiu da colaboração deste evento.');
+    } catch (err) {
+      this.feedback.error(explainError('Não foi possível sair da colaboração', err));
+    }
+  }
+
   protected openCollaborators(): void {
     const event = this.event();
     if (event && this.isOwner()) this.collaboratorsManager.open(event);

@@ -111,4 +111,19 @@ test.describe('Convite para colaborar', () => {
     await page.getByTestId('notifications-btn').click();
     await expect(page.getByText('Aguardando resposta')).toBeVisible();
   });
+
+  test('a collaborator can step back with Sair da colaboração', async ({ page }) => {
+    await setupMockAuthSession(page, {
+      uid: 'ana-uid',
+      email: 'ana@exemplo.com',
+      displayName: 'Ana',
+      events: [{ ...event, collaborators: ['ana-uid'] }],
+    });
+    await page.goto('/evento/e1');
+    await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
+    await page.getByTestId('leave-collaboration-btn').click();
+    await page.getByRole('button', { name: 'Sair', exact: true }).click();
+    await expect(page.getByText('Compartilhe o QR Code')).toHaveCount(0);
+    await expect(page.getByTestId('leave-collaboration-btn')).toHaveCount(0);
+  });
 });

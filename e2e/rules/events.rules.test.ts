@@ -261,4 +261,19 @@ describe('events collection Firestore rules contract', () => {
     await assertFails(getDoc(doc(other, 'events/e/collaborators/collab-uid')));
     await assertSucceeds(deleteDoc(doc(owner, 'events/e/collaborators/collab-uid')));
   });
+
+  it('lets a collaborator leave, taking out only their own account', async () => {
+    await seed('events/e', { ...ownedEvent, collaborators: ['collab-uid', 'other-collab'] });
+    const collab = accountDb('collab-uid', 'collab@test.com');
+
+    await assertFails(
+      updateDoc(doc(collab, 'events/e'), { collaborators: ['collab-uid'], updatedAt: 'x' }),
+    );
+    await assertFails(
+      updateDoc(doc(collab, 'events/e'), { collaborators: ['other-collab'], title: 'Outro' }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(collab, 'events/e'), { collaborators: ['other-collab'], updatedAt: 'x' }),
+    );
+  });
 });

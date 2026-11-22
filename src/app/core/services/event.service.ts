@@ -213,6 +213,15 @@ export class EventService {
     });
   }
 
+  /** "Sair da colaboração": the collaborator takes their own account out of the event. */
+  async leaveCollaboration(eventId: string, uid: string): Promise<void> {
+    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
+      collaborators: this.gateway.arrayRemove(uid),
+      updatedAt: new Date().toISOString(),
+    });
+    await this.gateway.deleteDoc(this.collaboratorPath(eventId, uid)).catch(() => undefined);
+  }
+
   async removeCollaborator(eventId: string, collaboratorUid: string): Promise<void> {
     await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
       collaborators: this.gateway.arrayRemove(collaboratorUid),

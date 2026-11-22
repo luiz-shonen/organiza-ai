@@ -54,12 +54,14 @@ export class GuestListCardComponent {
   protected readonly displayPhone = Phone.display;
 
   /** "5 confirmados": everyone going, the guests and the people coming with them. */
+  /** Everyone going: the guests and the people coming with them. */
+  protected readonly people = computed(() =>
+    this.households().reduce((total, household) => total + household.members.length, 0),
+  );
+  /** Under the heading: how many answered, the count of people being in the pill. */
   protected readonly summary = computed(() => {
-    const people = this.households().reduce(
-      (total, household) => total + household.members.length,
-      0,
-    );
-    return people === 1 ? '1 confirmado' : `${people} confirmados`;
+    const families = this.households().length;
+    return families === 1 ? '1 família respondeu' : `${families} famílias responderam`;
   });
 
   /** Beside the guest's name: "+2 · 3 itens", short enough for a phone. */

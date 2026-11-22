@@ -226,7 +226,7 @@ test.describe('Invites, event states and guests', () => {
     await page.goto('/evento/evt-guests');
 
     const card = page.getByTestId('guest-list-card');
-    await expect(card).toContainText('Quem vai');
+    await expect(card).toContainText('Confirmados');
     await expect(card.getByTestId('guest-household').first()).toBeVisible();
     await expect(card).not.toContainText('91111');
     await expect(card.getByRole('button', { name: 'Baixar a lista em Excel' })).toHaveCount(0);

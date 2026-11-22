@@ -54,6 +54,7 @@
         [canEdit]="canEditEvent()"
         (edit)="editEvent()"
         (collaborators)="openCollaborators()"
+        (leaveCollaboration)="onLeaveCollaboration()"
       />
 
       @if (!isOwner() || canEditEvent()) {

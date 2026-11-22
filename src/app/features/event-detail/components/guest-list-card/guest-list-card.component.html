@@ -2,7 +2,8 @@
   <section class="guest-list" aria-labelledby="guest-list-title">
     <org-card-header
       id="guest-list-title"
-      heading="Quem vai"
+      heading="Confirmados"
+      [count]="households().length ? people() : null"
       [subheading]="households().length ? summary() : 'Ninguém confirmou ainda.'"
     >
       @if (forOrganizer() && households().length) {
@@ -121,7 +122,6 @@
 
                 @if (household.members.length > 1) {
                   <!-- Who comes through the guest: their family and companions ("Vão com Jéssica"). -->
-                  <p class="guest-list__together">Vão com {{ firstName(household.name) }}</p>
                   <ul
                     class="guest-list__people"
                     [attr.aria-label]="'Quem vai com ' + household.name"

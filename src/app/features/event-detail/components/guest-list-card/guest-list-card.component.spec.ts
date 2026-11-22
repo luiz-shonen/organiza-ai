@@ -60,7 +60,7 @@ describe('GuestListCardComponent', () => {
     const element = await render(false);
     const text = element.textContent ?? '';
 
-    expect(text).toContain('3 confirmados');
+    expect(element.querySelector('[data-testid="card-header-count"]')?.textContent).toContain('3');
     // The guest's name is the panel title only, not repeated inside.
     expect(text.split('Jéssica Melo').length - 1).toBe(1);
     expect(text).toContain('2 pessoas · 2 itens');
@@ -71,8 +71,8 @@ describe('GuestListCardComponent', () => {
     expect(lines).toEqual(['3 L de Sorvete', '2 garrafas de Refrigerante']);
     expect(text).toContain('Família');
     expect(text).toContain('Não leva nada da lista');
-    // Family and companions come through the guest: "Vão com Jéssica"; no "Convidado(a)" label.
-    expect(text).toContain('Vão com Jéssica');
+    // Family and companions are listed under the guest, without a heading or "Convidado(a)".
+    expect(text).not.toContain('Vão com');
     expect(text).not.toContain('Convidado(a)');
     expect(text).not.toContain('99267');
     expect(text).not.toContain('Não poderão ir');

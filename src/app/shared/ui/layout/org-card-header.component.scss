@@ -14,9 +14,22 @@
 }
 
 .org-card-header__heading {
+  align-items: center;
   color: var(--org-on-surface);
+  display: flex;
   font: var(--org-text-title);
+  gap: var(--org-space-sm);
   margin: 0;
+}
+
+// The count beside the heading, like "Próximos eventos" in Meus eventos.
+.org-card-header__count {
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface-variant);
+  font: var(--org-font-weight-semibold) var(--org-font-size-xs) / var(--org-line-height-none)
+    var(--org-font-body);
+  padding: var(--org-space-xs) var(--org-space-sm);
 }
 
 .org-card-header__subheading {

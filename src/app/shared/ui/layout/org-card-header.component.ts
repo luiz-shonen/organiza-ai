@@ -10,4 +10,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 export class OrgCardHeaderComponent {
   public readonly heading = input.required<string>();
   public readonly subheading = input<string | null>(null);
+  /** A count in a pill beside the heading ("Confirmados 4"); none when null. */
+  public readonly count = input<number | null>(null);
 }

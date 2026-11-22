@@ -79,6 +79,12 @@
 }
 
 // The guest is the panel title, so their part starts right under it, without the name again.
+// What is inside a household lines up with the name above it, past the photo.
+.guest-list__holder,
+.guest-list__people {
+  padding-inline-start: calc(var(--org-icon-size-xl) + var(--org-space-sm));
+}
+
 .guest-list__holder {
   display: flex;
   flex-direction: column;
@@ -88,10 +94,9 @@
 // One row per person with them: avatar, name with their role, then what they bring.
 .guest-list__person {
   align-items: flex-start;
-  border-top: 1px solid var(--org-outline-variant);
   display: flex;
   gap: var(--org-space-sm);
-  padding: var(--org-space-sm) 0;
+  padding: var(--org-space-xs) 0;
 }
 
 .guest-list__info {

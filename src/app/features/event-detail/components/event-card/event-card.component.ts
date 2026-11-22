@@ -52,6 +52,8 @@ export class EventCardComponent {
   public readonly edit = output<void>();
   /** "Colaboradores": the owner manages who helps organise. */
   public readonly collaborators = output<void>();
+  /** "Sair da colaboração": a collaborator stops helping organise. */
+  public readonly leaveCollaboration = output<void>();
 
   /** The colours and words of the invitation, from the category. */
   protected readonly theme = computed(() => inviteTheme(this.event().category));

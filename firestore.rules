@@ -247,8 +247,18 @@ service cloud.firestore {
       allow update: if isValidEvent()
                     && (isAdmin()
                         || (ownsEvent(resource.data) && !changes('createdBy'))
-                        || isJoiningByInvitation());
+                        || isJoiningByInvitation()
+                        || isLeavingCollaboration());
       allow delete: if isAdmin() || ownsEvent(resource.data);
+
+      // "Sair da colaboração": a collaborator removes only their own uid, nothing else.
+      function isLeavingCollaboration() {
+        return isAccountHolder()
+            && request.auth.uid in resource.data.get('collaborators', [])
+            && changedKeys().hasOnly(['collaborators', 'updatedAt'])
+            && request.resource.data.get('collaborators', []).toSet()
+                 == resource.data.get('collaborators', []).toSet().difference([request.auth.uid].toSet());
+      }
 
       // claimPendingInvitations: the invited account adds only its own uid, while the
       // invitation for its e-mail still exists (the same batch deletes it).

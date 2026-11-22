@@ -29,7 +29,6 @@ import type {
 import { buildFamilyChecklist, hasStarted, toggleBought } from '../../core/utils';
 import {
   FeedbackService,
-  OrgButtonComponent,
   OrgEmptyStateComponent,
   OrgExpansionPanelComponent,
   OrgFilterBarComponent,
@@ -66,7 +65,6 @@ interface HomeCard {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     NotificationCardComponent,
-    OrgButtonComponent,
     OrgEmptyStateComponent,
     OrgExpansionPanelComponent,
     OrgFilterBarComponent,
@@ -359,10 +357,6 @@ export class HomeContainer {
       this.households.update((all) => ({ ...all, [eventId]: household }));
       this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', error));
     }
-  }
-
-  protected createEvent(): void {
-    void this.router.navigate(['/meus-eventos/evento/novo']);
   }
 
   protected setFilters(ids: string[]): void {

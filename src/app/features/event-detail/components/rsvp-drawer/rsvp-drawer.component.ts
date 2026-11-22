@@ -183,6 +183,8 @@ export class RsvpDrawerComponent {
     if (!this.santaGiftsError()) return '';
     const max = this.santa()?.maxGiftOptions ?? 1;
     const lines = parseGiftLines(this.santaGifts()[key] ?? '', max);
+    if (this.santa()?.giftOptions && !lines.length)
+      return 'Informe pelo menos uma opção de presente';
     const bad = lines.find((line) => GiftOption.validate(line));
     return bad ? `"${bad}": ${GiftOption.validate(bad)}` : '';
   }
@@ -190,8 +192,8 @@ export class RsvpDrawerComponent {
   protected santaGiftLabel(person: RsvpSantaPerson): string {
     const max = this.santa()?.maxGiftOptions ?? 1;
     const self = person.key === 'self';
-    if (max === 1) return `Opção de presente ${self ? 'sua' : `de ${person.name}`} (opcional)`;
-    return `Opções de presente ${self ? 'suas' : `de ${person.name}`}, uma por linha, até ${max} (opcional)`;
+    if (max === 1) return `Opção de presente ${self ? 'sua' : `de ${person.name}`}`;
+    return `Opções de presente ${self ? 'suas' : `de ${person.name}`}, uma por linha, até ${max}`;
   }
 
   /** Who is in the draw, among the people still going; null when the drawer does not ask. */
@@ -262,8 +264,11 @@ export class RsvpDrawerComponent {
       return;
     }
     const santa = this.santaChoice();
-    const badGift = Object.values(santa ?? {}).some((gifts) =>
-      gifts.some((gift) => GiftOption.validate(gift)),
+    // With gift options on, everyone in the draw names at least one.
+    const needsGift = !!this.santa()?.giftOptions;
+    const badGift = Object.values(santa ?? {}).some(
+      (gifts) =>
+        (needsGift && gifts.length === 0) || gifts.some((gift) => GiftOption.validate(gift)),
     );
     if (badGift) {
       this.santaGiftsError.set(true);

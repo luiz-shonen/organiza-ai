@@ -83,18 +83,6 @@ export class SecretSantaParticipantsComponent {
     Math.max(0, SECRET_SANTA_MIN_PARTICIPANTS - this.participants().length),
   );
 
-  protected summary(participant: SecretSantaParticipantInput): string {
-    const parts: string[] = [];
-    if (participant.phone) parts.push(participant.phone);
-    if (this.giftOptions()) {
-      const count = participant.giftOptions.length;
-      parts.push(
-        count === 0 ? 'Sem opções de presente' : count === 1 ? '1 opção' : `${count} opções`,
-      );
-    }
-    return parts.join(' · ');
-  }
-
   protected addSuggestion(suggestion: SecretSantaSuggestion): void {
     this.add.emit(this.fromSuggestion(suggestion));
   }

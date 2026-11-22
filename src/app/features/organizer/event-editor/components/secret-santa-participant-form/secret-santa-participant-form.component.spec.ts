@@ -222,12 +222,14 @@ describe('SecretSantaParticipantFormComponent', () => {
     expect(el().textContent).not.toContain('0 de 1');
   });
 
-  it('sends no ideas when none were typed', () => {
+  it('asks for at least one idea when the event wants gift options', () => {
     fixture.componentRef.setInput('showGiftOptions', true);
     fixture.detectChanges();
     type('santa-name-input', 'Ana');
     submit();
-    expect(emitted[0].giftOptions).toEqual([]);
+    fixture.detectChanges();
+    expect(emitted).toEqual([]);
+    expect(el().textContent).toContain('Informe pelo menos uma opção de presente');
   });
 
   it('offers people the organizer knows, and their phone comes along', () => {

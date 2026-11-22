@@ -147,6 +147,13 @@ describe('RsvpDrawerComponent', () => {
     const el = () => fixture.nativeElement as HTMLElement;
     const confirm = () =>
       (el().querySelector('[data-testid="rsvp-confirm-btn"] button') as HTMLButtonElement).click();
+    const typeGifts = (index: number, text: string) => {
+      const field = el().querySelector(
+        `textarea[data-testid="rsvp-santa-gifts-${index}"]`,
+      ) as HTMLTextAreaElement;
+      field.value = text;
+      field.dispatchEvent(new Event('input'));
+    };
 
     it('asks for each person going: the guest and the relatives checked above', () => {
       open();
@@ -166,13 +173,25 @@ describe('RsvpDrawerComponent', () => {
       ) as HTMLTextAreaElement;
       gifts.value = 'Manta\nChinelo 37\nTerceira passa do limite';
       gifts.dispatchEvent(new Event('input'));
+      typeGifts(0, 'Livro');
       confirm();
 
       expect(close).toHaveBeenCalledWith(
         expect.objectContaining({
-          secretSanta: { self: [], 'f:fam-ana': ['Manta', 'Chinelo 37'] },
+          secretSanta: { self: ['Livro'], 'f:fam-ana': ['Manta', 'Chinelo 37'] },
         }),
       );
+    });
+
+    it('asks every person in the draw for at least one gift option', () => {
+      open();
+      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      confirm();
+      fixture.detectChanges();
+
+      expect(close).not.toHaveBeenCalled();
+      expect(el().textContent).toContain('Informe pelo menos uma opção de presente');
     });
 
     it('asks the WhatsApp of a relative in the draw, filled from the profile, optional', () => {
@@ -189,6 +208,8 @@ describe('RsvpDrawerComponent', () => {
       expect(phone).toBeTruthy();
       phone.value = '21988880000';
       phone.dispatchEvent(new Event('input'));
+      typeGifts(0, 'Livro');
+      typeGifts(1, 'Manta');
       confirm();
 
       expect(close).toHaveBeenCalledWith(
@@ -205,6 +226,7 @@ describe('RsvpDrawerComponent', () => {
       ) as HTMLInputElement;
       phone.value = '2198';
       phone.dispatchEvent(new Event('input'));
+      typeGifts(1, 'Manta');
       confirm();
       fixture.detectChanges();
 
@@ -213,7 +235,7 @@ describe('RsvpDrawerComponent', () => {
     });
 
     it('opens an edit with who is already in, and leaves out someone no longer going', () => {
-      open({ self: ['Livro'], 'f:fam-ana': [] });
+      open({ self: ['Livro'], 'f:fam-ana': ['Manta'] });
       expect(
         (el().querySelector('textarea[data-testid="rsvp-santa-gifts-0"]') as HTMLTextAreaElement)
           .value,

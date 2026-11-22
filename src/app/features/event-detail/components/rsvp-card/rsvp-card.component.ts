@@ -103,14 +103,14 @@ export class RsvpCardComponent {
   });
   protected readonly santaGiftsError = computed(() => {
     if (!this.santaAttempted()) return '';
+    if (this.secretSanta()?.giftOptions && !this.giftLines().length)
+      return 'Informe pelo menos uma opção de presente';
     const bad = this.giftLines().find((line) => GiftOption.validate(line));
     return bad ? `"${bad}": ${GiftOption.validate(bad)}` : '';
   });
   protected readonly santaGiftLabel = computed(() => {
     const max = this.secretSanta()?.maxGiftOptions ?? 1;
-    return max === 1
-      ? 'Opção de presente (opcional)'
-      : `Opções de presente, uma por linha, até ${max} (opcional)`;
+    return max === 1 ? 'Opção de presente' : `Opções de presente, uma por linha, até ${max}`;
   });
 
   protected onConfirm(): void {
@@ -182,7 +182,8 @@ export class RsvpCardComponent {
     this.santaAttempted.set(true);
     const phone = Phone.create(this.santaPhone());
     const gifts = this.giftLines();
-    if (!phone || gifts.some((gift) => GiftOption.validate(gift))) return null;
+    const missingGift = !!this.secretSanta()?.giftOptions && gifts.length === 0;
+    if (!phone || missingGift || gifts.some((gift) => GiftOption.validate(gift))) return null;
     return { phone: phone.formatted, gifts };
   }
 

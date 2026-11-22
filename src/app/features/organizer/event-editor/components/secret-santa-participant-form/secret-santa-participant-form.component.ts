@@ -209,7 +209,9 @@ export class SecretSantaParticipantFormComponent {
     const name = PersonName.create(this.name());
     const phoneText = this.phone().trim();
     const phone = phoneText ? Phone.create(phoneText) : null;
-    if (!name || (phoneText && !phone) || !pendingAdded) {
+    const missingGift = this.showGiftOptions() && pendingAdded && this.gifts().length === 0;
+    if (missingGift) this.newGiftError.set('Informe pelo menos uma opção de presente');
+    if (!name || (phoneText && !phone) || !pendingAdded || missingGift) {
       this.showErrors.set(true);
       revealFirstInvalidSoon(this.host.nativeElement);
       return;

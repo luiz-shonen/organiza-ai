@@ -246,7 +246,13 @@ describe('RsvpCardComponent', () => {
 
       type('input[data-testid="rsvp-santa-phone"]', '11977776666');
       click('rsvp-santa-join-send-btn');
-      expect(spy).toHaveBeenCalledWith({ phone: '(11) 97777-6666', gifts: [] });
+      fixture.detectChanges();
+      // With gift options on, at least one is needed too.
+      expect(spy).not.toHaveBeenCalled();
+      expect(el().textContent).toContain('Informe pelo menos uma opção de presente');
+      type('textarea[data-testid="rsvp-santa-gifts"]', 'Livro');
+      click('rsvp-santa-join-send-btn');
+      expect(spy).toHaveBeenCalledWith({ phone: '(11) 97777-6666', gifts: ['Livro'] });
     });
 
     it('shows a declined member in the draw, with a way out', () => {

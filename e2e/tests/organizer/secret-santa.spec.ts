@@ -212,7 +212,7 @@ test.describe('Amigo oculto', () => {
     const list = people.getByTestId('secret-santa-participants');
     await expect(list).toContainText('Jéssica Melo');
     await expect(list).toContainText('Vó Maria');
-    await expect(list).toContainText('2 opções');
+    await expect(list).toContainText('Chinelo, cor verde, tamanho 37 · Livro de receitas');
     await expect(people.getByTestId('secret-santa-missing')).toContainText('Falta 1');
     await page
       .getByTestId('secret-santa-card')

@@ -65,7 +65,7 @@ describe('SecretSantaParticipantsComponent', () => {
     expect(many[0].map((p) => p.name)).toEqual(['Jéssica', 'Luiz']);
   });
 
-  it('lists participants with their gift option count and lets them be removed', () => {
+  it('lists participants with their gift ideas and lets them be removed', () => {
     const removed: number[] = [];
     fixture.componentInstance.remove.subscribe((i) => removed.push(i));
     fixture.componentRef.setInput('giftOptions', true);
@@ -75,7 +75,8 @@ describe('SecretSantaParticipantsComponent', () => {
     fixture.detectChanges();
     const list = byTestId('secret-santa-participants')!;
     expect(list.textContent).toContain('Ana');
-    expect(list.textContent).toContain('2 opções');
+    // The ideas themselves, on their own line.
+    expect(list.textContent).toContain('Livro · Chinelo');
     (list.querySelector('[aria-label="Remover Ana"]') as HTMLButtonElement).click();
     expect(removed).toEqual([0]);
   });

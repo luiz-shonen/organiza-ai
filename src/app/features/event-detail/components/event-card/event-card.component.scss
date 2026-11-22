@@ -69,11 +69,13 @@
   }
 }
 
-// The date and the place: the icon alone, in orange, beside the lilac.
+// The date and the place: small orange accents beside the lilac.
 .event-card__row-icon {
   align-items: center;
+  background: var(--org-accent-container);
   block-size: 40px;
-  color: var(--org-accent);
+  border-radius: var(--org-radius-sm);
+  color: var(--org-on-accent-container);
   display: inline-flex;
   flex: none;
   inline-size: 40px;

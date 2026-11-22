@@ -285,11 +285,12 @@
     gap: var(--org-space-sm);
   }
 
-  // The icon alone, in colour: no tile behind it.
   &__feature-icon {
     align-items: center;
+    background: var(--org-secondary-container);
     block-size: 36px;
-    color: var(--org-secondary);
+    border-radius: var(--org-radius-sm);
+    color: var(--org-on-secondary-container);
     display: inline-flex;
     flex: none;
     inline-size: 36px;

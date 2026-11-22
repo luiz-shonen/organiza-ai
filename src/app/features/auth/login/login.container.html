@@ -84,7 +84,7 @@
             @for (feature of features; track feature.icon) {
               <li class="login__feature" [style.--login-i]="$index">
                 <span class="login__feature-icon" aria-hidden="true">
-                  <org-icon [name]="feature.icon" color="currentColor" />
+                  <org-icon [name]="feature.icon" size="sm" color="currentColor" />
                 </span>
                 {{ feature.text }}
               </li>

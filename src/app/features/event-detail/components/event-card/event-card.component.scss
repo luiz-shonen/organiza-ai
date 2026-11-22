@@ -69,12 +69,13 @@
   }
 }
 
+// The date and the place: small orange accents beside the lilac.
 .event-card__row-icon {
   align-items: center;
-  background: var(--org-secondary-container);
+  background: var(--org-accent-container);
   block-size: 40px;
   border-radius: var(--org-radius-sm);
-  color: var(--org-on-secondary-container);
+  color: var(--org-on-accent-container);
   display: inline-flex;
   flex: none;
   inline-size: 40px;
@@ -101,7 +102,7 @@
 
 .event-card__date-sub {
   align-self: flex-start;
-  color: var(--org-on-primary-container);
+  color: var(--org-on-accent-container);
   font-size: var(--org-font-size-sm);
   font-weight: var(--org-font-weight-semibold);
   text-decoration: none;

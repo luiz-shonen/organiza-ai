@@ -2,12 +2,13 @@
   display: inline-flex;
 }
 
+// An initial on a warm orange disc: one of the app's orange accents.
 .org-avatar {
   align-items: center;
-  background: var(--org-surface-container-low);
+  background: var(--org-accent-container);
   block-size: var(--org-icon-size-xl);
   border-radius: var(--org-radius-circle);
-  color: var(--org-on-surface);
+  color: var(--org-on-accent-container);
   display: inline-flex;
   flex: none;
   font: var(--org-font-weight-bold) var(--org-font-size-md) / var(--org-line-height-none)

@@ -81,7 +81,7 @@
               <org-expansion-panel
                 [plain]="true"
                 [prominent]="true"
-                [heading]="household.name"
+                heading=""
                 [ariaLabel]="'Quem vai com ' + household.name"
                 [expanded]="$first || households().length <= 3"
               >
@@ -91,14 +91,15 @@
                   [name]="household.name"
                   [photoUrl]="household.photoUrl ?? null"
                 />
-                @if (forOrganizer() && household.phone) {
-                  <span orgExpansionTitleMeta class="guest-list__phone">
-                    {{ displayPhone(household.phone) }}
-                  </span>
+                <span orgExpansionTitleMeta class="guest-list__who">
+                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  @if (forOrganizer() && household.phone) {
+                    <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
+                  }
+                </span>
+                @if (householdSummary(household); as summary) {
+                  <span orgExpansionSummary class="guest-list__count">{{ summary }}</span>
                 }
-                <span orgExpansionSummary class="guest-list__count">{{
-                  householdSummary(household)
-                }}</span>
 
                 @let holder = household.members[0];
                 <!-- What the guest brings; nothing at all when the event has no list. -->
@@ -161,11 +162,15 @@
                   [name]="household.name"
                   [photoUrl]="household.photoUrl ?? null"
                 />
-                <span class="guest-list__row-name">{{ household.name }}</span>
-                @if (forOrganizer() && household.phone) {
-                  <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
+                <span class="guest-list__who">
+                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  @if (forOrganizer() && household.phone) {
+                    <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
+                  }
+                </span>
+                @if (householdSummary(household); as summary) {
+                  <span class="guest-list__count">{{ summary }}</span>
                 }
-                <span class="guest-list__count">{{ householdSummary(household) }}</span>
               </div>
             }
           </li>

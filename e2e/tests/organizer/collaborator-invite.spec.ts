@@ -88,7 +88,7 @@ test.describe('Convite para colaborar', () => {
     await page.goto('/evento/e1');
     await expect(page.getByTestId('collaborator-invite')).toBeVisible();
     await expect(page.getByText('Compartilhe o QR Code')).toHaveCount(0);
-    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toHaveCount(0);
     await page.getByTestId('collaborator-invite-accept').click();
     await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
   });
@@ -121,9 +121,11 @@ test.describe('Convite para colaborar', () => {
     });
     await page.goto('/evento/e1');
     await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
-    await page.getByTestId('leave-collaboration-btn').click();
+    await page.getByRole('button', { name: 'Sair da colaboração', exact: true }).click();
     await page.getByRole('button', { name: 'Sair', exact: true }).click();
     await expect(page.getByText('Compartilhe o QR Code')).toHaveCount(0);
-    await expect(page.getByTestId('leave-collaboration-btn')).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Sair da colaboração', exact: true }),
+    ).toHaveCount(0);
   });
 });

@@ -134,11 +134,11 @@ test.describe('Invites, event states and guests', () => {
     ]);
 
     await page.goto('/evento/evt-next');
-    await expect(page.getByTestId('edit-event-btn')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toBeVisible();
 
     await page.goto('/evento/evt-past');
     await expect(page.locator('h1.event-card__title')).toHaveText('Churrasco passado');
-    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toHaveCount(0);
 
     // Typing the editor address leads back to the event, saying why.
     await page.goto('/meus-eventos/evento/evt-past');

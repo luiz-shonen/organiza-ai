@@ -17,4 +17,6 @@ export class OrgLogoComponent {
   public readonly size = input<OrgLogoSize>('md');
   /** The mark bounces, draws its check and throws confetti every few seconds. */
   public readonly animated = input(true);
+  /** On a phone, only the mark: the header has no room for the name beside its buttons. */
+  public readonly markOnPhone = input(false);
 }

@@ -156,15 +156,17 @@
   justify-content: flex-end;
 }
 
-// On a phone the buttons take the whole row under the organizer, side by side, the same size.
-@media (width < 600px) {
-  .event-card__host-actions {
-    flex-wrap: nowrap;
-    inline-size: 100%;
+// A wide screen shows the labelled buttons; a phone, the icons beside the organizer.
+.event-card__host-actions--narrow {
+  display: none;
+}
 
-    > org-button {
-      flex: 1 1 0;
-      min-inline-size: 0;
-    }
+@media (width < 600px) {
+  .event-card__host-actions--wide {
+    display: none;
+  }
+
+  .event-card__host-actions--narrow {
+    display: flex;
   }
 }

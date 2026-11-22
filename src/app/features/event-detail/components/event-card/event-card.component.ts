@@ -7,6 +7,7 @@ import {
   OrgBannerComponent,
   type OrgBadgeVariant,
   OrgButtonComponent,
+  OrgIconButtonComponent,
   OrgIconComponent,
   OrgSurfaceComponent,
 } from '../../../../shared/ui';
@@ -28,6 +29,7 @@ import { InviteLetterComponent } from '../../../../shared/components/invite-pape
     OrgAvatarComponent,
     OrgBadgeComponent,
     OrgButtonComponent,
+    OrgIconButtonComponent,
     OrgIconComponent,
     OrgSurfaceComponent,
   ],

@@ -411,7 +411,7 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     await page.goto('/meus-eventos');
     await page.getByRole('link', { name: 'Ver detalhes de Festa Junina da Comunidade' }).click();
     await expect(page).toHaveURL(/\/evento\/event-1$/);
-    await page.getByTestId('edit-event-btn').click();
+    await page.getByRole('button', { name: 'Editar evento', exact: true }).click();
     await expect(page).toHaveURL(/\/meus-eventos\/evento\/event-1$/);
 
     const back = page.getByTestId('header-back-btn');

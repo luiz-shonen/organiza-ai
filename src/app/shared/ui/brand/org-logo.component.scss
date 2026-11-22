@@ -185,3 +185,9 @@
     @include still;
   }
 }
+
+.org-logo--mark-on-phone .org-logo__text {
+  @media (width < 600px) {
+    display: none;
+  }
+}

@@ -71,10 +71,11 @@ export class GuestListCardComponent {
   }
 
   protected householdSummary(household: GuestHousehold): string {
+    // Only what the line does not already say: one person alone needs no "1 pessoa".
     const people = household.members.length;
     const items = household.bring.length;
     return [
-      people === 1 ? '1 pessoa' : `${people} pessoas`,
+      ...(people > 1 ? [`${people} pessoas`] : []),
       ...(items ? [items === 1 ? '1 item' : `${items} itens`] : []),
     ].join(' · ');
   }

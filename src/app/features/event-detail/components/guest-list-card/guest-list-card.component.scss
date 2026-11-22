@@ -46,9 +46,7 @@
   font-size: var(--org-font-size-md);
   font-weight: var(--org-font-weight-semibold);
   min-inline-size: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .guest-list__row .guest-list__count {
@@ -62,8 +60,25 @@
 }
 
 // How many go, as a green pill on the right.
+// Name and phone side by side; on a phone the phone goes under the name, never cutting it.
+.guest-list__who {
+  align-items: baseline;
+  column-gap: var(--org-space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  min-inline-size: 0;
+  white-space: normal;
+
+  @media (width < 600px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
 .guest-list__count {
   background: var(--org-tertiary-container);
+  flex: none;
+  white-space: nowrap;
   border-radius: var(--org-radius-full);
   color: var(--org-on-tertiary-container);
   font-size: var(--org-font-size-xs);

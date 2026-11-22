@@ -380,7 +380,7 @@ test.describe('Amigo oculto', () => {
     // Managing the draw is the organizers' side: none of it here.
     await expect(page.getByTestId('secret-santa-card')).toHaveCount(0);
     await expect(page.getByTestId('secret-santa-people')).toHaveCount(0);
-    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toHaveCount(0);
     await roster.screenshot({ path: 'e2e/screenshots/secret-santa-roster-guest.png' });
   });
 

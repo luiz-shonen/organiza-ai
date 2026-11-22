@@ -15,7 +15,9 @@
         <org-icon [name]="icon" color="var(--org-success)" />
       }
       <ng-content select="[orgExpansionTitleLead]" />
-      <span class="org-expansion-panel__heading">{{ heading() }}</span>
+      @if (heading()) {
+        <span class="org-expansion-panel__heading">{{ heading() }}</span>
+      }
       <ng-content select="[orgExpansionTitleMeta]" />
     </mat-panel-title>
     <mat-panel-description class="org-expansion-panel__summary">

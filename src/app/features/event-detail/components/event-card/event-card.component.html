@@ -126,6 +126,7 @@
             variant="danger-text"
             testId="leave-collaboration-btn"
             [compact]="true"
+            [fullWidth]="true"
             [gradient]="false"
             (pressed)="leaveCollaboration.emit()"
           />
@@ -137,6 +138,7 @@
             variant="secondary"
             testId="collaborators-btn"
             [compact]="true"
+            [fullWidth]="true"
             (pressed)="collaborators.emit()"
           />
         }
@@ -146,6 +148,7 @@
           variant="secondary"
           testId="edit-event-btn"
           [compact]="true"
+          [fullWidth]="true"
           (pressed)="edit.emit()"
         />
       </div>

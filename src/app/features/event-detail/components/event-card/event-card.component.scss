@@ -155,3 +155,16 @@
   gap: var(--org-space-sm);
   justify-content: flex-end;
 }
+
+// On a phone the buttons take the whole row under the organizer, side by side, the same size.
+@media (width < 600px) {
+  .event-card__host-actions {
+    flex-wrap: nowrap;
+    inline-size: 100%;
+
+    > org-button {
+      flex: 1 1 0;
+      min-inline-size: 0;
+    }
+  }
+}

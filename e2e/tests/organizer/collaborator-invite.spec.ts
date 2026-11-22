@@ -92,4 +92,23 @@ test.describe('Convite para colaborar', () => {
     await page.getByTestId('collaborator-invite-accept').click();
     await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
   });
+
+  test('a seen invite stays on top waiting; a new invite to the same event counts again', async ({
+    page,
+  }) => {
+    // The previous invite to this event was opened on this device.
+    await page.addInitScript(() =>
+      localStorage.setItem('organiza:seen-invites:ana-uid', JSON.stringify(['e1@0'])),
+    );
+    await asInvited(page);
+    await page.goto('/');
+    await expect(page.getByTestId('notifications-count')).toHaveText('1');
+    await page.getByTestId('notifications-btn').click();
+    await expect(page.getByText('Aguardando resposta')).toBeVisible();
+    await page.getByTestId('notification-item').first().click();
+    await expect(page).toHaveURL(/\/evento\/e1/);
+    await expect(page.getByTestId('notifications-count')).toHaveCount(0);
+    await page.getByTestId('notifications-btn').click();
+    await expect(page.getByText('Aguardando resposta')).toBeVisible();
+  });
 });

@@ -3,14 +3,15 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
 import { AuthService, CollaboratorInvitesService, InboxService } from '../../../core/services';
+import type { EventInvitation } from '../../../core/models';
 import { OrgNotificationMenuComponent, type OrgNotificationItem } from '../../ui';
 
 interface BellItem extends OrgNotificationItem {
   readonly url: string;
   /** An inbox notification is marked read when opened; an invite stays until answered. */
   readonly inboxId: string | null;
-  /** An invite's event: opening it marks the invite seen. */
-  readonly eventId: string | null;
+  /** The invite itself: opening it marks it seen. */
+  readonly invite: EventInvitation | null;
 }
 
 /**
@@ -56,8 +57,9 @@ export class NotificationBellComponent {
           .join(' · '),
         url: `/evento/${invite.eventId}`,
         inboxId: null,
-        eventId: invite.eventId,
-        unread: !this.invites.seen().has(invite.eventId),
+        invite,
+        unread: !this.invites.isSeen(invite),
+        pinned: true,
       })),
       ...this.history().map((notification) => ({
         key: notification.id,
@@ -75,7 +77,7 @@ export class NotificationBellComponent {
             : notification.eventTitle || notification.body,
         url: notification.actionUrl,
         inboxId: notification.id,
-        eventId: null,
+        invite: null,
         unread: !notification.readAt,
       })),
     ].sort((a, b) => Number(b.unread) - Number(a.unread)),
@@ -90,7 +92,7 @@ export class NotificationBellComponent {
     if (!bellItem) return;
     const uid = this.uid();
     if (bellItem.inboxId && uid) this.inbox.markRead(uid, bellItem.inboxId).catch(() => undefined);
-    if (bellItem.eventId) this.invites.markSeen(bellItem.eventId);
+    if (bellItem.invite) this.invites.markSeen(bellItem.invite);
     void this.router.navigateByUrl(bellItem.url);
   }
 }

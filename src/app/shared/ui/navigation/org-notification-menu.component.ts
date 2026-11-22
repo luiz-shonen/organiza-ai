@@ -21,6 +21,8 @@ export interface OrgNotificationItem {
   readonly body: string;
   /** Not seen yet: counted on the bell and marked in the list. Missing means new. */
   readonly unread?: boolean;
+  /** Waiting for an answer: kept on top, under "Aguardando resposta", seen or not. */
+  readonly pinned?: boolean;
 }
 
 /**

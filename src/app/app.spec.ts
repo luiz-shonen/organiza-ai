@@ -41,7 +41,11 @@ describe('App', () => {
         },
         {
           provide: CollaboratorInvitesService,
-          useValue: { invites: signal([]), refresh: vi.fn().mockResolvedValue(undefined) },
+          useValue: {
+            invites: signal([]),
+            refresh: vi.fn().mockResolvedValue(undefined),
+            watch: vi.fn(),
+          },
         },
         {
           provide: UserService,

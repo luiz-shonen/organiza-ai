@@ -38,10 +38,20 @@ export class CollaboratorInvitesService {
     this.seenIds.set(new Set(ids));
   }
 
+  /** One invite, not its event: a new invite to the same event is new again. */
+  seenKeyOf(invite: Pick<EventInvitation, 'eventId' | 'createdAt'>): string {
+    return `${invite.eventId}@${invite.createdAt}`;
+  }
+
+  isSeen(invite: Pick<EventInvitation, 'eventId' | 'createdAt'>): boolean {
+    return this.seenIds().has(this.seenKeyOf(invite));
+  }
+
   /** Opening an invite (from the bell or on the event page) stops it counting as new. */
-  markSeen(eventId: string): void {
-    if (!eventId || this.seenIds().has(eventId)) return;
-    const next = new Set(this.seenIds()).add(eventId);
+  markSeen(invite: Pick<EventInvitation, 'eventId' | 'createdAt'>): void {
+    const id = this.seenKeyOf(invite);
+    if (!invite.eventId || this.seenIds().has(id)) return;
+    const next = new Set(this.seenIds()).add(id);
     this.seenIds.set(next);
     const key = this.seenKey();
     try {
@@ -49,6 +59,19 @@ export class CollaboratorInvitesService {
     } catch {
       // Storage may be unavailable: it then stays seen for this visit only.
     }
+  }
+
+  /** While the app is open: on coming back to it, and every minute, new invites show up. */
+  private watching = false;
+  watch(): void {
+    if (this.watching || typeof window === 'undefined') return;
+    this.watching = true;
+    const again = () => {
+      if (document.visibilityState === 'visible') void this.refresh();
+    };
+    window.addEventListener('focus', again);
+    document.addEventListener('visibilitychange', again);
+    window.setInterval(again, 60_000);
   }
 
   async refresh(): Promise<void> {

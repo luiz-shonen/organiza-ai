@@ -13,8 +13,18 @@
 <mat-menu #menu="matMenu" xPosition="before" class="org-notification-menu__panel">
   <p class="org-notification-menu__heading">Notificações</p>
   @for (item of items(); track item.key) {
-    @if (item.unread === false && ($first || items()[$index - 1].unread !== false)) {
-      <p class="org-notification-menu__group">Anteriores</p>
+    @if (item.pinned && $first) {
+      <p class="org-notification-menu__group org-notification-menu__group--first">
+        Aguardando resposta
+      </p>
+    } @else if (
+      !item.pinned &&
+      item.unread === false &&
+      ($first || items()[$index - 1].pinned || items()[$index - 1].unread !== false)
+    ) {
+      <p class="org-notification-menu__group" [class.org-notification-menu__group--first]="$first">
+        Anteriores
+      </p>
     }
     <button
       mat-menu-item
@@ -22,6 +32,7 @@
       class="org-notification-menu__item"
       data-testid="notification-item"
       [class.org-notification-menu__item--unread]="item.unread !== false"
+      [class.org-notification-menu__item--pinned]="item.pinned"
       (click)="selected.emit(item)"
     >
       @if (item.person; as person) {

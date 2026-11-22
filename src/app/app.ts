@@ -125,6 +125,7 @@ export class App {
       .catch(() => undefined);
     // Invites to help organise wait in the bell until accepted on the event's page.
     void this.collaboratorInvites.refresh();
+    this.collaboratorInvites.watch();
     if (user.email) {
       void this.eventService.recordCollaboratorEmail(user.email, user.uid).catch(() => undefined);
     }

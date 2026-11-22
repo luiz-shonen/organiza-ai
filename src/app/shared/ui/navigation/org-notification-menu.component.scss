@@ -126,6 +126,15 @@ org-notification-menu {
   text-transform: uppercase;
 }
 
-.org-notification-menu__item:not(.org-notification-menu__item--unread) {
+.org-notification-menu__group--first {
+  border-top: 0;
+  margin-top: 0;
+}
+
+// Read and done with: quieter. An invite waiting for an answer never fades.
+.org-notification-menu__item:not(
+  .org-notification-menu__item--unread,
+  .org-notification-menu__item--pinned
+) {
   opacity: 0.75;
 }

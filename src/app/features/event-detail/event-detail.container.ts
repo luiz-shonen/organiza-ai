@@ -1382,7 +1382,7 @@ export class EventDetailContainer implements OnInit {
   /** Seeing the invite here is opening it: the bell stops counting it. */
   private readonly markInviteSeen = effect(() => {
     const invite = this.collaboratorInvite();
-    if (invite) untracked(() => this.collaboratorInvites.markSeen(invite.eventId));
+    if (invite) untracked(() => this.collaboratorInvites.markSeen(invite));
   });
   private readonly loadCollaboratorInvites = effect(() => {
     if (this.memberUid()) untracked(() => void this.collaboratorInvites.refresh());

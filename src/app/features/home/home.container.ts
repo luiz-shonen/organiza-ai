@@ -361,10 +361,6 @@ export class HomeContainer {
     }
   }
 
-  protected openEvent(eventId: string): void {
-    void this.router.navigate(['/evento', eventId]);
-  }
-
   protected createEvent(): void {
     void this.router.navigate(['/meus-eventos/evento/novo']);
   }

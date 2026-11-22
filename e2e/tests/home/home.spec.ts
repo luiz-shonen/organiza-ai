@@ -32,11 +32,11 @@ test.describe('Home Theming, Feed and Accessibility', () => {
     });
     await homePage.goto('/');
 
-    // The card title is the link to the event; a pending invite offers "Responder convite".
+    // The envelope is the link to the event; it needs no button of its own.
     const firstCard = homePage.eventCards.first();
     await expect(firstCard).toBeVisible();
     await expect(firstCard.getByTestId('event-card-link')).toHaveAttribute('href', /\/evento\//);
-    await expect(firstCard.getByTestId('answer-invite-btn')).toBeVisible();
+    await expect(firstCard.getByTestId('answer-invite-btn')).toHaveCount(0);
     await assertSingleSurfaceRing(firstCard);
     await assertNoHorizontalOverflow(page);
 

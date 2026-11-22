@@ -113,3 +113,19 @@ org-notification-menu {
   margin-inline-end: var(--org-space-xs);
   vertical-align: middle;
 }
+
+// The history: what was already opened, quieter, under "Anteriores".
+.org-notification-menu__group {
+  border-top: 1px solid var(--org-outline-variant);
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  letter-spacing: var(--org-letter-spacing-label);
+  margin: var(--org-space-xs) 0 0;
+  padding: var(--org-space-sm) var(--org-space-md) var(--org-space-2xs);
+  text-transform: uppercase;
+}
+
+.org-notification-menu__item:not(.org-notification-menu__item--unread) {
+  opacity: 0.75;
+}

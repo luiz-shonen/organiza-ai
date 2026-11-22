@@ -34,42 +34,52 @@ export class NotificationBellComponent {
   private readonly router = inject(Router);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
-  private readonly unread = toSignal(
-    toObservable(this.uid).pipe(switchMap((uid) => (uid ? this.inbox.watchUnread(uid) : of([])))),
+  private readonly history = toSignal(
+    toObservable(this.uid).pipe(switchMap((uid) => (uid ? this.inbox.watchAll(uid) : of([])))),
     { initialValue: [] },
   );
 
-  protected readonly items = computed<BellItem[]>(() => [
-    ...this.invites.invites().map((invite) => ({
-      key: `invite_${invite.eventId}`,
-      icon: 'handshake' as const,
-      person: invite.invitedByName
-        ? { name: invite.invitedByName, photo: invite.invitedByPhoto ?? null }
-        : null,
-      title: 'Convite para colaborar',
-      body: [
-        invite.eventTitle || 'Um evento',
-        invite.invitedByName && `por ${invite.invitedByName}`,
-      ]
-        .filter(Boolean)
-        .join(' · '),
-      url: `/evento/${invite.eventId}`,
-      inboxId: null,
-      eventId: invite.eventId,
-      unread: !this.invites.seen().has(invite.eventId),
-    })),
-    ...this.unread().map((notification) => ({
-      key: notification.id,
-      icon: notification.kind === 'secret-santa' ? ('redeem' as const) : ('notifications' as const),
-      person: null,
-      title: notification.title,
-      body: notification.eventTitle || notification.body,
-      url: notification.actionUrl,
-      inboxId: notification.id,
-      eventId: null,
-      unread: true,
-    })),
-  ]);
+  protected readonly items = computed<BellItem[]>(() =>
+    [
+      ...this.invites.invites().map((invite) => ({
+        key: `invite_${invite.eventId}`,
+        icon: 'handshake' as const,
+        person: invite.invitedByName
+          ? { name: invite.invitedByName, photo: invite.invitedByPhoto ?? null }
+          : null,
+        title: 'Convite para colaborar',
+        body: [
+          invite.eventTitle || 'Um evento',
+          invite.invitedByName && `por ${invite.invitedByName}`,
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        url: `/evento/${invite.eventId}`,
+        inboxId: null,
+        eventId: invite.eventId,
+        unread: !this.invites.seen().has(invite.eventId),
+      })),
+      ...this.history().map((notification) => ({
+        key: notification.id,
+        icon:
+          notification.kind === 'secret-santa'
+            ? ('redeem' as const)
+            : notification.kind === 'collaborator'
+              ? ('handshake' as const)
+              : ('notifications' as const),
+        person: null,
+        title: notification.title,
+        body:
+          notification.kind === 'collaborator'
+            ? notification.body
+            : notification.eventTitle || notification.body,
+        url: notification.actionUrl,
+        inboxId: notification.id,
+        eventId: null,
+        unread: !notification.readAt,
+      })),
+    ].sort((a, b) => Number(b.unread) - Number(a.unread)),
+  );
 
   protected refresh(): void {
     void this.invites.refresh();

@@ -161,8 +161,27 @@ service cloud.firestore {
         allow read, delete: if request.auth != null && request.auth.uid == uid;
         allow update: if (request.auth != null && request.auth.uid == uid
                           && changedKeys().hasOnly(['readAt']))
-                      || isSecretSantaNotice();
-        allow create: if isSecretSantaNotice();
+                      || isSecretSantaNotice()
+                      || isOwnCollaboratorRecord();
+        allow create: if isSecretSantaNotice() || isOwnCollaboratorRecord();
+
+        // The member's own line in their history: an invite to help organise they answered.
+        function isOwnCollaboratorRecord() {
+          let data = request.resource.data;
+          return request.auth != null
+              && request.auth.uid == uid
+              && data.keys().hasOnly(['kind', 'eventId', 'eventTitle', 'title', 'body',
+                                      'actionLabel', 'actionUrl', 'createdAt', 'readAt'])
+              && data.get('kind', '') == 'collaborator'
+              && data.get('eventId', '') is string
+              && notificationId == 'collaborator_' + data.get('eventId', '')
+              && isOptionalString(data.get('eventTitle', null), 200)
+              && isFilledText(data.get('title', null), 200)
+              && isFilledText(data.get('body', null), 500)
+              && isFilledText(data.get('actionLabel', null), 60)
+              && data.get('actionUrl', '') == '/evento/' + data.get('eventId', '')
+              && data.get('createdAt', null) is string;
+        }
 
         function isSecretSantaNotice() {
           let data = request.resource.data;

@@ -39,7 +39,7 @@ export {
   SECRET_SANTA_MIN_PARTICIPANTS,
 } from './secret-santa.model';
 export type { AppNotification, AppNotificationKind } from './app-notification.model';
-export { secretSantaNotificationId } from './app-notification.model';
+export { collaboratorNotificationId, secretSantaNotificationId } from './app-notification.model';
 export type { EventInvitation } from './invitation.model';
 export type { Guest, GuestCompanion, GuestCreate, GuestDecline, GuestSession } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';

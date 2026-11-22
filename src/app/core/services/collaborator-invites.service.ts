@@ -2,6 +2,8 @@ import { Injectable, inject, signal } from '@angular/core';
 import type { EventInvitation } from '../models';
 import { AuthService } from './auth.service';
 import { EventService } from './event.service';
+import { InboxService } from './inbox.service';
+import { collaboratorNotificationId } from '../models';
 
 /**
  * The invites to help organise an event that the signed-in person received (by e-mail) and
@@ -12,6 +14,7 @@ import { EventService } from './event.service';
 export class CollaboratorInvitesService {
   private readonly auth = inject(AuthService);
   private readonly events = inject(EventService);
+  private readonly inbox = inject(InboxService);
 
   private readonly list = signal<EventInvitation[]>([]);
   readonly invites = this.list.asReadonly();
@@ -71,11 +74,33 @@ export class CollaboratorInvitesService {
     if (!uid) return;
     await this.events.acceptInvitation(invite.eventId, invite.invitedEmail, uid);
     this.drop(invite);
+    await this.remember(invite, true);
   }
 
   async decline(invite: EventInvitation): Promise<void> {
     await this.events.declineInvitation(invite.eventId, invite.invitedEmail);
     this.drop(invite);
+    await this.remember(invite, false);
+  }
+
+  /** The answered invite stays in the bell's history; best effort, never undoing the answer. */
+  private async remember(invite: EventInvitation, accepted: boolean): Promise<void> {
+    const uid = this.auth.currentUser()?.uid;
+    if (!uid) return;
+    const by = invite.invitedByName ? ` · por ${invite.invitedByName}` : '';
+    await this.inbox
+      .record(uid, {
+        id: collaboratorNotificationId(invite.eventId),
+        kind: 'collaborator',
+        eventId: invite.eventId,
+        eventTitle: invite.eventTitle,
+        title: accepted ? 'Você aceitou colaborar' : 'Você recusou o convite para colaborar',
+        body: `${invite.eventTitle || 'Um evento'}${by}`,
+        actionLabel: 'Ver evento',
+        actionUrl: `/evento/${invite.eventId}`,
+        createdAt: new Date().toISOString(),
+      })
+      .catch(() => undefined);
   }
 
   private drop(invite: EventInvitation): void {

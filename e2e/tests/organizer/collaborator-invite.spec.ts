@@ -58,6 +58,13 @@ test.describe('Convite para colaborar', () => {
     await page.getByTestId('collaborator-invite-accept').click();
     await expect(page.getByTestId('collaborator-invite')).toHaveCount(0);
     await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
+
+    // The bell keeps it as history, under "Anteriores", not counted as new.
+    await page.getByTestId('notifications-btn').click();
+    await expect(page.getByText('Anteriores')).toBeVisible();
+    await expect(
+      page.getByTestId('notification-item').filter({ hasText: 'Você aceitou colaborar' }),
+    ).toContainText('Natal da família · por Jéssica Melo');
   });
 
   test('Recusar drops the invite without joining', async ({ page }) => {

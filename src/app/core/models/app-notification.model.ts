@@ -1,5 +1,5 @@
 /** What an in-app notification is about. */
-export type AppNotificationKind = 'secret-santa';
+export type AppNotificationKind = 'secret-santa' | 'collaborator';
 
 /**
  * A notification in the member's inbox (`users/{uid}/notifications/{id}`), shown at the top of
@@ -19,6 +19,11 @@ export interface AppNotification {
   readonly createdAt: string;
   /** When the member opened or dismissed it; null while it is new. */
   readonly readAt: string | null;
+}
+
+/** The record of an answered invite to help organise an event, one per event. */
+export function collaboratorNotificationId(eventId: string): string {
+  return `collaborator_${eventId}`;
 }
 
 /** One amigo oculto notice per event: a new draw or a new link replaces the previous one. */

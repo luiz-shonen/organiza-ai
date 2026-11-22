@@ -12,6 +12,19 @@ export class InboxService {
     return `users/${uid}/notifications`;
   }
 
+  /** Every notification, new and opened, most recent first: the bell's history. */
+  watchAll(uid: string): Observable<AppNotification[]> {
+    return this.gateway
+      .collectionSnapshot<Omit<AppNotification, 'id'>>(this.path(uid))
+      .pipe(
+        map((docs) =>
+          docs
+            .map((d) => this.toNotification(d))
+            .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+        ),
+      );
+  }
+
   /** New notifications, most recent first. */
   watchUnread(uid: string): Observable<AppNotification[]> {
     return this.gateway.collectionSnapshot<Omit<AppNotification, 'id'>>(this.path(uid)).pipe(
@@ -33,6 +46,18 @@ export class InboxService {
 
   async markRead(uid: string, id: string): Promise<void> {
     await this.gateway.updateDoc(`${this.path(uid)}/${id}`, { readAt: new Date().toISOString() });
+  }
+
+  /**
+   * The member's own record in their history (an invite they answered), already read: it is
+   * the history of what they did, not something new.
+   */
+  async record(uid: string, notification: Omit<AppNotification, 'readAt'>): Promise<void> {
+    const { id, ...data } = notification;
+    await this.gateway.setDoc(`${this.path(uid)}/${id}`, {
+      ...data,
+      readAt: new Date().toISOString(),
+    });
   }
 
   /** Writes (or replaces) a notification in someone's inbox, as new. */

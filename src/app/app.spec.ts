@@ -35,7 +35,10 @@ describe('App', () => {
           },
         },
         // The bell and the sign-in sync read Firestore: stand-ins here.
-        { provide: InboxService, useValue: { watchUnread: () => of([]), markRead: vi.fn() } },
+        {
+          provide: InboxService,
+          useValue: { watchUnread: () => of([]), watchAll: () => of([]), markRead: vi.fn() },
+        },
         {
           provide: CollaboratorInvitesService,
           useValue: { invites: signal([]), refresh: vi.fn().mockResolvedValue(undefined) },

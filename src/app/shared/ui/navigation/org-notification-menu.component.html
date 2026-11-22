@@ -13,6 +13,9 @@
 <mat-menu #menu="matMenu" xPosition="before" class="org-notification-menu__panel">
   <p class="org-notification-menu__heading">Notificações</p>
   @for (item of items(); track item.key) {
+    @if (item.unread === false && ($first || items()[$index - 1].unread !== false)) {
+      <p class="org-notification-menu__group">Anteriores</p>
+    }
     <button
       mat-menu-item
       type="button"

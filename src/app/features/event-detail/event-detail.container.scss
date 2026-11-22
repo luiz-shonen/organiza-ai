@@ -88,16 +88,21 @@
   min-inline-size: 0;
 }
 
-// On a phone the column dissolves: for the owner the share panel first, then "Quem vai",
+// On a phone both columns dissolve into one: the guest's answer, the share panel, "Quem vai",
 // then the amigo oculto.
-.event-detail__side {
+.event-detail__top--pair {
   @media (width < 960px) {
-    display: contents;
-  }
-}
+    .event-detail__lead,
+    .event-detail__side {
+      display: contents;
+    }
 
-.event-detail__top:not(:has(app-rsvp-card)) .event-detail__share {
-  @media (width < 960px) {
-    order: -1;
+    app-rsvp-card {
+      order: -2;
+    }
+
+    .event-detail__share {
+      order: -1;
+    }
   }
 }

@@ -64,8 +64,8 @@
       />
     }
 
-    <!-- Only the editing: sharing the invite lives on the event page. -->
-    <div class="editor__grid editor__grid--single">
+    <!-- Editing, the invite's link and QR code stay at hand beside the steps (also on its page). -->
+    <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col" data-testid="event-step-progress">
         <org-stepper
           #stepper
@@ -136,6 +136,18 @@
           </org-step>
         </org-stepper>
       </div>
+
+      @if (isEditing()) {
+        <div class="editor__col">
+          <app-share-panel
+            [eventUrl]="eventUrl()"
+            [eventTitle]="basicInfoForm.controls.title.value"
+            [eventDate]="currentEvent()?.date ?? null"
+            [eventEndDate]="currentEvent()?.endDate ?? null"
+            [eventLocation]="currentEvent()?.location ?? null"
+          />
+        </div>
+      }
     </div>
   }
 </org-page-layout>

@@ -54,13 +54,11 @@
                 (leaveSanta)="onLeaveSecretSanta()"
               />
             }
-            @if (canEditEvent()) {
-              <app-event-ornament
-                class="event-detail__ornament"
-                [class.event-detail__ornament--banner]="isOwner()"
-              />
-            }
+            <!-- The owner has no presence to confirm: a small festive scene stands in for it. -->
             @if (ownerTopRow()) {
+              <app-event-ornament class="event-detail__ornament event-detail__ornament--banner" />
+            }
+            @if (organizerTopRow()) {
               <ng-container [ngTemplateOutlet]="guestList" />
             }
           </div>
@@ -76,7 +74,7 @@
                 [eventEndDate]="event.endDate ?? null"
                 [eventLocation]="event.location"
               />
-              @if (showSecretSanta() && ownerTopRow()) {
+              @if (showSecretSanta() && organizerTopRow()) {
                 <ng-container
                   [ngTemplateOutlet]="secretSantaCard"
                   [ngTemplateOutletContext]="{ $implicit: event }"
@@ -111,12 +109,12 @@
       }
 
       <!-- The owner has "Quem vai" up beside the share panel; everyone else has it here. -->
-      @if (!ownerTopRow()) {
+      @if (!organizerTopRow()) {
         <ng-container [ngTemplateOutlet]="guestList" />
       }
 
       <!-- The owner has the amigo oculto up under the share panel; organizers otherwise here. -->
-      @if (showSecretSanta() && !ownerTopRow()) {
+      @if (showSecretSanta() && !organizerTopRow()) {
         <ng-container
           [ngTemplateOutlet]="secretSantaCard"
           [ngTemplateOutletContext]="{ $implicit: event }"

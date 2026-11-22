@@ -84,6 +84,7 @@ import {
   type SecretSantaParticipantUpdate,
   type SecretSantaSuggestion,
 } from './components/event-secret-santa-step/event-secret-santa-step.component';
+import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
   FeedbackService,
   OrgDialogService,
@@ -126,6 +127,7 @@ export type EditorStepSlug = (typeof EDITOR_STEP_SLUGS)[number];
     OrgStepComponent,
     OrgStepperComponent,
     OrgSurfaceComponent,
+    SharePanelComponent,
   ],
   templateUrl: './event-editor.container.html',
   styleUrl: './event-editor.container.scss',

@@ -518,9 +518,11 @@ export class EventDetailContainer implements OnInit {
   });
 
   /**
-   * The owner's top row: no presence to confirm, so a small festive scene and "Quem vai" sit
-   * beside the share panel instead.
+   * Organizers' top row: on the left the guest's answer (a collaborator) or a small festive
+   * scene (the owner, who has no presence to confirm), with "Quem vai" under it; on the right
+   * the share panel with the amigo oculto under it.
    */
+  protected readonly organizerTopRow = computed(() => this.canEditEvent());
   protected readonly ownerTopRow = computed(() => this.isOwner() && this.canEditEvent());
 
   /** Organizers edit the event only until it starts; afterwards it is history. */

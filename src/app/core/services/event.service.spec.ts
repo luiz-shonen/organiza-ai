@@ -323,15 +323,16 @@ describe('EventService', () => {
       });
     });
 
-    it('removeCollaborator removes the UID and their saved e-mail in one batch', async () => {
+    it('removeCollaborator removes the UID, then their saved e-mail apart', async () => {
+      mockGateway.deleteDoc.mockRejectedValueOnce(new Error('permission-denied'));
       await service.removeCollaborator('evt-1', 'user-collab-1');
 
       expect(mockGateway.arrayRemove).toHaveBeenCalledWith('user-collab-1');
-      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-1', {
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-1', {
         collaborators: expect.anything(),
         updatedAt: expect.any(String),
       });
-      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith(
+      expect(mockGateway.deleteDoc).toHaveBeenCalledWith(
         'events/evt-1/collaborators/user-collab-1',
       );
     });

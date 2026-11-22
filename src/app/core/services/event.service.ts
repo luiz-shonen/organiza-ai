@@ -198,13 +198,14 @@ export class EventService {
   }
 
   async removeCollaborator(eventId: string, collaboratorUid: string): Promise<void> {
-    await this.gateway.runBatch((batch) => {
-      batch.update(`${this.collectionName}/${eventId}`, {
-        collaborators: this.gateway.arrayRemove(collaboratorUid),
-        updatedAt: new Date().toISOString(),
-      });
-      batch.delete(this.collaboratorPath(eventId, collaboratorUid));
+    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
+      collaborators: this.gateway.arrayRemove(collaboratorUid),
+      updatedAt: new Date().toISOString(),
     });
+    // Then their saved e-mail, apart: removing must never fail on that record.
+    await this.gateway
+      .deleteDoc(this.collaboratorPath(eventId, collaboratorUid))
+      .catch(() => undefined);
   }
 
   listPendingInvitations(eventId: string): Observable<EventInvitation[]> {

@@ -35,7 +35,14 @@
       title="Nenhum evento por aqui ainda"
       description="Quando você criar um evento ou receber um convite, ele aparece nesta tela."
       data-testid="home-empty-state"
-    />
+    >
+      <org-button
+        orgEmptyStateAction
+        label="Criar meu primeiro evento"
+        [gradient]="false"
+        (pressed)="createEvent()"
+      />
+    </org-empty-state>
   } @else {
     <section class="home__list" aria-labelledby="home-list-title">
       <h2 class="home__list-title" id="home-list-title">

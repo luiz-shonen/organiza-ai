@@ -18,13 +18,6 @@
   gap: var(--org-space-md);
 }
 
-// On a phone the owner's column holds only the scene, which is hidden there: no empty row.
-.event-detail__lead:not(:has(app-rsvp-card)) {
-  @media (width < 960px) {
-    display: none;
-  }
-}
-
 .event-detail__ornament {
   display: none;
 
@@ -32,6 +25,16 @@
     @media (width >= 960px) {
       display: block;
       flex: 1 1 0;
+    }
+  }
+
+  // The owner's: a fixed strip the size the guest's usually gets, "Quem vai" under it.
+  &--banner {
+    .event-detail__top--pair & {
+      @media (width >= 960px) {
+        block-size: 220px;
+        flex: none;
+      }
     }
   }
 }
@@ -73,5 +76,28 @@
 
   @page {
     margin: 1.5cm;
+  }
+}
+
+// The share panel, and for the owner the amigo oculto under it, in one column.
+.event-detail__side {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+  min-inline-size: 0;
+}
+
+// On a phone the column dissolves: for the owner the share panel first, then "Quem vai",
+// then the amigo oculto.
+.event-detail__side {
+  @media (width < 960px) {
+    display: contents;
+  }
+}
+
+.event-detail__top:not(:has(app-rsvp-card)) .event-detail__share {
+  @media (width < 960px) {
+    order: -1;
   }
 }

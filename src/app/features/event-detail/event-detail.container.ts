@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { explainError } from '../../core/utils/error.utils';
 import {
   Component,
@@ -109,6 +110,7 @@ import {
   selector: 'app-event-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NgTemplateOutlet,
     OrgSkeletonComponent,
     OrgPageLayoutComponent,
     OrgEmptyStateComponent,
@@ -512,6 +514,12 @@ export class EventDetailContainer implements OnInit {
     // and looks after other people's events from the admin area.
     return event.createdBy === uid || (event.collaborators ?? []).includes(uid);
   });
+
+  /**
+   * The owner's top row: no presence to confirm, so a small festive scene and "Quem vai" sit
+   * beside the share panel instead.
+   */
+  protected readonly ownerTopRow = computed(() => this.isOwner() && this.canEditEvent());
 
   /** Organizers edit the event only until it starts; afterwards it is history. */
   protected readonly canEditEvent = computed(

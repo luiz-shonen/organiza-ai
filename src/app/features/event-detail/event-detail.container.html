@@ -54,20 +54,34 @@
               />
             }
             @if (canEditEvent()) {
-              <app-event-ornament class="event-detail__ornament" />
+              <app-event-ornament
+                class="event-detail__ornament"
+                [class.event-detail__ornament--banner]="isOwner()"
+              />
+            }
+            @if (ownerTopRow()) {
+              <ng-container [ngTemplateOutlet]="guestList" />
             }
           </div>
 
           <!-- Organizers share the invite from here: link, QR code and WhatsApp. -->
           @if (canEditEvent()) {
-            <app-share-panel
-              class="event-detail__share"
-              [eventUrl]="eventUrl()"
-              [eventTitle]="event.title"
-              [eventDate]="event.date"
-              [eventEndDate]="event.endDate ?? null"
-              [eventLocation]="event.location"
-            />
+            <div class="event-detail__side">
+              <app-share-panel
+                class="event-detail__share"
+                [eventUrl]="eventUrl()"
+                [eventTitle]="event.title"
+                [eventDate]="event.date"
+                [eventEndDate]="event.endDate ?? null"
+                [eventLocation]="event.location"
+              />
+              @if (showSecretSanta() && ownerTopRow()) {
+                <ng-container
+                  [ngTemplateOutlet]="secretSantaCard"
+                  [ngTemplateOutletContext]="{ $implicit: event }"
+                />
+              }
+            </div>
           }
         </div>
       }
@@ -95,58 +109,17 @@
         <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
       }
 
-      <app-guest-list-card
-        class="print-section"
-        [households]="households()"
-        [forOrganizer]="canEdit()"
-        [declines]="declines()"
-        [hasItems]="progress().length > 0"
-        [pending]="pendingGuests()"
-        [busyGuestId]="approvingGuestId()"
-        (approve)="onApproveGuest($event)"
-        (refuse)="onRefuseGuest($event)"
-        (exportCsv)="exportGuests()"
-        (print)="printGuests()"
-      />
+      <!-- The owner has "Quem vai" up beside the share panel; everyone else has it here. -->
+      @if (!ownerTopRow()) {
+        <ng-container [ngTemplateOutlet]="guestList" />
+      }
 
-      @if (showSecretSanta()) {
-        <app-secret-santa-card
-          [participants]="secretSantaParticipants()"
-          [isOwner]="isOwner()"
-          [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
-          [links]="secretSantaLinks()"
-          [outdated]="secretSantaOutdated()"
-          [drawing]="secretSantaDrawing()"
-          [resendingId]="secretSantaResendingId()"
-          [canEditParticipants]="false"
-          [selfJoinOpen]="secretSantaSelfJoinOpen()"
-          [duplicates]="secretSantaDoubtful()"
-          [busyDuplicateId]="secretSantaBusyDuplicate()"
-          (selfJoinChange)="onSecretSantaSelfJoin($event)"
-          (merge)="onMergeSecretSanta($event)"
-          (distinct)="onDistinctSecretSanta($event)"
-          (draw)="onDrawSecretSanta()"
-          (send)="onSendSecretSanta($event)"
-          (resend)="onResendSecretSanta($event)"
-          (editParticipants)="onEditSecretSanta()"
-        >
-          <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
-          @if (canEditEvent()) {
-            <app-secret-santa-participants
-              [participants]="secretSantaParticipants()"
-              [suggestions]="secretSantaSuggestions()"
-              [knownPeople]="secretSantaKnownPeople()"
-              [giftOptions]="!!event.secretSanta?.giftOptions"
-              [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
-              [drawn]="!!secretSantaDraw()"
-              [saveNew]="saveNewSecretSantaParticipant"
-              (add)="addSecretSantaParticipants([$event])"
-              (addMany)="addSecretSantaParticipants($event)"
-              (update)="updateSecretSantaParticipant($event)"
-              (remove)="removeSecretSantaParticipant($event)"
-            />
-          }
-        </app-secret-santa-card>
+      <!-- The owner has the amigo oculto up under the share panel; organizers otherwise here. -->
+      @if (showSecretSanta() && !ownerTopRow()) {
+        <ng-container
+          [ngTemplateOutlet]="secretSantaCard"
+          [ngTemplateOutletContext]="{ $implicit: event }"
+        />
       }
 
       @if (showSecretSantaRoster()) {
@@ -183,3 +156,61 @@
     />
   </org-page-layout>
 }
+
+<!-- "Quem vai": under the RSVP for guests, beside the share panel for the owner. -->
+<ng-template #guestList>
+  <app-guest-list-card
+    class="print-section"
+    [households]="households()"
+    [forOrganizer]="canEdit()"
+    [declines]="declines()"
+    [hasItems]="progress().length > 0"
+    [pending]="pendingGuests()"
+    [busyGuestId]="approvingGuestId()"
+    (approve)="onApproveGuest($event)"
+    (refuse)="onRefuseGuest($event)"
+    (exportCsv)="exportGuests()"
+    (print)="printGuests()"
+  />
+</ng-template>
+
+<!-- The amigo oculto for organizers: under the share panel for the owner, in the list otherwise. -->
+<ng-template #secretSantaCard let-event>
+  <app-secret-santa-card
+    [participants]="secretSantaParticipants()"
+    [isOwner]="isOwner()"
+    [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
+    [links]="secretSantaLinks()"
+    [outdated]="secretSantaOutdated()"
+    [drawing]="secretSantaDrawing()"
+    [resendingId]="secretSantaResendingId()"
+    [canEditParticipants]="false"
+    [selfJoinOpen]="secretSantaSelfJoinOpen()"
+    [duplicates]="secretSantaDoubtful()"
+    [busyDuplicateId]="secretSantaBusyDuplicate()"
+    (selfJoinChange)="onSecretSantaSelfJoin($event)"
+    (merge)="onMergeSecretSanta($event)"
+    (distinct)="onDistinctSecretSanta($event)"
+    (draw)="onDrawSecretSanta()"
+    (send)="onSendSecretSanta($event)"
+    (resend)="onResendSecretSanta($event)"
+    (editParticipants)="onEditSecretSanta()"
+  >
+    <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
+    @if (canEditEvent()) {
+      <app-secret-santa-participants
+        [participants]="secretSantaParticipants()"
+        [suggestions]="secretSantaSuggestions()"
+        [knownPeople]="secretSantaKnownPeople()"
+        [giftOptions]="!!event.secretSanta?.giftOptions"
+        [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+        [drawn]="!!secretSantaDraw()"
+        [saveNew]="saveNewSecretSantaParticipant"
+        (add)="addSecretSantaParticipants([$event])"
+        (addMany)="addSecretSantaParticipants($event)"
+        (update)="updateSecretSantaParticipant($event)"
+        (remove)="removeSecretSantaParticipant($event)"
+      />
+    }
+  </app-secret-santa-card>
+</ng-template>

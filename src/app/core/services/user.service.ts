@@ -80,11 +80,17 @@ export class UserService {
    * The name others see for this account (`publicProfiles/{uid}`: the name only, readable by
    * anyone). Events show their organizer by `createdBy` through it.
    */
-  async publishName(uid: string, name: string): Promise<void> {
+  async publishName(uid: string, name: string, photoURL?: string | null): Promise<void> {
     const clean = name.trim().slice(0, 120);
     if (!uid || !clean) return;
+    const current = await this.gateway
+      .getDoc<{ photoURL?: string | null }>(`publicProfiles/${uid}`)
+      .catch(() => null);
+    const photo = (photoURL === undefined ? current?.photoURL : photoURL) || null;
     await this.gateway.setDoc(`publicProfiles/${uid}`, {
       name: clean,
+      // The account's photo (Google's), shown beside the name, e.g. in "Organizado por".
+      ...(photo ? { photoURL: photo.slice(0, 2048) } : {}),
       updatedAt: new Date().toISOString(),
     });
   }
@@ -99,15 +105,22 @@ export class UserService {
   }
 
   /** Once per sign-in: the public name matches the profile's (or the Google account's). */
-  async syncPublicName(uid: string, fallback: string | null | undefined): Promise<void> {
+  async syncPublicName(
+    uid: string,
+    fallback: string | null | undefined,
+    photoURL?: string | null,
+  ): Promise<void> {
     if (!uid) return;
     const profile = await this.getProfile(uid);
     const name = (profile?.name || fallback || '').trim();
     if (!name) return;
+    const photo = profile?.photoURL || photoURL || null;
     const current = await this.gateway
-      .getDoc<{ name?: string }>(`publicProfiles/${uid}`)
+      .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
       .catch(() => null);
-    if (current?.name !== name) await this.publishName(uid, name);
+    if (current?.name !== name || (current?.photoURL ?? null) !== photo) {
+      await this.publishName(uid, name, photo);
+    }
   }
 
   async upsertProfile(uid: string, data: Partial<UserProfile>): Promise<void> {

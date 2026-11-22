@@ -68,19 +68,31 @@ export class EventService {
         map((doc) => (doc ? this.mapEventData(doc) : null)),
         switchMap((event) => {
           if (!event?.createdBy) return of(event);
-          return this.organizerName(event.createdBy).pipe(
-            map((name) => (name ? { ...event, creatorName: name } : event)),
+          return this.organizerProfile(event.createdBy).pipe(
+            map((profile) =>
+              profile
+                ? {
+                    ...event,
+                    creatorName: profile.name || event.creatorName,
+                    creatorPhoto: profile.photo,
+                  }
+                : event,
+            ),
           );
         }),
       );
   }
 
-  /** The public name of an account, live; null when it has none yet. */
-  private organizerName(uid: string): Observable<string | null> {
-    return this.gateway.docSnapshot<{ name?: string }>(`publicProfiles/${uid}`).pipe(
-      map((profile) => profile?.name?.trim() || null),
-      catchError(() => of(null)),
-    );
+  /** The public name and photo of an account, live; null when it has none yet. */
+  private organizerProfile(uid: string): Observable<{ name: string; photo: string | null } | null> {
+    return this.gateway
+      .docSnapshot<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
+      .pipe(
+        map((profile) =>
+          profile ? { name: profile.name?.trim() ?? '', photo: profile.photoURL || null } : null,
+        ),
+        catchError(() => of(null)),
+      );
   }
 
   async createEvent(data: PartyEventCreate): Promise<string> {

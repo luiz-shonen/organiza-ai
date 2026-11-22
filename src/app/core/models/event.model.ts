@@ -105,6 +105,8 @@ export interface PartyEvent {
   creatorEmail?: string;
   /** The organizer's display name, saved with the event so guests see who invites them. */
   creatorName?: string;
+  /** The organizer's account photo, from their public profile (not saved on the event). */
+  creatorPhoto?: string | null;
   collaborators?: string[];
   /** "Vai ter amigo oculto?" and whether participants list gift options. */
   secretSanta?: SecretSantaSettings;

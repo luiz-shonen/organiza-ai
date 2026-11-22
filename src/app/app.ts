@@ -120,7 +120,9 @@ export class App {
     const user = this.authService.currentUser();
     if (!user || user.isAnonymous || this.publicNameSyncedFor === user.uid) return;
     this.publicNameSyncedFor = user.uid;
-    void this.userService.syncPublicName(user.uid, user.displayName).catch(() => undefined);
+    void this.userService
+      .syncPublicName(user.uid, user.displayName, user.photoURL)
+      .catch(() => undefined);
     // Invites to help organise wait in the bell until accepted on the event's page.
     void this.collaboratorInvites.refresh();
     if (user.email) {

@@ -123,8 +123,9 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null
                             && request.auth.uid == uid
-                            && request.resource.data.keys().hasOnly(['name', 'updatedAt'])
+                            && request.resource.data.keys().hasOnly(['name', 'photoURL', 'updatedAt'])
                             && isFilledText(request.resource.data.get('name', null), 120)
+                            && isOptionalString(request.resource.data.get('photoURL', null), 2048)
                             && isOptionalString(request.resource.data.get('updatedAt', null), 40);
     }
 

@@ -35,6 +35,12 @@ describe('public profiles', () => {
   it('anyone reads a name; only its account writes it, and only the name', async () => {
     const luiz = testEnvironment.authenticatedContext('luiz').firestore();
     await assertSucceeds(setDoc(doc(luiz, 'publicProfiles/luiz'), { name: 'Luiz Rodrigues' }));
+    await assertSucceeds(
+      setDoc(doc(luiz, 'publicProfiles/luiz'), {
+        name: 'Luiz Rodrigues',
+        photoURL: 'https://lh3.googleusercontent.com/a/photo',
+      }),
+    );
     await assertFails(setDoc(doc(luiz, 'publicProfiles/ana'), { name: 'Ana' }));
     await assertFails(
       setDoc(doc(luiz, 'publicProfiles/luiz'), { name: 'Luiz', phone: '(11) 90000-0000' }),

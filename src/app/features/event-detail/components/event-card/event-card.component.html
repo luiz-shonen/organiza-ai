@@ -112,7 +112,7 @@
     <div class="event-card__host-info">
       <p class="event-card__host-label">Organizado por</p>
       <div class="event-card__host-person">
-        <org-avatar [name]="organizerAvatarName()" />
+        <org-avatar [name]="organizerAvatarName()" [photoUrl]="event().creatorPhoto ?? null" />
         <p class="event-card__host-name">{{ organizerName() }}</p>
       </div>
     </div>

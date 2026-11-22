@@ -18,6 +18,7 @@
       type="button"
       class="org-notification-menu__item"
       data-testid="notification-item"
+      [class.org-notification-menu__item--unread]="item.unread !== false"
       (click)="selected.emit(item)"
     >
       @if (item.person; as person) {

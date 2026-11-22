@@ -19,6 +19,8 @@ export interface OrgNotificationItem {
   readonly person?: { readonly name: string; readonly photo: string | null } | null;
   readonly title: string;
   readonly body: string;
+  /** Not seen yet: counted on the bell and marked in the list. Missing means new. */
+  readonly unread?: boolean;
 }
 
 /**
@@ -40,7 +42,9 @@ export class OrgNotificationMenuComponent {
   public readonly opened = output<void>();
   public readonly selected = output<OrgNotificationItem>();
 
-  protected readonly count = computed(() => this.items().length);
+  protected readonly count = computed(
+    () => this.items().filter((item) => item.unread !== false).length,
+  );
   protected readonly label = computed(() => {
     const count = this.count();
     if (!count) return 'Notificações';

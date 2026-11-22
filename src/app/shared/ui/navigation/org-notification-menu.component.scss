@@ -101,3 +101,15 @@ org-notification-menu {
   margin: 0;
   padding: 0 var(--org-space-md) var(--org-space-md);
 }
+
+// A new one: a lilac dot before its title.
+.org-notification-menu__item--unread .org-notification-menu__title::before {
+  background: var(--org-primary);
+  block-size: 8px;
+  border-radius: var(--org-radius-full);
+  content: '';
+  display: inline-block;
+  inline-size: 8px;
+  margin-inline-end: var(--org-space-xs);
+  vertical-align: middle;
+}

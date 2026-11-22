@@ -523,9 +523,15 @@ export class EventDetailContainer implements OnInit {
     const event = this.event();
     if (!uid || !event) return false;
     // Only the owner and the collaborators organise; a super admin is a guest here like anyone,
-    // and looks after other people's events from the admin area.
-    return event.createdBy === uid || (event.collaborators ?? []).includes(uid);
+    // and looks after other people's events from the admin area. While an invite to help is
+    // waiting for an answer, they are a guest too: organising starts with "Aceitar".
+    if (event.createdBy === uid) return true;
+    return (event.collaborators ?? []).includes(uid) && !this.pendingCollaboratorInvite();
   });
+  /** The viewer's unanswered invite to help organise this event, if any. */
+  private readonly pendingCollaboratorInvite = computed(() =>
+    this.collaboratorInvites.forEvent(this.id()),
+  );
 
   /**
    * Organizers' top row: on the left the guest's answer (a collaborator) or a small festive
@@ -1371,8 +1377,13 @@ export class EventDetailContainer implements OnInit {
 
   /** An invite to help organise this event, sent to the viewer's e-mail and not answered yet. */
   protected readonly collaboratorInvite = computed(() =>
-    this.canEdit() ? null : this.collaboratorInvites.forEvent(this.id()),
+    this.isOwner() ? null : this.pendingCollaboratorInvite(),
   );
+  /** Seeing the invite here is opening it: the bell stops counting it. */
+  private readonly markInviteSeen = effect(() => {
+    const invite = this.collaboratorInvite();
+    if (invite) untracked(() => this.collaboratorInvites.markSeen(invite.eventId));
+  });
   private readonly loadCollaboratorInvites = effect(() => {
     if (this.memberUid()) untracked(() => void this.collaboratorInvites.refresh());
   });

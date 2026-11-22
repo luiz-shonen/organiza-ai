@@ -9,6 +9,8 @@ interface BellItem extends OrgNotificationItem {
   readonly url: string;
   /** An inbox notification is marked read when opened; an invite stays until answered. */
   readonly inboxId: string | null;
+  /** An invite's event: opening it marks the invite seen. */
+  readonly eventId: string | null;
 }
 
 /**
@@ -53,6 +55,8 @@ export class NotificationBellComponent {
         .join(' · '),
       url: `/evento/${invite.eventId}`,
       inboxId: null,
+      eventId: invite.eventId,
+      unread: !this.invites.seen().has(invite.eventId),
     })),
     ...this.unread().map((notification) => ({
       key: notification.id,
@@ -62,6 +66,8 @@ export class NotificationBellComponent {
       body: notification.eventTitle || notification.body,
       url: notification.actionUrl,
       inboxId: notification.id,
+      eventId: null,
+      unread: true,
     })),
   ]);
 
@@ -74,6 +80,7 @@ export class NotificationBellComponent {
     if (!bellItem) return;
     const uid = this.uid();
     if (bellItem.inboxId && uid) this.inbox.markRead(uid, bellItem.inboxId).catch(() => undefined);
+    if (bellItem.eventId) this.invites.markSeen(bellItem.eventId);
     void this.router.navigateByUrl(bellItem.url);
   }
 }

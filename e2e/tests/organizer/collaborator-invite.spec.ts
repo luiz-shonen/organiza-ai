@@ -50,6 +50,8 @@ test.describe('Convite para colaborar', () => {
     const item = page.getByTestId('notification-item');
     await expect(item).toContainText('Natal da família · por Jéssica Melo');
     await item.click();
+    // Opened: it no longer counts as new, though it stays listed until answered.
+    await expect(page.getByTestId('notifications-count')).toHaveCount(0);
 
     await expect(page).toHaveURL(/\/evento\/e1/);
     await expect(page.getByTestId('collaborator-invite')).toContainText('Jéssica Melo chamou você');
@@ -64,5 +66,23 @@ test.describe('Convite para colaborar', () => {
     await page.getByTestId('collaborator-invite-decline').click();
     await expect(page.getByTestId('collaborator-invite')).toHaveCount(0);
     await expect(page.getByText('Compartilhe o QR Code')).toHaveCount(0);
+  });
+
+  test('someone already listed as a collaborator is a guest until they accept', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'ana-uid',
+      email: 'ana@exemplo.com',
+      displayName: 'Ana',
+      events: [{ ...event, collaborators: ['ana-uid'] }],
+      collections: { invitations: [invite], 'events/e1/invitations': [invite] },
+    });
+    await page.goto('/evento/e1');
+    await expect(page.getByTestId('collaborator-invite')).toBeVisible();
+    await expect(page.getByText('Compartilhe o QR Code')).toHaveCount(0);
+    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+    await page.getByTestId('collaborator-invite-accept').click();
+    await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
   });
 });

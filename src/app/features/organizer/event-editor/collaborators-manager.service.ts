@@ -75,11 +75,14 @@ export class CollaboratorsManagerService {
             return;
           }
           try {
+            const me = this.authService.currentUser();
+            const myName = me ? await this.userService.publicName(me.uid).catch(() => '') : '';
             await this.eventService.inviteCollaborator(
               eventId,
               action.email,
               event.title,
-              this.authService.currentUser()?.email || '',
+              me?.email || '',
+              { name: myName || me?.displayName, photo: me?.photoURL },
             );
             this.feedback.success(`Convite enviado para ${action.email}`);
           } catch (error) {

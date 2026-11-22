@@ -71,7 +71,9 @@ export type OrgIconName =
   | 'redeem'
   | 'visibility'
   | 'arrow_upward'
-  | 'arrow_downward';
+  | 'arrow_downward'
+  | 'notifications'
+  | 'handshake';
 
 export type OrgIconSize = 'sm' | 'md' | 'lg';
 
@@ -146,6 +148,8 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   visibility: 'visibility',
   arrow_upward: 'arrow_upward',
   arrow_downward: 'arrow_downward',
+  notifications: 'notifications',
+  handshake: 'handshake',
 };
 
 @Component({

@@ -243,6 +243,10 @@ Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the l
 
 Uso recomendado: `<org-party-drift />` inside a positioned, full-size layer, as the app shell does on the login page's confetti backdrop (`.app-backdrop--festive`); elsewhere the backdrop stays still, so reading is not tiring. A few balloons and confetti in the palette colours drift slowly up behind the content, clipped by the layer. Decorative (`aria-hidden`), no pointer events, hidden under `prefers-reduced-motion`.
 
+### OrgNotificationMenuComponent
+
+Uso recomendado: `<org-notification-menu [items]="items()" (opened)="refresh()" (selected)="open($event)" />`, in the header between the theme toggle and the profile photo (wrapped by `app-notification-bell`, which supplies the items). A bell icon button with the count of new ones on its corner (amber, `9+` past nine) opening a menu: each `OrgNotificationItem` shows a person's photo or initial (`person`) or an icon, a title and one line of detail; an empty menu says "Nenhuma notificação por aqui.". Presentational: the page decides what opening one does.
+
 ### OrgSegmentedControlComponent
 
 Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.

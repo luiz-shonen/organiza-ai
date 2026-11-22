@@ -16,6 +16,36 @@
     data-testid="event-detail-page"
   >
     <div class="event-detail__stack" data-testid="event-detail">
+      <!-- An invite to help organise: only "Aceitar" makes them a collaborator. -->
+      @if (collaboratorInvite(); as invite) {
+        <org-surface variant="card" data-testid="collaborator-invite">
+          <div class="event-detail__invite">
+            <org-card-header
+              heading="Convite para colaborar"
+              [subheading]="
+                (invite.invitedByName || 'Quem organiza') +
+                ' chamou você para ajudar: a lista de itens, os convidados e o amigo oculto.'
+              "
+            />
+            <div class="event-detail__invite-actions">
+              <org-button
+                label="Recusar"
+                variant="text"
+                testId="collaborator-invite-decline"
+                [gradient]="false"
+                (pressed)="declineCollaboratorInvite(invite)"
+              />
+              <org-button
+                label="Aceitar"
+                icon="check"
+                testId="collaborator-invite-accept"
+                [gradient]="false"
+                (pressed)="acceptCollaboratorInvite(invite)"
+              />
+            </div>
+          </div>
+        </org-surface>
+      }
       <app-event-card
         [event]="event"
         [guestCount]="guestCount()"

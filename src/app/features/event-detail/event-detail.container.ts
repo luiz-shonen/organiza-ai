@@ -10,12 +10,14 @@ import {
   OnInit,
   DestroyRef,
   effect,
+  untracked,
 } from '@angular/core';
 import {
   EventService,
   ItemService,
   GuestService,
   AuthService,
+  CollaboratorInvitesService,
   UserService,
   FamilyService,
   ConfettiService,
@@ -45,6 +47,7 @@ import {
   type SecretSantaParticipant,
   type SecretSantaParticipantInput,
   type SecretSantaRosterEntry,
+  type EventInvitation,
 } from '../../core/models';
 import {
   addClaimEntry,
@@ -68,6 +71,9 @@ import {
 } from '../../core/utils';
 import {
   OrgSkeletonComponent,
+  OrgButtonComponent,
+  OrgCardHeaderComponent,
+  OrgSurfaceComponent,
   FeedbackService,
   OrgDialogService,
   OrgEmptyStateComponent,
@@ -113,6 +119,9 @@ import {
   imports: [
     NgTemplateOutlet,
     OrgSkeletonComponent,
+    OrgButtonComponent,
+    OrgCardHeaderComponent,
+    OrgSurfaceComponent,
     OrgPageLayoutComponent,
     OrgEmptyStateComponent,
     EventCardComponent,
@@ -141,6 +150,7 @@ export class EventDetailContainer implements OnInit {
   private readonly feedback = inject(FeedbackService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
+  private readonly collaboratorInvites = inject(CollaboratorInvitesService);
   private readonly userService = inject(UserService);
   private readonly familyService = inject(FamilyService);
   private readonly confetti = inject(ConfettiService);
@@ -1356,6 +1366,32 @@ export class EventDetailContainer implements OnInit {
       this.feedback.success('Item liberado.');
     } catch (error) {
       this.feedback.error(explainError('Não foi possível liberar o item', error));
+    }
+  }
+
+  /** An invite to help organise this event, sent to the viewer's e-mail and not answered yet. */
+  protected readonly collaboratorInvite = computed(() =>
+    this.canEdit() ? null : this.collaboratorInvites.forEvent(this.id()),
+  );
+  private readonly loadCollaboratorInvites = effect(() => {
+    if (this.memberUid()) untracked(() => void this.collaboratorInvites.refresh());
+  });
+
+  protected async acceptCollaboratorInvite(invite: EventInvitation): Promise<void> {
+    try {
+      await this.collaboratorInvites.accept(invite);
+      this.feedback.success('Pronto! Agora você colabora neste evento.');
+    } catch (err) {
+      this.feedback.error(explainError('Não foi possível aceitar o convite', err));
+    }
+  }
+
+  protected async declineCollaboratorInvite(invite: EventInvitation): Promise<void> {
+    try {
+      await this.collaboratorInvites.decline(invite);
+      this.feedback.success('Convite recusado.');
+    } catch (err) {
+      this.feedback.error(explainError('Não foi possível recusar o convite', err));
     }
   }
 

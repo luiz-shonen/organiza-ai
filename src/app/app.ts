@@ -20,6 +20,7 @@ import {
   SeasonalThemeService,
   UserService,
   EventService,
+  CollaboratorInvitesService,
 } from './core/services';
 import { isPrimaryDestination, resolveBackRoute } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
@@ -30,6 +31,7 @@ import { OrgButtonComponent } from './shared/ui/actions/org-button.component';
 import { OrgAvatarComponent } from './shared/ui/data-display/org-avatar.component';
 import { OrgThemeToggleComponent } from './shared/ui/actions/org-theme-toggle.component';
 import { OrgLogoComponent } from './shared/ui/brand/org-logo.component';
+import { NotificationBellComponent } from './shared/components/notification-bell/notification-bell.component';
 import { OrgPartyDriftComponent } from './shared/ui/brand/org-party-drift.component';
 import {
   OrgNavBarComponent,
@@ -77,6 +79,7 @@ const PROFILE_ITEM: OrgNavBarItem = {
     OrgThemeToggleComponent,
     OrgLogoComponent,
     OrgPartyDriftComponent,
+    NotificationBellComponent,
     OrgNavBarComponent,
     RsvpDrawerComponent,
     CollaboratorDrawerComponent,
@@ -92,6 +95,7 @@ export class App {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly eventService = inject(EventService);
+  private readonly collaboratorInvites = inject(CollaboratorInvitesService);
   protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   // Created with the app, so it records from the first screen.
@@ -117,14 +121,10 @@ export class App {
     if (!user || user.isAnonymous || this.publicNameSyncedFor === user.uid) return;
     this.publicNameSyncedFor = user.uid;
     void this.userService.syncPublicName(user.uid, user.displayName).catch(() => undefined);
-    // An e-mail invite to help organise ("Colaboradores") takes effect when that account signs in.
+    // Invites to help organise wait in the bell until accepted on the event's page.
+    void this.collaboratorInvites.refresh();
     if (user.email) {
-      const email = user.email;
-      void this.eventService
-        .claimPendingInvitations(email, user.uid)
-        .catch(() => undefined)
-        .then(() => this.eventService.recordCollaboratorEmail(email, user.uid))
-        .catch(() => undefined);
+      void this.eventService.recordCollaboratorEmail(user.email, user.uid).catch(() => undefined);
     }
   });
 

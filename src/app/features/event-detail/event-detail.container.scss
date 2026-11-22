@@ -106,3 +106,16 @@
     }
   }
 }
+
+// An invite to help organise: what it is, then Recusar / Aceitar.
+.event-detail__invite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.event-detail__invite-actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}

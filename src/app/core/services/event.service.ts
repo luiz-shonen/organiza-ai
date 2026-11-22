@@ -185,6 +185,7 @@ export class EventService {
     email: string,
     eventTitle?: string,
     invitedBy?: string,
+    inviter?: { name?: string | null; photo?: string | null },
   ): Promise<void> {
     const normalizedEmail = email.toLowerCase().trim();
     await this.gateway.setDoc(`${this.collectionName}/${eventId}/invitations/${normalizedEmail}`, {
@@ -193,6 +194,9 @@ export class EventService {
       eventTitle: eventTitle ?? '',
       invitedEmail: normalizedEmail,
       invitedBy: invitedBy ?? '',
+      // The bell shows who invites: their name and photo.
+      invitedByName: inviter?.name?.trim() || '',
+      invitedByPhoto: inviter?.photo || null,
       createdAt: new Date().toISOString(),
     });
   }
@@ -225,30 +229,71 @@ export class EventService {
       );
   }
 
-  async claimPendingInvitations(email: string, uid: string): Promise<void> {
-    if (!email || !uid) return;
+  /** The invites to help organise sent to this e-mail and not answered yet. */
+  async invitationsFor(email: string): Promise<EventInvitation[]> {
     const normalizedEmail = email.toLowerCase().trim();
-
-    const snapshotDocs = await this.gateway.getCollectionGroupDocs<{ eventId?: string }>(
+    if (!normalizedEmail) return [];
+    const docs = await this.gateway.getCollectionGroupDocs<Partial<EventInvitation>>(
       'invitations',
       this.gateway.where('invitedEmail', '==', normalizedEmail),
     );
-    if (snapshotDocs.length === 0) return;
+    const invites = docs
+      .filter((d) => d.eventId && (d.invitedEmail ?? d.id) === normalizedEmail)
+      .map((d) => ({
+        id: d.id,
+        eventId: d.eventId ?? '',
+        eventTitle: d.eventTitle ?? '',
+        invitedEmail: d.invitedEmail ?? d.id,
+        invitedBy: d.invitedBy ?? '',
+        invitedByName: d.invitedByName ?? '',
+        invitedByPhoto: d.invitedByPhoto ?? null,
+        createdAt: d.createdAt ?? '',
+      }));
+    // Invites saved before the inviter's name was kept: the event's organizer, by account.
+    return Promise.all(
+      invites.map(async (invite) => {
+        if (invite.invitedByName) return invite;
+        const event = await this.gateway
+          .getDoc<{
+            createdBy?: string;
+            creatorName?: string;
+          }>(`${this.collectionName}/${invite.eventId}`)
+          .catch(() => null);
+        const profile = event?.createdBy
+          ? await this.gateway
+              .getDoc<{ name?: string }>(`publicProfiles/${event.createdBy}`)
+              .catch(() => null)
+          : null;
+        return { ...invite, invitedByName: profile?.name || event?.creatorName || '' };
+      }),
+    );
+  }
 
-    const now = new Date().toISOString();
+  /** "Aceitar": the invited account joins the event as a collaborator; the invite goes. */
+  async acceptInvitation(eventId: string, email: string, uid: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
     await this.gateway.runBatch((batch) => {
-      for (const invDoc of snapshotDocs) {
-        if (invDoc.eventId) {
-          batch.update(`${this.collectionName}/${invDoc.eventId}`, {
-            collaborators: this.gateway.arrayUnion(uid),
-            updatedAt: now,
-          });
-          batch.delete(`${this.collectionName}/${invDoc.eventId}/invitations/${invDoc.id}`);
-        }
-      }
+      batch.update(`${this.collectionName}/${eventId}`, {
+        collaborators: this.gateway.arrayUnion(uid),
+        updatedAt: new Date().toISOString(),
+      });
+      batch.delete(`${this.collectionName}/${eventId}/invitations/${normalizedEmail}`);
     });
-    // Then, apart from the claim (which must never fail on it), the e-mail the organizers see.
-    await this.recordCollaboratorEmail(normalizedEmail, uid);
+    // Then, apart, the e-mail the organizers see in their list.
+    await this.gateway
+      .setDoc(this.collaboratorPath(eventId, uid), {
+        email: normalizedEmail,
+        updatedAt: new Date().toISOString(),
+      })
+      .catch(() => undefined);
+  }
+
+  /** "Recusar": the invite is gone and nothing changes on the event. */
+  async declineInvitation(eventId: string, email: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
+    await this.gateway.deleteDoc(
+      `${this.collectionName}/${eventId}/invitations/${normalizedEmail}`,
+    );
   }
 
   private collaboratorPath(eventId: string, uid: string): string {

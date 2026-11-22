@@ -319,6 +319,8 @@ describe('EventService', () => {
         eventTitle: 'My Party',
         invitedEmail: 'collab@test.com',
         invitedBy: 'Host',
+        invitedByName: '',
+        invitedByPhoto: null,
         createdAt: expect.any(String),
       });
     });
@@ -360,18 +362,9 @@ describe('EventService', () => {
       expect(result?.[0].invitedEmail).toBe('invited@test.com');
     });
 
-    it('claimPendingInvitations finds invitations and claims them via batch', async () => {
-      mockGateway.getCollectionGroupDocs.mockResolvedValue([
-        { id: 'user@test.com', eventId: 'evt-100' },
-      ]);
+    it('accepting an invite adds the account and removes the invite in one batch', async () => {
+      await service.acceptInvitation('evt-100', 'User@Test.com', 'uid-999');
 
-      await service.claimPendingInvitations('User@Test.com', 'uid-999');
-
-      expect(mockGateway.getCollectionGroupDocs).toHaveBeenCalledWith(
-        'invitations',
-        expect.anything(),
-      );
-      expect(mockGateway.runBatch).toHaveBeenCalled();
       expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100', {
         collaborators: expect.anything(),
         updatedAt: expect.any(String),
@@ -379,15 +372,6 @@ describe('EventService', () => {
       expect(mockGateway.batchOps.delete).toHaveBeenCalledWith(
         'events/evt-100/invitations/user@test.com',
       );
-    });
-
-    it('claimPendingInvitations returns early if email or uid is empty or no invites found', async () => {
-      await service.claimPendingInvitations('', 'uid-1');
-      expect(mockGateway.getCollectionGroupDocs).not.toHaveBeenCalled();
-
-      mockGateway.getCollectionGroupDocs.mockResolvedValue([]);
-      await service.claimPendingInvitations('test@test.com', 'uid-1');
-      expect(mockGateway.runBatch).not.toHaveBeenCalled();
     });
   });
 });

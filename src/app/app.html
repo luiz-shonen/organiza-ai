@@ -99,6 +99,9 @@
             (darkChange)="themeService.setMode($event ? 'dark' : 'light')"
           />
           @if (showAvatar()) {
+            <app-notification-bell />
+          }
+          @if (showAvatar()) {
             <a
               routerLink="/perfil"
               class="app-toolbar__avatar"

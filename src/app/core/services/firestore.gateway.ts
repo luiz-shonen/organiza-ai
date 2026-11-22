@@ -48,11 +48,39 @@ export class FirestoreGateway {
   }
 
   arrayUnion(...elements: unknown[]): unknown {
+    if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
+      return { __mockArrayOp: 'union', elements };
+    }
     return arrayUnion(...elements);
   }
 
   arrayRemove(...elements: unknown[]): unknown {
+    if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
+      return { __mockArrayOp: 'remove', elements };
+    }
     return arrayRemove(...elements);
+  }
+
+  /** E2E mock store: applies `arrayUnion` / `arrayRemove` the way Firestore does. */
+  private applyMockArrayOps(
+    current: Record<string, unknown>,
+    data: Record<string, unknown>,
+  ): Record<string, unknown> {
+    const next: Record<string, unknown> = { ...current };
+    for (const [key, value] of Object.entries(data)) {
+      const op = value as { __mockArrayOp?: 'union' | 'remove'; elements?: unknown[] } | null;
+      if (op && typeof op === 'object' && op.__mockArrayOp) {
+        const list = Array.isArray(current[key]) ? (current[key] as unknown[]) : [];
+        const elements = op.elements ?? [];
+        next[key] =
+          op.__mockArrayOp === 'union'
+            ? [...list, ...elements.filter((e) => !list.includes(e))]
+            : list.filter((e) => !elements.includes(e));
+      } else {
+        next[key] = value;
+      }
+    }
+    return next;
   }
 
   serverTimestamp(): unknown {
@@ -179,7 +207,10 @@ export class FirestoreGateway {
       if (store[col]) {
         const idx = store[col].findIndex((item) => item.id === id);
         if (idx !== -1) {
-          store[col][idx] = { ...store[col][idx], ...(data as Record<string, unknown>) };
+          store[col][idx] = this.applyMockArrayOps(
+            store[col][idx] as Record<string, unknown>,
+            data as Record<string, unknown>,
+          ) as (typeof store)[string][number];
         }
       }
       window.dispatchEvent(new CustomEvent('__mock_doc_change__', { detail: { path } }));

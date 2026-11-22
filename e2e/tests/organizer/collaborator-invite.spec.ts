@@ -1,0 +1,68 @@
+import { test, expect } from '../../fixtures/test.fixture';
+import { setupMockAuthSession, type MockDocument } from '../../helpers/auth-mock.helper';
+
+/**
+ * An invite to help organise reaches the person in the notifications bell; only "Aceitar" on the
+ * event's page makes them a collaborator, "Recusar" drops it.
+ */
+const event = {
+  id: 'e1',
+  title: 'Natal da família',
+  category: 'Natal',
+  date: new Date(Date.now() + 86400000 * 30).toISOString(),
+  location: 'Rua A, 1',
+  status: 'active',
+  createdBy: 'owner-uid',
+  creatorName: 'Jéssica',
+  collaborators: [],
+  guests: [],
+  createdAt: '',
+  updatedAt: '',
+};
+const invite: MockDocument = {
+  id: 'ana@exemplo.com',
+  eventId: 'e1',
+  eventTitle: 'Natal da família',
+  invitedEmail: 'ana@exemplo.com',
+  invitedBy: 'jessica@exemplo.com',
+  invitedByName: 'Jéssica Melo',
+  createdAt: '1',
+};
+
+async function asInvited(page: import('@playwright/test').Page) {
+  await setupMockAuthSession(page, {
+    uid: 'ana-uid',
+    email: 'ana@exemplo.com',
+    displayName: 'Ana',
+    events: [event],
+    collections: { invitations: [invite], 'events/e1/invitations': [invite] },
+  });
+}
+
+test.describe('Convite para colaborar', () => {
+  test('arrives in the bell; Aceitar on the event page makes them a collaborator', async ({
+    page,
+  }) => {
+    await asInvited(page);
+    await page.goto('/');
+    await expect(page.getByTestId('notifications-count')).toHaveText('1');
+    await page.getByTestId('notifications-btn').click();
+    const item = page.getByTestId('notification-item');
+    await expect(item).toContainText('Natal da família · por Jéssica Melo');
+    await item.click();
+
+    await expect(page).toHaveURL(/\/evento\/e1/);
+    await expect(page.getByTestId('collaborator-invite')).toContainText('Jéssica Melo chamou você');
+    await page.getByTestId('collaborator-invite-accept').click();
+    await expect(page.getByTestId('collaborator-invite')).toHaveCount(0);
+    await expect(page.getByText('Compartilhe o QR Code')).toBeVisible();
+  });
+
+  test('Recusar drops the invite without joining', async ({ page }) => {
+    await asInvited(page);
+    await page.goto('/evento/e1');
+    await page.getByTestId('collaborator-invite-decline').click();
+    await expect(page.getByTestId('collaborator-invite')).toHaveCount(0);
+    await expect(page.getByText('Compartilhe o QR Code')).toHaveCount(0);
+  });
+});

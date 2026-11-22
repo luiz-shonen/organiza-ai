@@ -89,6 +89,15 @@ export class UserService {
     });
   }
 
+  /** The name an account shows to others; empty when it has none. */
+  async publicName(uid: string): Promise<string> {
+    if (!uid) return '';
+    const profile = await this.gateway
+      .getDoc<{ name?: string }>(`publicProfiles/${uid}`)
+      .catch(() => null);
+    return profile?.name?.trim() ?? '';
+  }
+
   /** Once per sign-in: the public name matches the profile's (or the Google account's). */
   async syncPublicName(uid: string, fallback: string | null | undefined): Promise<void> {
     if (!uid) return;

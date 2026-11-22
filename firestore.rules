@@ -386,6 +386,19 @@ service cloud.firestore {
         allow read, write: if ownsEvent(eventData(eventId));
       }
 
+      // Who each collaborator is (their e-mail), for the organizers' "Colaboradores" list: written
+      // by the collaborator themself, only while they are one, with their own sign-in e-mail.
+      match /collaborators/{uid} {
+        allow read: if isAdmin() || managesEvent(eventData(eventId));
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.keys().hasOnly(['email', 'updatedAt'])
+                              && request.resource.data.email == request.auth.token.get('email', '').lower()
+                              && isOptionalString(request.resource.data.get('updatedAt', null), 40)
+                              && uid in getAfter(/databases/$(database)/documents/events/$(eventId)).data.get('collaborators', []);
+        allow delete: if isAdmin() || ownsEvent(eventData(eventId)) || (request.auth != null && request.auth.uid == uid);
+      }
+
       // Invitations subcollection: the owner invites, the invited user reads and claims
       match /invitations/{email} {
         allow read: if isAdmin() || managesEvent(eventData(eventId)) || (request.auth != null && request.auth.token.get('email', '').lower() == email.lower());

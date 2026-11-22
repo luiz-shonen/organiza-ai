@@ -198,9 +198,12 @@ export class EventService {
   }
 
   async removeCollaborator(eventId: string, collaboratorUid: string): Promise<void> {
-    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
-      collaborators: this.gateway.arrayRemove(collaboratorUid),
-      updatedAt: new Date().toISOString(),
+    await this.gateway.runBatch((batch) => {
+      batch.update(`${this.collectionName}/${eventId}`, {
+        collaborators: this.gateway.arrayRemove(collaboratorUid),
+        updatedAt: new Date().toISOString(),
+      });
+      batch.delete(this.collaboratorPath(eventId, collaboratorUid));
     });
   }
 
@@ -231,17 +234,71 @@ export class EventService {
     );
     if (snapshotDocs.length === 0) return;
 
+    const now = new Date().toISOString();
     await this.gateway.runBatch((batch) => {
       for (const invDoc of snapshotDocs) {
         if (invDoc.eventId) {
           batch.update(`${this.collectionName}/${invDoc.eventId}`, {
             collaborators: this.gateway.arrayUnion(uid),
-            updatedAt: new Date().toISOString(),
+            updatedAt: now,
           });
           batch.delete(`${this.collectionName}/${invDoc.eventId}/invitations/${invDoc.id}`);
+          // The organizers see who joined by e-mail, never by account id.
+          batch.set(this.collaboratorPath(invDoc.eventId, uid), {
+            email: normalizedEmail,
+            updatedAt: now,
+          });
         }
       }
     });
+  }
+
+  private collaboratorPath(eventId: string, uid: string): string {
+    return `${this.collectionName}/${eventId}/collaborators/${uid}`;
+  }
+
+  /**
+   * For collaborators who joined before e-mails were kept: on sign-in they record theirs on
+   * each event they help with, so the organizers' list shows it.
+   */
+  async recordCollaboratorEmail(email: string, uid: string): Promise<void> {
+    const normalizedEmail = email.toLowerCase().trim();
+    if (!normalizedEmail || !uid) return;
+    const events = await this.gateway.getDocs<{ id: string }>(
+      this.collectionName,
+      this.gateway.where('collaborators', 'array-contains', uid),
+    );
+    for (const event of events) {
+      const saved = await this.gateway
+        .getDoc<{ email?: string }>(this.collaboratorPath(event.id, uid))
+        .catch(() => null);
+      if (saved?.email === normalizedEmail) continue;
+      await this.gateway
+        .setDoc(this.collaboratorPath(event.id, uid), {
+          email: normalizedEmail,
+          updatedAt: new Date().toISOString(),
+        })
+        .catch(() => undefined);
+    }
+  }
+
+  /** Each collaborator's e-mail by account id (organizers only). */
+  async collaboratorEmails(eventId: string): Promise<Record<string, string>> {
+    const docs = await this.gateway
+      .getDocs<{ id: string; email?: string }>(`${this.collectionName}/${eventId}/collaborators`)
+      .catch(() => [] as { id: string; email?: string }[]);
+    return Object.fromEntries(docs.filter((d) => d.email).map((d) => [d.id, d.email as string]));
+  }
+
+  /** The e-mails invited to help organise who have not signed in yet. */
+  async pendingInvitationEmails(eventId: string): Promise<string[]> {
+    const docs = await this.gateway
+      .getDocs<{
+        id: string;
+        invitedEmail?: string;
+      }>(`${this.collectionName}/${eventId}/invitations`)
+      .catch(() => [] as { id: string; invitedEmail?: string }[]);
+    return docs.map((d) => d.invitedEmail || d.id);
   }
 
   async getEventById(eventId: string): Promise<PartyEvent | null> {

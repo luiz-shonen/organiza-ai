@@ -28,7 +28,9 @@ export interface RsvpDrawerResult {
 }
 
 export interface CollaboratorDrawerRequestData {
-  collaborators: string[];
+  /** Each collaborator: their account id (to remove them) and how they are shown (e-mail). */
+  collaborators: readonly { id: string; label: string }[];
+  /** E-mails invited who have not signed in yet. */
   pendingInvites: string[];
 }
 

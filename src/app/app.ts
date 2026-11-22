@@ -119,7 +119,11 @@ export class App {
     void this.userService.syncPublicName(user.uid, user.displayName).catch(() => undefined);
     // An e-mail invite to help organise ("Colaboradores") takes effect when that account signs in.
     if (user.email) {
-      void this.eventService.claimPendingInvitations(user.email, user.uid).catch(() => undefined);
+      const email = user.email;
+      void this.eventService
+        .claimPendingInvitations(email, user.uid)
+        .then(() => this.eventService.recordCollaboratorEmail(email, user.uid))
+        .catch(() => undefined);
     }
   });
 

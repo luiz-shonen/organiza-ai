@@ -323,14 +323,17 @@ describe('EventService', () => {
       });
     });
 
-    it('removeCollaborator removes UID using arrayRemove', async () => {
+    it('removeCollaborator removes the UID and their saved e-mail in one batch', async () => {
       await service.removeCollaborator('evt-1', 'user-collab-1');
 
       expect(mockGateway.arrayRemove).toHaveBeenCalledWith('user-collab-1');
-      expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-1', {
+      expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-1', {
         collaborators: expect.anything(),
         updatedAt: expect.any(String),
       });
+      expect(mockGateway.batchOps.delete).toHaveBeenCalledWith(
+        'events/evt-1/collaborators/user-collab-1',
+      );
     });
 
     it('listPendingInvitations returns mapped invitations observable', () => {

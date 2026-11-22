@@ -41,16 +41,16 @@
     <h3 id="active-collaborators">
       Colaboradores ativos ({{ drawerData().collaborators.length }})
     </h3>
-    @for (collaborator of drawerData().collaborators; track collaborator) {
+    @for (collaborator of drawerData().collaborators; track collaborator.id) {
       <org-button
         class="collaborator-drawer__chip"
         variant="secondary"
         icon="close"
-        [label]="collaborator"
+        [label]="collaborator.label"
         [compact]="true"
         [gradient]="false"
-        [tooltip]="'Remover ' + collaborator"
-        (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator })"
+        [tooltip]="'Remover ' + collaborator.label"
+        (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator.id })"
       />
     } @empty {
       <p class="collaborator-drawer__empty">Ninguém ainda. Convide pelo e-mail acima.</p>

@@ -220,10 +220,10 @@ describe('EventEditorContainer', () => {
       expect(component['basicInfoForm'].getRawValue().title).toBe('');
     });
 
-    it('opens a typed collaborator drawer for the event owner', () => {
+    it('opens a typed collaborator drawer for the event owner', async () => {
       const drawer = TestBed.inject(DrawerService);
       component['openCollaboratorsDialog']();
-      expect(drawer.drawerType()).toBe('collaborator');
+      await vi.waitFor(() => expect(drawer.drawerType()).toBe('collaborator'));
     });
   });
 

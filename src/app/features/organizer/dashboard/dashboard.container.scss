@@ -68,8 +68,29 @@
 
   // On a phone the chips scroll sideways; the order button stays put at the right.
   .dashboard__chips {
+    align-items: center;
+    display: flex;
     flex: 1 1 auto;
+    gap: var(--org-space-sm);
     min-inline-size: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    org-filter-bar {
+      flex: none;
+    }
+  }
+
+  // Between the status chips and "Organizo / Colaboro".
+  .dashboard__chips-rule {
+    background: var(--org-outline-variant);
+    block-size: var(--org-space-lg);
+    flex: none;
+    inline-size: 1px;
   }
 
   org-icon-button {

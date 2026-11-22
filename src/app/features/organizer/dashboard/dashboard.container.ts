@@ -29,7 +29,6 @@ import {
   OrgEmptyStateComponent,
   OrgExpansionPanelComponent,
   OrgFilterBarComponent,
-  OrgSegmentedControlComponent,
   OrgIconButtonComponent,
   OrgInsightCardComponent,
   OrgPageHeaderComponent,
@@ -37,7 +36,6 @@ import {
   OrgProgressComponent,
   OrgSkeletonComponent,
   type OrgFilterOption,
-  type OrgSegmentedOption,
   type OrgInsightTone,
 } from '../../../shared/ui';
 import {
@@ -98,7 +96,6 @@ function isUpcoming(event: PartyEvent): boolean {
     OrgEmptyStateComponent,
     OrgExpansionPanelComponent,
     OrgFilterBarComponent,
-    OrgSegmentedControlComponent,
     OrgIconButtonComponent,
     OrgInsightCardComponent,
     OrgPageHeaderComponent,
@@ -138,11 +135,11 @@ export class DashboardContainer {
   /** The filter chips on; `['all']` shows every event. */
   readonly activeFilters = signal<readonly EventStatusFilter[]>(['all']);
   readonly dateOrder = signal<EventDateOrder>('oldest');
-  readonly roleFilter = signal<EventRoleFilter>('all');
-  protected readonly roleOptions: readonly OrgSegmentedOption<EventRoleFilter>[] = [
-    { value: 'all', label: 'Ambos', testId: 'role-filter-all' },
-    { value: 'owner', label: 'Organizo', testId: 'role-filter-owner' },
-    { value: 'collaborator', label: 'Colaboro', testId: 'role-filter-collaborator' },
+  /** "Organizo" and "Colaboro" chips; none (or both) on shows every event. */
+  readonly roleFilters = signal<readonly string[]>(['all']);
+  protected readonly roleOptions: readonly OrgFilterOption<EventRoleFilter>[] = [
+    { id: 'owner', label: 'Organizo', testId: 'role-filter-owner' },
+    { id: 'collaborator', label: 'Colaboro', testId: 'role-filter-collaborator' },
   ];
 
   /** The person's part in an event: created it, or was invited to help organise it. */
@@ -194,9 +191,9 @@ export class DashboardContainer {
   readonly filteredEvents = computed(() => {
     const byDate = (a: PartyEvent, b: PartyEvent) =>
       new Date(a.date).getTime() - new Date(b.date).getTime();
-    const role = this.roleFilter();
+    const roles = this.roleFilters().filter((id) => id !== 'all');
     const list = this.statusFiltered()
-      .filter((e) => role === 'all' || this.roleOf(e) === role)
+      .filter((e) => !roles.length || roles.includes(this.roleOf(e) ?? ''))
       .sort(byDate);
     return this.dateOrder() === 'newest' ? list.reverse() : list;
   });
@@ -343,8 +340,8 @@ export class DashboardContainer {
     this.dateOrder.update((order) => (order === 'oldest' ? 'newest' : 'oldest'));
   }
 
-  protected setRoleFilter(role: string): void {
-    this.roleFilter.set(role === 'owner' || role === 'collaborator' ? role : 'all');
+  protected setRoleFilters(ids: string[]): void {
+    this.roleFilters.set(ids);
   }
 
   protected setFilters(ids: string[]): void {

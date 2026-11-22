@@ -245,7 +245,7 @@ Uso recomendado: `<org-party-drift />` inside a positioned, full-size layer, as 
 
 ### OrgSegmentedControlComponent
 
-Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil, or "Mais antigos / Mais recentes" in Meus eventos. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
+Uso recomendado: `<org-segmented-control ariaLabel="Selecionar tema" [options]="themeOptions" [value]="mode()" (valueChange)="setMode($event)" />`. Two or three mutually exclusive choices shown side by side (Hick), e.g. the theme choice in Perfil. Options are typed `OrgSegmentedOption` with `value`, `label`, optional `icon` and `testId`.
 
 ### OrgDateBadgeComponent
 

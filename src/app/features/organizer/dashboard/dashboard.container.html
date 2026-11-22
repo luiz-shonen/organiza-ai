@@ -24,26 +24,30 @@
             cards().length
           }}</span>
         </h2>
-        @if (showRoleFilter()) {
-          <org-segmented-control
-            class="dashboard__roles"
-            ariaLabel="Eventos que você organiza ou em que colabora"
-            [options]="roleOptions"
-            [value]="roleFilter()"
-            (valueChange)="setRoleFilter($event)"
-          />
-        }
       </div>
 
-      <!-- The status chips, and at their right the date order: up for oldest first. -->
+      <!--
+        The status chips, then (for someone who collaborates) "Organizo" and "Colaboro" after a
+        fine rule, all in one row that scrolls on a phone; at the right the date order.
+      -->
       <div class="dashboard__filters">
-        <org-filter-bar
-          class="dashboard__chips"
-          ariaLabel="Filtros de status dos eventos"
-          [options]="filters"
-          [values]="activeFilters()"
-          (valuesChange)="setFilters($event)"
-        />
+        <div class="dashboard__chips">
+          <org-filter-bar
+            ariaLabel="Filtros de status dos eventos"
+            [options]="filters"
+            [values]="activeFilters()"
+            (valuesChange)="setFilters($event)"
+          />
+          @if (showRoleFilter()) {
+            <span class="dashboard__chips-rule" aria-hidden="true"></span>
+            <org-filter-bar
+              ariaLabel="Eventos que você organiza ou em que colabora"
+              [options]="roleOptions"
+              [values]="roleFilters()"
+              (valuesChange)="setRoleFilters($event)"
+            />
+          }
+        </div>
         <org-icon-button
           variant="chip"
           testId="date-order-btn"

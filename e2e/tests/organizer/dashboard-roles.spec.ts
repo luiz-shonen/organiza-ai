@@ -42,11 +42,14 @@ test.describe('Meus eventos', () => {
     ).toHaveText(/Colaborador\(a\)/);
     await expect(cards.filter({ hasText: 'Primeiro' }).getByTestId('event-role')).toHaveCount(0);
 
+    // "Colaboro" alone, then "Organizo" alone; neither on shows them all.
     await page.getByTestId('role-filter-collaborator').click();
     await expect(cards).toHaveCount(1);
+    await page.getByTestId('role-filter-collaborator').click();
     await page.getByTestId('role-filter-owner').click();
     await expect(cards).toHaveCount(2);
-    await page.getByTestId('role-filter-all').click();
+    await page.getByTestId('role-filter-owner').click();
+    await expect(cards).toHaveCount(3);
 
     // Oldest first by default; the arrow turns the order around.
     await expect(cards.first()).toContainText('Primeiro');

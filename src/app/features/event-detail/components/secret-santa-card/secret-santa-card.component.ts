@@ -86,7 +86,6 @@ export class SecretSantaCardComponent {
   /** The entry being merged or marked, while it saves. */
   public readonly busyDuplicateId = input<string | null>(null);
 
-  protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly linkStatus = linkStatus;
   protected readonly openedCount = computed(() => this.links().filter((l) => l.openedAt).length);
   protected readonly canDraw = computed(

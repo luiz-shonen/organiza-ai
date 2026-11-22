@@ -243,14 +243,11 @@ export class EventService {
             updatedAt: now,
           });
           batch.delete(`${this.collectionName}/${invDoc.eventId}/invitations/${invDoc.id}`);
-          // The organizers see who joined by e-mail, never by account id.
-          batch.set(this.collaboratorPath(invDoc.eventId, uid), {
-            email: normalizedEmail,
-            updatedAt: now,
-          });
         }
       }
     });
+    // Then, apart from the claim (which must never fail on it), the e-mail the organizers see.
+    await this.recordCollaboratorEmail(normalizedEmail, uid);
   }
 
   private collaboratorPath(eventId: string, uid: string): string {

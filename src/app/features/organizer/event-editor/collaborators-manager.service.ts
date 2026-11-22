@@ -34,7 +34,7 @@ export class CollaboratorsManagerService {
     // By e-mail; someone who has not signed in since keeps their name until they do.
     const collaborators = ids.map((id, i) => ({
       id,
-      label: emails[id] || names[i] || 'Colaborador(a)',
+      label: emails[id] || names[i] || 'E-mail ainda não registrado',
     }));
     this.drawerService.open({
       kind: 'collaborator',

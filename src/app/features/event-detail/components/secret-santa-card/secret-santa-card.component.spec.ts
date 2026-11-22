@@ -49,7 +49,8 @@ describe('SecretSantaCardComponent', () => {
     fixture.componentRef.setInput('participants', people.slice(0, 2));
     fixture.detectChanges();
     expect(button('secret-santa-draw-btn')).toBeNull();
-    expect(el().querySelector('[data-testid="secret-santa-too-few"]')).not.toBeNull();
+    // How many are missing is said by the participants list, not again here.
+    expect(el().querySelector('[data-testid="secret-santa-too-few"]')).toBeNull();
   });
 
   it('after the draw, lists each link to send by WhatsApp, never who drew whom', () => {

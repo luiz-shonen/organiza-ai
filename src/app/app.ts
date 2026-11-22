@@ -122,6 +122,7 @@ export class App {
       const email = user.email;
       void this.eventService
         .claimPendingInvitations(email, user.uid)
+        .catch(() => undefined)
         .then(() => this.eventService.recordCollaboratorEmail(email, user.uid))
         .catch(() => undefined);
     }

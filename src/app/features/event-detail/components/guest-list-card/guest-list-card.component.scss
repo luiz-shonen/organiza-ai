@@ -29,6 +29,21 @@
 }
 
 // Beside the guest's name in the panel title, quieter than it.
+// Each household starts with the face of who answered: their photo, or their initial.
+.guest-list__avatar {
+  flex: none;
+}
+
+// How many go, as a green pill on the right.
+.guest-list__count {
+  background: var(--org-tertiary-container);
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-tertiary-container);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  padding: var(--org-space-2xs) var(--org-space-sm);
+}
+
 .guest-list__phone {
   color: var(--org-on-surface-variant);
   flex: none;

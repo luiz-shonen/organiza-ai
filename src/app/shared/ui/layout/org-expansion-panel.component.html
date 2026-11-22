@@ -13,6 +13,7 @@
       @if (icon(); as icon) {
         <org-icon [name]="icon" color="var(--org-success)" />
       }
+      <ng-content select="[orgExpansionTitleLead]" />
       <span class="org-expansion-panel__heading">{{ heading() }}</span>
       <ng-content select="[orgExpansionTitleMeta]" />
     </mat-panel-title>

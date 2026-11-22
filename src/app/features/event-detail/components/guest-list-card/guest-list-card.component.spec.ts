@@ -63,7 +63,7 @@ describe('GuestListCardComponent', () => {
     expect(text).toContain('3 confirmados');
     // The guest's name is the panel title only, not repeated inside.
     expect(text.split('Jéssica Melo').length - 1).toBe(1);
-    expect(text).toContain('+1 · 2 itens');
+    expect(text).toContain('2 pessoas · 2 itens');
     expect(text).toContain('Leva:');
     const lines = Array.from(element.querySelectorAll('.guest-list__items li'), (li) =>
       li.textContent?.trim(),

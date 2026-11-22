@@ -64,12 +64,11 @@ export class GuestListCardComponent {
 
   /** Beside the guest's name: "+2 · 3 itens", short enough for a phone. */
   protected householdSummary(household: GuestHousehold): string {
-    const extra = household.members.length - 1;
+    const people = household.members.length;
     const items = household.bring.length;
-    const parts = [
-      ...(extra ? [`+${extra}`] : []),
+    return [
+      people === 1 ? '1 pessoa' : `${people} pessoas`,
       ...(items ? [items === 1 ? '1 item' : `${items} itens`] : []),
-    ];
-    return parts.join(' · ') || '1 pessoa';
+    ].join(' · ');
   }
 }

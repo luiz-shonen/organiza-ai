@@ -82,12 +82,20 @@
               [ariaLabel]="'Quem vai com ' + household.name"
               [expanded]="$first || households().length <= 3"
             >
+              <org-avatar
+                orgExpansionTitleLead
+                class="guest-list__avatar"
+                [name]="household.name"
+                [photoUrl]="household.photoUrl ?? null"
+              />
               @if (forOrganizer() && household.phone) {
                 <span orgExpansionTitleMeta class="guest-list__phone">
                   {{ displayPhone(household.phone) }}
                 </span>
               }
-              <span orgExpansionSummary>{{ householdSummary(household) }}</span>
+              <span orgExpansionSummary class="guest-list__count">{{
+                householdSummary(household)
+              }}</span>
 
               @let holder = household.members[0];
               <!-- What the guest brings; nothing at all when the event has no list. -->

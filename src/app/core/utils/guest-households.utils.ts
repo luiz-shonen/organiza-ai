@@ -16,6 +16,8 @@ export interface GuestHousehold {
   id: string;
   name: string;
   phone: string;
+  /** The account holder's photo (their Google account's, saved with the answer). */
+  photoUrl?: string | null;
   /** Companions and family members coming with the account holder. */
   people: string[];
   /** Everything the household brings, all people together. */
@@ -118,6 +120,7 @@ export function buildGuestHouseholds(
         id: guest.id,
         name: guest.name,
         phone: guest.phone ?? '',
+        ...(guest.photoUrl ? { photoUrl: guest.photoUrl } : {}),
         people: [...family, ...companions].map((person) => person.name),
         bring: linesFor(allTotals, itemsById),
         members: [holder, ...family, ...companions],

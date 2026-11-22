@@ -26,13 +26,13 @@
       />
 
       @if (!isOwner() || canEditEvent()) {
-        <div
-          class="event-detail__top"
-          [class.event-detail__top--pair]="!isOwner() && canEditEvent()"
-        >
-          <!-- The organizer hosts the event; there is no presence for them to confirm. -->
-          @if (!isOwner()) {
-            <div class="event-detail__lead">
+        <div class="event-detail__top" [class.event-detail__top--pair]="canEditEvent()">
+          <!--
+            The guest's answer with the festive scene under it; the owner hosts the event and has
+            no presence to confirm, so the scene takes the whole column beside the share panel.
+          -->
+          <div class="event-detail__lead">
+            @if (!isOwner()) {
               <app-rsvp-card
                 [isConfirmed]="isUserConfirmed()"
                 [pendingApproval]="isUserPending()"
@@ -52,11 +52,11 @@
                 (joinSanta)="onJoinSecretSantaOnly($event)"
                 (leaveSanta)="onLeaveSecretSanta()"
               />
-              @if (canEditEvent()) {
-                <app-event-ornament class="event-detail__ornament" />
-              }
-            </div>
-          }
+            }
+            @if (canEditEvent()) {
+              <app-event-ornament class="event-detail__ornament" />
+            }
+          </div>
 
           <!-- Organizers share the invite from here: link, QR code and WhatsApp. -->
           @if (canEditEvent()) {

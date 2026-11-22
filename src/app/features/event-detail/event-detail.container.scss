@@ -18,6 +18,13 @@
   gap: var(--org-space-md);
 }
 
+// On a phone the owner's column holds only the scene, which is hidden there: no empty row.
+.event-detail__lead:not(:has(app-rsvp-card)) {
+  @media (width < 960px) {
+    display: none;
+  }
+}
+
 .event-detail__ornament {
   display: none;
 

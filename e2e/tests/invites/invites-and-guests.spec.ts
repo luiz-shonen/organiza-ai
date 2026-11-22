@@ -144,7 +144,9 @@ test.describe('Invites, event states and guests', () => {
     await page.goto('/meus-eventos/evento/evt-past');
     await expect(page).toHaveURL(/\/evento\/evt-past$/);
     await expect(
-      page.getByText('Este evento já aconteceu e não pode mais ser editado.'),
+      page
+        .getByTestId('feedback-snackbar')
+        .getByText('Este evento já aconteceu e não pode mais ser editado.'),
     ).toBeVisible();
   });
 

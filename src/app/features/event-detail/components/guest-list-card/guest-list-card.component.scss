@@ -24,8 +24,35 @@
   padding: 0;
 }
 
+// One row per household, split by fine rules like the amigo oculto list.
 .guest-list__households {
+  gap: 0;
+}
+
+.guest-list__household + .guest-list__household {
+  border-top: 1px solid var(--org-outline-variant);
+}
+
+// A household with nothing to open: the same line as a panel's title.
+.guest-list__row {
+  align-items: center;
+  display: flex;
   gap: var(--org-space-sm);
+  min-block-size: calc(var(--org-touch) + var(--org-space-sm));
+}
+
+.guest-list__row-name {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.guest-list__row .guest-list__count {
+  margin-inline-start: auto;
 }
 
 // Beside the guest's name in the panel title, quieter than it.

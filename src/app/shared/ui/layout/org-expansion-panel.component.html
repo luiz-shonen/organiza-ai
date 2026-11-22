@@ -1,5 +1,6 @@
 <mat-expansion-panel
   class="org-expansion-panel"
+  [class.org-expansion-panel--plain]="plain()"
   [expanded]="expanded()"
   [attr.aria-label]="ariaLabel()"
   (opened)="expanded.set(true)"

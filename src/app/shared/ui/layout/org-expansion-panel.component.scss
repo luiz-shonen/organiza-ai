@@ -69,3 +69,16 @@
   flex-direction: column;
   gap: var(--org-space-md);
 }
+
+.org-expansion-panel--plain {
+  border: 0;
+  border-radius: 0;
+
+  .org-expansion-panel__header {
+    padding: 0;
+  }
+
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 0 var(--org-space-md);
+  }
+}

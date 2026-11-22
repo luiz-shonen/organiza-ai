@@ -19,5 +19,7 @@ export class OrgExpansionPanelComponent {
   public readonly ariaLabel = input<string | null>(null);
   /** A larger title, for a panel that names a person. Extra detail beside it: `[orgExpansionTitleMeta]`; before it (a face): `[orgExpansionTitleLead]`. */
   public readonly prominent = input(false);
+  /** No frame: a row in a list split by fine rules, not a box of its own. */
+  public readonly plain = input(false);
   public readonly expanded = model(false);
 }

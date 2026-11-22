@@ -63,6 +63,11 @@ export class GuestListCardComponent {
   });
 
   /** Beside the guest's name: "+2 · 3 itens", short enough for a phone. */
+  /** Something to open: who comes with them, or what they bring (or not) from the list. */
+  protected hasDetails(household: GuestHousehold): boolean {
+    return household.members.length > 1 || household.bring.length > 0 || this.hasItems();
+  }
+
   protected householdSummary(household: GuestHousehold): string {
     const people = household.members.length;
     const items = household.bring.length;

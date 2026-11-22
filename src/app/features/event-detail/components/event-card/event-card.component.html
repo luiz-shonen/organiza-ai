@@ -105,14 +105,27 @@
       </div>
     </div>
     @if (canEdit()) {
-      <org-button
-        label="Editar evento"
-        icon="edit"
-        variant="secondary"
-        testId="edit-event-btn"
-        [compact]="true"
-        (pressed)="edit.emit()"
-      />
+      <div class="event-card__host-actions">
+        <!-- Only the owner invites or removes people who help organise. -->
+        @if (isOwner()) {
+          <org-button
+            label="Colaboradores"
+            icon="group_add"
+            variant="secondary"
+            testId="collaborators-btn"
+            [compact]="true"
+            (pressed)="collaborators.emit()"
+          />
+        }
+        <org-button
+          label="Editar evento"
+          icon="edit"
+          variant="secondary"
+          testId="edit-event-btn"
+          [compact]="true"
+          (pressed)="edit.emit()"
+        />
+      </div>
     }
   </div>
 </div>

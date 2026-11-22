@@ -34,6 +34,7 @@ import { LocationService } from '../../../core/services/location.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CollaboratorsManagerService } from './collaborators-manager.service';
 import {
   formatCep,
   hasStarted,
@@ -144,6 +145,7 @@ export class EventEditorContainer implements OnInit {
   private readonly feedback = inject(FeedbackService);
   private readonly drawerService = inject(DrawerService);
   private readonly dialogs = inject(OrgDialogService);
+  private readonly collaborators = inject(CollaboratorsManagerService);
   private readonly headerService = inject(HeaderService);
   protected readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
@@ -609,49 +611,9 @@ export class EventEditorContainer implements OnInit {
   }
 
   protected openCollaboratorsDialog(): void {
-    const eventId = this.id();
     const ev = this.currentEvent();
-    if (!eventId || !ev) return;
-
-    this.drawerService.open({
-      kind: 'collaborator',
-      data: {
-        collaborators: ev.collaborators ?? [],
-        pendingInvites: [],
-      },
-      onAction: async (action) => {
-        if (action.action === 'invite') {
-          try {
-            await this.eventService.inviteCollaborator(
-              eventId,
-              action.email,
-              ev.title,
-              this.authService.currentUser()?.email || '',
-            );
-            this.feedback.success(`Convite enviado para ${action.email}`);
-          } catch (error) {
-            this.feedback.error(explainError('Não foi possível enviar o convite', error));
-          }
-          return;
-        }
-        const confirmed = await firstValueFrom(
-          this.dialogs.confirm({
-            title: 'Remover colaborador',
-            message: `${action.collaboratorId} deixa de poder editar os itens e ver a lista de convidados deste evento.`,
-            confirmLabel: 'Remover',
-            tone: 'danger',
-            icon: 'block',
-          }),
-        );
-        if (!confirmed) return;
-        try {
-          await this.eventService.removeCollaborator(eventId, action.collaboratorId);
-          this.feedback.success('Colaborador removido');
-        } catch (error) {
-          this.feedback.error(explainError('Não foi possível remover o colaborador', error));
-        }
-      },
-    });
+    const eventId = this.id();
+    if (eventId && ev) this.collaborators.open({ ...ev, id: eventId });
   }
 
   /** Turning the question off with items on the list removes them, after asking. */

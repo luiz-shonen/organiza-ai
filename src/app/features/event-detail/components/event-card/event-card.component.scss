@@ -147,3 +147,10 @@
 .event-card__directions {
   white-space: pre-line;
 }
+
+.event-card__host-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}

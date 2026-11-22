@@ -19,6 +19,7 @@ import {
   DrawerService,
   SeasonalThemeService,
   UserService,
+  EventService,
 } from './core/services';
 import { isPrimaryDestination, resolveBackRoute } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
@@ -90,6 +91,7 @@ const PROFILE_ITEM: OrgNavBarItem = {
 export class App {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
+  private readonly eventService = inject(EventService);
   protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   // Created with the app, so it records from the first screen.
@@ -115,6 +117,10 @@ export class App {
     if (!user || user.isAnonymous || this.publicNameSyncedFor === user.uid) return;
     this.publicNameSyncedFor = user.uid;
     void this.userService.syncPublicName(user.uid, user.displayName).catch(() => undefined);
+    // An e-mail invite to help organise ("Colaboradores") takes effect when that account signs in.
+    if (user.email) {
+      void this.eventService.claimPendingInvitations(user.email, user.uid).catch(() => undefined);
+    }
   });
 
   constructor() {

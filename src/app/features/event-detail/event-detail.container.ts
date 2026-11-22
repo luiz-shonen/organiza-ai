@@ -95,6 +95,7 @@ import {
 import { NotificationCardComponent } from '../../shared/components/notification-card/notification-card.component';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { CollaboratorsManagerService } from '../organizer/event-editor/collaborators-manager.service';
 import { EventOrnamentComponent } from './components/event-ornament/event-ornament.component';
 import { SecretSantaRosterCardComponent } from './components/secret-santa-roster-card/secret-santa-roster-card.component';
 import { SharePanelComponent } from '../organizer/event-editor/components/share-panel/share-panel.component';
@@ -147,6 +148,7 @@ export class EventDetailContainer implements OnInit {
   private readonly seasonalThemeService = inject(SeasonalThemeService);
   private readonly dialogs = inject(OrgDialogService);
   private readonly drawerService = inject(DrawerService);
+  private readonly collaboratorsManager = inject(CollaboratorsManagerService);
   private readonly claimService = inject(ClaimService);
   private readonly router = inject(Router);
   private readonly secretSantaService = inject(SecretSantaService);
@@ -1353,6 +1355,12 @@ export class EventDetailContainer implements OnInit {
     } catch (error) {
       this.feedback.error(explainError('Não foi possível liberar o item', error));
     }
+  }
+
+  /** "Colaboradores" beside "Editar evento": the same drawer as in the editor. */
+  protected openCollaborators(): void {
+    const event = this.event();
+    if (event && this.isOwner()) this.collaboratorsManager.open(event);
   }
 
   protected editEvent(): void {

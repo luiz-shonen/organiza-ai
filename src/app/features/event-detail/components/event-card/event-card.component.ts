@@ -48,6 +48,8 @@ export class EventCardComponent {
   /** Name of the person viewing; the organizer's avatar uses it when it is them. */
   public readonly viewerName = input<string | null>(null);
   public readonly edit = output<void>();
+  /** "Colaboradores": the owner manages who helps organise. */
+  public readonly collaborators = output<void>();
 
   /** The colours and words of the invitation, from the category. */
   protected readonly theme = computed(() => inviteTheme(this.event().category));

@@ -23,6 +23,7 @@
         [viewerName]="currentGuestName()"
         [canEdit]="canEditEvent()"
         (edit)="editEvent()"
+        (collaborators)="openCollaborators()"
       />
 
       @if (!isOwner() || canEditEvent()) {

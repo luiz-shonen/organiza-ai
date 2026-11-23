@@ -213,7 +213,7 @@ Uso recomendado: `<org-step label="Informações">...</org-step>`. It is only us
 
 ### OrgStepperComponent
 
-Uso recomendado: `<org-stepper [orientation]="orientation()"><org-step label="Informações">...</org-step></org-stepper>`. The caller supplies semantic steps; the component owns compact mobile orientation.
+Uso recomendado: `<org-stepper [orientation]="orientation()"><org-step label="Informações">...</org-step></org-stepper>`. The caller supplies semantic steps; the component owns compact mobile orientation. Changing step scrolls the stepper back into view and, once the step's animation ends, focuses its first input, textarea or select.
 
 ### OrgMenuComponent
 
@@ -289,7 +289,7 @@ Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Va
 
 ### OrgConfirmDialogComponent
 
-Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top.
+Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top. For a third way out, `choose({ ..., extraLabel })` adds a middle button (`org-confirm-extra`) and returns `'confirm' | 'extra' | 'cancel'` (`OrgDialogChoice`), e.g. "Qual telefone fica?" or "Substituir / Adicionar como outra pessoa".
 
 ### OrgEmptyStateComponent
 

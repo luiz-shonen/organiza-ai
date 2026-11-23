@@ -61,6 +61,11 @@ describe('OrgPageHeaderComponent', () => {
     expect(iconEl).toBeNull();
   });
 
+  it('keeps no native title, so its buttons do not show the heading as a tooltip', () => {
+    const headers = fixture.nativeElement.querySelectorAll('org-page-header');
+    headers.forEach((header: HTMLElement) => expect(header.hasAttribute('title')).toBe(false));
+  });
+
   it('renders full header with title, subtitle, icon, gradient, and projected actions', () => {
     const header = fixture.nativeElement.querySelector('#full-header') as HTMLElement;
 

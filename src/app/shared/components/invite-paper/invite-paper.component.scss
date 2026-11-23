@@ -227,6 +227,11 @@
   max-inline-size: 42ch;
 }
 
+// Text the organizer typed (the description): the blank lines and breaks they left stay.
+.invite-paper__text--typed {
+  white-space: pre-line;
+}
+
 .invite-paper__signature {
   animation: invite-paper-write 1.3s calc(var(--invite-start, 0s) + var(--invite-delay, 2.1s))
     cubic-bezier(0.55, 0, 0.35, 1) both;

@@ -27,7 +27,11 @@
         </p>
       }
       @if (event().description) {
-        <p class="invite-paper__text">{{ event().description }}</p>
+        <p
+          class="invite-paper__text invite-paper__text--typed"
+          data-testid="invite-description"
+          [textContent]="event().description"
+        ></p>
       }
       @if (event().status === 'cancelled') {
         <org-badge label="Evento cancelado" variant="danger" [gradient]="false" />

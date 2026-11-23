@@ -52,6 +52,18 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(tag()?.textContent).toContain('Evento');
   });
 
+  it('keeps the blank lines the organizer left in the description', () => {
+    const typed = 'Pela primeira vez nosso Natal será no sítio.\n\nChecklist: itens de cama.';
+    fixture.componentRef.setInput('event', { ...mockEvent, description: typed });
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.querySelector(
+      '[data-testid="invite-description"]',
+    ) as HTMLElement;
+    expect(text.textContent).toBe(typed);
+    expect(text.classList).toContain('invite-paper__text--typed');
+  });
+
   it('links to Google Calendar with the event data', () => {
     const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
     expect(link.href).toContain('https://calendar.google.com');

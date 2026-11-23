@@ -15,6 +15,8 @@ import {
 export class PixCardComponent {
   readonly pixKey = input<string | null>(null);
   readonly pixType = input<string | undefined>(undefined);
+  /** What the organizer collects for (rachar os custos, doação…). */
+  readonly purpose = input<string | null>(null);
   readonly estimatedBudget = input<number | null>(null);
   readonly guestCount = input<number>(0);
 

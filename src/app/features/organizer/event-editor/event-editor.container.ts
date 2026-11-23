@@ -66,6 +66,7 @@ import {
   NewPartyItem,
   PartyEvent,
   PartyItem,
+  PIX_PURPOSE_MAX,
   SecretSantaParticipant,
   SecretSantaParticipantInput,
   SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
@@ -269,6 +270,7 @@ export class EventEditorContainer implements OnInit {
 
   protected readonly pixForm = this.fb.nonNullable.group({
     pixKey: ['', [valueObjectValidator(PixKey.validate)]],
+    pixPurpose: ['', [Validators.maxLength(PIX_PURPOSE_MAX)]],
   });
 
   constructor() {
@@ -366,6 +368,7 @@ export class EventEditorContainer implements OnInit {
 
             this.pixForm.patchValue({
               pixKey: event.pixKey ?? '',
+              pixPurpose: event.pixPurpose ?? '',
             });
 
             // Read once: a later snapshot of the event must not undo switches not saved yet.
@@ -490,6 +493,8 @@ export class EventEditorContainer implements OnInit {
     const cep = Cep.create(rawAddress.cep)?.formatted ?? rawAddress.cep;
     const number = AddressNumber.create(rawAddress.number)?.value ?? rawAddress.number.trim();
     const pixKey = PixKey.create(this.pixForm.getRawValue().pixKey)?.value ?? '';
+    // Without a key there is no Pix to explain.
+    const pixPurpose = pixKey ? this.pixForm.getRawValue().pixPurpose.trim() : '';
 
     let finalDate = new Date();
     if (date) {
@@ -538,6 +543,7 @@ export class EventEditorContainer implements OnInit {
       location,
       addressDetails,
       pixKey: pixKey || null,
+      pixPurpose: pixPurpose || null,
       createdBy: user?.uid ?? '',
       creatorEmail: user?.email ?? '',
       collaborators: this.currentEvent()?.collaborators ?? [],
@@ -858,7 +864,11 @@ export class EventEditorContainer implements OnInit {
     const snapshot = this.draftSnapshot();
     const typed = this.basicInfoForm.dirty || this.addressForm.dirty || this.pixForm.dirty;
     const compared = (draft: EventEditorDraft) =>
-      JSON.stringify(typed ? draft : { ...draft, basicInfo: null, address: null, pixKey: null });
+      JSON.stringify(
+        typed
+          ? draft
+          : { ...draft, basicInfo: null, address: null, pixKey: null, pixPurpose: null },
+      );
     if (compared(snapshot) === compared(baseline)) {
       this.drafts.clear(this.draftKey());
     } else {
@@ -881,6 +891,7 @@ export class EventEditorContainer implements OnInit {
       basicInfo: { ...basic, date: day(basic.date), endDate: day(basic.endDate) },
       address: this.addressForm.getRawValue(),
       pixKey: this.pixForm.getRawValue().pixKey,
+      pixPurpose: this.pixForm.getRawValue().pixPurpose,
       requireApproval: this.requireApproval(),
       // Editing, items are saved as they are added, and the list loads on its own time.
       itemsEnabled: this.isEditing() ? false : this.itemsEnabled(),
@@ -904,7 +915,8 @@ export class EventEditorContainer implements OnInit {
     });
     // The CEP first: its lookup locks what it fills, and the rest keeps what was typed.
     this.addressForm.patchValue(draft.address);
-    this.pixForm.patchValue({ pixKey: draft.pixKey });
+    // Drafts saved before the purpose field have none.
+    this.pixForm.patchValue({ pixKey: draft.pixKey, pixPurpose: draft.pixPurpose ?? '' });
     this.requireApproval.set(draft.requireApproval);
     this.secretSantaEnabled.set(draft.secretSanta.enabled);
     this.secretSantaGiftOptions.set(draft.secretSanta.giftOptions);
@@ -1014,6 +1026,7 @@ interface EventEditorDraft {
     directions: string;
   };
   pixKey: string;
+  pixPurpose?: string;
   requireApproval: boolean;
   itemsEnabled: boolean;
   items: NewPartyItem[];

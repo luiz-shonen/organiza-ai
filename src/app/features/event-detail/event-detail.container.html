@@ -180,6 +180,7 @@
         <app-pix-card
           [pixKey]="event.pixKey"
           [pixType]="event.pixType"
+          [purpose]="event.pixPurpose ?? null"
           [estimatedBudget]="event.estimatedBudget ?? null"
           [guestCount]="guestCount()"
         />

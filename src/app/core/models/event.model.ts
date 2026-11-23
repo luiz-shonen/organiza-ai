@@ -15,6 +15,8 @@ export interface AddressDetails {
 /** Sizes of the optional address fields, in the editor and the rules. */
 export const ADDRESS_COMPLEMENT_MAX = 80;
 export const ADDRESS_DIRECTIONS_MAX = 300;
+/** Longest "Para que é o Pix" text. */
+export const PIX_PURPOSE_MAX = 300;
 
 export type PixType = 'cpf' | 'cnpj' | 'email' | 'phone' | 'random' | string;
 
@@ -98,6 +100,8 @@ export interface PartyEvent {
   location: string;
   addressDetails?: AddressDetails;
   pixKey: string | null;
+  /** What the Pix is for, in the organizer's words (rachar os custos, doação…). */
+  pixPurpose?: string | null;
   pixType?: PixType;
   estimatedBudget?: number | null;
   status?: 'active' | 'cancelled';

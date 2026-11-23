@@ -30,6 +30,7 @@ export type AddressFound = Readonly<{ address: boolean; neighborhood: boolean; c
 
 export type EventPixForm = FormGroup<{
   pixKey: FormControl<string>;
+  pixPurpose: FormControl<string>;
 }>;
 
 export interface NewPartyItem {

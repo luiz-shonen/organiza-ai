@@ -282,6 +282,7 @@ service cloud.firestore {
                 || (data.endDate is string && data.endDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77))
+            && (!changes('pixPurpose') || isOptionalString(data.get('pixPurpose', null), 300))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
             && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
             && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)));

@@ -9,6 +9,7 @@ export type {
 export {
   ADDRESS_COMPLEMENT_MAX,
   ADDRESS_DIRECTIONS_MAX,
+  PIX_PURPOSE_MAX,
   EVENT_CATEGORIES,
   getCategoryClass,
   getCategoryHue,

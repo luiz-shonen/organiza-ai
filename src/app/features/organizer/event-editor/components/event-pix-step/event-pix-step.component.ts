@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { fieldError } from '../../../../../core/value-objects';
-import { EventPixForm } from '../../../../../core/models';
+import { EventPixForm, PIX_PURPOSE_MAX } from '../../../../../core/models';
 import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconComponent,
   OrgSurfaceComponent,
   OrgTextFieldComponent,
+  OrgTextareaFieldComponent,
 } from '../../../../../shared/ui';
 
 @Component({
@@ -20,6 +21,7 @@ import {
     OrgIconComponent,
     OrgSurfaceComponent,
     OrgTextFieldComponent,
+    OrgTextareaFieldComponent,
   ],
   templateUrl: './event-pix-step.component.html',
   styleUrl: '../event-step.scss',
@@ -37,4 +39,5 @@ export class EventPixStepComponent {
   readonly save = output<void>();
 
   protected readonly fieldError = fieldError;
+  protected readonly purposeMax = PIX_PURPOSE_MAX;
 }

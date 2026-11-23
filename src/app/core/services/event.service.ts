@@ -456,6 +456,7 @@ export class EventService {
       addressDetails: (data['addressDetails'] as AddressDetails | undefined) ?? undefined,
       pixKey: (data['pixKey'] as string | null) ?? null,
       pixType: (data['pixType'] as PixType | undefined) ?? undefined,
+      pixPurpose: typeof data['pixPurpose'] === 'string' ? data['pixPurpose'] : null,
       estimatedBudget:
         typeof data['estimatedBudget'] === 'number'
           ? (data['estimatedBudget'] as number)

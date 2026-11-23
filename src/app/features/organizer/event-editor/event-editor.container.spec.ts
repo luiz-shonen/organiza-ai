@@ -607,7 +607,7 @@ describe('EventEditorContainer', () => {
         city: 'Belo Horizonte/MG',
         number: 'Casa 5',
       });
-      component['pixForm'].setValue({ pixKey: 'chave qualquer' });
+      component['pixForm'].patchValue({ pixKey: 'chave qualquer' });
 
       expect(component['basicInfoForm'].controls.title.getError('valueObject')).toBe(
         'Não use os caracteres < > { }',
@@ -638,6 +638,40 @@ describe('EventEditorContainer', () => {
 
       expect(mockEventService.createEvent).toHaveBeenCalledWith(
         expect.objectContaining({ category: 'Chá revelação' }),
+      );
+    });
+
+    it('saves what the Pix is for, and nothing of it without a key', async () => {
+      component['basicInfoForm'].patchValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].patchValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      component['pixForm'].setValue({
+        pixKey: 'pix@test.com',
+        pixPurpose: '  Doação para o abrigo do bairro ',
+      });
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          pixKey: 'pix@test.com',
+          pixPurpose: 'Doação para o abrigo do bairro',
+        }),
+      );
+
+      component['pixForm'].setValue({ pixKey: '', pixPurpose: 'Rachar os custos' });
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({ pixKey: null, pixPurpose: null }),
       );
     });
 

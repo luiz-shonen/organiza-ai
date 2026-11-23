@@ -1,8 +1,20 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { of, switchMap } from 'rxjs';
-import { AuthService, CollaboratorInvitesService, InboxService } from '../../../core/services';
+import {
+  AuthService,
+  CollaboratorInvitesService,
+  EventService,
+  InboxService,
+} from '../../../core/services';
 import type { EventInvitation } from '../../../core/models';
 import { OrgNotificationMenuComponent, type OrgNotificationItem } from '../../ui';
 
@@ -33,12 +45,36 @@ export class NotificationBellComponent {
   private readonly inbox = inject(InboxService);
   private readonly invites = inject(CollaboratorInvitesService);
   private readonly router = inject(Router);
+  private readonly events = inject(EventService);
 
   private readonly uid = computed(() => this.auth.currentUser()?.uid ?? null);
   private readonly history = toSignal(
     toObservable(this.uid).pipe(switchMap((uid) => (uid ? this.inbox.watchAll(uid) : of([])))),
     { initialValue: [] },
   );
+
+  /**
+   * Who organizes each event the notices are about, by event id: the face and name beside a
+   * notice ("Natal · por Jéssica"), as on an invite to help organise. Their profile's, now.
+   */
+  private readonly organizers = signal<
+    Readonly<Record<string, { readonly name: string; readonly photo: string | null }>>
+  >({});
+  private readonly loadOrganizers = effect(() => {
+    const known = this.organizers();
+    const missing = [...new Set(this.history().map((n) => n.eventId))].filter(
+      (id) => id && !(id in known),
+    );
+    if (!missing.length) return;
+    void Promise.all(
+      missing.map(async (eventId) => {
+        const event = await this.events.getEventById(eventId).catch(() => null);
+        const [named] = event ? await this.events.withOrganizerNames([event]) : [];
+        const name = named?.creatorName?.trim() ?? '';
+        return [eventId, { name, photo: named?.creatorPhoto ?? null }] as const;
+      }),
+    ).then((found) => this.organizers.update((all) => ({ ...all, ...Object.fromEntries(found) })));
+  });
 
   protected readonly items = computed<BellItem[]>(() =>
     [
@@ -61,27 +97,37 @@ export class NotificationBellComponent {
         unread: !this.invites.isSeen(invite),
         pinned: true,
       })),
-      ...this.history().map((notification) => ({
-        key: notification.id,
-        icon:
-          notification.kind === 'secret-santa'
-            ? ('redeem' as const)
-            : notification.kind === 'collaborator'
-              ? ('handshake' as const)
-              : ('notifications' as const),
-        person: null,
-        title: notification.title,
-        body:
-          notification.kind === 'collaborator'
-            ? notification.body
-            : notification.eventTitle || notification.body,
-        url: notification.actionUrl,
-        inboxId: notification.id,
-        invite: null,
-        unread: !notification.readAt,
-      })),
+      ...this.history().map((notification) => {
+        const organizer = this.organizerOf(notification.eventId);
+        return {
+          key: notification.id,
+          icon:
+            notification.kind === 'secret-santa'
+              ? ('redeem' as const)
+              : notification.kind === 'collaborator'
+                ? ('handshake' as const)
+                : ('notifications' as const),
+          person: organizer,
+          title: notification.title,
+          body:
+            notification.kind === 'collaborator'
+              ? notification.body
+              : [notification.eventTitle || notification.body, organizer && `por ${organizer.name}`]
+                  .filter(Boolean)
+                  .join(' · '),
+          url: notification.actionUrl,
+          inboxId: notification.id,
+          invite: null,
+          unread: !notification.readAt,
+        };
+      }),
     ].sort((a, b) => Number(b.unread) - Number(a.unread)),
   );
+
+  private organizerOf(eventId: string): { name: string; photo: string | null } | null {
+    const organizer = this.organizers()[eventId];
+    return organizer?.name ? organizer : null;
+  }
 
   protected refresh(): void {
     void this.invites.refresh();

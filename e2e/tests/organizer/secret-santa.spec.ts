@@ -689,6 +689,8 @@ test.describe('Amigo oculto', () => {
             readAt: null,
           },
         ],
+        // Who organizes it, as their profile names them: beside the notice in the bell.
+        publicProfiles: [{ id: 'test-user-uid', name: 'Luiz Rodrigues' }],
         secretSantaReveals: [
           {
             id: '0b6f2a52-6b0f-4f39-9d0e-3c1b8f0a7e11',
@@ -710,6 +712,13 @@ test.describe('Amigo oculto', () => {
     const notice = page.getByTestId('home-notifications').getByTestId('notification-card');
     await expect(notice).toContainText('Sorteio do amigo oculto feito!');
     await page.screenshot({ path: 'e2e/screenshots/secret-santa-home-notice.png' });
+    // In the bell too, with the organizer's face and name, like an invite to help organise.
+    await page.getByTestId('notifications-btn').click();
+    const item = page.getByTestId('notification-item').first();
+    await expect(item).toContainText('por Luiz Rodrigues');
+    await expect(item.locator('org-avatar')).toHaveCount(1);
+    await page.screenshot({ path: 'e2e/screenshots/secret-santa-bell-notice.png' });
+    await page.keyboard.press('Escape');
     await notice.getByTestId('notification-action-btn').click();
 
     await expect(page).toHaveURL(/\/amigo-oculto\/0b6f2a52/);

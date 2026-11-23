@@ -63,7 +63,7 @@ describe('SecretSantaService (invite sign-ups)', () => {
     );
   });
 
-  it('merges a duplicate into the entry from the invite, keeping what the organizer typed', async () => {
+  it('merges a duplicate into the entry from the invite, keeping the guest own entry', async () => {
     const keep: SecretSantaParticipant = {
       id: 'rsvp_u1',
       name: 'Jéssica Melo',
@@ -78,10 +78,8 @@ describe('SecretSantaService (invite sign-ups)', () => {
       giftOptions: ['Livro'],
     };
     await service.mergeDuplicate('evt-1', { keep, drop, sure: true });
-    expect(gateway.batchOps.update).toHaveBeenCalledWith(`${path}/rsvp_u1`, {
-      phone: '(11) 98888-1111',
-      giftOptions: ['Livro'],
-    });
+    // The guest's entry stays as they made it.
+    expect(gateway.batchOps.update).not.toHaveBeenCalled();
     expect(gateway.batchOps.delete).toHaveBeenCalledWith(`${path}/m1`);
   });
 

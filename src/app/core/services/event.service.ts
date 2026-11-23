@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, combineLatest, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, combineLatest, from, map, of, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
 import {
@@ -53,6 +53,7 @@ export class EventService {
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
         );
       }),
+      switchMap((events) => from(this.withOrganizerNames(events))),
     );
   }
 
@@ -81,6 +82,41 @@ export class EventService {
           );
         }),
       );
+  }
+
+  /**
+   * Events named by their organizer's current profile (`publicProfiles/{createdBy}`), one read
+   * per organizer: the `creatorName` saved when the event was made is only a fallback.
+   */
+  async withOrganizerNames(events: readonly PartyEvent[]): Promise<PartyEvent[]> {
+    try {
+      return await this.namedByOrganizers(events);
+    } catch {
+      return [...events];
+    }
+  }
+
+  private async namedByOrganizers(events: readonly PartyEvent[]): Promise<PartyEvent[]> {
+    const owners = [
+      ...new Set(events.map((event) => event.createdBy).filter((uid): uid is string => !!uid)),
+    ];
+    const profiles = new Map(
+      await Promise.all(
+        owners.map(async (uid) => {
+          const profile = await this.gateway
+            .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
+            .catch(() => null);
+          return [uid, profile] as const;
+        }),
+      ),
+    );
+    return events.map((event) => {
+      const profile = event.createdBy ? profiles.get(event.createdBy) : undefined;
+      const name = profile?.name?.trim();
+      return name
+        ? { ...event, creatorName: name, creatorPhoto: profile?.photoURL || event.creatorPhoto }
+        : event;
+    });
   }
 
   /** The public name and photo of an account, live; null when it has none yet. */

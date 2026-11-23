@@ -91,6 +91,13 @@
             }
             @if (organizerTopRow()) {
               <ng-container [ngTemplateOutlet]="guestList" />
+              <!-- Once drawn, the links need room: the card moves under "Confirmados". -->
+              @if (showSecretSanta() && secretSantaDraw()) {
+                <ng-container
+                  [ngTemplateOutlet]="secretSantaCard"
+                  [ngTemplateOutletContext]="{ $implicit: event }"
+                />
+              }
             }
           </div>
 
@@ -105,7 +112,7 @@
                 [eventEndDate]="event.endDate ?? null"
                 [eventLocation]="event.location"
               />
-              @if (showSecretSanta() && organizerTopRow()) {
+              @if (showSecretSanta() && organizerTopRow() && !secretSantaDraw()) {
                 <ng-container
                   [ngTemplateOutlet]="secretSantaCard"
                   [ngTemplateOutletContext]="{ $implicit: event }"
@@ -154,8 +161,18 @@
 
       @if (showSecretSantaRoster()) {
         <app-secret-santa-roster-card
-          [entries]="secretSantaRoster()"
+          [entries]="secretSantaRosterView()"
           [giftOptions]="!!event.secretSanta?.giftOptions"
+          [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+          [editableIds]="myEditableSecretSantaIds()"
+          [notice]="secretSantaRosterNotice()"
+          [canJoin]="canJoinSecretSanta()"
+          [editing]="editingOwnSecretSanta()"
+          [save]="saveOwnSecretSantaEntry"
+          (join)="onJoinSecretSanta()"
+          (edit)="onEditOwnSecretSanta($event)"
+          (leave)="onLeaveOwnSecretSanta($event)"
+          (cancelEdit)="editingOwnSecretSanta.set(null)"
         />
       }
 
@@ -193,13 +210,13 @@
     class="print-section"
     [households]="households()"
     [forOrganizer]="canEdit()"
-    [declines]="declines()"
+    [declines]="declinesView()"
     [hasItems]="progress().length > 0"
     [pending]="pendingGuests()"
     [busyGuestId]="approvingGuestId()"
     (approve)="onApproveGuest($event)"
     (refuse)="onRefuseGuest($event)"
-    (exportCsv)="exportGuests()"
+    (download)="downloadGuests()"
     (print)="printGuests()"
   />
 </ng-template>
@@ -213,6 +230,7 @@
     [links]="secretSantaLinks()"
     [outdated]="secretSantaOutdated()"
     [drawing]="secretSantaDrawing()"
+    [drawDate]="event.secretSanta?.drawDate ?? null"
     [resendingId]="secretSantaResendingId()"
     [canEditParticipants]="false"
     [selfJoinOpen]="secretSantaSelfJoinOpen()"
@@ -229,15 +247,13 @@
     <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
     @if (canEditEvent()) {
       <app-secret-santa-participants
-        [participants]="secretSantaParticipants()"
-        [suggestions]="secretSantaSuggestions()"
+        [participants]="secretSantaParticipantsView()"
         [knownPeople]="secretSantaKnownPeople()"
         [giftOptions]="!!event.secretSanta?.giftOptions"
         [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
         [drawn]="!!secretSantaDraw()"
         [saveNew]="saveNewSecretSantaParticipant"
         (add)="addSecretSantaParticipants([$event])"
-        (addMany)="addSecretSantaParticipants($event)"
         (update)="updateSecretSantaParticipant($event)"
         (remove)="removeSecretSantaParticipant($event)"
       />

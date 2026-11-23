@@ -143,6 +143,29 @@ describe('secret santa Firestore rules contract', () => {
     await assertFails(getDoc(doc(visitorDb(), 'events/e/secretSanta/draw')));
   });
 
+  it('lets the owner draw only from the draw day chosen for the event', async () => {
+    const draw = { drawnAt: 'now', participantIds: ['p1'], links: [] };
+    const path = 'events/e/secretSanta/draw';
+    const setDrawDate = (drawDate: string) =>
+      testEnvironment.withSecurityRulesDisabled(async (context) => {
+        await updateDoc(doc(context.firestore(), 'events/e'), {
+          secretSanta: { enabled: true, giftOptions: false, drawDate },
+        });
+      });
+    await setDrawDate('2099-12-20');
+    await assertFails(setDoc(doc(accountDb('owner-uid'), path), draw));
+
+    await setDrawDate('2020-12-20');
+    await assertSucceeds(setDoc(doc(accountDb('owner-uid'), path), draw));
+
+    // Already drawn, day moved ahead: a new link for one person still works, a new draw does not.
+    await setDrawDate('2099-12-20');
+    await assertSucceeds(
+      updateDoc(doc(accountDb('owner-uid'), path), { links: [{ participantId: 'p1' }] }),
+    );
+    await assertFails(updateDoc(doc(accountDb('owner-uid'), path), { drawnAt: 'later' }));
+  });
+
   it('opens a secret link to anyone, signed in or not, but never lists the links', async () => {
     await assertSucceeds(getDoc(doc(visitorDb(), 'secretSantaReveals/tok-1')));
     await assertSucceeds(getDoc(doc(accountDb('stranger-uid'), 'secretSantaReveals/tok-1')));

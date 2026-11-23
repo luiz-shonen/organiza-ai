@@ -31,6 +31,7 @@ describe('App', () => {
           useValue: {
             isAdmin: signal(false),
             currentUser: signal(null),
+            displayName: signal(''),
             logout: vi.fn(),
           },
         },

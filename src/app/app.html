@@ -14,7 +14,7 @@
           <app-navigation-drawer
             [isAuthenticated]="isAuthenticated()"
             [isSuperAdmin]="isSuperAdmin()"
-            [displayName]="user()?.displayName ?? ''"
+            [displayName]="displayName()"
             [email]="user()?.email ?? ''"
             [photoUrl]="user()?.photoURL ?? null"
             [activeRoute]="currentUrl()"
@@ -106,11 +106,11 @@
               routerLink="/perfil"
               class="app-toolbar__avatar"
               data-testid="header-profile-link"
-              [attr.aria-label]="'Meu perfil · ' + (user()?.displayName || user()?.email || '')"
+              [attr.aria-label]="'Meu perfil · ' + (displayName() || user()?.email || '')"
               [attr.aria-current]="currentUrl().startsWith('/perfil') ? 'page' : null"
             >
               <org-avatar
-                [name]="user()?.displayName || user()?.email || ''"
+                [name]="displayName() || user()?.email || ''"
                 [photoUrl]="user()?.photoURL ?? null"
               />
             </a>

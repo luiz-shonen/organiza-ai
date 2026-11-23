@@ -12,10 +12,7 @@ import {
   OrgQuantityStepperComponent,
 } from '../../../../../shared/ui';
 
-export type {
-  SecretSantaParticipantUpdate,
-  SecretSantaSuggestion,
-} from '../secret-santa-participants/secret-santa-participants.component';
+export type { SecretSantaParticipantUpdate } from '../secret-santa-participants/secret-santa-participants.component';
 
 /**
  * "Amigo oculto" step: whether the event has one and whether participants list gift options.

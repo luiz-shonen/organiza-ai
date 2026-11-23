@@ -94,7 +94,7 @@ describe('SecretSantaParticipantFormComponent', () => {
     ) as HTMLButtonElement | null;
   const giftItems = () =>
     Array.from(el().querySelectorAll('[data-testid="santa-gift-item"]')).map((item) =>
-      item.querySelector('.santa-form__gift-text')!.textContent!.trim(),
+      item.querySelector('.gift-field__text')!.textContent!.trim(),
     );
 
   it('adds gift ideas to a list with + or Enter, and sends one still typed', () => {
@@ -159,7 +159,7 @@ describe('SecretSantaParticipantFormComponent', () => {
     addGiftButton()!.click();
     fixture.detectChanges();
 
-    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    (el().querySelector('.gift-field__text') as HTMLElement).click();
     fixture.detectChanges();
     expect(editInput()!.value).toBe('Chinelo Kenner, Marrom, Tamanho 38');
     typeEdit('Chinelo Kenner, Marrom, Tamanho 39');
@@ -187,13 +187,13 @@ describe('SecretSantaParticipantFormComponent', () => {
       addGiftButton()!.click();
       fixture.detectChanges();
     }
-    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    (el().querySelector('.gift-field__text') as HTMLElement).click();
     fixture.detectChanges();
     typeEdit('');
     key(editInput()!, 'Enter');
     expect(giftItems()).toEqual(['Livro']);
 
-    (el().querySelector('.santa-form__gift-text') as HTMLElement).click();
+    (el().querySelector('.gift-field__text') as HTMLElement).click();
     fixture.detectChanges();
     typeEdit('Livro de receitas');
     submit();

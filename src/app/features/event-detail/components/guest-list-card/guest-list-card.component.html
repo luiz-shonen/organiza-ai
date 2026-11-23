@@ -10,10 +10,10 @@
         <div class="guest-list__actions no-print" orgCardHeaderAction>
           <org-icon-button
             icon="download"
-            ariaLabel="Baixar a lista em Excel"
-            tooltip="Excel"
+            ariaLabel="Baixar a lista em PDF"
+            tooltip="Baixar PDF"
             [gradient]="false"
-            (pressed)="exportCsv.emit()"
+            (pressed)="download.emit()"
           />
           <org-icon-button
             icon="print"
@@ -181,15 +181,23 @@
     @if (forOrganizer() && declines().length) {
       <section class="guest-list__declines" aria-labelledby="guest-list-declines-title">
         <h3 id="guest-list-declines-title" class="guest-list__declines-title">
-          Não poderão ir ({{ declines().length }})
+          Não poderão ir
+          <span class="guest-list__declines-count">{{ declines().length }}</span>
         </h3>
+        <!-- The same rows as the list above, quieter: the face, the name, their note if any. -->
         <ul class="guest-list__declines-list" data-testid="guests-declines">
           @for (decline of declines(); track decline.id) {
-            <li>
-              <span class="guest-list__name">{{ decline.name }}</span>
-              @if (decline.message) {
-                <p class="guest-list__message">“{{ decline.message }}”</p>
-              }
+            <li class="guest-list__decline">
+              <org-avatar
+                class="guest-list__avatar guest-list__decline-avatar"
+                [name]="decline.name"
+              />
+              <div class="guest-list__decline-text">
+                <span class="guest-list__decline-name">{{ decline.name }}</span>
+                @if (decline.message) {
+                  <p class="guest-list__message">“{{ decline.message }}”</p>
+                }
+              </div>
             </li>
           }
         </ul>

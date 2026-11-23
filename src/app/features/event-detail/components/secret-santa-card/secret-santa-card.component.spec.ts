@@ -72,6 +72,40 @@ describe('SecretSantaCardComponent', () => {
     expect(button('secret-santa-redraw-btn')).not.toBeNull();
   });
 
+  it('keeps the draw button off until the draw day chosen for the event', () => {
+    fixture.componentRef.setInput('isOwner', true);
+    fixture.componentRef.setInput('drawDate', '2099-12-20');
+    fixture.detectChanges();
+    expect(button('secret-santa-draw-btn')!.disabled).toBe(true);
+    expect(el().querySelector('[data-testid="secret-santa-draw-locked"]')?.textContent).toContain(
+      '20 de dezembro',
+    );
+
+    fixture.componentRef.setInput('drawDate', '2020-12-20');
+    fixture.detectChanges();
+    expect(button('secret-santa-draw-btn')!.disabled).toBe(false);
+    expect(el().querySelector('[data-testid="secret-santa-draw-locked"]')).toBeNull();
+  });
+
+  it('after the draw, leaves out the sign-ups and the duplicates: only the links matter', () => {
+    fixture.componentRef.setInput('isOwner', true);
+    fixture.componentRef.setInput('duplicates', [
+      {
+        keep: { id: 'a', name: 'Ana', phone: '', giftOptions: [], joinedBy: 'u1' },
+        drop: { id: 'b', name: 'Ana', phone: '', giftOptions: [] },
+        sure: false,
+      },
+    ]);
+    fixture.componentRef.setInput('drawnAt', '2026-11-16T20:00:00.000Z');
+    fixture.componentRef.setInput('links', links);
+    fixture.detectChanges();
+    expect(el().querySelector('[data-testid="secret-santa-self-join"]')).toBeNull();
+    expect(el().querySelector('[data-testid="secret-santa-duplicate"]')).toBeNull();
+    expect(el().querySelector('[data-testid="secret-santa-drawn"]')?.textContent).toContain(
+      '1 de 3 já abriram o link.',
+    );
+  });
+
   it('warns when the list changed after the draw', () => {
     fixture.componentRef.setInput('isOwner', true);
     fixture.componentRef.setInput('drawnAt', '2026-11-16T20:00:00.000Z');
@@ -126,7 +160,7 @@ describe('SecretSantaCardComponent', () => {
     fixture.componentInstance.distinct.subscribe(distinct);
 
     expect(el().querySelector('[data-testid="secret-santa-duplicate"]')?.textContent).toContain(
-      'Possível repetido: Ana Souza (adicionado à mão) e Ana Souza (entrou pelo convite)',
+      'Possível repetido: Ana Souza (adicionado à mão, (11) 97777-0000) e Ana Souza (entrou pelo convite)',
     );
     button('secret-santa-merge-btn')?.click();
     button('secret-santa-distinct-btn')?.click();

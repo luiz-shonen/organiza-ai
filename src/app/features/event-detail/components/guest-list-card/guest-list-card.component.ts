@@ -14,7 +14,7 @@ import {
 /**
  * "Quem vai" on the event page: one panel per confirmed household, like "Levar familiares?",
  * with each person (the guest, their family, their companions) and what they bring. Organizers
- * also see phones, the declines, and the Excel / print actions in the header.
+ * also see phones, the declines, and the PDF / print actions in the header.
  */
 @Component({
   selector: 'app-guest-list-card',
@@ -32,7 +32,7 @@ import {
 })
 export class GuestListCardComponent {
   readonly households = input.required<readonly GuestHousehold[]>();
-  /** Organizers only: phones, "Não poderão ir", Excel and print. */
+  /** Organizers only: phones, "Não poderão ir", PDF and print. */
   readonly forOrganizer = input(false);
   readonly declines = input<readonly GuestDecline[]>([]);
   /** The event has a list of things to bring: without one, "Não leva nada da lista" is not said. */
@@ -48,7 +48,8 @@ export class GuestListCardComponent {
   readonly approve = output<PendingGuest>();
   readonly refuse = output<PendingGuest>();
 
-  readonly exportCsv = output<void>();
+  /** "Baixar": the list as a PDF. */
+  readonly download = output<void>();
   readonly print = output<void>();
 
   protected readonly displayPhone = Phone.display;

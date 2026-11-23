@@ -108,6 +108,14 @@ How the app behaves for organizers and guests. Data and permissions are in
   fills the phone. Gift ideas are a list: one "Nova opção" field adds each with + or Enter,
   each idea has a ✕, and one still typed goes with the participant. A failed add keeps what was
   typed, and every error says why (`explainError`).
+- **Whose gift ideas they are.** Someone who joined from the invite (`joinedBy`) owns their gift
+  ideas and phone: a pencil on their own entries in the guest's "Amigo oculto" card opens the
+  same participant form the organizers use (also still in "Editar presença"), while sign-ups
+  are open. Organizers only
+  rename them (the edit sheet shows the ideas read only), and "Juntar" keeps the guest's ideas.
+  Ideas of people added by hand stay the organizers' to edit. `firestore.rules` enforces it on
+  `secretSantaParticipants` and the matching `secretSantaRoster` entry. In the organizers' list
+  each person's ideas fold under the name ("2 ideias de presente ▾"), one 🎁 line each.
 - **An event may run over several days.** Step "Informações" has "Data de início" and an optional
   "Data de término"; empty (or the same day) is a one-day event, and a last day before the first
   one does not move on. It is saved as `endDate` ("2026-12-25") only when it is after the start
@@ -147,7 +155,7 @@ How the app behaves for organizers and guests. Data and permissions are in
 
 ## Approving who confirms (optional)
 
-- Step "Informações" of the editor: **"Aprovar presenças"** (`event.requireApproval`),
+- Step "Informações" of the editor: **"Exigir aprovação de presença"** (`event.requireApproval`),
   off by default (anyone with the link confirms at once). Only the owner changes it.
 - On: a guest's first answer is saved with `approved: false`. Their card says "Aguardando
   aprovação"; they do not count on "Quem vai" or the total, are not offered in "Confirmados no
@@ -177,6 +185,22 @@ How the app behaves for organizers and guests. Data and permissions are in
 - Organizers also see phones, "Não poderão ir (N)" with the messages, and Excel / Imprimir as icons in
   the card header. The editor has no guest list.
 - "Faltam 5 kg" beside an item is lilac text, not a pill: it informs, "Eu levo" (soft amber) acts.
+
+## Names follow the profile
+
+A person with an account is shown everywhere by the name on their profile now, not the one typed
+when they answered: the top bar and menu, Início, "Organizado por" (on the event and in the event
+lists), the RSVP card, Confirmados, "Aguardando aprovação", "Não poderão ir", who brings each
+item, the amigo oculto list and links, and the secret link's "Este link é de". The screens look
+the name up by account (`publicProfiles/{uid}`); the copies saved before are only a fallback.
+
+- A new draw writes the profile names into the links; a draw made before keeps its names until
+  it is drawn again.
+- Renaming yourself or a relative on the profile also rewrites the copies in every event the
+  household answered (`rsvpEvents`): the guest entries, what each one brings, and the amigo oculto
+  entries while that draw is still open. Relatives have no account to look up, so this is how
+  their new name reaches the events. Best effort: an event that refuses the write keeps the old copy.
+- Companions typed on an answer have no account and keep the name they were given.
 
 ## Organizer
 

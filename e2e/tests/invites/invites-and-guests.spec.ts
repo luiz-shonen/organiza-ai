@@ -231,7 +231,7 @@ test.describe('Invites, event states and guests', () => {
     await expect(card).toContainText('Confirmados');
     await expect(card.getByTestId('guest-household').first()).toBeVisible();
     await expect(card).not.toContainText('91111');
-    await expect(card.getByRole('button', { name: 'Baixar a lista em Excel' })).toHaveCount(0);
+    await expect(card.getByRole('button', { name: 'Baixar a lista em PDF' })).toHaveCount(0);
   });
 
   test('the organizer sees phones and the export in "Quem vai"', async ({ page }) => {
@@ -240,8 +240,17 @@ test.describe('Invites, event states and guests', () => {
     await page.goto('/evento/evt-mine');
 
     const card = page.getByTestId('guest-list-card');
-    await expect(card.getByRole('button', { name: 'Baixar a lista em Excel' })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Baixar a lista em PDF' })).toBeVisible();
     await expect(card).toContainText('(11) 91111-1111');
+
+    // "Baixar" saves the "Confirmados" list as a PDF named after the event.
+    const downloading = page.waitForEvent('download');
+    await card.getByRole('button', { name: 'Baixar a lista em PDF' }).click();
+    const file = await downloading;
+    expect(file.suggestedFilename()).toMatch(/^confirmados-.+\.pdf$/);
+    const path = await file.path();
+    const { readFileSync } = await import('node:fs');
+    expect(readFileSync(path).subarray(0, 5).toString()).toBe('%PDF-');
   });
 
   test('the header switches between light and dark', async ({ page }) => {

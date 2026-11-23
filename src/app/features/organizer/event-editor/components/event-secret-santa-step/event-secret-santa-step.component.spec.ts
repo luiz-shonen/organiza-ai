@@ -20,7 +20,7 @@ describe('EventSecretSantaStepComponent', () => {
     fixture.componentRef.setInput('enabled', true);
     fixture.detectChanges();
     expect(el().textContent).toContain('Incluir opções de presente');
-    expect(el().textContent).toContain('na página do evento você vê os participantes');
+    expect(el().textContent).toContain('você acompanha os participantes');
     expect(byTestId('secret-santa-manual')).toBeNull();
     expect(byTestId('secret-santa-participants')).toBeNull();
   });

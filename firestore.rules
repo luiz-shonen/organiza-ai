@@ -326,7 +326,8 @@ service cloud.firestore {
       match /secretSantaParticipants/{participantId} {
         allow read, delete: if isAdmin() || managesEvent(eventData(eventId));
         allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
-                              && isValidSecretSantaParticipant();
+                              && isValidSecretSantaParticipant()
+                              && !changesGuestEntry();
         allow get: if isOwnRsvpEntry();
         allow delete: if isOwnRsvpEntry() && isBeforeDraw();
         allow create, update: if isOwnRsvpEntry()
@@ -334,6 +335,28 @@ service cloud.firestore {
                               && isValidSecretSantaParticipant()
                               && request.resource.data.get('joinedBy', '') == request.auth.uid
                               && !changes('distinctFrom');
+
+        // An entry tied to a guest (joined from the invite, or a confirmed guest's) is theirs:
+        // organizers may take it out, tell it apart or link it ("Juntar"), never change it.
+        function changesGuestEntry() {
+          return resource != null
+              && (resource.data.get('joinedBy', '') != '' || resource.data.get('guestId', '') != '')
+              && !changedKeys().hasOnly(['distinctFrom', 'guestId'])
+              && !takesPhoneFromMerged();
+        }
+
+        // "Juntar", keeping the phone the organizer typed: only that phone, taken from the typed
+        // entry (`mergedFrom`) that leaves the list in the same batch.
+        function takesPhoneFromMerged() {
+          let from = request.resource.data.get('mergedFrom', '');
+          let typed = /databases/$(database)/documents/events/$(eventId)/secretSantaParticipants/$(from);
+          return changedKeys().hasOnly(['phone', 'mergedFrom', 'guestId'])
+              && from is string && from != '' && from != participantId
+              && exists(typed)
+              && !existsAfter(typed)
+              && get(typed).data.get('joinedBy', '') == ''
+              && get(typed).data.get('phone', '') == request.resource.data.get('phone', null);
+        }
 
         // A missing document passes, so the guest can check whether they joined.
         function isOwnRsvpEntry() {
@@ -353,20 +376,20 @@ service cloud.firestore {
                                       + duration.value(3, 'h'));
         }
 
-        // When the event asks for approval, only a guest the owner approved joins.
+        // When the event asks for approval, a guest who confirmed (waiting or approved) joins;
+        // the app counts the entry only once approved, and a refusal removes it.
         function isSelfJoinOpen() {
           let event = eventData(eventId);
           let settings = event.get('secretSanta', {});
           return isBeforeDraw()
               && settings.get('selfJoin', true) != false
               && (event.get('requireApproval', false) != true
-                  || get(/databases/$(database)/documents/events/$(eventId)/guests/$(request.auth.uid))
-                       .data.get('approved', true) == true);
+                  || exists(/databases/$(database)/documents/events/$(eventId)/guests/$(request.auth.uid)));
         }
 
         function isValidSecretSantaParticipant() {
           let data = request.resource.data;
-          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'guestId', 'joinedBy', 'distinctFrom', 'createdAt'])
+          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'guestId', 'joinedBy', 'distinctFrom', 'mergedFrom', 'createdAt'])
               && (resource != null || data.keys().hasAll(['name', 'phone', 'giftOptions']))
               && (!changes('name') || isFilledText(data.get('name', null), 120))
               && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
@@ -386,7 +409,9 @@ service cloud.firestore {
       // a guest writes only their own (`rsvp_{uid}…`), in the same batch as the participant entry.
       match /secretSantaRoster/{participantId} {
         allow read: if isAdmin() || isAccountHolder();
-        allow create, update: if (isAdmin() || managesEvent(eventData(eventId))) && isValidRosterEntry();
+        allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
+                              && isValidRosterEntry()
+                              && mirrorsGuestEntry();
         allow delete: if isAdmin() || managesEvent(eventData(eventId));
         allow create, update: if isOwnRosterEntry(true) && isValidRosterEntry();
         allow delete: if isOwnRosterEntry(false);
@@ -402,6 +427,18 @@ service cloud.firestore {
                     : !writing);
         }
 
+        // An organizer's copy of a guest's entry carries that entry's own name and ideas.
+        function mirrorsGuestEntry() {
+          let participant = /databases/$(database)/documents/events/$(eventId)/secretSantaParticipants/$(participantId);
+          return !existsAfter(participant) || mirrors(getAfter(participant).data);
+        }
+
+        function mirrors(entry) {
+          return (entry.get('joinedBy', '') == '' && entry.get('guestId', '') == '')
+              || (request.resource.data.get('name', null) == entry.get('name', '')
+                  && request.resource.data.get('giftOptions', null) == entry.get('giftOptions', []));
+        }
+
         function isValidRosterEntry() {
           let data = request.resource.data;
           return data.keys().hasOnly(['name', 'giftOptions', 'createdAt'])
@@ -413,7 +450,23 @@ service cloud.firestore {
 
       // The latest amigo oculto draw holds every secret link; only the owner sends them.
       match /secretSanta/{docId} {
-        allow read, write: if ownsEvent(eventData(eventId));
+        // Drawing (the first time or again) waits for the draw day chosen for the event, from
+        // midnight in Brasília (03:00 UTC); a new link for one person changes no drawnAt.
+        function isDrawDayReached() {
+          let day = eventData(eventId).get('secretSanta', {}).get('drawDate', '');
+          return day == ''
+              || request.time >= timestamp.date(int(day[0:4]), int(day[5:7]), int(day[8:10]))
+                                    + duration.value(3, 'h');
+        }
+
+        function drawsNow() {
+          return resource == null
+              || request.resource.data.get('drawnAt', null) != resource.data.get('drawnAt', null);
+        }
+
+        allow read, delete: if ownsEvent(eventData(eventId));
+        allow create, update: if ownsEvent(eventData(eventId))
+                              && (!drawsNow() || isDrawDayReached());
       }
 
       // Who each collaborator is (their e-mail), for the organizers' "Colaboradores" list: written

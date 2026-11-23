@@ -7,6 +7,7 @@ import {
   ConfettiService,
   InboxService,
   SecretSantaService,
+  UserService,
 } from '../../core/services';
 import type { SecretSantaReveal } from '../../core/models';
 
@@ -15,6 +16,7 @@ describe('SecretSantaRevealContainer', () => {
   const getReveal = vi.fn();
   const openReveal = vi.fn();
   const markRead = vi.fn();
+  const publicName = vi.fn();
   const currentUser = vi.fn();
   const confetti = { fireCelebration: vi.fn() };
   const el = () => fixture.nativeElement as HTMLElement;
@@ -43,6 +45,7 @@ describe('SecretSantaRevealContainer', () => {
     getReveal.mockReset();
     openReveal.mockReset().mockResolvedValue(undefined);
     markRead.mockReset().mockResolvedValue(undefined);
+    publicName.mockReset().mockResolvedValue('');
     currentUser.mockReset().mockReturnValue(null);
     confetti.fireCelebration.mockReset();
     await TestBed.configureTestingModule({
@@ -53,6 +56,7 @@ describe('SecretSantaRevealContainer', () => {
         { provide: ConfettiService, useValue: confetti },
         { provide: AuthService, useValue: { currentUser, loading: () => false } },
         { provide: InboxService, useValue: { markRead } },
+        { provide: UserService, useValue: { publicName } },
       ],
     }).compileComponents();
   });
@@ -79,7 +83,7 @@ describe('SecretSantaRevealContainer', () => {
     expect(byTestId('secret-santa-confirm')?.textContent).toContain('Este link é de');
     expect(byTestId('secret-santa-owner')?.textContent?.trim()).toBe('Jéssica Melo');
     expect(byTestId('secret-santa-confirm')?.textContent).toContain(
-      'Se você não é Jéssica, não toque no botão',
+      'Se você não é Jéssica, não abra: devolva o link para quem enviou.',
     );
     expect(byTestId('secret-santa-confirm-btn')?.textContent).toContain('Sou Jéssica, mostrar');
     expect(openReveal).not.toHaveBeenCalled();
@@ -155,6 +159,15 @@ describe('SecretSantaRevealContainer', () => {
     expect(byTestId('secret-santa-once-warning')?.textContent).toContain(
       'Este link só abre uma vez.',
     );
+  });
+
+  it("names the link's owner as their profile is now, when the link is tied to an account", async () => {
+    getReveal.mockResolvedValue({ ...reveal, giverUid: 'u-jessica' });
+    publicName.mockResolvedValue('Jéssica Araújo');
+    currentUser.mockReturnValue({ uid: 'someone-else', isAnonymous: false });
+    await open('tok-1');
+    expect(publicName).toHaveBeenCalledWith('u-jessica');
+    expect(byTestId('secret-santa-owner')?.textContent?.trim()).toBe('Jéssica Araújo');
   });
 
   it('says the link expired when it was opened before, without the name', async () => {

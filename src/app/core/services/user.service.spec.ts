@@ -14,11 +14,14 @@ describe('UserService', () => {
     getEventById: ReturnType<typeof vi.fn>;
     getUserEvents: ReturnType<typeof vi.fn>;
     renameCreator: ReturnType<typeof vi.fn>;
+    withOrganizerNames: (events: unknown[]) => Promise<unknown[]>;
   };
 
   beforeEach(() => {
     mockGateway = createMockFirestoreGateway();
     mockEventService = {
+      // Named by the organizer's profile: here, as they come.
+      withOrganizerNames: (events) => Promise.resolve(events),
       getEventById: vi.fn(),
       getUserEvents: vi.fn(),
       renameCreator: vi.fn().mockResolvedValue(undefined),

@@ -8,6 +8,8 @@ import { OrgIconComponent, OrgIconName } from '../actions/org-icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-section.component.html',
   styleUrl: './org-section.component.scss',
+  // `title` is an input, not the native tooltip that would repeat the heading on hover.
+  host: { '[attr.title]': 'null' },
 })
 export class OrgSectionComponent {
   /** Section heading rendered inside <h2>. */

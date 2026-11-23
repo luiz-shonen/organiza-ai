@@ -99,7 +99,7 @@
     <!-- Who may confirm: anyone with the link (default), or only after the owner approves. -->
     <div class="event-step__approval" data-testid="event-approval">
       <org-toggle
-        label="Aprovar presenças"
+        label="Exigir aprovação de presença"
         testId="event-approval-toggle"
         [disabled]="!canConfigureApproval()"
         [checked]="requireApproval()"
@@ -107,9 +107,11 @@
       />
       <p class="event-step__approval-hint">
         @if (requireApproval()) {
-          Quem confirmar pelo link só entra na lista depois que você aprovar.
+          Você revisa cada pessoa que confirmar presença pelo convite e decide se aprova ou não. Só
+          quem você aprovar entra na lista do evento.
         } @else {
-          Quem abrir o link e confirmar já entra na lista de presença.
+          Quem abrir o convite e confirmar presença entra direto na lista, sem precisar da sua
+          aprovação.
         }
       </p>
     </div>

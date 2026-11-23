@@ -83,9 +83,11 @@ describe('GuestListCardComponent', () => {
     const text = element.textContent ?? '';
 
     expect(text).toContain('(31) 99267-7624');
-    expect(text).toContain('Não poderão ir (1)');
+    expect(
+      element.querySelector('#guest-list-declines-title')?.textContent?.replace(/\s+/g, ' ').trim(),
+    ).toBe('Não poderão ir 1');
     expect(text).toContain('Vou estar viajando.');
-    expect(element.querySelector('[aria-label="Baixar a lista em Excel"]')).not.toBeNull();
+    expect(element.querySelector('[aria-label="Baixar a lista em PDF"]')).not.toBeNull();
   });
 
   it('lists the confirmations waiting for approval, for organizers only, to approve or refuse', async () => {

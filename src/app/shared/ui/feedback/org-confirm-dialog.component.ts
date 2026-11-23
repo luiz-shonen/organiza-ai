@@ -22,7 +22,7 @@ export type { OrgConfirmDialogData };
 export class OrgConfirmDialogComponent {
   public readonly data = inject<OrgConfirmDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef =
-    inject<MatDialogRef<OrgConfirmDialogComponent, boolean>>(MatDialogRef);
+    inject<MatDialogRef<OrgConfirmDialogComponent, boolean | 'extra'>>(MatDialogRef);
 
   protected readonly isDanger = this.data.tone === 'danger';
   protected readonly icon: OrgIconName =
@@ -33,5 +33,8 @@ export class OrgConfirmDialogComponent {
   }
   protected confirm(): void {
     this.dialogRef.close(true);
+  }
+  protected extra(): void {
+    this.dialogRef.close('extra');
   }
 }

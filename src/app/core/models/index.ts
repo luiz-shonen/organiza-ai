@@ -56,8 +56,11 @@ export type { UserProfile } from './profile.model';
 export type {
   SeasonalThemeId,
   SeasonalThemeRule,
+  CategorySceneThemeId,
+  SeasonalCalendarThemeId,
   SeasonalThemeConfig,
 } from './seasonal-theme.model';
+export { CATEGORY_SCENE_THEMES } from './seasonal-theme.model';
 export type { ThemeMode } from './theme.model';
 export type { EventNotificationRecord, EventNotificationType } from './notification.model';
 export type {
@@ -70,6 +73,7 @@ export type { FirestoreBatchOperations } from './firestore-gateway.models';
 export type {
   ConfirmDialogData,
   OrgConfirmDialogData,
+  OrgDialogChoice,
   BatchPrimaryGuestInput,
 } from './dialog.model';
 export type {

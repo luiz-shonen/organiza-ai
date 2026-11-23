@@ -29,6 +29,7 @@
   [orientation]="orientation()"
   [selectedIndex]="selectedIndex()"
   (selectionChange)="updateSelection($event.selectedIndex)"
+  (animationDone)="focusFirstField()"
 >
   <!-- Finished steps show a check, whether or not they can be reopened. -->
   <ng-template matStepperIcon="edit">

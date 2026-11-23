@@ -3,6 +3,9 @@
 :host {
   display: block;
   max-width: 100%;
+
+  // Scrolled back to on a step change: clear of the sticky top bar.
+  scroll-margin-top: calc(var(--org-header-height, 64px) + var(--org-space-md));
 }
 
 // The phone header ("Etapa 2 de 5", name, bars) replaces the dots below 600px.

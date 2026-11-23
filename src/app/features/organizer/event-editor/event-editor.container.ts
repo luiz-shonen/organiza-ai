@@ -40,7 +40,6 @@ import {
   hasStarted,
   parseDay,
   parseLocation,
-  splitGuestsByApproval,
   toDayString,
   fromDrawDate,
   toDrawDate,
@@ -82,7 +81,6 @@ import { EventPixStepComponent } from './components/event-pix-step/event-pix-ste
 import {
   EventSecretSantaStepComponent,
   type SecretSantaParticipantUpdate,
-  type SecretSantaSuggestion,
 } from './components/event-secret-santa-step/event-secret-santa-step.component';
 import { SharePanelComponent } from './components/share-panel/share-panel.component';
 import {
@@ -229,27 +227,6 @@ export class EventEditorContainer implements OnInit {
     const time = savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     const when = `${day} às ${time}`;
     return `Recuperamos o que você estava preenchendo (${when}).\nSalve para não perder.`;
-  });
-
-  /** Confirmed guests, their relatives and companions not yet in the amigo oculto. */
-  protected readonly secretSantaSuggestions = computed<SecretSantaSuggestion[]>(() => {
-    const taken = new Set(this.stepParticipants().map((p) => p.guestId ?? ''));
-    const names = new Set(this.stepParticipants().map((p) => p.name.trim().toLowerCase()));
-    const people: SecretSantaSuggestion[] = [];
-    // Guests still waiting for approval are not offered.
-    const { approved } = splitGuestsByApproval(
-      this.guests(),
-      !!this.currentEvent()?.requireApproval,
-    );
-    for (const guest of approved) {
-      people.push({ guestId: guest.id, name: guest.name, phone: guest.phone ?? '' });
-      (guest.companions ?? []).forEach((companion, i) =>
-        people.push({ guestId: `${guest.id}#${i}`, name: companion.name, phone: '' }),
-      );
-    }
-    return people.filter(
-      (p) => p.name.trim() && !taken.has(p.guestId) && !names.has(p.name.trim().toLowerCase()),
-    );
   });
 
   public readonly isOwner = computed(() => {

@@ -77,7 +77,9 @@ export class EventAddressStepComponent {
   /** Moves on when the step is complete; otherwise says what is missing and shows the field. */
   protected tryNext(): void {
     const form = this.form();
-    if (form.valid) {
+    // Not invalid, rather than valid: a collaborator sees these fields locked (disabled), and
+    // a disabled form is neither; they still move on through the steps.
+    if (!form.invalid) {
       this.attempted.set(false);
       this.next.emit();
       return;
@@ -91,7 +93,7 @@ export class EventAddressStepComponent {
   protected missingMessage(): string {
     if (!this.attempted()) return '';
     const form = this.form();
-    if (form.valid) return '';
+    if (!form.invalid) return '';
     const { cep, number, address, neighborhood, city } = form.controls;
     const missing: string[] = [];
     if (cep.invalid) missing.push('o CEP');

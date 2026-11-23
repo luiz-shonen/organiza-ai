@@ -221,7 +221,12 @@ describe('RsvpCardComponent', () => {
       expect(
         (el().querySelector('input[data-testid="rsvp-santa-phone"]') as HTMLInputElement).value,
       ).toBe('(11) 98888-1111');
-      type('textarea[data-testid="rsvp-santa-gifts"]', 'Livro\n\nMeia azul');
+      // One idea at a time: "+" adds it, and the one still typed goes with the answer.
+      type('input[data-testid="rsvp-santa-gift-input"]', 'Livro');
+      click('rsvp-santa-add-gift-btn');
+      fixture.detectChanges();
+      expect(el().querySelectorAll('[data-testid="rsvp-santa-gift-item"]').length).toBe(1);
+      type('input[data-testid="rsvp-santa-gift-input"]', 'Meia azul');
       click('rsvp-decline-send-btn');
 
       expect(spy).toHaveBeenCalledWith({
@@ -250,7 +255,7 @@ describe('RsvpCardComponent', () => {
       // With gift options on, at least one is needed too.
       expect(spy).not.toHaveBeenCalled();
       expect(el().textContent).toContain('Informe pelo menos uma opção de presente');
-      type('textarea[data-testid="rsvp-santa-gifts"]', 'Livro');
+      type('input[data-testid="rsvp-santa-gift-input"]', 'Livro');
       click('rsvp-santa-join-send-btn');
       expect(spy).toHaveBeenCalledWith({ phone: '(11) 97777-6666', gifts: ['Livro'] });
     });

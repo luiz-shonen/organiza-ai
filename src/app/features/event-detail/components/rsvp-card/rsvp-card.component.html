@@ -104,7 +104,7 @@
           @if (inSanta()) {
             Você está no amigo oculto.
           } @else if (santaOpen()) {
-            Você ainda não está no amigo oculto. Para entrar, toque em "Editar presença".
+            Você ainda não está no amigo oculto. Para entrar, use o "Amigo oculto" mais abaixo.
           } @else {
             Você não está no amigo oculto.
           }
@@ -244,15 +244,12 @@
     (valueChange)="santaPhone.set($event)"
   />
   @if (secretSanta()?.giftOptions) {
-    <org-textarea-field
-      placeholder="Ex: Chinelo, cor verde, tamanho 36"
-      testId="rsvp-santa-gifts"
+    <app-gift-options-field
+      testIdPrefix="rsvp-santa"
       [label]="santaGiftLabel()"
-      [rows]="secretSanta()?.maxGiftOptions === 1 ? 1 : 3"
-      [maxLength]="(secretSanta()?.maxGiftOptions ?? 1) * (giftLineMax + 1)"
-      [error]="santaGiftsError()"
-      [value]="santaGifts()"
-      (valueChange)="santaGifts.set($event)"
+      hint=""
+      [max]="secretSanta()?.maxGiftOptions ?? 1"
+      [(gifts)]="santaGifts"
     />
   }
 </ng-template>

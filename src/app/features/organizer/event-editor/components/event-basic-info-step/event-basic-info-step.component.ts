@@ -103,7 +103,9 @@ export class EventBasicInfoStepComponent {
   /** Moves on when the step is complete; otherwise says what is missing and shows the field. */
   protected tryNext(): void {
     const form = this.form();
-    if (form.valid) {
+    // Not invalid, rather than valid: a collaborator sees these fields locked (disabled), and
+    // a disabled form is neither; they still move on through the steps.
+    if (!form.invalid) {
       this.attempted.set(false);
       this.next.emit();
       return;
@@ -117,11 +119,12 @@ export class EventBasicInfoStepComponent {
   protected missingMessage(): string {
     if (!this.attempted()) return '';
     const form = this.form();
-    if (form.valid) return '';
-    const { title, category, date, endDate, time } = form.controls;
+    if (!form.invalid) return '';
+    const { title, category, description, date, endDate, time } = form.controls;
     const missing: string[] = [];
     if (title.invalid) missing.push('o título');
     if (category.invalid) missing.push('a categoria');
+    if (description.invalid) missing.push('a descrição (ou deixe vazia)');
     if (date.invalid) missing.push('a data');
     if (time.invalid) missing.push('a hora');
     if (endDate.invalid) missing.push('a data de término (ou deixe vazia)');

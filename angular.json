@@ -24,7 +24,14 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "allowedCommonJsDependencies": ["qrcode"],
+            "allowedCommonJsDependencies": [
+              "qrcode",
+              "html2canvas",
+              "canvg",
+              "core-js",
+              "raf",
+              "rgbcolor"
+            ],
             "assets": [
               {
                 "glob": "**/*",

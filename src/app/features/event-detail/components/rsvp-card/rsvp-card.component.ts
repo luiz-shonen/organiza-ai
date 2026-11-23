@@ -1,8 +1,16 @@
-import { Component, ChangeDetectionStrategy, computed, input, output, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import type { RsvpSecretSantaData } from '../../../../core/models';
-import { parseGiftLines } from '../../../../core/utils';
-import { DeclineMessage, GiftOption, Phone } from '../../../../core/value-objects';
+import { DeclineMessage, Phone } from '../../../../core/value-objects';
+import { GiftOptionsFieldComponent } from '../../../../shared/components/gift-options-field/gift-options-field.component';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
@@ -36,6 +44,7 @@ export interface RsvpDeclineResult {
     OrgCardHeaderComponent,
     OrgTextFieldComponent,
     OrgTextareaFieldComponent,
+    GiftOptionsFieldComponent,
   ],
   templateUrl: './rsvp-card.component.html',
   styleUrl: './rsvp-card.component.scss',
@@ -92,26 +101,18 @@ export class RsvpCardComponent {
   /** "Mesmo sem ir, quero participar do amigo oculto" in the decline form. */
   protected readonly santaWanted = signal(false);
   protected readonly santaPhone = signal('');
-  protected readonly santaGifts = signal('');
+  protected readonly santaGifts = signal<readonly string[]>([]);
+  private readonly giftsField = viewChild(GiftOptionsFieldComponent);
   protected readonly maskPhone = Phone.mask;
-  protected readonly giftLineMax = GiftOption.RULES.max;
   private readonly santaAttempted = signal(false);
   protected readonly santaPhoneError = computed(() => {
     if (!this.santaAttempted()) return '';
     if (!this.santaPhone().trim()) return 'Informe o telefone que vai receber o link';
     return Phone.validate(this.santaPhone()) ?? '';
   });
-  protected readonly santaGiftsError = computed(() => {
-    if (!this.santaAttempted()) return '';
-    if (this.secretSanta()?.giftOptions && !this.giftLines().length)
-      return 'Informe pelo menos uma opção de presente';
-    const bad = this.giftLines().find((line) => GiftOption.validate(line));
-    return bad ? `"${bad}": ${GiftOption.validate(bad)}` : '';
-  });
-  protected readonly santaGiftLabel = computed(() => {
-    const max = this.secretSanta()?.maxGiftOptions ?? 1;
-    return max === 1 ? 'Opção de presente' : `Opções de presente, uma por linha, até ${max}`;
-  });
+  protected readonly santaGiftLabel = computed(() =>
+    (this.secretSanta()?.maxGiftOptions ?? 1) === 1 ? 'Opção de presente' : 'Opções de presente',
+  );
 
   protected onConfirm(): void {
     if (!this.isLoading()) {
@@ -172,24 +173,21 @@ export class RsvpCardComponent {
     this.stopJoinSanta();
   }
 
-  private giftLines(): string[] {
-    const santa = this.secretSanta();
-    return santa?.giftOptions ? parseGiftLines(this.santaGifts(), santa.maxGiftOptions) : [];
-  }
-
   /** The phone and gift options typed, or null (errors shown) when something is wrong. */
   private santaJoin(): RsvpSantaJoin | null {
     this.santaAttempted.set(true);
     const phone = Phone.create(this.santaPhone());
-    const gifts = this.giftLines();
-    const missingGift = !!this.secretSanta()?.giftOptions && gifts.length === 0;
-    if (!phone || missingGift || gifts.some((gift) => GiftOption.validate(gift))) return null;
-    return { phone: phone.formatted, gifts };
+    const wantsGifts = !!this.secretSanta()?.giftOptions;
+    // An idea still typed joins the list; with gift options on, at least one is needed.
+    const giftsOk = wantsGifts ? (this.giftsField()?.commit(true) ?? true) : true;
+    if (!phone || !giftsOk) return null;
+    return { phone: phone.formatted, gifts: wantsGifts ? [...this.santaGifts()] : [] };
   }
 
   private resetSanta(): void {
     this.santaPhone.set(this.phone());
-    this.santaGifts.set((this.secretSanta()?.joined['self'] ?? []).join('\n'));
+    this.santaGifts.set([...(this.secretSanta()?.joined['self'] ?? [])]);
+    this.giftsField()?.reset();
     this.santaAttempted.set(false);
   }
 }

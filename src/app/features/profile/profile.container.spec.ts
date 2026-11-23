@@ -4,7 +4,13 @@ import { provideRouter, Router } from '@angular/router';
 import { signal, WritableSignal } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ProfileContainer } from './profile.container';
-import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
+import {
+  AuthService,
+  UserService,
+  FamilyService,
+  ThemeService,
+  NameSyncService,
+} from '../../core/services';
 import { of } from 'rxjs';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
 import type { UserProfile, PartyEvent, FamilyMember } from '../../core/models';
@@ -108,7 +114,19 @@ describe('ProfileContainer', () => {
         { provide: OrgDialogService, useValue: mockDialogs },
         {
           provide: AuthService,
-          useValue: { currentUser: mockCurrentUser, isSuperAdmin: signal(false) },
+          useValue: {
+            currentUser: mockCurrentUser,
+            isSuperAdmin: signal(false),
+            setProfileName: vi.fn(),
+          },
+        },
+        // The events the person answered take a new name in the background: a stand-in here.
+        {
+          provide: NameSyncService,
+          useValue: {
+            syncOwnName: vi.fn().mockResolvedValue(undefined),
+            syncFamilyMemberName: vi.fn().mockResolvedValue(undefined),
+          },
         },
         {
           provide: UserService,

@@ -2,7 +2,13 @@ import { explainError } from '../../core/utils/error.utils';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { AuthService, UserService, FamilyService, ThemeService } from '../../core/services';
+import {
+  AuthService,
+  UserService,
+  FamilyService,
+  NameSyncService,
+  ThemeService,
+} from '../../core/services';
 import type { UserProfile, FamilyMember, ThemeMode } from '../../core/models';
 import {
   OrgLoadingStateComponent,
@@ -45,6 +51,7 @@ export class ProfileContainer implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly familyService = inject(FamilyService);
+  private readonly nameSync = inject(NameSyncService);
   private readonly router = inject(Router);
   private readonly feedback = inject(FeedbackService);
   private readonly themeService = inject(ThemeService);
@@ -120,6 +127,11 @@ export class ProfileContainer implements OnInit {
     try {
       this.updating.set(true);
       await this.userService.updateProfile(current.uid, { displayName, phone });
+      if (displayName && displayName !== (current.name ?? current.displayName)) {
+        this.authService.setProfileName(displayName);
+        // The events this person answered take the new name too (in the background).
+        void this.nameSync.syncOwnName(current.uid, displayName).catch(() => undefined);
+      }
       this.userProfile.set({
         ...current,
         displayName,
@@ -161,6 +173,8 @@ export class ProfileContainer implements OnInit {
     try {
       this.savingFamilyMember.set(true);
       await this.familyService.updateFamilyMember(user.uid, id, changes);
+      // The events this relative was confirmed in take the new name too (in the background).
+      void this.nameSync.syncFamilyMemberName(user.uid, id, changes.name).catch(() => undefined);
       this.familyMembers.update((list) =>
         list.map((member) => (member.id === id ? { ...member, ...changes } : member)),
       );

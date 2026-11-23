@@ -4,6 +4,7 @@ import {
   type SecretSantaDuplicate,
   type SecretSantaParticipant,
 } from '../../../../core/models';
+import { secretSantaDrawDeadline } from '../../../../core/utils';
 import {
   OrgBadgeComponent,
   OrgBannerComponent,
@@ -65,6 +66,8 @@ export class SecretSantaCardComponent {
   /** Someone was added or removed after the draw. */
   public readonly outdated = input(false);
   public readonly drawing = input(false);
+  /** The draw day chosen for the event (`YYYY-MM-DD`): drawing waits for it. */
+  public readonly drawDate = input<string | null>(null);
   public readonly draw = output<void>();
   public readonly send = output<SecretSantaShareLink>();
   /** A new link for one person (the old one stops working), e.g. after they opened it. */
@@ -91,6 +94,27 @@ export class SecretSantaCardComponent {
   protected readonly canDraw = computed(
     () => this.participants().length >= SECRET_SANTA_MIN_PARTICIPANTS,
   );
+  /** "20 de dezembro" while the draw day has not come; '' once drawing is allowed. */
+  protected readonly drawOpensLabel = computed(() => {
+    const opens = secretSantaDrawDeadline(this.drawDate());
+    if (!opens || Date.now() >= opens.getTime()) return '';
+    return opens.toLocaleDateString('pt-BR', {
+      day: 'numeric',
+      month: 'long',
+      timeZone: 'America/Sao_Paulo',
+    });
+  });
+
+  /** "Possível repetido", with each one's phone, so the organizer sees what differs. */
+  protected duplicateMessage(pair: SecretSantaDuplicate): string {
+    const who = (p: SecretSantaParticipant, how: string) =>
+      `${p.name} (${how}${p.phone ? ', ' + p.phone : ''})`;
+    return (
+      `Possível repetido: ${who(pair.drop, 'adicionado à mão')} e ` +
+      `${who(pair.keep, 'entrou pelo convite')}. Se for a mesma pessoa, junte as duas.`
+    );
+  }
+
   /** Everyone in the draw: who joined from the invitation plus who was added by hand. */
   protected readonly subheading = computed(() => {
     const count = this.participants().length;

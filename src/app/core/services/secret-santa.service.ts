@@ -228,26 +228,29 @@ export class SecretSantaService {
 
   /**
    * Makes the two entries of one person a single one: the entry that came from the invite stays
-   * (it is tied to the guest's account) and takes the phone and gift options typed by the
-   * organizer when it has none; the typed entry leaves the list.
+   * as the guest made it (their name and gift ideas are theirs), tied to the confirmed guest the
+   * typed one pointed to; the typed entry leaves the list. With two phones, the organizer chose
+   * which stays: the typed one may replace the guest's only here.
    */
-  async mergeDuplicate(eventId: string, duplicate: SecretSantaDuplicate): Promise<void> {
+  async mergeDuplicate(
+    eventId: string,
+    duplicate: SecretSantaDuplicate,
+    /** "Juntar" with two phones: the one the organizer chose to keep. */
+    phone: string = duplicate.keep.phone,
+  ): Promise<void> {
     const { keep, drop } = duplicate;
+    // Only the typed entry's phone can replace the guest's, and only as it leaves the list.
+    const takesTypedPhone = phone !== keep.phone && phone === drop.phone;
+    const changes = {
+      ...(!keep.guestId && drop.guestId ? { guestId: drop.guestId } : {}),
+      ...(takesTypedPhone ? { phone, mergedFrom: drop.id } : {}),
+    };
     await this.gateway.runBatch((batch) => {
-      batch.update(`${this.participantsPath(eventId)}/${keep.id}`, {
-        phone: keep.phone || drop.phone,
-        giftOptions: [...(keep.giftOptions.length ? keep.giftOptions : drop.giftOptions)],
-        ...(!keep.guestId && drop.guestId ? { guestId: drop.guestId } : {}),
-      });
+      if (Object.keys(changes).length) {
+        batch.update(`${this.participantsPath(eventId)}/${keep.id}`, changes);
+      }
       batch.delete(`${this.participantsPath(eventId)}/${drop.id}`);
-      batch.set(
-        `${this.rosterPath(eventId)}/${keep.id}`,
-        this.rosterDoc({
-          name: keep.name,
-          giftOptions: keep.giftOptions.length ? keep.giftOptions : drop.giftOptions,
-        }),
-        { merge: true },
-      );
+      batch.set(`${this.rosterPath(eventId)}/${keep.id}`, this.rosterDoc(keep), { merge: true });
       batch.delete(`${this.rosterPath(eventId)}/${drop.id}`);
     });
   }

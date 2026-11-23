@@ -116,3 +116,30 @@
     var(--org-font-body);
   padding: var(--org-space-xs) var(--org-space-sm);
 }
+
+// "Progresso" with only the guests to count: the panel's closed look, without opening.
+.dashboard__progress-line {
+  align-items: center;
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-sm);
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+  min-block-size: var(--org-touch);
+  padding: 0 var(--org-space-md);
+}
+
+.dashboard__progress-title {
+  align-items: center;
+  color: var(--org-on-surface);
+  display: flex;
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+  gap: var(--org-space-sm);
+}
+
+.dashboard__progress-count {
+  color: var(--org-on-success-container);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-bold);
+}

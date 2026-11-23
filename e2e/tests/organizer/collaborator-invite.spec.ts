@@ -112,6 +112,37 @@ test.describe('Convite para colaborar', () => {
     await expect(page.getByText('Aguardando resposta')).toBeVisible();
   });
 
+  test('a collaborator moves through the editor steps, the locked ones included', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'ana-uid',
+      email: 'ana@exemplo.com',
+      displayName: 'Ana',
+      events: [
+        {
+          ...event,
+          collaborators: ['ana-uid'],
+          addressDetails: {
+            cep: '01310-100',
+            address: 'Rua A',
+            number: '1',
+            neighborhood: 'Centro',
+            city: 'São Paulo/SP',
+          },
+        },
+      ],
+    });
+    await page.goto('/meus-eventos/evento/e1');
+    await expect(page.getByTestId('event-editor-step-1')).toBeVisible();
+    // The main information is the owner's: locked for her, and still no reason to stop.
+    await page.getByTestId('event-editor-step-1').getByTestId('stepper-next-btn').click();
+    await expect(page.getByTestId('step-missing-fields')).toHaveCount(0);
+    await expect(page.getByTestId('event-editor-step-2')).toBeInViewport();
+    await page.getByTestId('event-editor-step-2').getByTestId('stepper-next-btn').click();
+    await expect(page.getByTestId('event-editor-step-3')).toBeInViewport();
+  });
+
   test('a collaborator can step back with Sair da colaboração', async ({ page }) => {
     await setupMockAuthSession(page, {
       uid: 'ana-uid',

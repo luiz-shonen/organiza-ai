@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, combineLatest, from, map } from 'rxjs';
+import { Observable, combineLatest, from, map, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventService } from './event.service';
 import type { UserProfile, PartyEvent, ThemeMode } from '../models';
@@ -104,6 +104,25 @@ export class UserService {
     return profile?.name?.trim() ?? '';
   }
 
+  /**
+   * The public name and photo of several accounts, by uid (missing ones left out): lists show
+   * people as their profile names them now, not as they were typed when they answered.
+   */
+  async publicProfiles(
+    uids: readonly string[],
+  ): Promise<Record<string, { name: string; photoURL: string | null }>> {
+    const found = await Promise.all(
+      [...new Set(uids.filter(Boolean))].map(async (uid) => {
+        const doc = await this.gateway
+          .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
+          .catch(() => null);
+        const name = doc?.name?.trim();
+        return name ? ([uid, { name, photoURL: doc?.photoURL ?? null }] as const) : null;
+      }),
+    );
+    return Object.fromEntries(found.filter((entry) => entry !== null));
+  }
+
   /** Once per sign-in: the public name matches the profile's (or the Google account's). */
   async syncPublicName(
     uid: string,
@@ -206,6 +225,8 @@ export class UserService {
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
         );
       }),
+      // Each event named by its organizer's current profile name.
+      switchMap((events) => from(this.eventService.withOrganizerNames(events))),
     );
   }
 

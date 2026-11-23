@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { SeasonalThemeService } from '../../../../core/services';
 import { OrgSurfaceComponent } from '../../../../shared/ui';
 
 type Tone = 'primary' | 'secondary' | 'tertiary' | 'success';
 const TONES: readonly Tone[] = ['primary', 'secondary', 'tertiary', 'success'];
 
 /**
- * A festive scene (bunting, balloons, a gift, confetti) that fills the room left under a short
- * card beside the share panel. Decorative only; it hides itself when there is too little room.
+ * A festive scene that fills the room left under a short card beside the share panel, drawn for
+ * the event's theme (the same one as the page's background: Natal, casamento, churrasco...); a
+ * party with balloons and a gift otherwise. Decorative only; it hides itself when there is too
+ * little room.
  */
 @Component({
   selector: 'app-event-ornament',
@@ -17,6 +20,9 @@ const TONES: readonly Tone[] = ['primary', 'secondary', 'tertiary', 'success'];
   host: { 'aria-hidden': 'true' },
 })
 export class EventOrnamentComponent {
+  private readonly seasonalTheme = inject(SeasonalThemeService);
+  /** The event's theme, as the page's background has it. */
+  protected readonly theme = computed(() => this.seasonalTheme.config().activeTheme);
   /** Flags hang from the bunting's curve: y = 18 + 104·t·(1 − t). */
   protected readonly flags = Array.from({ length: 11 }, (_, i) => {
     const x = 30 + i * 54;

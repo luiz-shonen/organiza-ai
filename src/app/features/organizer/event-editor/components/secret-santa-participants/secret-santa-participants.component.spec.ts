@@ -16,17 +16,21 @@ describe('SecretSantaParticipantsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('keeps adding by hand behind a button: guests come in through the invite', () => {
+  it('adds by hand in a drawer (a bottom sheet on a phone), behind a button', () => {
     fixture.detectChanges();
-    expect(el().querySelector('app-secret-santa-participant-form')).toBeNull();
+    const form = () =>
+      document.querySelector(
+        '[data-testid="add-participant-sheet"] app-secret-santa-participant-form',
+      );
+    expect(form()).toBeNull();
 
     (byTestId('secret-santa-manual-btn') as HTMLButtonElement).click();
     fixture.detectChanges();
-    expect(el().querySelector('app-secret-santa-participant-form')).toBeTruthy();
+    expect(form()).toBeTruthy();
 
-    (byTestId('secret-santa-manual-close-btn') as HTMLButtonElement).click();
+    (document.querySelector('[data-testid="santa-cancel-btn"]') as HTMLButtonElement).click();
     fixture.detectChanges();
-    expect(el().querySelector('app-secret-santa-participant-form')).toBeNull();
+    expect(form()).toBeNull();
   });
 
   it('says how many people are still missing for a draw', () => {
@@ -38,31 +42,10 @@ describe('SecretSantaParticipantsComponent', () => {
     expect(byTestId('secret-santa-missing')?.textContent).toContain('2');
   });
 
-  it('adds a confirmed guest with one tap, or all of them', () => {
-    const added: SecretSantaParticipantInput[] = [];
-    const many: (readonly SecretSantaParticipantInput[])[] = [];
-    fixture.componentInstance.add.subscribe((p) => added.push(p));
-    fixture.componentInstance.addMany.subscribe((list) => many.push(list));
-    fixture.componentRef.setInput('suggestions', [
-      { guestId: 'g1', name: 'Jéssica', phone: '(11) 98888-1111' },
-      { guestId: 'g2', name: 'Luiz', phone: '' },
-    ]);
-    fixture.detectChanges();
-
-    const chip = el().querySelector(
-      '.santa-step__suggestions org-button button',
-    ) as HTMLButtonElement;
-    chip.click();
-    expect(added).toEqual([
-      { name: 'Jéssica', phone: '(11) 98888-1111', giftOptions: [], guestId: 'g1' },
-    ]);
-
-    (
-      el().querySelector(
-        '[data-testid="secret-santa-add-all-btn"] button, button[data-testid="secret-santa-add-all-btn"]',
-      ) as HTMLButtonElement
-    ).click();
-    expect(many[0].map((p) => p.name)).toEqual(['Jéssica', 'Luiz']);
+  it('never offers confirmed guests to add: they join from the invite themselves', () => {
+    expect(el().textContent).not.toContain('Confirmados no evento');
+    expect(byTestId('secret-santa-suggestions')).toBeNull();
+    expect(byTestId('secret-santa-manual-btn')).not.toBeNull();
   });
 
   it('lists participants with their gift ideas and lets them be removed', () => {
@@ -75,9 +58,34 @@ describe('SecretSantaParticipantsComponent', () => {
     fixture.detectChanges();
     const list = byTestId('secret-santa-participants')!;
     expect(list.textContent).toContain('Ana');
-    // The ideas themselves, on their own line.
-    expect(list.textContent).toContain('Livro · Chinelo');
+    // The ideas fold under the name: "2 ideias de presente", then each one.
+    const toggle = byTestId('secret-santa-gifts-toggle') as HTMLButtonElement;
+    expect(toggle.textContent).toContain('2 ideias de presente');
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(byTestId('secret-santa-gifts')).toBeNull();
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(byTestId('secret-santa-gifts')!.textContent).toContain('Chinelo');
+    toggle.click();
+    fixture.detectChanges();
+    expect(byTestId('secret-santa-gifts')).toBeNull();
     (list.querySelector('[aria-label="Remover Ana"]') as HTMLButtonElement).click();
     expect(removed).toEqual([0]);
+  });
+
+  it('never offers to edit a guest entry: only to take it out', () => {
+    fixture.componentRef.setInput('participants', [
+      { name: 'Ana', phone: '(11) 98888-1111', giftOptions: ['Livro'], joinedBy: 'ana-uid' },
+      { name: 'Bia', phone: '', giftOptions: [], guestId: 'bia-uid' },
+      { name: 'Tio Zé', phone: '', giftOptions: [] },
+    ]);
+    fixture.detectChanges();
+    expect(el().querySelector('[aria-label="Editar Ana"]')).toBeNull();
+    expect(el().querySelector('[aria-label="Editar Bia"]')).toBeNull();
+    expect(el().querySelectorAll('[data-testid="secret-santa-from-invite"]').length).toBe(2);
+    expect(el().querySelector('[aria-label="Remover Ana"]')).not.toBeNull();
+    // Someone typed by hand is the organizers' to change.
+    expect(el().querySelector('[aria-label="Editar Tio Zé"]')).not.toBeNull();
   });
 });

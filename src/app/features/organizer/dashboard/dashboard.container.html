@@ -105,24 +105,45 @@
                 </org-insight-card>
               }
 
-              @if (card.stats; as stats) {
+              <!--
+                Two separate blocks, each with one element at its root: the card projects a block
+                into [eventCardBody] only then (a comment or a nested @if there drops it).
+                No items: the guests are the only number, one plain line with nothing to open.
+              -->
+              @if (card.stats && card.stats.items === 0) {
+                <div
+                  eventCardBody
+                  class="dashboard__progress-line"
+                  data-testid="dashboard-progress-line"
+                >
+                  <span class="dashboard__progress-title">
+                    <org-icon name="group" color="var(--org-success)" />
+                    Convidados confirmados
+                  </span>
+                  <span class="dashboard__progress-count">{{ card.stats.guests }}</span>
+                </div>
+              }
+              @if (card.stats && card.stats.items > 0) {
                 <org-expansion-panel eventCardBody heading="Progresso" icon="group">
                   <span orgExpansionSummary>
-                    {{ stats.guests }} {{ stats.guests === 1 ? 'confirmado' : 'confirmados' }}
+                    {{ card.stats.guests }}
+                    {{ card.stats.guests === 1 ? 'confirmado' : 'confirmados' }}
                   </span>
                   <dl class="dashboard__stats">
                     <div class="dashboard__stat">
                       <dt>Convidados confirmados</dt>
-                      <dd>{{ stats.guests }}</dd>
+                      <dd>{{ card.stats.guests }}</dd>
                     </div>
-                    <div class="dashboard__stat">
+                    <div class="dashboard__stat" data-testid="dashboard-items-stat">
                       <dt>Itens completos</dt>
-                      <dd>{{ stats.completeItems }} de {{ stats.items }}</dd>
+                      <dd>{{ card.stats.completeItems }} de {{ card.stats.items }}</dd>
                     </div>
                     <org-progress
                       variant="success"
-                      [value]="stats.items ? (stats.completeItems / stats.items) * 100 : 0"
-                      [ariaLabel]="stats.completeItems + ' de ' + stats.items + ' itens completos'"
+                      [value]="(card.stats.completeItems / card.stats.items) * 100"
+                      [ariaLabel]="
+                        card.stats.completeItems + ' de ' + card.stats.items + ' itens completos'
+                      "
                     />
                   </dl>
                 </org-expansion-panel>

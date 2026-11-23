@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isPrimaryDestination, resolveBackRoute } from './navigation.utils';
+import { isPrimaryDestination, resolveBackRoute, showsBottomNav } from './navigation.utils';
 
 describe('navigation utils', () => {
   it('treats Início, Meus eventos and Perfil as primary destinations', () => {
@@ -8,6 +8,15 @@ describe('navigation utils', () => {
     expect(isPrimaryDestination('/meus-eventos/?filtro=futuros')).toBe(true);
     expect(isPrimaryDestination('/perfil#familia')).toBe(true);
     expect(isPrimaryDestination('/evento/abc')).toBe(false);
+  });
+
+  it('shows the bottom bar on its destinations and on an event page, not in the editor', () => {
+    expect(showsBottomNav('/')).toBe(true);
+    expect(showsBottomNav('/perfil')).toBe(true);
+    expect(showsBottomNav('/evento/abc')).toBe(true);
+    expect(showsBottomNav('/evento/abc?convite=1')).toBe(true);
+    expect(showsBottomNav('/meus-eventos/evento/abc')).toBe(false);
+    expect(showsBottomNav('/amigo-oculto/xyz')).toBe(false);
   });
 
   it('sends sub-pages back to their parent destination', () => {

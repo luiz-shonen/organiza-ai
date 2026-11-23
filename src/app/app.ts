@@ -22,7 +22,7 @@ import {
   EventService,
   CollaboratorInvitesService,
 } from './core/services';
-import { isPrimaryDestination, resolveBackRoute } from './core/utils';
+import { resolveBackRoute, showsBottomNav } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
 import { OrgIconComponent } from './shared/ui/actions/org-icon.component';
@@ -151,6 +151,8 @@ export class App {
 
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly user = this.authService.currentUser;
+  /** The person's name as their profile has it (not only the Google account's). */
+  protected readonly displayName = this.authService.displayName;
   protected readonly isAuthenticated = computed(() => {
     const u = this.user();
     return u !== null && !u.isAnonymous;
@@ -172,7 +174,7 @@ export class App {
   protected readonly backRoute = computed(() => resolveBackRoute(this.currentUrl()));
   protected readonly showAvatar = this.isAuthenticated;
   protected readonly showBottomNav = computed(
-    () => this.isAuthenticated() && isPrimaryDestination(this.currentUrl()),
+    () => this.isAuthenticated() && showsBottomNav(this.currentUrl()),
   );
   protected readonly isFestiveBackdrop = computed(
     () => this.seasonalService.config().activeTheme === 'default',

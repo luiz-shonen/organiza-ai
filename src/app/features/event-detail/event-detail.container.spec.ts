@@ -60,6 +60,7 @@ describe('EventDetailContainer', () => {
   let currentUserSignal: WritableSignal<MockCurrentUser>;
   let mockAuthService: {
     currentUser: WritableSignal<MockCurrentUser>;
+    displayName: () => string;
     isSuperAdmin: WritableSignal<boolean>;
     loginWithGoogle: ReturnType<typeof vi.fn>;
   };
@@ -67,6 +68,7 @@ describe('EventDetailContainer', () => {
     upsertProfile: ReturnType<typeof vi.fn>;
     rememberInvitedEvent: ReturnType<typeof vi.fn>;
     getDeclinedEvents: ReturnType<typeof vi.fn>;
+    publicProfiles: ReturnType<typeof vi.fn>;
     setDeclined: ReturnType<typeof vi.fn>;
     setAttending: ReturnType<typeof vi.fn>;
     getProfile: ReturnType<typeof vi.fn>;
@@ -78,6 +80,7 @@ describe('EventDetailContainer', () => {
   let mockSeasonalThemeService: {
     evaluateEventTheme: ReturnType<typeof vi.fn>;
     resetToAuto: ReturnType<typeof vi.fn>;
+    config: () => { activeTheme: string };
   };
   let mockFeedback: {
     success: ReturnType<typeof vi.fn>;
@@ -167,6 +170,7 @@ describe('EventDetailContainer', () => {
     };
     mockAuthService = {
       currentUser: currentUserSignal,
+      displayName: () => String(currentUserSignal()?.['displayName'] ?? ''),
       isSuperAdmin: signal(false),
       loginWithGoogle: vi.fn().mockImplementation(async () => {
         currentUserSignal.set({
@@ -182,6 +186,7 @@ describe('EventDetailContainer', () => {
       upsertProfile: vi.fn().mockResolvedValue(undefined),
       rememberInvitedEvent: vi.fn().mockResolvedValue(undefined),
       getDeclinedEvents: vi.fn().mockResolvedValue([]),
+      publicProfiles: vi.fn().mockResolvedValue({}),
       setDeclined: vi.fn().mockResolvedValue(undefined),
       setAttending: vi.fn().mockResolvedValue(undefined),
       getProfile: vi.fn().mockResolvedValue(null),
@@ -193,6 +198,7 @@ describe('EventDetailContainer', () => {
     mockSeasonalThemeService = {
       evaluateEventTheme: vi.fn(),
       resetToAuto: vi.fn(),
+      config: () => ({ activeTheme: 'default' }),
     };
     mockFeedback = {
       success: vi.fn(),

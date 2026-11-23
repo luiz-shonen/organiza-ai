@@ -80,10 +80,10 @@ test.describe('Aprovar quem confirma pelo link', () => {
 
     const approval = page.getByTestId('event-approval');
     await expect(approval).toContainText(
-      'Quem abrir o link e confirmar já entra na lista de presença.',
+      'Quem abrir o convite e confirmar presença entra direto na lista',
     );
     await approval.getByTestId('event-approval-toggle').locator('button').click();
-    await expect(approval).toContainText('só entra na lista depois que você aprovar');
+    await expect(approval).toContainText('Só quem você aprovar entra na lista do evento.');
     await approval.screenshot({ path: 'e2e/screenshots/approval-toggle.png' });
 
     await eventEditorPage.saveEvent();

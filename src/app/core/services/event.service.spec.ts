@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { EventService } from './event.service';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
@@ -75,7 +75,7 @@ describe('EventService', () => {
       expect(result).toEqual([]);
     });
 
-    it('combines owned and collaborated events without duplicates', () => {
+    it('combines owned and collaborated events without duplicates', async () => {
       const owned = [
         { id: 'e1', title: 'Owned Event', date: '2026-06-01T00:00:00.000Z' },
         { id: 'shared', title: 'Shared Event', date: '2026-08-01T00:00:00.000Z' },
@@ -88,15 +88,33 @@ describe('EventService', () => {
       mockGateway.collectionSnapshot.mockReturnValueOnce(of(owned));
       mockGateway.collectionSnapshot.mockReturnValueOnce(of(collaborated));
 
-      let result: PartyEvent[] = [];
-      service.getUserEvents('user-123').subscribe((events) => {
-        result = events;
-      });
+      const result: PartyEvent[] = await firstValueFrom(service.getUserEvents('user-123'));
 
       expect(result).toHaveLength(3);
       expect(result[0].id).toBe('e1');
       expect(result[1].id).toBe('e2');
       expect(result[2].id).toBe('shared');
+    });
+
+    it("names each event by its organizer's current profile name", async () => {
+      mockGateway.collectionSnapshot.mockReturnValueOnce(
+        of([
+          {
+            id: 'e1',
+            title: 'Natal',
+            date: '2026-12-24T00:00:00.000Z',
+            createdBy: 'org-1',
+            creatorName: 'Nome antigo',
+          },
+        ]),
+      );
+      mockGateway.collectionSnapshot.mockReturnValueOnce(of([]));
+      mockGateway.getDoc = vi.fn().mockResolvedValue({ name: 'Jéssica Araújo' });
+
+      const [event] = await firstValueFrom(service.getUserEvents('org-1'));
+
+      expect(mockGateway.getDoc).toHaveBeenCalledWith('publicProfiles/org-1');
+      expect(event.creatorName).toBe('Jéssica Araújo');
     });
   });
 

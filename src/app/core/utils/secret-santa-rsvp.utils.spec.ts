@@ -6,7 +6,6 @@ import {
   isSecretSantaOpen,
   isSecretSantaSelfJoinOpen,
   normalizePersonName,
-  parseGiftLines,
   rsvpSecretSantaEntryId,
   secretSantaRsvpId,
 } from './secret-santa.utils';
@@ -132,7 +131,7 @@ describe('buildRsvpSecretSantaEntries', () => {
   });
 });
 
-describe('isSecretSantaSelfJoinOpen and parseGiftLines', () => {
+describe('isSecretSantaSelfJoinOpen', () => {
   it('is open unless the owner closed it', () => {
     expect(isSecretSantaSelfJoinOpen({ enabled: true })).toBe(true);
     expect(isSecretSantaSelfJoinOpen({ enabled: true, selfJoin: false })).toBe(false);
@@ -148,10 +147,6 @@ describe('isSecretSantaSelfJoinOpen and parseGiftLines', () => {
     // Closing the sign-ups stops joining, not leaving.
     expect(isSecretSantaOpen({ enabled: true, selfJoin: false })).toBe(true);
     expect(isSecretSantaSelfJoinOpen({ enabled: true, selfJoin: false })).toBe(false);
-  });
-
-  it('reads one option per line, up to the limit', () => {
-    expect(parseGiftLines(' Livro \r\n\nMeia\nCaneca', 2)).toEqual(['Livro', 'Meia']);
   });
 });
 

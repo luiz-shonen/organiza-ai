@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, effect, inject } from '@angular/core';
 import {
   Auth,
   User,
@@ -29,6 +29,41 @@ export class AuthService {
     const user = this._currentUser();
     return user !== null && !user.isAnonymous;
   });
+
+  /**
+   * The name on the person's profile (`users/{uid}.name`), which they may change at any time;
+   * empty until it loads, or for an account without one.
+   */
+  private readonly _profileName = signal('');
+  /**
+   * The name to show for the signed-in person everywhere (top bar, menu, their answers): the
+   * profile's, then the Google account's, then the e-mail's first part.
+   */
+  readonly displayName = computed(() => {
+    const user = this._currentUser();
+    if (!user) return '';
+    return this._profileName() || user.displayName || user.email?.split('@')[0] || '';
+  });
+  private profileNameFor: string | null = null;
+  private readonly loadProfileName = effect(() => {
+    const uid = this._currentUser()?.uid ?? null;
+    if (uid === this.profileNameFor) return;
+    this.profileNameFor = uid;
+    this._profileName.set('');
+    if (!uid) return;
+    this.gateway
+      .getDoc<{ name?: string; displayName?: string }>(`users/${uid}`)
+      .then((profile) => {
+        if (this.profileNameFor !== uid) return;
+        this._profileName.set((profile?.name || profile?.displayName || '').trim());
+      })
+      .catch(() => undefined);
+  });
+
+  /** After the profile is saved with a new name: every screen shows it at once. */
+  setProfileName(name: string): void {
+    this._profileName.set(name.trim());
+  }
 
   isSuperAdminEmail(email: string | null): boolean {
     return email === 'luiz.gmr.dev@gmail.com' || email === 'jessica.calm.dev@gmail.com';

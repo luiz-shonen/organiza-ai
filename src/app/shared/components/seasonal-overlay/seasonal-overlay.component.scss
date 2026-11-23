@@ -209,6 +209,10 @@
     @include semantic.tablet {
       height: 100px;
     }
+
+    @include semantic.desktop {
+      height: 130px;
+    }
   }
 
   // ═══════════════════════════════════════
@@ -237,6 +241,14 @@
       top: 14px;
       width: 90px;
       height: 115px;
+    }
+
+    // A computer: in the side margin, where the page's content does not cover it.
+    @include semantic.desktop {
+      top: 96px;
+      left: max(24px, calc((100vw - 960px) / 4));
+      width: 110px;
+      height: 140px;
     }
   }
 
@@ -437,4 +449,46 @@
       left 150px bottom 120px,
       right 150px bottom 120px; /* Bonfires fixed */
   }
+}
+
+.seasonal-overlay {
+  // ═══════════════════════════════════════
+  // AN EVENT'S KIND (one scene per category)
+  // ═══════════════════════════════════════
+
+  &__scene {
+    position: absolute;
+    inset: 0;
+  }
+
+  // The scene repeats along the whole bottom of the page.
+  &__ground {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 90px;
+    background-repeat: repeat-x;
+    background-position: center bottom;
+    background-size: auto 100%;
+
+    @include semantic.tablet {
+      height: 120px;
+    }
+  }
+
+  // The wedding: only a thin flowering vine along the bottom.
+  &__scene[data-scene='casamento'] &__ground {
+    height: 56px;
+
+    @include semantic.tablet {
+      height: 70px;
+    }
+  }
+}
+
+// The category scenes are the event's own and sit only along the bottom: present enough to
+// be seen, still behind the page (0.68 light, 0.54 dark).
+.seasonal-overlay:has(.seasonal-overlay__scene) {
+  opacity: calc(var(--org-seasonal-overlay-opacity) * 4.5);
 }

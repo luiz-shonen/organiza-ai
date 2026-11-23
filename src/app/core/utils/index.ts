@@ -12,3 +12,5 @@ export * from './guest-approval.utils';
 export * from './invite.utils';
 export * from './error.utils';
 export * from './known-people.utils';
+export * from './guest-list-document.utils';
+export * from './print.utils';

@@ -7,18 +7,19 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   AuthService,
   ConfettiService,
   InboxService,
   SecretSantaService,
+  UserService,
 } from '../../core/services';
 import { secretSantaNotificationId, type SecretSantaReveal } from '../../core/models';
 import { giftSearchLinks } from '../../core/utils/secret-santa.utils';
 import {
   OrgButtonComponent,
-  OrgEmptyStateComponent,
   OrgIconComponent,
   OrgLoadingStateComponent,
   OrgPageLayoutComponent,
@@ -28,6 +29,7 @@ import {
   InviteDividerComponent,
   InvitePaperComponent,
 } from '../../shared/components/invite-paper/invite-paper.component';
+import { CELEBRATION_SOUND_DELAY_MS, playCelebrationSound } from './celebration-sound';
 
 /**
  * The secret link of the amigo oculto (`/amigo-oculto/:token`). Opens without signing in,
@@ -51,8 +53,8 @@ function isPermissionError(error: unknown): boolean {
   imports: [
     InviteDividerComponent,
     InvitePaperComponent,
+    NgTemplateOutlet,
     OrgButtonComponent,
-    OrgEmptyStateComponent,
     OrgIconComponent,
     OrgLoadingStateComponent,
     OrgPageLayoutComponent,
@@ -63,6 +65,17 @@ function isPermissionError(error: unknown): boolean {
 })
 export class SecretSantaRevealContainer {
   public readonly token = input.required<string>();
+  /** Little stars twinkling around the name they drew (percent of its box, and a delay). */
+  protected readonly sparks = [
+    [4, 18, 0],
+    [94, 12, 0.4],
+    [12, 82, 0.8],
+    [88, 78, 0.2],
+    [50, -6, 0.6],
+    [30, 100, 1],
+    [70, 96, 0.3],
+  ].map(([x, y, d]) => ({ x, y, delay: `${d + 1.6}s` }));
+
   /** "Mercado Livre" and "Amazon" searches for a gift idea. */
   protected readonly searchLinks = giftSearchLinks;
 
@@ -71,6 +84,7 @@ export class SecretSantaRevealContainer {
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
   private readonly inbox = inject(InboxService);
+  private readonly users = inject(UserService);
 
   protected readonly loading = signal(true);
   protected readonly reveal = signal<SecretSantaReveal | null>(null);
@@ -124,6 +138,11 @@ export class SecretSantaRevealContainer {
       this.reveal.set(null);
       this.locked.set(isPermissionError(error));
       return;
+    }
+    if (reveal?.giverUid) {
+      // Named as the account's profile is now, not as it was when the draw was made.
+      const name = await this.users.publicName(reveal.giverUid).catch(() => '');
+      if (name) reveal = { ...reveal, giverName: name };
     }
     this.reveal.set(reveal);
     if (!reveal) return;
@@ -186,6 +205,8 @@ export class SecretSantaRevealContainer {
   protected show(): void {
     this.revealed.set(true);
     this.confetti.fireCelebration();
+    // The fanfare lands with the name; the tap that got here lets the page play sound.
+    playCelebrationSound(CELEBRATION_SOUND_DELAY_MS);
   }
 
   protected hide(): void {

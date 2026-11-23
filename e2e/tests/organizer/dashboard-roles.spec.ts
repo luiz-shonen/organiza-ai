@@ -56,4 +56,24 @@ test.describe('Meus eventos', () => {
     await page.getByTestId('date-order-btn').click();
     await expect(cards.first()).toContainText('Terceiro');
   });
+
+  test('an event without items shows one plain line of guests, nothing to open', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'test-user-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz',
+      events: [event('a', 'Sem itens', 5)],
+    });
+    await page.goto('/meus-eventos');
+
+    const card = page.getByTestId('organizer-event-card').first();
+    const line = card.getByTestId('dashboard-progress-line');
+    await expect(line).toBeVisible();
+    await expect(line).toContainText('Convidados confirmados');
+    await expect(card.getByText('Progresso')).toHaveCount(0);
+    await expect(card.getByText('Itens completos')).toHaveCount(0);
+    await card.screenshot({ path: 'e2e/screenshots/dashboard-progress-line.png' });
+  });
 });

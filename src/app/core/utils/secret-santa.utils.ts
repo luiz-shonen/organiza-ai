@@ -229,15 +229,6 @@ export function fromDrawDate(drawDate: string | null | undefined): Date | null {
   return new Date(y, m - 1, d);
 }
 
-/** Gift options typed one per line, blank lines left out, at most `max`. */
-export function parseGiftLines(text: string, max: number): string[] {
-  return text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, max);
-}
-
 /** The entry id of one person a guest puts in the draw (`self`, `f:{id}` or `c:{name}`). */
 export function rsvpSecretSantaEntryId(uid: string, key: string): string {
   if (key.startsWith('f:')) return secretSantaRsvpId(uid, { familyId: key.slice(2) });

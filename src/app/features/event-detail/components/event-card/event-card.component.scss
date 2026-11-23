@@ -1,3 +1,5 @@
+@use '../../../../shared/ui/tokens/semantic' as semantic;
+
 :host {
   display: block;
 }
@@ -45,6 +47,35 @@
   align-self: flex-start;
   flex: none;
   margin-inline-start: auto;
+
+  // A phone: the tag goes under the date, lined up with it (see .event-card__row--when).
+  @include semantic.mobile {
+    grid-column: 2;
+    justify-self: start;
+    margin-inline-start: 0;
+  }
+}
+
+.event-card__row.event-card__row--when {
+  // A phone: icon | date and "Adicionar ao calendário", each on one line; the tag below the
+  // text. A grid, so the text always has the whole rest of the width.
+  @include semantic.mobile {
+    gap: var(--org-space-xs) var(--org-space-sm);
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+
+    .event-card__row-title,
+    .event-card__date-sub {
+      white-space: nowrap;
+    }
+
+    // "Quarta-feira, 30 de setembro · 19:30" fits a narrow phone too.
+    .event-card__row-title {
+      --event-card-size: min(var(--org-font-size-md), 3.9vw);
+
+      font-size: var(--event-card-size);
+    }
+  }
 }
 
 .event-card__row {

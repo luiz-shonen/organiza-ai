@@ -1,0 +1,97 @@
+<fieldset class="gift-field" [attr.data-testid]="testIdPrefix() + '-gift-list'">
+  <legend class="gift-field__title">
+    {{ title() }}
+    @if (count(); as count) {
+      <span class="gift-field__count">{{ count }}</span>
+    }
+  </legend>
+  @if (hint()) {
+    <p class="gift-field__hint">{{ hint() }}</p>
+  }
+
+  @if (gifts().length) {
+    <ol class="gift-field__items">
+      @for (gift of gifts(); track $index; let i = $index) {
+        @if (editingGift() === i) {
+          <!-- Editing in place: Enter or ✓ keeps it, Esc leaves it as it was. -->
+          <li class="gift-field__editing">
+            <org-text-field
+              class="gift-field__edit"
+              [label]="'Opção ' + (i + 1)"
+              [testId]="testIdPrefix() + '-gift-edit-input'"
+              [maxLength]="giftMaxLength"
+              [error]="editingGiftError()"
+              [suffixAction]="true"
+              [value]="editingGiftText()"
+              (valueChange)="setEditingGift($event)"
+            >
+              <org-icon-button
+                orgFieldSuffix
+                icon="check"
+                variant="primary"
+                ariaLabel="Salvar opção"
+                [gradient]="false"
+                [testId]="testIdPrefix() + '-gift-save-btn'"
+                (pressed)="saveGiftEdit()"
+              />
+            </org-text-field>
+          </li>
+        } @else {
+          <li class="gift-field__item" [attr.data-testid]="testIdPrefix() + '-gift-item'">
+            <!-- Tapping the text edits it too; the pencil is the way in for the keyboard. -->
+            <span
+              class="gift-field__text"
+              tabindex="-1"
+              (click)="editGift(i)"
+              (keydown.enter)="editGift(i)"
+              >{{ gift }}</span
+            >
+            <org-icon-button
+              icon="edit"
+              [gradient]="false"
+              [ariaLabel]="'Editar ' + gift"
+              [testId]="testIdPrefix() + '-gift-edit-btn'"
+              (pressed)="editGift(i)"
+            />
+            <org-icon-button
+              icon="close"
+              [gradient]="false"
+              [ariaLabel]="'Remover ' + gift"
+              (pressed)="removeGift(i)"
+            />
+          </li>
+        }
+      }
+    </ol>
+  }
+
+  @if (full()) {
+    @if (max() > 1) {
+      <p class="gift-field__hint">Limite de {{ max() }} opções atingido.</p>
+    }
+  } @else {
+    <!-- One compact field for the next idea, and the lilac + beside it (or Enter) to add it. -->
+    <div class="gift-field__add">
+      <org-text-field
+        class="gift-field__new"
+        [label]="gifts().length ? 'Adicionar mais uma opção' : 'Nova opção'"
+        placeholder="Ex: Chinelo, cor verde, tamanho 36"
+        [testId]="testIdPrefix() + '-gift-input'"
+        [maxLength]="giftMaxLength"
+        [error]="newGiftError()"
+        [value]="newGift()"
+        (valueChange)="setNewGift($event)"
+      />
+      <org-icon-button
+        class="gift-field__add-btn"
+        icon="add"
+        variant="primary"
+        ariaLabel="Adicionar opção"
+        [gradient]="false"
+        [disabled]="!newGift().trim()"
+        [testId]="testIdPrefix() + '-add-gift-btn'"
+        (pressed)="addGift()"
+      />
+    </div>
+  }
+</fieldset>

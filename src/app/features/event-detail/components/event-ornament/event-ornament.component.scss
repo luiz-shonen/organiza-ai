@@ -1,3 +1,5 @@
+@use '../../../../shared/ui/tokens/ornament';
+
 // Fills whatever height the grid row leaves; below a useful height the scene is not drawn.
 :host {
   container-type: size;
@@ -11,8 +13,13 @@
   }
 }
 
-// A lilac sky inside the card's own frame.
+// A lilac sky inside the card's own frame, and the few colors a themed scene needs beyond the
+// app's own (wood, leaves, fire, gold...).
 .ornament {
+  @each $name, $color in ornament.$ornament-colors {
+    --ornament-#{$name}: #{$color};
+  }
+
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--org-primary-container) 80%, transparent),
@@ -79,6 +86,90 @@
 
 .ornament__fill--success {
   fill: var(--org-success);
+}
+
+// Themed scenes: fills and strokes by color.
+@each $name in gold, red, red-deep, pink, leaf, leaf-deep, wood, wood-deep, flame, flame-out, cream,
+  cream-deep, meat, ink, ink-soft, glass, water, snow
+{
+  .ornament__fill--#{$name} {
+    fill: var(--ornament-#{$name});
+  }
+
+  .ornament__stroke--#{$name} {
+    fill: none;
+    stroke: var(--ornament-#{$name});
+    stroke-linecap: round;
+    stroke-width: 3;
+  }
+}
+
+.ornament__fill--glow {
+  fill: var(--ornament-gold);
+  opacity: 0.25;
+}
+
+.ornament__stroke--ink-thin {
+  fill: none;
+  stroke: var(--ornament-ink);
+  stroke-width: 2;
+}
+
+.ornament__stroke--primary,
+.ornament__stroke--secondary,
+.ornament__stroke--tertiary {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.ornament__stroke--primary {
+  stroke: var(--org-primary);
+}
+
+.ornament__stroke--secondary {
+  stroke: var(--org-secondary);
+}
+
+.ornament__stroke--tertiary {
+  stroke: var(--org-tertiary);
+}
+
+.ornament__stroke--rays {
+  fill: none;
+  opacity: 0.45;
+  stroke: var(--ornament-gold);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.ornament__stroke--ring {
+  fill: none;
+  stroke: var(--ornament-gold);
+  stroke-width: 7;
+}
+
+.ornament__stroke--smoke {
+  fill: none;
+  opacity: 0.6;
+  stroke: var(--org-outline);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.ornament__cloud {
+  fill: var(--ornament-snow);
+}
+
+.ornament__cloud-edge,
+.ornament__dove {
+  fill: var(--ornament-snow);
+  stroke: color-mix(in srgb, var(--org-primary) 25%, transparent);
+  stroke-width: 1.5;
+}
+
+.ornament__cloud-edge {
+  stroke-width: 3;
 }
 
 .ornament__bow {

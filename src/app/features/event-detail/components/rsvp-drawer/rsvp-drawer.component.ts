@@ -8,17 +8,17 @@ import {
   input,
   output,
   signal,
+  viewChildren,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FamilyMember, type RsvpSecretSantaKey } from '../../../../core/models';
-import { parseGiftLines } from '../../../../core/utils';
 import {
-  GiftOption,
   Phone,
   fieldError,
   requiredText,
   valueObjectValidator,
 } from '../../../../core/value-objects';
+import { GiftOptionsFieldComponent } from '../../../../shared/components/gift-options-field/gift-options-field.component';
 import { CompanionSelectorComponent } from '../companion-selector/companion-selector.component';
 import {
   FamilySelectorComponent,
@@ -30,7 +30,6 @@ import {
   OrgCheckboxComponent,
   OrgIconButtonComponent,
   OrgTextFieldComponent,
-  OrgTextareaFieldComponent,
   revealFirstInvalidSoon,
 } from '../../../../shared/ui';
 
@@ -54,7 +53,7 @@ export type RsvpDrawerData = RsvpDrawerRequestData;
     OrgCheckboxComponent,
     OrgIconButtonComponent,
     OrgTextFieldComponent,
-    OrgTextareaFieldComponent,
+    GiftOptionsFieldComponent,
   ],
   templateUrl: './rsvp-drawer.component.html',
   styleUrl: './rsvp-drawer.component.scss',
@@ -89,14 +88,20 @@ export class RsvpDrawerComponent {
   protected readonly guestName = computed(() => this.drawerData().session?.name ?? '');
 
   /** "Quem vai participar do amigo oculto?": who is checked, and each one's gift options. */
-  protected readonly santa = computed(() => this.drawerData().secretSanta ?? null);
+  // Asked when confirming the first time; afterwards the invite's own "Amigo oculto" card is
+  // where the guest edits their ideas or leaves, so "Editar presença" leaves it out.
+  protected readonly santa = computed(() =>
+    this.editing() ? null : (this.drawerData().secretSanta ?? null),
+  );
   protected readonly santaChecked = signal<readonly RsvpSecretSantaKey[]>([]);
-  protected readonly santaGifts = signal<Readonly<Record<RsvpSecretSantaKey, string>>>({});
-  private readonly santaGiftsError = signal(false);
+  protected readonly santaGifts = signal<Readonly<Record<RsvpSecretSantaKey, readonly string[]>>>(
+    {},
+  );
+  /** One list of gift ideas per person in the draw, checked before saving. */
+  private readonly giftFields = viewChildren(GiftOptionsFieldComponent);
   /** A relative's or companion's own WhatsApp, for their link; empty, it goes to the guest's. */
   protected readonly santaPhones = signal<Readonly<Record<RsvpSecretSantaKey, string>>>({});
   private readonly santaPhonesError = signal(false);
-  protected readonly giftLineMax = GiftOption.RULES.max;
   /** The guest, then the relatives and companions checked above: only who is going. */
   protected readonly santaPeople = computed<RsvpSantaPerson[]>(() => {
     const name = this.guestName();
@@ -130,9 +135,7 @@ export class RsvpDrawerComponent {
 
       const joined = data.secretSanta?.joined ?? {};
       this.santaChecked.set(Object.keys(joined));
-      this.santaGifts.set(
-        Object.fromEntries(Object.entries(joined).map(([key, gifts]) => [key, gifts.join('\n')])),
-      );
+      this.santaGifts.set({ ...joined });
       // Typed before, else the relative's phone in the family profile.
       const profilePhones = Object.fromEntries(
         (data.familyMembers ?? [])
@@ -153,8 +156,8 @@ export class RsvpDrawerComponent {
     );
   }
 
-  protected setSantaGifts(key: RsvpSecretSantaKey, text: string): void {
-    this.santaGifts.update((all) => ({ ...all, [key]: text }));
+  protected setSantaGifts(key: RsvpSecretSantaKey, gifts: readonly string[]): void {
+    this.santaGifts.update((all) => ({ ...all, [key]: gifts }));
   }
 
   protected setSantaPhone(key: RsvpSecretSantaKey, phone: string): void {
@@ -178,22 +181,11 @@ export class RsvpDrawerComponent {
     );
   }
 
-  /** The error of one person's gift options: the first line too short or too long. */
-  protected santaGiftError(key: RsvpSecretSantaKey): string {
-    if (!this.santaGiftsError()) return '';
-    const max = this.santa()?.maxGiftOptions ?? 1;
-    const lines = parseGiftLines(this.santaGifts()[key] ?? '', max);
-    if (this.santa()?.giftOptions && !lines.length)
-      return 'Informe pelo menos uma opção de presente';
-    const bad = lines.find((line) => GiftOption.validate(line));
-    return bad ? `"${bad}": ${GiftOption.validate(bad)}` : '';
-  }
-
   protected santaGiftLabel(person: RsvpSantaPerson): string {
     const max = this.santa()?.maxGiftOptions ?? 1;
     const self = person.key === 'self';
-    if (max === 1) return `Opção de presente ${self ? 'sua' : `de ${person.name}`}`;
-    return `Opções de presente ${self ? 'suas' : `de ${person.name}`}, uma por linha, até ${max}`;
+    if (self) return max === 1 ? 'Sua opção de presente' : 'Suas opções de presente';
+    return `${max === 1 ? 'Opção de presente' : 'Opções de presente'} de ${person.name}`;
   }
 
   /** Who is in the draw, among the people still going; null when the drawer does not ask. */
@@ -204,12 +196,7 @@ export class RsvpDrawerComponent {
     return Object.fromEntries(
       this.santaChecked()
         .filter((key) => going.has(key))
-        .map((key) => [
-          key,
-          santa.giftOptions
-            ? parseGiftLines(this.santaGifts()[key] ?? '', santa.maxGiftOptions)
-            : [],
-        ]),
+        .map((key) => [key, santa.giftOptions ? [...(this.santaGifts()[key] ?? [])] : []]),
     );
   }
 
@@ -263,18 +250,16 @@ export class RsvpDrawerComponent {
       revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
-    const santa = this.santaChoice();
-    // With gift options on, everyone in the draw names at least one.
-    const needsGift = !!this.santa()?.giftOptions;
-    const badGift = Object.values(santa ?? {}).some(
-      (gifts) =>
-        (needsGift && gifts.length === 0) || gifts.some((gift) => GiftOption.validate(gift)),
-    );
-    if (badGift) {
-      this.santaGiftsError.set(true);
+    // With gift options on, everyone in the draw names at least one; an idea still typed joins
+    // their list. Every list is checked, so each shows its own error.
+    const giftsOk = this.giftFields()
+      .map((field) => field.commit(true))
+      .every(Boolean);
+    if (!giftsOk) {
       revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
+    const santa = this.santaChoice();
     const badPhone = Object.keys(santa ?? {}).some((key) => {
       const typed = (this.santaPhones()[key] ?? '').trim();
       return key !== 'self' && typed && !Phone.create(typed);

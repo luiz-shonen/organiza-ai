@@ -9,6 +9,8 @@ import { OrgSurfaceComponent } from '../surface/org-surface.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-empty-state.component.html',
   styleUrl: './org-empty-state.component.scss',
+  // `title` is an input, not the native tooltip that would repeat the heading on hover.
+  host: { '[attr.title]': 'null' },
 })
 export class OrgEmptyStateComponent {
   /** Icon name to display. Defaults to 'info'. */

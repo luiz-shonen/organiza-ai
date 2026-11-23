@@ -18,6 +18,16 @@
       [gradient]="false"
       (pressed)="cancel()"
     />
+    @if (data.extraLabel; as extraLabel) {
+      <org-button
+        variant="secondary"
+        testId="org-confirm-extra"
+        [label]="extraLabel"
+        [compact]="true"
+        [gradient]="false"
+        (pressed)="extra()"
+      />
+    }
     <org-button
       testId="org-confirm-submit"
       [label]="data.confirmLabel ?? 'Confirmar'"

@@ -11,6 +11,7 @@ function christmasEvent(secretSanta?: {
   enabled: boolean;
   giftOptions: boolean;
   maxGiftOptions?: number;
+  drawDate?: string;
 }) {
   return {
     id: EVENT_ID,
@@ -49,7 +50,7 @@ function christmasEvent(secretSanta?: {
 }
 
 const participants: MockDocument[] = [
-  // Added from "Confirmados no evento": Jéssica has an account, so she is also told in the app.
+  // Jéssica's entry tied to her account (`guestId`), so she is also told in the app.
   {
     id: 'p1',
     name: 'Jéssica Melo',
@@ -136,14 +137,14 @@ test.describe('Amigo oculto', () => {
 
     const step = page.getByTestId('event-editor-step-secret-santa');
     await step.getByTestId('secret-santa-toggle').locator('button').click();
-    await step.getByTestId('secret-santa-gifts-toggle').locator('button').click();
+    await step.getByTestId('secret-santa-gifts-toggle').click();
     // The organizer chooses how many options each person may list (3 unless changed).
     const giftLimit = step.getByTestId('secret-santa-gift-limit');
     await expect(giftLimit.getByTestId('quantity-value')).toHaveText('3');
     await giftLimit.getByRole('button', { name: 'Aumentar' }).click();
     await expect(giftLimit.getByTestId('quantity-value')).toHaveText('4');
     // Only the settings here: who takes part is on the event page.
-    await expect(step).toContainText('na página do evento você vê os participantes');
+    await expect(step).toContainText('você acompanha os participantes');
     await expect(step.getByTestId('secret-santa-manual')).toHaveCount(0);
     await step.locator('.event-step__card').first().screenshot({
       path: 'e2e/screenshots/secret-santa-gift-limit.png',
@@ -160,7 +161,7 @@ test.describe('Amigo oculto', () => {
     });
   });
 
-  test('on the event page the organizer adds a confirmed guest and anyone by hand', async ({
+  test('on the event page the organizer adds by hand only who will not join from the invite', async ({
     page,
   }) => {
     await setupMockAuthSession(page, {
@@ -172,12 +173,10 @@ test.describe('Amigo oculto', () => {
     await page.goto(`/evento/${EVENT_ID}`);
     const people = page.getByTestId('secret-santa-people');
 
-    // Confirmed guests are one tap away; confirming presence alone puts nobody in the draw.
-    await expect(people.getByTestId('secret-santa-suggestions')).toContainText('Jéssica Melo');
-    await people
-      .getByTestId('secret-santa-suggestions')
-      .getByRole('button', { name: 'Jéssica Melo' })
-      .click();
+    // Confirmed guests join from the invite themselves (their entry and gift ideas are theirs):
+    // the organizer is never offered to add them.
+    await expect(people.getByTestId('secret-santa-suggestions')).toHaveCount(0);
+    await expect(people).not.toContainText('Confirmados no evento');
 
     await people
       .getByTestId('secret-santa-manual')
@@ -210,22 +209,67 @@ test.describe('Amigo oculto', () => {
     await people.getByTestId('santa-submit-btn').click();
 
     const list = people.getByTestId('secret-santa-participants');
-    await expect(list).toContainText('Jéssica Melo');
     await expect(list).toContainText('Vó Maria');
-    await expect(list).toContainText('Chinelo, cor verde, tamanho 37 · Livro de receitas');
-    await expect(people.getByTestId('secret-santa-missing')).toContainText('Falta 1');
+    await expect(list).toContainText('2 ideias de presente');
+    await list.getByTestId('secret-santa-gifts-toggle').first().click();
+    await expect(list.getByTestId('secret-santa-gifts')).toContainText(
+      'Chinelo, cor verde, tamanho 37',
+    );
+    await expect(list.getByTestId('secret-santa-gifts')).toContainText('Livro de receitas');
+    await expect(people.getByTestId('secret-santa-missing')).toContainText('Faltam 2');
     await page
       .getByTestId('secret-santa-card')
       .screenshot({ path: 'e2e/screenshots/secret-santa-event-people.png' });
 
     const store = await readStore(page);
     const saved = store[`events/${EVENT_ID}/secretSantaParticipants`];
-    expect(saved.map((p) => p['name'])).toEqual(['Jéssica Melo', 'Vó Maria']);
-    expect(saved[1]['giftOptions']).toEqual([
+    expect(saved.map((p) => p['name'])).toEqual(['Vó Maria']);
+    expect(saved[0]['giftOptions']).toEqual([
       'Chinelo, cor verde, tamanho 37',
       'Livro de receitas',
     ]);
-    expect(saved[1]['phone']).toBe('(11) 97777-2222');
+    expect(saved[0]['phone']).toBe('(11) 97777-2222');
+  });
+
+  test('adding someone already in the draw asks first: replace, another person, or not', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'test-user-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent({ enabled: true, giftOptions: false })],
+      collections: { [`events/${EVENT_ID}/secretSantaParticipants`]: participants },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+    const people = page.getByTestId('secret-santa-people');
+    const sheet = page.getByTestId('add-participant-sheet');
+    const dialog = page.getByTestId('org-confirm-dialog');
+
+    // Luiz's phone, typed by hand before: replace him with what is typed now.
+    await people.getByTestId('secret-santa-manual-btn').click();
+    await sheet.getByTestId('santa-name-input').fill('Luiz Rodrigues');
+    await sheet.getByTestId('santa-phone-input').fill('11977772222');
+    await sheet.getByTestId('santa-submit-btn').click();
+    await expect(dialog).toContainText('Essa pessoa já está no amigo oculto');
+    await expect(dialog).toContainText('Luiz já está no sorteio com o telefone (11) 97777-2222');
+    await dialog.screenshot({ path: 'e2e/screenshots/secret-santa-same-person.png' });
+    await dialog.getByTestId('org-confirm-submit').click();
+    const store = async () => (await readStore(page))[`events/${EVENT_ID}/secretSantaParticipants`];
+    await expect
+      .poll(async () => (await store()).map((p) => p['name']))
+      .toEqual(['Jéssica Melo', 'Luiz Rodrigues', 'Vó Maria']);
+
+    // Jéssica is a confirmed guest: hers to change; adding means another person.
+    await people.getByTestId('secret-santa-manual-btn').click();
+    await sheet.getByTestId('santa-name-input').fill('Jéssica Melo');
+    await sheet.getByTestId('santa-submit-btn').click();
+    await expect(dialog).toContainText('entrou pelo convite');
+    await expect(dialog.getByTestId('org-confirm-extra')).toHaveCount(0);
+    await dialog.getByTestId('org-confirm-cancel').click();
+    // Cancelled: nothing added, what was typed is still there.
+    await expect(sheet.getByTestId('santa-name-input')).toHaveValue('Jéssica Melo');
+    expect(await store()).toHaveLength(3);
   });
 
   test('the owner draws and sends each secret link by WhatsApp; drawing again asks first', async ({
@@ -248,8 +292,13 @@ test.describe('Amigo oculto', () => {
     await expect(links.locator('li')).toHaveCount(3);
     // What to do when a link shows as opened but the person says it was not them.
     await expect(card.getByTestId('secret-santa-leak-hint')).toContainText(
-      'Então alguém viu o resultado: sorteie de novo. Quem tem conta só abre o link entrando nela.',
+      'Um link aparece aberto e a pessoa diz que não abriu? Sorteie de novo.',
     );
+    // Once drawn, the sign-ups and the list give way to the links; the card moves under
+    // "Confirmados" (beside it on a wide screen), where the links have room.
+    await expect(card.getByTestId('secret-santa-self-join')).toHaveCount(0);
+    await expect(card.getByTestId('secret-santa-people')).toHaveCount(0);
+    await expect(page.locator('.event-detail__lead app-secret-santa-card')).toHaveCount(1);
     // The owner sees whom to send each link to, never who drew whom: one name per row.
     const luizRow = links.locator('li').filter({ hasText: 'Luiz' });
     await expect(luizRow).not.toContainText('Jéssica');
@@ -308,7 +357,9 @@ test.describe('Amigo oculto', () => {
       .filter({ hasText: 'Luiz' })
       .getByRole('button', { name: 'Novo link' })
       .click();
-    await expect(page.getByRole('dialog')).toContainText('O link atual de Luiz deixa de funcionar');
+    await expect(page.getByRole('dialog')).toContainText(
+      'Com o novo link, Luiz pode ver de novo quem tirou (a mesma pessoa).',
+    );
     await page.getByRole('dialog').getByRole('button', { name: 'Criar novo link' }).click();
     await expect
       .poll(async () => {
@@ -338,6 +389,67 @@ test.describe('Amigo oculto', () => {
         return tokens.length === 3 && tokens.every((token) => !oldTokens.has(token));
       })
       .toBe(true);
+  });
+
+  test('the draw button waits for the draw day chosen for the event', async ({ page }) => {
+    await setupMockAuthSession(page, {
+      uid: 'test-user-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent({ enabled: true, giftOptions: false, drawDate: '2099-12-20' })],
+      collections: { [`events/${EVENT_ID}/secretSantaParticipants`]: participants },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    const card = page.getByTestId('secret-santa-card');
+    await expect(card.getByTestId('secret-santa-draw-locked')).toContainText(
+      'O sorteio fica liberado a partir de 20 de dezembro',
+    );
+    await expect(card.getByTestId('secret-santa-draw-btn')).toBeDisabled();
+  });
+
+  test('a renamed account shows its profile name in the draw links, the list and the declines', async ({
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'test-user-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent({ enabled: true, giftOptions: false })],
+      collections: {
+        [`events/${EVENT_ID}/secretSantaParticipants`]: participants,
+        [`events/${EVENT_ID}/secretSanta`]: [
+          {
+            id: 'draw',
+            drawnAt: new Date().toISOString(),
+            participantIds: participants.map((p) => p.id),
+            links: participants.map((p, i) => ({
+              participantId: p.id,
+              name: p['name'],
+              phone: p['phone'],
+              token: `tok-${i}`,
+              receiverId: participants[(i + 1) % participants.length].id,
+              ...(p.id === 'p1' ? { uid: 'guest-jessica' } : {}),
+            })),
+          },
+        ],
+        [`events/${EVENT_ID}/declines`]: [
+          { id: 'fabio-uid', name: 'Fábio', message: '', declinedAt: new Date().toISOString() },
+        ],
+        // Both changed their name on the profile after answering.
+        publicProfiles: [
+          { id: 'guest-jessica', name: 'Jéssica Araújo' },
+          { id: 'fabio-uid', name: 'Fábio Akita' },
+        ],
+      },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    const links = page.getByTestId('secret-santa-links');
+    await expect(links).toContainText('Jéssica Araújo');
+    await expect(links).not.toContainText('Jéssica Melo');
+    await expect(page.getByTestId('guests-declines')).toHaveText(/Fábio Akita/);
+    await expect(page.getByTestId('guest-list-card')).toContainText('Jéssica Araújo');
   });
 
   test('a collaborator sees the participants but cannot draw', async ({ page }) => {
@@ -382,6 +494,53 @@ test.describe('Amigo oculto', () => {
     await expect(page.getByTestId('secret-santa-people')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toHaveCount(0);
     await roster.screenshot({ path: 'e2e/screenshots/secret-santa-roster-guest.png' });
+  });
+
+  test('a guest edits their own gift ideas with the pencil in the amigo oculto card', async ({
+    page,
+  }) => {
+    const own = {
+      id: 'rsvp_guest-jessica',
+      name: 'Jéssica Melo',
+      phone: '(11) 98888-1111',
+      giftOptions: ['Chinelo 39'],
+      guestId: 'guest-jessica',
+      joinedBy: 'guest-jessica',
+      createdAt: '1',
+    };
+    await setupMockAuthSession(page, {
+      uid: 'guest-jessica',
+      email: 'jessica@organizaai.test',
+      displayName: 'Jéssica Melo',
+      events: [christmasEvent({ enabled: true, giftOptions: true, maxGiftOptions: 3 })],
+      collections: {
+        [`events/${EVENT_ID}/secretSantaParticipants`]: [own],
+        [`events/${EVENT_ID}/secretSantaRoster`]: [
+          { id: own.id, name: own.name, giftOptions: own.giftOptions, createdAt: '1' },
+          { id: 'p2', name: 'Luiz', giftOptions: ['Livro'], createdAt: '2' },
+        ],
+      },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    const roster = page.getByTestId('secret-santa-roster');
+    // Only her own entry has the pencil.
+    await expect(roster.getByTestId('secret-santa-roster-edit-btn')).toHaveCount(1);
+    await roster.getByTestId('secret-santa-roster-edit-btn').click();
+
+    const sheet = page.getByTestId('edit-own-santa-sheet');
+    await expect(sheet.getByTestId('own-santa-gift-item')).toHaveCount(1);
+    await sheet.getByTestId('own-santa-gift-input').fill('Bíblia');
+    await sheet.getByTestId('own-santa-add-gift-btn').click();
+    await expect(sheet.getByTestId('own-santa-gift-item')).toHaveCount(2);
+    await sheet.screenshot({ path: 'e2e/screenshots/secret-santa-own-edit.png' });
+    await sheet.getByTestId('own-santa-submit-btn').click();
+
+    await expect(roster).toContainText('Bíblia');
+    const store = await readStore(page);
+    const saved = store[`events/${EVENT_ID}/secretSantaParticipants`].find((p) => p.id === own.id);
+    expect(saved?.['giftOptions']).toEqual(['Chinelo 39', 'Bíblia']);
+    expect(saved?.['joinedBy']).toBe('guest-jessica');
   });
 
   test('a participant opens the secret link without signing in and reveals whom they drew', async ({
@@ -436,11 +595,15 @@ test.describe('Amigo oculto', () => {
       .getByTestId('secret-santa-gifts')
       .screenshot({ path: 'e2e/screenshots/secret-santa-gift-search.png' });
     await expect(page.locator('canvas').first()).toBeAttached(); // canvas-confetti
-    await page
-      .getByTestId('secret-santa-result')
-      .evaluate((el) =>
-        Promise.all(el.getAnimations({ subtree: true }).map((animation) => animation.finished)),
-      );
+    // The name lands (the glow and the stars around it keep twinkling: those never end).
+    await page.getByTestId('secret-santa-result').evaluate((el) =>
+      Promise.all(
+        el
+          .getAnimations({ subtree: true })
+          .filter((animation) => animation.effect?.getComputedTiming().iterations !== Infinity)
+          .map((animation) => animation.finished),
+      ),
+    );
     await page
       .getByTestId('secret-santa-result')
       .screenshot({ path: 'e2e/screenshots/secret-santa-reveal.png' });

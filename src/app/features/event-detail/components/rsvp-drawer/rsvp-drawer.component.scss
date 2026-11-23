@@ -30,12 +30,6 @@
     color: var(--org-on-surface);
   }
 
-  &__description {
-    margin: 4px 0 0;
-    color: var(--org-on-surface-variant);
-    font-size: var(--org-font-size-sm);
-  }
-
   &__form {
     display: flex;
     flex: 1;
@@ -126,10 +120,26 @@
     margin: 0;
   }
 
+  // One person in the draw: the checkbox, then (indented under the name) their WhatsApp and
+  // gift ideas, with room between people.
   &__santa-person {
     display: flex;
     flex-direction: column;
-    gap: var(--org-space-xs);
+    gap: var(--org-space-sm);
+
+    & + & {
+      border-block-start: 1px dashed var(--org-outline-variant);
+      padding-block-start: var(--org-space-md);
+    }
+
+    > org-text-field,
+    > app-gift-options-field {
+      margin-inline-start: var(--org-space-xl);
+    }
+
+    > app-gift-options-field {
+      margin-block-end: var(--org-space-sm);
+    }
   }
 
   @include semantic.tablet {

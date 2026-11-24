@@ -107,6 +107,7 @@
 }
 
 // One row per person with them: avatar, name with their role, then what they bring.
+// The name line is as tall as the photo, so the two sit centred; "Leva:" goes below.
 .guest-list__person {
   align-items: flex-start;
   display: flex;
@@ -123,6 +124,7 @@
 
 .guest-list__name {
   align-items: center;
+  min-block-size: var(--org-icon-size-xl);
   color: var(--org-on-surface);
   display: flex;
   flex-wrap: wrap;

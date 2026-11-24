@@ -74,8 +74,10 @@
   border: 0;
   border-radius: 0;
 
+  // A little room on the right: flush against the edge, the panel's clipping cut the
+  // corner of the open/close arrow.
   .org-expansion-panel__header {
-    padding: 0;
+    padding: 0 var(--org-space-xs) 0 0;
   }
 
   ::ng-deep .mat-expansion-panel-body {

@@ -13,6 +13,13 @@ export interface RsvpDrawerRequestData {
   savedCompanions?: readonly string[];
   /** Saves a member added in the drawer to the profile's family, so it is kept even before "Confirmar". */
   addFamilyMember?: (member: FamilyMemberCreate) => Promise<FamilyMember>;
+  /** Saves a relative edited in the drawer to the profile's family. */
+  updateFamilyMember?: (
+    memberId: string,
+    changes: Pick<FamilyMember, 'name' | 'relationship' | 'phone'>,
+  ) => Promise<void>;
+  /** Asks, then removes a relative from the profile's family; false when the guest gave up. */
+  removeFamilyMember?: (memberId: string) => Promise<boolean>;
   /** The event has an amigo oculto: the drawer asks who takes part. */
   secretSanta?: RsvpSecretSantaData;
 }

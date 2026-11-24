@@ -1,4 +1,4 @@
-import { revealFirstInvalidSoon } from '../../../../shared/ui';
+import { revealFirstInvalidSoon } from '../../ui';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,14 +10,10 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { RELATIONSHIP_OPTIONS } from '../../../../core/utils';
-import { PersonName, Phone } from '../../../../core/value-objects';
-import {
-  OrgAutocompleteFieldComponent,
-  OrgButtonComponent,
-  OrgTextFieldComponent,
-} from '../../../../shared/ui';
+import { FamilyMember, FamilyRelationship } from '../../../core/models';
+import { RELATIONSHIP_OPTIONS, isPet } from '../../../core/utils';
+import { PersonName, Phone } from '../../../core/value-objects';
+import { OrgAutocompleteFieldComponent, OrgButtonComponent, OrgTextFieldComponent } from '../../ui';
 
 export interface AddFamilyMemberPayload {
   name: string;
@@ -26,8 +22,10 @@ export interface AddFamilyMemberPayload {
 }
 
 /**
- * Name, relationship and phone of a family member. The roster uses one to add and
- * another, in a sheet, to edit, so a half-typed new member survives an edit.
+ * Name, relationship and phone of a family member (a pet has no phone). The profile's roster
+ * uses one to add and another, in a sheet, to edit, so a half-typed new member survives an
+ * edit; the RSVP drawer uses it to add and edit relatives without leaving the event. Not a
+ * <form>: inside the RSVP form, a nested submit sent that one too. Enter saves it.
  */
 @Component({
   selector: 'app-family-member-form',
@@ -63,8 +61,10 @@ export class FamilyMemberFormComponent {
   protected readonly relationshipError = computed(() =>
     this.showErrors() && !this.relationship() ? 'Escolha um parentesco da lista' : '',
   );
+  /** Pets have no WhatsApp: the field goes away. */
+  protected readonly isPet = computed(() => isPet(this.relationship()));
   protected readonly phoneError = computed(() =>
-    this.showErrors() ? (Phone.validate(this.phone()) ?? '') : '',
+    this.showErrors() && !this.isPet() ? (Phone.validate(this.phone()) ?? '') : '',
   );
   protected readonly nameMaxLength = PersonName.MAX;
   protected readonly maskPhone = Phone.mask;
@@ -79,10 +79,18 @@ export class FamilyMemberFormComponent {
     this.relationship.set(option?.value ?? null);
   }
 
+  /** Enter in a field saves, unless it picked an option of Parentesco. */
+  protected onEnter(event: Event): void {
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    this.submit();
+  }
+
   protected submit(): void {
     const name = PersonName.create(this.name());
     const relationship = this.relationship();
-    if (!name || !relationship || Phone.validate(this.phone())) {
+    const pet = isPet(relationship);
+    if (!name || !relationship || (!pet && Phone.validate(this.phone()))) {
       this.showErrors.set(true);
       revealFirstInvalidSoon(this.host.nativeElement);
       return;
@@ -90,7 +98,7 @@ export class FamilyMemberFormComponent {
     this.submitted.emit({
       name: name.value,
       relationship,
-      phone: Phone.create(this.phone())?.formatted,
+      phone: pet ? '' : Phone.create(this.phone())?.formatted,
     });
     if (!this.member()) this.load(null);
   }

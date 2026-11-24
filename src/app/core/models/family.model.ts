@@ -1,4 +1,12 @@
-export type FamilyRelationship = 'spouse' | 'child' | 'parent' | 'sibling' | 'relative' | 'other';
+/** `pet`: an animal of the family. It goes to events but is not counted as a person. */
+export type FamilyRelationship =
+  | 'spouse'
+  | 'child'
+  | 'parent'
+  | 'sibling'
+  | 'relative'
+  | 'pet'
+  | 'other';
 
 export interface FamilyMember {
   id: string;

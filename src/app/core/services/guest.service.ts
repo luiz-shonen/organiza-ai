@@ -138,8 +138,12 @@ export class GuestService {
             id: memberId,
             name: member.name,
             primaryGuestId: primaryGuest.uid,
+            // Shown beside the name in "Confirmados"; a pet is counted apart from people.
+            relationship: member.relationship ?? 'other',
             // An older family phone may break the rules' format; it is not needed for the RSVP.
-            phone: Phone.create(member.phone)?.formatted ?? '',
+            // A pet has none.
+            phone:
+              member.relationship === 'pet' ? '' : (Phone.create(member.phone)?.formatted ?? ''),
             isConfirmed: true,
             confirmedAt: now,
             createdAt: now,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { EventClaims, Guest, PartyItem } from '../models';
-import { buildGuestHouseholds } from './guest-households.utils';
+import { buildGuestHouseholds, countGuests, householdPeople } from './guest-households.utils';
 
 const items = [
   { id: 'i1', name: 'Carne', quantity: 4, unit: 'kg', claimedBy: null },
@@ -63,5 +63,31 @@ describe('buildGuestHouseholds', () => {
         ],
       },
     ]);
+  });
+});
+
+describe('kinship and pets', () => {
+  const guests = [
+    { id: 'u1', uid: 'u1', name: 'Luiz', companions: [{ name: 'Soraya' }] },
+    { id: 'u1_f1', name: 'Shiba', primaryGuestId: 'u1', relationship: 'pet' },
+    { id: 'u1_f2', name: 'Ana', primaryGuestId: 'u1', relationship: 'child' },
+    { id: 'u1_f3', name: 'Rui', primaryGuestId: 'u1' },
+  ] as Guest[];
+
+  it('shows each relative with their kinship, "Família" when it was not saved', () => {
+    const [household] = buildGuestHouseholds(guests, [], []);
+    expect(household.members.map((member) => member.role)).toEqual([
+      'Convidado(a)',
+      'Pet',
+      'Filho(a)',
+      'Família',
+      'Acompanhante',
+    ]);
+    expect(household.pets).toBe(1);
+    expect(householdPeople(household)).toBe(4);
+  });
+
+  it('counts pets apart from people', () => {
+    expect(countGuests(guests)).toEqual({ people: 4, pets: 1 });
   });
 });

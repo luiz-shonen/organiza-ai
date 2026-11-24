@@ -277,10 +277,10 @@ describe('Core Utilities', () => {
   });
 
   describe('relationship.utils', () => {
-    it('RELATIONSHIP_OPTIONS contains all 6 family relationship options', () => {
-      expect(RELATIONSHIP_OPTIONS).toHaveLength(6);
+    it('RELATIONSHIP_OPTIONS contains all 7 family relationship options, Pet included', () => {
+      expect(RELATIONSHIP_OPTIONS).toHaveLength(7);
       const values = RELATIONSHIP_OPTIONS.map((opt) => opt.value);
-      expect(values).toEqual(['spouse', 'child', 'parent', 'sibling', 'relative', 'other']);
+      expect(values).toEqual(['spouse', 'child', 'parent', 'sibling', 'relative', 'pet', 'other']);
     });
 
     it('getRelationshipLabel maps values to Portuguese localized labels', () => {

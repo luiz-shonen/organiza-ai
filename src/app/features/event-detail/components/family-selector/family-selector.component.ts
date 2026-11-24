@@ -1,33 +1,37 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { RELATIONSHIP_OPTIONS, getRelationshipLabel } from '../../../../core/utils';
-import { PersonName } from '../../../../core/value-objects';
+import { getRelationshipLabel } from '../../../../core/utils';
+import {
+  FamilyMemberFormComponent,
+  type AddFamilyMemberPayload,
+} from '../../../../shared/components/family-member-form/family-member-form.component';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
   OrgExpansionPanelComponent,
-  OrgAutocompleteFieldComponent,
-  OrgTextFieldComponent,
-  type OrgSelectOption,
+  OrgIconButtonComponent,
 } from '../../../../shared/ui';
 
-export interface InlineFamilyMemberPayload {
-  name: string;
-  relationship: FamilyRelationship;
-  phone?: string;
+export type InlineFamilyMemberPayload = AddFamilyMemberPayload;
+
+/** A relative edited from the RSVP drawer: their id and what was typed. */
+export interface UpdateInlineFamilyMemberPayload extends AddFamilyMemberPayload {
+  id: string;
 }
 
+/**
+ * "Levar familiares?": the family of the profile, to tick who goes. Relatives are added,
+ * edited and removed right here (saved to the profile), with the same form as the profile.
+ */
 @Component({
   selector: 'app-family-selector',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    FamilyMemberFormComponent,
     OrgButtonComponent,
     OrgCheckboxComponent,
     OrgExpansionPanelComponent,
-    OrgAutocompleteFieldComponent,
-    OrgTextFieldComponent,
+    OrgIconButtonComponent,
   ],
   templateUrl: './family-selector.component.html',
   styleUrl: './family-selector.component.scss',
@@ -35,31 +39,19 @@ export interface InlineFamilyMemberPayload {
 export class FamilySelectorComponent {
   readonly members = input<FamilyMember[]>([]);
   readonly selectedIds = input<string[]>([]);
+  /** A relative is being saved: the forms wait. */
   readonly isAddingInline = input<boolean>(false);
 
   readonly toggleMember = output<string>();
   readonly selectAll = output<boolean>();
   readonly addInlineMember = output<InlineFamilyMemberPayload>();
+  readonly updateMember = output<UpdateInlineFamilyMemberPayload>();
+  readonly removeMember = output<string>();
 
   protected readonly isExpanded = signal<boolean>(false);
   protected readonly showInlineForm = signal<boolean>(false);
-
-  protected readonly inlineName = signal<string>('');
-  /** Null while what is typed in Parentesco matches no option. */
-  protected readonly inlineRelationship = signal<FamilyRelationship | null>('child');
-  /** Set on a submit with invalid fields; the errors then follow what is typed. */
-  protected readonly showInlineErrors = signal(false);
-  protected readonly inlineNameError = computed(() =>
-    this.showInlineErrors() ? (PersonName.validate(this.inlineName()) ?? '') : '',
-  );
-  protected readonly inlineRelationshipError = computed(() =>
-    this.showInlineErrors() && !this.inlineRelationship() ? 'Escolha um parentesco da lista' : '',
-  );
-  protected readonly nameMaxLength = PersonName.MAX;
-
-  protected readonly relationshipOptions = RELATIONSHIP_OPTIONS;
-  protected readonly relationshipAutocompleteOptions: readonly OrgSelectOption[] =
-    this.relationshipOptions;
+  /** The relative whose row shows the form to edit them. */
+  protected readonly editingId = signal<string | null>(null);
 
   protected readonly allSelected = computed(() => {
     const list = this.members();
@@ -96,46 +88,31 @@ export class FamilySelectorComponent {
   }
 
   protected onToggleInlineForm(): void {
+    this.editingId.set(null);
     this.showInlineForm.update((v) => !v);
-    if (!this.showInlineForm()) {
-      this.resetInlineForm();
-    }
   }
 
   protected onCancelInlineForm(): void {
     this.showInlineForm.set(false);
-    this.resetInlineForm();
   }
 
-  protected onSubmitInline(): void {
-    if (!this.inlineName().trim()) return;
-    const name = PersonName.create(this.inlineName());
-    const relationship = this.inlineRelationship();
-    if (!name || !relationship) {
-      this.showInlineErrors.set(true);
-      return;
-    }
-
-    this.addInlineMember.emit({ name: name.value, relationship });
-
+  protected onSubmitInline(payload: AddFamilyMemberPayload): void {
+    this.addInlineMember.emit(payload);
     this.showInlineForm.set(false);
-    this.resetInlineForm();
   }
 
-  /** Enter in the name adds the member instead of submitting the RSVP around it. */
-  protected onInlineEnter(event: Event): void {
-    event.preventDefault();
-    this.onSubmitInline();
+  protected onEdit(memberId: string): void {
+    this.showInlineForm.set(false);
+    this.editingId.set(memberId);
   }
 
-  protected setInlineRelationship(value: string | null): void {
-    const option = this.relationshipOptions.find((relationship) => relationship.value === value);
-    this.inlineRelationship.set(option?.value ?? null);
+  protected onSaveEdit(memberId: string, payload: AddFamilyMemberPayload): void {
+    this.updateMember.emit({ id: memberId, ...payload });
+    this.editingId.set(null);
   }
 
-  private resetInlineForm(): void {
-    this.inlineName.set('');
-    this.inlineRelationship.set('child');
-    this.showInlineErrors.set(false);
+  protected onRemove(memberId: string): void {
+    if (this.editingId() === memberId) this.editingId.set(null);
+    this.removeMember.emit(memberId);
   }
 }

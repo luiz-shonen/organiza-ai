@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import type { ItemClaimEntry } from '../models';
+import type { FamilyRelationship, ItemClaimEntry } from '../models';
 import { secretSantaRsvpId } from '../utils/secret-santa.utils';
 import { FirestoreGateway } from './firestore.gateway';
 import { SecretSantaService } from './secret-santa.service';
@@ -32,12 +32,18 @@ export class NameSyncService {
   }
 
   /** A relative on the profile was renamed. */
-  async syncFamilyMemberName(uid: string, memberId: string, name: string): Promise<void> {
+  async syncFamilyMemberName(
+    uid: string,
+    memberId: string,
+    name: string,
+    /** The kinship shown beside the name in "Confirmados", kept in step too. */
+    relationship?: FamilyRelationship,
+  ): Promise<void> {
     const clean = name.trim();
     if (!uid || !memberId || !clean) return;
     await this.eachEvent(uid, (eventId) =>
       Promise.all([
-        this.renameGuest(`events/${eventId}/guests/${uid}_${memberId}`, clean),
+        this.renameGuest(`events/${eventId}/guests/${uid}_${memberId}`, clean, relationship),
         this.renameClaims(eventId, uid, memberId, clean),
         this.renameSantaEntry(eventId, uid, secretSantaRsvpId(uid, { familyId: memberId }), clean),
       ]),
@@ -52,10 +58,23 @@ export class NameSyncService {
     await Promise.all(events.map((eventId) => fn(eventId).catch(() => undefined)));
   }
 
-  private async renameGuest(path: string, name: string): Promise<void> {
-    const guest = await this.gateway.getDoc<{ name?: string }>(path).catch(() => null);
-    if (!guest || guest.name === name) return;
-    await this.gateway.updateDoc(path, { name }).catch(() => undefined);
+  private async renameGuest(
+    path: string,
+    name: string,
+    relationship?: FamilyRelationship,
+  ): Promise<void> {
+    const guest = await this.gateway
+      .getDoc<{ name?: string; relationship?: string }>(path)
+      .catch(() => null);
+    if (!guest) return;
+    const changes = {
+      ...(guest.name !== name ? { name } : {}),
+      ...(relationship && guest.relationship !== relationship
+        ? { relationship, ...(relationship === 'pet' ? { phone: '' } : {}) }
+        : {}),
+    };
+    if (!Object.keys(changes).length) return;
+    await this.gateway.updateDoc(path, changes).catch(() => undefined);
   }
 
   /** The lines of what this person brings (`memberId` null for the account holder). */

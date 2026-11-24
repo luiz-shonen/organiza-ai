@@ -21,7 +21,13 @@ import {
   NotificationService,
   UserService,
 } from '../../../core/services';
-import { buildItemProgress, daysUntil, hasStarted, shareWhatsApp } from '../../../core/utils';
+import {
+  buildItemProgress,
+  countGuests,
+  daysUntil,
+  hasStarted,
+  shareWhatsApp,
+} from '../../../core/utils';
 import type { PartyEvent } from '../../../core/models';
 import {
   FeedbackService,
@@ -301,10 +307,8 @@ export class DashboardContainer {
             firstValueFrom(this.claimService.listClaims(event.id)),
           ]);
           const progress = buildItemProgress(items, claims);
-          const people = guests.reduce(
-            (sum, guest) => sum + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
-            0,
-          );
+          // Pets go too, but are not counted as people.
+          const people = countGuests(guests).people;
           const stats: EventStats = {
             guests: people,
             items: progress.length,

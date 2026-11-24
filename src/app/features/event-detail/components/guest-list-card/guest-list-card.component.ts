@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import type { GuestDecline } from '../../../../core/models';
-import type { GuestHousehold, PendingGuest } from '../../../../core/utils';
+import {
+  householdPeople,
+  petsLabel,
+  type GuestHousehold,
+  type PendingGuest,
+} from '../../../../core/utils';
 import { Phone } from '../../../../core/value-objects';
 import {
   OrgAvatarComponent,
@@ -57,12 +62,17 @@ export class GuestListCardComponent {
   /** "5 confirmados": everyone going, the guests and the people coming with them. */
   /** Everyone going: the guests and the people coming with them. */
   protected readonly people = computed(() =>
-    this.households().reduce((total, household) => total + household.members.length, 0),
+    this.households().reduce((total, household) => total + householdPeople(household), 0),
   );
-  /** Under the heading: how many answered, the count of people being in the pill. */
+  /** Pets go too, but are counted apart from people. */
+  protected readonly pets = computed(() =>
+    this.households().reduce((total, household) => total + (household.pets ?? 0), 0),
+  );
+  /** Under the heading: how many answered (and the pets), the count of people in the pill. */
   protected readonly summary = computed(() => {
     const families = this.households().length;
-    return families === 1 ? '1 família respondeu' : `${families} famílias responderam`;
+    const answered = families === 1 ? '1 família respondeu' : `${families} famílias responderam`;
+    return this.pets() ? `${answered} · ${petsLabel(this.pets())}` : answered;
   });
 
   /** Beside the guest's name: "+2 · 3 itens", short enough for a phone. */
@@ -73,10 +83,11 @@ export class GuestListCardComponent {
 
   protected householdSummary(household: GuestHousehold): string {
     // Only what the line does not already say: one person alone needs no "1 pessoa".
-    const people = household.members.length;
+    const people = householdPeople(household);
     const items = household.bring.length;
     return [
       ...(people > 1 ? [`${people} pessoas`] : []),
+      ...(household.pets ? [petsLabel(household.pets)] : []),
       ...(items ? [items === 1 ? '1 item' : `${items} itens`] : []),
     ].join(' · ');
   }

@@ -12,7 +12,7 @@ import {
 import {
   FamilyMemberFormComponent,
   type AddFamilyMemberPayload,
-} from '../family-member-form/family-member-form.component';
+} from '../../../../shared/components/family-member-form/family-member-form.component';
 
 export type { AddFamilyMemberPayload };
 

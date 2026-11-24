@@ -20,6 +20,7 @@ import {
   CollaboratorInvitesService,
   UserService,
   FamilyService,
+  NameSyncService,
   ConfettiService,
   CelebrationSoundService,
   SeasonalThemeService,
@@ -53,6 +54,8 @@ import {
   addClaimEntry,
   buildFamilyChecklist,
   buildGuestHouseholds,
+  countGuests,
+  isPet,
   buildItemProgress,
   buildSecretSantaRevealUrl,
   buildSecretSantaWhatsAppUrl,
@@ -155,6 +158,7 @@ export class EventDetailContainer implements OnInit {
   private readonly collaboratorInvites = inject(CollaboratorInvitesService);
   private readonly userService = inject(UserService);
   private readonly familyService = inject(FamilyService);
+  private readonly nameSync = inject(NameSyncService);
   private readonly confetti = inject(ConfettiService);
   private readonly celebrationSound = inject(CelebrationSoundService);
   private readonly seasonalThemeService = inject(SeasonalThemeService);
@@ -777,12 +781,10 @@ export class EventDetailContainer implements OnInit {
     () => this.canEdit() && !hasStarted(this.event()?.date),
   );
 
-  protected readonly guestCount = computed(() => {
-    return this.listedGuests().reduce(
-      (sum, guest) => sum + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
-      0,
-    );
-  });
+  /** People going; pets are counted apart (`petCount`). */
+  private readonly confirmedCounts = computed(() => countGuests(this.listedGuests()));
+  protected readonly guestCount = computed(() => this.confirmedCounts().people);
+  protected readonly petCount = computed(() => this.confirmedCounts().pets);
 
   /** Only signed-in accounts answer invites; there are no anonymous guests. */
   protected readonly isUserConfirmed = computed(() => {
@@ -1341,6 +1343,45 @@ export class EventDetailContainer implements OnInit {
               throw err;
             }
           },
+          updateFamilyMember: async (memberId, changes) => {
+            try {
+              await this.familyService.updateFamilyMember(user.uid, memberId, changes);
+              // The events this relative was confirmed in follow (in the background).
+              void this.nameSync
+                .syncFamilyMemberName(user.uid, memberId, changes.name, changes.relationship)
+                .catch(() => undefined);
+              this.feedback.success(`${changes.name} foi atualizado(a).`);
+            } catch (err) {
+              console.error(err);
+              this.feedback.error(
+                explainError('Não foi possível atualizar o familiar. Tente novamente.', err),
+              );
+              throw err;
+            }
+          },
+          removeFamilyMember: async (memberId) => {
+            const name = familyMembers.find((member) => member.id === memberId)?.name ?? '';
+            const confirmed = await firstValueFrom(
+              this.dialogs.confirm({
+                title: 'Remover familiar',
+                message: `${name || 'Este familiar'} sai da sua família e deixa de aparecer para confirmar presença junto com você.`,
+                confirmLabel: 'Remover',
+                tone: 'danger',
+              }),
+            );
+            if (!confirmed) return false;
+            try {
+              await this.familyService.deleteFamilyMember(user.uid, memberId);
+              this.feedback.success(`${name || 'Familiar'} foi removido(a) da sua família.`);
+              return true;
+            } catch (err) {
+              console.error(err);
+              this.feedback.error(
+                explainError('Não foi possível remover o familiar. Tente novamente.', err),
+              );
+              throw err;
+            }
+          },
         },
         onComplete: async (result: RsvpDrawerResult) => {
           const newPhone = result.phone || phone;
@@ -1437,7 +1478,10 @@ export class EventDetailContainer implements OnInit {
     if (!settings?.enabled) return null;
     const keys = [
       'self',
-      ...familyMembers.map((member) => `f:${member.id}`),
+      // Pets go to the party, not to the draw.
+      ...familyMembers
+        .filter((member) => !isPet(member.relationship))
+        .map((member) => `f:${member.id}`),
       ...[...new Set(companions)].map((name) => `c:${name}`),
     ];
     const idToKey = new Map(keys.map((key) => [rsvpSecretSantaEntryId(uid, key), key]));

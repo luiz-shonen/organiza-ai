@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import type { RsvpSecretSantaData } from '../../../../core/models';
+import { petsLabel } from '../../../../core/utils';
 import { DeclineMessage, Phone } from '../../../../core/value-objects';
 import { GiftOptionsFieldComponent } from '../../../../shared/components/gift-options-field/gift-options-field.component';
 import {
@@ -60,6 +61,13 @@ export class RsvpCardComponent {
   /** The event has a list of things to bring; without one the card does not mention items. */
   readonly hasItems = input<boolean>(true);
   readonly guestCount = input<number>(0);
+  /** Pets confirmed, shown apart: "30 pessoas confirmadas · 2 pets". */
+  readonly petCount = input<number>(0);
+  protected readonly confirmedLabel = computed(() => {
+    const count = this.guestCount();
+    const people = count === 1 ? '1 pessoa confirmada' : `${count} pessoas confirmadas`;
+    return this.petCount() ? `${people} · ${petsLabel(this.petCount())}` : people;
+  });
   readonly isLoading = input<boolean>(false);
   readonly guestName = input<string | null>(null);
   /** Confirmed, and the event asks for approval: waiting for the owner. */

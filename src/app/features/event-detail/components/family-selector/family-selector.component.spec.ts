@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { By } from '@angular/platform-browser';
 import { FamilySelectorComponent } from './family-selector.component';
+import { FamilyMemberFormComponent } from '../../../../shared/components/family-member-form/family-member-form.component';
 import { FamilyMember } from '../../../../core/models';
 
 describe('FamilySelectorComponent', () => {
@@ -90,89 +92,101 @@ describe('FamilySelectorComponent', () => {
     expect(selectAllSpy).toHaveBeenCalledWith(true);
   });
 
-  it('should show inline form and emit addInlineMember upon submission', () => {
+  /** The form shown for a new relative or for one being edited. */
+  function memberForm(prefix: string): FamilyMemberFormComponent {
+    const found = fixture.debugElement
+      .queryAll(By.directive(FamilyMemberFormComponent))
+      .map((debug) => debug.componentInstance as FamilyMemberFormComponent)
+      .find((form) => form.testIdPrefix() === prefix);
+    if (!found) throw new Error(`No form ${prefix}`);
+    return found;
+  }
+
+  it('adds a relative with the profile form, phone included, and closes it', () => {
     fixture.componentRef.setInput('members', mockMembers);
-    fixture.componentRef.setInput('selectedIds', []);
+    fixture.detectChanges();
+    const added = vi.fn();
+    component.addInlineMember.subscribe(added);
+
+    component['onToggleInlineForm']();
+    fixture.detectChanges();
+    const form = memberForm('inline-family-member');
+    form['name'].set('Pedro Silva');
+    form['setRelationship']('sibling');
+    form['phone'].set('11977775555');
+    form['submit']();
     fixture.detectChanges();
 
-    const addInlineSpy = vi.fn();
-    component.addInlineMember.subscribe(addInlineSpy);
-
-    // Open inline form
-    component['onToggleInlineForm']();
-    expect(component['showInlineForm']()).toBe(true);
-
-    // Set values
-    component['inlineName'].set('Pedro Silva');
-    component['setInlineRelationship']('sibling');
-
-    component['onSubmitInline']();
-
-    expect(addInlineSpy).toHaveBeenCalledWith({ name: 'Pedro Silva', relationship: 'sibling' });
+    expect(added).toHaveBeenCalledWith({
+      name: 'Pedro Silva',
+      relationship: 'sibling',
+      phone: '(11) 97777-5555',
+    });
     expect(component['showInlineForm']()).toBe(false);
-    expect(component['inlineName']()).toBe('');
   });
 
-  it('should keep the inline form open and show errors for an invalid name or relationship', () => {
+  it('offers Pet among the kinships and asks no phone for one', () => {
     fixture.componentRef.setInput('members', mockMembers);
-    fixture.componentRef.setInput('selectedIds', []);
     fixture.detectChanges();
-    const addInlineSpy = vi.fn();
-    component.addInlineMember.subscribe(addInlineSpy);
+    component['onToggleInlineForm']();
+    fixture.detectChanges();
+
+    const form = memberForm('inline-family-member');
+    const text = () => (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text()).toContain('WhatsApp');
+    form['setRelationship']('pet');
+    fixture.detectChanges();
+    expect(text()).not.toContain('WhatsApp');
+  });
+
+  it('edits a relative in its own row and emits the changes', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.detectChanges();
+    const updated = vi.fn();
+    component.updateMember.subscribe(updated);
+
+    component['onEdit']('fam-2');
+    fixture.detectChanges();
+    const form = memberForm('edit-family-member');
+    expect(form['name']()).toBe('Mariana Silva');
+    form['name'].set('Mariana Souza');
+    form['submit']();
+    fixture.detectChanges();
+
+    expect(updated).toHaveBeenCalledWith({
+      id: 'fam-2',
+      name: 'Mariana Souza',
+      relationship: 'spouse',
+      phone: '(11) 98888-7777',
+    });
+    expect(component['editingId']()).toBeNull();
+  });
+
+  it('asks to remove a relative', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.detectChanges();
+    const removed = vi.fn();
+    component.removeMember.subscribe(removed);
+
+    (
+      fixture.nativeElement.querySelectorAll(
+        '[data-testid="family-selector-remove-btn"] button, button[data-testid="family-selector-remove-btn"]',
+      )[0] as HTMLButtonElement
+    ).click();
+
+    expect(removed).toHaveBeenCalledWith('fam-1');
+  });
+
+  it('cancels the new relative without emitting', () => {
+    fixture.componentRef.setInput('members', mockMembers);
+    fixture.detectChanges();
+    const added = vi.fn();
+    component.addInlineMember.subscribe(added);
 
     component['onToggleInlineForm']();
-    component['inlineName'].set('Pedro 123');
-    component['setInlineRelationship'](null);
-    component['onSubmitInline']();
-    fixture.detectChanges();
-
-    expect(addInlineSpy).not.toHaveBeenCalled();
-    expect(component['showInlineForm']()).toBe(true);
-    const text = (fixture.nativeElement as HTMLElement).textContent;
-    expect(text).toContain('Use só letras, espaços, hífen ou apóstrofo');
-    expect(text).toContain('Escolha um parentesco da lista');
-  });
-
-  it('should compose the six relationship choices with the shared autocomplete field', () => {
-    fixture.componentRef.setInput('members', mockMembers);
-    fixture.componentRef.setInput('selectedIds', []);
-    fixture.detectChanges();
-
-    (component as unknown as { onToggleInlineForm: () => void }).onToggleInlineForm();
-    fixture.detectChanges();
-
-    expect(component['relationshipOptions']).toHaveLength(6);
-    expect(
-      (fixture.nativeElement as HTMLElement).querySelector('org-autocomplete-field'),
-    ).toBeTruthy();
-  });
-
-  it('should cancel inline form without emitting addInlineMember', () => {
-    fixture.componentRef.setInput('members', mockMembers);
-    fixture.detectChanges();
-
-    const addInlineSpy = vi.fn();
-    component.addInlineMember.subscribe(addInlineSpy);
-
-    component['onToggleInlineForm']();
-    component['inlineName'].set('Draft Name');
     component['onCancelInlineForm']();
 
-    expect(addInlineSpy).not.toHaveBeenCalled();
+    expect(added).not.toHaveBeenCalled();
     expect(component['showInlineForm']()).toBe(false);
-    expect(component['inlineName']()).toBe('');
-  });
-
-  it('should not emit addInlineMember if name is empty', () => {
-    fixture.componentRef.setInput('members', mockMembers);
-    fixture.detectChanges();
-
-    const addInlineSpy = vi.fn();
-    component.addInlineMember.subscribe(addInlineSpy);
-
-    component['inlineName'].set('   ');
-    component['onSubmitInline']();
-
-    expect(addInlineSpy).not.toHaveBeenCalled();
   });
 });

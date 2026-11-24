@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { FamilyMember, type RsvpSecretSantaKey } from '../../../../core/models';
+import { isPet } from '../../../../core/utils';
 import {
   Phone,
   fieldError,
@@ -23,6 +24,7 @@ import { CompanionSelectorComponent } from '../companion-selector/companion-sele
 import {
   FamilySelectorComponent,
   type InlineFamilyMemberPayload,
+  type UpdateInlineFamilyMemberPayload,
 } from '../family-selector/family-selector.component';
 import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
 import {
@@ -102,13 +104,16 @@ export class RsvpDrawerComponent {
   /** A relative's or companion's own WhatsApp, for their link; empty, it goes to the guest's. */
   protected readonly santaPhones = signal<Readonly<Record<RsvpSecretSantaKey, string>>>({});
   private readonly santaPhonesError = signal(false);
-  /** The guest, then the relatives and companions checked above: only who is going. */
+  /** The guest, then the relatives and companions checked above: only who is going, no pets. */
   protected readonly santaPeople = computed<RsvpSantaPerson[]>(() => {
     const name = this.guestName();
     return [
       { key: 'self', name, label: name ? `Você (${name})` : 'Você' },
       ...this.familyMembers()
-        .filter((member) => this.selectedFamilyMemberIds().includes(member.id))
+        .filter(
+          (member) =>
+            this.selectedFamilyMemberIds().includes(member.id) && !isPet(member.relationship),
+        )
         .map((member) => ({ key: `f:${member.id}`, name: member.name, label: member.name })),
       ...this.selectedCompanions().map((companion) => ({
         key: `c:${companion}`,
@@ -239,6 +244,41 @@ export class RsvpDrawerComponent {
       this.selectedFamilyMemberIds.update((ids) => [...ids, member.id]);
     } catch {
       // The page tells the user; what was typed in the RSVP itself stays.
+    } finally {
+      this.isAddingInline.set(false);
+    }
+  }
+
+  /** Saved to the profile right away; the drawer shows the new name and kinship. */
+  protected async onUpdateFamilyMember(payload: UpdateInlineFamilyMemberPayload): Promise<void> {
+    const save = this.drawerData().updateFamilyMember;
+    if (!save) return;
+    this.isAddingInline.set(true);
+    try {
+      const { id, ...changes } = payload;
+      const changed = { ...changes, phone: changes.phone ?? '' };
+      await save(id, changed);
+      this.familyMembers.update((members) =>
+        members.map((member) => (member.id === id ? { ...member, ...changed } : member)),
+      );
+    } catch {
+      // The page tells the user; the relative stays as it was.
+    } finally {
+      this.isAddingInline.set(false);
+    }
+  }
+
+  /** Removed from the profile after the page confirms it; no longer ticked here either. */
+  protected async onRemoveFamilyMember(memberId: string): Promise<void> {
+    const remove = this.drawerData().removeFamilyMember;
+    if (!remove) return;
+    this.isAddingInline.set(true);
+    try {
+      if (!(await remove(memberId))) return;
+      this.familyMembers.update((members) => members.filter((member) => member.id !== memberId));
+      this.selectedFamilyMemberIds.update((ids) => ids.filter((id) => id !== memberId));
+    } catch {
+      // The page tells the user; the relative stays.
     } finally {
       this.isAddingInline.set(false);
     }

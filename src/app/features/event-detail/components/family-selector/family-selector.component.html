@@ -29,20 +29,51 @@
 
       <ul class="family-selector__list" role="list" aria-label="Lista de familiares para seleção">
         @for (member of members(); track member.id) {
-          <li class="family-selector__item" role="listitem">
-            <org-checkbox
-              class="family-selector__checkbox"
-              [checked]="isMemberSelected(member.id)"
-              (checkedChange)="onToggleMember(member.id)"
-              [ariaLabel]="'Confirmar presença para ' + member.name"
-            >
-              <div class="family-selector__member-info">
-                <span class="family-selector__member-name">{{ member.name }}</span>
-                <span class="family-selector__member-badge">{{
-                  getRelationshipLabel(member.relationship)
-                }}</span>
+          <li class="family-selector__item" role="listitem" data-testid="family-selector-member">
+            @if (editingId() === member.id) {
+              <app-family-member-form
+                class="family-selector__edit-form"
+                testIdPrefix="edit-family-member"
+                submitLabel="Salvar"
+                cancelLabel="Cancelar"
+                [member]="member"
+                [saving]="isAddingInline()"
+                (submitted)="onSaveEdit(member.id, $event)"
+                (cancelled)="editingId.set(null)"
+              />
+            } @else {
+              <div class="family-selector__row">
+                <org-checkbox
+                  class="family-selector__checkbox"
+                  [checked]="isMemberSelected(member.id)"
+                  (checkedChange)="onToggleMember(member.id)"
+                  [ariaLabel]="'Confirmar presença para ' + member.name"
+                >
+                  <div class="family-selector__member-info">
+                    <span class="family-selector__member-name">{{ member.name }}</span>
+                    <span class="family-selector__member-badge">{{
+                      getRelationshipLabel(member.relationship)
+                    }}</span>
+                  </div>
+                </org-checkbox>
+                <org-icon-button
+                  icon="edit"
+                  testId="family-selector-edit-btn"
+                  [gradient]="false"
+                  [ariaLabel]="'Editar ' + member.name"
+                  [disabled]="isAddingInline()"
+                  (pressed)="onEdit(member.id)"
+                />
+                <org-icon-button
+                  icon="delete_outline"
+                  testId="family-selector-remove-btn"
+                  [gradient]="false"
+                  [ariaLabel]="'Remover ' + member.name + ' da sua família'"
+                  [disabled]="isAddingInline()"
+                  (pressed)="onRemove(member.id)"
+                />
               </div>
-            </org-checkbox>
+            }
           </li>
         }
       </ul>
@@ -64,51 +95,16 @@
         />
       </div>
     } @else {
-      <!-- Not a <form>: it sits inside the RSVP form, and a nested submit sent that one. -->
-      <div
-        class="family-selector__inline-form"
-        role="group"
-        aria-label="Formulário rápido para adicionar novo familiar"
-      >
-        <h4 class="family-selector__inline-title">Novo Familiar</h4>
-
-        <div class="family-selector__inline-grid">
-          <org-text-field
-            class="family-selector__inline-field"
-            label="Nome"
-            placeholder="Ex: Pedro"
-            [required]="true"
-            [maxLength]="nameMaxLength"
-            [error]="inlineNameError()"
-            [(value)]="inlineName"
-            (keydown.enter)="onInlineEnter($event)"
-          />
-
-          <org-autocomplete-field
-            class="family-selector__inline-field"
-            label="Parentesco"
-            [options]="relationshipAutocompleteOptions"
-            [value]="inlineRelationship()"
-            [required]="true"
-            [error]="inlineRelationshipError()"
-            (valueChange)="setInlineRelationship($event)"
-          />
-        </div>
-
-        <div class="family-selector__inline-actions">
-          <org-button
-            label="Cancelar"
-            variant="text"
-            [gradient]="false"
-            (pressed)="onCancelInlineForm()"
-          />
-          <org-button
-            label="Adicionar"
-            [disabled]="!inlineName().trim() || isAddingInline()"
-            [loading]="isAddingInline()"
-            (pressed)="onSubmitInline()"
-          />
-        </div>
+      <div class="family-selector__inline-form">
+        <h4 class="family-selector__inline-title">Novo familiar</h4>
+        <app-family-member-form
+          testIdPrefix="inline-family-member"
+          submitLabel="Adicionar"
+          cancelLabel="Cancelar"
+          [saving]="isAddingInline()"
+          (submitted)="onSubmitInline($event)"
+          (cancelled)="onCancelInlineForm()"
+        />
       </div>
     }
   </org-expansion-panel>

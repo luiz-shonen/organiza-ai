@@ -9,8 +9,19 @@ export const RELATIONSHIP_OPTIONS: readonly RelationshipOption[] = [
   { value: 'parent', label: 'Pai/Mãe' },
   { value: 'sibling', label: 'Irmão(ã)' },
   { value: 'relative', label: 'Parente' },
+  { value: 'pet', label: 'Pet' },
   { value: 'other', label: 'Outro' },
 ] as const;
+
+/** A pet goes to events but is no person: no phone, no amigo oculto, counted apart. */
+export function isPet(relationship: FamilyRelationship | null | undefined): boolean {
+  return relationship === 'pet';
+}
+
+/** "1 pet" or "2 pets". */
+export function petsLabel(count: number): string {
+  return count === 1 ? '1 pet' : `${count} pets`;
+}
 
 /**
  * Returns a localized Portuguese label for a family relationship.

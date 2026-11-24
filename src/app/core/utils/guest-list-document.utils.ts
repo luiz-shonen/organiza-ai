@@ -1,5 +1,6 @@
 import { formatDaySpan, formatTime } from './date.utils';
 import type { GuestHousehold } from './guest-households.utils';
+import { petsLabel } from './relationship.utils';
 
 /** What the printed "Confirmados" list shows about the event. */
 export interface GuestListDocumentEvent {
@@ -42,9 +43,18 @@ export function guestListWhen(event: GuestListDocumentEvent): string {
   return `${label} · ${formatTime(event.date)}`;
 }
 
-/** Everyone counted: each household's account holder plus who comes with them. */
+/** Everyone counted: each household's account holder plus who comes with them, pets apart. */
 export function guestListPeopleCount(households: readonly GuestHousehold[]): number {
-  return households.reduce((total, household) => total + 1 + household.people.length, 0);
+  return households.reduce(
+    (total, household) => total + 1 + household.people.length - (household.pets ?? 0),
+    0,
+  );
+}
+
+/** The pets going, counted apart from people; "" when there are none. */
+export function guestListPetsLabel(households: readonly GuestHousehold[]): string {
+  const pets = households.reduce((total, household) => total + (household.pets ?? 0), 0);
+  return pets ? petsLabel(pets) : '';
 }
 
 /**
@@ -139,6 +149,7 @@ export function buildGuestListDocument(input: GuestListDocumentInput): string {
   <div class="summary">
     <span class="chip">${families === 1 ? '1 família' : `${families} famílias`}</span>
     <span class="chip green">${people === 1 ? '1 pessoa' : `${people} pessoas`}</span>
+    ${guestListPetsLabel(households) ? `<span class="chip">${guestListPetsLabel(households)}</span>` : ''}
   </div>
   <table>
     <thead>

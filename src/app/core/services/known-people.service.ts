@@ -5,6 +5,7 @@ import { GuestService } from './guest.service';
 import { SecretSantaService } from './secret-santa.service';
 import { FamilyService } from './family.service';
 import { buildKnownPeople, type KnownPerson } from '../utils/known-people.utils';
+import { isPet } from '../utils/relationship.utils';
 
 /** How many of the organizer's other events are read: the most recent ones. */
 const EVENTS_READ = 20;
@@ -43,10 +44,10 @@ export class KnownPeopleService {
         ];
       }),
     );
-    const family = (await this.family.getFamilyMembers(uid).catch(() => [])).map((member) => ({
-      name: member.name,
-      phone: member.phone ?? '',
-    }));
+    // Pets never enter an amigo oculto.
+    const family = (await this.family.getFamilyMembers(uid).catch(() => []))
+      .filter((member) => !isPet(member.relationship))
+      .map((member) => ({ name: member.name, phone: member.phone ?? '' }));
     return buildKnownPeople([...family, ...fromEvents.flat()]);
   }
 }

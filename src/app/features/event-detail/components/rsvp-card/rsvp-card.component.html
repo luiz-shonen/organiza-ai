@@ -10,9 +10,7 @@
             ? 'Você recusou este convite'
             : 'Confirme sua presença'
       "
-      [subheading]="
-        guestCount() === 1 ? '1 pessoa confirmada' : guestCount() + ' pessoas confirmadas'
-      "
+      [subheading]="confirmedLabel()"
     />
 
     @if (declining()) {

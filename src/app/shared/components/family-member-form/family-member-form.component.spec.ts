@@ -87,3 +87,25 @@ describe('FamilyMemberFormComponent', () => {
     expect(component['name']()).toBe('Mariana Silva');
   });
 });
+
+describe('FamilyMemberFormComponent for a pet', () => {
+  it('asks no WhatsApp and saves none', async () => {
+    await TestBed.configureTestingModule({
+      imports: [FamilyMemberFormComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(FamilyMemberFormComponent);
+    const submitted = vi.fn();
+    fixture.componentInstance.submitted.subscribe(submitted);
+    fixture.detectChanges();
+
+    fixture.componentInstance['name'].set('Shiba');
+    fixture.componentInstance['phone'].set('(11) 9');
+    fixture.componentInstance['setRelationship']('pet');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain('WhatsApp');
+
+    fixture.componentInstance['submit']();
+    expect(submitted).toHaveBeenCalledWith({ name: 'Shiba', relationship: 'pet', phone: '' });
+  });
+});

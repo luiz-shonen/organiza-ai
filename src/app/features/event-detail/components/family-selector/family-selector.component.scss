@@ -36,8 +36,21 @@
     padding: 4px 0;
   }
 
+  // The checkbox takes the line; ✏️ and 🗑 sit at its end.
+  &__row {
+    align-items: center;
+    display: flex;
+    gap: var(--org-space-2xs);
+  }
+
   &__checkbox {
-    width: 100%;
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  &__edit-form {
+    border-block: 1px solid var(--org-outline-variant);
+    padding-block: var(--org-space-sm);
   }
 
   &__member-info {
@@ -101,21 +114,5 @@
     font-size: var(--org-font-size-sm);
     font-weight: var(--org-font-weight-semibold);
     color: var(--org-on-surface);
-  }
-
-  &__inline-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--org-space-xs);
-  }
-
-  &__inline-field {
-    width: 100%;
-  }
-
-  &__inline-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
   }
 }

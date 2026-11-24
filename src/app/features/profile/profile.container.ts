@@ -174,7 +174,9 @@ export class ProfileContainer implements OnInit {
       this.savingFamilyMember.set(true);
       await this.familyService.updateFamilyMember(user.uid, id, changes);
       // The events this relative was confirmed in take the new name too (in the background).
-      void this.nameSync.syncFamilyMemberName(user.uid, id, changes.name).catch(() => undefined);
+      void this.nameSync
+        .syncFamilyMemberName(user.uid, id, changes.name, changes.relationship)
+        .catch(() => undefined);
       this.familyMembers.update((list) =>
         list.map((member) => (member.id === id ? { ...member, ...changes } : member)),
       );

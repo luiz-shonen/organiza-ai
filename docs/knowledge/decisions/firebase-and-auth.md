@@ -33,7 +33,7 @@ What the screens do with this data (invite states, filters, "Quem vai") is in
 - The rules check the fields people write, because a client can skip the app's value objects. The limits are looser than the app's, so they stop abuse without rejecting anything the app saves:
   - Names on profiles, family members, guests, claims and item claims have at most 120 characters and no `< > { }`.
   - Phones are empty, or 10 to 20 digits and phone punctuation.
-  - A family relationship must be one of the six options.
+  - A family relationship must be one of the seven options (Pet included); a relative confirmed to an event carries it too.
   - A theme must be `light`, `dark` or `system`.
   - Events only have size limits: a title of up to 200 characters, a description of up to 2000, and a location of up to 500.
 - On an update, the rules check only the fields that change. That way an older document with a value outside the rules can still be edited.

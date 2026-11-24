@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import {
   guestListPeopleCount,
+  guestListPetsLabel,
   guestListWhen,
   type GuestListDocumentInput,
 } from '../../core/utils/guest-list-document.utils';
@@ -137,7 +138,7 @@ export function buildGuestListPdf(input: GuestListDocumentInput): jsPDF {
     PRIMARY_CONTAINER,
     ON_PRIMARY_CONTAINER,
   );
-  chip(
+  const second = chip(
     doc,
     MARGIN + first + 3,
     y,
@@ -145,6 +146,10 @@ export function buildGuestListPdf(input: GuestListDocumentInput): jsPDF {
     GREEN_CONTAINER,
     ON_GREEN_CONTAINER,
   );
+  const pets = guestListPetsLabel(households);
+  if (pets) {
+    chip(doc, MARGIN + first + second + 6, y, pets, PRIMARY_CONTAINER, ON_PRIMARY_CONTAINER);
+  }
   y += 11;
 
   const headerRow = () => {

@@ -120,6 +120,7 @@ Features must use the typed `OrgIcon` API rather than placing raw Material icon 
 42. `cloud_off` — Offline network banner
 43. `redeem` — Amigo oculto (secret santa) and gift options
 44. `visibility` — Reveal the drawn secret santa
+45. `unfold_more` / `unfold_less` — "Expandir tudo" / "Recolher tudo" over a list of folded items
 
 ---
 

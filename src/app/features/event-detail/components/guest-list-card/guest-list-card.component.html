@@ -74,6 +74,23 @@
     }
 
     @if (households().length) {
+      @if (hasAnyDetails()) {
+        <!-- Everything starts folded; one tap opens or folds every family at once. -->
+        <div class="guest-list__fold-all no-print">
+          <org-button
+            variant="text"
+            testId="guest-list-fold-all"
+            [compact]="true"
+            [gradient]="false"
+            [icon]="allOpen() ? 'unfold_less' : 'unfold_more'"
+            [label]="allOpen() ? 'Recolher tudo' : 'Expandir tudo'"
+            [tooltip]="
+              allOpen() ? 'Fechar todas as famílias' : 'Abrir todas as famílias de uma vez'
+            "
+            (pressed)="allOpen.set(!allOpen())"
+          />
+        </div>
+      }
       <ul class="guest-list__households" aria-label="Convidados confirmados">
         @for (household of households(); track household.id) {
           <li class="guest-list__household" data-testid="guest-household">
@@ -83,7 +100,7 @@
                 [prominent]="true"
                 heading=""
                 [ariaLabel]="'Quem vai com ' + household.name"
-                [expanded]="$first || households().length <= 3"
+                [expanded]="allOpen()"
               >
                 <org-avatar
                   orgExpansionTitleLead

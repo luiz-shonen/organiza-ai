@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  linkedSignal,
+  output,
+  signal,
+} from '@angular/core';
 import { SECRET_SANTA_MAX_GIFT_OPTIONS } from '../../../core/models';
 import { GiftOption } from '../../../core/value-objects';
 import { OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent } from '../../ui';
@@ -179,6 +187,8 @@ export class GiftOptionsListComponent {
   /** The person's short comment, shown above the ideas ("Adoro cozinhar e tomar café"). */
   public readonly note = input<string | null | undefined>(null);
   public readonly collapsible = input(false);
+  /** "Expandir tudo" / "Recolher tudo" of the card: every list follows it, then each its own way. */
+  public readonly openAll = input(false);
   /** The person may change these ideas: a pencil and a trash can on each. */
   public readonly editable = input(false);
   public readonly edit = output<GiftOptionEdit>();
@@ -188,7 +198,7 @@ export class GiftOptionsListComponent {
   /** A new idea typed in place; the page saves it. */
   public readonly add = output<string>();
 
-  protected readonly open = signal(false);
+  protected readonly open = linkedSignal(() => this.openAll());
   protected readonly editingIndex = signal<number | null>(null);
   protected readonly editText = signal('');
   protected readonly editError = signal('');

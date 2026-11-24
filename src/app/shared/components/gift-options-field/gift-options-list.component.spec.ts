@@ -74,4 +74,18 @@ describe('GiftOptionsListComponent', () => {
     expect(note?.textContent).toBe('Adoro cozinhar\ne tomar café');
     expect(el.querySelectorAll('[data-testid="gift-options-list-item"]')).toHaveLength(0);
   });
+
+  it('follows the card\'s "Expandir tudo", and can still be folded on its own', () => {
+    const { fixture, el, button } = create(false);
+    fixture.componentRef.setInput('collapsible', true);
+    fixture.detectChanges();
+    const items = () => el.querySelectorAll('[data-testid="gift-options-list-item"]').length;
+    expect(items()).toBe(0);
+    fixture.componentRef.setInput('openAll', true);
+    fixture.detectChanges();
+    expect(items()).toBe(2);
+    button('gift-options-list-toggle').click();
+    fixture.detectChanges();
+    expect(items()).toBe(0);
+  });
 });

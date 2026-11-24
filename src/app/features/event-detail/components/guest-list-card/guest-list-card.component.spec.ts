@@ -124,4 +124,27 @@ describe('GuestListCardComponent', () => {
     expect(approve).toHaveBeenCalledWith(waiting);
     expect(refuse).toHaveBeenCalledWith(waiting);
   });
+
+  it('starts with every family folded and opens or folds them all at once', async () => {
+    await render(false);
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    fixture.componentRef.setInput('households', households);
+    fixture.componentRef.setInput('hasItems', true);
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    const panels = () =>
+      [...el.querySelectorAll('mat-expansion-panel')].map((panel) =>
+        panel.classList.contains('mat-expanded'),
+      );
+    expect(panels().every((open) => !open)).toBe(true);
+    const button = () =>
+      el.querySelector(
+        '[data-testid="guest-list-fold-all"] button, button[data-testid="guest-list-fold-all"]',
+      ) as HTMLButtonElement;
+    expect(button().textContent).toContain('Expandir tudo');
+    button().click();
+    fixture.detectChanges();
+    expect(panels().every((open) => open)).toBe(true);
+    expect(button().textContent).toContain('Recolher tudo');
+  });
 });

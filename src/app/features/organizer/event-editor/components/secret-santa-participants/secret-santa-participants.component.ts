@@ -89,6 +89,11 @@ export class SecretSantaParticipantsComponent {
   protected readonly editingIndex = signal<number | null>(null);
   /** "Adicionar alguém à mão" opens the form in a drawer (a bottom sheet on a phone). */
   protected readonly manualOpen = signal(false);
+  /** "Expandir tudo" / "Recolher tudo" of everyone's gift ideas; folded when the page opens. */
+  protected readonly giftsOpen = signal(false);
+  protected readonly anyGifts = computed(
+    () => this.giftOptions() && this.participants().some((p) => p.giftOptions.length > 0),
+  );
   /** "Participar também": the same drawer, filled with the organizer's profile. */
   protected readonly joiningSelf = signal(false);
   /** The organizer's own entry in the list, if they are in the draw. */

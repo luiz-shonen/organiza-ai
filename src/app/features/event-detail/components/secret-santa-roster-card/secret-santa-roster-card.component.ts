@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import {
   SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
   type SecretSantaParticipant,
@@ -40,6 +40,11 @@ export class SecretSantaRosterCardComponent {
   public readonly entries = input.required<readonly SecretSantaRosterEntry[]>();
   /** The event asks each participant for gift ideas, and how many. */
   public readonly giftOptions = input(false);
+  /** "Expandir tudo" / "Recolher tudo" of everyone's gift ideas; folded when the page opens. */
+  protected readonly giftsOpen = signal(false);
+  protected readonly anyGifts = computed(
+    () => this.giftOptions() && this.entries().some((entry) => entry.giftOptions.length > 0),
+  );
   /** One of the guest's own gift ideas changed or taken out, right in the card. */
   public readonly editGift = output<{ id: string; gift: number; text: string }>();
   public readonly removeGift = output<{ id: string; gift: number }>();

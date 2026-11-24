@@ -52,8 +52,24 @@
 }
 
 .family-roster__item-name {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
   font-size: var(--org-font-size-md);
   font-weight: var(--org-font-weight-semibold);
+  gap: var(--org-space-xs);
+  overflow-wrap: anywhere;
+}
+
+// The kinship as a tag, the same as in "Levar familiares?" and in "Confirmados".
+.family-roster__kinship {
+  background: var(--org-state-selected);
+  border-radius: var(--org-radius-xs);
+  color: var(--org-primary);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  padding: 1px 6px;
+  text-transform: uppercase;
 }
 
 .family-roster__item-sub {

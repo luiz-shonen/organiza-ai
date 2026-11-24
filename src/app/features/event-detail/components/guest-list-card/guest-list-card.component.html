@@ -151,10 +151,16 @@
                       <li class="guest-list__person">
                         <org-avatar [name]="person.name" />
                         <div class="guest-list__info">
-                          <p class="guest-list__name">
-                            {{ person.name }}
-                            <span class="guest-list__role">{{ person.role }}</span>
-                          </p>
+                          <!-- The name with the kinship tag beside it; under it, family or companion. -->
+                          <div class="guest-list__who-line">
+                            <p class="guest-list__name">
+                              {{ person.name }}
+                              @if (person.kinship) {
+                                <span class="guest-list__kinship">{{ person.kinship }}</span>
+                              }
+                            </p>
+                            <p class="guest-list__role">{{ person.role }}</p>
+                          </div>
                           @if (person.bring.length) {
                             <p class="guest-list__bring">Leva:</p>
                             <ul

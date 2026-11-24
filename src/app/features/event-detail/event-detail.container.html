@@ -257,6 +257,7 @@
         [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
         [drawn]="!!secretSantaDraw()"
         [saveNew]="saveNewSecretSantaParticipant"
+        [self]="secretSantaSelf()"
         (add)="addSecretSantaParticipants([$event])"
         (update)="updateSecretSantaParticipant($event)"
         (remove)="removeSecretSantaParticipant($event)"

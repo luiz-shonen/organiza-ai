@@ -444,6 +444,20 @@ export class EventDetailContainer implements OnInit {
         'oculto passa a valer assim que ela for aprovada.'
       : '',
   );
+  /**
+   * The organizer in the participants list: "Participar também" puts them in their own draw,
+   * named as on their profile, with the profile's phone.
+   */
+  protected readonly secretSantaSelf = computed(() => {
+    const uid = this.memberUid();
+    if (!uid) return null;
+    return {
+      uid,
+      name: this.publicProfiles()[uid]?.name || this.currentGuestName() || '',
+      phone: this.myPhone(),
+    };
+  });
+
   /** The confirmed guest may still join and is not in: "Participar do amigo oculto". */
   protected readonly canJoinSecretSanta = computed(() => {
     const santa = this.mySecretSanta();

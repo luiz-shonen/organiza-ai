@@ -50,6 +50,11 @@ export class SecretSantaParticipantFormComponent {
   public readonly cancelLabel = input<string | null>(null);
   public readonly testIdPrefix = input('santa');
   /**
+   * The name comes from an account (the organizer's own entry): it follows the profile, so it
+   * is shown but not typed here.
+   */
+  public readonly lockName = input(false);
+  /**
    * Saves the person and resolves true when it worked. Given, the form waits for it and keeps
    * what was typed when it fails; otherwise `submitted` is emitted and the form clears at once.
    */

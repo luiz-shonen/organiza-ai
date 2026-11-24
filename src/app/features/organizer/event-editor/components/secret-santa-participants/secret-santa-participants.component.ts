@@ -65,6 +65,11 @@ export class SecretSantaParticipantsComponent {
   public readonly saveNew = input<
     ((participant: SecretSantaParticipantInput) => Promise<boolean>) | null
   >(null);
+  /**
+   * The organizer looking at the list: offered "Participar também" while not in the draw, and
+   * their own entry stays theirs to edit, with the name of their profile.
+   */
+  public readonly self = input<{ uid: string; name: string; phone: string } | null>(null);
   public readonly add = output<SecretSantaParticipantInput>();
   public readonly update = output<SecretSantaParticipantUpdate>();
   public readonly remove = output<number>();
@@ -75,6 +80,17 @@ export class SecretSantaParticipantsComponent {
   private readonly expanded = signal<ReadonlySet<number>>(new Set());
   /** "Adicionar alguém à mão" opens the form in a drawer (a bottom sheet on a phone). */
   protected readonly manualOpen = signal(false);
+  /** "Participar também": the same drawer, filled with the organizer's profile. */
+  protected readonly joiningSelf = signal(false);
+  /** The organizer's own entry in the list, if they are in the draw. */
+  protected readonly selfIndex = computed(() => {
+    const uid = this.self()?.uid;
+    return uid ? this.participants().findIndex((p) => p.guestId === uid || p.joinedBy === uid) : -1;
+  });
+  protected readonly selfDraft = computed<SecretSantaParticipantInput | null>(() => {
+    const self = this.self();
+    return self ? { name: self.name, phone: self.phone, giftOptions: [], guestId: self.uid } : null;
+  });
   protected readonly editingParticipant = computed(() => {
     const index = this.editingIndex();
     return index === null ? null : (this.participants()[index] ?? null);
@@ -91,15 +107,27 @@ export class SecretSantaParticipantsComponent {
     return !!participant.joinedBy || !!participant.guestId;
   }
 
+  protected isSelf(index: number): boolean {
+    return index === this.selfIndex();
+  }
+
   /** Saves the person typed by hand; the drawer closes once it worked. */
   protected readonly saveNewAndClose = async (
     participant: SecretSantaParticipantInput,
   ): Promise<boolean> => {
     const save = this.saveNew();
     const saved = save ? await save(participant) : (this.add.emit(participant), true);
-    if (saved) this.manualOpen.set(false);
+    if (saved) {
+      this.manualOpen.set(false);
+      this.joiningSelf.set(false);
+    }
     return saved;
   };
+
+  protected closeManual(): void {
+    this.manualOpen.set(false);
+    this.joiningSelf.set(false);
+  }
 
   protected isExpanded(index: number): boolean {
     return this.expanded().has(index);

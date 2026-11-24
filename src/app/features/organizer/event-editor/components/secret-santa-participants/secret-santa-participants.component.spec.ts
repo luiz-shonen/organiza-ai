@@ -33,6 +33,42 @@ describe('SecretSantaParticipantsComponent', () => {
     expect(form()).toBeNull();
   });
 
+  it('lets the organizer join their own draw with the name of their profile, locked', async () => {
+    const saved: SecretSantaParticipantInput[] = [];
+    fixture.componentRef.setInput('self', { uid: 'owner', name: 'Luiz', phone: '(31) 99267-7624' });
+    fixture.componentRef.setInput('saveNew', async (p: SecretSantaParticipantInput) => {
+      saved.push(p);
+      return true;
+    });
+    fixture.detectChanges();
+
+    (byTestId('secret-santa-self-join-btn') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    const name = document.querySelector(
+      '[data-testid="add-participant-sheet"] [data-testid="santa-name-input"] input, [data-testid="add-participant-sheet"] input[data-testid="santa-name-input"]',
+    ) as HTMLInputElement;
+    expect(name.value).toBe('Luiz');
+    expect(name.readOnly).toBe(true);
+
+    (
+      document.querySelector(
+        '[data-testid="add-participant-sheet"] [data-testid="santa-submit-btn"] button, [data-testid="add-participant-sheet"] button[type="submit"]',
+      ) as HTMLButtonElement
+    ).click();
+    await fixture.whenStable();
+    expect(saved).toEqual([
+      { name: 'Luiz', phone: '(31) 99267-7624', giftOptions: [], guestId: 'owner' },
+    ]);
+
+    fixture.componentRef.setInput('participants', [
+      { id: 'p1', name: 'Luiz', phone: '', giftOptions: [], guestId: 'owner' },
+    ]);
+    fixture.detectChanges();
+    expect(byTestId('secret-santa-self-join-btn')).toBeNull();
+    expect(byTestId('secret-santa-self')).toBeTruthy();
+    expect(byTestId('secret-santa-self-edit-btn')).toBeTruthy();
+  });
+
   it('says how many people are still missing for a draw', () => {
     fixture.componentRef.setInput('participants', [
       { name: 'Ana', phone: '', giftOptions: [] },

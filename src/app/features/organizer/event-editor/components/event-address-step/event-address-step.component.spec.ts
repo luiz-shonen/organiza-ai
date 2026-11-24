@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { EventAddressStepComponent } from './event-address-step.component';
 import type { EventAddressForm } from '../../../../../core/models';
+import { MapLocation, valueObjectValidator } from '../../../../../core/value-objects';
 
 describe('EventAddressStepComponent', () => {
   let fixture: ComponentFixture<EventAddressStepComponent>;
@@ -33,6 +34,10 @@ describe('EventAddressStepComponent', () => {
       noNumber: new FormControl(false, { nonNullable: true }),
       complement: new FormControl('', { nonNullable: true }),
       directions: new FormControl('', { nonNullable: true }),
+      mapLocation: new FormControl('', {
+        nonNullable: true,
+        validators: valueObjectValidator(MapLocation.validate),
+      }),
     });
     fixture = TestBed.createComponent(EventAddressStepComponent);
     fixture.componentRef.setInput('form', form);
@@ -88,6 +93,21 @@ describe('EventAddressStepComponent', () => {
     expect(input('event-directions-input')).toBeTruthy();
   });
 
+  it('says what it understood from the map link, and shortens a long one to its pin', () => {
+    const field = () =>
+      el().querySelector('[data-testid="event-map-location-input"]') as HTMLInputElement;
+    expect(el().textContent).toContain('Cole o link de "Compartilhar" do Google Maps');
+
+    form.controls.mapLocation.setValue(
+      'https://www.google.com/maps/place/S%C3%ADtio+Boa+Vista/@-19.3,-43.7,15z/data=!3d-19.31!4d-43.71',
+    );
+    field().dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    fixture.detectChanges();
+
+    expect(form.controls.mapLocation.value).toBe('Sítio Boa Vista: -19.31, -43.71');
+    expect(el().textContent).toContain('Local marcado: Sítio Boa Vista · -19.31, -43.71');
+  });
+
   it('moves on when everything is filled', () => {
     const moved: void[] = [];
     fixture.componentInstance.next.subscribe(() => moved.push(undefined));
@@ -100,6 +120,7 @@ describe('EventAddressStepComponent', () => {
       noNumber: false,
       complement: '',
       directions: '',
+      mapLocation: '',
     });
     pressNext();
     expect(moved).toHaveLength(1);

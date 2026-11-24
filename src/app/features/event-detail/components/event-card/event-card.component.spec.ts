@@ -64,6 +64,27 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(text.classList).toContain('invite-paper__text--typed');
   });
 
+  it('opens the pin the organizer pasted instead of searching the address', () => {
+    const link = () =>
+      (fixture.nativeElement.querySelector('[data-testid="event-location"]') as HTMLAnchorElement)
+        .href;
+    expect(link()).toContain('google.com/maps/search/?api=1&query=');
+
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      mapLocation: { lat: -19.31, lng: -43.71, label: 'Sítio Boa Vista' },
+    });
+    fixture.detectChanges();
+    expect(link()).toBe('https://www.google.com/maps/search/?api=1&query=-19.31,-43.71');
+
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      mapLocation: { url: 'https://evil.com/x' },
+    });
+    fixture.detectChanges();
+    expect(link()).not.toContain('evil.com');
+  });
+
   it('links to Google Calendar with the event data', () => {
     const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
     expect(link.href).toContain('https://calendar.google.com');

@@ -188,6 +188,7 @@ describe('EventEditorContainer', () => {
         noNumber: false,
         complement: '',
         directions: '',
+        mapLocation: '',
       });
       expect(component['missingSteps']()).toEqual([]);
 
@@ -672,6 +673,35 @@ describe('EventEditorContainer', () => {
       await component['saveEvent']();
       expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
         expect.objectContaining({ pixKey: null, pixPurpose: null }),
+      );
+    });
+
+    it('saves the map pin pasted for the place, and refuses another site', async () => {
+      component['basicInfoForm'].patchValue({
+        title: 'Natal no sítio',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].patchValue({
+        cep: '35830-000',
+        address: 'Estrada da Serra do Cipó',
+        neighborhood: 'Zona rural',
+        city: 'Jaboticatubas/MG',
+        number: '135',
+        mapLocation: 'https://evil.example.com/maps',
+      });
+      expect(component['addressForm'].controls.mapLocation.invalid).toBe(true);
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).not.toHaveBeenCalled();
+
+      component['addressForm'].patchValue({ mapLocation: 'Sítio Boa Vista: -19.31, -43.71' });
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mapLocation: { lat: -19.31, lng: -43.71, label: 'Sítio Boa Vista' },
+        }),
       );
     });
 

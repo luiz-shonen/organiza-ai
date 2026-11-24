@@ -121,6 +121,17 @@
         formControlName="directions"
         testId="event-directions-input"
       />
+
+      <org-text-field
+        label="Localização no mapa (opcional)"
+        placeholder="Ex: https://maps.app.goo.gl/AbC123 ou -19.9167, -43.9345"
+        prefixIcon="place"
+        [hint]="mapHint(addressForm.controls.mapLocation.value)"
+        [error]="fieldError(addressForm.controls.mapLocation, '')"
+        formControlName="mapLocation"
+        testId="event-map-location-input"
+        (focusout)="tidyMapLocation()"
+      />
     </div>
   </org-surface>
   @if (missingMessage(); as message) {

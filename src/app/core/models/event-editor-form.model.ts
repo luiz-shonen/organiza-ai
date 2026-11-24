@@ -20,6 +20,8 @@ export type EventAddressForm = FormGroup<{
   noNumber: FormControl<boolean>;
   complement: FormControl<string>;
   directions: FormControl<string>;
+  /** "Localização no mapa": a Google Maps link, the WhatsApp location or coordinates. */
+  mapLocation: FormControl<string>;
 }>;
 
 /**

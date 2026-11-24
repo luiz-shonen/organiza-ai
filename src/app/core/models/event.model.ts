@@ -12,6 +12,14 @@ export interface AddressDetails {
   directions?: string;
 }
 
+/**
+ * Where the event is on a map, as saved on the event: a pin (with the place name a Google
+ * Maps link carries) or, when the link holds no coordinates (a short share link), the link.
+ */
+export type MapLocationData =
+  | { readonly lat: number; readonly lng: number; readonly label?: string }
+  | { readonly url: string };
+
 /** Sizes of the optional address fields, in the editor and the rules. */
 export const ADDRESS_COMPLEMENT_MAX = 80;
 export const ADDRESS_DIRECTIONS_MAX = 300;
@@ -99,6 +107,8 @@ export interface PartyEvent {
   endDate?: string | null;
   location: string;
   addressDetails?: AddressDetails;
+  /** The pin or map link the organizer pasted; opens instead of searching the address. */
+  mapLocation?: MapLocationData | null;
   pixKey: string | null;
   /** What the Pix is for, in the organizer's words (rachar os custos, doação…). */
   pixPurpose?: string | null;

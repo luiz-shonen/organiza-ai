@@ -1,6 +1,7 @@
 import { eventLastDay, formatDaySpan, inviteInitial, inviteTheme } from '../../../../core/utils';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { getCategoryClass, getCategoryHue, PartyEvent } from '../../../../core/models';
+import { MapLocation } from '../../../../core/value-objects';
 import {
   OrgAvatarComponent,
   OrgBadgeComponent,
@@ -126,8 +127,10 @@ export class EventCardComponent {
     return { street, rest: rest.map((part) => part.replace('CEP: ', '')).join(' · ') };
   });
 
+  /** The pin or map link the organizer pasted, else a search for the address. */
   protected readonly mapsUrl = computed(
     () =>
+      MapLocation.fromData(this.event().mapLocation)?.href ??
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.event().location)}`,
   );
 

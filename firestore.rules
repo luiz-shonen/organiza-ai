@@ -285,7 +285,8 @@ service cloud.firestore {
             && (!changes('pixPurpose') || isOptionalString(data.get('pixPurpose', null), 300))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
             && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
-            && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)));
+            && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)))
+            && (!changes('mapLocation') || isMapLocation(data.get('mapLocation', null)));
       }
 
       // CEP, street, number, neighbourhood and city, plus the optional complement ("Km 12")
@@ -301,6 +302,22 @@ service cloud.firestore {
             && isOptionalString(value.get('city', null), 120)
             && isOptionalString(value.get('complement', null), 80)
             && isOptionalString(value.get('directions', null), 300);
+      }
+
+      // "Localização no mapa": a pin (latitude, longitude and the place name) or a link, and
+      // only to Google Maps or Waze, so the invite never sends guests to another site.
+      function isMapLocation(value) {
+        return value == null
+            || (value is map
+                && value.keys().hasOnly(['lat', 'lng', 'label'])
+                && value.get('lat', null) is number && value.lat >= -90 && value.lat <= 90
+                && value.get('lng', null) is number && value.lng >= -180 && value.lng <= 180
+                && isOptionalString(value.get('label', null), 80))
+            || (value is map
+                && value.keys().hasOnly(['url'])
+                && value.get('url', null) is string
+                && value.url.size() <= 500
+                && value.url.matches('https://(maps[.]app[.]goo[.]gl/|goo[.]gl/maps/|(www[.])?google[.]com([.]br)?/maps[/?]|maps[.]google[.]com([.]br)?/|(www[.]|ul[.])?waze[.]com/)[^ <>"]*'));
       }
 
       // "Vai ter amigo oculto?", "Incluir opções de presente", how many per person (1 to 10) and

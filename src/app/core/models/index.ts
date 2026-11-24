@@ -3,6 +3,7 @@ export type {
   PartyEventCreate,
   PartyEventUpdate,
   AddressDetails,
+  MapLocationData,
   PixType,
   EventCategoryOption,
 } from './event.model';

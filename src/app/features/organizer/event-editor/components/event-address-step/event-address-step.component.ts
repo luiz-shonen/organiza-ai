@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { fieldError } from '../../../../../core/value-objects';
+import { MapLocation, fieldError } from '../../../../../core/value-objects';
 import {
   ADDRESS_COMPLEMENT_MAX,
   ADDRESS_DIRECTIONS_MAX,
@@ -62,6 +62,27 @@ export class EventAddressStepComponent {
   protected readonly fieldError = fieldError;
   protected readonly complementMax = ADDRESS_COMPLEMENT_MAX;
   protected readonly directionsMax = ADDRESS_DIRECTIONS_MAX;
+
+  /**
+   * A long link copied from the address bar becomes its pin once the field is left
+   * ("Sítio Boa Vista: -19.9167, -43.9345"), so the field stays short and readable.
+   */
+  protected tidyMapLocation(): void {
+    const control = this.form().controls.mapLocation;
+    if (control.disabled) return;
+    const pin = MapLocation.create(control.value);
+    if (pin && pin.text !== control.value.trim() && !('url' in pin.data)) {
+      control.setValue(pin.text);
+    }
+  }
+
+  /** Under "Localização no mapa": what was understood, or how to fill it in. */
+  protected mapHint(text: string): string {
+    const pin = text.trim() ? MapLocation.create(text) : null;
+    return pin
+      ? pin.summary
+      : 'Cole o link de "Compartilhar" do Google Maps, a localização enviada no WhatsApp ou a latitude e longitude (ex: -19.9167, -43.9345).';
+  }
 
   /** The CEP was found but left something out, as a rural CEP does: say what to do. */
   protected readonly partlyFound = computed(() => {

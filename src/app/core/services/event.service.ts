@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, combineLatest, from, map, of, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
+import { MapLocation } from '../value-objects';
 import {
   PartyEvent,
   PartyEventCreate,
@@ -454,6 +455,8 @@ export class EventService {
       ...(typeof data['endDate'] === 'string' ? { endDate: data['endDate'] } : {}),
       location: (data['location'] as string) ?? '',
       addressDetails: (data['addressDetails'] as AddressDetails | undefined) ?? undefined,
+      // Checked again on read: only a valid pin or a map site's link ever opens.
+      mapLocation: MapLocation.fromData(data['mapLocation'])?.data ?? null,
       pixKey: (data['pixKey'] as string | null) ?? null,
       pixType: (data['pixType'] as PixType | undefined) ?? undefined,
       pixPurpose: typeof data['pixPurpose'] === 'string' ? data['pixPurpose'] : null,

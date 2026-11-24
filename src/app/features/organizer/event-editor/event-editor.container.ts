@@ -50,6 +50,7 @@ import {
   EventCategory,
   EventDescription,
   EventTitle,
+  MapLocation,
   PixKey,
   endNotBeforeStart,
   notInPast,
@@ -262,6 +263,7 @@ export class EventEditorContainer implements OnInit {
     noNumber: [false],
     complement: ['', [Validators.maxLength(ADDRESS_COMPLEMENT_MAX)]],
     directions: ['', [Validators.maxLength(ADDRESS_DIRECTIONS_MAX)]],
+    mapLocation: ['', [valueObjectValidator(MapLocation.validate)]],
   });
   /** Which fields the CEP filled (locked); null until a full CEP was looked up. */
   protected readonly addressFound = signal<AddressFound | null>(null);
@@ -364,6 +366,7 @@ export class EventEditorContainer implements OnInit {
               noNumber: details.number === 'S/N',
               complement: saved?.complement ?? '',
               directions: saved?.directions ?? '',
+              mapLocation: MapLocation.fromData(event.mapLocation)?.text ?? '',
             });
 
             this.pixForm.patchValue({
@@ -542,6 +545,7 @@ export class EventEditorContainer implements OnInit {
       endDate: endDateStr,
       location,
       addressDetails,
+      mapLocation: MapLocation.create(rawAddress.mapLocation)?.data ?? null,
       pixKey: pixKey || null,
       pixPurpose: pixPurpose || null,
       createdBy: user?.uid ?? '',
@@ -1024,6 +1028,8 @@ interface EventEditorDraft {
     noNumber: boolean;
     complement: string;
     directions: string;
+    /** Missing in drafts saved before the field. */
+    mapLocation?: string;
   };
   pixKey: string;
   pixPurpose?: string;

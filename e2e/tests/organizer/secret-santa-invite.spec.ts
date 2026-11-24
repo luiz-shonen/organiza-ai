@@ -466,7 +466,9 @@ test.describe('Amigo oculto pelo convite', () => {
     const roster = page.getByTestId('secret-santa-roster');
     await roster.getByTestId('secret-santa-roster-join-btn').click();
     const sheet = page.getByTestId('edit-own-santa-sheet');
-    await expect(sheet.getByTestId('own-santa-name-input')).toHaveValue('Carlos Eduardo Primo');
+    // The name comes from the profile: shown, not typed.
+    await expect(sheet.getByTestId('own-santa-name')).toContainText('Carlos Eduardo Primo');
+    await expect(sheet.getByTestId('own-santa-name-input')).toHaveCount(0);
     await sheet.getByTestId('own-santa-gift-input').fill('Vinho tinto');
     await sheet.getByTestId('own-santa-submit-btn').click();
 

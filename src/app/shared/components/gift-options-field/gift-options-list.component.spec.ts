@@ -40,4 +40,28 @@ describe('GiftOptionsListComponent', () => {
     button('gift-options-list-remove-btn', 0).click();
     expect(removed).toEqual([0]);
   });
+
+  it('adds another idea in place with the +, and offers it on an empty list too', () => {
+    const { fixture, el, button } = create(true);
+    const added: string[] = [];
+    fixture.componentInstance.add.subscribe((text) => added.push(text));
+    button('gift-options-list-add-btn').click();
+    fixture.detectChanges();
+    expect(el.querySelector('[data-testid="gift-options-list-add-input"]')).not.toBeNull();
+    fixture.componentInstance['setAddText']('Vinho tinto');
+    button('gift-options-list-add-save-btn').click();
+    expect(added).toEqual(['Vinho tinto']);
+
+    fixture.componentRef.setInput('gifts', []);
+    fixture.detectChanges();
+    expect(el.textContent).toContain('Sem ideias de presente ainda');
+    expect(button('gift-options-list-add-btn')).toBeTruthy();
+  });
+
+  it('offers no + once the list is full', () => {
+    const { fixture, el } = create(true);
+    fixture.componentRef.setInput('max', 2);
+    fixture.detectChanges();
+    expect(el.querySelector('[data-testid="gift-options-list-add-btn"]')).toBeNull();
+  });
 });

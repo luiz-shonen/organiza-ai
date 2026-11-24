@@ -43,6 +43,7 @@ export class SecretSantaRosterCardComponent {
   /** One of the guest's own gift ideas changed or taken out, right in the card. */
   public readonly editGift = output<{ id: string; gift: number; text: string }>();
   public readonly removeGift = output<{ id: string; gift: number }>();
+  public readonly addGift = output<{ id: string; text: string }>();
   /** The organizer's description: gift value, rules, when gifts are swapped. */
   public readonly rules = input<string | null>(null);
   public readonly maxGiftOptions = input(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);

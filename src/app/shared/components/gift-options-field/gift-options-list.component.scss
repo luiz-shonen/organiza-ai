@@ -40,3 +40,16 @@
 .gift-list__edit-actions {
   display: flex;
 }
+
+// No idea yet: says so, with the + beside it for whoever may add one.
+.gift-list__empty {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-xs);
+}
+
+.gift-list__none {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}

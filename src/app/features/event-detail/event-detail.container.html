@@ -206,6 +206,7 @@
           (cancelEdit)="editingOwnSecretSanta.set(null)"
           (editGift)="onEditOwnSecretSantaGift($event)"
           (removeGift)="onRemoveOwnSecretSantaGift($event)"
+          (addGift)="onAddOwnSecretSantaGift($event)"
         />
       }
 
@@ -297,6 +298,7 @@
         (remove)="removeSecretSantaParticipant($event)"
         (editGift)="onEditSecretSantaGift($event)"
         (removeGift)="onRemoveSecretSantaGift($event)"
+        (addGift)="onAddSecretSantaGift($event)"
       />
     }
   </app-secret-santa-card>

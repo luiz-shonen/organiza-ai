@@ -1373,6 +1373,56 @@ export class EventDetailContainer implements OnInit {
     return this.onEditOwnSecretSantaGift(change);
   }
 
+  /** A new gift idea added in place, to anyone's entry (organizers): no question asked. */
+  protected async onAddSecretSantaGift(change: {
+    participant: number;
+    text: string;
+  }): Promise<void> {
+    const saved = this.secretSantaParticipants()[change.participant];
+    if (!saved) return;
+    try {
+      await this.secretSantaService.updateGiftOptions(this.id(), saved.id, [
+        ...saved.giftOptions,
+        change.text,
+      ]);
+      this.feedback.success('Ideia adicionada.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível adicionar a ideia de presente', error));
+    }
+  }
+
+  /** A new gift idea added in place to the guest's own entry. */
+  protected async onAddOwnSecretSantaGift(change: { id: string; text: string }): Promise<void> {
+    const uid = this.memberUid();
+    if (!uid) return;
+    try {
+      const [entry] = await this.secretSantaService.getOwnEntries(this.id(), [change.id]);
+      if (!entry) return;
+      await this.secretSantaService.saveOwnEntries(
+        this.id(),
+        uid,
+        [
+          {
+            id: entry.id,
+            input: {
+              name: entry.name,
+              phone: entry.phone,
+              giftOptions: [...entry.giftOptions, change.text],
+              ...(entry.guestId ? { guestId: entry.guestId } : {}),
+            },
+          },
+        ],
+        [],
+        [entry.id],
+      );
+      this.mySecretSantaVersion.update((v) => v + 1);
+      this.feedback.success('Ideia adicionada.');
+    } catch (err) {
+      console.error(err);
+      this.feedback.error(explainError('Não foi possível adicionar a ideia de presente', err));
+    }
+  }
+
   protected async removeSecretSantaParticipant(index: number): Promise<void> {
     const saved = this.secretSantaParticipants()[index];
     if (!saved) return;

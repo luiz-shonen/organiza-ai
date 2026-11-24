@@ -83,6 +83,7 @@ export class SecretSantaParticipantsComponent {
   /** One gift idea of a participant changed or taken out, right in the list; the page confirms. */
   public readonly editGift = output<{ participant: number; gift: number; text: string }>();
   public readonly removeGift = output<{ participant: number; gift: number }>();
+  public readonly addGift = output<{ participant: number; text: string }>();
 
   protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly editingIndex = signal<number | null>(null);

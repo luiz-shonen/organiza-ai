@@ -1320,7 +1320,7 @@ export class EventDetailContainer implements OnInit {
     const gifts = await this.confirmGiftChange(saved.giftOptions, change.gift, change.text ?? null);
     if (!gifts) return;
     try {
-      await this.secretSantaService.updateGiftOptions(this.id(), saved.id, gifts);
+      await this.secretSantaService.updateGiftOptions(this.id(), saved, gifts);
       this.feedback.success(change.text === undefined ? 'Ideia apagada.' : 'Ideia atualizada.');
     } catch (error) {
       this.feedback.error(explainError('Não foi possível salvar a ideia de presente', error));
@@ -1381,7 +1381,7 @@ export class EventDetailContainer implements OnInit {
     const saved = this.secretSantaParticipants()[change.participant];
     if (!saved) return;
     try {
-      await this.secretSantaService.updateGiftOptions(this.id(), saved.id, [
+      await this.secretSantaService.updateGiftOptions(this.id(), saved, [
         ...saved.giftOptions,
         change.text,
       ]);

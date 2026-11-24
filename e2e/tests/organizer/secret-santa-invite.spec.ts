@@ -473,6 +473,10 @@ test.describe('Amigo oculto pelo convite', () => {
     await sheet.getByTestId('own-santa-submit-btn').click();
 
     await expect(roster).toContainText('Carlos Eduardo Primo');
+    // The gift ideas fold under each name: open them all.
+    for (const toggle of await roster.getByTestId('gift-options-list-toggle').all()) {
+      await toggle.click();
+    }
     await expect(roster).toContainText('Vinho tinto');
     await expect(roster.getByTestId('secret-santa-roster-join-btn')).toHaveCount(0);
     await expect(roster.getByTestId('secret-santa-roster-edit-btn')).toHaveCount(1);

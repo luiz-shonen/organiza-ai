@@ -1,9 +1,5 @@
 @use 'gift-item' as gift;
 
-:host {
-  display: block;
-}
-
 .gift-list {
   @include gift.list;
 }
@@ -17,4 +13,17 @@
 
 .gift-list__text {
   @include gift.text;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-xs);
+}
+
+// "Ver 3 ideias de presente": a quiet text button, flush with the name above it.
+.gift-list__toggle {
+  align-self: flex-start;
+  margin-inline-start: calc(-1 * var(--org-space-sm));
+  max-inline-size: 100%;
 }

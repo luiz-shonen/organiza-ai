@@ -80,6 +80,14 @@
 }
 
 // The share panel, and for the owner the amigo oculto under it, in one column.
+// "Quem não vai entrar pelo convite" and "Você também participa?" under the share panel, on a
+// computer only; on a phone they stay inside the amigo oculto card.
+.event-detail__santa-extras {
+  @media (width < 960px) {
+    display: none;
+  }
+}
+
 .event-detail__side {
   align-self: start;
   display: flex;

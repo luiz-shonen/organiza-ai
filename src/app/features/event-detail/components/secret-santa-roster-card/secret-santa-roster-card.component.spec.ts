@@ -30,7 +30,14 @@ describe('SecretSantaRosterCardComponent', () => {
     expect(rules().textContent).toBe('Presente de R$ 80 a R$ 100.\n\nTroca na ceia.');
   });
 
-  it('lists everyone with their gift ideas, with no pencil for someone else', () => {
+  it('lists everyone with their gift ideas folded, with no pencil for someone else', () => {
+    const toggle = el().querySelector(
+      '[data-testid="gift-options-list-toggle"] button, button[data-testid="gift-options-list-toggle"]',
+    ) as HTMLButtonElement;
+    expect(toggle.textContent).toContain('Ver 2 ideias de presente');
+    expect(el().textContent).not.toContain('Chinelo 39');
+    toggle.click();
+    fixture.detectChanges();
     expect(el().textContent).toContain('Chinelo 39');
     expect(el().textContent).toContain('Sem ideias de presente ainda');
     expect(editButtons().length).toBe(0);

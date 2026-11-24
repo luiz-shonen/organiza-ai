@@ -28,6 +28,15 @@
     transform: scale(1.05);
   }
 
+  // The filter chips' look: surface, fine outline, muted icon, as tall as a chip.
+  &--chip {
+    background: var(--org-surface);
+    block-size: var(--org-touch);
+    border: 1px solid var(--org-outline-variant);
+    color: var(--org-on-surface-variant);
+    inline-size: var(--org-touch);
+  }
+
   &--gradient {
     background: var(--org-gradient-primary);
     color: var(--org-on-primary);

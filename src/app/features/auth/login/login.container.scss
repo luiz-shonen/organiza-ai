@@ -1,54 +1,300 @@
 .login {
+  // The envelope tilts and floats: its corners must not make the page scroll sideways.
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 28px;
   min-height: 100dvh;
-  padding: 40px 28px;
+  padding: 40px var(--org-space-md);
   box-sizing: border-box;
 
-  &__header {
+  // The welcome never runs past the screen: exactly its height, spacing that shrinks with it,
+  // and the extras left out on a short screen.
+  &--welcome,
+  &--invite {
+    block-size: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding-block: clamp(var(--org-space-sm), 4dvh, 40px);
+    position: relative;
+  }
+
+  // The invite that sent them here: an envelope on its own, sealed, floating; a real envelope's
+  // proportions, the flap with a gilt edge, a wax seal, the address centred on the front.
+  &__sealed {
+    animation:
+      login-sealed-arrive 0.8s var(--org-motion-ease-emphasized) both,
+      login-sealed-float 5s 0.8s ease-in-out infinite;
+
+    --login-flap: 42%;
+
+    aspect-ratio: 1.5;
+    container-type: inline-size;
+    filter: drop-shadow(0 18px 28px color-mix(in srgb, var(--org-invite-flap) 22%, transparent));
+
+    // As wide as the screen lets it, 760px at most, and short enough for the logo, the line
+    // and the button to fit above and below without scrolling.
+    flex: none;
+    max-inline-size: min(760px, (100dvh - 300px) * 1.5);
+    min-inline-size: min(100%, 300px);
+    position: relative;
+    width: 90%;
+
+    // On a phone the whole width, and a little taller, for the address to breathe.
+    @media (width < 600px) {
+      --login-flap: 34%;
+
+      aspect-ratio: 1.25;
+      width: 100%;
+    }
+  }
+
+  &__sealed-body {
+    background: var(--org-invite-envelope);
+    border-radius: var(--org-radius-md);
+    inset: 0;
+    position: absolute;
+  }
+
+  &__sealed-frame {
+    border: 1px solid var(--org-invite-line);
+    border-radius: var(--org-radius-sm);
+    inset: 10px;
+    outline: 1px solid var(--org-invite-line);
+    outline-offset: -5px;
+    position: absolute;
+  }
+
+  // Bottom-right under the seal: who invites, handwritten, then "convida você"; written in once
+  // the envelope has landed.
+  &__sealed-address {
     display: flex;
     flex-direction: column;
+    font-weight: var(--org-font-weight-regular);
+    inset-block-end: var(--org-space-xl);
+    inset-inline-end: var(--org-space-xl);
+    margin: 0;
+    max-inline-size: 62%;
+    position: absolute;
+    text-align: end;
+
+    @container (width < 520px) {
+      inset-block-end: var(--org-space-lg);
+      inset-inline-end: var(--org-space-lg);
+      max-inline-size: 78%;
+    }
+  }
+
+  &__sealed-from {
+    animation: login-write 1s 0.9s cubic-bezier(0.55, 0, 0.35, 1) both;
+    color: var(--org-invite-ink);
+    font-family: var(--org-font-script);
+
+    // The script runs small for its size: a step above the seal's letter, below the envelope's.
+    font-size: calc(var(--org-font-size-script-lg) * 1.3);
+    line-height: var(--org-line-height-tight);
+    padding-inline: var(--org-space-xs);
+
+    @container (width < 420px) {
+      font-size: calc(var(--org-font-size-script-lg) * 1.05);
+    }
+  }
+
+  &__sealed-verb {
+    animation: login-rise 0.5s 1.7s var(--org-motion-ease-emphasized) both;
+    color: var(--org-invite-muted);
+    font-size: var(--org-font-size-sm);
+    letter-spacing: var(--org-letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  // The flap and its gilt edge: triangles cut by a mask, rounded like the envelope at the top.
+  &__sealed-flap,
+  &__sealed-flap-trim {
+    border-radius: var(--org-radius-md) var(--org-radius-md) 0 0;
+    inset: 0 0 auto;
+    mask:
+      linear-gradient(to bottom left, var(--org-invite-flap) 50%, transparent 50%) left / 51% 100%
+        no-repeat,
+      linear-gradient(to bottom right, var(--org-invite-flap) 50%, transparent 50%) right / 51% 100%
+        no-repeat;
+    position: absolute;
+  }
+
+  &__sealed-flap {
+    background: var(--org-invite-flap);
+    block-size: var(--login-flap);
+  }
+
+  &__sealed-flap-trim {
+    background: var(--org-invite-line);
+    block-size: calc(var(--login-flap) + 3px);
+  }
+
+  &__sealed-seal {
     align-items: center;
-    gap: var(--org-space-sm);
-    width: 100%;
+    animation: login-sealed-glow 2.8s 1s ease-in-out infinite;
+    background: var(--org-invite-seal);
+    block-size: 64px;
+    border: 3px solid var(--org-invite-line);
+    border-radius: var(--org-radius-full);
+    box-shadow: var(--org-shadow-md);
+    color: var(--org-invite-on-seal);
+    display: flex;
+    font-family: var(--org-font-script);
+    font-size: var(--org-font-size-script-lg);
+    inline-size: 64px;
+    inset-block-start: calc(var(--login-flap) - 34px);
+    inset-inline-start: 50%;
+    justify-content: center;
+    line-height: var(--org-line-height-none);
+    margin-inline-start: -32px;
+    position: absolute;
+  }
+
+  &__invite-body {
+    align-items: center;
+    animation: login-rise 0.5s 2s var(--org-motion-ease-emphasized) both;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: var(--org-space-md);
+    max-inline-size: 420px;
     text-align: center;
+    width: 100%;
   }
 
   &__brand {
-    margin: 0;
-  }
-
-  &__subtitle {
-    color: var(--org-on-surface-variant);
-    font: var(--org-text-body-sm);
-    margin: 0;
+    margin: 0 0 var(--org-space-xs);
   }
 
   &__card {
+    animation: login-card-in 0.6s var(--org-motion-ease-emphasized) both;
+    flex: none;
+    max-width: 420px;
+    position: relative;
     width: 100%;
-    max-width: 400px;
   }
 
   &__card-content {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    padding: var(--org-space-sm) var(--org-space-xs);
+    gap: clamp(var(--org-space-sm), 3dvh, var(--org-space-lg));
+    padding: clamp(var(--org-space-sm), 3dvh, var(--org-space-lg)) var(--org-space-md);
   }
 
-  &__error {
-    display: flex;
+  &--welcome &__brand {
+    animation: login-hop 4.5s 1.2s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+
+  &--welcome &__title {
+    animation: login-rise 0.5s 0.2s var(--org-motion-ease-emphasized) both;
+    font-size: var(--org-font-size-2xl);
+  }
+
+  // "organizadas" keeps a slow shine running through its gradient.
+  &--welcome &__highlight {
+    animation: login-shine 4s linear infinite;
+    background-size: 200% 100%;
+  }
+
+  &--welcome &__feature {
+    animation: login-slide 0.45s calc(0.35s + var(--login-i, 0) * 0.12s)
+      var(--org-motion-ease-emphasized) both;
+  }
+
+  &--welcome &__feature-icon {
+    animation: login-pop 0.5s calc(0.55s + var(--login-i, 0) * 0.12s)
+      var(--org-motion-ease-emphasized) both;
+  }
+
+  // The invite's button: narrower, the envelope is what matters here.
+  &--invite .login__google-btn {
+    inline-size: min(100%, 300px);
+  }
+
+  &--invite {
+    gap: clamp(var(--org-space-md), 3dvh, 28px);
+  }
+
+  &--welcome .login__google-btn {
+    animation: login-rise 0.5s 0.85s var(--org-motion-ease-emphasized) both;
+  }
+
+  // A short screen keeps the logo, the headline and the button.
+  @media (height < 600px) {
+    &--welcome &__features {
+      display: none;
+    }
+  }
+
+  &__intro {
     align-items: center;
+    display: flex;
+    flex-direction: column;
     gap: var(--org-space-sm);
-    padding: 12px var(--org-space-md);
-    border-radius: var(--org-radius-sm);
-    background: var(--org-error-container);
-    color: var(--org-on-error-container);
-    font: var(--org-text-body-sm);
+    text-align: center;
+  }
+
+  &__title {
+    color: var(--org-on-surface);
+    font-family: var(--org-font-display);
+    font-size: var(--org-font-size-heading);
     font-weight: var(--org-font-weight-semibold);
+    letter-spacing: var(--org-letter-spacing-tight);
+    line-height: var(--org-line-height-tight);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  // Like "Descubra, Participe e Celebre" on Início.
+  &__highlight {
+    background: var(--org-gradient-highlight);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  &__lead {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-body);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  // What the app does, one line each, with the icon squares of the rest of the app.
+  &__features {
+    border-block: 1px solid var(--org-outline-variant);
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-sm);
+    list-style: none;
+    margin: 0;
+    padding: var(--org-space-md) var(--org-space-xs);
+  }
+
+  &__feature {
+    align-items: center;
+    color: var(--org-on-surface);
+    display: flex;
+    font: var(--org-text-body);
+    gap: var(--org-space-sm);
+  }
+
+  &__feature-icon {
+    align-items: center;
+    background: var(--org-secondary-container);
+    block-size: 36px;
+    border-radius: var(--org-radius-sm);
+    color: var(--org-on-secondary-container);
+    display: inline-flex;
+    flex: none;
+    inline-size: 36px;
+    justify-content: center;
   }
 
   &__form {
@@ -75,5 +321,148 @@
       height: 1px;
       background: var(--org-outline-variant);
     }
+  }
+}
+
+// Arriving: dropped onto the page with a little turn; then it floats, the seal softly glowing.
+@keyframes login-sealed-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) rotate(-6deg) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(-1.5deg);
+  }
+}
+
+@keyframes login-sealed-float {
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(-0.5deg) translateY(-6px);
+  }
+}
+
+@keyframes login-sealed-glow {
+  0%,
+  100% {
+    box-shadow: var(--org-shadow-md);
+  }
+
+  50% {
+    box-shadow:
+      var(--org-shadow-md),
+      0 0 0 6px color-mix(in srgb, var(--org-invite-line) 30%, transparent);
+  }
+}
+
+@keyframes login-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+// Every few seconds the logo gives a little hop.
+@keyframes login-hop {
+  0%,
+  78%,
+  100% {
+    transform: none;
+  }
+
+  84% {
+    transform: translateY(-8px) rotate(-6deg);
+  }
+
+  90% {
+    transform: translateY(0) rotate(4deg);
+  }
+
+  95% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes login-shine {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes login-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes login-pop {
+  0% {
+    transform: scale(0);
+  }
+
+  70% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login__sealed,
+  .login__sealed *,
+  .login__invite-body,
+  .login__card,
+  .login__brand,
+  .login__title,
+  .login__highlight,
+  .login__feature,
+  .login__feature-icon,
+  .login__google-btn {
+    animation: none;
+  }
+
+  .login__sealed {
+    transform: rotate(-1.5deg);
+  }
+}
+
+@keyframes login-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes login-write {
+  from {
+    clip-path: inset(-30% 100% -30% 0);
+  }
+
+  to {
+    clip-path: inset(-30% -5% -30% 0);
   }
 }

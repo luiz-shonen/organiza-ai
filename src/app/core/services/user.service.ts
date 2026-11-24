@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, combineLatest, from, map } from 'rxjs';
+import { Observable, combineLatest, from, map, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventService } from './event.service';
 import type { UserProfile, PartyEvent, ThemeMode } from '../models';
@@ -58,8 +58,8 @@ export class UserService {
       }
       const newName = (data.name ?? data.displayName)?.trim();
       if (newName) {
-        // Guests read the organizer's name from each event, not from this private profile.
-        this.eventService.renameCreator(uid, newName).catch(console.error);
+        // Guests read the organizer's name from the public profile, never this private one.
+        this.publishName(uid, newName).catch(console.error);
       }
       if (existing) {
         await this.gateway.updateDoc(this.userPath(uid), updateData);
@@ -73,6 +73,72 @@ export class UserService {
     } catch (err) {
       console.error('Error updating profile:', err);
       throw err;
+    }
+  }
+
+  /**
+   * The name others see for this account (`publicProfiles/{uid}`: the name only, readable by
+   * anyone). Events show their organizer by `createdBy` through it.
+   */
+  async publishName(uid: string, name: string, photoURL?: string | null): Promise<void> {
+    const clean = name.trim().slice(0, 120);
+    if (!uid || !clean) return;
+    const current = await this.gateway
+      .getDoc<{ photoURL?: string | null }>(`publicProfiles/${uid}`)
+      .catch(() => null);
+    const photo = (photoURL === undefined ? current?.photoURL : photoURL) || null;
+    await this.gateway.setDoc(`publicProfiles/${uid}`, {
+      name: clean,
+      // The account's photo (Google's), shown beside the name, e.g. in "Organizado por".
+      ...(photo ? { photoURL: photo.slice(0, 2048) } : {}),
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  /** The name an account shows to others; empty when it has none. */
+  async publicName(uid: string): Promise<string> {
+    if (!uid) return '';
+    const profile = await this.gateway
+      .getDoc<{ name?: string }>(`publicProfiles/${uid}`)
+      .catch(() => null);
+    return profile?.name?.trim() ?? '';
+  }
+
+  /**
+   * The public name and photo of several accounts, by uid (missing ones left out): lists show
+   * people as their profile names them now, not as they were typed when they answered.
+   */
+  async publicProfiles(
+    uids: readonly string[],
+  ): Promise<Record<string, { name: string; photoURL: string | null }>> {
+    const found = await Promise.all(
+      [...new Set(uids.filter(Boolean))].map(async (uid) => {
+        const doc = await this.gateway
+          .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
+          .catch(() => null);
+        const name = doc?.name?.trim();
+        return name ? ([uid, { name, photoURL: doc?.photoURL ?? null }] as const) : null;
+      }),
+    );
+    return Object.fromEntries(found.filter((entry) => entry !== null));
+  }
+
+  /** Once per sign-in: the public name matches the profile's (or the Google account's). */
+  async syncPublicName(
+    uid: string,
+    fallback: string | null | undefined,
+    photoURL?: string | null,
+  ): Promise<void> {
+    if (!uid) return;
+    const profile = await this.getProfile(uid);
+    const name = (profile?.name || fallback || '').trim();
+    if (!name) return;
+    const photo = profile?.photoURL || photoURL || null;
+    const current = await this.gateway
+      .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
+      .catch(() => null);
+    if (current?.name !== name || (current?.photoURL ?? null) !== photo) {
+      await this.publishName(uid, name, photo);
     }
   }
 
@@ -159,6 +225,8 @@ export class UserService {
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
         );
       }),
+      // Each event named by its organizer's current profile name.
+      switchMap((events) => from(this.eventService.withOrganizerNames(events))),
     );
   }
 

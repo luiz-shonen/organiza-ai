@@ -67,20 +67,31 @@ export interface SecretSantaShare {
   readonly name: string;
   readonly eventTitle: string;
   readonly url: string;
+  /** Who organizes the event ("Luiz Rodrigues"): the person to ask for a new link. */
+  readonly organizerName?: string;
 }
 
 /**
- * "Olá, Jéssica! ... toque no link". The link goes alone on the last line, and there is no
- * emoji, for the same reasons as the event invitation (see `buildShareMessage`).
+ * "Olá, Jéssica! ... toque no link". It says the link opens once and that whoever organizes
+ * can make a new one (same person drawn). The link goes alone on the last line, and there is
+ * no emoji, for the same reasons as the event invitation (see `buildShareMessage`).
  */
-export function buildSecretSantaMessage({ name, eventTitle, url }: SecretSantaShare): string {
+export function buildSecretSantaMessage({
+  name,
+  eventTitle,
+  url,
+  organizerName,
+}: SecretSantaShare): string {
   const firstName = name.trim().split(/\s+/)[0] || name.trim();
+  const organizer = organizerName?.trim().split(/\s+/)[0];
+  const askWhom = organizer ? `a ${organizer}, que organiza o evento` : 'a quem organiza o evento';
   return [
     `Olá, *${firstName}*!`,
     `O sorteio do amigo oculto de *${eventTitle.trim() || 'nosso evento'}* foi feito.`,
     '',
     'Toque no link para descobrir quem você tirou. É segredo, não conte para ninguém!',
     '*Atenção:* o link só abre uma vez. Tenha papel e caneta para anotar o nome.',
+    `Se precisar, peça um novo link ${askWhom}. Você continua com a mesma pessoa.`,
     url,
   ].join('\n');
 }
@@ -174,20 +185,48 @@ export function findSecretSantaDuplicates(
   return found;
 }
 
-/** Guests may join the draw from the invite: amigo oculto on and sign-ups not closed. */
-export function isSecretSantaSelfJoinOpen(
-  settings: { enabled: boolean; selfJoin?: boolean } | null | undefined,
-): boolean {
-  return !!settings?.enabled && settings.selfJoin !== false;
+interface SecretSantaWindow {
+  enabled: boolean;
+  selfJoin?: boolean;
+  drawDate?: string;
+  drawnAt?: string;
 }
 
-/** Gift options typed one per line, blank lines left out, at most `max`. */
-export function parseGiftLines(text: string, max: number): string[] {
-  return text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .slice(0, max);
+/** The draw day starts at midnight in Brasília (UTC−3): sign-ups close then. */
+export function secretSantaDrawDeadline(drawDate: string | null | undefined): Date | null {
+  if (!drawDate || !/^\d{4}-\d{2}-\d{2}$/.test(drawDate)) return null;
+  return new Date(`${drawDate}T00:00:00-03:00`);
+}
+
+/** Guests may still join or leave on their own: amigo oculto on, not drawn, draw day not come. */
+export function isSecretSantaOpen(
+  settings: SecretSantaWindow | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  if (!settings?.enabled || settings.drawnAt) return false;
+  const deadline = secretSantaDrawDeadline(settings.drawDate);
+  return !deadline || now < deadline;
+}
+
+/** Guests may join the draw from the invite: open (above) and the owner has not closed it. */
+export function isSecretSantaSelfJoinOpen(
+  settings: SecretSantaWindow | null | undefined,
+  now: Date = new Date(),
+): boolean {
+  return isSecretSantaOpen(settings, now) && settings?.selfJoin !== false;
+}
+
+/** A `Date` as the `YYYY-MM-DD` of that calendar day (local time). */
+export function toDrawDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** `YYYY-MM-DD` back to a local `Date` at midnight, for the date field. */
+export function fromDrawDate(drawDate: string | null | undefined): Date | null {
+  if (!drawDate || !/^\d{4}-\d{2}-\d{2}$/.test(drawDate)) return null;
+  const [y, m, d] = drawDate.split('-').map(Number);
+  return new Date(y, m - 1, d);
 }
 
 /** The entry id of one person a guest puts in the draw (`self`, `f:{id}` or `c:{name}`). */
@@ -198,8 +237,9 @@ export function rsvpSecretSantaEntryId(uid: string, key: string): string {
 }
 
 /**
- * The entries a guest writes from the invite. Relatives and companions without a phone of their
- * own get the guest's phone: their links go to the guest's WhatsApp, with their own name.
+ * The entries a guest writes from the invite. A relative or companion gets the WhatsApp typed for
+ * them in the invite, else (a relative) the one in the family profile, else the guest's: then
+ * their link goes to the guest's WhatsApp, with their own name.
  */
 export function buildRsvpSecretSantaEntries(params: {
   readonly uid: string;
@@ -208,8 +248,11 @@ export function buildRsvpSecretSantaEntries(params: {
   readonly familyMembers: readonly { id: string; name: string; phone?: string }[];
   readonly companions: readonly string[];
   readonly choice: Readonly<Record<string, readonly string[]>>;
+  /** WhatsApp typed in the invite for a relative or companion, by key. */
+  readonly phones?: Readonly<Record<string, string>>;
 }): { id: string; input: SecretSantaParticipantInput }[] {
   const { uid, name, phone, familyMembers, companions, choice } = params;
+  const typed = (key: string) => Phone.create(params.phones?.[key] ?? '')?.formatted;
   return Object.entries(choice).flatMap(([key, gifts]) => {
     const giftOptions = [...gifts];
     const id = rsvpSecretSantaEntryId(uid, key);
@@ -225,7 +268,7 @@ export function buildRsvpSecretSantaEntries(params: {
           id,
           input: {
             name: member.name,
-            phone: own || phone,
+            phone: typed(key) || own || phone,
             giftOptions,
             guestId: `${uid}_${member.id}`,
           },
@@ -237,8 +280,42 @@ export function buildRsvpSecretSantaEntries(params: {
     return [
       {
         id,
-        input: { name: companions[index], phone, giftOptions, guestId: `${uid}#${index}` },
+        input: {
+          name: companions[index],
+          phone: typed(key) || phone,
+          giftOptions,
+          guestId: `${uid}#${index}`,
+        },
       },
     ];
   });
+}
+
+/** A store where a gift idea can be looked up: its name, its mark and the search address. */
+export interface GiftSearchLink {
+  readonly store: 'Mercado Livre' | 'Amazon';
+  readonly icon: string;
+  readonly url: string;
+}
+
+/**
+ * Searches for a gift idea ("Chinelo, cor verde, tamanho 36") on Mercado Livre and Amazon:
+ * plain links that open each store's search, like "Adicionar ao calendário" opens Google's.
+ */
+export function giftSearchLinks(idea: string): GiftSearchLink[] {
+  const text = idea.trim().replace(/\s+/g, ' ');
+  if (!text) return [];
+  return [
+    {
+      store: 'Mercado Livre',
+      icon: '/icons/mercado-livre.svg',
+      // Mercado Livre's own search pages read the words joined by hyphens.
+      url: `https://lista.mercadolivre.com.br/${encodeURIComponent(text.replace(/ /g, '-'))}`,
+    },
+    {
+      store: 'Amazon',
+      icon: '/icons/amazon.svg',
+      url: `https://www.amazon.com.br/s?k=${encodeURIComponent(text)}`,
+    },
+  ];
 }

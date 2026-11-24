@@ -1,4 +1,9 @@
-<span class="org-logo" [class.org-logo--lg]="size() === 'lg'" [class.org-logo--still]="!animated()">
+<span
+  class="org-logo"
+  [class.org-logo--lg]="size() === 'lg'"
+  [class.org-logo--still]="!animated()"
+  [class.org-logo--mark-on-phone]="markOnPhone()"
+>
   <svg class="org-logo__mark" viewBox="0 0 26 26" aria-hidden="true" focusable="false">
     <g class="org-logo__calendar">
       <rect class="org-logo__sheet" x="2" y="4" width="22" height="20" rx="4" stroke-width="1.6" />

@@ -39,6 +39,18 @@ describe('PixCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('shows what the Pix is for only when the organizer wrote it', () => {
+    componentRef.setInput('pixKey', 'pix@test.com');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="pix-purpose"]')).toBeNull();
+
+    componentRef.setInput('purpose', 'Doação para o abrigo do bairro');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[data-testid="pix-purpose"]').textContent.trim(),
+    ).toBe('Doação para o abrigo do bairro');
+  });
+
   describe('suggestedSplit calculation', () => {
     it('calculates suggested split accurately when budget and guestCount are positive', () => {
       componentRef.setInput('estimatedBudget', 600);

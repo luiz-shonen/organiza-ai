@@ -114,12 +114,9 @@ describe('guest approval', () => {
     );
   });
 
-  it('keeps a waiting guest out of the amigo oculto until approved', async () => {
+  it('lets a guest who confirmed join the amigo oculto while waiting; who did not, never', async () => {
     await seed({ requireApproval: true, secretSanta: { enabled: true, giftOptions: false } });
     const maria = accountDb('maria');
-    await assertSucceeds(
-      setDoc(doc(maria, 'events/e/guests/maria'), rsvp('maria', { approved: false })),
-    );
     const entry = {
       name: 'Maria',
       phone: '',
@@ -128,7 +125,13 @@ describe('guest approval', () => {
       joinedBy: 'maria',
     };
     const path = 'events/e/secretSantaParticipants/rsvp_maria';
+    // Not confirmed yet: no entry.
     await assertFails(setDoc(doc(maria, path), entry));
+    // Confirmed and waiting: joins at once (the app counts it once she is approved).
+    await assertSucceeds(
+      setDoc(doc(maria, 'events/e/guests/maria'), rsvp('maria', { approved: false })),
+    );
+    await assertSucceeds(setDoc(doc(maria, path), entry));
     await assertFails(
       setDoc(doc(accountDb('tia'), 'events/e/secretSantaParticipants/rsvp_tia'), {
         ...entry,
@@ -136,9 +139,6 @@ describe('guest approval', () => {
         joinedBy: 'tia',
       }),
     );
-
-    await updateDoc(doc(accountDb('owner-uid'), 'events/e/guests/maria'), { approved: true });
-    await assertSucceeds(setDoc(doc(maria, path), entry));
   });
 });
 

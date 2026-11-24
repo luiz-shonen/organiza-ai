@@ -1,8 +1,17 @@
-import { Component, ChangeDetectionStrategy, computed, input, output, signal } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import type { RsvpSecretSantaData } from '../../../../core/models';
-import { parseGiftLines } from '../../../../core/utils';
-import { DeclineMessage, GiftOption, Phone } from '../../../../core/value-objects';
+import { petsLabel } from '../../../../core/utils';
+import { DeclineMessage, Phone } from '../../../../core/value-objects';
+import { GiftOptionsFieldComponent } from '../../../../shared/components/gift-options-field/gift-options-field.component';
 import {
   OrgButtonComponent,
   OrgCheckboxComponent,
@@ -36,6 +45,7 @@ export interface RsvpDeclineResult {
     OrgCardHeaderComponent,
     OrgTextFieldComponent,
     OrgTextareaFieldComponent,
+    GiftOptionsFieldComponent,
   ],
   templateUrl: './rsvp-card.component.html',
   styleUrl: './rsvp-card.component.scss',
@@ -51,6 +61,13 @@ export class RsvpCardComponent {
   /** The event has a list of things to bring; without one the card does not mention items. */
   readonly hasItems = input<boolean>(true);
   readonly guestCount = input<number>(0);
+  /** Pets confirmed, shown apart: "30 pessoas confirmadas · 2 pets". */
+  readonly petCount = input<number>(0);
+  protected readonly confirmedLabel = computed(() => {
+    const count = this.guestCount();
+    const people = count === 1 ? '1 pessoa confirmada' : `${count} pessoas confirmadas`;
+    return this.petCount() ? `${people} · ${petsLabel(this.petCount())}` : people;
+  });
   readonly isLoading = input<boolean>(false);
   readonly guestName = input<string | null>(null);
   /** Confirmed, and the event asks for approval: waiting for the owner. */
@@ -85,29 +102,25 @@ export class RsvpCardComponent {
   /** The member is in the draw themself. */
   protected readonly inSanta = computed(() => !!this.secretSanta()?.joined['self']);
   protected readonly santaOpen = computed(() => !!this.secretSanta()?.open);
+  /** Leaving is up to the guest until the draw, even with sign-ups closed. */
+  protected readonly santaCanLeave = computed(
+    () => this.santaOpen() || !!this.secretSanta()?.canLeave,
+  );
   /** "Mesmo sem ir, quero participar do amigo oculto" in the decline form. */
   protected readonly santaWanted = signal(false);
   protected readonly santaPhone = signal('');
-  protected readonly santaGifts = signal('');
+  protected readonly santaGifts = signal<readonly string[]>([]);
+  private readonly giftsField = viewChild(GiftOptionsFieldComponent);
   protected readonly maskPhone = Phone.mask;
-  protected readonly giftLineMax = GiftOption.RULES.max;
   private readonly santaAttempted = signal(false);
   protected readonly santaPhoneError = computed(() => {
     if (!this.santaAttempted()) return '';
     if (!this.santaPhone().trim()) return 'Informe o telefone que vai receber o link';
     return Phone.validate(this.santaPhone()) ?? '';
   });
-  protected readonly santaGiftsError = computed(() => {
-    if (!this.santaAttempted()) return '';
-    const bad = this.giftLines().find((line) => GiftOption.validate(line));
-    return bad ? `"${bad}": ${GiftOption.validate(bad)}` : '';
-  });
-  protected readonly santaGiftLabel = computed(() => {
-    const max = this.secretSanta()?.maxGiftOptions ?? 1;
-    return max === 1
-      ? 'Opção de presente (opcional)'
-      : `Opções de presente, uma por linha, até ${max} (opcional)`;
-  });
+  protected readonly santaGiftLabel = computed(() =>
+    (this.secretSanta()?.maxGiftOptions ?? 1) === 1 ? 'Opção de presente' : 'Opções de presente',
+  );
 
   protected onConfirm(): void {
     if (!this.isLoading()) {
@@ -168,23 +181,21 @@ export class RsvpCardComponent {
     this.stopJoinSanta();
   }
 
-  private giftLines(): string[] {
-    const santa = this.secretSanta();
-    return santa?.giftOptions ? parseGiftLines(this.santaGifts(), santa.maxGiftOptions) : [];
-  }
-
   /** The phone and gift options typed, or null (errors shown) when something is wrong. */
   private santaJoin(): RsvpSantaJoin | null {
     this.santaAttempted.set(true);
     const phone = Phone.create(this.santaPhone());
-    const gifts = this.giftLines();
-    if (!phone || gifts.some((gift) => GiftOption.validate(gift))) return null;
-    return { phone: phone.formatted, gifts };
+    const wantsGifts = !!this.secretSanta()?.giftOptions;
+    // An idea still typed joins the list; with gift options on, at least one is needed.
+    const giftsOk = wantsGifts ? (this.giftsField()?.commit(true) ?? true) : true;
+    if (!phone || !giftsOk) return null;
+    return { phone: phone.formatted, gifts: wantsGifts ? [...this.santaGifts()] : [] };
   }
 
   private resetSanta(): void {
     this.santaPhone.set(this.phone());
-    this.santaGifts.set((this.secretSanta()?.joined['self'] ?? []).join('\n'));
+    this.santaGifts.set([...(this.secretSanta()?.joined['self'] ?? [])]);
+    this.giftsField()?.reset();
     this.santaAttempted.set(false);
   }
 }

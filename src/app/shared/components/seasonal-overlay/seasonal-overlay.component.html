@@ -80,7 +80,7 @@
             />
           </div>
 
-          <!-- Silhueta de Belém (bottom) -->
+          <!-- Silhueta de Belém (bottom, the whole width) -->
           <img
             class="seasonal-overlay__bethlehem"
             src="seasonal/natal-bethlehem.svg"
@@ -119,6 +119,17 @@
             <span class="seasonal-overlay__particle seasonal-overlay__particle--7"></span>
             <span class="seasonal-overlay__particle seasonal-overlay__particle--8"></span>
           </div>
+        </div>
+      }
+
+      @default {
+        <!-- An event's kind (Aniversário, Casamento, Formatura…): its scene along the whole
+             bottom of the page, still (nothing moves). -->
+        <div class="seasonal-overlay__scene" [attr.data-scene]="theme">
+          <div
+            class="seasonal-overlay__ground"
+            [style.background-image]="'url(seasonal/' + theme + '-scene.svg)'"
+          ></div>
         </div>
       }
 

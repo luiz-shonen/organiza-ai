@@ -10,6 +10,13 @@ import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
+
+// The organizers' share panel draws a QR code on a canvas, which the test DOM does not have.
+vi.mock('qrcode', () => ({
+  default: {
+    toCanvas: vi.fn().mockResolvedValue(undefined),
+  },
+}));
 import {
   EventService,
   ItemService,
@@ -53,6 +60,7 @@ describe('EventDetailContainer', () => {
   let currentUserSignal: WritableSignal<MockCurrentUser>;
   let mockAuthService: {
     currentUser: WritableSignal<MockCurrentUser>;
+    displayName: () => string;
     isSuperAdmin: WritableSignal<boolean>;
     loginWithGoogle: ReturnType<typeof vi.fn>;
   };
@@ -60,6 +68,7 @@ describe('EventDetailContainer', () => {
     upsertProfile: ReturnType<typeof vi.fn>;
     rememberInvitedEvent: ReturnType<typeof vi.fn>;
     getDeclinedEvents: ReturnType<typeof vi.fn>;
+    publicProfiles: ReturnType<typeof vi.fn>;
     setDeclined: ReturnType<typeof vi.fn>;
     setAttending: ReturnType<typeof vi.fn>;
     getProfile: ReturnType<typeof vi.fn>;
@@ -71,6 +80,7 @@ describe('EventDetailContainer', () => {
   let mockSeasonalThemeService: {
     evaluateEventTheme: ReturnType<typeof vi.fn>;
     resetToAuto: ReturnType<typeof vi.fn>;
+    config: () => { activeTheme: string };
   };
   let mockFeedback: {
     success: ReturnType<typeof vi.fn>;
@@ -160,6 +170,7 @@ describe('EventDetailContainer', () => {
     };
     mockAuthService = {
       currentUser: currentUserSignal,
+      displayName: () => String(currentUserSignal()?.['displayName'] ?? ''),
       isSuperAdmin: signal(false),
       loginWithGoogle: vi.fn().mockImplementation(async () => {
         currentUserSignal.set({
@@ -175,6 +186,7 @@ describe('EventDetailContainer', () => {
       upsertProfile: vi.fn().mockResolvedValue(undefined),
       rememberInvitedEvent: vi.fn().mockResolvedValue(undefined),
       getDeclinedEvents: vi.fn().mockResolvedValue([]),
+      publicProfiles: vi.fn().mockResolvedValue({}),
       setDeclined: vi.fn().mockResolvedValue(undefined),
       setAttending: vi.fn().mockResolvedValue(undefined),
       getProfile: vi.fn().mockResolvedValue(null),
@@ -186,6 +198,7 @@ describe('EventDetailContainer', () => {
     mockSeasonalThemeService = {
       evaluateEventTheme: vi.fn(),
       resetToAuto: vi.fn(),
+      config: () => ({ activeTheme: 'default' }),
     };
     mockFeedback = {
       success: vi.fn(),
@@ -311,8 +324,41 @@ describe('EventDetailContainer', () => {
     expect(component['guestCount']()).toBe(6);
   });
 
+  it('"Participantes" opens the editor on the amigo oculto step', () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    component['onEditSecretSanta']();
+    expect(navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-123'], {
+      queryParams: { passo: 'amigo-oculto' },
+    });
+  });
+
   describe('RSVP 1-Touch flow', () => {
-    it('sends a visitor without an account to sign in, and back to the invite', async () => {
+    it('signs a visitor in with Google right there, then goes on to the answer', async () => {
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      fixture.detectChanges();
+
+      await component['onConfirmRsvp']();
+      await settle();
+
+      expect(mockAuthService.loginWithGoogle).toHaveBeenCalled();
+      expect(navigate).not.toHaveBeenCalledWith(['/login'], expect.anything());
+      expect(mockDrawerService.open).toHaveBeenCalled();
+    });
+
+    it('stays put when the visitor closes the Google pop-up', async () => {
+      mockAuthService.loginWithGoogle.mockRejectedValueOnce({ code: 'auth/popup-closed-by-user' });
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      fixture.detectChanges();
+
+      await component['onConfirmRsvp']();
+      await settle();
+
+      expect(navigate).not.toHaveBeenCalled();
+      expect(mockDrawerService.open).not.toHaveBeenCalled();
+    });
+
+    it('falls back to the sign-in page when the pop-up cannot open', async () => {
+      mockAuthService.loginWithGoogle.mockRejectedValueOnce({ code: 'auth/popup-blocked' });
       const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
       fixture.detectChanges();
 
@@ -323,7 +369,6 @@ describe('EventDetailContainer', () => {
         queryParams: { redirect: '/evento/evt-123' },
       });
       expect(mockDrawerService.open).not.toHaveBeenCalled();
-      expect(mockGuestService.batchConfirmRsvp).not.toHaveBeenCalled();
     });
 
     it('opens the RSVP drawer and persists the verified attendee through the batch contract', async () => {
@@ -560,7 +605,9 @@ describe('EventDetailContainer', () => {
 
       await component['onConfirmClaim']({ itemId: 'item-1', quantity: 1, memberId: null, who: '' });
 
-      expect(mockFeedback.error).toHaveBeenCalledWith('Erro ao assumir item. Tente novamente.');
+      expect(mockFeedback.error).toHaveBeenCalledWith(
+        'Não foi possível assumir o item: erro inesperado (Claim failed).',
+      );
     });
   });
 });

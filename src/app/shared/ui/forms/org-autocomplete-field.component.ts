@@ -2,13 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   forwardRef,
   input,
+  linkedSignal,
   model,
   signal,
+  viewChildren,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatOption } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import type { OrgSelectOption } from './org-select-field.component';
@@ -47,7 +50,17 @@ export class OrgAutocompleteFieldComponent implements ControlValueAccessor {
   public readonly disabled = input(false);
   public readonly required = input(false);
   public readonly testId = input<string | null>(null);
-  private readonly query = signal('');
+  /**
+   * The typed text. A value set from outside (a form reset to its default) brings its label
+   * back; typing that clears the value keeps what was typed.
+   */
+  private readonly query = linkedSignal<string | null, string>({
+    source: this.value,
+    computation: (value, previous) =>
+      this.options().find((option) => option.value === value)?.label ??
+      (value === null ? (previous?.value ?? '') : ''),
+  });
+  private readonly matOptions = viewChildren(MatOption);
   private readonly disabledFromControl = signal(false);
   private onChange: (value: string | null) => void = () => undefined;
   private onTouched: () => void = () => undefined;
@@ -67,6 +80,18 @@ export class OrgAutocompleteFieldComponent implements ControlValueAccessor {
     const query = normalizeSearchText(this.query());
     return this.options().filter((option) => normalizeSearchText(option.label).includes(query));
   });
+
+  constructor() {
+    // Material keeps the last picked option ticked on its own; follow the value instead, so a
+    // reset does not leave the previous choice marked in the list.
+    effect(() => {
+      const value = this.value();
+      for (const option of this.matOptions()) {
+        if (option.value === value && !option.selected) option.select(false);
+        else if (option.value !== value && option.selected) option.deselect(false);
+      }
+    });
+  }
 
   public writeValue(value: string | null): void {
     this.value.set(value);

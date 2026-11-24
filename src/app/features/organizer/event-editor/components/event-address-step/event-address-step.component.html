@@ -23,22 +23,42 @@
           (valueChange)="cepInput.emit($event)"
         />
 
-        <org-text-field
-          label="Número"
-          placeholder="Ex: 123"
-          [required]="true"
-          [maxLength]="7"
-          [error]="fieldError(addressForm.controls.number, 'Número é obrigatório')"
-          formControlName="number"
-          testId="event-number-input"
-        />
+        <div class="event-step__number">
+          <org-text-field
+            label="Número"
+            placeholder="Ex: 123"
+            [required]="!noNumber().checked"
+            [maxLength]="7"
+            [error]="fieldError(addressForm.controls.number, 'Número é obrigatório')"
+            formControlName="number"
+            testId="event-number-input"
+          />
+          <org-checkbox
+            label="Sem número"
+            testId="event-no-number"
+            [checked]="noNumber().checked"
+            [disabled]="noNumber().disabled"
+            (checkedChange)="
+              addressForm.controls.noNumber.setValue($event);
+              addressForm.controls.noNumber.markAsDirty()
+            "
+          />
+        </div>
       </div>
 
+      @if (partlyFound()) {
+        <p class="event-step__locked-note" data-testid="event-address-partial">
+          <org-icon name="info" color="currentColor" />
+          O CEP não trouxe o endereço completo. Complete o que falta abaixo.
+        </p>
+      }
+
       <org-text-field
-        class="event-step__locked"
         label="Endereço"
-        placeholder="Ex: Rua das Festas"
-        [readOnly]="true"
+        [class.event-step__locked]="isLocked('address')"
+        [placeholder]="isLocked('address') ? 'Preenchido pelo CEP' : 'Ex: Estrada da Serra, Km 12'"
+        [readOnly]="isLocked('address')"
+        [suffixIcon]="isLocked('address') ? 'lock' : null"
         [required]="true"
         [error]="
           addressForm.controls.address.hasError('required') && addressForm.controls.address.touched
@@ -51,10 +71,11 @@
 
       <div class="event-step__row event-step__row--wide-narrow">
         <org-text-field
-          class="event-step__locked"
           label="Bairro"
-          placeholder="Ex: Centro"
-          [readOnly]="true"
+          [class.event-step__locked]="isLocked('neighborhood')"
+          [placeholder]="isLocked('neighborhood') ? 'Preenchido pelo CEP' : 'Ex: Zona rural'"
+          [readOnly]="isLocked('neighborhood')"
+          [suffixIcon]="isLocked('neighborhood') ? 'lock' : null"
           [required]="true"
           [error]="
             addressForm.controls.neighborhood.hasError('required') &&
@@ -63,13 +84,15 @@
               : ''
           "
           formControlName="neighborhood"
+          testId="event-neighborhood-input"
         />
 
         <org-text-field
-          class="event-step__locked"
           label="Cidade/UF"
-          placeholder="Ex: São Paulo/SP"
-          [readOnly]="true"
+          [class.event-step__locked]="isLocked('city')"
+          [placeholder]="isLocked('city') ? 'Preenchido pelo CEP' : 'Ex: Jaboticatubas/MG'"
+          [readOnly]="isLocked('city')"
+          [suffixIcon]="isLocked('city') ? 'lock' : null"
           [required]="true"
           [error]="
             addressForm.controls.city.hasError('required') && addressForm.controls.city.touched
@@ -77,8 +100,38 @@
               : ''
           "
           formControlName="city"
+          testId="event-city-input"
         />
       </div>
+
+      <org-text-field
+        label="Complemento (opcional)"
+        placeholder="Ex: Km 12, sítio Boa Vista, casa 2"
+        [maxLength]="complementMax"
+        formControlName="complement"
+        testId="event-complement-input"
+      />
+
+      <org-textarea-field
+        label="Como chegar (opcional)"
+        placeholder="Ex: depois da ponte, entre na estrada de terra à direita. Portão azul."
+        hint="Ajuda quem vai a lugares que o mapa não acha direito."
+        [rows]="3"
+        [maxLength]="directionsMax"
+        formControlName="directions"
+        testId="event-directions-input"
+      />
+
+      <org-text-field
+        label="Localização no mapa (opcional)"
+        placeholder="Ex: https://maps.app.goo.gl/AbC123 ou -19.9167, -43.9345"
+        prefixIcon="place"
+        [hint]="mapHint(addressForm.controls.mapLocation.value)"
+        [error]="fieldError(addressForm.controls.mapLocation, '')"
+        formControlName="mapLocation"
+        testId="event-map-location-input"
+        (focusout)="tidyMapLocation()"
+      />
     </div>
   </org-surface>
   @if (missingMessage(); as message) {

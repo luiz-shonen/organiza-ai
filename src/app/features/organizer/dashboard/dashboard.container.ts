@@ -21,7 +21,13 @@ import {
   NotificationService,
   UserService,
 } from '../../../core/services';
-import { buildItemProgress, daysUntil, hasStarted, shareWhatsApp } from '../../../core/utils';
+import {
+  buildItemProgress,
+  countGuests,
+  daysUntil,
+  hasStarted,
+  shareWhatsApp,
+} from '../../../core/utils';
 import type { PartyEvent } from '../../../core/models';
 import {
   FeedbackService,
@@ -30,6 +36,7 @@ import {
   OrgExpansionPanelComponent,
   OrgFilterBarComponent,
   OrgIconButtonComponent,
+  OrgIconComponent,
   OrgInsightCardComponent,
   OrgPageHeaderComponent,
   OrgPageLayoutComponent,
@@ -45,6 +52,10 @@ import {
 import { NextEventBannerComponent } from '../../../shared/components/next-event-banner/next-event-banner.component';
 
 export type EventStatusFilter = 'all' | 'soon' | 'scheduled' | 'past' | 'cancelled';
+/** By the event's date: earliest first (the default) or latest first. */
+export type EventDateOrder = 'oldest' | 'newest';
+/** Whose events: all of them, the ones the person created, or the ones they help organise. */
+export type EventRoleFilter = 'all' | 'owner' | 'collaborator';
 
 /** "Em breve" means really close: at most this many days away. Further ahead is "Agendado". */
 export const SOON_DAYS = 5;
@@ -66,6 +77,8 @@ export interface EventStats {
 }
 
 interface DashboardCard {
+  /** "Colaborador(a)" on an event someone else created. */
+  role: string | null;
   readonly event: PartyEvent;
   readonly status: EventSummaryStatus;
   readonly stats: EventStats | null;
@@ -91,6 +104,7 @@ function isUpcoming(event: PartyEvent): boolean {
     OrgExpansionPanelComponent,
     OrgFilterBarComponent,
     OrgIconButtonComponent,
+    OrgIconComponent,
     OrgInsightCardComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
@@ -115,20 +129,40 @@ export class DashboardContainer {
   private readonly notificationService = inject(NotificationService);
   private readonly eventNotificationService = inject(EventNotificationService);
 
-  /** Events the person created or helps organise (super admins see every event). */
+  /** Events the person created or helps organise. */
   protected readonly events = toSignal(
     toObservable(this.authService.currentUser).pipe(
       switchMap((user) => {
         if (!user) return of([] as PartyEvent[]);
-        return this.authService.isSuperAdmin()
-          ? this.eventService.listEvents()
-          : this.eventService.getUserEvents(user.uid);
+        // Also for a super admin: only theirs; every event is in the admin area.
+        return this.eventService.getUserEvents(user.uid);
       }),
     ),
   );
 
   /** The filter chips on; `['all']` shows every event. */
   readonly activeFilters = signal<readonly EventStatusFilter[]>(['all']);
+  readonly dateOrder = signal<EventDateOrder>('oldest');
+  /** "Organizo" and "Colaboro" chips; none (or both) on shows every event. */
+  readonly roleFilters = signal<readonly string[]>(['all']);
+  protected readonly roleOptions: readonly OrgFilterOption<EventRoleFilter>[] = [
+    { id: 'owner', label: 'Organizo', testId: 'role-filter-owner' },
+    { id: 'collaborator', label: 'Colaboro', testId: 'role-filter-collaborator' },
+  ];
+
+  /** The person's part in an event: created it, or was invited to help organise it. */
+  protected roleOf(event: PartyEvent): EventRoleFilter | null {
+    const uid = this.authService.currentUser()?.uid;
+    if (!uid) return null;
+    if (event.createdBy === uid) return 'owner';
+    return (event.collaborators ?? []).includes(uid) ? 'collaborator' : null;
+  }
+
+  private readonly collaborationCount = computed(
+    () => (this.events() ?? []).filter((e) => this.roleOf(e) === 'collaborator').length,
+  );
+  /** "Organizo / Colaboro" only for someone who helps organise someone else's event. */
+  protected readonly showRoleFilter = computed(() => this.collaborationCount() > 0);
   private readonly stats = signal<Readonly<Record<string, EventStats>>>({});
 
   protected readonly filters: readonly OrgFilterOption<EventStatusFilter>[] = [
@@ -153,11 +187,26 @@ export class DashboardContainer {
   });
 
   protected readonly subtitle = computed(() => {
-    const count = this.events()?.length ?? 0;
-    return count === 1 ? '1 evento que você organiza' : `${count} eventos que você organiza`;
+    const helping = this.collaborationCount();
+    const own = (this.events()?.length ?? 0) - helping;
+    const owned = own === 1 ? '1 evento que você organiza' : `${own} eventos que você organiza`;
+    if (!helping) return owned;
+    const helped = helping === 1 ? '1 em que você colabora' : `${helping} em que você colabora`;
+    return `${owned} · ${helped}`;
   });
 
+  /** The chosen chips, in the chosen date order. */
   readonly filteredEvents = computed(() => {
+    const byDate = (a: PartyEvent, b: PartyEvent) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime();
+    const roles = this.roleFilters().filter((id) => id !== 'all');
+    const list = this.statusFiltered()
+      .filter((e) => !roles.length || roles.includes(this.roleOf(e) ?? ''))
+      .sort(byDate);
+    return this.dateOrder() === 'newest' ? list.reverse() : list;
+  });
+
+  private readonly statusFiltered = computed(() => {
     const all = this.events() ?? [];
     const picked = this.activeFilters();
     // "Todos" is what is still to come; past and cancelled events have their own chips.
@@ -200,6 +249,7 @@ export class DashboardContainer {
       return {
         event,
         status,
+        role: this.roleOf(event) === 'collaborator' ? 'Colaborador(a)' : null,
         stats,
         insight: live && stats ? this.buildInsight(days, stats) : null,
       };
@@ -216,26 +266,7 @@ export class DashboardContainer {
     return event ? daysUntil(event.date) : null;
   });
 
-  /** Events saved before "Organizado por" used the profile name get it once, here. */
-  private creatorNamesChecked = false;
-
   constructor() {
-    effect(() => {
-      const user = this.authService.currentUser();
-      const all = this.events();
-      if (!user || !all?.length || this.creatorNamesChecked) return;
-      this.creatorNamesChecked = true;
-      untracked(async () => {
-        const name = (await this.userService.getProfile(user.uid))?.name?.trim();
-        if (
-          name &&
-          all.some((event) => event.createdBy === user.uid && event.creatorName !== name)
-        ) {
-          await this.eventService.renameCreator(user.uid, name);
-        }
-      });
-    });
-
     effect(() => {
       const all = this.events();
       if (all && all.length > 0) {
@@ -276,10 +307,8 @@ export class DashboardContainer {
             firstValueFrom(this.claimService.listClaims(event.id)),
           ]);
           const progress = buildItemProgress(items, claims);
-          const people = guests.reduce(
-            (sum, guest) => sum + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
-            0,
-          );
+          // Pets go too, but are not counted as people.
+          const people = countGuests(guests).people;
           const stats: EventStats = {
             guests: people,
             items: progress.length,
@@ -313,6 +342,14 @@ export class DashboardContainer {
     };
   }
 
+  protected toggleDateOrder(): void {
+    this.dateOrder.update((order) => (order === 'oldest' ? 'newest' : 'oldest'));
+  }
+
+  protected setRoleFilters(ids: string[]): void {
+    this.roleFilters.set(ids);
+  }
+
   protected setFilters(ids: string[]): void {
     this.activeFilters.set(ids as EventStatusFilter[]);
   }
@@ -327,7 +364,13 @@ export class DashboardContainer {
 
   protected shareWhatsApp(event: PartyEvent): void {
     const url = `${location.origin}/evento/${event.id}`;
-    shareWhatsApp({ title: event.title, date: event.date, location: event.location, url });
+    shareWhatsApp({
+      title: event.title,
+      date: event.date,
+      endDate: event.endDate,
+      location: event.location,
+      url,
+    });
   }
 
   protected copyLink(event: PartyEvent): void {

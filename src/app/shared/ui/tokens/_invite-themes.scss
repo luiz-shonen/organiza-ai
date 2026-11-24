@@ -1,8 +1,10 @@
 @use 'sass:map';
 
 // Invitations (the envelope on Início, the paper card on the event page) take the colours of
-// the event's category. They are objects, like printed paper: the same in light and dark mode.
-// A theme is one entry here plus its key in `inviteTheme` (core/utils/invite.utils.ts).
+// the event's category: light paper in the light theme, dark paper in the dark one, with the
+// gold and the colours of the category kept bright enough to read on it.
+// A theme is one entry here (and in $invite-themes-dark) plus its key in `inviteTheme`
+// (core/utils/invite.utils.ts).
 $invite-themes: (
   'natal': (
     envelope: #f3e6df,
@@ -36,6 +38,15 @@ $invite-themes: (
     line: #e8a33c,
     ink: #b3400b,
   ),
+  // The amigo oculto reveal: the app's lilac on cream, with the gold frame.
+  'segredo': (
+      envelope: #f1ecfb,
+      flap: #6d4fd8,
+      seal: #5b3fc4,
+      paper: #fffcf6,
+      line: #c9a24d,
+      ink: #5b3fc4,
+    ),
   'padrao': (
     envelope: #efecfb,
     flap: #8b74e8,
@@ -43,6 +54,70 @@ $invite-themes: (
     paper: #fffdf9,
     line: #b9a8ee,
     ink: #5b3fc4,
+  ),
+);
+
+// The dark paper of each theme: a deep tone of its colour, gold and ink lifted to read on it.
+$invite-themes-dark: (
+  'natal': (
+    envelope: #2b1c1e,
+    flap: #9b2f2a,
+    seal: #b83a33,
+    paper: #1f1416,
+    line: #d4b062,
+    ink: #f2958c,
+    text: #f6eee8,
+    muted: #cdbab0,
+  ),
+  'aniversario': (
+    envelope: #241e3b,
+    flap: #5d3fc4,
+    seal: #6a45d8,
+    paper: #18142a,
+    line: #e8b866,
+    ink: #c0abff,
+    text: #f2eefc,
+    muted: #bdb3da,
+  ),
+  'casamento': (
+    envelope: #26221b,
+    flap: #5e5038,
+    seal: #9a7b3f,
+    paper: #191713,
+    line: #cdb071,
+    ink: #dcc084,
+    text: #f4f0e7,
+    muted: #c4bba9,
+  ),
+  'junina': (
+    envelope: #2c1e13,
+    flap: #b13d0b,
+    seal: #c2410c,
+    paper: #1f150e,
+    line: #eaa94a,
+    ink: #ffa46b,
+    text: #f9efe5,
+    muted: #d1bda9,
+  ),
+  'segredo': (
+    envelope: #221e39,
+    flap: #5f46c4,
+    seal: #6d4fd8,
+    paper: #17142a,
+    line: #d4b062,
+    ink: #c4b2ff,
+    text: #f0edfb,
+    muted: #b6aed4,
+  ),
+  'padrao': (
+    envelope: #221e39,
+    flap: #5f46c4,
+    seal: #6d4fd8,
+    paper: #17142a,
+    line: #9d8de4,
+    ink: #bdadff,
+    text: #f0edfb,
+    muted: #b6aed4,
   ),
 );
 
@@ -58,6 +133,19 @@ $invite-themes: (
       --org-invite-on-seal: #fff;
       --org-invite-text: #2b2320;
       --org-invite-muted: #5a4d46;
+    }
+  }
+
+  @each $name, $theme in $invite-themes-dark {
+    html.dark .org-invite--#{$name} {
+      --org-invite-envelope: #{map.get($theme, envelope)};
+      --org-invite-flap: #{map.get($theme, flap)};
+      --org-invite-seal: #{map.get($theme, seal)};
+      --org-invite-paper: #{map.get($theme, paper)};
+      --org-invite-line: #{map.get($theme, line)};
+      --org-invite-ink: #{map.get($theme, ink)};
+      --org-invite-text: #{map.get($theme, text)};
+      --org-invite-muted: #{map.get($theme, muted)};
     }
   }
 }

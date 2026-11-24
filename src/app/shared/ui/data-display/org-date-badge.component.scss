@@ -26,3 +26,8 @@
   font: var(--org-font-weight-semibold) var(--org-font-size-2xl) / var(--org-line-height-tight)
     var(--org-font-display);
 }
+
+// "23–25": an event over several days, one step smaller so the badge stays compact.
+.org-date-badge__day--span {
+  font-size: var(--org-font-size-lg);
+}

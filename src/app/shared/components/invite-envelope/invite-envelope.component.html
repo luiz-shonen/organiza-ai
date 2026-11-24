@@ -6,6 +6,9 @@
       [routerLink]="link()"
       [attr.aria-label]="'Abrir o convite: ' + event().title"
     >
+      <!-- The envelope dressed like its letter: a fine gold frame, a gilt edge on the flap. -->
+      <span class="invite-envelope__frame" aria-hidden="true"></span>
+      <span class="invite-envelope__flap-trim" aria-hidden="true"></span>
       <span class="invite-envelope__flap" aria-hidden="true"></span>
       <span class="invite-envelope__seal" aria-hidden="true">{{ initial() }}</span>
       <span class="invite-envelope__address">
@@ -18,12 +21,15 @@
         }
       </span>
       <span class="invite-envelope__tags">
-        <org-badge
-          [label]="categoryLabel()"
-          [variant]="categoryVariant()"
-          [hue]="categoryHue()"
-          [gradient]="false"
-        />
+        <!-- Only a party the invitation has no words of its own for says what it is. -->
+        @if (showCategory()) {
+          <org-badge
+            [label]="categoryLabel()"
+            [variant]="categoryVariant()"
+            [hue]="categoryHue()"
+            [gradient]="false"
+          />
+        }
         @if (status(); as status) {
           <org-badge
             data-testid="event-status"

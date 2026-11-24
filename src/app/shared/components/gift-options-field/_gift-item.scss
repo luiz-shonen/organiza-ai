@@ -1,0 +1,29 @@
+// One gift idea as a card, the same in the form that edits it and in the lists that show it.
+
+@mixin list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@mixin item {
+  align-items: center;
+  background: var(--org-surface-container-high);
+  border-radius: var(--org-radius-md);
+  display: flex;
+  gap: var(--org-space-xs);
+  padding-block: var(--org-space-2xs);
+  padding-inline: var(--org-space-md) var(--org-space-2xs);
+}
+
+@mixin text {
+  color: var(--org-on-surface);
+  flex: 1;
+  font-size: var(--org-font-size-sm);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  padding-block: var(--org-space-xs);
+}

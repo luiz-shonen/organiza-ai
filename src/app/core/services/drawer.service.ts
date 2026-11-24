@@ -15,6 +15,7 @@ export class DrawerService {
   readonly isOpen = computed(() => this.request() !== null);
 
   public open(request: AppDrawerRequest): void {
+    this.request()?.onClose?.();
     this.request.set(request);
   }
 
@@ -39,6 +40,7 @@ export class DrawerService {
 
   public close(): void {
     const trigger = this.request()?.trigger;
+    this.request()?.onClose?.();
     this.request.set(null);
 
     if (trigger) {

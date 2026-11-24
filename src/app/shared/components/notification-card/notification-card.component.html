@@ -6,7 +6,10 @@
   [attr.aria-label]="notification().title"
 >
   <span class="notice__icon">
-    <org-icon [name]="notification().kind === 'secret-santa' ? 'redeem' : 'notifications_active'" />
+    <org-icon
+      color="currentColor"
+      [name]="notification().kind === 'secret-santa' ? 'redeem' : 'notifications_active'"
+    />
   </span>
   <div class="notice__content">
     <p class="notice__title">{{ notification().title }}</p>

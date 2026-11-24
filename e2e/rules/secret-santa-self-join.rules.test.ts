@@ -6,7 +6,16 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest';
 
 /** Guests joining the amigo oculto from the invite ("Vai participar do amigo oculto?"). */
@@ -119,13 +128,13 @@ describe('amigo oculto sign-ups from the invite', () => {
     await assertFails(updateDoc(doc(accountDb('maria'), path('rsvp_maria')), { phone: '' }));
   });
 
-  it('closes when the owner turns sign-ups off, or there is no amigo oculto', async () => {
+  it('closing the sign-ups stops joining and changes, not leaving; no amigo oculto closes all', async () => {
     const maria = accountDb('maria');
     await assertSucceeds(setDoc(doc(maria, path('rsvp_maria')), entry('maria')));
     await setSettings({ enabled: true, giftOptions: true, selfJoin: false });
     await assertFails(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: [] }));
-    await assertFails(deleteDoc(doc(maria, path('rsvp_maria'))));
     await assertFails(setDoc(doc(maria, path('rsvp_maria_c_bia')), entry('maria')));
+    await assertSucceeds(deleteDoc(doc(maria, path('rsvp_maria'))));
     await setSettings({ enabled: false, giftOptions: false });
     await assertFails(setDoc(doc(maria, path('rsvp_maria_c_bia')), entry('maria')));
   });
@@ -144,10 +153,65 @@ describe('amigo oculto sign-ups from the invite', () => {
     );
     await setSettings({ enabled: true, giftOptions: true });
     await assertSucceeds(setDoc(doc(accountDb('maria'), path('rsvp_maria')), entry('maria')));
-    await assertSucceeds(
-      updateDoc(doc(owner, path('rsvp_maria')), { phone: '', distinctFrom: ['p1'] }),
-    );
+    await assertSucceeds(updateDoc(doc(owner, path('rsvp_maria')), { distinctFrom: ['p1'] }));
     await assertFails(updateDoc(doc(owner, path('rsvp_maria')), { joinedBy: 'owner-uid' }));
     await assertSucceeds(deleteDoc(doc(owner, path('rsvp_maria'))));
+  });
+
+  it('never lets organizers change a guest entry: only take it out, or tell it apart', async () => {
+    const owner = accountDb('owner-uid');
+    const maria = accountDb('maria');
+    const roster = (id: string) => `events/e/secretSantaRoster/${id}`;
+    await assertSucceeds(setDoc(doc(maria, path('rsvp_maria')), entry('maria')));
+    await assertFails(updateDoc(doc(owner, path('rsvp_maria')), { name: 'Maria Silva' }));
+    await assertFails(updateDoc(doc(owner, path('rsvp_maria')), { phone: '(11) 97777-0000' }));
+    await assertFails(updateDoc(doc(owner, path('rsvp_maria')), { giftOptions: ['Vinho'] }));
+    await assertSucceeds(updateDoc(doc(owner, path('rsvp_maria')), { distinctFrom: ['p9'] }));
+    // The guests' copy of her entry must say what she wrote.
+    await assertSucceeds(
+      setDoc(doc(owner, roster('rsvp_maria')), { name: 'Maria', giftOptions: ['Livro'] }),
+    );
+    await assertFails(
+      setDoc(doc(owner, roster('rsvp_maria')), { name: 'Maria Silva', giftOptions: ['Livro'] }),
+    );
+    await assertFails(
+      setDoc(doc(owner, roster('rsvp_maria')), { name: 'Maria', giftOptions: ['Vinho'] }),
+    );
+    // An entry made for a confirmed guest (`guestId`) is theirs as well.
+    await assertSucceeds(
+      setDoc(doc(owner, path('p2')), { name: 'Ana', phone: '', giftOptions: [], guestId: 'ana' }),
+    );
+    await assertFails(updateDoc(doc(owner, path('p2')), { name: 'Ana Souza' }));
+    await assertSucceeds(deleteDoc(doc(owner, path('p2'))));
+    // The guest herself changes her ideas; someone typed by hand, the organizers do.
+    await assertSucceeds(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: ['Vinho'] }));
+    const typed = { name: 'Tio Zé', phone: '', giftOptions: ['Meia'] };
+    await assertSucceeds(setDoc(doc(owner, path('p1')), typed));
+    await assertSucceeds(updateDoc(doc(owner, path('p1')), { giftOptions: ['Boné'] }));
+    await assertSucceeds(
+      setDoc(doc(owner, roster('p1')), { name: 'Tio Zé', giftOptions: ['Boné'] }),
+    );
+  });
+
+  it('Juntar may give a guest entry only the phone of the typed entry it removes', async () => {
+    const owner = accountDb('owner-uid');
+    await assertSucceeds(setDoc(doc(accountDb('maria'), path('rsvp_maria')), entry('maria')));
+    await assertSucceeds(
+      setDoc(doc(owner, path('m1')), { name: 'Maria', phone: '(11) 95555-1111', giftOptions: [] }),
+    );
+    // Not removed in the same batch: refused.
+    await assertFails(
+      updateDoc(doc(owner, path('rsvp_maria')), { phone: '(11) 95555-1111', mergedFrom: 'm1' }),
+    );
+    // Another phone than the typed one: refused.
+    const wrong = writeBatch(owner);
+    wrong.update(doc(owner, path('rsvp_maria')), { phone: '(11) 90000-0000', mergedFrom: 'm1' });
+    wrong.delete(doc(owner, path('m1')));
+    await assertFails(wrong.commit());
+    // The typed phone, the typed entry removed with it: allowed.
+    const merge = writeBatch(owner);
+    merge.update(doc(owner, path('rsvp_maria')), { phone: '(11) 95555-1111', mergedFrom: 'm1' });
+    merge.delete(doc(owner, path('m1')));
+    await assertSucceeds(merge.commit());
   });
 });

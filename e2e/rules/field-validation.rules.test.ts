@@ -189,4 +189,50 @@ describe('event fields', () => {
       setDoc(doc(db, 'events/event-2'), { ...event, description: 'x'.repeat(2001) }),
     );
   });
+
+  it('takes the last day of an event over several days as "AAAA-MM-DD", or null', async () => {
+    await seed(`admins/${adminEmail}`, { email: adminEmail });
+    const db = testEnvironment.authenticatedContext('admin-1', { email: adminEmail }).firestore();
+    const event = { title: 'Retiro', date: '2026-12-23T20:00:00.000Z' };
+
+    await assertSucceeds(setDoc(doc(db, 'events/event-1'), { ...event, endDate: '2026-12-25' }));
+    await assertSucceeds(setDoc(doc(db, 'events/event-1'), { ...event, endDate: null }));
+    await assertFails(setDoc(doc(db, 'events/event-2'), { ...event, endDate: '25/12/2026' }));
+    await assertFails(setDoc(doc(db, 'events/event-2'), { ...event, endDate: 20261225 }));
+  });
+
+  it('takes a rural address: no street from the CEP, S/N, a complement and directions', async () => {
+    await seed(`admins/${adminEmail}`, { email: adminEmail });
+    const db = testEnvironment.authenticatedContext('admin-1', { email: adminEmail }).firestore();
+    const addressDetails = {
+      cep: '35830-000',
+      address: 'Estrada da Serra do Cipó',
+      number: 'S/N',
+      neighborhood: '',
+      city: 'Jaboticatubas/MG',
+      complement: 'Km 12, sítio Boa Vista',
+      directions: 'Depois da ponte, estrada de terra à direita. Portão azul.',
+    };
+    const event = { title: 'Churrasco no sítio', addressDetails };
+
+    await assertSucceeds(setDoc(doc(db, 'events/event-1'), event));
+    await assertFails(
+      setDoc(doc(db, 'events/event-2'), {
+        ...event,
+        addressDetails: { ...addressDetails, complement: 'x'.repeat(81) },
+      }),
+    );
+    await assertFails(
+      setDoc(doc(db, 'events/event-2'), {
+        ...event,
+        addressDetails: { ...addressDetails, directions: 'x'.repeat(301) },
+      }),
+    );
+    await assertFails(
+      setDoc(doc(db, 'events/event-2'), {
+        ...event,
+        addressDetails: { ...addressDetails, mapPin: 'x' },
+      }),
+    );
+  });
 });

@@ -132,12 +132,8 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
       );
       return {
         field: true,
-        focusLabel: fieldStyle
-          .getPropertyValue('--mat-form-field-outlined-focus-label-text-color')
-          .trim(),
-        focusOutline: fieldStyle
-          .getPropertyValue('--mat-form-field-outlined-focus-outline-color')
-          .trim(),
+        // The focus colours come from the theme: Material's primary, bridged from --org-primary.
+        themePrimary: fieldStyle.getPropertyValue('--mat-sys-primary').trim(),
         primary: fieldStyle.getPropertyValue('--org-primary').trim(),
         segments: outlineSegments.flatMap((segment) => {
           const style = window.getComputedStyle(segment);
@@ -166,8 +162,7 @@ export async function assertFocusedFieldCoherence(locator: Locator): Promise<voi
   });
   if (state.field) {
     expect(state.primary).not.toBe('');
-    expect(state.focusLabel).toBe(state.primary);
-    expect(state.focusOutline).toBe(state.primary);
+    expect(state.themePrimary).toBe(state.primary);
     const segmentColors = state.segments
       .filter(
         ([color, width]) =>

@@ -3,9 +3,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrgIconComponent, OrgIconName } from './org-icon.component';
 
-export type OrgIconButtonVariant = 'default' | 'danger' | 'primary';
+/** `chip`: outlined like the filter chips, for an action that sits in a row of them. */
+export type OrgIconButtonVariant = 'default' | 'danger' | 'primary' | 'chip';
 
-const VALID_VARIANTS: ReadonlySet<OrgIconButtonVariant> = new Set(['default', 'danger', 'primary']);
+const VALID_VARIANTS: ReadonlySet<OrgIconButtonVariant> = new Set([
+  'default',
+  'danger',
+  'primary',
+  'chip',
+]);
 
 /** A trash can is always a destructive action, so it is always red. */
 const TRASH_ICONS: ReadonlySet<OrgIconName> = new Set(['delete', 'delete_outline']);

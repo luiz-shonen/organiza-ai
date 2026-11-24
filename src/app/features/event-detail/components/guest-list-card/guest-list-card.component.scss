@@ -24,17 +24,82 @@
   padding: 0;
 }
 
+// One row per household, split by fine rules like the amigo oculto list.
 .guest-list__households {
+  gap: 0;
+}
+
+.guest-list__household + .guest-list__household {
+  border-top: 1px solid var(--org-outline-variant);
+}
+
+// A household with nothing to open: the same line as a panel's title.
+.guest-list__row {
+  align-items: center;
+  display: flex;
   gap: var(--org-space-sm);
+  min-block-size: calc(var(--org-touch) + var(--org-space-sm));
+}
+
+.guest-list__row-name {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.guest-list__row .guest-list__count {
+  margin-inline-start: auto;
+}
+
+// Beside the guest's name in the panel title, quieter than it.
+// Each household starts with the face of who answered: their photo, or their initial.
+.guest-list__avatar {
+  flex: none;
+}
+
+// How many go, as a green pill on the right.
+// Name and phone side by side; on a phone the phone goes under the name, never cutting it.
+.guest-list__who {
+  align-items: baseline;
+  column-gap: var(--org-space-sm);
+  display: flex;
+  flex-wrap: wrap;
+  min-inline-size: 0;
+  white-space: normal;
+
+  @media (width < 600px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.guest-list__count {
+  background: var(--org-tertiary-container);
+  flex: none;
+  white-space: nowrap;
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-tertiary-container);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  padding: var(--org-space-2xs) var(--org-space-sm);
 }
 
 .guest-list__phone {
   color: var(--org-on-surface-variant);
+  flex: none;
   font-size: var(--org-font-size-sm);
-  margin: 0;
+  font-weight: var(--org-font-weight-regular);
 }
 
 // The guest is the panel title, so their part starts right under it, without the name again.
+// What is inside a household lines up with the name above it, past the photo.
+.guest-list__holder,
+.guest-list__people {
+  padding-inline-start: calc(var(--org-icon-size-xl) + var(--org-space-sm));
+}
+
 .guest-list__holder {
   display: flex;
   flex-direction: column;
@@ -42,12 +107,12 @@
 }
 
 // One row per person with them: avatar, name with their role, then what they bring.
+// The name line is as tall as the photo, so the two sit centred; "Leva:" goes below.
 .guest-list__person {
   align-items: flex-start;
-  border-top: 1px solid var(--org-outline-variant);
   display: flex;
   gap: var(--org-space-sm);
-  padding: var(--org-space-sm) 0;
+  padding: var(--org-space-xs) 0;
 }
 
 .guest-list__info {
@@ -59,6 +124,7 @@
 
 .guest-list__name {
   align-items: center;
+  min-block-size: var(--org-icon-size-xl);
   color: var(--org-on-surface);
   display: flex;
   flex-wrap: wrap;
@@ -72,10 +138,15 @@
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-xs);
   font-weight: var(--org-font-weight-medium);
+}
 
-  &--host {
-    color: var(--org-primary);
-  }
+.guest-list__together {
+  color: var(--org-primary);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  letter-spacing: var(--org-letter-spacing-label);
+  margin: var(--org-space-sm) 0 0;
+  text-transform: uppercase;
 }
 
 .guest-list__bring,
@@ -110,14 +181,61 @@
 }
 
 .guest-list__declines-title {
+  align-items: center;
   color: var(--org-on-surface);
-  font-size: var(--org-font-size-sm);
+  display: flex;
+  font-size: var(--org-font-size-md);
   font-weight: var(--org-font-weight-semibold);
-  margin: 0 0 var(--org-space-sm);
+  gap: var(--org-space-xs);
+  margin: 0 0 var(--org-space-2xs);
 }
 
-.guest-list__declines-list {
+// How many, in a neutral pill (the green one is for who goes).
+.guest-list__declines-count {
+  background: var(--org-surface-container-high);
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  padding: var(--org-space-2xs) var(--org-space-sm);
+}
+
+// One row per person who will not go, like a confirmed one but quieter.
+.guest-list__decline {
+  align-items: center;
+  display: flex;
   gap: var(--org-space-sm);
+  min-block-size: calc(var(--org-touch) + var(--org-space-xs));
+  padding-block: var(--org-space-2xs);
+
+  & + & {
+    border-top: 1px solid var(--org-outline-variant);
+  }
+}
+
+.guest-list__decline-avatar {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.guest-list__decline-text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.guest-list__decline-name {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.guest-list__message {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  font-style: italic;
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 @media print {

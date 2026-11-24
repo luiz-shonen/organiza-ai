@@ -38,6 +38,21 @@
       }
     </org-page-header>
 
+    @if (draftMessage(); as message) {
+      <org-banner
+        variant="info"
+        icon="history"
+        class="editor__draft-banner"
+        data-testid="editor-draft-restored"
+        actionLabel="Desfazer"
+        actionIcon="undo"
+        dismissLabel="Fechar aviso"
+        [message]="message"
+        (action)="discardDraft()"
+        (dismissed)="restoredDraftAt.set(null)"
+      />
+    }
+
     @if (isEditing() && !isOwner()) {
       <org-banner
         variant="info"
@@ -49,6 +64,7 @@
       />
     }
 
+    <!-- Editing, the invite's link and QR code stay at hand beside the steps (also on its page). -->
     <div class="editor__grid" [class.editor__grid--single]="!isEditing()">
       <div class="editor__col" data-testid="event-step-progress">
         <org-stepper
@@ -56,6 +72,7 @@
           ariaLabel="Etapas de criação do evento"
           [linear]="!isEditing()"
           [compact]="true"
+          [selectedIndex]="activeStepIndex()"
           (selectionChange)="activeStepIndex.set($event)"
         >
           <org-step [label]="stepLabels[0]" [stepControl]="basicInfoForm">
@@ -73,6 +90,8 @@
           <org-step [label]="stepLabels[1]" [stepControl]="addressForm">
             <app-event-address-step
               [form]="addressForm"
+              [found]="addressFound()"
+              [noNumber]="noNumberState()"
               (cepInput)="formatCep($event)"
               (back)="stepper.previous()"
               (next)="stepper.next()"
@@ -95,16 +114,11 @@
           <org-step [label]="stepLabels[3]">
             <app-event-secret-santa-step
               [canConfigure]="isOwner()"
-              [participants]="stepParticipants()"
-              [suggestions]="secretSantaSuggestions()"
-              [drawn]="secretSantaDrawn()"
               [(enabled)]="secretSantaEnabled"
               [(giftOptions)]="secretSantaGiftOptions"
               [(maxGiftOptions)]="secretSantaMaxGifts"
-              (add)="addParticipant($event)"
-              (addMany)="addParticipants($event)"
-              (update)="updateParticipant($event)"
-              (remove)="removeParticipant($event)"
+              [(drawDate)]="secretSantaDrawDate"
+              [(rules)]="secretSantaRules"
               (back)="stepper.previous()"
               (next)="stepper.next()"
             />
@@ -130,6 +144,7 @@
             [eventUrl]="eventUrl()"
             [eventTitle]="basicInfoForm.controls.title.value"
             [eventDate]="currentEvent()?.date ?? null"
+            [eventEndDate]="currentEvent()?.endDate ?? null"
             [eventLocation]="currentEvent()?.location ?? null"
           />
         </div>

@@ -213,7 +213,7 @@ Uso recomendado: `<org-step label="Informações">...</org-step>`. It is only us
 
 ### OrgStepperComponent
 
-Uso recomendado: `<org-stepper [orientation]="orientation()"><org-step label="Informações">...</org-step></org-stepper>`. The caller supplies semantic steps; the component owns compact mobile orientation.
+Uso recomendado: `<org-stepper [orientation]="orientation()"><org-step label="Informações">...</org-step></org-stepper>`. The caller supplies semantic steps; the component owns compact mobile orientation. Changing step scrolls the stepper back into view and, once the step's animation ends, focuses its first input, textarea or select.
 
 ### OrgMenuComponent
 
@@ -238,6 +238,14 @@ Uso recomendado: `<org-avatar [name]="user.displayName" [photoUrl]="user.photoUR
 ### OrgLogoComponent
 
 Uso recomendado: `<org-logo />` in the header, `<org-logo size="lg" />` on the login screen. Calendar mark plus the gradient wordmark; the surrounding link provides the accessible name. The mark is an inline SVG animated with CSS only: every 6s the calendar hops, the check is drawn and confetti bursts from it; `[animated]="false"` and `prefers-reduced-motion` keep it still. `public/icons/favicon.svg` is the same mark, and the PNG/ICO icons are rendered from it.
+
+### OrgPartyDriftComponent
+
+Uso recomendado: `<org-party-drift />` inside a positioned, full-size layer, as the app shell does on the login page's confetti backdrop (`.app-backdrop--festive`); elsewhere the backdrop stays still, so reading is not tiring. A few balloons and confetti in the palette colours drift slowly up behind the content, clipped by the layer. Decorative (`aria-hidden`), no pointer events, hidden under `prefers-reduced-motion`.
+
+### OrgNotificationMenuComponent
+
+Uso recomendado: `<org-notification-menu [items]="items()" (opened)="refresh()" (selected)="open($event)" />`, in the header between the theme toggle and the profile photo (wrapped by `app-notification-bell`, which supplies the items). A bell icon button with the count of new ones on its corner (amber, `9+` past nine) opening a menu: each `OrgNotificationItem` shows a person's photo or initial (`person`) or an icon, a title and one line of detail; an empty menu says "Nenhuma notificação por aqui.". Presentational: the page decides what opening one does.
 
 ### OrgSegmentedControlComponent
 
@@ -281,7 +289,7 @@ Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Va
 
 ### OrgConfirmDialogComponent
 
-Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top.
+Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top. For a third way out, `choose({ ..., extraLabel })` adds a middle button (`org-confirm-extra`) and returns `'confirm' | 'extra' | 'cancel'` (`OrgDialogChoice`), e.g. "Qual telefone fica?" or "Substituir / Adicionar como outra pessoa".
 
 ### OrgEmptyStateComponent
 
@@ -347,12 +355,23 @@ To add a theme, add one entry to the map and its id to the service.
 
 Invites look like invites. On Início each one is a sealed envelope (`app-invite-envelope`: flap, wax
 seal with the organizer's initial, "Para Jéssica", title, date and tags); opening it opens the event
-page, whose top is a paper invitation (`app-event-card`: double gold frame, handwritten greeting,
-title, ornament, date block, description, "Com carinho, Luiz"). Both take the colours of the event's
+page, whose top is a paper invitation (`app-event-card`: double frame with scrolled corners and
+medallions drawn in SVG, handwritten greeting (`--org-font-script`), the party's name and the
+day in an engraved serif (`--org-font-invite`, Cormorant Garamond, upright figures), a drawn divider with the theme's motif, date
+block, description, "Cordialmente, Luiz"). Opening it plays a short entrance (unfold, frame drawn,
+greeting and signature written in), skipped under reduced motion. Both take the colours of the event's
 category through one class, `.org-invite--{natal|aniversario|casamento|junina|padrao}`, which sets the
 `--org-invite-*` tokens (`$invite-themes` in `src/app/shared/ui/tokens/_invite-themes.scss`). The
-words come from `inviteTheme()` in `src/app/core/utils/invite.utils.ts`. Paper and envelopes keep
-their colours in dark mode, like printed paper. Meus eventos keeps the plain `app-event-summary-card`.
+words come from `inviteTheme()` in `src/app/core/utils/invite.utils.ts`, in the tone of a formal
+printed invitation. In dark mode paper and envelopes take each theme's dark tone
+(`$invite-themes-dark`, set under `html.dark`). The paper is one shared piece, `app-invite-paper` (frame, corners, medallions, and the lettering
+classes `invite-paper__greeting`, `__title`, `__signature`…), used by the event page and by the
+amigo oculto reveal (its own `segredo` palette: the app's lilac with the gold frame). On the event
+page it comes in `app-invite-letter`: the sealed envelope arrives, the seal breaks, the flap opens
+and the letter rises out before writing itself in. The envelope cover (`app-invite-envelope`, on
+Início and on the login page an invite sends people to) wears the same dress: a gold double rule,
+a gilt flap edge and seal ring, "Para Jéssica" handwritten and the name in the engraved serif.
+Meus eventos keeps the plain `app-event-summary-card`.
 
 ---
 

@@ -1,0 +1,57 @@
+<span class="org-notification-menu" [matMenuTriggerFor]="menu" (menuOpened)="opened.emit()">
+  <org-icon-button icon="notifications" testId="notifications-btn" [ariaLabel]="label()" />
+  @if (count()) {
+    <span
+      class="org-notification-menu__count"
+      data-testid="notifications-count"
+      aria-hidden="true"
+      >{{ count() > 9 ? '9+' : count() }}</span
+    >
+  }
+</span>
+
+<mat-menu #menu="matMenu" xPosition="before" class="org-notification-menu__panel">
+  <p class="org-notification-menu__heading">Notificações</p>
+  @for (item of items(); track item.key) {
+    @if (item.pinned && $first) {
+      <p class="org-notification-menu__group org-notification-menu__group--first">
+        Aguardando resposta
+      </p>
+    } @else if (
+      !item.pinned &&
+      item.unread === false &&
+      ($first || items()[$index - 1].pinned || items()[$index - 1].unread !== false)
+    ) {
+      <p class="org-notification-menu__group" [class.org-notification-menu__group--first]="$first">
+        Anteriores
+      </p>
+    }
+    <button
+      mat-menu-item
+      type="button"
+      class="org-notification-menu__item"
+      data-testid="notification-item"
+      [class.org-notification-menu__item--unread]="item.unread !== false"
+      [class.org-notification-menu__item--pinned]="item.pinned"
+      (click)="selected.emit(item)"
+    >
+      @if (item.person; as person) {
+        <org-avatar
+          class="org-notification-menu__avatar"
+          [name]="person.name"
+          [photoUrl]="person.photo"
+        />
+      } @else {
+        <span class="org-notification-menu__icon" aria-hidden="true">
+          <org-icon [name]="item.icon" size="sm" color="currentColor" />
+        </span>
+      }
+      <span class="org-notification-menu__text">
+        <span class="org-notification-menu__title">{{ item.title }}</span>
+        <span class="org-notification-menu__body">{{ item.body }}</span>
+      </span>
+    </button>
+  } @empty {
+    <p class="org-notification-menu__empty">Nenhuma notificação por aqui.</p>
+  }
+</mat-menu>

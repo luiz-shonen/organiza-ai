@@ -20,19 +20,26 @@ export function parseLocation(location: string | null | undefined): Required<Add
     neighborhood,
     city,
     cep,
+    complement: '',
+    directions: '',
   };
 }
 
 /**
  * The address on two lines, the way map apps show it: "Rua X, 12 · Bairro" and
- * "Cidade/UF · 00000-000". Uses `addressDetails` when the event has it.
+ * "Cidade/UF · 00000-000". Uses `addressDetails` when the event has it; the complement
+ * ("Km 12") follows the number.
  */
 export function addressLines(
   location: string | null | undefined,
   details?: AddressDetails | null,
 ): { street: string; area: string } {
-  const parts = details?.address ? { ...parseLocation(''), ...details } : parseLocation(location);
-  const streetNumber = [parts.address, parts.number].filter(Boolean).join(', ');
+  // A rural CEP may give no street, only the city: the saved fields still win over the line.
+  const parts =
+    details?.address || details?.city
+      ? { ...parseLocation(''), ...details }
+      : parseLocation(location);
+  const streetNumber = [parts.address, parts.number, parts.complement].filter(Boolean).join(', ');
   return {
     street: [streetNumber, parts.neighborhood].filter(Boolean).join(' · '),
     area: [parts.city, parts.cep].filter(Boolean).join(' · '),

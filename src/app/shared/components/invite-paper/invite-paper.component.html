@@ -1,0 +1,44 @@
+<ng-template #corner>
+  <!-- The frame turns in around the corner; a diamond sits in the cut, two scrolls and a leaf
+       grow from it along the edges. -->
+  <svg class="invite-paper__corner-art" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+    <path class="invite-paper__draw" pathLength="1" d="M0.5 80V24A23.5 23.5 0 0 0 24 0.5H80" />
+    <path class="invite-paper__draw" pathLength="1" d="M6.5 80V30A23.5 23.5 0 0 0 30 6.5H80" />
+    <path
+      class="invite-paper__draw"
+      pathLength="1"
+      d="M21 21C29 14 41 13 49 17C55 20 54 27 48 27C44 27 43 23 46 21.5"
+    />
+    <path
+      class="invite-paper__draw"
+      pathLength="1"
+      d="M21 21C14 29 13 41 17 49C20 55 27 54 27 48C27 44 23 43 21.5 46"
+    />
+    <path class="invite-paper__leaf" d="M21 21Q33 24 36 36Q24 33 21 21Z" />
+    <path class="invite-paper__leaf" d="M7 2L12 7L7 12L2 7Z" />
+  </svg>
+</ng-template>
+
+<ng-template #medallion>
+  <svg class="invite-paper__medallion-art" viewBox="0 0 64 16" aria-hidden="true">
+    <rect class="invite-paper__medallion-gap" x="8" y="0" width="48" height="16" />
+    <circle class="invite-paper__leaf" cx="17" cy="8" r="1.6" />
+    <path class="invite-paper__leaf" d="M32 1L39 8L32 15L25 8Z" />
+    <circle class="invite-paper__leaf" cx="47" cy="8" r="1.6" />
+  </svg>
+</ng-template>
+
+<div class="invite-paper__sheet">
+  <span class="invite-paper__frame" aria-hidden="true"></span>
+  @for (place of corners; track place) {
+    <span class="invite-paper__corner invite-paper__corner--{{ place }}" aria-hidden="true">
+      <ng-container [ngTemplateOutlet]="corner" />
+    </span>
+  }
+  @for (place of rules; track place) {
+    <span class="invite-paper__medallion invite-paper__medallion--{{ place }}" aria-hidden="true">
+      <ng-container [ngTemplateOutlet]="medallion" />
+    </span>
+  }
+  <ng-content />
+</div>

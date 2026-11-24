@@ -10,6 +10,13 @@ export interface SecretSantaSettings {
    * Missing means open; the owner closes it, for instance after the draw.
    */
   readonly selfJoin?: boolean;
+  /**
+   * The day of the draw (`YYYY-MM-DD`), chosen when creating the event. Guests join and leave
+   * on their own until that day starts (Brasília time).
+   */
+  readonly drawDate?: string;
+  /** When the owner drew: from then on the guests no longer join or leave on their own. */
+  readonly drawnAt?: string;
 }
 
 /** Someone who takes part in the draw; not necessarily a guest with an account. */
@@ -45,12 +52,16 @@ export type RsvpSecretSantaKey = string;
 export interface RsvpSecretSantaData {
   /** Sign-ups from the invite are open; closed, the guest only reads where they stand. */
   readonly open: boolean;
+  /** The guest may still take themself out: true until the draw (or its day) comes. */
+  readonly canLeave?: boolean;
   /** Closed for this guest because the owner has not approved their presence yet. */
   readonly waitingApproval?: boolean;
   readonly giftOptions: boolean;
   readonly maxGiftOptions: number;
   /** Who is in the draw already, with their gift options. */
   readonly joined: Readonly<Record<RsvpSecretSantaKey, readonly string[]>>;
+  /** The WhatsApp typed for a relative or companion before (not the guest's own fallback). */
+  readonly phones?: Readonly<Record<RsvpSecretSantaKey, string>>;
 }
 
 /** Who the guest puts in the draw, with each one's gift options. */
@@ -105,6 +116,13 @@ export interface SecretSantaReveal {
   readonly createdAt: string;
   /** Set the first time the link is opened; from then on the link is spent. */
   readonly openedAt?: string;
+}
+
+/** One person in the amigo oculto as the guests see it: no phone, only the name and the ideas. */
+export interface SecretSantaRosterEntry {
+  readonly id: string;
+  readonly name: string;
+  readonly giftOptions: readonly string[];
 }
 
 /** Fewer people than this and everyone could guess who drew whom. */

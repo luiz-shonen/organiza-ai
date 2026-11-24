@@ -36,7 +36,8 @@ test.describe('Authentication Guards and Form Validation', () => {
     page,
     loginPage,
   }) => {
-    await loginPage.goto('/login');
+    // The e-mail form is hidden for now; `?senha` shows it.
+    await loginPage.goto('/login?senha');
     await loginPage.assertLoaded();
 
     // Provide invalid credentials
@@ -64,13 +65,20 @@ test.describe('Authentication Guards and Form Validation', () => {
     await expect(passwordError).toContainText('Mínimo 6 caracteres');
   });
 
-  test('should display Google sign-in option and submit button', async ({ loginPage }) => {
+  test('should offer only Google sign-in, and the e-mail form at /login?senha', async ({
+    loginPage,
+  }) => {
     await loginPage.goto('/login');
     await loginPage.assertLoaded();
 
-    // Check Google sign-in button
+    // For now Google is the only way in.
     await expect(loginPage.googleBtn).toBeVisible();
     await expect(loginPage.googleBtn).toContainText(/Entrar com Google/i);
+    await expect(loginPage.submitBtn).toHaveCount(0);
+    await expect(loginPage.passwordInput).toHaveCount(0);
+
+    await loginPage.goto('/login?senha');
+    await expect(loginPage.googleBtn).toBeVisible();
 
     // Check submit button
     await expect(loginPage.submitBtn).toBeVisible();

@@ -71,6 +71,28 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await rsvpDialog.assertHidden();
   });
 
+  test('confirming without a phone takes the guest to that field, with the reason', async ({
+    eventDetailPage,
+    rsvpDialog,
+    page,
+  }) => {
+    await setupMockAuthSession(page, {
+      uid: 'e2e-new-guest-uid',
+      displayName: 'Novo Convidado',
+      events: [guestEvent],
+    });
+    await eventDetailPage.goto(`/evento/${guestEvent.id}`);
+    await eventDetailPage.openRsvpDialog();
+    await rsvpDialog.assertVisible();
+    const phone = page.locator('input[data-testid="rsvp-phone-input"]');
+    await phone.fill('');
+
+    await rsvpDialog.confirmBtn.click();
+    await expect(phone).toBeFocused();
+    await expect(page.getByTestId('rsvp-drawer')).toContainText('Telefone é obrigatório');
+    await expect(phone).toBeInViewport();
+  });
+
   test('should render Pix card with dynamic split estimation and copy button', async ({
     eventDetailPage,
     page,
@@ -173,7 +195,7 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await expect(page.locator('app-item-list-card')).toHaveCount(0);
   });
 
-  test('should render dynamic category badge matching event category tokens and activate seasonal theme overlay', async ({
+  test('should open the junina invitation without a category tag and activate the seasonal theme overlay', async ({
     page,
     eventDetailPage,
   }) => {
@@ -200,11 +222,9 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await page.goto('/evento/event-junina-e2e');
     await eventDetailPage.assertLoaded();
 
-    await expect(eventDetailPage.categoryBadge).toBeVisible();
-    await expect(eventDetailPage.categoryBadge).toHaveText('Festa Junina');
-    await expect(eventDetailPage.categoryBadge.locator('.org-badge')).toHaveClass(
-      /org-badge--festa/,
-    );
+    // "Arraiá de gala" already says what the party is: the invitation carries no tag.
+    await expect(page.getByTestId('event-invitation')).toContainText('Arraiá de gala');
+    await expect(eventDetailPage.categoryLine).toHaveCount(0);
 
     await expect(page.locator('.seasonal-overlay__junina')).toBeVisible();
     await expect(page.locator('html')).toHaveClass(/theme-junina/);

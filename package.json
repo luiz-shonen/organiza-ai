@@ -41,6 +41,7 @@
     "@angular/router": "^22.0.7",
     "@angular/service-worker": "^22.0.7",
     "firebase": "^12.14.0",
+    "jspdf": "^3.0.1",
     "qrcode": "^1.5.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

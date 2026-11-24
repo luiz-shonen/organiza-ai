@@ -1,7 +1,7 @@
 <org-surface variant="card" data-testid="pix-card">
   <article class="pix-card">
     <org-card-header
-      heading="Rachadinha via Pix"
+      heading="Pix do evento"
       [subheading]="pixType() ? 'Tipo: ' + pixType() : 'Contribua com o evento!'"
     >
       <!-- Copy sits in the header, as in banking apps: the key below is what it copies. -->
@@ -19,6 +19,10 @@
         />
       }
     </org-card-header>
+
+    @if (purpose()) {
+      <p class="pix-card__purpose" data-testid="pix-purpose">{{ purpose() }}</p>
+    }
 
     @if (formattedSuggestedSplit(); as split) {
       <div

@@ -1,0 +1,22 @@
+// The few colours a themed scene of the event ornament needs beyond the app's own: wood,
+// leaves, fire, gold, snow... (`app-event-ornament`, one scene per theme of the event).
+$ornament-colors: (
+  gold: #f2b53a,
+  red: #e05a5f,
+  red-deep: #b8434a,
+  pink: #f28fb0,
+  leaf: #4caf6a,
+  leaf-deep: #2f8a4c,
+  wood: #a0703f,
+  wood-deep: #7d5430,
+  flame: #ffb02e,
+  flame-out: #f2662b,
+  cream: #fff3dc,
+  cream-deep: #ecd9b4,
+  meat: #b5643a,
+  ink: #4a4458,
+  ink-soft: #6a6478,
+  glass: #d9e4f2,
+  water: #74b9ff,
+  snow: #fff,
+);

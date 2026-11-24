@@ -3,6 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   contentChildren,
+  computed,
+  ElementRef,
+  inject,
   input,
   model,
   output,
@@ -11,6 +14,10 @@ import {
 import { MatStepper, MatStepperModule, StepperOrientation } from '@angular/material/stepper';
 import { NgTemplateOutlet } from '@angular/common';
 import { OrgStepComponent } from './org-step.component';
+
+/** A field a person types into or picks from; buttons and links are left alone. */
+const FIRST_FIELD =
+  'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not(:disabled):not([readonly]), textarea:not(:disabled):not([readonly]), select:not(:disabled)';
 
 @Component({
   selector: 'org-stepper',
@@ -29,6 +36,18 @@ export class OrgStepperComponent {
   public readonly selectionChange = output<number>();
   protected readonly steps = contentChildren(OrgStepComponent);
   private readonly materialStepper = viewChild.required(MatStepper);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  /** Set when the step changes, so the new step's first field gets the focus once it slides in. */
+  private focusPending = false;
+  /** The current step's name, whole ("Amigo oculto"), for the phone header. */
+  protected readonly currentLabel = computed(
+    () => this.steps()[this.selectedIndex()]?.label() ?? '',
+  );
+
+  /** A bar of the phone header: in a linear stepper, a step not reached yet stays shut. */
+  protected select(index: number): void {
+    this.materialStepper().selectedIndex = index;
+  }
 
   public next(): void {
     this.materialStepper().next();
@@ -41,5 +60,20 @@ export class OrgStepperComponent {
   protected updateSelection(index: number): void {
     this.selectedIndex.set(index);
     this.selectionChange.emit(index);
+    // "Próximo" sits at the bottom of a long step: back to the top of the steps.
+    this.host.nativeElement.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    this.focusPending = true;
+  }
+
+  /** Once the new step is in place, its first field takes the focus, ready to type. */
+  protected focusFirstField(): void {
+    if (!this.focusPending) return;
+    this.focusPending = false;
+    const field = this.host.nativeElement
+      .querySelector<HTMLElement>(
+        '.mat-horizontal-stepper-content-current, .mat-vertical-content-container-active',
+      )
+      ?.querySelector<HTMLElement>(FIRST_FIELD);
+    field?.focus({ preventScroll: true });
   }
 }

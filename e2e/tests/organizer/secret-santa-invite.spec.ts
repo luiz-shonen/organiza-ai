@@ -52,7 +52,14 @@ test.describe('Amigo oculto pelo convite', () => {
     const santa = drawer.getByTestId('rsvp-santa');
     await expect(santa).toContainText('Quem vai participar do sorteio?');
     await santa.getByTestId('rsvp-santa-person-0').locator('input').check();
-    await santa.locator('textarea[data-testid="rsvp-santa-gifts-0"]').fill('Livro\nMeia de lã');
+    // One idea at a time: "+" adds it and the field is ready for the next.
+    await santa.getByTestId('rsvp-santa-0-gift-input').fill('Livro');
+    await santa.getByTestId('rsvp-santa-0-add-gift-btn').click();
+    await expect(santa.getByTestId('rsvp-santa-0-gift-item')).toHaveCount(1);
+    await santa.screenshot({ path: 'e2e/screenshots/santa-rsvp-gift-field.png' });
+    await santa.getByTestId('rsvp-santa-0-gift-input').fill('Meia de lã');
+    await santa.getByTestId('rsvp-santa-0-gift-input').press('Enter');
+    await expect(santa.getByTestId('rsvp-santa-0-gift-item')).toHaveCount(2);
     await santa.screenshot({ path: 'e2e/screenshots/santa-rsvp-question.png' });
     await drawer.getByTestId('rsvp-confirm-btn').locator('button').click();
 
@@ -66,9 +73,10 @@ test.describe('Amigo oculto pelo convite', () => {
       joinedBy: 'maria-uid',
     });
 
-    // Editing the presence opens with the same answers, and never adds her twice.
+    // "Editar presença" no longer asks the amigo oculto (its card does), and keeps her in it once.
     await page.getByTestId('rsvp-edit-btn').locator('button').click();
-    await expect(page.getByTestId('rsvp-santa-person-0').locator('input')).toBeChecked();
+    await expect(page.getByTestId('rsvp-drawer')).toBeVisible();
+    await expect(page.getByTestId('rsvp-santa')).toHaveCount(0);
     await page.getByTestId('rsvp-confirm-btn').locator('button').click();
     await expect(page.getByTestId('rsvp-drawer')).toHaveCount(0);
     const entries = (await readStore(page))[PARTICIPANTS].filter((p) =>
@@ -162,12 +170,12 @@ test.describe('Amigo oculto pelo convite', () => {
     await page.goto(`/evento/${EVENT_ID}`);
     const card = page.getByTestId('secret-santa-card');
 
-    // Same phone and first name: joined at once, keeping the gift typed by hand.
+    // Same phone and first name: joined at once; the gift ideas stay the guest's own.
     await expect
       .poll(async () => (await readStore(page))[PARTICIPANTS].map((p) => p.id))
       .toEqual(['m2', 'm3', 'rsvp_jess', 'rsvp_ana', 'rsvp_maria']);
     const jess = (await readStore(page))[PARTICIPANTS].find((p) => p.id === 'rsvp_jess');
-    expect(jess?.['giftOptions']).toEqual(['Livro']);
+    expect(jess?.['giftOptions']).toEqual([]);
 
     // Same full name, other phone: only pointed out.
     const doubtful = card.getByTestId('secret-santa-duplicate');
@@ -179,14 +187,75 @@ test.describe('Amigo oculto pelo convite', () => {
     await expect
       .poll(async () => (await readStore(page))[PARTICIPANTS].map((p) => p.id))
       .toEqual(['m3', 'rsvp_jess', 'rsvp_ana', 'rsvp_maria']);
-    await expect(card).toContainText('4 participantes, 3 pelo convite');
+    await expect(card).toContainText('4 pessoas no sorteio');
+    await expect(card.getByTestId('secret-santa-joined-tag')).toHaveText('3 pelo convite');
 
     // The owner closes the sign-ups, keeping the other settings.
     await card.getByTestId('secret-santa-self-join').locator('button').click();
-    await expect(card).toContainText('Fechado: só você e quem organiza mudam a lista');
+    await expect(card).toContainText('Fechado: ninguém novo entra pelo convite');
     await expect
       .poll(async () => (await readStore(page))['events'][0]['secretSanta'])
       .toEqual({ enabled: true, giftOptions: true, maxGiftOptions: 3, selfJoin: false });
+  });
+
+  test('Juntar with two phones asks which stays; either answer clears the notice', async ({
+    page,
+  }) => {
+    const bia = (id: string, phone: string, extra: Record<string, unknown> = {}) => ({
+      id,
+      name: 'Bia Lima',
+      phone,
+      giftOptions: [],
+      createdAt: id,
+      ...extra,
+    });
+    await setupMockAuthSession(page, {
+      uid: 'organizer-uid',
+      email: 'organizer@organizaai.test',
+      displayName: 'Luiz Organizer',
+      events: [christmasEvent({ enabled: true, giftOptions: false })],
+      collections: {
+        [PARTICIPANTS]: [
+          bia('m1', '(11) 95555-1111'),
+          bia('rsvp_bia', '(11) 94444-2222', { guestId: 'bia', joinedBy: 'bia' }),
+          { id: 'm2', name: 'Caio', phone: '', giftOptions: [], createdAt: 'm2' },
+          {
+            id: 'rsvp_caio',
+            name: 'Caio',
+            phone: '',
+            giftOptions: [],
+            createdAt: 'x',
+            guestId: 'caio',
+            joinedBy: 'caio',
+          },
+        ],
+      },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+    const card = page.getByTestId('secret-santa-card');
+    const doubtful = card.getByTestId('secret-santa-duplicate');
+    await expect(doubtful).toHaveCount(2);
+    // Both phones are shown, so the organizer sees what differs.
+    await expect(doubtful.first()).toContainText('(11) 95555-1111');
+    await expect(doubtful.first()).toContainText('(11) 94444-2222');
+
+    // "Juntar": which phone stays? The one typed by hand.
+    await doubtful.first().getByTestId('secret-santa-merge-btn').click();
+    const dialog = page.getByTestId('org-confirm-dialog');
+    await expect(dialog).toContainText('Qual telefone fica?');
+    await dialog.screenshot({ path: 'e2e/screenshots/santa-merge-which-phone.png' });
+    await dialog.getByTestId('org-confirm-extra').click();
+    await expect(doubtful).toHaveCount(1);
+    const store = async () => (await readStore(page))[PARTICIPANTS];
+    await expect.poll(async () => (await store()).map((p) => p.id)).not.toContain('m1');
+    const kept = (await store()).find((p) => p.id === 'rsvp_bia');
+    expect(kept?.['phone']).toBe('(11) 95555-1111');
+    expect(kept?.['name']).toBe('Bia Lima');
+
+    // "São pessoas diferentes": the notice goes away and both stay.
+    await doubtful.getByTestId('secret-santa-distinct-btn').click();
+    await expect(doubtful).toHaveCount(0);
+    expect((await store()).map((p) => p.id)).toEqual(expect.arrayContaining(['m2', 'rsvp_caio']));
   });
 
   test('with sign-ups closed, the invite only says so', async ({ page }) => {
@@ -200,7 +269,7 @@ test.describe('Amigo oculto pelo convite', () => {
 
     await page.getByTestId('rsvp-action-btn').locator('button').click();
     await expect(page.getByTestId('rsvp-santa-closed')).toContainText(
-      'As inscrições do amigo oculto estão fechadas.',
+      'As inscrições do amigo oculto foram encerradas.',
     );
     await expect(page.getByTestId('rsvp-santa-person-0')).toHaveCount(0);
   });
@@ -321,7 +390,8 @@ test.describe('Amigo oculto pelo convite', () => {
         };
       })
       .toEqual({ ids: ['m1', 'rsvp_ana'], marked: [expect.any(String)] });
-    await expect(card).toContainText('2 participantes, 1 pelo convite');
+    await expect(card).toContainText('2 pessoas no sorteio');
+    await expect(card.getByTestId('secret-santa-joined-tag')).toHaveText('1 pelo convite');
   });
 
   test('a guest waiting for approval joins the draw only after being approved', async ({
@@ -337,13 +407,77 @@ test.describe('Amigo oculto pelo convite', () => {
           requireApproval: true,
         },
       ],
+      userProfile: { id: 'primo-uid', name: 'Primo Carlos', phone: '(11) 97777-0000' },
     });
     await page.goto(`/evento/${EVENT_ID}`);
 
     await page.getByTestId('rsvp-action-btn').locator('button').click();
-    await expect(page.getByTestId('rsvp-santa-closed')).toContainText(
-      'Você entra no amigo oculto depois que quem organiza aprovar a sua presença',
+    const drawer = page.getByTestId('rsvp-drawer');
+    await expect(drawer).toBeVisible();
+    // The first confirmation asks the amigo oculto, approval or not.
+    const santa = drawer.getByTestId('rsvp-santa');
+    await expect(santa).toContainText('Quem vai participar do sorteio?');
+    await santa.getByTestId('rsvp-santa-person-0').locator('input').check();
+    await drawer.getByTestId('rsvp-confirm-btn').locator('button').click();
+
+    // Saved, and it counts once the presence is approved: the card says so.
+    await expect
+      .poll(async () => (await readStore(page))[PARTICIPANTS]?.map((p) => p.id) ?? [])
+      .toContain('rsvp_primo-uid');
+    const roster = page.getByTestId('secret-santa-roster');
+    await expect(roster.getByTestId('secret-santa-roster-notice')).toContainText(
+      'passa a valer assim que ela for aprovada',
     );
-    await expect(page.getByTestId('rsvp-santa-person-0')).toHaveCount(0);
+    await expect(roster).toContainText('Primo Carlos');
+
+    // "Editar presença" no longer asks it: the card is where it changes.
+    await page.getByRole('button', { name: 'Editar presença' }).first().click();
+    await expect(page.getByTestId('rsvp-drawer').getByTestId('rsvp-santa')).toHaveCount(0);
+  });
+
+  test('an approved guest joins from the card, named as on their profile', async ({ page }) => {
+    await setupMockAuthSession(page, {
+      uid: 'primo-uid',
+      email: 'primo@organizaai.test',
+      displayName: 'Primo Carlos',
+      events: [
+        christmasEvent({ enabled: true, giftOptions: true, maxGiftOptions: 2 }, [
+          {
+            id: 'primo-uid',
+            uid: 'primo-uid',
+            name: 'Carlos',
+            phone: '(11) 97777-0000',
+            isConfirmed: true,
+            confirmedAt: new Date().toISOString(),
+            companionsCount: 0,
+          },
+        ]),
+      ],
+      // Renamed on the profile after answering as "Carlos".
+      userProfile: { id: 'primo-uid', name: 'Carlos Eduardo Primo', phone: '(11) 97777-0000' },
+      collections: {
+        publicProfiles: [{ id: 'primo-uid', name: 'Carlos Eduardo Primo' }],
+      },
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+
+    // "Quem vai" follows the profile, not the name typed when answering.
+    await expect(page.getByText('Carlos Eduardo Primo').first()).toBeVisible();
+    const roster = page.getByTestId('secret-santa-roster');
+    await roster.getByTestId('secret-santa-roster-join-btn').click();
+    const sheet = page.getByTestId('edit-own-santa-sheet');
+    // The name comes from the profile: shown, not typed.
+    await expect(sheet.getByTestId('own-santa-name')).toContainText('Carlos Eduardo Primo');
+    await expect(sheet.getByTestId('own-santa-name-input')).toHaveCount(0);
+    await sheet.getByTestId('own-santa-gift-input').fill('Vinho tinto');
+    await sheet.getByTestId('own-santa-submit-btn').click();
+
+    await expect(roster).toContainText('Carlos Eduardo Primo');
+    await expect(roster).toContainText('Vinho tinto');
+    await expect(roster.getByTestId('secret-santa-roster-join-btn')).toHaveCount(0);
+    await expect(roster.getByTestId('secret-santa-roster-edit-btn')).toHaveCount(1);
+    const entry = (await readStore(page))[PARTICIPANTS].find((p) => p.id === 'rsvp_primo-uid');
+    expect(entry).toMatchObject({ joinedBy: 'primo-uid', giftOptions: ['Vinho tinto'] });
+    await roster.screenshot({ path: 'e2e/screenshots/santa-join-from-card.png' });
   });
 });

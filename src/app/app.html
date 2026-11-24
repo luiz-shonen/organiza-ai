@@ -14,7 +14,7 @@
           <app-navigation-drawer
             [isAuthenticated]="isAuthenticated()"
             [isSuperAdmin]="isSuperAdmin()"
-            [displayName]="user()?.displayName ?? ''"
+            [displayName]="displayName()"
             [email]="user()?.email ?? ''"
             [photoUrl]="user()?.photoURL ?? null"
             [activeRoute]="currentUrl()"
@@ -48,7 +48,12 @@
       class="app-backdrop"
       [class.app-backdrop--festive]="isFestiveBackdrop()"
       aria-hidden="true"
-    ></div>
+    >
+      <!-- Balloons and confetti drift up on the sign-in page only: elsewhere it tires the eye. -->
+      @if (isFestiveBackdrop() && !showHeader()) {
+        <org-party-drift />
+      }
+    </div>
     <app-seasonal-overlay />
     @if (showHeader()) {
       <mat-toolbar class="app-toolbar" role="banner">
@@ -66,7 +71,7 @@
               ariaLabel="Voltar"
               icon="arrow_back"
               testId="header-back-btn"
-              (pressed)="navigate(backRoute)"
+              (pressed)="goBack(backRoute)"
             />
           }
           <a
@@ -75,7 +80,7 @@
             [class.app-toolbar__brand--inset]="!backRoute() && !isDesignSystemPage()"
             aria-label="Organiza AI · ir para o início"
           >
-            <org-logo />
+            <org-logo [markOnPhone]="true" />
           </a>
         </div>
 
@@ -94,15 +99,18 @@
             (darkChange)="themeService.setMode($event ? 'dark' : 'light')"
           />
           @if (showAvatar()) {
+            <app-notification-bell />
+          }
+          @if (showAvatar()) {
             <a
               routerLink="/perfil"
               class="app-toolbar__avatar"
               data-testid="header-profile-link"
-              [attr.aria-label]="'Meu perfil · ' + (user()?.displayName || user()?.email || '')"
+              [attr.aria-label]="'Meu perfil · ' + (displayName() || user()?.email || '')"
               [attr.aria-current]="currentUrl().startsWith('/perfil') ? 'page' : null"
             >
               <org-avatar
-                [name]="user()?.displayName || user()?.email || ''"
+                [name]="displayName() || user()?.email || ''"
                 [photoUrl]="user()?.photoURL ?? null"
               />
             </a>

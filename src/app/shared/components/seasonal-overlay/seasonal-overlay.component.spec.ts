@@ -35,4 +35,14 @@ describe('SeasonalOverlayComponent', () => {
     const starImg = fixture.nativeElement.querySelector('.seasonal-overlay__star');
     expect(starImg).toBeTruthy();
   });
+
+  it("draws a category's own scene along the bottom, still: nothing floats", () => {
+    themeService.evaluateEventTheme(null, 'Festa da Ana', 'Formatura');
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('[data-scene="formatura"]')).toBeTruthy();
+    const ground = el.querySelector<HTMLElement>('.seasonal-overlay__ground')!;
+    expect(ground.style.backgroundImage).toContain('seasonal/formatura-scene.svg');
+    expect(el.querySelectorAll('.seasonal-overlay__float').length).toBe(0);
+  });
 });

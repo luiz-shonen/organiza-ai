@@ -3,16 +3,25 @@
     <div class="event-step__card">
       <org-card-header
         heading="Pagamento por Pix"
-        subheading="Para rachar os custos com os convidados"
+        subheading="Para receber contribuições dos convidados"
       />
       <org-text-field
         label="Chave Pix (opcional)"
         placeholder="CPF, e-mail ou chave aleatória"
-        hint="Deixe em branco se não quiser rachadinha."
+        hint="Deixe em branco se o evento não tiver Pix."
         [maxLength]="77"
         [error]="fieldError(form().controls.pixKey, '')"
         formControlName="pixKey"
         testId="event-pix-input"
+      />
+      <org-textarea-field
+        label="Para que é o Pix (opcional)"
+        placeholder="Ex: rachar os custos da festa, comprar bebidas a mais, doação para o abrigo do bairro."
+        hint="Aparece para os convidados junto com a chave."
+        [rows]="3"
+        [maxLength]="purposeMax"
+        formControlName="pixPurpose"
+        testId="event-pix-purpose-input"
       />
     </div>
   </org-surface>

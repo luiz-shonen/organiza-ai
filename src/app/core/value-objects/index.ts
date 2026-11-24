@@ -2,6 +2,7 @@ export * from './address';
 export * from './bounded-text';
 export * from './email';
 export * from './event-date-time';
+export * from './map-location';
 export * from './person-name';
 export * from './phone';
 export * from './pix-key';

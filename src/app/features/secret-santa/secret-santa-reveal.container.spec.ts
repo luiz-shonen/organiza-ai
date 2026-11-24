@@ -7,6 +7,7 @@ import {
   ConfettiService,
   InboxService,
   SecretSantaService,
+  UserService,
 } from '../../core/services';
 import type { SecretSantaReveal } from '../../core/models';
 
@@ -15,6 +16,7 @@ describe('SecretSantaRevealContainer', () => {
   const getReveal = vi.fn();
   const openReveal = vi.fn();
   const markRead = vi.fn();
+  const publicName = vi.fn();
   const currentUser = vi.fn();
   const confetti = { fireCelebration: vi.fn() };
   const el = () => fixture.nativeElement as HTMLElement;
@@ -43,6 +45,7 @@ describe('SecretSantaRevealContainer', () => {
     getReveal.mockReset();
     openReveal.mockReset().mockResolvedValue(undefined);
     markRead.mockReset().mockResolvedValue(undefined);
+    publicName.mockReset().mockResolvedValue('');
     currentUser.mockReset().mockReturnValue(null);
     confetti.fireCelebration.mockReset();
     await TestBed.configureTestingModule({
@@ -53,6 +56,7 @@ describe('SecretSantaRevealContainer', () => {
         { provide: ConfettiService, useValue: confetti },
         { provide: AuthService, useValue: { currentUser, loading: () => false } },
         { provide: InboxService, useValue: { markRead } },
+        { provide: UserService, useValue: { publicName } },
       ],
     }).compileComponents();
   });
@@ -76,9 +80,10 @@ describe('SecretSantaRevealContainer', () => {
   it('first says whose link it is, and shows or spends nothing before they confirm', async () => {
     getReveal.mockResolvedValue(reveal);
     await open('tok-1');
-    expect(byTestId('secret-santa-confirm')?.textContent).toContain('Este link é de Jéssica Melo');
+    expect(byTestId('secret-santa-confirm')?.textContent).toContain('Este link é de');
+    expect(byTestId('secret-santa-owner')?.textContent?.trim()).toBe('Jéssica Melo');
     expect(byTestId('secret-santa-confirm')?.textContent).toContain(
-      'Se você não é Jéssica, não toque no botão',
+      'Se você não é Jéssica, não abra: devolva o link para quem enviou.',
     );
     expect(byTestId('secret-santa-confirm-btn')?.textContent).toContain('Sou Jéssica, mostrar');
     expect(openReveal).not.toHaveBeenCalled();
@@ -111,10 +116,20 @@ describe('SecretSantaRevealContainer', () => {
     getReveal.mockResolvedValue(reveal);
     await openAsGiver('tok-1');
     expect(getReveal).toHaveBeenCalledWith('tok-1');
-    expect(byTestId('secret-santa-greeting')?.textContent).toContain('Olá, Jéssica!');
+    expect(byTestId('secret-santa-greeting')?.textContent).toContain('Salve, Jéssica!');
     expect(el().textContent).toContain('Natal 2026 da família');
     expect(byTestId('secret-santa-receiver')?.textContent).toContain('Luiz');
     expect(byTestId('secret-santa-gifts')?.textContent).toContain('Chinelo, cor verde, tamanho 36');
+    // Each idea can be looked up on Mercado Livre and Amazon, in a new tab.
+    const searches = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLAnchorElement>(
+        '[data-testid="secret-santa-gift-search"]',
+      ),
+    );
+    expect(searches.map((link) => link.textContent?.trim())).toEqual(['Mercado Livre', 'Amazon']);
+    expect(searches[0].href).toContain('lista.mercadolivre.com.br/Chinelo');
+    expect(searches[1].href).toContain('amazon.com.br/s?k=Chinelo');
+    expect(searches[1].target).toBe('_blank');
     expect(confetti.fireCelebration).toHaveBeenCalledTimes(1);
   });
 
@@ -144,6 +159,15 @@ describe('SecretSantaRevealContainer', () => {
     expect(byTestId('secret-santa-once-warning')?.textContent).toContain(
       'Este link só abre uma vez.',
     );
+  });
+
+  it("names the link's owner as their profile is now, when the link is tied to an account", async () => {
+    getReveal.mockResolvedValue({ ...reveal, giverUid: 'u-jessica' });
+    publicName.mockResolvedValue('Jéssica Araújo');
+    currentUser.mockReturnValue({ uid: 'someone-else', isAnonymous: false });
+    await open('tok-1');
+    expect(publicName).toHaveBeenCalledWith('u-jessica');
+    expect(byTestId('secret-santa-owner')?.textContent?.trim()).toBe('Jéssica Araújo');
   });
 
   it('says the link expired when it was opened before, without the name', async () => {

@@ -11,6 +11,8 @@ describe('parseLocation', () => {
       neighborhood: 'Vista Alegre',
       city: 'Belo Horizonte/MG',
       cep: '30514-160',
+      complement: '',
+      directions: '',
     });
   });
 
@@ -21,6 +23,8 @@ describe('parseLocation', () => {
       neighborhood: '',
       city: '',
       cep: '',
+      complement: '',
+      directions: '',
     });
     expect(parseLocation(undefined).address).toBe('');
   });
@@ -45,5 +49,18 @@ describe('addressLines', () => {
       }),
     ).toEqual({ street: 'Av. Afonso Pena, 1500', area: 'Belo Horizonte/MG' });
     expect(addressLines('Espaço Gourmet')).toEqual({ street: 'Espaço Gourmet', area: '' });
+  });
+
+  it('takes a rural address with no street from the CEP, and the complement after S/N', () => {
+    expect(
+      addressLines('Jaboticatubas/MG - CEP: 35830-000', {
+        address: '',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        cep: '35830-000',
+        complement: 'Km 12',
+      }),
+    ).toEqual({ street: 'S/N, Km 12', area: 'Jaboticatubas/MG · 35830-000' });
   });
 });

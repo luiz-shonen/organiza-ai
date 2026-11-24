@@ -13,7 +13,7 @@ related: [firebase-and-auth.md, angular-architecture.md]
 # Household claims for the event list
 
 What each family brings to an event lives in `events/{eventId}/claims/{uid}`: one document per
-account holder with `name`, `entries` and `updatedAt`. Each entry is one person of the household
+account holder with `name`, `entries` and `updatedAt` (the screens show the account holder by their profile name; renaming oneself or a relative on the profile rewrites `name` and the entries' `who` here, see [events-and-invites](events-and-invites.md#names-follow-the-profile)). Each entry is one person of the household
 (`memberId` is a family member id, or `null` for the account holder) bringing `quantity` of one
 item, plus the `bought` check of the family checklist.
 

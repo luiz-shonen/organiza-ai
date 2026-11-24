@@ -39,27 +39,38 @@
   </form>
   <section aria-labelledby="active-collaborators">
     <h3 id="active-collaborators">
-      Colaboradores ativos ({{ drawerData().collaborators.length }})
+      Colaboradores ativos ({{ drawerData().collaborators().length }})
     </h3>
-    @for (collaborator of drawerData().collaborators; track collaborator) {
+    @for (collaborator of drawerData().collaborators(); track collaborator.id) {
       <org-button
         class="collaborator-drawer__chip"
         variant="secondary"
         icon="close"
-        [label]="collaborator"
+        [label]="collaborator.label"
         [compact]="true"
         [gradient]="false"
-        [tooltip]="'Remover ' + collaborator"
-        (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator })"
+        [tooltip]="'Remover ' + collaborator.label"
+        (pressed)="action.emit({ action: 'remove', collaboratorId: collaborator.id })"
       />
     } @empty {
       <p class="collaborator-drawer__empty">Ninguém ainda. Convide pelo e-mail acima.</p>
     }
   </section>
   <section aria-labelledby="pending-invites">
-    <h3 id="pending-invites">Convites pendentes ({{ drawerData().pendingInvites.length }})</h3>
-    @for (invite of drawerData().pendingInvites; track invite) {
-      <span class="collaborator-drawer__pending">{{ invite }}</span>
+    <h3 id="pending-invites">Convites pendentes ({{ drawerData().pendingInvites().length }})</h3>
+    <!-- Until the person signs in with that e-mail; the owner may withdraw it. -->
+    @for (invite of drawerData().pendingInvites(); track invite) {
+      <org-button
+        class="collaborator-drawer__chip"
+        variant="secondary"
+        icon="close"
+        testId="pending-invite"
+        [label]="invite"
+        [compact]="true"
+        [gradient]="false"
+        [tooltip]="'Remover o convite para ' + invite"
+        (pressed)="action.emit({ action: 'cancelInvite', email: invite })"
+      />
     } @empty {
       <p class="collaborator-drawer__empty">Nenhum convite esperando resposta.</p>
     }

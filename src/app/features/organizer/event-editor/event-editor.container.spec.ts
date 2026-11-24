@@ -1,3 +1,4 @@
+import { FormDraftService } from '../../../core/services/form-draft.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router, provideRouter } from '@angular/router';
@@ -16,7 +17,7 @@ import {
 import { LocationService } from '../../../core/services/location.service';
 import { MatStepper } from '@angular/material/stepper';
 import { By } from '@angular/platform-browser';
-import { PartyEvent } from '../../../core/models';
+import { PartyEvent, ViaCepResponse } from '../../../core/models';
 import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 
 vi.mock('qrcode', () => ({
@@ -63,6 +64,8 @@ describe('EventEditorContainer', () => {
     createEvent: ReturnType<typeof vi.fn>;
     updateEvent: ReturnType<typeof vi.fn>;
     inviteCollaborator: ReturnType<typeof vi.fn>;
+    collaboratorEmails$: ReturnType<typeof vi.fn>;
+    listPendingInvitations: ReturnType<typeof vi.fn>;
     removeCollaborator: ReturnType<typeof vi.fn>;
   };
 
@@ -87,9 +90,13 @@ describe('EventEditorContainer', () => {
       createEvent: vi.fn().mockResolvedValue('new-id'),
       updateEvent: vi.fn().mockResolvedValue(undefined),
       inviteCollaborator: vi.fn().mockResolvedValue(undefined),
+      collaboratorEmails$: vi.fn().mockReturnValue(of({})),
+      listPendingInvitations: vi.fn().mockReturnValue(of([])),
       removeCollaborator: vi.fn().mockResolvedValue(undefined),
     };
 
+    // Drafts live in localStorage: each test starts without one.
+    localStorage.clear();
     mockItemService = {
       listItems: vi.fn().mockReturnValue(of([])),
       addItem: vi.fn().mockResolvedValue('item-1'),
@@ -178,11 +185,27 @@ describe('EventEditorContainer', () => {
         number: '100',
         neighborhood: 'Centro',
         city: 'São Paulo/SP',
+        noNumber: false,
+        complement: '',
+        directions: '',
+        mapLocation: '',
       });
       expect(component['missingSteps']()).toEqual([]);
 
       component['addressForm'].controls.number.setValue('');
       expect(component['missingSteps']()).toEqual(['Endereço']);
+    });
+
+    it('?passo=amigo-oculto opens the amigo oculto step, not the step left open last time', () => {
+      fixture = TestBed.createComponent(EventEditorContainer);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('id', 'evt-123');
+      fixture.componentRef.setInput('passo', 'amigo-oculto');
+      // Pix was the step open last time.
+      TestBed.inject(FormDraftService).save(component['stepKey'](), 4);
+      fixture.detectChanges();
+
+      expect(component['activeStepIndex']()).toBe(3);
     });
 
     it('does not edit an event that already happened: back to its page, saying why', () => {
@@ -202,10 +225,10 @@ describe('EventEditorContainer', () => {
       expect(component['basicInfoForm'].getRawValue().title).toBe('');
     });
 
-    it('opens a typed collaborator drawer for the event owner', () => {
+    it('opens a typed collaborator drawer for the event owner', async () => {
       const drawer = TestBed.inject(DrawerService);
       component['openCollaboratorsDialog']();
-      expect(drawer.drawerType()).toBe('collaborator');
+      await vi.waitFor(() => expect(drawer.drawerType()).toBe('collaborator'));
     });
   });
 
@@ -267,6 +290,74 @@ describe('EventEditorContainer', () => {
       fixture.detectChanges();
     });
 
+    describe('a draft kept in the browser', () => {
+      const reopen = () => {
+        fixture.destroy();
+        fixture = TestBed.createComponent(EventEditorContainer);
+        component = fixture.componentInstance;
+        fixture.componentRef.setInput('id', 'novo');
+        fixture.detectChanges();
+      };
+      const type = (title: string) => {
+        const control = component['basicInfoForm'].controls.title;
+        control.setValue(title);
+        control.markAsDirty();
+        fixture.detectChanges();
+      };
+
+      it('brings back what was typed after a reload, with items, until discarded', async () => {
+        expect(component['restoredDraftAt']()).toBeNull();
+        type('Natal da família');
+        component['basicInfoForm'].patchValue({ date: new Date(2099, 11, 24) });
+        await component['addItem']({ name: 'Farofa', quantity: 1 });
+        fixture.detectChanges();
+
+        reopen();
+        expect(component['basicInfoForm'].controls.title.value).toBe('Natal da família');
+        expect(component['basicInfoForm'].controls.date.value).toEqual(new Date(2099, 11, 24));
+        expect(component['draftItems']().map((item) => item.name)).toEqual(['Farofa']);
+        expect(component['restoredDraftAt']()).toBeInstanceOf(Date);
+        expect(
+          (fixture.nativeElement as HTMLElement).querySelector(
+            '[data-testid="editor-draft-restored"]',
+          ),
+        ).toBeTruthy();
+
+        component['discardDraft']();
+        fixture.detectChanges();
+        expect(component['basicInfoForm'].controls.title.value).toBe('');
+        expect(component['draftItems']()).toEqual([]);
+        reopen();
+        expect(component['restoredDraftAt']()).toBeNull();
+      });
+
+      it('does not offer a draft that matches the event as it is', () => {
+        const drafts = TestBed.inject(FormDraftService);
+        drafts.save('event:new-creator-uid:novo', component['draftSnapshot']());
+        reopen();
+        expect(component['restoredDraftAt']()).toBeNull();
+        expect(drafts.load('event:new-creator-uid:novo')).toBeNull();
+      });
+
+      it('keeps nothing when the form was only opened, or after "Cancelar"', () => {
+        reopen();
+        expect(component['restoredDraftAt']()).toBeNull();
+        type('Churrasco');
+        // "Cancelar" leaves for Meus eventos, a screen these tests do not route to.
+        vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+        component['cancelEditing']();
+        reopen();
+        expect(component['basicInfoForm'].controls.title.value).toBe('');
+      });
+
+      it('is kept per account', () => {
+        type('Natal da família');
+        mockCurrentUserSignal.set({ uid: 'someone-else', email: 'other@test.com' });
+        reopen();
+        expect(component['basicInfoForm'].controls.title.value).toBe('');
+      });
+    });
+
     it('should compute isOwner as true for new event creation', () => {
       expect(component.isOwner()).toBe(true);
       expect(component['basicInfoForm'].enabled).toBe(true);
@@ -287,6 +378,150 @@ describe('EventEditorContainer', () => {
       expect(element.querySelector('#pix-form [data-testid="event-save-btn"]')).toBeTruthy();
     });
 
+    describe('an event over several days', () => {
+      const fill = (endDate: Date | null) => {
+        component['basicInfoForm'].patchValue({
+          title: 'Retiro de fim de ano',
+          category: 'Outros',
+          description: '',
+          date: new Date(2027, 11, 23),
+          endDate,
+          time: '17:00',
+        });
+        component['addressForm'].patchValue({
+          cep: '30514-160',
+          address: 'Rua Dom Lara',
+          number: '135',
+          neighborhood: 'Vista Alegre',
+          city: 'Belo Horizonte/MG',
+        });
+      };
+
+      it('saves the last day when it comes after the first', async () => {
+        fill(new Date(2027, 11, 25));
+        await component['saveEvent']();
+        expect(mockEventService.createEvent).toHaveBeenCalledWith(
+          expect.objectContaining({ endDate: '2027-12-25' }),
+        );
+      });
+
+      it('saves no last day when it is empty or the same day', async () => {
+        fill(new Date(2027, 11, 23));
+        await component['saveEvent']();
+        expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+          expect.objectContaining({ endDate: null }),
+        );
+      });
+
+      it('does not let the last day come before the first', () => {
+        fill(new Date(2027, 11, 20));
+        expect(component['basicInfoForm'].hasError('endBeforeStart')).toBe(true);
+        fill(null);
+        expect(component['basicInfoForm'].valid).toBe(true);
+      });
+    });
+
+    describe('a rural address', () => {
+      const lookup = (cep: string, found: Partial<ViaCepResponse> | null) => {
+        component['addressForm'].controls.cep.setValue(cep, { emitEvent: false });
+        component['applyCepLookup'](
+          found
+            ? { cep, logradouro: '', complemento: '', bairro: '', localidade: '', uf: '', ...found }
+            : null,
+        );
+      };
+
+      it('locks what the CEP filled and opens what it did not', () => {
+        expect(component['addressFound']()).toBeNull();
+        lookup('35830-000', { localidade: 'Jaboticatubas', uf: 'MG' });
+
+        expect(component['addressForm'].getRawValue()).toMatchObject({
+          address: '',
+          neighborhood: '',
+          city: 'Jaboticatubas/MG',
+        });
+        expect(component['addressFound']()).toEqual({
+          address: false,
+          neighborhood: false,
+          city: true,
+        });
+      });
+
+      it('keeps what the organizer typed, and clears what the last CEP filled', () => {
+        lookup('30514-160', {
+          logradouro: 'Rua Dom Lara',
+          bairro: 'Vista Alegre',
+          localidade: 'Belo Horizonte',
+          uf: 'MG',
+        });
+        lookup('35830-000', { localidade: 'Jaboticatubas', uf: 'MG' });
+        expect(component['addressForm'].getRawValue()).toMatchObject({
+          address: '',
+          neighborhood: '',
+          city: 'Jaboticatubas/MG',
+        });
+
+        component['addressForm'].patchValue({ address: 'Estrada da Serra' });
+        lookup('35830-000', { localidade: 'Jaboticatubas', uf: 'MG' });
+        expect(component['addressForm'].controls.address.value).toBe('Estrada da Serra');
+      });
+
+      it('opens every field for a CEP the lookup does not know', () => {
+        lookup('99999-999', null);
+        expect(component['addressFound']()).toEqual({
+          address: false,
+          neighborhood: false,
+          city: false,
+        });
+      });
+
+      it('"Sem número" saves S/N, with the complement and directions', async () => {
+        const form = component['addressForm'];
+        form.controls.noNumber.setValue(true);
+        expect(form.controls.number.disabled).toBe(true);
+        expect(form.controls.number.value).toBe('S/N');
+        expect(component['noNumberState']()).toEqual({ checked: true, disabled: false });
+
+        component['basicInfoForm'].patchValue({
+          title: 'Churrasco no sítio',
+          category: 'Outros',
+          description: '',
+          date: new Date(Date.now() + 7 * 86_400_000),
+          time: '12:00',
+        });
+        form.patchValue({
+          cep: '35830-000',
+          address: 'Estrada da Serra do Cipó',
+          neighborhood: 'Zona rural',
+          city: 'Jaboticatubas/MG',
+          complement: ' Km 12, sítio Boa Vista ',
+          directions: 'Depois da ponte, à direita.',
+        });
+        expect(form.valid).toBe(true);
+        await component['saveEvent']();
+
+        expect(mockEventService.createEvent).toHaveBeenCalledWith(
+          expect.objectContaining({
+            location:
+              'Estrada da Serra do Cipó, S/N - Zona rural - Jaboticatubas/MG - CEP: 35830-000',
+            addressDetails: {
+              cep: '35830-000',
+              address: 'Estrada da Serra do Cipó',
+              number: 'S/N',
+              neighborhood: 'Zona rural',
+              city: 'Jaboticatubas/MG',
+              complement: 'Km 12, sítio Boa Vista',
+              directions: 'Depois da ponte, à direita.',
+            },
+          }),
+        );
+
+        form.controls.noNumber.setValue(false);
+        expect(form.controls.number.enabled).toBe(true);
+        expect(form.controls.number.value).toBe('');
+      });
+    });
+
     it('keeps items typed during creation and saves them with the new event', async () => {
       await component['addItem']({
         name: 'Pipoca',
@@ -302,14 +537,14 @@ describe('EventEditorContainer', () => {
       ]);
 
       const date = new Date(Date.now() + 7 * 86_400_000);
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: 'Festa',
         category: 'Outros',
         description: 'Descrição',
         date,
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514-160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',
@@ -329,7 +564,7 @@ describe('EventEditorContainer', () => {
 
     it('blocks step 1 right away for a date and time in the past or a typed non-date', () => {
       const form = component['basicInfoForm'];
-      form.setValue({
+      form.patchValue({
         title: 'Festa',
         category: 'Outros',
         description: 'Arraiá com quentão',
@@ -347,7 +582,7 @@ describe('EventEditorContainer', () => {
     });
 
     it('accepts the event without a description', () => {
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: 'Festa',
         category: 'Outros',
         description: '',
@@ -359,21 +594,21 @@ describe('EventEditorContainer', () => {
 
     it('refuses markup in the title, a bad house number and an invalid Pix key', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: '<script>Festa</script>',
         category: 'Outros',
         description: 'Arraiá com quentão',
         date,
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514-160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',
         city: 'Belo Horizonte/MG',
         number: 'Casa 5',
       });
-      component['pixForm'].setValue({ pixKey: 'chave qualquer' });
+      component['pixForm'].patchValue({ pixKey: 'chave qualquer' });
 
       expect(component['basicInfoForm'].controls.title.getError('valueObject')).toBe(
         'Não use os caracteres < > { }',
@@ -386,14 +621,14 @@ describe('EventEditorContainer', () => {
     });
 
     it('saves a category typed by the organizer', async () => {
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: 'Festa',
         category: '  Chá   revelação ',
         description: 'Arraiá com quentão',
         date: new Date(Date.now() + 7 * 86_400_000),
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514-160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',
@@ -407,16 +642,110 @@ describe('EventEditorContainer', () => {
       );
     });
 
+    it('saves what the Pix is for, and nothing of it without a key', async () => {
+      component['basicInfoForm'].patchValue({
+        title: 'Festa',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].patchValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      component['pixForm'].setValue({
+        pixKey: 'pix@test.com',
+        pixPurpose: '  Doação para o abrigo do bairro ',
+      });
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          pixKey: 'pix@test.com',
+          pixPurpose: 'Doação para o abrigo do bairro',
+        }),
+      );
+
+      component['pixForm'].setValue({ pixKey: '', pixPurpose: 'Rachar os custos' });
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({ pixKey: null, pixPurpose: null }),
+      );
+    });
+
+    it('saves the map pin pasted for the place, and refuses another site', async () => {
+      component['basicInfoForm'].patchValue({
+        title: 'Natal no sítio',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].patchValue({
+        cep: '35830-000',
+        address: 'Estrada da Serra do Cipó',
+        neighborhood: 'Zona rural',
+        city: 'Jaboticatubas/MG',
+        number: '135',
+        mapLocation: 'https://evil.example.com/maps',
+      });
+      expect(component['addressForm'].controls.mapLocation.invalid).toBe(true);
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).not.toHaveBeenCalled();
+
+      component['addressForm'].patchValue({ mapLocation: 'Sítio Boa Vista: -19.31, -43.71' });
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          mapLocation: { lat: -19.31, lng: -43.71, label: 'Sítio Boa Vista' },
+        }),
+      );
+    });
+
+    it('saves the amigo oculto rules with their line breaks, none without amigo oculto', async () => {
+      component['basicInfoForm'].patchValue({
+        title: 'Natal',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].patchValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      component['secretSantaEnabled'].set(true);
+      component['secretSantaRules'].set('  Presente de R$ 80 a R$ 100.\n\nTroca na ceia. ');
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          secretSantaRules: 'Presente de R$ 80 a R$ 100.\n\nTroca na ceia.',
+        }),
+      );
+
+      component['secretSantaEnabled'].set(false);
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({ secretSantaRules: null }),
+      );
+    });
+
     it('saves tidied text and the CEP formatted', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
-      component['basicInfoForm'].setValue({
+      component['basicInfoForm'].patchValue({
         title: '  Festa   Junina ',
         category: 'Outros',
         description: 'Arraiá com quentão',
         date,
         time: '20:00',
       });
-      component['addressForm'].setValue({
+      component['addressForm'].patchValue({
         cep: '30514160',
         address: 'Rua Dom Lara',
         neighborhood: 'Vista Alegre',

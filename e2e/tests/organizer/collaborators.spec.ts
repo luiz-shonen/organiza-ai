@@ -30,12 +30,11 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
   test('should render share panel with QR code canvas and WhatsApp share button', async ({
     page,
     sharePanel,
-    eventEditorPage,
     eventDetailPage,
   }) => {
-    // Navigate to event editor for an existing event
-    await page.goto('/meus-eventos/evento/mock-collab-event');
-    await eventEditorPage.assertLoaded();
+    // Sharing lives on the event page, for organizers
+    await page.goto('/evento/mock-collab-event');
+    await eventDetailPage.assertLoaded();
 
     // Verify share panel component is rendered
     await sharePanel.assertLoaded();
@@ -87,12 +86,11 @@ test.describe('Collaborator Invitations and RBAC Controls', () => {
   test('should copy event invite link to clipboard', async ({
     page,
     sharePanel,
-    eventEditorPage,
     eventDetailPage,
   }) => {
-    // Navigate to event editor
-    await page.goto('/meus-eventos/evento/mock-collab-event');
-    await eventEditorPage.assertLoaded();
+    // Sharing lives on the event page, for organizers
+    await page.goto('/evento/mock-collab-event');
+    await eventDetailPage.assertLoaded();
     expect(eventDetailPage).toBeDefined();
 
     // Verify share panel loaded

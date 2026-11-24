@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { InboxService } from './inbox.service';
 import { secretSantaNotificationId } from '../models';
@@ -11,6 +11,7 @@ import type {
   SecretSantaParticipantInput,
   SecretSantaDuplicate,
   SecretSantaReveal,
+  SecretSantaRosterEntry,
   SecretSantaSettings,
 } from '../models';
 import { drawSecretSanta, generateId } from '../utils';
@@ -28,6 +29,73 @@ export class SecretSantaService {
 
   private participantsPath(eventId: string): string {
     return `events/${eventId}/secretSantaParticipants`;
+  }
+
+  /**
+   * The amigo oculto as the guests see it: one entry per participant, same id, with only the
+   * name and the gift options (the participants hold phones, so only organizers read those).
+   * Every write to a participant writes its roster entry in the same batch.
+   */
+  private rosterPath(eventId: string): string {
+    return `events/${eventId}/secretSantaRoster`;
+  }
+
+  private rosterDoc(input: { name: string; giftOptions: readonly string[] }) {
+    return { name: input.name, giftOptions: [...input.giftOptions] };
+  }
+
+  /** Who is in the draw, names and gift options only: what a signed-in guest may read. */
+  listRoster(eventId: string): Observable<SecretSantaRosterEntry[]> {
+    return this.gateway
+      .collectionSnapshot<
+        Omit<SecretSantaRosterEntry, 'id'> & { createdAt?: string }
+      >(this.rosterPath(eventId))
+      .pipe(
+        map((docs) =>
+          docs
+            .map((d) => ({
+              id: d.id,
+              name: d.name ?? '',
+              giftOptions: d.giftOptions ?? [],
+              createdAt: d.createdAt ?? '',
+            }))
+            .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+            .map(({ createdAt: _createdAt, ...entry }) => entry),
+        ),
+      );
+  }
+
+  /**
+   * Organizers only: brings the roster in line with the participants (entries written before it
+   * existed, or by an older version), so the guests see the same people.
+   */
+  async syncRoster(
+    eventId: string,
+    participants: readonly SecretSantaParticipant[],
+  ): Promise<void> {
+    const roster = await firstValueFrom(this.listRoster(eventId));
+    const byId = new Map(roster.map((entry) => [entry.id, entry]));
+    const stale = participants.filter((p) => {
+      const entry = byId.get(p.id);
+      return (
+        !entry ||
+        entry.name !== p.name ||
+        JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions)
+      );
+    });
+    const ids = new Set(participants.map((p) => p.id));
+    const gone = roster.filter((entry) => !ids.has(entry.id));
+    if (!stale.length && !gone.length) return;
+    await this.gateway.runBatch((batch) => {
+      for (const p of stale) {
+        batch.set(
+          `${this.rosterPath(eventId)}/${p.id}`,
+          { ...this.rosterDoc(p), createdAt: p.createdAt || new Date().toISOString() },
+          { merge: true },
+        );
+      }
+      for (const entry of gone) batch.delete(`${this.rosterPath(eventId)}/${entry.id}`);
+    });
   }
 
   private drawPath(eventId: string): string {
@@ -60,10 +128,13 @@ export class SecretSantaService {
   }
 
   async addParticipant(eventId: string, input: SecretSantaParticipantInput): Promise<string> {
-    return this.gateway.addDoc(this.participantsPath(eventId), {
-      ...this.toDoc(input),
-      createdAt: new Date().toISOString(),
+    const id = this.gateway.newId(this.participantsPath(eventId));
+    const createdAt = new Date().toISOString();
+    await this.gateway.runBatch((batch) => {
+      batch.set(`${this.participantsPath(eventId)}/${id}`, { ...this.toDoc(input), createdAt });
+      batch.set(`${this.rosterPath(eventId)}/${id}`, { ...this.rosterDoc(input), createdAt });
     });
+    return id;
   }
 
   async updateParticipant(
@@ -71,14 +142,19 @@ export class SecretSantaService {
     participantId: string,
     input: SecretSantaParticipantInput,
   ): Promise<void> {
-    await this.gateway.updateDoc(
-      `${this.participantsPath(eventId)}/${participantId}`,
-      this.toDoc(input),
-    );
+    await this.gateway.runBatch((batch) => {
+      batch.update(`${this.participantsPath(eventId)}/${participantId}`, this.toDoc(input));
+      batch.set(`${this.rosterPath(eventId)}/${participantId}`, this.rosterDoc(input), {
+        merge: true,
+      });
+    });
   }
 
   async removeParticipant(eventId: string, participantId: string): Promise<void> {
-    await this.gateway.deleteDoc(`${this.participantsPath(eventId)}/${participantId}`);
+    await this.gateway.runBatch((batch) => {
+      batch.delete(`${this.participantsPath(eventId)}/${participantId}`);
+      batch.delete(`${this.rosterPath(eventId)}/${participantId}`);
+    });
   }
 
   /**
@@ -137,27 +213,45 @@ export class SecretSantaService {
           },
           { merge: true },
         );
+        batch.set(
+          `${this.rosterPath(eventId)}/${id}`,
+          { ...this.rosterDoc(input), ...(existing.includes(id) ? {} : { createdAt: now }) },
+          { merge: true },
+        );
       }
       for (const id of remove) {
         batch.delete(`${this.participantsPath(eventId)}/${id}`);
+        batch.delete(`${this.rosterPath(eventId)}/${id}`);
       }
     });
   }
 
   /**
    * Makes the two entries of one person a single one: the entry that came from the invite stays
-   * (it is tied to the guest's account) and takes the phone and gift options typed by the
-   * organizer when it has none; the typed entry leaves the list.
+   * as the guest made it (their name and gift ideas are theirs), tied to the confirmed guest the
+   * typed one pointed to; the typed entry leaves the list. With two phones, the organizer chose
+   * which stays: the typed one may replace the guest's only here.
    */
-  async mergeDuplicate(eventId: string, duplicate: SecretSantaDuplicate): Promise<void> {
+  async mergeDuplicate(
+    eventId: string,
+    duplicate: SecretSantaDuplicate,
+    /** "Juntar" with two phones: the one the organizer chose to keep. */
+    phone: string = duplicate.keep.phone,
+  ): Promise<void> {
     const { keep, drop } = duplicate;
+    // Only the typed entry's phone can replace the guest's, and only as it leaves the list.
+    const takesTypedPhone = phone !== keep.phone && phone === drop.phone;
+    const changes = {
+      ...(!keep.guestId && drop.guestId ? { guestId: drop.guestId } : {}),
+      ...(takesTypedPhone ? { phone, mergedFrom: drop.id } : {}),
+    };
     await this.gateway.runBatch((batch) => {
-      batch.update(`${this.participantsPath(eventId)}/${keep.id}`, {
-        phone: keep.phone || drop.phone,
-        giftOptions: [...(keep.giftOptions.length ? keep.giftOptions : drop.giftOptions)],
-        ...(!keep.guestId && drop.guestId ? { guestId: drop.guestId } : {}),
-      });
+      if (Object.keys(changes).length) {
+        batch.update(`${this.participantsPath(eventId)}/${keep.id}`, changes);
+      }
       batch.delete(`${this.participantsPath(eventId)}/${drop.id}`);
+      batch.set(`${this.rosterPath(eventId)}/${keep.id}`, this.rosterDoc(keep), { merge: true });
+      batch.delete(`${this.rosterPath(eventId)}/${drop.id}`);
     });
   }
 
@@ -196,7 +290,7 @@ export class SecretSantaService {
    * participant gets a new secret link, and the draw keeps those links for the owner to send.
    */
   async draw(
-    event: Pick<PartyEvent, 'id' | 'title' | 'date'>,
+    event: Pick<PartyEvent, 'id' | 'title' | 'date' | 'secretSanta'>,
     participants: readonly SecretSantaParticipant[],
     previous: SecretSantaDraw | null,
     /** Participants with an account (confirmed guests), by participant id: told in the app. */
@@ -229,6 +323,13 @@ export class SecretSantaService {
         );
       });
       batch.set(this.drawPath(event.id), draw);
+      // Guests read it on the event: from now on they no longer join or leave on their own.
+      if (event.secretSanta) {
+        batch.update(`events/${event.id}`, {
+          secretSanta: { ...event.secretSanta, drawnAt: now },
+          updatedAt: now,
+        });
+      }
     });
     await this.notify(event, links, false);
     return draw;

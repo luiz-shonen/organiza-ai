@@ -39,7 +39,8 @@ test.describe('Offline mode and PWA cache', () => {
     loginPage,
   }) => {
     // 1. Navigate to Login Page
-    await loginPage.goto('/login');
+    // The e-mail form is hidden for now; `?senha` shows it.
+    await loginPage.goto('/login?senha');
     await loginPage.assertLoaded();
 
     // 2. Switch to offline

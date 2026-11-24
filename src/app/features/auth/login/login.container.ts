@@ -1,7 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, input, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of, switchMap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../../core/services';
+import { AuthService, EventService } from '../../../core/services';
+import { inviteInitial, inviteTheme } from '../../../core/utils';
 import { Email, requiredText, valueObjectValidator } from '../../../core/value-objects';
 import {
   OrgButtonComponent,
@@ -40,6 +44,7 @@ function authErrorMessage(message: string, fallback: string): string {
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    NgTemplateOutlet,
     ReactiveFormsModule,
     OrgButtonComponent,
     OrgIconComponent,
@@ -55,6 +60,45 @@ export class LoginContainer {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
+  private readonly eventService = inject(EventService);
+
+  /**
+   * For now people sign in with Google only. `/login?senha` still shows the e-mail and password
+   * form, for test accounts; the form and its flows stay as they are.
+   */
+  readonly senha = input<string>();
+  protected readonly emailSignIn = computed(() => this.senha() !== undefined);
+  /** Where to go after signing in (`?redirect=/evento/abc`); an invite says so on the page. */
+  readonly redirect = input<string>();
+  protected readonly invited = computed(() => /^\/evento\/[^/]/.test(this.redirect() ?? ''));
+  /** The event of that invite (events are readable signed out): its envelope is the page. */
+  protected readonly invitedEvent = toSignal(
+    toObservable(
+      computed(() => /^\/evento\/([^/?#]+)/.exec(this.redirect() ?? '')?.[1] ?? null),
+    ).pipe(
+      switchMap((id) =>
+        id ? this.eventService.getEvent(id).pipe(catchError(() => of(null))) : of(null),
+      ),
+    ),
+    { initialValue: null },
+  );
+  /** Who sends the invite ("Luiz Rodrigues convida você"); empty when the event has no name. */
+  /** Who invites, first and last name only ("Jéssica Cristina de Melo" → "Jéssica Melo"). */
+  protected readonly inviterName = computed(() => {
+    const words = (this.invitedEvent()?.creatorName ?? '').trim().split(/\s+/).filter(Boolean);
+    return words.length > 2 ? `${words[0]} ${words[words.length - 1]}` : words.join(' ');
+  });
+  /** The sealed envelope: the invite's colours and the organizer's initial on the seal. */
+  protected readonly sealedTheme = computed(() => inviteTheme(this.invitedEvent()?.category));
+  protected readonly sealedInitial = computed(() =>
+    inviteInitial(this.invitedEvent()?.creatorName || this.invitedEvent()?.title),
+  );
+  protected readonly features = [
+    { icon: 'mail', text: 'Convites com cara de convite' },
+    { icon: 'how_to_reg', text: 'Quem vai, confirmado com um toque' },
+    { icon: 'checklist', text: 'O que cada família leva' },
+    { icon: 'redeem', text: 'Amigo oculto sorteado e entregue no WhatsApp' },
+  ] as const;
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [requiredText, valueObjectValidator(Email.validate)]],

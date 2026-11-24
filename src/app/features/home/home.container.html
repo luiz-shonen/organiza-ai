@@ -102,27 +102,6 @@
                   />
                 </org-expansion-panel>
               }
-
-              @if (card.pending) {
-                <org-button
-                  inviteFooter
-                  label="Responder convite"
-                  variant="tonal"
-                  testId="answer-invite-btn"
-                  [compact]="true"
-                  (pressed)="openEvent(card.event.id)"
-                />
-              }
-              @if (card.answered) {
-                <org-button
-                  inviteFooter
-                  label="Ver convite"
-                  variant="tonal"
-                  testId="view-invite-btn"
-                  [compact]="true"
-                  (pressed)="openEvent(card.event.id)"
-                />
-              }
             </app-invite-envelope>
           }
         </div>

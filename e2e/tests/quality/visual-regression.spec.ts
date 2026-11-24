@@ -59,7 +59,8 @@ test.describe('Design system visual baselines', () => {
     page,
     loginPage,
   }) => {
-    await loginPage.goto('/login');
+    // The e-mail form is hidden for now; `?senha` shows it.
+    await loginPage.goto('/login?senha');
     await loginPage.assertLoaded();
 
     await assertMinTouchTarget(loginPage.submitBtn);

@@ -11,6 +11,8 @@ export { ItemService } from './item.service';
 export { ClaimService } from './claim.service';
 export { LocationService } from './location.service';
 export { ConfettiService } from './confetti.service';
+export { CelebrationSoundService } from './celebration-sound.service';
+export { CollaboratorInvitesService } from './collaborator-invites.service';
 export { SeasonalThemeService } from './seasonal-theme.service';
 export { DrawerService } from './drawer.service';
 
@@ -19,3 +21,8 @@ export { NotificationService } from './notification.service';
 export { EventNotificationService } from './event-notification.service';
 export { InboxService } from './inbox.service';
 export { SecretSantaService } from './secret-santa.service';
+export { NameSyncService } from './name-sync.service';
+export { FormDraftService } from './form-draft.service';
+export type { StoredDraft } from './form-draft.service';
+export { KnownPeopleService } from './known-people.service';
+export { NavigationHistoryService } from './navigation-history.service';

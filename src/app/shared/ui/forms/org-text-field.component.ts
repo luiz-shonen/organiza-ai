@@ -1,16 +1,32 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   forwardRef,
   input,
   model,
   output,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+
+/** A ready answer offered while typing ("Jéssica Melo", detail "(11) 98888-1111"). */
+export interface OrgTextSuggestion {
+  readonly label: string;
+  readonly detail?: string;
+}
+
+function searchText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR')
+    .trim();
+}
 
 export type OrgTextFieldType = 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
 
@@ -33,7 +49,13 @@ function normalizeType(value: unknown): OrgTextFieldType {
 @Component({
   selector: 'org-text-field',
   standalone: true,
-  imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule],
+  imports: [
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+  ],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -70,6 +92,19 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
   /** Reformats what is typed, e.g. a phone mask; the field shows and emits the result. */
   public readonly mask = input<((value: string) => string) | null>(null);
   public readonly togglePasswordVisibility = output<void>();
+  /**
+   * Answers to offer under the field: those whose label has what was typed (accents and case
+   * aside), at most six. Picking one fills the field with its label and emits it.
+   */
+  public readonly suggestions = input<readonly OrgTextSuggestion[]>([]);
+  protected readonly matchingSuggestions = computed(() => {
+    const query = searchText(this.value());
+    if (!query) return [];
+    return this.suggestions()
+      .filter((suggestion) => searchText(suggestion.label).includes(query))
+      .slice(0, 6);
+  });
+  public readonly suggestionPicked = output<OrgTextSuggestion>();
   private onChange: (value: string) => void = () => undefined;
   private onTouched: () => void = () => undefined;
 
@@ -97,6 +132,16 @@ export class OrgTextFieldComponent implements ControlValueAccessor {
   public setDisabledState(disabled: boolean): void {
     this.disabledState = disabled;
   }
+
+  protected pickSuggestion(suggestion: OrgTextSuggestion): void {
+    this.value.set(suggestion.label);
+    this.onChange(suggestion.label);
+    this.suggestionPicked.emit(suggestion);
+  }
+
+  /** The input shows the label of a picked suggestion, not the object. */
+  protected readonly suggestionLabel = (suggestion: OrgTextSuggestion | string | null): string =>
+    typeof suggestion === 'string' ? suggestion : (suggestion?.label ?? '');
 
   protected markTouched(): void {
     this.onTouched();

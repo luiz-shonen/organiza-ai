@@ -7,8 +7,45 @@
     </div>
   </org-page-layout>
 } @else if (event(); as event) {
-  <org-page-layout maxWidth="narrow" data-testid="event-detail-page">
+  <!--
+    The invitation takes the full width; under it, the guest's RSVP with the organizers' share
+    panel beside it, then everything else, full width too.
+  -->
+  <org-page-layout
+    [maxWidth]="canEditEvent() ? 'default' : 'narrow'"
+    data-testid="event-detail-page"
+  >
     <div class="event-detail__stack" data-testid="event-detail">
+      <!-- An invite to help organise: only "Aceitar" makes them a collaborator. -->
+      @if (collaboratorInvite(); as invite) {
+        <org-surface variant="card" data-testid="collaborator-invite">
+          <div class="event-detail__invite">
+            <org-card-header
+              heading="Convite para colaborar"
+              [subheading]="
+                (invite.invitedByName || 'Quem organiza') +
+                ' chamou você para ajudar: a lista de itens, os convidados e o amigo oculto.'
+              "
+            />
+            <div class="event-detail__invite-actions">
+              <org-button
+                label="Recusar"
+                variant="text"
+                testId="collaborator-invite-decline"
+                [gradient]="false"
+                (pressed)="declineCollaboratorInvite(invite)"
+              />
+              <org-button
+                label="Aceitar"
+                icon="check"
+                testId="collaborator-invite-accept"
+                [gradient]="false"
+                (pressed)="acceptCollaboratorInvite(invite)"
+              />
+            </div>
+          </div>
+        </org-surface>
+      }
       <app-event-card
         [event]="event"
         [guestCount]="guestCount()"
@@ -16,29 +53,69 @@
         [viewerName]="currentGuestName()"
         [canEdit]="canEditEvent()"
         (edit)="editEvent()"
+        (collaborators)="openCollaborators()"
+        (leaveCollaboration)="onLeaveCollaboration()"
       />
 
-      <!-- The organizer hosts the event; there is no presence for them to confirm. -->
-      @if (!isOwner()) {
-        <app-rsvp-card
-          [isConfirmed]="isUserConfirmed()"
-          [pendingApproval]="isUserPending()"
-          [isDeclined]="isDeclined()"
-          [canDecline]="!!memberUid()"
-          [bringsSomething]="checklist().length > 0"
-          [hasItems]="progress().length > 0"
-          [guestCount]="guestCount()"
-          [isLoading]="rsvpLoading()"
-          [guestName]="currentGuestName()"
-          [secretSanta]="mySecretSanta()"
-          [phone]="myPhone()"
-          (confirmRsvp)="onConfirmRsvp()"
-          (editRsvp)="onEditRsvp()"
-          (cancelRsvp)="onCancelRsvp($event)"
-          (declineRsvp)="onDeclineRsvp($event)"
-          (joinSanta)="onJoinSecretSantaOnly($event)"
-          (leaveSanta)="onLeaveSecretSanta()"
-        />
+      @if (!isOwner() || canEditEvent()) {
+        <div class="event-detail__top" [class.event-detail__top--pair]="canEditEvent()">
+          <!--
+            The guest's answer with the festive scene under it; the owner hosts the event and has
+            no presence to confirm, so the scene takes the whole column beside the share panel.
+          -->
+          <div class="event-detail__lead">
+            @if (!isOwner()) {
+              <app-rsvp-card
+                [isConfirmed]="isUserConfirmed()"
+                [pendingApproval]="isUserPending()"
+                [isDeclined]="isDeclined()"
+                [canDecline]="!!memberUid()"
+                [bringsSomething]="checklist().length > 0"
+                [hasItems]="progress().length > 0"
+                [guestCount]="guestCount()"
+                [petCount]="petCount()"
+                [isLoading]="rsvpLoading()"
+                [guestName]="currentGuestName()"
+                [secretSanta]="mySecretSanta()"
+                [phone]="myPhone()"
+                (confirmRsvp)="onConfirmRsvp()"
+                (editRsvp)="onEditRsvp()"
+                (cancelRsvp)="onCancelRsvp($event)"
+                (declineRsvp)="onDeclineRsvp($event)"
+                (joinSanta)="onJoinSecretSantaOnly($event)"
+                (leaveSanta)="onLeaveSecretSanta()"
+              />
+            }
+            <!-- The owner has no presence to confirm: a small festive scene stands in for it. -->
+            @if (ownerTopRow()) {
+              <app-event-ornament class="event-detail__ornament event-detail__ornament--banner" />
+            }
+            @if (organizerTopRow()) {
+              <ng-container [ngTemplateOutlet]="guestList" />
+              <!-- The amigo oculto under "Confirmados", with the column's full width. -->
+              @if (showSecretSanta()) {
+                <ng-container
+                  [ngTemplateOutlet]="secretSantaCard"
+                  [ngTemplateOutletContext]="{ $implicit: event }"
+                />
+              }
+            }
+          </div>
+
+          <!-- Organizers share the invite from here: link, QR code and WhatsApp. -->
+          @if (canEditEvent()) {
+            <div class="event-detail__side">
+              <app-share-panel
+                class="event-detail__share"
+                [eventUrl]="eventUrl()"
+                [eventTitle]="event.title"
+                [eventDate]="event.date"
+                [eventEndDate]="event.endDate ?? null"
+                [eventLocation]="event.location"
+              />
+            </div>
+          }
+        </div>
       }
 
       @if (secretSantaNotice(); as notice) {
@@ -59,44 +136,39 @@
         />
       }
 
-      <!-- An event with nothing to bring shows no list to guests; organizers still see it. -->
-      @if (progress().length || canEdit()) {
+      <!-- An event with nothing to bring shows no list, to guests and organizers alike. -->
+      @if (progress().length) {
         <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
       }
 
-      <app-guest-list-card
-        class="print-section"
-        [households]="households()"
-        [forOrganizer]="canEdit()"
-        [declines]="declines()"
-        [pending]="pendingGuests()"
-        [busyGuestId]="approvingGuestId()"
-        (approve)="onApproveGuest($event)"
-        (refuse)="onRefuseGuest($event)"
-        (exportCsv)="exportGuests()"
-        (print)="printGuests()"
-      />
+      <!-- The owner has "Quem vai" up beside the share panel; everyone else has it here. -->
+      @if (!organizerTopRow()) {
+        <ng-container [ngTemplateOutlet]="guestList" />
+      }
 
-      @if (showSecretSanta()) {
-        <app-secret-santa-card
-          [participants]="secretSantaParticipants()"
-          [isOwner]="isOwner()"
-          [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
-          [links]="secretSantaLinks()"
-          [outdated]="secretSantaOutdated()"
-          [drawing]="secretSantaDrawing()"
-          [resendingId]="secretSantaResendingId()"
-          [canEditParticipants]="canEditEvent()"
-          [selfJoinOpen]="secretSantaSelfJoinOpen()"
-          [duplicates]="secretSantaDoubtful()"
-          [busyDuplicateId]="secretSantaBusyDuplicate()"
-          (selfJoinChange)="onSecretSantaSelfJoin($event)"
-          (merge)="onMergeSecretSanta($event)"
-          (distinct)="onDistinctSecretSanta($event)"
-          (draw)="onDrawSecretSanta()"
-          (send)="onSendSecretSanta($event)"
-          (resend)="onResendSecretSanta($event)"
-          (editParticipants)="onEditSecretSanta()"
+      <!-- The owner has the amigo oculto up under "Confirmados"; organizers otherwise here. -->
+      @if (showSecretSanta() && !organizerTopRow()) {
+        <ng-container
+          [ngTemplateOutlet]="secretSantaCard"
+          [ngTemplateOutletContext]="{ $implicit: event }"
+        />
+      }
+
+      @if (showSecretSantaRoster()) {
+        <app-secret-santa-roster-card
+          [entries]="secretSantaRosterView()"
+          [giftOptions]="!!event.secretSanta?.giftOptions"
+          [rules]="event.secretSantaRules ?? null"
+          [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+          [editableIds]="myEditableSecretSantaIds()"
+          [notice]="secretSantaRosterNotice()"
+          [canJoin]="canJoinSecretSanta()"
+          [editing]="editingOwnSecretSanta()"
+          [save]="saveOwnSecretSantaEntry"
+          (join)="onJoinSecretSanta()"
+          (edit)="onEditOwnSecretSanta($event)"
+          (leave)="onLeaveOwnSecretSanta($event)"
+          (cancelEdit)="editingOwnSecretSanta.set(null)"
         />
       }
 
@@ -104,6 +176,7 @@
         <app-pix-card
           [pixKey]="event.pixKey"
           [pixType]="event.pixType"
+          [purpose]="event.pixPurpose ?? null"
           [estimatedBudget]="event.estimatedBudget ?? null"
           [guestCount]="guestCount()"
         />
@@ -127,3 +200,62 @@
     />
   </org-page-layout>
 }
+
+<!-- "Quem vai": under the RSVP for guests, beside the share panel for the owner. -->
+<ng-template #guestList>
+  <app-guest-list-card
+    class="print-section"
+    [households]="households()"
+    [forOrganizer]="canEdit()"
+    [declines]="declinesView()"
+    [hasItems]="progress().length > 0"
+    [pending]="pendingGuests()"
+    [busyGuestId]="approvingGuestId()"
+    (approve)="onApproveGuest($event)"
+    (refuse)="onRefuseGuest($event)"
+    (download)="downloadGuests()"
+    (print)="printGuests()"
+  />
+</ng-template>
+
+<!-- The amigo oculto for organizers: under "Confirmados" for the owner, in the list otherwise. -->
+<ng-template #secretSantaCard let-event>
+  <app-secret-santa-card
+    [participants]="secretSantaParticipants()"
+    [isOwner]="isOwner()"
+    [rules]="event?.secretSantaRules ?? null"
+    [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
+    [links]="secretSantaLinks()"
+    [outdated]="secretSantaOutdated()"
+    [drawing]="secretSantaDrawing()"
+    [drawDate]="event.secretSanta?.drawDate ?? null"
+    [resendingId]="secretSantaResendingId()"
+    [canEditParticipants]="false"
+    [selfJoinOpen]="secretSantaSelfJoinOpen()"
+    [duplicates]="secretSantaDoubtful()"
+    [busyDuplicateId]="secretSantaBusyDuplicate()"
+    (selfJoinChange)="onSecretSantaSelfJoin($event)"
+    (merge)="onMergeSecretSanta($event)"
+    (distinct)="onDistinctSecretSanta($event)"
+    (draw)="onDrawSecretSanta()"
+    (send)="onSendSecretSanta($event)"
+    (resend)="onResendSecretSanta($event)"
+    (editParticipants)="onEditSecretSanta()"
+  >
+    <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
+    @if (canEditEvent()) {
+      <app-secret-santa-participants
+        [participants]="secretSantaParticipantsView()"
+        [knownPeople]="secretSantaKnownPeople()"
+        [giftOptions]="!!event.secretSanta?.giftOptions"
+        [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+        [drawn]="!!secretSantaDraw()"
+        [saveNew]="saveNewSecretSantaParticipant"
+        [self]="secretSantaSelf()"
+        (add)="addSecretSantaParticipants([$event])"
+        (update)="updateSecretSantaParticipant($event)"
+        (remove)="removeSecretSantaParticipant($event)"
+      />
+    }
+  </app-secret-santa-card>
+</ng-template>

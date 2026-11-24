@@ -32,9 +32,14 @@ describe('SeasonalThemeService', () => {
   });
 
   it('should override theme when event date is in June', () => {
-    service.evaluateEventTheme('2026-06-20', 'Aniversário');
+    service.evaluateEventTheme('2026-06-20', 'Encontro da turma');
     expect(service.config().activeTheme).toBe('junina');
     expect(service.config().isOverride).toBe(true);
+  });
+
+  it("puts the event's kind, named in its title, over its date", () => {
+    service.evaluateEventTheme('2026-06-20', 'Aniversário da vó');
+    expect(service.config().activeTheme).toBe('aniversario');
   });
 
   it('should override theme when event category is Festa Junina', () => {
@@ -54,5 +59,38 @@ describe('SeasonalThemeService', () => {
     expect(service.config().isOverride).toBe(true);
     service.resetToAuto();
     expect(service.config().isOverride).toBe(false);
+  });
+
+  it('gives every category of the project its own theme, over the date', () => {
+    const december = '2026-12-20T20:00:00-03:00';
+    const expected: Record<string, string> = {
+      Aniversário: 'aniversario',
+      Casamento: 'casamento',
+      Natal: 'natal',
+      'Ano Novo': 'ano-novo',
+      Páscoa: 'pascoa',
+      'Festa Junina': 'junina',
+      Churrasco: 'churrasco',
+      'Happy Hour': 'happy-hour',
+      Confraternização: 'confraternizacao',
+      Formatura: 'formatura',
+      'Chá de bebê': 'cha-de-bebe',
+      'Chá de panela': 'cha-de-panela',
+      Batizado: 'batizado',
+      'Reunião de família': 'reuniao-familia',
+    };
+    for (const [category, theme] of Object.entries(expected)) {
+      service.evaluateEventTheme(december, 'Teste', category);
+      expect(service.config().activeTheme, category).toBe(theme);
+    }
+  });
+
+  it('never turns a category theme on by the date alone', () => {
+    for (let month = 0; month < 12; month++) {
+      service.detectSeasonalTheme(new Date(2026, month, 10));
+      expect(['junina', 'natal', 'pascoa', 'ano-novo', 'default']).toContain(
+        service.config().activeTheme,
+      );
+    }
   });
 });

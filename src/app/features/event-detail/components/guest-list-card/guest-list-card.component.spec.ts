@@ -42,14 +42,28 @@ async function render(forOrganizer: boolean) {
 }
 
 describe('GuestListCardComponent', () => {
+  it('says nothing about the list when the event has none to bring', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    fixture.componentRef.setInput('households', households);
+    fixture.componentRef.setInput('hasItems', false);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).textContent).not.toContain(
+      'Não leva nada da lista',
+    );
+  });
+
   it('shows each person, their role and what they bring, without phones', async () => {
     const element = await render(false);
     const text = element.textContent ?? '';
 
-    expect(text).toContain('3 confirmados');
+    expect(element.querySelector('[data-testid="card-header-count"]')?.textContent).toContain('3');
     // The guest's name is the panel title only, not repeated inside.
     expect(text.split('Jéssica Melo').length - 1).toBe(1);
-    expect(text).toContain('+1 · 2 itens');
+    expect(text).toContain('2 pessoas · 2 itens');
     expect(text).toContain('Leva:');
     const lines = Array.from(element.querySelectorAll('.guest-list__items li'), (li) =>
       li.textContent?.trim(),
@@ -57,6 +71,9 @@ describe('GuestListCardComponent', () => {
     expect(lines).toEqual(['3 L de Sorvete', '2 garrafas de Refrigerante']);
     expect(text).toContain('Família');
     expect(text).toContain('Não leva nada da lista');
+    // Family and companions are listed under the guest, without a heading or "Convidado(a)".
+    expect(text).not.toContain('Vão com');
+    expect(text).not.toContain('Convidado(a)');
     expect(text).not.toContain('99267');
     expect(text).not.toContain('Não poderão ir');
   });
@@ -66,9 +83,11 @@ describe('GuestListCardComponent', () => {
     const text = element.textContent ?? '';
 
     expect(text).toContain('(31) 99267-7624');
-    expect(text).toContain('Não poderão ir (1)');
+    expect(
+      element.querySelector('#guest-list-declines-title')?.textContent?.replace(/\s+/g, ' ').trim(),
+    ).toBe('Não poderão ir 1');
     expect(text).toContain('Vou estar viajando.');
-    expect(element.querySelector('[aria-label="Baixar a lista em Excel"]')).not.toBeNull();
+    expect(element.querySelector('[aria-label="Baixar a lista em PDF"]')).not.toBeNull();
   });
 
   it('lists the confirmations waiting for approval, for organizers only, to approve or refuse', async () => {

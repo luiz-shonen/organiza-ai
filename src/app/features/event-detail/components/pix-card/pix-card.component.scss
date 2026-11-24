@@ -2,6 +2,16 @@
   display: grid;
   gap: 16px;
 
+  // The organizer's own words on what the Pix is for; line breaks they typed stay.
+  &__purpose {
+    margin: 0;
+    color: var(--org-on-surface);
+    font-size: var(--org-font-size-md);
+    line-height: var(--org-line-height-normal);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+
   &__split-container {
     display: flex;
     flex-direction: column;

@@ -1,3 +1,4 @@
+import { NavigationHistoryService } from './core/services/navigation-history.service';
 import {
   Component,
   ChangeDetectionStrategy,
@@ -12,8 +13,16 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
-import { AuthService, ThemeService, DrawerService, SeasonalThemeService } from './core/services';
-import { isPrimaryDestination, resolveBackRoute } from './core/utils';
+import {
+  AuthService,
+  ThemeService,
+  DrawerService,
+  SeasonalThemeService,
+  UserService,
+  EventService,
+  CollaboratorInvitesService,
+} from './core/services';
+import { resolveBackRoute, showsBottomNav } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
 import { OrgIconComponent } from './shared/ui/actions/org-icon.component';
@@ -22,6 +31,8 @@ import { OrgButtonComponent } from './shared/ui/actions/org-button.component';
 import { OrgAvatarComponent } from './shared/ui/data-display/org-avatar.component';
 import { OrgThemeToggleComponent } from './shared/ui/actions/org-theme-toggle.component';
 import { OrgLogoComponent } from './shared/ui/brand/org-logo.component';
+import { NotificationBellComponent } from './shared/components/notification-bell/notification-bell.component';
+import { OrgPartyDriftComponent } from './shared/ui/brand/org-party-drift.component';
 import {
   OrgNavBarComponent,
   type OrgNavBarItem,
@@ -67,6 +78,8 @@ const PROFILE_ITEM: OrgNavBarItem = {
     OrgAvatarComponent,
     OrgThemeToggleComponent,
     OrgLogoComponent,
+    OrgPartyDriftComponent,
+    NotificationBellComponent,
     OrgNavBarComponent,
     RsvpDrawerComponent,
     CollaboratorDrawerComponent,
@@ -80,8 +93,13 @@ const PROFILE_ITEM: OrgNavBarItem = {
 })
 export class App {
   private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
+  private readonly eventService = inject(EventService);
+  private readonly collaboratorInvites = inject(CollaboratorInvitesService);
   protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  // Created with the app, so it records from the first screen.
+  private readonly navigationHistory = inject(NavigationHistoryService);
   protected readonly drawerService = inject(DrawerService);
 
   private readonly seasonalService = inject(SeasonalThemeService);
@@ -95,6 +113,24 @@ export class App {
     PROFILE_ITEM,
   ];
   protected readonly headerNavItems: readonly OrgNavBarItem[] = [HOME_ITEM, MY_EVENTS_ITEM];
+
+  /** Whoever signs in keeps their public name (the organizer name guests see) up to date. */
+  private publicNameSyncedFor: string | null = null;
+  private readonly syncPublicName = effect(() => {
+    const user = this.authService.currentUser();
+    if (!user || user.isAnonymous || this.publicNameSyncedFor === user.uid) return;
+    this.publicNameSyncedFor = user.uid;
+    void this.userService
+      .syncPublicName(user.uid, user.displayName, user.photoURL)
+      .catch(() => undefined);
+    // Invites to help organise wait in the bell until accepted on the event's page.
+    void this.collaboratorInvites.refresh();
+    this.collaboratorInvites.watch();
+    void this.collaboratorInvites.backfillHistory().catch(() => undefined);
+    if (user.email) {
+      void this.eventService.recordCollaboratorEmail(user.email, user.uid).catch(() => undefined);
+    }
+  });
 
   constructor() {
     effect(() => {
@@ -115,6 +151,8 @@ export class App {
 
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
   protected readonly user = this.authService.currentUser;
+  /** The person's name as their profile has it (not only the Google account's). */
+  protected readonly displayName = this.authService.displayName;
   protected readonly isAuthenticated = computed(() => {
     const u = this.user();
     return u !== null && !u.isAnonymous;
@@ -136,7 +174,7 @@ export class App {
   protected readonly backRoute = computed(() => resolveBackRoute(this.currentUrl()));
   protected readonly showAvatar = this.isAuthenticated;
   protected readonly showBottomNav = computed(
-    () => this.isAuthenticated() && isPrimaryDestination(this.currentUrl()),
+    () => this.isAuthenticated() && showsBottomNav(this.currentUrl()),
   );
   protected readonly isFestiveBackdrop = computed(
     () => this.seasonalService.config().activeTheme === 'default',
@@ -153,6 +191,11 @@ export class App {
 
   protected navigate(route: string): void {
     this.router.navigateByUrl(route).catch(console.error);
+  }
+
+  /** The header arrow: the screen before in this tab, or the parent when there is none. */
+  protected goBack(fallback: string): void {
+    this.navigationHistory.back(fallback);
   }
 
   protected completeRsvp(result: RsvpDrawerResult): void {

@@ -48,13 +48,22 @@ describe('SecretSantaService (invite sign-ups)', () => {
       { name: 'Maria', phone: '', giftOptions: [], guestId: 'u1', joinedBy: 'u1' },
       { merge: true },
     ]);
-    expect(sets[1][1]).toEqual(
+    // Each entry and its roster copy (name and gift options only) go in the same batch.
+    expect(sets[1]).toEqual([
+      'events/evt-1/secretSantaRoster/rsvp_u1',
+      { name: 'Maria', giftOptions: [] },
+      { merge: true },
+    ]);
+    expect(sets[2][1]).toEqual(
       expect.objectContaining({ joinedBy: 'u1', createdAt: expect.any(String) }),
     );
     expect(gateway.batchOps.delete).toHaveBeenCalledWith(`${path}/rsvp_u1_c_bia`);
+    expect(gateway.batchOps.delete).toHaveBeenCalledWith(
+      'events/evt-1/secretSantaRoster/rsvp_u1_c_bia',
+    );
   });
 
-  it('merges a duplicate into the entry from the invite, keeping what the organizer typed', async () => {
+  it('merges a duplicate into the entry from the invite, keeping the guest own entry', async () => {
     const keep: SecretSantaParticipant = {
       id: 'rsvp_u1',
       name: 'Jéssica Melo',
@@ -69,10 +78,8 @@ describe('SecretSantaService (invite sign-ups)', () => {
       giftOptions: ['Livro'],
     };
     await service.mergeDuplicate('evt-1', { keep, drop, sure: true });
-    expect(gateway.batchOps.update).toHaveBeenCalledWith(`${path}/rsvp_u1`, {
-      phone: '(11) 98888-1111',
-      giftOptions: ['Livro'],
-    });
+    // The guest's entry stays as they made it.
+    expect(gateway.batchOps.update).not.toHaveBeenCalled();
     expect(gateway.batchOps.delete).toHaveBeenCalledWith(`${path}/m1`);
   });
 

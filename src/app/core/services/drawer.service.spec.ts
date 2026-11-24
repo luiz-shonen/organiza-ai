@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { RsvpDrawerResult } from '../models';
 import { DrawerService } from './drawer.service';
@@ -47,7 +48,7 @@ describe('DrawerService', () => {
     const onAction = vi.fn();
     service.open({
       kind: 'collaborator',
-      data: { collaborators: [], pendingInvites: [] },
+      data: { collaborators: signal([]), pendingInvites: signal([]) },
       onAction,
     });
 

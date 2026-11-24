@@ -39,7 +39,10 @@ $breakpoint-lg: 1200px;
 
   :root {
     // Brand: lilac drives actions, sky blue carries dates and info, leaf green
-    // marks success and progress.
+    // marks success and progress, a warm orange gives small accents beside the lilac.
+    --org-accent: #f76707;
+    --org-accent-container: #fff4e6;
+    --org-on-accent-container: #d9480f;
     --org-primary: #7950f2;
     --org-on-primary: #fff;
     --org-primary-container: #f1ecff;
@@ -62,6 +65,12 @@ $breakpoint-lg: 1200px;
     // Filled destructive button ("Remover item"): white text on a deep red, both themes.
     --org-danger-fill: #c92a2a;
     --org-on-danger-fill: #fff;
+
+    // Backing for other brands' marks (Mercado Livre, Amazon): none on light surfaces.
+    --org-brand-mark-badge: transparent;
+
+    // Behind a brand mark on a filled button (the "G" of "Entrar com Google").
+    --org-brand-mark-disc: #fff;
     --org-error-container: #ffe3e3;
     --org-on-error-container: #a51111;
     --org-warning: #e8a200;
@@ -174,6 +183,13 @@ $breakpoint-lg: 1200px;
   }
 
   html.dark {
+    // Other brands' marks keep their own colours on white (the Amazon "a" is black).
+    --org-brand-mark-badge: #fff;
+
+    // Warm orange accents: what breaks the lilac most on the dark surfaces.
+    --org-accent: #ffa94d;
+    --org-accent-container: rgb(255 146 43 / 0.16);
+    --org-on-accent-container: #ffc078;
     --org-primary: #b197fc;
     --org-on-primary: #1b1530;
     --org-primary-container: rgb(177 151 252 / 0.18);

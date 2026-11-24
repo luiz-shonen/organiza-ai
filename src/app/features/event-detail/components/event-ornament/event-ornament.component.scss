@@ -1,0 +1,263 @@
+@use '../../../../shared/ui/tokens/ornament';
+
+// Fills whatever height the grid row leaves; below a useful height the scene is not drawn.
+:host {
+  container-type: size;
+  display: block;
+  min-block-size: 0;
+}
+
+.ornament-frame {
+  @container (height < 140px) {
+    display: none;
+  }
+}
+
+// A lilac sky inside the card's own frame, and the few colors a themed scene needs beyond the
+// app's own (wood, leaves, fire, gold...).
+.ornament {
+  @each $name, $color in ornament.$ornament-colors {
+    --ornament-#{$name}: #{$color};
+  }
+
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--org-primary-container) 80%, transparent),
+    transparent 80%
+  );
+  block-size: 100%;
+  display: flex;
+}
+
+.ornament__scene {
+  block-size: 100%;
+  inline-size: 100%;
+
+  // The hill and the bunting run past the scene to the card's edges; the card clips them.
+  overflow: visible;
+}
+
+.ornament__string,
+.ornament__line {
+  fill: none;
+  stroke: var(--org-outline);
+  stroke-width: 1.5;
+}
+
+.ornament__hill {
+  fill: var(--org-primary-container);
+}
+
+.ornament__flag,
+.ornament__fill--primary {
+  fill: var(--org-primary);
+}
+
+.ornament__flag {
+  animation: ornament-sway 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: top center;
+
+  &--secondary {
+    fill: var(--org-secondary);
+  }
+
+  &--tertiary {
+    fill: var(--org-tertiary);
+  }
+
+  &--success {
+    fill: var(--org-success);
+  }
+}
+
+.ornament__fill--primary-deep {
+  fill: var(--org-primary);
+  filter: brightness(0.85);
+}
+
+.ornament__fill--secondary {
+  fill: var(--org-secondary);
+}
+
+.ornament__fill--tertiary {
+  fill: var(--org-tertiary);
+}
+
+.ornament__fill--success {
+  fill: var(--org-success);
+}
+
+// Themed scenes: fills and strokes by color.
+@each $name in gold, red, red-deep, pink, leaf, leaf-deep, wood, wood-deep, flame, flame-out, cream,
+  cream-deep, meat, ink, ink-soft, glass, water, snow
+{
+  .ornament__fill--#{$name} {
+    fill: var(--ornament-#{$name});
+  }
+
+  .ornament__stroke--#{$name} {
+    fill: none;
+    stroke: var(--ornament-#{$name});
+    stroke-linecap: round;
+    stroke-width: 3;
+  }
+}
+
+.ornament__fill--glow {
+  fill: var(--ornament-gold);
+  opacity: 0.25;
+}
+
+.ornament__stroke--ink-thin {
+  fill: none;
+  stroke: var(--ornament-ink);
+  stroke-width: 2;
+}
+
+.ornament__stroke--primary,
+.ornament__stroke--secondary,
+.ornament__stroke--tertiary {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+
+.ornament__stroke--primary {
+  stroke: var(--org-primary);
+}
+
+.ornament__stroke--secondary {
+  stroke: var(--org-secondary);
+}
+
+.ornament__stroke--tertiary {
+  stroke: var(--org-tertiary);
+}
+
+.ornament__stroke--rays {
+  fill: none;
+  opacity: 0.45;
+  stroke: var(--ornament-gold);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.ornament__stroke--ring {
+  fill: none;
+  stroke: var(--ornament-gold);
+  stroke-width: 7;
+}
+
+.ornament__stroke--smoke {
+  fill: none;
+  opacity: 0.6;
+  stroke: var(--org-outline);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.ornament__cloud {
+  fill: var(--ornament-snow);
+}
+
+.ornament__cloud-edge,
+.ornament__dove {
+  fill: var(--ornament-snow);
+  stroke: color-mix(in srgb, var(--org-primary) 25%, transparent);
+  stroke-width: 1.5;
+}
+
+.ornament__cloud-edge {
+  stroke-width: 3;
+}
+
+.ornament__bow {
+  fill: var(--org-secondary);
+}
+
+.ornament__shine {
+  fill: var(--org-surface);
+  opacity: 0.45;
+}
+
+.ornament__balloon {
+  animation: ornament-float 4.5s ease-in-out infinite;
+}
+
+.ornament__lid {
+  animation: ornament-hop 3.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.ornament__confetti {
+  animation: ornament-drift 5s ease-in-out infinite;
+  opacity: 0.8;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ornament__sparkle {
+  animation: ornament-twinkle 2.4s ease-in-out infinite;
+  fill: var(--org-primary);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes ornament-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes ornament-sway {
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes ornament-hop {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  80% {
+    transform: translateY(-6px) rotate(-3deg);
+  }
+
+  90% {
+    transform: translateY(-2px) rotate(2deg);
+  }
+}
+
+@keyframes ornament-drift {
+  50% {
+    transform: translateY(10px) rotate(160deg);
+  }
+}
+
+@keyframes ornament-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ornament__flag,
+  .ornament__balloon,
+  .ornament__lid,
+  .ornament__confetti,
+  .ornament__sparkle {
+    animation: none;
+  }
+}

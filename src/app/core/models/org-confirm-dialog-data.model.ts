@@ -19,6 +19,14 @@ export interface OrgConfirmDialogData {
   readonly tone?: OrgConfirmDialogTone;
   /** Defaults to `delete_outline` for danger and `info` otherwise. */
   readonly icon?: OrgConfirmDialogIcon;
+  /**
+   * A second way forward beside the main one ("Adicionar mesmo assim" next to "Substituir"):
+   * shown between "cancel" and the main button; `choose()` tells which was pressed.
+   */
+  readonly extraLabel?: string;
 }
+
+/** What `choose()` returns: the main button, the extra one, or neither (closed, cancelled). */
+export type OrgDialogChoice = 'confirm' | 'extra' | 'cancel';
 
 export type ConfirmDialogData = OrgConfirmDialogData;

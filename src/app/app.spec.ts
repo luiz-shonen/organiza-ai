@@ -5,7 +5,15 @@ import { signal } from '@angular/core';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { App } from './app';
 import { FirebaseService } from './core/services/firebase.service';
-import { AuthService, SeasonalThemeService } from './core/services';
+import { of } from 'rxjs';
+import {
+  AuthService,
+  CollaboratorInvitesService,
+  EventService,
+  InboxService,
+  SeasonalThemeService,
+  UserService,
+} from './core/services';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -23,8 +31,35 @@ describe('App', () => {
           useValue: {
             isAdmin: signal(false),
             currentUser: signal(null),
+            displayName: signal(''),
             logout: vi.fn(),
           },
+        },
+        // The bell and the sign-in sync read Firestore: stand-ins here.
+        {
+          provide: InboxService,
+          useValue: { watchUnread: () => of([]), watchAll: () => of([]), markRead: vi.fn() },
+        },
+        {
+          provide: CollaboratorInvitesService,
+          useValue: {
+            invites: signal([]),
+            refresh: vi.fn().mockResolvedValue(undefined),
+            watch: vi.fn(),
+            backfillHistory: vi.fn().mockResolvedValue(undefined),
+          },
+        },
+        {
+          provide: UserService,
+          useValue: {
+            syncPublicName: vi.fn().mockResolvedValue(undefined),
+            getProfile: vi.fn().mockResolvedValue(null),
+            updateThemePreference: vi.fn().mockResolvedValue(undefined),
+          },
+        },
+        {
+          provide: EventService,
+          useValue: { recordCollaboratorEmail: vi.fn().mockResolvedValue(undefined) },
         },
         {
           provide: SeasonalThemeService,

@@ -6,7 +6,27 @@ export interface AddressDetails {
   number?: string;
   neighborhood?: string;
   city?: string;
+  /** "Km 12, sítio Boa Vista": what the street and number do not say. */
+  complement?: string;
+  /** "Como chegar": directions for places a map does not find well, such as rural ones. */
+  directions?: string;
 }
+
+/**
+ * Where the event is on a map, as saved on the event: a pin (with the place name a Google
+ * Maps link carries) or, when the link holds no coordinates (a short share link), the link.
+ */
+export type MapLocationData =
+  | { readonly lat: number; readonly lng: number; readonly label?: string }
+  | { readonly url: string };
+
+/** Sizes of the optional address fields, in the editor and the rules. */
+export const ADDRESS_COMPLEMENT_MAX = 80;
+export const ADDRESS_DIRECTIONS_MAX = 300;
+/** Longest "Para que é o Pix" text. */
+export const PIX_PURPOSE_MAX = 300;
+/** Longest amigo oculto description (value, rules, dates). */
+export const SECRET_SANTA_RULES_MAX = 500;
 
 export type PixType = 'cpf' | 'cnpj' | 'email' | 'phone' | 'random' | string;
 
@@ -82,9 +102,23 @@ export interface PartyEvent {
   category?: string;
   description: string;
   date: string;
+  /**
+   * The last day ("2026-12-25") of an event that runs over several days, starting on `date`.
+   * Missing or null: a one-day event.
+   */
+  endDate?: string | null;
   location: string;
   addressDetails?: AddressDetails;
+  /** The pin or map link the organizer pasted; opens instead of searching the address. */
+  mapLocation?: MapLocationData | null;
   pixKey: string | null;
+  /** What the Pix is for, in the organizer's words (rachar os custos, doação…). */
+  pixPurpose?: string | null;
+  /**
+   * The amigo oculto in the organizer's words: the gift value ("de R$ 80 a R$ 100"), the
+   * rules, when gifts are swapped. Kept beside `secretSanta`, whose keys the rules fix.
+   */
+  secretSantaRules?: string | null;
   pixType?: PixType;
   estimatedBudget?: number | null;
   status?: 'active' | 'cancelled';
@@ -92,11 +126,13 @@ export interface PartyEvent {
   creatorEmail?: string;
   /** The organizer's display name, saved with the event so guests see who invites them. */
   creatorName?: string;
+  /** The organizer's account photo, from their public profile (not saved on the event). */
+  creatorPhoto?: string | null;
   collaborators?: string[];
   /** "Vai ter amigo oculto?" and whether participants list gift options. */
   secretSanta?: SecretSantaSettings;
   /**
-   * "Aprovar quem confirma pelo link": each confirmation waits for the owner before it counts.
+   * "Aprovar presenças": each confirmation waits for the owner before it counts.
    * Off (or missing) means anyone with the link confirms at once.
    */
   requireApproval?: boolean;

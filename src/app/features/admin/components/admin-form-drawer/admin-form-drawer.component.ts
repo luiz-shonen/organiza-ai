@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import { revealFirstInvalidSoon } from '../../../../shared/ui';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import {
   Email,
@@ -20,6 +28,7 @@ import {
   styleUrl: './admin-form-drawer.component.scss',
 })
 export class AdminFormDrawerComponent {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly fb = inject(FormBuilder);
 
   readonly isOpen = input(false);
@@ -38,6 +47,7 @@ export class AdminFormDrawerComponent {
   protected onSubmit(): void {
     if (this.form.invalid || this.saving()) {
       this.form.markAllAsTouched();
+      revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
 

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { EventService } from './event.service';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
@@ -75,7 +75,7 @@ describe('EventService', () => {
       expect(result).toEqual([]);
     });
 
-    it('combines owned and collaborated events without duplicates', () => {
+    it('combines owned and collaborated events without duplicates', async () => {
       const owned = [
         { id: 'e1', title: 'Owned Event', date: '2026-06-01T00:00:00.000Z' },
         { id: 'shared', title: 'Shared Event', date: '2026-08-01T00:00:00.000Z' },
@@ -88,15 +88,33 @@ describe('EventService', () => {
       mockGateway.collectionSnapshot.mockReturnValueOnce(of(owned));
       mockGateway.collectionSnapshot.mockReturnValueOnce(of(collaborated));
 
-      let result: PartyEvent[] = [];
-      service.getUserEvents('user-123').subscribe((events) => {
-        result = events;
-      });
+      const result: PartyEvent[] = await firstValueFrom(service.getUserEvents('user-123'));
 
       expect(result).toHaveLength(3);
       expect(result[0].id).toBe('e1');
       expect(result[1].id).toBe('e2');
       expect(result[2].id).toBe('shared');
+    });
+
+    it("names each event by its organizer's current profile name", async () => {
+      mockGateway.collectionSnapshot.mockReturnValueOnce(
+        of([
+          {
+            id: 'e1',
+            title: 'Natal',
+            date: '2026-12-24T00:00:00.000Z',
+            createdBy: 'org-1',
+            creatorName: 'Nome antigo',
+          },
+        ]),
+      );
+      mockGateway.collectionSnapshot.mockReturnValueOnce(of([]));
+      mockGateway.getDoc = vi.fn().mockResolvedValue({ name: 'Jéssica Araújo' });
+
+      const [event] = await firstValueFrom(service.getUserEvents('org-1'));
+
+      expect(mockGateway.getDoc).toHaveBeenCalledWith('publicProfiles/org-1');
+      expect(event.creatorName).toBe('Jéssica Araújo');
     });
   });
 
@@ -128,7 +146,7 @@ describe('EventService', () => {
       expect(result?.secretSanta).toEqual({ enabled: true, giftOptions: false });
     });
 
-    it('keeps "Aprovar quem confirma pelo link" only when it is on', () => {
+    it('keeps "Aprovar presenças" only when it is on', () => {
       mockGateway.docSnapshot.mockReturnValue(of({ id: 'evt-1', requireApproval: true }));
       let result = null as PartyEvent | null;
       service.getEvent('evt-1').subscribe((event) => (result = event));
@@ -319,11 +337,14 @@ describe('EventService', () => {
         eventTitle: 'My Party',
         invitedEmail: 'collab@test.com',
         invitedBy: 'Host',
+        invitedByName: '',
+        invitedByPhoto: null,
         createdAt: expect.any(String),
       });
     });
 
-    it('removeCollaborator removes UID using arrayRemove', async () => {
+    it('removeCollaborator removes the UID, then their saved e-mail apart', async () => {
+      mockGateway.deleteDoc.mockRejectedValueOnce(new Error('permission-denied'));
       await service.removeCollaborator('evt-1', 'user-collab-1');
 
       expect(mockGateway.arrayRemove).toHaveBeenCalledWith('user-collab-1');
@@ -331,6 +352,9 @@ describe('EventService', () => {
         collaborators: expect.anything(),
         updatedAt: expect.any(String),
       });
+      expect(mockGateway.deleteDoc).toHaveBeenCalledWith(
+        'events/evt-1/collaborators/user-collab-1',
+      );
     });
 
     it('listPendingInvitations returns mapped invitations observable', () => {
@@ -356,18 +380,9 @@ describe('EventService', () => {
       expect(result?.[0].invitedEmail).toBe('invited@test.com');
     });
 
-    it('claimPendingInvitations finds invitations and claims them via batch', async () => {
-      mockGateway.getCollectionGroupDocs.mockResolvedValue([
-        { id: 'user@test.com', eventId: 'evt-100' },
-      ]);
+    it('accepting an invite adds the account and removes the invite in one batch', async () => {
+      await service.acceptInvitation('evt-100', 'User@Test.com', 'uid-999');
 
-      await service.claimPendingInvitations('User@Test.com', 'uid-999');
-
-      expect(mockGateway.getCollectionGroupDocs).toHaveBeenCalledWith(
-        'invitations',
-        expect.anything(),
-      );
-      expect(mockGateway.runBatch).toHaveBeenCalled();
       expect(mockGateway.batchOps.update).toHaveBeenCalledWith('events/evt-100', {
         collaborators: expect.anything(),
         updatedAt: expect.any(String),
@@ -375,15 +390,6 @@ describe('EventService', () => {
       expect(mockGateway.batchOps.delete).toHaveBeenCalledWith(
         'events/evt-100/invitations/user@test.com',
       );
-    });
-
-    it('claimPendingInvitations returns early if email or uid is empty or no invites found', async () => {
-      await service.claimPendingInvitations('', 'uid-1');
-      expect(mockGateway.getCollectionGroupDocs).not.toHaveBeenCalled();
-
-      mockGateway.getCollectionGroupDocs.mockResolvedValue([]);
-      await service.claimPendingInvitations('test@test.com', 'uid-1');
-      expect(mockGateway.runBatch).not.toHaveBeenCalled();
     });
   });
 });

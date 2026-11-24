@@ -134,19 +134,39 @@ describe('RsvpDrawerComponent', () => {
       phone: '',
       createdAt: '2026-11-03T00:00:00.000Z',
     };
+    /** Confirming the first time, with Ana checked above: the drawer asks the amigo oculto. */
     const open = (joined: Record<string, readonly string[]> = {}, isOpen = true) => {
       fixture.componentRef.setInput('drawerData', {
         session: { name: 'Maria', phone: '11999998888' },
         familyMembers: [grandma],
         userId: 'uid-maria',
-        existing: { companions: [], familyMemberIds: ['fam-ana'] },
         secretSanta: { open: isOpen, giftOptions: true, maxGiftOptions: 2, joined },
       });
+      fixture.detectChanges();
+      fixture.componentInstance['onToggleFamilyMember']('fam-ana');
       fixture.detectChanges();
     };
     const el = () => fixture.nativeElement as HTMLElement;
     const confirm = () =>
       (el().querySelector('[data-testid="rsvp-confirm-btn"] button') as HTMLButtonElement).click();
+    /** Adds each idea with "+", one at a time; once the list is full the field is gone. */
+    const typeGifts = (index: number, ...gifts: string[]) => {
+      for (const gift of gifts) {
+        const field = el().querySelector(
+          `input[data-testid="rsvp-santa-${index}-gift-input"]`,
+        ) as HTMLInputElement | null;
+        if (!field) return;
+        field.value = gift;
+        field.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        (
+          el().querySelector(
+            `button[data-testid="rsvp-santa-${index}-add-gift-btn"]`,
+          ) as HTMLButtonElement
+        ).click();
+        fixture.detectChanges();
+      }
+    };
 
     it('asks for each person going: the guest and the relatives checked above', () => {
       open();
@@ -161,39 +181,91 @@ describe('RsvpDrawerComponent', () => {
       (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
       (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
       fixture.detectChanges();
-      const gifts = el().querySelector(
-        'textarea[data-testid="rsvp-santa-gifts-1"]',
-      ) as HTMLTextAreaElement;
-      gifts.value = 'Manta\nChinelo 37\nTerceira passa do limite';
-      gifts.dispatchEvent(new Event('input'));
+      typeGifts(1, 'Manta', 'Chinelo 37', 'Terceira passa do limite');
+      typeGifts(0, 'Livro');
       confirm();
 
       expect(close).toHaveBeenCalledWith(
         expect.objectContaining({
-          secretSanta: { self: [], 'f:fam-ana': ['Manta', 'Chinelo 37'] },
+          secretSanta: { self: ['Livro'], 'f:fam-ana': ['Manta', 'Chinelo 37'] },
         }),
       );
     });
 
-    it('opens an edit with who is already in, and leaves out someone no longer going', () => {
-      open({ self: ['Livro'], 'f:fam-ana': [] });
-      expect(
-        (el().querySelector('textarea[data-testid="rsvp-santa-gifts-0"]') as HTMLTextAreaElement)
-          .value,
-      ).toBe('Livro');
-      fixture.componentInstance['onToggleFamilyMember']('fam-ana');
+    it('asks every person in the draw for at least one gift option', () => {
+      open();
+      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
       fixture.detectChanges();
+      confirm();
+      fixture.detectChanges();
+
+      expect(close).not.toHaveBeenCalled();
+      expect(el().textContent).toContain('Informe pelo menos uma opção de presente');
+    });
+
+    it('asks the WhatsApp of a relative in the draw, filled from the profile, optional', () => {
+      open();
+      expect(el().querySelector('[data-testid="rsvp-santa-phone-1"]')).toBeNull();
+      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
+      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      // Not for the guest: their own number is the field above.
+      expect(el().querySelector('[data-testid="rsvp-santa-phone-0"]')).toBeNull();
+      const phone = el().querySelector(
+        'input[data-testid="rsvp-santa-phone-1"]',
+      ) as HTMLInputElement;
+      expect(phone).toBeTruthy();
+      phone.value = '21988880000';
+      phone.dispatchEvent(new Event('input'));
+      typeGifts(0, 'Livro');
+      typeGifts(1, 'Manta');
       confirm();
 
       expect(close).toHaveBeenCalledWith(
-        expect.objectContaining({ secretSanta: { self: ['Livro'] } }),
+        expect.objectContaining({ secretSantaPhones: { 'f:fam-ana': '(21) 98888-0000' } }),
       );
+    });
+
+    it('refuses a WhatsApp typed for a relative that is not a phone', () => {
+      open();
+      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      fixture.detectChanges();
+      const phone = el().querySelector(
+        'input[data-testid="rsvp-santa-phone-1"]',
+      ) as HTMLInputElement;
+      phone.value = '2198';
+      phone.dispatchEvent(new Event('input'));
+      typeGifts(1, 'Manta');
+      confirm();
+      fixture.detectChanges();
+
+      expect(close).not.toHaveBeenCalled();
+      expect(el().textContent).toContain('Telefone inválido');
+    });
+
+    it('leaves the amigo oculto out of "Editar presença": its card handles it', () => {
+      fixture.componentRef.setInput('drawerData', {
+        session: { name: 'Maria', phone: '11999998888' },
+        familyMembers: [grandma],
+        userId: 'uid-maria',
+        existing: { companions: [], familyMemberIds: ['fam-ana'] },
+        secretSanta: {
+          open: true,
+          giftOptions: true,
+          maxGiftOptions: 2,
+          joined: { self: ['Livro'] },
+        },
+      });
+      fixture.detectChanges();
+      expect(el().querySelector('[data-testid="rsvp-santa"]')).toBeNull();
+      confirm();
+      expect(close.mock.calls[0][0].secretSanta).toBeUndefined();
     });
 
     it('only says sign-ups are closed, and changes nothing', () => {
       open({ self: [] }, false);
       expect(el().querySelector('[data-testid="rsvp-santa-closed"]')?.textContent).toContain(
-        'As inscrições do amigo oculto estão fechadas.',
+        'As inscrições do amigo oculto foram encerradas.',
       );
       confirm();
       expect(close.mock.calls[0][0].secretSanta).toBeUndefined();

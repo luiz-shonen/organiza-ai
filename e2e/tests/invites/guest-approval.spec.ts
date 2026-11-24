@@ -79,9 +79,11 @@ test.describe('Aprovar quem confirma pelo link', () => {
     await eventEditorPage.assertLoaded();
 
     const approval = page.getByTestId('event-approval');
-    await expect(approval).toContainText('Qualquer pessoa com o link confirma presença na hora.');
+    await expect(approval).toContainText(
+      'Quem abrir o convite e confirmar presença entra direto na lista',
+    );
     await approval.getByTestId('event-approval-toggle').locator('button').click();
-    await expect(approval).toContainText('Cada confirmação fica esperando você aprovar');
+    await expect(approval).toContainText('Só quem você aprovar entra na lista do evento.');
     await approval.screenshot({ path: 'e2e/screenshots/approval-toggle.png' });
 
     await eventEditorPage.saveEvent();
@@ -110,7 +112,9 @@ test.describe('Aprovar quem confirma pelo link', () => {
       .getByTestId('rsvp-card')
       .screenshot({ path: 'e2e/screenshots/approval-waiting.png' });
     // Only Tia Lurdes counts on "Quem vai".
-    await expect(page.getByTestId('guest-list-card')).toContainText('1 confirmado');
+    await expect(page.getByTestId('guest-list-card').getByTestId('card-header-count')).toHaveText(
+      '1',
+    );
     const mine = (await readStore(page))[`events/${EVENT_ID}/guests`].find(
       (g) => g.id === 'primo-uid',
     );
@@ -162,13 +166,13 @@ test.describe('Aprovar quem confirma pelo link', () => {
     const card = page.getByTestId('guest-list-card');
     const pending = card.getByTestId('guest-pending');
     await expect(pending).toContainText('Aguardando aprovação (2)');
-    await expect(card).toContainText('1 confirmado');
+    await expect(card.getByTestId('card-header-count')).toHaveText('1');
     await pending.screenshot({ path: 'e2e/screenshots/approval-pending-list.png' });
 
     const primo = pending.getByTestId('guest-pending-row').filter({ hasText: 'Primo Carlos' });
     await expect(primo).toContainText('2 pessoas');
     await primo.getByTestId('guest-approve-btn').click();
-    await expect(card).toContainText('3 confirmados');
+    await expect(card.getByTestId('card-header-count')).toHaveText('3');
 
     const fulano = pending.getByTestId('guest-pending-row').filter({ hasText: 'Fulano' });
     await fulano.getByTestId('guest-refuse-btn').click();

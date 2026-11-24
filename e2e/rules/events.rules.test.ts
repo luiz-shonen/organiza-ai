@@ -241,4 +241,39 @@ describe('events collection Firestore rules contract', () => {
     await assertFails(setDoc(doc(other, 'events/e/items/i2'), { name: 'Pizza', claimedBy: null }));
     await assertSucceeds(deleteDoc(doc(collab, 'events/e/items/i1')));
   });
+
+  it('keeps each collaborator e-mail for the organizers, written only by that collaborator', async () => {
+    await seed('events/e', { ...ownedEvent, collaborators: ['collab-uid'] });
+    const owner = accountDb('owner-uid', 'owner@test.com');
+    const collab = accountDb('collab-uid', 'collab@test.com');
+    const other = accountDb('other-uid', 'other@test.com');
+
+    await assertSucceeds(
+      setDoc(doc(collab, 'events/e/collaborators/collab-uid'), { email: 'collab@test.com' }),
+    );
+    await assertFails(
+      setDoc(doc(collab, 'events/e/collaborators/collab-uid'), { email: 'someone@test.com' }),
+    );
+    await assertFails(
+      setDoc(doc(other, 'events/e/collaborators/other-uid'), { email: 'other@test.com' }),
+    );
+    await assertSucceeds(getDoc(doc(owner, 'events/e/collaborators/collab-uid')));
+    await assertFails(getDoc(doc(other, 'events/e/collaborators/collab-uid')));
+    await assertSucceeds(deleteDoc(doc(owner, 'events/e/collaborators/collab-uid')));
+  });
+
+  it('lets a collaborator leave, taking out only their own account', async () => {
+    await seed('events/e', { ...ownedEvent, collaborators: ['collab-uid', 'other-collab'] });
+    const collab = accountDb('collab-uid', 'collab@test.com');
+
+    await assertFails(
+      updateDoc(doc(collab, 'events/e'), { collaborators: ['collab-uid'], updatedAt: 'x' }),
+    );
+    await assertFails(
+      updateDoc(doc(collab, 'events/e'), { collaborators: ['other-collab'], title: 'Outro' }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(collab, 'events/e'), { collaborators: ['other-collab'], updatedAt: 'x' }),
+    );
+  });
 });

@@ -134,27 +134,37 @@ test.describe('Invites, event states and guests', () => {
     ]);
 
     await page.goto('/evento/evt-next');
-    await expect(page.getByTestId('edit-event-btn')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toBeVisible();
 
     await page.goto('/evento/evt-past');
     await expect(page.locator('h1.event-card__title')).toHaveText('Churrasco passado');
-    await expect(page.getByTestId('edit-event-btn')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Editar evento', exact: true })).toHaveCount(0);
 
     // Typing the editor address leads back to the event, saying why.
     await page.goto('/meus-eventos/evento/evt-past');
     await expect(page).toHaveURL(/\/evento\/evt-past$/);
     await expect(
-      page.getByText('Este evento já aconteceu e não pode mais ser editado.'),
+      page
+        .getByTestId('feedback-snackbar')
+        .getByText('Este evento já aconteceu e não pode mais ser editado.'),
     ).toBeVisible();
   });
 
   test('category tags have their own colour, status tags stay filled', async ({ page }) => {
-    await asGuest(page, [invite('evt-natal', 'Ceia de Natal', inDays(10), { category: 'Natal' })]);
+    // "Natal" says itself on the envelope (its colours and words): it carries no category tag.
+    // A category typed by the organizer has no words of its own, so it keeps its tag.
+    await asGuest(page, [
+      invite('evt-natal', 'Ceia de Natal', inDays(10), { category: 'Natal' }),
+      invite('evt-sarau', 'Sarau de poesia', inDays(12), { category: 'Sarau' }),
+    ]);
     await page.goto('/');
 
-    const tags = page.locator('app-invite-envelope .org-badge');
-    await expect(tags.first()).toHaveClass(/org-badge--category/);
-    await expect(tags.nth(1)).toHaveClass(/org-badge--warning/);
+    const natal = page.locator('app-invite-envelope').filter({ hasText: 'Ceia de Natal' });
+    await expect(natal.locator('.org-badge')).toHaveCount(1);
+    await expect(natal.locator('.org-badge')).toHaveClass(/org-badge--warning/);
+    const sarau = page.locator('app-invite-envelope').filter({ hasText: 'Sarau de poesia' });
+    await expect(sarau.locator('.org-badge').first()).toHaveClass(/org-badge--category/);
+    await expect(sarau.locator('.org-badge').nth(1)).toHaveClass(/org-badge--warning/);
   });
 
   test('a visitor is sent to sign in and back to the invite', async ({ page }) => {
@@ -218,10 +228,10 @@ test.describe('Invites, event states and guests', () => {
     await page.goto('/evento/evt-guests');
 
     const card = page.getByTestId('guest-list-card');
-    await expect(card).toContainText('Quem vai');
+    await expect(card).toContainText('Confirmados');
     await expect(card.getByTestId('guest-household').first()).toBeVisible();
     await expect(card).not.toContainText('91111');
-    await expect(card.getByRole('button', { name: 'Baixar a lista em Excel' })).toHaveCount(0);
+    await expect(card.getByRole('button', { name: 'Baixar a lista em PDF' })).toHaveCount(0);
   });
 
   test('the organizer sees phones and the export in "Quem vai"', async ({ page }) => {
@@ -230,8 +240,17 @@ test.describe('Invites, event states and guests', () => {
     await page.goto('/evento/evt-mine');
 
     const card = page.getByTestId('guest-list-card');
-    await expect(card.getByRole('button', { name: 'Baixar a lista em Excel' })).toBeVisible();
+    await expect(card.getByRole('button', { name: 'Baixar a lista em PDF' })).toBeVisible();
     await expect(card).toContainText('(11) 91111-1111');
+
+    // "Baixar" saves the "Confirmados" list as a PDF named after the event.
+    const downloading = page.waitForEvent('download');
+    await card.getByRole('button', { name: 'Baixar a lista em PDF' }).click();
+    const file = await downloading;
+    expect(file.suggestedFilename()).toMatch(/^confirmados-.+\.pdf$/);
+    const path = await file.path();
+    const { readFileSync } = await import('node:fs');
+    expect(readFileSync(path).subarray(0, 5).toString()).toBe('%PDF-');
   });
 
   test('the header switches between light and dark', async ({ page }) => {

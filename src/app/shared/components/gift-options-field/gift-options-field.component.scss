@@ -1,0 +1,91 @@
+@use 'gift-item' as gift;
+@use '@angular/material' as mat;
+
+:host {
+  display: block;
+}
+
+// Gift ideas: a title with "1 de 3", the ideas added so far, and one field to add the next.
+.gift-field {
+  border: 0;
+  display: flex;
+  flex-direction: column;
+
+  // Room between the title, the ideas and the field: its floating label needs it above.
+  gap: var(--org-space-md);
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+.gift-field__title {
+  align-items: baseline;
+  color: var(--org-on-surface);
+  display: flex;
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  gap: var(--org-space-sm);
+  margin: 0;
+
+  // A legend sits outside the fieldset's flex gap, so it needs its own room below.
+  padding: 0 0 var(--org-space-sm);
+}
+
+.gift-field__count {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-regular);
+}
+
+.gift-field__hint {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+.gift-field__items {
+  @include gift.list;
+}
+
+// One idea: its text, a pencil and a quiet ✕ to take it out.
+.gift-field__item {
+  @include gift.item;
+}
+
+// Tapping the text edits the idea.
+.gift-field__text {
+  @include gift.text;
+
+  cursor: text;
+}
+
+.gift-field__editing {
+  list-style: none;
+}
+
+// The next idea: a compact field and, beside it, the lilac + that adds it.
+.gift-field__add {
+  align-items: flex-start;
+  display: flex;
+  gap: var(--org-space-sm);
+
+  // The field's floating label sits above its border: a little more room for it.
+  margin-block-start: var(--org-space-2xs);
+}
+
+.gift-field__new {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+// Compact fields here (the new idea and the one being edited): a short list, not a form.
+:host ::ng-deep .gift-field__new,
+:host ::ng-deep .gift-field__edit {
+  @include mat.form-field-density(-3);
+}
+
+// Centered on the compact field's outline (the space below it is for hints).
+.gift-field__add-btn {
+  flex: none;
+  margin-block-start: -2px;
+}

@@ -9,6 +9,16 @@
 
   display: block;
   width: 100%;
+
+  // The hint and the counter ("0 / 300") share the line: the hint wraps, the counter never.
+  ::ng-deep .mat-mdc-form-field-hint-wrapper {
+    gap: var(--org-space-sm);
+  }
+
+  ::ng-deep .mat-mdc-form-field-hint-end {
+    flex: none;
+    white-space: nowrap;
+  }
 }
 
 .org-textarea-field__error {

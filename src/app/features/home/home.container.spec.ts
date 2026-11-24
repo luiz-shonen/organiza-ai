@@ -166,12 +166,12 @@ describe('HomeContainer', () => {
       );
     });
 
-    it('marks pending invitations and offers "Responder convite"', () => {
+    it('marks pending invitations; the envelope itself opens the invite', () => {
       const statuses = Array.from(element().querySelectorAll('[data-testid="event-status"]')).map(
         (badge) => badge.textContent?.trim(),
       );
       expect(statuses).toEqual(['Confirmado', 'Pendente']);
-      expect(element().querySelectorAll('[data-testid="answer-invite-btn"]')).toHaveLength(1);
+      expect(element().querySelectorAll('[data-testid="answer-invite-btn"]')).toHaveLength(0);
     });
 
     it('combines the filter chips, and "Todos" clears them', () => {
@@ -229,19 +229,6 @@ describe('HomeContainer', () => {
       expect(envelope?.textContent).toContain('Para Jéssica');
       expect(envelope?.querySelector('article')?.className).toContain('org-invite--');
       expect(envelope?.querySelector('a[data-testid="event-card-link"]')).not.toBeNull();
-    });
-
-    it('offers "Ver convite" on an answered invite instead of "Responder convite"', () => {
-      const confirmedCard = element().querySelectorAll('app-invite-envelope')[0];
-      expect(confirmedCard.querySelector('[data-testid="view-invite-btn"]')).not.toBeNull();
-      expect(confirmedCard.querySelector('[data-testid="answer-invite-btn"]')).toBeNull();
-    });
-
-    it('opens the event from "Responder convite"', () => {
-      (
-        element().querySelector('button[data-testid="answer-invite-btn"]') as HTMLButtonElement
-      ).click();
-      expect(router.navigate).toHaveBeenCalledWith(['/evento', 'evt-2']);
     });
 
     it('leaves the events the member organizes to "Meus eventos"', () => {

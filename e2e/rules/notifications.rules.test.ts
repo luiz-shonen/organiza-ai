@@ -92,4 +92,24 @@ describe('in-app notifications Firestore rules contract', () => {
     await assertFails(updateDoc(doc(guest, path), { title: 'Outro' }));
     await assertSucceeds(deleteDoc(doc(guest, path)));
   });
+
+  it('lets the member keep their own answered invite in the history, nobody else', async () => {
+    const record = {
+      kind: 'collaborator',
+      eventId: 'e',
+      eventTitle: 'Natal',
+      title: 'Você aceitou colaborar',
+      body: 'Natal · por Jéssica',
+      actionLabel: 'Ver evento',
+      actionUrl: '/evento/e',
+      createdAt: '2026-11-22T10:00:00.000Z',
+      readAt: '2026-11-22T10:00:00.000Z',
+    };
+    const own = 'users/guest-uid/notifications/collaborator_e';
+    await assertSucceeds(setDoc(doc(accountDb('guest-uid'), own), record));
+    await assertFails(setDoc(doc(accountDb('owner-uid'), own), record));
+    await assertFails(
+      setDoc(doc(accountDb('guest-uid'), own), { ...record, actionUrl: 'https://x.com' }),
+    );
+  });
 });

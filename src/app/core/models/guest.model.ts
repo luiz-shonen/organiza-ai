@@ -1,3 +1,5 @@
+import type { FamilyRelationship } from './family.model';
+
 export interface GuestCompanion {
   name: string;
 }
@@ -11,6 +13,8 @@ export interface Guest {
   isConfirmed: boolean;
   confirmedAt: string;
   primaryGuestId?: string;
+  /** A relative's kinship to the guest who confirmed them ("Filho(a)", "Pet"). */
+  relationship?: FamilyRelationship;
   uid?: string;
   /**
    * False while an event that asks for approval waits for the owner ("Aguardando aprovação").

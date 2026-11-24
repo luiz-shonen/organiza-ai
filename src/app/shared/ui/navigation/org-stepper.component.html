@@ -1,3 +1,26 @@
+<!--
+  Compact on a phone: "Etapa 2 de 5", the step's whole name and one bar per step (tap one to go
+  back to it), instead of numbered dots whose current name had to be cut short.
+-->
+@if (compact()) {
+  <div class="org-stepper__phone" data-testid="stepper-phone">
+    <p class="org-stepper__count">Etapa {{ selectedIndex() + 1 }} de {{ steps().length }}</p>
+    <p class="org-stepper__name" aria-live="polite">{{ currentLabel() }}</p>
+    <div class="org-stepper__bars">
+      @for (step of steps(); track step.label(); let i = $index) {
+        <button
+          type="button"
+          class="org-stepper__bar"
+          [class.org-stepper__bar--done]="i < selectedIndex()"
+          [class.org-stepper__bar--current]="i === selectedIndex()"
+          [attr.aria-label]="'Etapa ' + (i + 1) + ': ' + step.label()"
+          [attr.aria-current]="i === selectedIndex() ? 'step' : null"
+          (click)="select(i)"
+        ></button>
+      }
+    </div>
+  </div>
+}
 <mat-stepper
   class="org-stepper"
   [class.org-stepper--compact]="compact()"
@@ -6,6 +29,7 @@
   [orientation]="orientation()"
   [selectedIndex]="selectedIndex()"
   (selectionChange)="updateSelection($event.selectedIndex)"
+  (animationDone)="focusFirstField()"
 >
   <!-- Finished steps show a check, whether or not they can be reopened. -->
   <ng-template matStepperIcon="edit">

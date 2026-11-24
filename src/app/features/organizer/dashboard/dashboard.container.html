@@ -17,19 +17,50 @@
         <app-next-event-banner [event]="event" />
       }
 
-      <h2 class="dashboard__list-title" id="dashboard-list-title">
-        {{ listTitle() }}
-        <span class="dashboard__list-count" data-testid="dashboard-list-count">{{
-          cards().length
-        }}</span>
-      </h2>
+      <div class="dashboard__list-head">
+        <h2 class="dashboard__list-title" id="dashboard-list-title">
+          {{ listTitle() }}
+          <span class="dashboard__list-count" data-testid="dashboard-list-count">{{
+            cards().length
+          }}</span>
+        </h2>
+      </div>
 
-      <org-filter-bar
-        ariaLabel="Filtros de status dos eventos"
-        [options]="filters"
-        [values]="activeFilters()"
-        (valuesChange)="setFilters($event)"
-      />
+      <!--
+        The status chips, then (for someone who collaborates) "Organizo" and "Colaboro" after a
+        fine rule, all in one row that scrolls on a phone; at the right the date order.
+      -->
+      <div class="dashboard__filters">
+        <div class="dashboard__chips">
+          <org-filter-bar
+            ariaLabel="Filtros de status dos eventos"
+            [options]="filters"
+            [values]="activeFilters()"
+            (valuesChange)="setFilters($event)"
+          />
+          @if (showRoleFilter()) {
+            <span class="dashboard__chips-rule" aria-hidden="true"></span>
+            <org-filter-bar
+              ariaLabel="Eventos que você organiza ou em que colabora"
+              [options]="roleOptions"
+              [values]="roleFilters()"
+              (valuesChange)="setRoleFilters($event)"
+            />
+          }
+        </div>
+        <org-icon-button
+          variant="chip"
+          testId="date-order-btn"
+          [icon]="dateOrder() === 'oldest' ? 'arrow_upward' : 'arrow_downward'"
+          [ariaLabel]="
+            dateOrder() === 'oldest'
+              ? 'Mais antigos primeiro. Mostrar os mais recentes primeiro'
+              : 'Mais recentes primeiro. Mostrar os mais antigos primeiro'
+          "
+          [tooltip]="dateOrder() === 'oldest' ? 'Mais antigos primeiro' : 'Mais recentes primeiro'"
+          (pressed)="toggleDateOrder()"
+        />
+      </div>
 
       @if (cards().length === 0) {
         <org-empty-state
@@ -48,6 +79,7 @@
               testId="organizer-event-card"
               [event]="card.event"
               [status]="card.status"
+              [role]="card.role"
               [link]="['/evento', card.event.id]"
             >
               @if (card.insight; as insight) {
@@ -73,24 +105,45 @@
                 </org-insight-card>
               }
 
-              @if (card.stats; as stats) {
+              <!--
+                Two separate blocks, each with one element at its root: the card projects a block
+                into [eventCardBody] only then (a comment or a nested @if there drops it).
+                No items: the guests are the only number, one plain line with nothing to open.
+              -->
+              @if (card.stats && card.stats.items === 0) {
+                <div
+                  eventCardBody
+                  class="dashboard__progress-line"
+                  data-testid="dashboard-progress-line"
+                >
+                  <span class="dashboard__progress-title">
+                    <org-icon name="group" color="var(--org-success)" />
+                    Convidados confirmados
+                  </span>
+                  <span class="dashboard__progress-count">{{ card.stats.guests }}</span>
+                </div>
+              }
+              @if (card.stats && card.stats.items > 0) {
                 <org-expansion-panel eventCardBody heading="Progresso" icon="group">
                   <span orgExpansionSummary>
-                    {{ stats.guests }} {{ stats.guests === 1 ? 'confirmado' : 'confirmados' }}
+                    {{ card.stats.guests }}
+                    {{ card.stats.guests === 1 ? 'confirmado' : 'confirmados' }}
                   </span>
                   <dl class="dashboard__stats">
                     <div class="dashboard__stat">
                       <dt>Convidados confirmados</dt>
-                      <dd>{{ stats.guests }}</dd>
+                      <dd>{{ card.stats.guests }}</dd>
                     </div>
-                    <div class="dashboard__stat">
+                    <div class="dashboard__stat" data-testid="dashboard-items-stat">
                       <dt>Itens completos</dt>
-                      <dd>{{ stats.completeItems }} de {{ stats.items }}</dd>
+                      <dd>{{ card.stats.completeItems }} de {{ card.stats.items }}</dd>
                     </div>
                     <org-progress
                       variant="success"
-                      [value]="stats.items ? (stats.completeItems / stats.items) * 100 : 0"
-                      [ariaLabel]="stats.completeItems + ' de ' + stats.items + ' itens completos'"
+                      [value]="(card.stats.completeItems / card.stats.items) * 100"
+                      [ariaLabel]="
+                        card.stats.completeItems + ' de ' + card.stats.items + ' itens completos'
+                      "
                     />
                   </dl>
                 </org-expansion-panel>

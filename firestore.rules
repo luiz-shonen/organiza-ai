@@ -65,7 +65,7 @@ service cloud.firestore {
     }
 
     function isRelationship(value) {
-      return value in ['spouse', 'child', 'parent', 'sibling', 'relative', 'other'];
+      return value in ['spouse', 'child', 'parent', 'sibling', 'relative', 'pet', 'other'];
     }
 
     // Amigo oculto: one document per secret link, written by the event owner when drawing.
@@ -116,6 +116,19 @@ service cloud.firestore {
       allow read, write: if isSuperAdmin() || (request.auth != null && request.auth.token.get('email', '') == email);
     }
 
+    // The name others see for an account, and nothing else: events show their organizer by
+    // `createdBy` through it. Anyone reads it; only the account writes it.
+    match /publicProfiles/{uid} {
+      allow read: if true;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+                            && request.auth.uid == uid
+                            && request.resource.data.keys().hasOnly(['name', 'photoURL', 'updatedAt'])
+                            && isFilledText(request.resource.data.get('name', null), 120)
+                            && isOptionalString(request.resource.data.get('photoURL', null), 2048)
+                            && isOptionalString(request.resource.data.get('updatedAt', null), 40);
+    }
+
     match /users/{uid} {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid && isValidUser();
@@ -148,8 +161,27 @@ service cloud.firestore {
         allow read, delete: if request.auth != null && request.auth.uid == uid;
         allow update: if (request.auth != null && request.auth.uid == uid
                           && changedKeys().hasOnly(['readAt']))
-                      || isSecretSantaNotice();
-        allow create: if isSecretSantaNotice();
+                      || isSecretSantaNotice()
+                      || isOwnCollaboratorRecord();
+        allow create: if isSecretSantaNotice() || isOwnCollaboratorRecord();
+
+        // The member's own line in their history: an invite to help organise they answered.
+        function isOwnCollaboratorRecord() {
+          let data = request.resource.data;
+          return request.auth != null
+              && request.auth.uid == uid
+              && data.keys().hasOnly(['kind', 'eventId', 'eventTitle', 'title', 'body',
+                                      'actionLabel', 'actionUrl', 'createdAt', 'readAt'])
+              && data.get('kind', '') == 'collaborator'
+              && data.get('eventId', '') is string
+              && notificationId == 'collaborator_' + data.get('eventId', '')
+              && isOptionalString(data.get('eventTitle', null), 200)
+              && isFilledText(data.get('title', null), 200)
+              && isFilledText(data.get('body', null), 500)
+              && isFilledText(data.get('actionLabel', null), 60)
+              && data.get('actionUrl', '') == '/evento/' + data.get('eventId', '')
+              && data.get('createdAt', null) is string;
+        }
 
         function isSecretSantaNotice() {
           let data = request.resource.data;
@@ -215,8 +247,18 @@ service cloud.firestore {
       allow update: if isValidEvent()
                     && (isAdmin()
                         || (ownsEvent(resource.data) && !changes('createdBy'))
-                        || isJoiningByInvitation());
+                        || isJoiningByInvitation()
+                        || isLeavingCollaboration());
       allow delete: if isAdmin() || ownsEvent(resource.data);
+
+      // "Sair da colaboração": a collaborator removes only their own uid, nothing else.
+      function isLeavingCollaboration() {
+        return isAccountHolder()
+            && request.auth.uid in resource.data.get('collaborators', [])
+            && changedKeys().hasOnly(['collaborators', 'updatedAt'])
+            && request.resource.data.get('collaborators', []).toSet()
+                 == resource.data.get('collaborators', []).toSet().difference([request.auth.uid].toSet());
+      }
 
       // claimPendingInvitations: the invited account adds only its own uid, while the
       // invitation for its e-mail still exists (the same batch deletes it).
@@ -236,17 +278,57 @@ service cloud.firestore {
         return (!changes('title') || isFilledText(data.get('title', null), 200))
             && (!changes('category') || isOptionalString(data.get('category', null), 60))
             && (!changes('description') || isOptionalString(data.get('description', null), 2000))
+            && (!changes('endDate') || data.get('endDate', null) == null
+                || (data.endDate is string && data.endDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77))
+            && (!changes('pixPurpose') || isOptionalString(data.get('pixPurpose', null), 300))
+            && (!changes('secretSantaRules') || isOptionalString(data.get('secretSantaRules', null), 500))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
-            && (!changes('requireApproval') || data.get('requireApproval', null) is bool);
+            && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
+            && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)))
+            && (!changes('mapLocation') || isMapLocation(data.get('mapLocation', null)));
+      }
+
+      // CEP, street, number, neighbourhood and city, plus the optional complement ("Km 12")
+      // and "Como chegar" directions typed for places a map does not find well.
+      function isAddressDetails(value) {
+        return value is map
+            && value.keys().hasOnly(['cep', 'address', 'number', 'neighborhood', 'city',
+                                     'complement', 'directions'])
+            && isOptionalString(value.get('cep', null), 9)
+            && isOptionalString(value.get('address', null), 200)
+            && isOptionalString(value.get('number', null), 7)
+            && isOptionalString(value.get('neighborhood', null), 120)
+            && isOptionalString(value.get('city', null), 120)
+            && isOptionalString(value.get('complement', null), 80)
+            && isOptionalString(value.get('directions', null), 300);
+      }
+
+      // "Localização no mapa": a pin (latitude, longitude and the place name) or a link, and
+      // only to Google Maps or Waze, so the invite never sends guests to another site.
+      function isMapLocation(value) {
+        return value == null
+            || (value is map
+                && value.keys().hasOnly(['lat', 'lng', 'label'])
+                && value.get('lat', null) is number && value.lat >= -90 && value.lat <= 90
+                && value.get('lng', null) is number && value.lng >= -180 && value.lng <= 180
+                && isOptionalString(value.get('label', null), 80))
+            || (value is map
+                && value.keys().hasOnly(['url'])
+                && value.get('url', null) is string
+                && value.url.size() <= 500
+                && value.url.matches('https://(maps[.]app[.]goo[.]gl/|goo[.]gl/maps/|(www[.])?google[.]com([.]br)?/maps[/?]|maps[.]google[.]com([.]br)?/|(www[.]|ul[.])?waze[.]com/)[^ <>"]*'));
       }
 
       // "Vai ter amigo oculto?", "Incluir opções de presente", how many per person (1 to 10) and
       // whether guests may still join from the invite (`selfJoin`, missing means open).
       function isSecretSantaSettings(value) {
         return value is map
-            && value.keys().hasOnly(['enabled', 'giftOptions', 'maxGiftOptions', 'selfJoin'])
+            && value.keys().hasOnly(['enabled', 'giftOptions', 'maxGiftOptions', 'selfJoin', 'drawDate', 'drawnAt'])
+            && (!('drawDate' in value)
+                || (value.drawDate is string && value.drawDate.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')))
+            && isOptionalString(value.get('drawnAt', null), 40)
             && value.get('enabled', false) is bool
             && value.get('giftOptions', false) is bool
             && value.get('selfJoin', true) is bool
@@ -258,18 +340,42 @@ service cloud.firestore {
 
       // Amigo oculto participants: names and phones, so only the owner and collaborators read
       // the list. A guest also writes, reads and removes the entries they joined from the invite
-      // (`rsvp_{uid}…`: themself, relatives and companions), while sign-ups are open.
+      // (`rsvp_{uid}…`: themself, relatives and companions): joining while sign-ups are open,
+      // leaving at any time until the draw (or the day set for it).
       match /secretSantaParticipants/{participantId} {
         allow read, delete: if isAdmin() || managesEvent(eventData(eventId));
         allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
-                              && isValidSecretSantaParticipant();
+                              && isValidSecretSantaParticipant()
+                              && !changesGuestEntry();
         allow get: if isOwnRsvpEntry();
-        allow delete: if isOwnRsvpEntry() && isSelfJoinOpen();
+        allow delete: if isOwnRsvpEntry() && isBeforeDraw();
         allow create, update: if isOwnRsvpEntry()
                               && isSelfJoinOpen()
                               && isValidSecretSantaParticipant()
                               && request.resource.data.get('joinedBy', '') == request.auth.uid
                               && !changes('distinctFrom');
+
+        // An entry tied to a guest (joined from the invite, or a confirmed guest's) is theirs:
+        // organizers may take it out, tell it apart or link it ("Juntar"), never change it.
+        function changesGuestEntry() {
+          return resource != null
+              && (resource.data.get('joinedBy', '') != '' || resource.data.get('guestId', '') != '')
+              && !changedKeys().hasOnly(['distinctFrom', 'guestId'])
+              && !takesPhoneFromMerged();
+        }
+
+        // "Juntar", keeping the phone the organizer typed: only that phone, taken from the typed
+        // entry (`mergedFrom`) that leaves the list in the same batch.
+        function takesPhoneFromMerged() {
+          let from = request.resource.data.get('mergedFrom', '');
+          let typed = /databases/$(database)/documents/events/$(eventId)/secretSantaParticipants/$(from);
+          return changedKeys().hasOnly(['phone', 'mergedFrom', 'guestId'])
+              && from is string && from != '' && from != participantId
+              && exists(typed)
+              && !existsAfter(typed)
+              && get(typed).data.get('joinedBy', '') == ''
+              && get(typed).data.get('phone', '') == request.resource.data.get('phone', null);
+        }
 
         // A missing document passes, so the guest can check whether they joined.
         function isOwnRsvpEntry() {
@@ -278,20 +384,31 @@ service cloud.firestore {
               && (resource == null || resource.data.get('joinedBy', '') == request.auth.uid);
         }
 
-        // When the event asks for approval, only a guest the owner approved joins.
+        // Not drawn yet and the draw day (midnight in Brasília, 03:00 UTC) not come.
+        function isBeforeDraw() {
+          let settings = eventData(eventId).get('secretSanta', {});
+          let day = settings.get('drawDate', '');
+          return settings.get('enabled', false) == true
+              && !exists(/databases/$(database)/documents/events/$(eventId)/secretSanta/draw)
+              && (day == ''
+                  || request.time < timestamp.date(int(day[0:4]), int(day[5:7]), int(day[8:10]))
+                                      + duration.value(3, 'h'));
+        }
+
+        // When the event asks for approval, a guest who confirmed (waiting or approved) joins;
+        // the app counts the entry only once approved, and a refusal removes it.
         function isSelfJoinOpen() {
           let event = eventData(eventId);
           let settings = event.get('secretSanta', {});
-          return settings.get('enabled', false) == true
+          return isBeforeDraw()
               && settings.get('selfJoin', true) != false
               && (event.get('requireApproval', false) != true
-                  || get(/databases/$(database)/documents/events/$(eventId)/guests/$(request.auth.uid))
-                       .data.get('approved', true) == true);
+                  || exists(/databases/$(database)/documents/events/$(eventId)/guests/$(request.auth.uid)));
         }
 
         function isValidSecretSantaParticipant() {
           let data = request.resource.data;
-          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'guestId', 'joinedBy', 'distinctFrom', 'createdAt'])
+          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'guestId', 'joinedBy', 'distinctFrom', 'mergedFrom', 'createdAt'])
               && (resource != null || data.keys().hasAll(['name', 'phone', 'giftOptions']))
               && (!changes('name') || isFilledText(data.get('name', null), 120))
               && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
@@ -306,9 +423,82 @@ service cloud.firestore {
         }
       }
 
+      // The amigo oculto as guests see it: the same ids as the participants, only the name and
+      // the gift options (no phones). Any signed-in account reads it. Organizers write any entry;
+      // a guest writes only their own (`rsvp_{uid}…`), in the same batch as the participant entry.
+      match /secretSantaRoster/{participantId} {
+        allow read: if isAdmin() || isAccountHolder();
+        allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
+                              && isValidRosterEntry()
+                              && mirrorsGuestEntry();
+        allow delete: if isAdmin() || managesEvent(eventData(eventId));
+        allow create, update: if isOwnRosterEntry(true) && isValidRosterEntry();
+        allow delete: if isOwnRosterEntry(false);
+
+        // Writing: the participant entry exists after the batch and is this account's. Deleting:
+        // it is gone after the batch, or still this account's.
+        function isOwnRosterEntry(writing) {
+          let participant = /databases/$(database)/documents/events/$(eventId)/secretSantaParticipants/$(participantId);
+          return isAccountHolder()
+              && participantId.matches('rsvp_' + request.auth.uid + '(_.+)?')
+              && (existsAfter(participant)
+                    ? getAfter(participant).data.get('joinedBy', '') == request.auth.uid
+                    : !writing);
+        }
+
+        // An organizer's copy of a guest's entry carries that entry's own name and ideas.
+        function mirrorsGuestEntry() {
+          let participant = /databases/$(database)/documents/events/$(eventId)/secretSantaParticipants/$(participantId);
+          return !existsAfter(participant) || mirrors(getAfter(participant).data);
+        }
+
+        function mirrors(entry) {
+          return (entry.get('joinedBy', '') == '' && entry.get('guestId', '') == '')
+              || (request.resource.data.get('name', null) == entry.get('name', '')
+                  && request.resource.data.get('giftOptions', null) == entry.get('giftOptions', []));
+        }
+
+        function isValidRosterEntry() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['name', 'giftOptions', 'createdAt'])
+              && isFilledText(data.get('name', null), 120)
+              && data.get('giftOptions', null) is list && data.get('giftOptions', null).size() <= 10
+              && (!changes('createdAt') || isOptionalString(data.get('createdAt', null), 40));
+        }
+      }
+
       // The latest amigo oculto draw holds every secret link; only the owner sends them.
       match /secretSanta/{docId} {
-        allow read, write: if ownsEvent(eventData(eventId));
+        // Drawing (the first time or again) waits for the draw day chosen for the event, from
+        // midnight in Brasília (03:00 UTC); a new link for one person changes no drawnAt.
+        function isDrawDayReached() {
+          let day = eventData(eventId).get('secretSanta', {}).get('drawDate', '');
+          return day == ''
+              || request.time >= timestamp.date(int(day[0:4]), int(day[5:7]), int(day[8:10]))
+                                    + duration.value(3, 'h');
+        }
+
+        function drawsNow() {
+          return resource == null
+              || request.resource.data.get('drawnAt', null) != resource.data.get('drawnAt', null);
+        }
+
+        allow read, delete: if ownsEvent(eventData(eventId));
+        allow create, update: if ownsEvent(eventData(eventId))
+                              && (!drawsNow() || isDrawDayReached());
+      }
+
+      // Who each collaborator is (their e-mail), for the organizers' "Colaboradores" list: written
+      // by the collaborator themself, only while they are one, with their own sign-in e-mail.
+      match /collaborators/{uid} {
+        allow read: if isAdmin() || managesEvent(eventData(eventId));
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.keys().hasOnly(['email', 'updatedAt'])
+                              && request.resource.data.email == request.auth.token.get('email', '').lower()
+                              && isOptionalString(request.resource.data.get('updatedAt', null), 40)
+                              && uid in getAfter(/databases/$(database)/documents/events/$(eventId)).data.get('collaborators', []);
+        allow delete: if isAdmin() || ownsEvent(eventData(eventId)) || (request.auth != null && request.auth.uid == uid);
       }
 
       // Invitations subcollection: the owner invites, the invited user reads and claims
@@ -362,6 +552,8 @@ service cloud.firestore {
               && request.resource.data.primaryGuestId == request.auth.uid
               && isFilledText(request.resource.data.name, 120)
               && isPhoneOrEmpty(request.resource.data.get('phone', ''))
+              && (!('relationship' in request.resource.data)
+                  || isRelationship(request.resource.data.relationship))
               && request.resource.data.isConfirmed == true
               && request.resource.data.confirmedAt is string;
         }

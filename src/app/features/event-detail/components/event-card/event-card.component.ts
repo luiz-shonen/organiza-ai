@@ -1,23 +1,36 @@
-import { inviteTheme } from '../../../../core/utils';
+import { eventLastDay, formatDaySpan, inviteInitial, inviteTheme } from '../../../../core/utils';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { PartyEvent, getCategoryClass, getCategoryHue } from '../../../../core/models';
+import { getCategoryClass, getCategoryHue, PartyEvent } from '../../../../core/models';
+import { MapLocation } from '../../../../core/value-objects';
 import {
   OrgAvatarComponent,
   OrgBadgeComponent,
-  OrgBadgeVariant,
+  OrgBannerComponent,
+  type OrgBadgeVariant,
   OrgButtonComponent,
+  OrgIconButtonComponent,
   OrgIconComponent,
   OrgSurfaceComponent,
 } from '../../../../shared/ui';
+import {
+  InviteDividerComponent,
+  InvitePaperComponent,
+} from '../../../../shared/components/invite-paper/invite-paper.component';
+import { InviteLetterComponent } from '../../../../shared/components/invite-paper/invite-letter.component';
 
 /** Top of the event page: title card, date and place, and who organises it. */
 @Component({
   selector: 'app-event-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    OrgBannerComponent,
+    InviteDividerComponent,
+    InviteLetterComponent,
+    InvitePaperComponent,
     OrgAvatarComponent,
     OrgBadgeComponent,
     OrgButtonComponent,
+    OrgIconButtonComponent,
     OrgIconComponent,
     OrgSurfaceComponent,
   ],
@@ -25,6 +38,13 @@ import {
   styleUrl: './event-card.component.scss',
 })
 export class EventCardComponent {
+  /** The event's kind, as a tag beside its date: "Casamento", or what the organizer typed. */
+  protected readonly categoryLabel = computed(() => this.event().category?.trim() || 'Evento');
+  protected readonly categoryVariant = computed(
+    () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
+  );
+  protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
+
   public readonly event = input.required<PartyEvent>();
   public readonly guestCount = input<number>(0);
   /** The viewer created or helps organise the event: shows "Editar evento". */
@@ -33,50 +53,73 @@ export class EventCardComponent {
   /** Name of the person viewing; the organizer's avatar uses it when it is them. */
   public readonly viewerName = input<string | null>(null);
   public readonly edit = output<void>();
+  /** "Colaboradores": the owner manages who helps organise. */
+  public readonly collaborators = output<void>();
+  /** "Sair da colaboração": a collaborator stops helping organise. */
+  public readonly leaveCollaboration = output<void>();
 
-  protected readonly categoryName = computed(() => this.event().category || 'Evento');
   /** The colours and words of the invitation, from the category. */
   protected readonly theme = computed(() => inviteTheme(this.event().category));
-
-  /** "Quinta", "24", "Dez · 20:00": the date block of the invitation. */
+  /** The organizer's initial on the envelope's wax seal. */
+  protected readonly sealInitial = computed(() =>
+    inviteInitial(this.event().creatorName || this.event().title),
+  );
+  /**
+   * "Quinta", "24", "Dez · 20:00": the date block of the invitation. Over several days:
+   * "Quarta a sexta", "23–25", "Dez · 17:00" ("Dez–Jan" across months).
+   */
   protected readonly dateParts = computed(() => {
-    const date = new Date(this.event().date);
+    const { date: iso, endDate } = this.event();
+    const date = new Date(iso);
     if (isNaN(date.getTime())) return null;
-    const weekday = date.toLocaleDateString('pt-BR', { weekday: 'long' }).split('-')[0];
-    const month = date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '');
+    const last = eventLastDay(iso, endDate);
+    const weekdayOf = (day: Date) =>
+      day.toLocaleDateString('pt-BR', { weekday: 'long' }).split('-')[0];
+    const monthOf = (day: Date) =>
+      capital(day.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''));
     const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+    if (!last) {
+      return {
+        weekday: capital(weekdayOf(date)),
+        day: String(date.getDate()),
+        monthTime: `${monthOf(date)} · ${time}`,
+        isSpan: false,
+      };
+    }
+    const months =
+      monthOf(date) === monthOf(last) ? monthOf(date) : `${monthOf(date)}–${monthOf(last)}`;
     return {
-      weekday: capital(weekday),
-      day: String(date.getDate()),
-      monthTime: `${capital(month)} · ${time}`,
+      weekday: `${capital(weekdayOf(date))} a ${weekdayOf(last)}`,
+      day: `${date.getDate()}–${last.getDate()}`,
+      monthTime: `${months} · ${time}`,
+      isSpan: true,
     };
   });
 
-  protected readonly categoryHue = computed(() => getCategoryHue(this.event().category));
-  protected readonly categoryBadgeVariant = computed<OrgBadgeVariant>(
-    () => getCategoryClass(this.event().category).replace('cat-', '') as OrgBadgeVariant,
-  );
-
-  /** "Domingo, 23 de agosto · 20:00". */
+  /** "Domingo, 23 de agosto · 20:00"; over several days "De 23 a 25 de dezembro · 17:00". */
   protected readonly when = computed(() => {
-    const date = new Date(this.event().date);
+    const { date: iso, endDate } = this.event();
+    const date = new Date(iso);
     if (isNaN(date.getTime())) return '';
-    const day = date.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-    });
+    const span = formatDaySpan(iso, endDate);
+    const day = span
+      ? `De ${span}`
+      : capital(
+          date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }),
+        );
     const time = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return `${day.charAt(0).toUpperCase()}${day.slice(1)} · ${time}`;
+    return `${day} · ${time}`;
   });
 
-  /** Street on the first line, neighbourhood, city and CEP below it. */
+  /** Street, number and complement on the first line; neighbourhood, city and CEP below. */
   protected readonly address = computed(() => {
     const ev = this.event();
     const details = ev.addressDetails;
-    if (details?.address) {
-      const street = [details.address, details.number].filter(Boolean).join(', ');
+    // A rural CEP may give no street, only the city: the saved fields still win over the line.
+    if (details?.address || details?.city) {
+      const street = [details.address, details.number, details.complement]
+        .filter(Boolean)
+        .join(', ');
       const rest = [details.neighborhood, details.city, details.cep].filter(Boolean).join(' · ');
       return { street, rest };
     }
@@ -84,8 +127,10 @@ export class EventCardComponent {
     return { street, rest: rest.map((part) => part.replace('CEP: ', '')).join(' · ') };
   });
 
+  /** The pin or map link the organizer pasted, else a search for the address. */
   protected readonly mapsUrl = computed(
     () =>
+      MapLocation.fromData(this.event().mapLocation)?.href ??
       `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.event().location)}`,
   );
 
@@ -94,7 +139,7 @@ export class EventCardComponent {
     const { creatorName, creatorEmail } = this.event();
     return creatorName?.trim() || (creatorEmail ? creatorEmail.split('@')[0] : '');
   });
-  /** "Com carinho, Luiz": who signs the invitation (always the name, never "Você"). */
+  /** "Cordialmente, Luiz": who signs the invitation (always the name, never "Você"). */
   protected readonly signer = computed(() => this.creatorName());
 
   /** "Você" for the organizer; otherwise the organizer's name. */
@@ -109,9 +154,16 @@ export class EventCardComponent {
   protected readonly googleCalendarUrl = computed(() => {
     const ev = this.event();
     const dateStr = new Date(ev.date).toISOString().replace(/-|:|\.\d\d\d/g, '');
-    const endDateStr = new Date(new Date(ev.date).getTime() + 4 * 60 * 60 * 1000)
-      .toISOString()
-      .replace(/-|:|\.\d\d\d/g, '');
+    // One day: four hours. Several days: until the end of the last one.
+    const last = eventLastDay(ev.date, ev.endDate);
+    const end = last
+      ? new Date(last.getFullYear(), last.getMonth(), last.getDate(), 23, 59)
+      : new Date(new Date(ev.date).getTime() + 4 * 60 * 60 * 1000);
+    const endDateStr = end.toISOString().replace(/-|:|\.\d\d\d/g, '');
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(ev.title)}&dates=${dateStr}/${endDateStr}&details=${encodeURIComponent(ev.description)}&location=${encodeURIComponent(ev.location)}`;
   });
+}
+
+function capital(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }

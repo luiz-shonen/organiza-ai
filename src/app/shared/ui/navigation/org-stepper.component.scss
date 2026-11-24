@@ -1,6 +1,78 @@
+@use '../tokens/semantic' as semantic;
+
 :host {
   display: block;
   max-width: 100%;
+
+  // Scrolled back to on a step change: clear of the sticky top bar.
+  scroll-margin-top: calc(var(--org-header-height, 64px) + var(--org-space-md));
+}
+
+// The phone header ("Etapa 2 de 5", name, bars) replaces the dots below 600px.
+.org-stepper__phone {
+  display: none;
+  margin-block-end: var(--org-space-md);
+
+  @include semantic.mobile {
+    display: grid;
+    gap: var(--org-space-2xs);
+  }
+}
+
+.org-stepper__count {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  letter-spacing: var(--org-letter-spacing-wide);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.org-stepper__name {
+  color: var(--org-on-surface);
+  font: var(--org-font-weight-bold) var(--org-font-size-lg) / var(--org-line-height-tight)
+    var(--org-font-display);
+  margin: 0;
+}
+
+.org-stepper__bars {
+  display: flex;
+  gap: var(--org-space-xs);
+  margin-block-start: var(--org-space-xs);
+}
+
+// A 24px tall tap target with the 6px bar drawn in its middle.
+.org-stepper__bar {
+  background: none;
+  block-size: 24px;
+  border: 0;
+  cursor: pointer;
+  flex: 1;
+  padding: 0;
+  position: relative;
+
+  &::before {
+    background: var(--org-outline-variant);
+    block-size: 6px;
+    border-radius: var(--org-radius-full);
+    content: '';
+    inset-inline: 0;
+    position: absolute;
+    top: 9px;
+  }
+
+  &--done::before {
+    background: var(--org-primary-container);
+  }
+
+  &--current::before {
+    background: var(--org-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--org-primary);
+    outline-offset: 2px;
+  }
 }
 
 .org-stepper {
@@ -35,6 +107,11 @@
   &--compact ::ng-deep {
     .mat-horizontal-stepper-header-container {
       margin-bottom: var(--org-space-md);
+
+      // On a phone the header above says where the organizer is.
+      @include semantic.mobile {
+        display: none;
+      }
     }
 
     // A step without its name is a 48px circle with the dot in the middle, so the

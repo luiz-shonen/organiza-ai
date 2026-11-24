@@ -41,10 +41,71 @@ describe('EventCardComponent (Event Detail)', () => {
     );
   });
 
+  it('tags the kind of party beside the date, also a category the organizer typed', () => {
+    const tag = () =>
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="event-category"]');
+    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Sarau' });
+    fixture.detectChanges();
+    expect(tag()?.textContent).toContain('Sarau');
+    fixture.componentRef.setInput('event', { ...mockEvent, category: '' });
+    fixture.detectChanges();
+    expect(tag()?.textContent).toContain('Evento');
+  });
+
+  it('keeps the blank lines the organizer left in the description', () => {
+    const typed = 'Pela primeira vez nosso Natal será no sítio.\n\nChecklist: itens de cama.';
+    fixture.componentRef.setInput('event', { ...mockEvent, description: typed });
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.querySelector(
+      '[data-testid="invite-description"]',
+    ) as HTMLElement;
+    expect(text.textContent).toBe(typed);
+    expect(text.classList).toContain('invite-paper__text--typed');
+  });
+
+  it('opens the pin the organizer pasted instead of searching the address', () => {
+    const link = () =>
+      (fixture.nativeElement.querySelector('[data-testid="event-location"]') as HTMLAnchorElement)
+        .href;
+    expect(link()).toContain('google.com/maps/search/?api=1&query=');
+
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      mapLocation: { lat: -19.31, lng: -43.71, label: 'Sítio Boa Vista' },
+    });
+    fixture.detectChanges();
+    expect(link()).toBe('https://www.google.com/maps/search/?api=1&query=-19.31,-43.71');
+
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      mapLocation: { url: 'https://evil.com/x' },
+    });
+    fixture.detectChanges();
+    expect(link()).not.toContain('evil.com');
+  });
+
   it('links to Google Calendar with the event data', () => {
     const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
     expect(link.href).toContain('https://calendar.google.com');
     expect(link.href).toContain('Churrasco%20de%20Domingo');
+  });
+
+  it('shows the days of an event over several days, and adds them all to the calendar', () => {
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      date: new Date(2026, 11, 23, 17, 0).toISOString(),
+      endDate: '2026-12-25',
+    });
+    fixture.detectChanges();
+
+    const box = element().querySelector('.event-card__date-box') as HTMLElement;
+    expect(box.getAttribute('aria-label')).toBe('De 23 a 25 de dezembro · 17:00');
+    expect(box.textContent).toContain('23–25');
+    expect(box.textContent).toContain('Quarta a sexta');
+    const link = element().querySelector('.event-card__date-sub') as HTMLAnchorElement;
+    const end = new Date(2026, 11, 25, 23, 59).toISOString().replace(/-|:|\.\d\d\d/g, '');
+    expect(decodeURIComponent(link.href)).toContain(`/${end}`);
   });
 
   it('splits the address into street and the rest', () => {
@@ -53,14 +114,28 @@ describe('EventCardComponent (Event Detail)', () => {
     expect(text).toContain('Vista Alegre · Belo Horizonte/MG · 30514-160');
   });
 
-  it('shows the category, falling back to "Evento"', () => {
-    expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
-      'Evento',
-    );
-    fixture.componentRef.setInput('event', { ...mockEvent, category: 'Churrasco' });
+  it('shows a rural address with its complement, and how to get there', () => {
+    expect(element().querySelector('[data-testid="event-directions"]')).toBeNull();
+    fixture.componentRef.setInput('event', {
+      ...mockEvent,
+      location: 'Estrada da Serra, S/N - Jaboticatubas/MG - CEP: 35830-000',
+      addressDetails: {
+        cep: '35830-000',
+        address: 'Estrada da Serra',
+        number: 'S/N',
+        neighborhood: '',
+        city: 'Jaboticatubas/MG',
+        complement: 'Km 12',
+        directions: 'Depois da ponte, à direita.',
+      },
+    });
     fixture.detectChanges();
-    expect(element().querySelector('.event-card__category-badge')?.textContent?.trim()).toBe(
-      'Churrasco',
+
+    const text = element().querySelector('.event-card__location-text')?.textContent ?? '';
+    expect(text).toContain('Estrada da Serra, S/N, Km 12');
+    expect(text).toContain('Jaboticatubas/MG · 35830-000');
+    expect(element().querySelector('[data-testid="event-directions"]')?.textContent).toContain(
+      'Depois da ponte, à direita.',
     );
   });
 

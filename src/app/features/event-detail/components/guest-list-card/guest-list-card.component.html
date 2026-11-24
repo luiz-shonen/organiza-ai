@@ -2,17 +2,18 @@
   <section class="guest-list" aria-labelledby="guest-list-title">
     <org-card-header
       id="guest-list-title"
-      heading="Quem vai"
+      heading="Confirmados"
+      [count]="households().length ? people() : null"
       [subheading]="households().length ? summary() : 'Ninguém confirmou ainda.'"
     >
       @if (forOrganizer() && households().length) {
         <div class="guest-list__actions no-print" orgCardHeaderAction>
           <org-icon-button
             icon="download"
-            ariaLabel="Baixar a lista em Excel"
-            tooltip="Excel"
+            ariaLabel="Baixar a lista em PDF"
+            tooltip="Baixar PDF"
             [gradient]="false"
-            (pressed)="exportCsv.emit()"
+            (pressed)="download.emit()"
           />
           <org-icon-button
             icon="print"
@@ -75,66 +76,103 @@
     @if (households().length) {
       <ul class="guest-list__households" aria-label="Convidados confirmados">
         @for (household of households(); track household.id) {
-          <li data-testid="guest-household">
-            <org-expansion-panel
-              icon="how_to_reg"
-              [heading]="household.name"
-              [ariaLabel]="'Quem vai com ' + household.name"
-              [expanded]="$first || households().length <= 3"
-            >
-              <span orgExpansionSummary>{{ householdSummary(household) }}</span>
+          <li class="guest-list__household" data-testid="guest-household">
+            @if (hasDetails(household)) {
+              <org-expansion-panel
+                [plain]="true"
+                [prominent]="true"
+                heading=""
+                [ariaLabel]="'Quem vai com ' + household.name"
+                [expanded]="$first || households().length <= 3"
+              >
+                <org-avatar
+                  orgExpansionTitleLead
+                  class="guest-list__avatar"
+                  [name]="household.name"
+                  [photoUrl]="household.photoUrl ?? null"
+                />
+                <span orgExpansionTitleMeta class="guest-list__who">
+                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  @if (forOrganizer() && household.phone) {
+                    <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
+                  }
+                </span>
+                @if (householdSummary(household); as summary) {
+                  <span orgExpansionSummary class="guest-list__count">{{ summary }}</span>
+                }
 
-              @if (forOrganizer() && household.phone) {
-                <p class="guest-list__phone">{{ displayPhone(household.phone) }}</p>
-              }
+                @let holder = household.members[0];
+                <!-- What the guest brings; nothing at all when the event has no list. -->
+                @if (holder.bring.length || hasItems()) {
+                  <div class="guest-list__holder">
+                    @if (holder.bring.length) {
+                      <p class="guest-list__bring">Leva:</p>
+                      <ul
+                        class="guest-list__items"
+                        [attr.aria-label]="'O que ' + holder.name + ' leva'"
+                      >
+                        @for (line of holder.bring; track line) {
+                          <li>{{ line }}</li>
+                        }
+                      </ul>
+                    } @else if (hasItems()) {
+                      <p class="guest-list__bring">Não leva nada da lista</p>
+                    }
+                  </div>
+                }
 
-              @let holder = household.members[0];
-              <div class="guest-list__holder">
-                <span class="guest-list__role guest-list__role--host">Convidado(a)</span>
-                @if (holder.bring.length) {
-                  <p class="guest-list__bring">Leva:</p>
+                @if (household.members.length > 1) {
+                  <!-- Who comes through the guest: their family and companions ("Vão com Jéssica"). -->
                   <ul
-                    class="guest-list__items"
-                    [attr.aria-label]="'O que ' + holder.name + ' leva'"
+                    class="guest-list__people"
+                    [attr.aria-label]="'Quem vai com ' + household.name"
                   >
-                    @for (line of holder.bring; track line) {
-                      <li>{{ line }}</li>
+                    @for (person of household.members.slice(1); track $index) {
+                      <li class="guest-list__person">
+                        <org-avatar [name]="person.name" />
+                        <div class="guest-list__info">
+                          <p class="guest-list__name">
+                            {{ person.name }}
+                            <span class="guest-list__role">{{ person.role }}</span>
+                          </p>
+                          @if (person.bring.length) {
+                            <p class="guest-list__bring">Leva:</p>
+                            <ul
+                              class="guest-list__items"
+                              [attr.aria-label]="'O que ' + person.name + ' leva'"
+                            >
+                              @for (line of person.bring; track line) {
+                                <li>{{ line }}</li>
+                              }
+                            </ul>
+                          } @else if (hasItems()) {
+                            <p class="guest-list__bring">Não leva nada da lista</p>
+                          }
+                        </div>
+                      </li>
                     }
                   </ul>
-                } @else {
-                  <p class="guest-list__bring">Não leva nada da lista</p>
+                }
+              </org-expansion-panel>
+            } @else {
+              <!-- Nothing more to show: just the row, nothing to open. -->
+              <div class="guest-list__row">
+                <org-avatar
+                  class="guest-list__avatar"
+                  [name]="household.name"
+                  [photoUrl]="household.photoUrl ?? null"
+                />
+                <span class="guest-list__who">
+                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  @if (forOrganizer() && household.phone) {
+                    <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
+                  }
+                </span>
+                @if (householdSummary(household); as summary) {
+                  <span class="guest-list__count">{{ summary }}</span>
                 }
               </div>
-
-              @if (household.members.length > 1) {
-                <ul class="guest-list__people" [attr.aria-label]="'Quem vai com ' + household.name">
-                  @for (person of household.members.slice(1); track $index) {
-                    <li class="guest-list__person">
-                      <org-avatar [name]="person.name" />
-                      <div class="guest-list__info">
-                        <p class="guest-list__name">
-                          {{ person.name }}
-                          <span class="guest-list__role">{{ person.role }}</span>
-                        </p>
-                        @if (person.bring.length) {
-                          <p class="guest-list__bring">Leva:</p>
-                          <ul
-                            class="guest-list__items"
-                            [attr.aria-label]="'O que ' + person.name + ' leva'"
-                          >
-                            @for (line of person.bring; track line) {
-                              <li>{{ line }}</li>
-                            }
-                          </ul>
-                        } @else {
-                          <p class="guest-list__bring">Não leva nada da lista</p>
-                        }
-                      </div>
-                    </li>
-                  }
-                </ul>
-              }
-            </org-expansion-panel>
+            }
           </li>
         }
       </ul>
@@ -143,15 +181,23 @@
     @if (forOrganizer() && declines().length) {
       <section class="guest-list__declines" aria-labelledby="guest-list-declines-title">
         <h3 id="guest-list-declines-title" class="guest-list__declines-title">
-          Não poderão ir ({{ declines().length }})
+          Não poderão ir
+          <span class="guest-list__declines-count">{{ declines().length }}</span>
         </h3>
+        <!-- The same rows as the list above, quieter: the face, the name, their note if any. -->
         <ul class="guest-list__declines-list" data-testid="guests-declines">
           @for (decline of declines(); track decline.id) {
-            <li>
-              <span class="guest-list__name">{{ decline.name }}</span>
-              @if (decline.message) {
-                <p class="guest-list__message">“{{ decline.message }}”</p>
-              }
+            <li class="guest-list__decline">
+              <org-avatar
+                class="guest-list__avatar guest-list__decline-avatar"
+                [name]="decline.name"
+              />
+              <div class="guest-list__decline-text">
+                <span class="guest-list__decline-name">{{ decline.name }}</span>
+                @if (decline.message) {
+                  <p class="guest-list__message">“{{ decline.message }}”</p>
+                }
+              </div>
             </li>
           }
         </ul>

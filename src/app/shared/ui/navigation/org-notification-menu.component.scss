@@ -1,0 +1,140 @@
+// Not encapsulated: the menu opens in an overlay outside this component. Every rule is scoped
+// by the bell's own class names.
+org-notification-menu {
+  display: inline-flex;
+}
+
+// The bell, with the count of new ones on its corner.
+.org-notification-menu {
+  display: inline-flex;
+  position: relative;
+}
+
+.org-notification-menu__count {
+  align-items: center;
+  background: var(--org-attention-count-bg);
+  block-size: 18px;
+  border-radius: var(--org-radius-full);
+  color: var(--org-on-attention-count);
+  display: inline-flex;
+  font-size: var(--org-font-size-2xs);
+  font-weight: var(--org-font-weight-bold);
+  inset-block-start: 2px;
+  inset-inline-end: 0;
+  justify-content: center;
+  line-height: var(--org-line-height-none);
+  min-inline-size: 18px;
+  padding: 0 var(--org-space-2xs);
+  pointer-events: none;
+  position: absolute;
+}
+
+.org-notification-menu__panel.mat-mdc-menu-panel {
+  background: var(--org-surface);
+  border-radius: var(--org-radius-md);
+  box-shadow: var(--org-shadow-lg);
+  max-inline-size: min(340px, calc(100vw - 32px));
+  min-inline-size: 280px;
+  overflow: hidden;
+}
+
+.org-notification-menu__heading {
+  color: var(--org-on-surface);
+  font-family: var(--org-font-display);
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+  padding: var(--org-space-sm) var(--org-space-md);
+}
+
+.org-notification-menu__panel .org-notification-menu__item.mat-mdc-menu-item {
+  align-items: center;
+  color: var(--org-on-surface);
+  min-block-size: var(--org-space-2xl);
+  padding-block: var(--org-space-xs);
+
+  .mat-mdc-menu-item-text {
+    align-items: center;
+    display: flex;
+    gap: var(--org-space-sm);
+  }
+}
+
+.org-notification-menu__icon {
+  align-items: center;
+  background: var(--org-secondary-container);
+  block-size: 32px;
+  border-radius: var(--org-radius-sm);
+  color: var(--org-on-secondary-container);
+  display: inline-flex;
+  flex: none;
+  inline-size: 32px;
+  justify-content: center;
+}
+
+.org-notification-menu__avatar {
+  flex: none;
+}
+
+.org-notification-menu__text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.org-notification-menu__title {
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-semibold);
+}
+
+.org-notification-menu__body {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.org-notification-menu__empty {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+  padding: 0 var(--org-space-md) var(--org-space-md);
+}
+
+// A new one: a lilac dot before its title.
+.org-notification-menu__item--unread .org-notification-menu__title::before {
+  background: var(--org-primary);
+  block-size: 8px;
+  border-radius: var(--org-radius-full);
+  content: '';
+  display: inline-block;
+  inline-size: 8px;
+  margin-inline-end: var(--org-space-xs);
+  vertical-align: middle;
+}
+
+// The history: what was already opened, quieter, under "Anteriores".
+.org-notification-menu__group {
+  border-top: 1px solid var(--org-outline-variant);
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  letter-spacing: var(--org-letter-spacing-label);
+  margin: var(--org-space-xs) 0 0;
+  padding: var(--org-space-sm) var(--org-space-md) var(--org-space-2xs);
+  text-transform: uppercase;
+}
+
+.org-notification-menu__group--first {
+  border-top: 0;
+  margin-top: 0;
+}
+
+// Read and done with: quieter. An invite waiting for an answer never fades.
+.org-notification-menu__item:not(
+  .org-notification-menu__item--unread,
+  .org-notification-menu__item--pinned
+) {
+  opacity: 0.75;
+}

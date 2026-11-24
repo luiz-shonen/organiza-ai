@@ -64,7 +64,64 @@ const DEFAULT_SEASONAL_RULES: SeasonalThemeRule[] = [
     endDay: 2,
     keywords: ['ano novo', 'reveillon', 'réveillon', 'virada', '2025', '2026', '2027'],
   },
+  // One theme per kind of event (its category, or its title): never on by date.
+  {
+    id: 'aniversario',
+    name: 'Aniversário',
+    keywords: ['aniversário', 'aniversario', 'niver', 'parabéns', 'parabens'],
+  },
+  { id: 'casamento', name: 'Casamento', keywords: ['casamento', 'noivado', 'bodas', 'casório'] },
+  { id: 'churrasco', name: 'Churrasco', keywords: ['churrasco', 'churras', 'costelada'] },
+  { id: 'happy-hour', name: 'Happy Hour', keywords: ['happy hour', 'happy-hour', 'barzinho'] },
+  {
+    id: 'confraternizacao',
+    name: 'Confraternização',
+    keywords: ['confraternização', 'confraternizacao', 'confra'],
+  },
+  { id: 'formatura', name: 'Formatura', keywords: ['formatura', 'colação', 'colacao', 'formando'] },
+  {
+    id: 'cha-de-bebe',
+    name: 'Chá de bebê',
+    keywords: [
+      'chá de bebê',
+      'cha de bebe',
+      'chá de fralda',
+      'cha de fralda',
+      'chá revelação',
+      'cha revelacao',
+    ],
+  },
+  {
+    id: 'cha-de-panela',
+    name: 'Chá de panela',
+    keywords: ['chá de panela', 'cha de panela', 'chá de cozinha', 'cha de cozinha', 'chá bar'],
+  },
+  { id: 'batizado', name: 'Batizado', keywords: ['batizado', 'batismo'] },
+  {
+    id: 'reuniao-familia',
+    name: 'Reunião de família',
+    keywords: [
+      'reunião de família',
+      'reuniao de familia',
+      'encontro de família',
+      'encontro da família',
+    ],
+  },
 ];
+
+/** A rule with days of the year: on by itself in that season. */
+function isInSeason(rule: SeasonalThemeRule, month: number, day: number): boolean {
+  const { startMonth, startDay, endMonth, endDay } = rule;
+  if (startMonth == null || startDay == null || endMonth == null || endDay == null) return false;
+  if (startMonth <= endMonth) {
+    return (
+      (month > startMonth || (month === startMonth && day >= startDay)) &&
+      (month < endMonth || (month === endMonth && day <= endDay))
+    );
+  }
+  // Crosses the year (Dec 31 to Jan 2).
+  return (month === startMonth && day >= startDay) || (month === endMonth && day <= endDay);
+}
 
 @Injectable({
   providedIn: 'root',
@@ -92,20 +149,7 @@ export class SeasonalThemeService {
     const month = referenceDate.getMonth() + 1; // 1-12
     const day = referenceDate.getDate();
 
-    const matchedRule = this.rules().find((rule) => {
-      if (rule.startMonth <= rule.endMonth) {
-        return (
-          (month > rule.startMonth || (month === rule.startMonth && day >= rule.startDay)) &&
-          (month < rule.endMonth || (month === rule.endMonth && day <= rule.endDay))
-        );
-      } else {
-        // Crosses year boundary (e.g. Dec 31 -> Jan 2)
-        return (
-          (month === rule.startMonth && day >= rule.startDay) ||
-          (month === rule.endMonth && day <= rule.endDay)
-        );
-      }
-    });
+    const matchedRule = this.rules().find((rule) => isInSeason(rule, month, day));
 
     if (matchedRule) {
       this.activeThemeId.set(matchedRule.id);
@@ -168,19 +212,7 @@ export class SeasonalThemeService {
         const month = parsedDate.getMonth() + 1;
         const day = parsedDate.getDate();
 
-        const matchedDateRule = this.rules().find((rule) => {
-          if (rule.startMonth <= rule.endMonth) {
-            return (
-              (month > rule.startMonth || (month === rule.startMonth && day >= rule.startDay)) &&
-              (month < rule.endMonth || (month === rule.endMonth && day <= rule.endDay))
-            );
-          } else {
-            return (
-              (month === rule.startMonth && day >= rule.startDay) ||
-              (month === rule.endMonth && day <= rule.endDay)
-            );
-          }
-        });
+        const matchedDateRule = this.rules().find((rule) => isInSeason(rule, month, day));
 
         if (matchedDateRule) {
           this.activeThemeId.set(matchedDateRule.id);

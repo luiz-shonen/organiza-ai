@@ -38,7 +38,7 @@ describe('OrgConfirmDialogComponent', () => {
     expect(fixture.nativeElement.textContent).toContain('Voltar');
   });
 
-  it('marks a danger action with a red badge, a red confirm button and its own labels', async () => {
+  it('marks a danger action with a red confirm button, its icon and its own labels', async () => {
     await TestBed.configureTestingModule({
       imports: [OrgConfirmDialogComponent, MatDialogModule],
       providers: [
@@ -64,9 +64,9 @@ describe('OrgConfirmDialogComponent', () => {
     const dialog = element.querySelector('[data-testid="org-confirm-dialog"]') as HTMLElement;
     expect(dialog.classList.contains('org-confirm-dialog--danger')).toBe(true);
     expect(dialog.getAttribute('aria-labelledby')).toBe('org-confirm-dialog-title');
-    expect(element.querySelector('.org-confirm-dialog__badge')?.textContent).toContain('cancel');
     const submit = element.querySelector('[data-testid="org-confirm-submit"]') as HTMLElement;
     expect(submit.classList.contains('org-button__control--danger')).toBe(true);
+    expect(submit.textContent).toContain('cancel');
     expect(element.querySelector('[data-testid="org-confirm-cancel"]')?.textContent).toContain(
       'Manter evento',
     );

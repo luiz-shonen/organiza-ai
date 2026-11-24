@@ -1,12 +1,19 @@
 import type { EventClaims, Guest, PartyItem } from '../models';
 import { formatQuantity } from './item-progress.utils';
+import { getRelationshipLabel, isPet } from './relationship.utils';
 
-export type GuestRole = 'Convidado(a)' | 'Família' | 'Acompanhante';
+/**
+ * "Convidado(a)", "Acompanhante", or a relative's kinship ("Filho(a)", "Pet"); "Família"
+ * for relatives confirmed before the kinship was saved with them.
+ */
+export type GuestRole = string;
 
 /** One person going: the account holder, a relative or a companion, and what they bring. */
 export interface GuestPerson {
   name: string;
   role: GuestRole;
+  /** A pet of the family: listed, but not counted as a person. */
+  pet?: boolean;
   /** "2 kg de Carne" or "1 Bolo", one line per item. */
   bring: string[];
 }
@@ -16,12 +23,35 @@ export interface GuestHousehold {
   id: string;
   name: string;
   phone: string;
+  /** The account holder's photo (their Google account's, saved with the answer). */
+  photoUrl?: string | null;
   /** Companions and family members coming with the account holder. */
   people: string[];
   /** Everything the household brings, all people together. */
   bring: string[];
   /** The account holder first, then the family, then the companions. */
   members: GuestPerson[];
+  /** How many of the members are pets; missing means none. */
+  pets?: number;
+}
+
+/** People in a household, pets left out. */
+export function householdPeople(household: GuestHousehold): number {
+  return household.members.length - (household.pets ?? 0);
+}
+
+/** Everyone going and the pets, apart: "30 pessoas confirmadas · 2 pets". */
+export function countGuests(guests: readonly Guest[]): { people: number; pets: number } {
+  return guests.reduce(
+    (total, guest) =>
+      isPet(guest.relationship)
+        ? { ...total, pets: total.pets + 1 }
+        : {
+            ...total,
+            people: total.people + 1 + (guest.companions?.length ?? guest.companionsCount ?? 0),
+          },
+    { people: 0, pets: 0 },
+  );
 }
 
 function bringLine(item: PartyItem, quantity: number): string {
@@ -89,7 +119,8 @@ export function buildGuestHouseholds(
       const familyIds = familyGuests.map((member) => member.id.replace(`${uid}_`, ''));
       const family: GuestPerson[] = familyGuests.map((member, index) => ({
         name: member.name,
-        role: 'Família',
+        role: member.relationship ? getRelationshipLabel(member.relationship) : 'Família',
+        ...(isPet(member.relationship) ? { pet: true } : {}),
         bring: linesFor(byMember.get(familyIds[index]) ?? new Map(), itemsById),
       }));
       // A relative who brings something but is no longer on the guest list still shows.
@@ -118,9 +149,13 @@ export function buildGuestHouseholds(
         id: guest.id,
         name: guest.name,
         phone: guest.phone ?? '',
+        ...(guest.photoUrl ? { photoUrl: guest.photoUrl } : {}),
         people: [...family, ...companions].map((person) => person.name),
         bring: linesFor(allTotals, itemsById),
         members: [holder, ...family, ...companions],
+        ...(family.some((person) => person.pet)
+          ? { pets: family.filter((person) => person.pet).length }
+          : {}),
       };
     });
 }

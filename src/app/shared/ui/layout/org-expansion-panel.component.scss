@@ -38,6 +38,15 @@
   white-space: nowrap;
 }
 
+.org-expansion-panel__header--prominent {
+  --mat-expansion-header-collapsed-state-height: calc(var(--org-touch) + var(--org-space-sm));
+  --mat-expansion-header-expanded-state-height: calc(var(--org-touch) + var(--org-space-sm));
+
+  .org-expansion-panel__title {
+    font-size: var(--org-font-size-md);
+  }
+}
+
 .org-expansion-panel__heading {
   min-inline-size: 0;
   overflow: hidden;
@@ -59,4 +68,19 @@
   display: flex;
   flex-direction: column;
   gap: var(--org-space-md);
+}
+
+.org-expansion-panel--plain {
+  border: 0;
+  border-radius: 0;
+
+  // A little room on the right: flush against the edge, the panel's clipping cut the
+  // corner of the open/close arrow.
+  .org-expansion-panel__header {
+    padding: 0 var(--org-space-xs) 0 0;
+  }
+
+  ::ng-deep .mat-expansion-panel-body {
+    padding: 0 0 var(--org-space-md);
+  }
 }

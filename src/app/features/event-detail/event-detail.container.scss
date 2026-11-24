@@ -1,3 +1,44 @@
+// The guest's RSVP with the organizers' share panel beside it on a wide screen; stacked on a phone.
+.event-detail__top {
+  display: grid;
+  gap: var(--org-space-md);
+  grid-template-columns: minmax(0, 1fr);
+
+  &--pair {
+    @media (width >= 960px) {
+      grid-template-columns: minmax(0, 1fr) 380px;
+    }
+  }
+}
+
+// The RSVP card on top; under it, a festive scene fills the height the share panel leaves.
+.event-detail__lead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.event-detail__ornament {
+  display: none;
+
+  .event-detail__top--pair & {
+    @media (width >= 960px) {
+      display: block;
+      flex: 1 1 0;
+    }
+  }
+
+  // The owner's: a fixed strip the size the guest's usually gets, "Quem vai" under it.
+  &--banner {
+    .event-detail__top--pair & {
+      @media (width >= 960px) {
+        block-size: 220px;
+        flex: none;
+      }
+    }
+  }
+}
+
 .event-detail__stack,
 .event-detail__loading {
   display: flex;
@@ -36,4 +77,45 @@
   @page {
     margin: 1.5cm;
   }
+}
+
+// The share panel, and for the owner the amigo oculto under it, in one column.
+.event-detail__side {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+  min-inline-size: 0;
+}
+
+// On a phone both columns dissolve into one: the guest's answer, the share panel, "Quem vai",
+// then the amigo oculto.
+.event-detail__top--pair {
+  @media (width < 960px) {
+    .event-detail__lead,
+    .event-detail__side {
+      display: contents;
+    }
+
+    app-rsvp-card {
+      order: -2;
+    }
+
+    .event-detail__share {
+      order: -1;
+    }
+  }
+}
+
+// An invite to help organise: what it is, then Recusar / Aceitar.
+.event-detail__invite {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+.event-detail__invite-actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
 }

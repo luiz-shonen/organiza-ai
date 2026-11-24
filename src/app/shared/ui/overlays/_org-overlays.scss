@@ -71,6 +71,18 @@
   overflow: hidden auto;
 }
 
+// org-text-field suggestions: the name, then a quieter detail (the phone) under it.
+.org-text-field__suggestions .mat-mdc-option .mdc-list-item__primary-text {
+  display: grid;
+  gap: var(--org-space-2xs);
+  padding-block: var(--org-space-xs);
+}
+
+.org-text-field__suggestion-detail {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+}
+
 .mat-mdc-snack-bar-container.org-feedback-snackbar,
 .org-feedback-snackbar .mat-mdc-snack-bar-container {
   --mat-snack-bar-button-color: currentColor;

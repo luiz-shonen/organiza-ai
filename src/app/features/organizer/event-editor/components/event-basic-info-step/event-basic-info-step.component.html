@@ -63,14 +63,23 @@
         testId="event-description-input"
       />
 
-      <div class="event-step__row event-step__row--wide-narrow">
+      <div class="event-step__row event-step__row--dates">
         <org-date-field
-          label="Data do evento"
+          label="Data de início"
           [min]="minDate()"
           [required]="true"
           [error]="dateError()"
           formControlName="date"
           testId="event-date-input"
+        />
+
+        <org-date-field
+          label="Data de término (opcional)"
+          [hint]="basicInfoForm.controls.endDate.value ? '' : 'O evento será de um dia só.'"
+          [min]="basicInfoForm.controls.date.value || minDate()"
+          [error]="endDateError()"
+          formControlName="endDate"
+          testId="event-end-date-input"
         />
 
         <org-time-field
@@ -90,7 +99,7 @@
     <!-- Who may confirm: anyone with the link (default), or only after the owner approves. -->
     <div class="event-step__approval" data-testid="event-approval">
       <org-toggle
-        label="Aprovar quem confirma pelo link"
+        label="Exigir aprovação de presença"
         testId="event-approval-toggle"
         [disabled]="!canConfigureApproval()"
         [checked]="requireApproval()"
@@ -98,10 +107,11 @@
       />
       <p class="event-step__approval-hint">
         @if (requireApproval()) {
-          Cada confirmação fica esperando você aprovar antes de entrar na lista, no amigo oculto e
-          nos itens. Use se o link pode chegar a quem não foi convidado.
+          Você revisa cada pessoa que confirmar presença pelo convite e decide se aprova ou não. Só
+          quem você aprovar entra na lista do evento.
         } @else {
-          Qualquer pessoa com o link confirma presença na hora. Ligue para aprovar cada uma antes.
+          Quem abrir o convite e confirmar presença entra direto na lista, sem precisar da sua
+          aprovação.
         }
       </p>
     </div>

@@ -3,9 +3,9 @@ import type { SecretSantaParticipant } from '../models';
 import {
   buildRsvpSecretSantaEntries,
   findSecretSantaDuplicates,
+  isSecretSantaOpen,
   isSecretSantaSelfJoinOpen,
   normalizePersonName,
-  parseGiftLines,
   rsvpSecretSantaEntryId,
   secretSantaRsvpId,
 } from './secret-santa.utils';
@@ -131,7 +131,7 @@ describe('buildRsvpSecretSantaEntries', () => {
   });
 });
 
-describe('isSecretSantaSelfJoinOpen and parseGiftLines', () => {
+describe('isSecretSantaSelfJoinOpen', () => {
   it('is open unless the owner closed it', () => {
     expect(isSecretSantaSelfJoinOpen({ enabled: true })).toBe(true);
     expect(isSecretSantaSelfJoinOpen({ enabled: true, selfJoin: false })).toBe(false);
@@ -139,7 +139,47 @@ describe('isSecretSantaSelfJoinOpen and parseGiftLines', () => {
     expect(isSecretSantaSelfJoinOpen(null)).toBe(false);
   });
 
-  it('reads one option per line, up to the limit', () => {
-    expect(parseGiftLines(' Livro \r\n\nMeia\nCaneca', 2)).toEqual(['Livro', 'Meia']);
+  it('closes, for joining and leaving, once drawn or when the draw day starts in Brasília', () => {
+    const settings = { enabled: true, drawDate: '2026-12-20' };
+    expect(isSecretSantaOpen(settings, new Date('2026-12-20T02:59:00Z'))).toBe(true);
+    expect(isSecretSantaOpen(settings, new Date('2026-12-20T03:00:00Z'))).toBe(false);
+    expect(isSecretSantaOpen({ enabled: true, drawnAt: '2026-12-01T10:00:00Z' })).toBe(false);
+    // Closing the sign-ups stops joining, not leaving.
+    expect(isSecretSantaOpen({ enabled: true, selfJoin: false })).toBe(true);
+    expect(isSecretSantaSelfJoinOpen({ enabled: true, selfJoin: false })).toBe(false);
+  });
+});
+
+describe('buildRsvpSecretSantaEntries: whose WhatsApp each link goes to', () => {
+  const build = (phones?: Record<string, string>) =>
+    buildRsvpSecretSantaEntries({
+      uid: 'u1',
+      name: 'Maria',
+      phone: '(11) 99999-8888',
+      familyMembers: [
+        { id: 'ana', name: 'Ana', phone: '(11) 97777-1111' },
+        { id: 'vo', name: 'Vó Lurdes' },
+      ],
+      companions: ['Romero'],
+      choice: { self: [], 'f:ana': [], 'f:vo': [], 'c:Romero': [] },
+      phones,
+    }).map((entry) => [entry.input.name, entry.input.phone]);
+
+  it('uses the number typed in the invite first, then the family profile, then the guest', () => {
+    expect(build({ 'f:vo': '11966665555', 'c:Romero': '(21) 98888-0000' })).toEqual([
+      ['Maria', '(11) 99999-8888'],
+      ['Ana', '(11) 97777-1111'],
+      ['Vó Lurdes', '(11) 96666-5555'],
+      ['Romero', '(21) 98888-0000'],
+    ]);
+  });
+
+  it('sends the link to the guest when nobody typed a number', () => {
+    expect(build()).toEqual([
+      ['Maria', '(11) 99999-8888'],
+      ['Ana', '(11) 97777-1111'],
+      ['Vó Lurdes', '(11) 99999-8888'],
+      ['Romero', '(11) 99999-8888'],
+    ]);
   });
 });

@@ -1,43 +1,51 @@
 <div class="event-card">
-  <!-- The invitation itself, on paper in the colours of the category (see inviteTheme). -->
-  <div [class]="theme().className">
-    <header class="event-card__hero" data-testid="event-invitation">
-      <div class="event-card__paper">
-        <org-badge
-          class="event-card__category-badge"
-          [label]="categoryName()"
-          [variant]="categoryBadgeVariant()"
-          [hue]="categoryHue()"
-          [gradient]="false"
-        />
-        <p class="event-card__greeting">{{ theme().greeting }}</p>
-        <p class="event-card__lead">{{ theme().lead }}</p>
-        <h1 class="event-card__title">{{ event().title }}</h1>
-        <p class="event-card__ornament" aria-hidden="true">{{ theme().ornament }}</p>
-        @if (dateParts(); as date) {
-          <p class="event-card__date-box" [attr.aria-label]="when()">
-            <span class="event-card__date-side" aria-hidden="true">{{ date.weekday }}</span>
-            <span class="event-card__date-day" aria-hidden="true">{{ date.day }}</span>
-            <span class="event-card__date-side" aria-hidden="true">{{ date.monthTime }}</span>
-          </p>
-        }
-        @if (event().description) {
-          <p class="event-card__description">{{ event().description }}</p>
-        }
-        @if (event().status === 'cancelled') {
-          <org-badge label="Evento cancelado" variant="danger" [gradient]="false" />
-        }
-        @if (signer()) {
-          <p class="event-card__signature" data-testid="event-invitation-signature">
-            Com carinho, {{ signer() }}
-          </p>
-        }
-      </div>
-    </header>
-  </div>
+  <!--
+    The invitation itself, on paper in the colours of the category (see inviteTheme), light or
+    dark with the app. Each time it opens it arrives in its envelope: the seal breaks, the flap
+    opens, the letter rises out, then its frame is drawn and the words come in.
+  -->
+  <app-invite-letter [themeClass]="theme().className" [initial]="sealInitial()">
+    <app-invite-paper
+      class="event-card__hero"
+      data-testid="event-invitation"
+      [themeClass]="theme().className"
+    >
+      <p class="invite-paper__greeting event-card__greeting">{{ theme().greeting }}</p>
+      <p class="invite-paper__lead">{{ theme().lead }}</p>
+      <h1 class="invite-paper__title event-card__title">{{ event().title }}</h1>
+      <app-invite-divider [motif]="theme().ornament" />
+      @if (dateParts(); as date) {
+        <p class="invite-paper__rise event-card__date-box" [attr.aria-label]="when()">
+          <span class="event-card__date-side" aria-hidden="true">{{ date.weekday }}</span>
+          <span
+            class="event-card__date-day"
+            [class.event-card__date-day--span]="date.isSpan"
+            aria-hidden="true"
+            >{{ date.day }}</span
+          >
+          <span class="event-card__date-side" aria-hidden="true">{{ date.monthTime }}</span>
+        </p>
+      }
+      @if (event().description) {
+        <p
+          class="invite-paper__text invite-paper__text--typed"
+          data-testid="invite-description"
+          [textContent]="event().description"
+        ></p>
+      }
+      @if (event().status === 'cancelled') {
+        <org-badge label="Evento cancelado" variant="danger" [gradient]="false" />
+      }
+      @if (signer()) {
+        <p class="invite-paper__signature" data-testid="event-invitation-signature">
+          Cordialmente, {{ signer() }}
+        </p>
+      }
+    </app-invite-paper>
+  </app-invite-letter>
 
   <org-surface variant="card" class="event-card__details-card" [flush]="true">
-    <div class="event-card__row" data-testid="countdown-timer">
+    <div class="event-card__row event-card__row--when" data-testid="countdown-timer">
       <span class="event-card__row-icon">
         <org-icon name="calendar_today" color="currentColor" />
       </span>
@@ -51,6 +59,15 @@
           >Adicionar ao calendário</a
         >
       </div>
+      <!-- What kind of party this is, always: a typed category shows as typed. -->
+      <org-badge
+        class="event-card__kind"
+        data-testid="event-category"
+        [label]="categoryLabel()"
+        [variant]="categoryVariant()"
+        [hue]="categoryHue()"
+        [gradient]="false"
+      />
     </div>
 
     <a
@@ -70,30 +87,96 @@
         }
       </span>
     </a>
+    @if (event().addressDetails?.directions; as directions) {
+      <div class="event-card__row" data-testid="event-directions">
+        <span class="event-card__row-icon">
+          <org-icon name="directions" color="currentColor" />
+        </span>
+        <span class="event-card__row-text">
+          <span class="event-card__row-title">Como chegar</span>
+          <span class="event-card__row-sub event-card__directions">{{ directions }}</span>
+        </span>
+      </div>
+    }
   </org-surface>
+
+  <!-- A collaborator is told here too, as in the editor, what they can and cannot change. -->
+  @if (canEdit() && !isOwner()) {
+    <org-banner
+      variant="info"
+      icon="info"
+      role="status"
+      data-testid="collaborator-banner"
+      aria-label="Permissões de colaborador"
+      message="Modo colaborador: você pode gerenciar a lista de itens e ver os convidados. As informações principais só podem ser alteradas pelo organizador."
+    />
+  }
 
   <div class="event-card__host">
     <div class="event-card__host-info">
       <p class="event-card__host-label">Organizado por</p>
       <div class="event-card__host-person">
-        <org-avatar [name]="organizerAvatarName()" />
-        <div>
-          <p class="event-card__host-name">{{ organizerName() }}</p>
-          <p class="event-card__host-sub">
-            {{ isOwner() ? 'Você organiza este evento' : 'Organizador(a)' }}
-          </p>
-        </div>
+        <org-avatar [name]="organizerAvatarName()" [photoUrl]="event().creatorPhoto ?? null" />
+        <p class="event-card__host-name">{{ organizerName() }}</p>
       </div>
     </div>
     @if (canEdit()) {
-      <org-button
-        label="Editar evento"
-        icon="edit"
-        variant="secondary"
-        testId="edit-event-btn"
-        [compact]="true"
-        (pressed)="edit.emit()"
-      />
+      <!-- Labelled buttons on a wide screen; on a phone, icons with their name on hover. -->
+      <div class="event-card__host-actions event-card__host-actions--wide">
+        <!-- Only the owner invites or removes people who help organise. -->
+        @if (!isOwner()) {
+          <org-button
+            label="Sair da colaboração"
+            icon="logout"
+            variant="danger-text"
+            testId="leave-collaboration-btn"
+            [compact]="true"
+            [gradient]="false"
+            (pressed)="leaveCollaboration.emit()"
+          />
+        } @else {
+          <org-button
+            label="Colaboradores"
+            icon="group_add"
+            variant="secondary"
+            testId="collaborators-btn"
+            [compact]="true"
+            (pressed)="collaborators.emit()"
+          />
+        }
+        <org-button
+          label="Editar evento"
+          icon="edit"
+          variant="secondary"
+          testId="edit-event-btn"
+          [compact]="true"
+          (pressed)="edit.emit()"
+        />
+      </div>
+      <div class="event-card__host-actions event-card__host-actions--narrow">
+        @if (!isOwner()) {
+          <org-icon-button
+            icon="logout"
+            variant="danger"
+            ariaLabel="Sair da colaboração"
+            testId="leave-collaboration-icon"
+            (pressed)="leaveCollaboration.emit()"
+          />
+        } @else {
+          <org-icon-button
+            icon="group_add"
+            ariaLabel="Colaboradores"
+            testId="collaborators-icon"
+            (pressed)="collaborators.emit()"
+          />
+        }
+        <org-icon-button
+          icon="edit"
+          ariaLabel="Editar evento"
+          testId="edit-event-icon"
+          (pressed)="edit.emit()"
+        />
+      </div>
     }
   </div>
 </div>

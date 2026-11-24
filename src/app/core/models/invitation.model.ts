@@ -4,5 +4,8 @@ export interface EventInvitation {
   eventTitle: string;
   invitedEmail: string;
   invitedBy: string;
+  /** Who invites, as shown in the bell: their name and photo. */
+  invitedByName?: string;
+  invitedByPhoto?: string | null;
   createdAt: string;
 }

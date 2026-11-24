@@ -24,6 +24,28 @@
   }
 }
 
+// A fine double gold rule just inside the edge, like the frame of the letter inside.
+.invite-envelope__frame {
+  border: 1px solid var(--org-invite-line);
+  border-radius: var(--org-radius-md);
+  inset: 8px;
+  outline: 1px solid var(--org-invite-line);
+  outline-offset: -5px;
+  pointer-events: none;
+  position: absolute;
+}
+
+// The gilt edge of the flap: the same triangle, a little longer, in gold, behind it.
+.invite-envelope__flap-trim {
+  background: var(--org-invite-line);
+  block-size: 108px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  inset: 0 0 auto;
+  position: absolute;
+  transform-origin: top center;
+  transition: transform var(--org-motion-base) var(--org-motion-ease);
+}
+
 .invite-envelope__flap {
   background: var(--org-invite-flap);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
@@ -39,7 +61,7 @@
   background: var(--org-invite-seal);
   block-size: 52px;
   border-radius: var(--org-radius-full);
-  border: 3px solid color-mix(in srgb, var(--org-invite-on-seal) 22%, var(--org-invite-seal));
+  border: 3px solid var(--org-invite-line);
   box-shadow: var(--org-shadow-sm);
   color: var(--org-invite-on-seal);
   display: flex;
@@ -56,7 +78,8 @@
 
 .invite-envelope__front:hover,
 .invite-envelope__front:focus-visible {
-  .invite-envelope__flap {
+  .invite-envelope__flap,
+  .invite-envelope__flap-trim {
     transform: scaleY(0.9);
   }
 
@@ -72,33 +95,40 @@
   }
 }
 
-// "Para Jéssica", the title and the date, written on the envelope below the seal.
+// "Para Jéssica", the title and the date, written on the envelope below the seal and to the
+// right, as an address is, well inside the gold frame.
 .invite-envelope__address {
   display: grid;
   gap: var(--org-space-2xs);
-  padding: 140px var(--org-space-md) var(--org-space-sm);
+  justify-items: end;
+  padding: 140px var(--org-space-xl) var(--org-space-lg) 30%;
   position: relative;
+  text-align: end;
 }
 
+// The lettering of the invitations: "Para Jéssica" handwritten, the party's name engraved.
 .invite-envelope__to {
   color: var(--org-invite-ink);
-  font: var(--org-font-weight-semibold) var(--org-font-size-xs) / var(--org-line-height-tight)
-    var(--org-font-body);
-  letter-spacing: var(--org-letter-spacing-label);
-  text-transform: uppercase;
+  font: var(--org-font-weight-regular) var(--org-font-size-script-md) / var(--org-line-height-tight)
+    var(--org-font-script);
 }
 
 .invite-envelope__title {
   color: var(--org-invite-text);
-  font: var(--org-font-weight-semibold) var(--org-font-size-lg) / var(--org-line-height-snug)
-    var(--org-font-display);
+  font-family: var(--org-font-invite);
+  font-size: var(--org-font-size-2xl);
+  font-variant-numeric: lining-nums;
+  font-weight: var(--org-font-weight-bold);
+  line-height: var(--org-line-height-tight);
   margin: 0;
   overflow-wrap: anywhere;
 }
 
 .invite-envelope__when {
   color: var(--org-invite-muted);
-  font-size: var(--org-font-size-sm);
+  font-size: var(--org-font-size-xs);
+  letter-spacing: var(--org-letter-spacing-label);
+  text-transform: uppercase;
 }
 
 .invite-envelope__tags {

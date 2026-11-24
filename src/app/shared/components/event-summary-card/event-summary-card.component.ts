@@ -44,6 +44,8 @@ export class EventSummaryCardComponent {
     addressLines(this.event().location, this.event().addressDetails),
   );
   public readonly status = input<EventSummaryStatus | null>(null);
+  /** The viewer's part when it is not theirs: "Colaborador(a)". */
+  public readonly role = input<string | null>(null);
   public readonly testId = input('event-card');
   /** Route of the event page; the title becomes the link to it. */
   public readonly link = input<readonly string[] | null>(null);

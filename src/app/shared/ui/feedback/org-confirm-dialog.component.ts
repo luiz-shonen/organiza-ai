@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation, inject } from '@
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { OrgConfirmDialogData } from '../../../core/models';
 import { OrgButtonComponent } from '../actions/org-button.component';
-import { OrgIconComponent, type OrgIconName } from '../actions/org-icon.component';
+import type { OrgIconName } from '../actions/org-icon.component';
 
 export type { OrgConfirmDialogData };
 
@@ -13,7 +13,7 @@ export type { OrgConfirmDialogData };
 @Component({
   selector: 'org-confirm-dialog',
   standalone: true,
-  imports: [MatDialogModule, OrgButtonComponent, OrgIconComponent],
+  imports: [MatDialogModule, OrgButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: './org-confirm-dialog.component.html',
@@ -22,7 +22,7 @@ export type { OrgConfirmDialogData };
 export class OrgConfirmDialogComponent {
   public readonly data = inject<OrgConfirmDialogData>(MAT_DIALOG_DATA);
   private readonly dialogRef =
-    inject<MatDialogRef<OrgConfirmDialogComponent, boolean>>(MatDialogRef);
+    inject<MatDialogRef<OrgConfirmDialogComponent, boolean | 'extra'>>(MatDialogRef);
 
   protected readonly isDanger = this.data.tone === 'danger';
   protected readonly icon: OrgIconName =
@@ -33,5 +33,8 @@ export class OrgConfirmDialogComponent {
   }
   protected confirm(): void {
     this.dialogRef.close(true);
+  }
+  protected extra(): void {
+    this.dialogRef.close('extra');
   }
 }

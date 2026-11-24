@@ -57,6 +57,27 @@ describe('OrgAutocompleteFieldComponent', () => {
     expect(values()).toEqual(['parent', 'relative']);
   });
 
+  it('forgets the previous choice when the value is reset from outside', async () => {
+    const fixture = await createComponent();
+    const trigger = fixture.debugElement
+      .query(By.directive(MatAutocompleteTrigger))
+      .injector.get(MatAutocompleteTrigger);
+    trigger.openPanel();
+    fixture.detectChanges();
+
+    fixture.componentInstance['selectOption']('sibling');
+    fixture.detectChanges();
+    fixture.componentInstance.value.set('spouse');
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['filteredOptions']()).toHaveLength(OPTIONS.length);
+    expect((fixture.nativeElement.querySelector('input') as HTMLInputElement).value).toBe(
+      'Cônjuge',
+    );
+    const ticked = trigger.autocomplete.options.filter((option) => option.selected);
+    expect(ticked.map((option) => option.value)).toEqual(['spouse']);
+  });
+
   it('models the selected typed value and shows its label', async () => {
     const fixture = await createComponent();
     const onChange = vi.fn();

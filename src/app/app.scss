@@ -18,6 +18,12 @@
   height: 100%;
   width: 100%;
   background: transparent;
+
+  // Material's `hidden` still lets the browser scroll it sideways to show a focused field (the
+  // steps of the event editor sit beside each other), shifting the whole page on a phone.
+  &.mat-drawer-container {
+    overflow: clip;
+  }
 }
 
 .app-sidenav-drawer {

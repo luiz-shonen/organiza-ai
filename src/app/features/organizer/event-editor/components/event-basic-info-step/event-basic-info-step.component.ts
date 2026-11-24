@@ -138,8 +138,10 @@ export class EventBasicInfoStepComponent {
     return 'Para continuar, confira os campos marcados em vermelho.';
   }
 
+  /** The category is the owner's: locked for a collaborator, like the other fields here. */
   protected selectCategory(category: string): void {
     const control = this.form().controls.category;
+    if (control.disabled) return;
     control.setValue(category);
     control.markAsTouched();
     control.markAsDirty();
@@ -147,6 +149,7 @@ export class EventBasicInfoStepComponent {
 
   protected clearCategory(): void {
     const control = this.form().controls.category;
+    if (control.disabled) return;
     control.setValue('');
     control.markAsTouched();
     control.markAsDirty();

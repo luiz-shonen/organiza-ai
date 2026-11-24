@@ -33,6 +33,8 @@ export class OrgEditableChipComponent {
   /** Longer text is cut to this length when the edit is committed. */
   public readonly maxLength = input<number | null>(null);
   public readonly testId = input<string | null>(null);
+  /** Shown but locked: no typing, no pencil, no ✕ (a collaborator sees the owner's choice). */
+  public readonly disabled = input(false);
   /** The trimmed text when an edit is committed with something in it. */
   public readonly valueChange = output<string>();
   /** The ✕ was pressed. */
@@ -46,7 +48,7 @@ export class OrgEditableChipComponent {
 
   /** A first click on the empty chip opens it for typing, like a field would. */
   protected startOnClick(): void {
-    if (!this.hasValue()) this.chip()?._edit();
+    if (!this.disabled() && !this.hasValue()) this.chip()?._edit();
   }
 
   protected cancel(): void {
@@ -59,7 +61,7 @@ export class OrgEditableChipComponent {
     const max = this.maxLength();
     const trimmed = event.value.trim();
     const text = (max ? trimmed.slice(0, max) : trimmed).trim();
-    if (this.cancelled || !text || text === this.value()) {
+    if (this.disabled() || this.cancelled || !text || text === this.value()) {
       this.cancelled = false;
       return;
     }

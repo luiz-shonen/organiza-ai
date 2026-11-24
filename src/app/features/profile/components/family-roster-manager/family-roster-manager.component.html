@@ -28,13 +28,16 @@
           >
             <org-avatar [name]="member.name" />
             <div class="family-roster__item-info">
-              <span class="family-roster__item-name">{{ member.name }}</span>
-              <span class="family-roster__item-sub">
-                {{ getRelationshipLabel(member.relationship) }}
-                @if (member.phone) {
-                  · {{ displayPhone(member.phone) }}
-                }
+              <!-- The kinship as a tag beside the name, as in "Levar familiares?". -->
+              <span class="family-roster__item-name">
+                {{ member.name }}
+                <span class="family-roster__kinship" data-testid="family-member-kinship">{{
+                  getRelationshipLabel(member.relationship)
+                }}</span>
               </span>
+              @if (member.phone) {
+                <span class="family-roster__item-sub">{{ displayPhone(member.phone) }}</span>
+              }
             </div>
             <org-icon-button
               class="family-roster__edit-btn"

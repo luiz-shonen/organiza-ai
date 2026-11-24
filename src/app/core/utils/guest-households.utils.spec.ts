@@ -74,14 +74,14 @@ describe('kinship and pets', () => {
     { id: 'u1_f3', name: 'Rui', primaryGuestId: 'u1' },
   ] as Guest[];
 
-  it('shows each relative with their kinship, "Família" when it was not saved', () => {
+  it('marks family and companions, with the kinship of each relative when it was saved', () => {
     const [household] = buildGuestHouseholds(guests, [], []);
-    expect(household.members.map((member) => member.role)).toEqual([
-      'Convidado(a)',
-      'Pet',
-      'Filho(a)',
-      'Família',
-      'Acompanhante',
+    expect(household.members.map((member) => [member.role, member.kinship])).toEqual([
+      ['Convidado(a)', undefined],
+      ['Família', 'Pet'],
+      ['Família', 'Filho(a)'],
+      ['Família', undefined],
+      ['Acompanhante', undefined],
     ]);
     expect(household.pets).toBe(1);
     expect(householdPeople(household)).toBe(4);

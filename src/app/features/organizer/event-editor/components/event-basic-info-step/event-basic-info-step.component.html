@@ -31,6 +31,7 @@
               [label]="cat.name"
               [selectable]="true"
               [selected]="basicInfoForm.controls.category.value === cat.name"
+              [disabled]="basicInfoForm.controls.category.disabled"
               (selectionChange)="selectCategory(cat.name)"
             />
           }
@@ -41,6 +42,7 @@
             [value]="customCategory()"
             [selected]="!!customCategory()"
             [maxLength]="categoryMaxLength"
+            [disabled]="basicInfoForm.controls.category.disabled"
             (valueChange)="selectCategory($event)"
             (cleared)="clearCategory()"
           />

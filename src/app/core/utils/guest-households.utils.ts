@@ -2,16 +2,15 @@ import type { EventClaims, Guest, PartyItem } from '../models';
 import { formatQuantity } from './item-progress.utils';
 import { getRelationshipLabel, isPet } from './relationship.utils';
 
-/**
- * "Convidado(a)", "Acompanhante", or a relative's kinship ("Filho(a)", "Pet"); "Família"
- * for relatives confirmed before the kinship was saved with them.
- */
-export type GuestRole = string;
+/** Who the person is to the guest: themself, their family, or someone they bring along. */
+export type GuestRole = 'Convidado(a)' | 'Família' | 'Acompanhante';
 
 /** One person going: the account holder, a relative or a companion, and what they bring. */
 export interface GuestPerson {
   name: string;
   role: GuestRole;
+  /** A relative's kinship, as the tag beside the name ("Cônjuge", "Pet"); none for others. */
+  kinship?: string;
   /** A pet of the family: listed, but not counted as a person. */
   pet?: boolean;
   /** "2 kg de Carne" or "1 Bolo", one line per item. */
@@ -119,7 +118,8 @@ export function buildGuestHouseholds(
       const familyIds = familyGuests.map((member) => member.id.replace(`${uid}_`, ''));
       const family: GuestPerson[] = familyGuests.map((member, index) => ({
         name: member.name,
-        role: member.relationship ? getRelationshipLabel(member.relationship) : 'Família',
+        role: 'Família',
+        ...(member.relationship ? { kinship: getRelationshipLabel(member.relationship) } : {}),
         ...(isPet(member.relationship) ? { pet: true } : {}),
         bring: linesFor(byMember.get(familyIds[index]) ?? new Map(), itemsById),
       }));

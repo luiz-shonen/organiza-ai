@@ -106,8 +106,8 @@
   gap: var(--org-space-2xs);
 }
 
-// One row per person with them: avatar, name with their role, then what they bring.
-// The name line is as tall as the photo, so the two sit centred; "Leva:" goes below.
+// One row per person with them: avatar, the name with the kinship under it, then what they
+// bring. Name and kinship are as tall as the photo, so they sit centred; "Leva:" goes below.
 .guest-list__person {
   align-items: flex-start;
   display: flex;
@@ -122,9 +122,15 @@
   min-width: 0;
 }
 
+.guest-list__who-line {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-block-size: var(--org-icon-size-xl);
+}
+
 .guest-list__name {
   align-items: center;
-  min-block-size: var(--org-icon-size-xl);
   color: var(--org-on-surface);
   display: flex;
   flex-wrap: wrap;
@@ -132,12 +138,24 @@
   font-weight: var(--org-font-weight-semibold);
   gap: var(--org-space-xs);
   margin: 0;
+  overflow-wrap: anywhere;
+}
+
+// The kinship as a tag, the same as in "Levar familiares?" and on the profile.
+.guest-list__kinship {
+  background: var(--org-state-selected);
+  border-radius: var(--org-radius-xs);
+  color: var(--org-primary);
+  font-size: var(--org-font-size-xs);
+  font-weight: var(--org-font-weight-semibold);
+  padding: 1px 6px;
+  text-transform: uppercase;
 }
 
 .guest-list__role {
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-xs);
-  font-weight: var(--org-font-weight-medium);
+  margin: 0;
 }
 
 .guest-list__together {
@@ -299,8 +317,20 @@
   gap: var(--org-space-xs);
 }
 
-// "Expandir tudo": a quiet text button on the right, above the families.
+// Above the families: what opens when one is tapped, and "Expandir tudo" on the right.
 .guest-list__fold-all {
+  align-items: center;
   display: flex;
-  justify-content: flex-end;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+
+  // Clear of the line that opens the list below.
+  margin-block-end: var(--org-space-sm);
+}
+
+.guest-list__fold-hint {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  margin: 0;
+  min-inline-size: 0;
 }

@@ -248,6 +248,21 @@ describe('EventEditorContainer', () => {
       expect(component['pixForm'].disabled).toBe(true);
     });
 
+    it('locks the category chips for a collaborator, like the other fields', () => {
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+      const options = el.querySelectorAll('[data-testid="category-options"] mat-chip-option');
+      expect(options.length).toBeGreaterThan(0);
+      options.forEach((chip) =>
+        expect(chip.classList.contains('mat-mdc-chip-disabled')).toBe(true),
+      );
+      const custom = el.querySelector('[data-testid="custom-category-chip"]');
+      expect(custom?.querySelector('[matchipedit], button')).toBeNull();
+      const before = component['basicInfoForm'].controls.category.value;
+      (options[0] as HTMLElement).click();
+      expect(component['basicInfoForm'].controls.category.value).toBe(before);
+    });
+
     it('should prevent collaborator from saving main event details and display warning', async () => {
       await component['saveEvent']();
       expect(mockEventService.updateEvent).not.toHaveBeenCalled();

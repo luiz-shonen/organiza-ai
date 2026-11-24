@@ -92,8 +92,8 @@
             }
             @if (organizerTopRow()) {
               <ng-container [ngTemplateOutlet]="guestList" />
-              <!-- Once drawn, the links need room: the card moves under "Confirmados". -->
-              @if (showSecretSanta() && secretSantaDraw()) {
+              <!-- The amigo oculto under "Confirmados", with the column's full width. -->
+              @if (showSecretSanta()) {
                 <ng-container
                   [ngTemplateOutlet]="secretSantaCard"
                   [ngTemplateOutletContext]="{ $implicit: event }"
@@ -113,12 +113,6 @@
                 [eventEndDate]="event.endDate ?? null"
                 [eventLocation]="event.location"
               />
-              @if (showSecretSanta() && organizerTopRow() && !secretSantaDraw()) {
-                <ng-container
-                  [ngTemplateOutlet]="secretSantaCard"
-                  [ngTemplateOutletContext]="{ $implicit: event }"
-                />
-              }
             </div>
           }
         </div>
@@ -152,7 +146,7 @@
         <ng-container [ngTemplateOutlet]="guestList" />
       }
 
-      <!-- The owner has the amigo oculto up under the share panel; organizers otherwise here. -->
+      <!-- The owner has the amigo oculto up under "Confirmados"; organizers otherwise here. -->
       @if (showSecretSanta() && !organizerTopRow()) {
         <ng-container
           [ngTemplateOutlet]="secretSantaCard"
@@ -224,7 +218,7 @@
   />
 </ng-template>
 
-<!-- The amigo oculto for organizers: under the share panel for the owner, in the list otherwise. -->
+<!-- The amigo oculto for organizers: under "Confirmados" for the owner, in the list otherwise. -->
 <ng-template #secretSantaCard let-event>
   <app-secret-santa-card
     [participants]="secretSantaParticipants()"

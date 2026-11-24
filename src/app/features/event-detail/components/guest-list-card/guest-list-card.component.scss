@@ -33,6 +33,11 @@
   border-top: 1px solid var(--org-outline-variant);
 }
 
+// The people with a guest, one per line, as the families are.
+.guest-list__person + .guest-list__person {
+  border-top: 1px solid var(--org-outline-variant);
+}
+
 // Under "Expandir tudo", a line opens the families, as over the amigo oculto list, and at the
 // same distance: the button's own margin only, not the card's gap too.
 .guest-list__fold-all + .guest-list__households {
@@ -159,7 +164,7 @@
   text-transform: uppercase;
 }
 
-.guest-list__role {
+.guest-list__sub {
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-xs);
   margin: 0;

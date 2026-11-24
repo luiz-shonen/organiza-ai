@@ -48,7 +48,7 @@ describe('buildGuestHouseholds', () => {
             bring: ['1 kg de Carne', '2 L de Refrigerante'],
           },
           { name: 'Pedro', role: 'Família', bring: ['1 kg de Carne'] },
-          { name: 'Soraya', role: 'Acompanhante', bring: [] },
+          { name: 'Soraya', role: 'Acompanhante', kinship: 'Acompanhante', bring: [] },
         ],
       },
       {
@@ -59,7 +59,7 @@ describe('buildGuestHouseholds', () => {
         bring: ['1 Bolo'],
         members: [
           { name: 'Bia', role: 'Convidado(a)', bring: ['1 Bolo'] },
-          { name: '2 acompanhantes', role: 'Acompanhante', bring: [] },
+          { name: '2 acompanhantes', role: 'Acompanhante', kinship: 'Acompanhante', bring: [] },
         ],
       },
     ]);
@@ -81,7 +81,7 @@ describe('kinship and pets', () => {
       ['Família', 'Pet'],
       ['Família', 'Filho(a)'],
       ['Família', undefined],
-      ['Acompanhante', undefined],
+      ['Acompanhante', 'Acompanhante'],
     ]);
     expect(household.pets).toBe(1);
     expect(householdPeople(household)).toBe(4);

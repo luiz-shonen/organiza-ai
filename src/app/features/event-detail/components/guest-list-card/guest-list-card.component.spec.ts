@@ -56,7 +56,7 @@ describe('GuestListCardComponent', () => {
     );
   });
 
-  it('shows each person, their role and what they bring, without phones', async () => {
+  it('shows each person and what they bring, without phones', async () => {
     const element = await render(false);
     const text = element.textContent ?? '';
 
@@ -69,7 +69,8 @@ describe('GuestListCardComponent', () => {
       li.textContent?.trim(),
     );
     expect(lines).toEqual(['3 L de Sorvete', '2 garrafas de Refrigerante']);
-    expect(text).toContain('Família');
+    // No "Família" caption under the name: a relative carries their kinship tag instead.
+    expect(text).not.toContain('Família');
     expect(text).toContain('Não leva nada da lista');
     // Family and companions are listed under the guest, without a heading or "Convidado(a)".
     expect(text).not.toContain('Vão com');
@@ -146,5 +147,46 @@ describe('GuestListCardComponent', () => {
     fixture.detectChanges();
     expect(panels().every((open) => open)).toBe(true);
     expect(button().textContent).toContain('Recolher tudo');
+  });
+
+  it('shows a relative\'s phone under the name to organizers only, with no "Família" caption', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const withPhone: GuestHousehold[] = [
+      {
+        ...households[0],
+        members: [
+          households[0].members[0],
+          {
+            name: 'Luiz Rodrigues',
+            role: 'Família',
+            kinship: 'Cônjuge',
+            phone: '(31) 99267-7624',
+            bring: [],
+          },
+        ],
+      },
+    ];
+    const show = (forOrganizer: boolean) => {
+      const fixture = TestBed.createComponent(GuestListCardComponent);
+      fixture.componentRef.setInput('households', withPhone);
+      fixture.componentRef.setInput('forOrganizer', forOrganizer);
+      fixture.detectChanges();
+      (
+        fixture.nativeElement.querySelector(
+          'button[data-testid="guest-list-fold-all"], [data-testid="guest-list-fold-all"] button',
+        ) as HTMLButtonElement
+      ).click();
+      fixture.detectChanges();
+      return (fixture.nativeElement as HTMLElement).querySelector('.guest-list__people')!
+        .textContent!;
+    };
+    const organizer = show(true);
+    expect(organizer).toContain('(31) 99267-7624');
+    expect(organizer).toContain('Cônjuge');
+    expect(organizer).not.toContain('Família');
+    expect(show(false)).not.toContain('99267');
   });
 });

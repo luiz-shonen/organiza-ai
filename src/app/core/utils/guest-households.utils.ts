@@ -9,8 +9,13 @@ export type GuestRole = 'Convidado(a)' | 'Família' | 'Acompanhante';
 export interface GuestPerson {
   name: string;
   role: GuestRole;
-  /** A relative's kinship, as the tag beside the name ("Cônjuge", "Pet"); none for others. */
+  /**
+   * The tag beside the name: a relative's kinship ("Cônjuge", "Pet"), or "Acompanhante" for
+   * someone the guest brings; none for the guest, or a relative confirmed before kinships.
+   */
   kinship?: string;
+  /** A relative's WhatsApp, from the family on the guest's profile (organizers see it). */
+  phone?: string;
   /** A pet of the family: listed, but not counted as a person. */
   pet?: boolean;
   /** "2 kg de Carne" or "1 Bolo", one line per item. */
@@ -120,6 +125,7 @@ export function buildGuestHouseholds(
         name: member.name,
         role: 'Família',
         ...(member.relationship ? { kinship: getRelationshipLabel(member.relationship) } : {}),
+        ...(member.phone ? { phone: member.phone } : {}),
         ...(isPet(member.relationship) ? { pet: true } : {}),
         bring: linesFor(byMember.get(familyIds[index]) ?? new Map(), itemsById),
       }));
@@ -138,7 +144,7 @@ export function buildGuestHouseholds(
       const companions: GuestPerson[] = [
         ...named,
         ...(unnamed ? [unnamed === 1 ? '1 acompanhante' : `${unnamed} acompanhantes`] : []),
-      ].map((name) => ({ name, role: 'Acompanhante', bring: [] }));
+      ].map((name) => ({ name, role: 'Acompanhante', kinship: 'Acompanhante', bring: [] }));
 
       const allTotals = new Map<string, number>();
       for (const totals of byMember.values()) {

@@ -268,4 +268,29 @@ describe('SecretSantaParticipantFormComponent', () => {
       guestId: 'g1',
     });
   });
+
+  it('brings back what was typed when the drawer is opened again, until saved', async () => {
+    const open = () => {
+      const fixture = TestBed.createComponent(SecretSantaParticipantFormComponent);
+      fixture.componentRef.setInput('draftKey', 'manual');
+      fixture.componentRef.setInput('showGiftOptions', true);
+      fixture.detectChanges();
+      return fixture;
+    };
+    const first = open();
+    first.componentInstance['name'].set('Vó Maria');
+    first.componentInstance['gifts'].set(['Chinelo 37']);
+    first.componentInstance['pendingGift'].set('Livro');
+    first.detectChanges();
+    first.destroy();
+
+    const again = open();
+    expect(again.componentInstance['name']()).toBe('Vó Maria');
+    expect(again.componentInstance['gifts']()).toEqual(['Chinelo 37']);
+    expect(again.componentInstance['pendingGift']()).toBe('Livro');
+
+    again.componentInstance['cancel']();
+    again.destroy();
+    expect(open().componentInstance['name']()).toBe('');
+  });
 });

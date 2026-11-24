@@ -45,8 +45,8 @@ export class GiftOptionsFieldComponent {
   protected readonly editingGift = signal<number | null>(null);
   protected readonly editingGiftText = signal('');
   protected readonly editingGiftError = signal('');
-  /** The idea being typed in "Nova opção", not added yet. */
-  protected readonly newGift = signal('');
+  /** The idea being typed in "Nova opção", not added yet (kept in a form's draft). */
+  public readonly newGift = model('');
   protected readonly newGiftError = signal('');
   protected readonly giftMaxLength = GiftOption.RULES.max;
 

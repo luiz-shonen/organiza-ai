@@ -50,8 +50,8 @@ export class SecretSantaParticipantFormComponent {
   public readonly cancelLabel = input<string | null>(null);
   public readonly testIdPrefix = input('santa');
   /**
-   * The name comes from an account (the organizer's own entry): it follows the profile, so it
-   * is shown but not typed here.
+   * The name comes from a profile (the person's own entry, or a relative of their family): it
+   * follows the profile everywhere, so it is shown but not typed here.
    */
   public readonly lockName = input(false);
   /**

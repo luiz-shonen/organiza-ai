@@ -68,4 +68,12 @@ export class SecretSantaRosterCardComponent {
   protected isEditable(id: string): boolean {
     return this.editableIds().includes(id);
   }
+
+  /**
+   * The guest's own entry and a relative's (`rsvp_{uid}`, `rsvp_{uid}_f_…`) take their name from
+   * the profile, which renames them everywhere; only a companion's name is typed here.
+   */
+  protected nameFromProfile(id: string): boolean {
+    return id.startsWith('rsvp_') && !id.includes('_c_');
+  }
 }

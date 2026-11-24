@@ -57,4 +57,26 @@ describe('SecretSantaRosterCardComponent', () => {
     expect(sheet.querySelectorAll('[data-testid="own-santa-gift-item"]').length).toBe(2);
     expect(sheet.querySelector('[data-testid="own-santa-gift-input"]')).not.toBeNull();
   });
+
+  it('locks the name of the guest and their relatives (it follows the profile), not a companion', () => {
+    const nameInput = () =>
+      document.querySelector(
+        '[data-testid="edit-own-santa-sheet"] [data-testid="own-santa-name-input"] input, [data-testid="edit-own-santa-sheet"] input[data-testid="own-santa-name-input"]',
+      ) as HTMLInputElement;
+    for (const [id, locked] of [
+      ['rsvp_ana', true],
+      ['rsvp_ana_f_fam1', true],
+      ['rsvp_ana_c_soraya', false],
+    ] as const) {
+      fixture.componentRef.setInput('editing', {
+        id,
+        name: 'Ana',
+        phone: '',
+        giftOptions: [],
+        joinedBy: 'ana',
+      });
+      fixture.detectChanges();
+      expect(nameInput().readOnly, id).toBe(locked);
+    }
+  });
 });

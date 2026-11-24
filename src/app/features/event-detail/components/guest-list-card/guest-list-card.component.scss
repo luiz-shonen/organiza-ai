@@ -299,8 +299,17 @@
   gap: var(--org-space-xs);
 }
 
-// "Expandir tudo": a quiet text button on the right, above the families.
+// Above the families: what opens when one is tapped, and "Expandir tudo" on the right.
 .guest-list__fold-all {
+  align-items: center;
   display: flex;
-  justify-content: flex-end;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+}
+
+.guest-list__fold-hint {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  margin: 0;
+  min-inline-size: 0;
 }

@@ -12,8 +12,8 @@ import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
 } from '../../../../../shared/ui';
+import { GiftOptionsListComponent } from '../../../../../shared/components/gift-options-field/gift-options-list.component';
 import { SecretSantaParticipantFormComponent } from '../secret-santa-participant-form/secret-santa-participant-form.component';
 
 /** One person in the list; `joinedBy` (or a confirmed guest's `guestId`) marks the invite. */
@@ -39,7 +39,7 @@ export interface SecretSantaParticipantUpdate {
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
+    GiftOptionsListComponent,
     SecretSantaParticipantFormComponent,
   ],
   templateUrl: './secret-santa-participants.component.html',
@@ -76,8 +76,6 @@ export class SecretSantaParticipantsComponent {
 
   protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly editingIndex = signal<number | null>(null);
-  /** Rows whose gift ideas are unfolded. */
-  private readonly expanded = signal<ReadonlySet<number>>(new Set());
   /** "Adicionar alguém à mão" opens the form in a drawer (a bottom sheet on a phone). */
   protected readonly manualOpen = signal(false);
   /** "Participar também": the same drawer, filled with the organizer's profile. */
@@ -127,18 +125,6 @@ export class SecretSantaParticipantsComponent {
   protected closeManual(): void {
     this.manualOpen.set(false);
     this.joiningSelf.set(false);
-  }
-
-  protected isExpanded(index: number): boolean {
-    return this.expanded().has(index);
-  }
-
-  protected toggleGifts(index: number): void {
-    this.expanded.update((open) => {
-      const next = new Set(open);
-      if (!next.delete(index)) next.add(index);
-      return next;
-    });
   }
 
   protected saveEdit(participant: SecretSantaParticipantInput): void {

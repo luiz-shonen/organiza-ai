@@ -1,0 +1,20 @@
+@use 'gift-item' as gift;
+
+:host {
+  display: block;
+}
+
+.gift-list {
+  @include gift.list;
+}
+
+// No buttons at the end: the same card, with the text's room on both sides.
+.gift-list__item {
+  @include gift.item;
+
+  padding-inline: var(--org-space-md);
+}
+
+.gift-list__text {
+  @include gift.text;
+}

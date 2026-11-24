@@ -58,11 +58,8 @@ describe('SecretSantaRosterCardComponent', () => {
     expect(sheet.querySelector('[data-testid="own-santa-gift-input"]')).not.toBeNull();
   });
 
-  it('locks the name of the guest and their relatives (it follows the profile), not a companion', () => {
-    const nameInput = () =>
-      document.querySelector(
-        '[data-testid="edit-own-santa-sheet"] [data-testid="own-santa-name-input"] input, [data-testid="edit-own-santa-sheet"] input[data-testid="own-santa-name-input"]',
-      ) as HTMLInputElement;
+  it('shows the name of the guest and their relatives (from the profile), types a companion', () => {
+    const sheet = () => document.querySelector('[data-testid="edit-own-santa-sheet"]')!;
     for (const [id, locked] of [
       ['rsvp_ana', true],
       ['rsvp_ana_f_fam1', true],
@@ -76,7 +73,8 @@ describe('SecretSantaRosterCardComponent', () => {
         joinedBy: 'ana',
       });
       fixture.detectChanges();
-      expect(nameInput().readOnly, id).toBe(locked);
+      expect(!!sheet().querySelector('[data-testid="own-santa-name"]'), id).toBe(locked);
+      expect(!!sheet().querySelector('[data-testid="own-santa-name-input"]'), id).toBe(!locked);
     }
   });
 });

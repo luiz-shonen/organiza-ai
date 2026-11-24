@@ -547,6 +547,7 @@ export class EventDetailContainer implements OnInit {
       );
       this.editingOwnSecretSanta.set(null);
       this.mySecretSantaVersion.update((v) => v + 1);
+      await this.syncSantaPhoneToProfile(uid, editing.id, participant.phone);
       this.feedback.success(existed ? 'Amigo oculto atualizado.' : 'Você entrou no amigo oculto!');
       return true;
     } catch (err) {
@@ -555,6 +556,40 @@ export class EventDetailContainer implements OnInit {
       return false;
     }
   };
+
+  /**
+   * A phone typed in an amigo oculto entry that comes from a profile updates that profile: the
+   * guest's own (`rsvp_{uid}`, or the organizer's entry with their uid) or a relative's
+   * (`rsvp_{uid}_f_{id}`). One phone per person, the same everywhere.
+   */
+  private async syncSantaPhoneToProfile(
+    uid: string,
+    entryId: string,
+    phone: string,
+  ): Promise<void> {
+    const digits = (value: string | null | undefined) => (value ?? '').replace(/\D/g, '');
+    if (!digits(phone)) return;
+    try {
+      if (entryId === secretSantaRsvpId(uid) || entryId === uid) {
+        if (digits(phone) === digits(this.myPhone())) return;
+        await this.userService.updateProfile(uid, { phone });
+        this.myPhone.set(phone);
+        this.feedback.info('Seu telefone também foi atualizado no perfil.');
+        return;
+      }
+      const familyPrefix = `${secretSantaRsvpId(uid)}_f_`;
+      if (entryId.startsWith(familyPrefix)) {
+        await this.familyService.updateFamilyMemberPhone(
+          uid,
+          entryId.slice(familyPrefix.length),
+          phone,
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      this.feedback.error(explainError('O telefone não foi atualizado no perfil.', err));
+    }
+  }
 
   private readonly loadSecretSantaRoster = effect((onCleanup) => {
     if (!this.event()?.secretSanta?.enabled || this.canEdit() || !this.memberUid()) {
@@ -1134,6 +1169,13 @@ export class EventDetailContainer implements OnInit {
   protected readonly saveNewSecretSantaParticipant = async (
     participant: SecretSantaParticipantInput,
   ): Promise<boolean> => {
+    // "Participar também": the organizer's own entry, their phone being the profile's.
+    const uid = this.memberUid();
+    if (uid && participant.guestId === uid) {
+      const added = await this.addSecretSantaParticipants([participant]);
+      if (added) await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
+      return added;
+    }
     const match = this.sameSecretSantaPerson(participant);
     if (!match) return this.addSecretSantaParticipants([participant]);
     const { same, by } = match;
@@ -1221,6 +1263,11 @@ export class EventDetailContainer implements OnInit {
     if (!saved) return;
     try {
       await this.secretSantaService.updateParticipant(this.id(), saved.id, participant);
+      // The organizer's own entry: their phone is the profile's.
+      const uid = this.memberUid();
+      if (uid && participant.guestId === uid) {
+        await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
+      }
       this.feedback.success('Participante atualizado');
     } catch (error) {
       this.feedback.error(explainError('Não foi possível atualizar o participante', error));

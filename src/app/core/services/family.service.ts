@@ -64,6 +64,12 @@ export class FamilyService {
     });
   }
 
+  /** Only the WhatsApp, as typed for the relative elsewhere (their amigo oculto entry). */
+  async updateFamilyMemberPhone(uid: string, memberId: string, phone: string): Promise<void> {
+    if (!uid || !memberId) return;
+    await this.gateway.updateDoc(`${this.familyPath(uid)}/${memberId}`, { phone });
+  }
+
   async deleteFamilyMember(uid: string, memberId: string): Promise<void> {
     if (!uid || !memberId) return;
     await this.gateway.deleteDoc(`${this.familyPath(uid)}/${memberId}`);

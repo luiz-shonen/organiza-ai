@@ -44,11 +44,10 @@ describe('SecretSantaParticipantsComponent', () => {
 
     (byTestId('secret-santa-self-join-btn') as HTMLButtonElement).click();
     fixture.detectChanges();
-    const name = document.querySelector(
-      '[data-testid="add-participant-sheet"] [data-testid="santa-name-input"] input, [data-testid="add-participant-sheet"] input[data-testid="santa-name-input"]',
-    ) as HTMLInputElement;
-    expect(name.value).toBe('Luiz');
-    expect(name.readOnly).toBe(true);
+    const sheet = document.querySelector('[data-testid="add-participant-sheet"]')!;
+    // The name of the profile is shown, not typed.
+    expect(sheet.querySelector('[data-testid="santa-name"]')?.textContent).toContain('Luiz');
+    expect(sheet.querySelector('[data-testid="santa-name-input"]')).toBeNull();
 
     (
       document.querySelector(
@@ -94,18 +93,10 @@ describe('SecretSantaParticipantsComponent', () => {
     fixture.detectChanges();
     const list = byTestId('secret-santa-participants')!;
     expect(list.textContent).toContain('Ana');
-    // The ideas fold under the name: "2 ideias de presente", then each one.
-    const toggle = byTestId('secret-santa-gifts-toggle') as HTMLButtonElement;
-    expect(toggle.textContent).toContain('2 ideias de presente');
-    expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    expect(byTestId('secret-santa-gifts')).toBeNull();
-    toggle.click();
-    fixture.detectChanges();
-    expect(toggle.getAttribute('aria-expanded')).toBe('true');
-    expect(byTestId('secret-santa-gifts')!.textContent).toContain('Chinelo');
-    toggle.click();
-    fixture.detectChanges();
-    expect(byTestId('secret-santa-gifts')).toBeNull();
+    // The ideas under the name, as the same cards the form shows, with nothing to press.
+    const cards = list.querySelectorAll('[data-testid="gift-options-list-item"]');
+    expect([...cards].map((card) => card.textContent?.trim())).toEqual(['Livro', 'Chinelo']);
+    expect(byTestId('secret-santa-gifts')!.querySelector('button')).toBeNull();
     (list.querySelector('[aria-label="Remover Ana"]') as HTMLButtonElement).click();
     expect(removed).toEqual([0]);
   });

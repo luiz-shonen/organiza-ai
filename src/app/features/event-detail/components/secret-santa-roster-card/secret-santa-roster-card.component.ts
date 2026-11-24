@@ -10,25 +10,26 @@ import {
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgIconButtonComponent,
-  OrgIconComponent,
   OrgSurfaceComponent,
 } from '../../../../shared/ui';
+import { GiftOptionsListComponent } from '../../../../shared/components/gift-options-field/gift-options-list.component';
 import { SecretSantaParticipantFormComponent } from '../../../organizer/event-editor/components/secret-santa-participant-form/secret-santa-participant-form.component';
 
 /**
  * The amigo oculto as a guest sees it: who takes part and, when the event asks for them, each
  * one's gift ideas, no phones. The guest's own entries (`editableIds`) get a pencil that opens
- * the same form the organizers use, to change their name, phone and gift ideas right here.
+ * the same form the organizers use, to change their phone and gift ideas right here (a name
+ * from a profile is only shown).
  */
 @Component({
   selector: 'app-secret-santa-roster-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    GiftOptionsListComponent,
     OrgBottomSheetComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgIconButtonComponent,
-    OrgIconComponent,
     OrgSurfaceComponent,
     SecretSantaParticipantFormComponent,
   ],

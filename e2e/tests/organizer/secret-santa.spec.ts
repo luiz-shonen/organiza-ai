@@ -210,8 +210,6 @@ test.describe('Amigo oculto', () => {
 
     const list = people.getByTestId('secret-santa-participants');
     await expect(list).toContainText('Vó Maria');
-    await expect(list).toContainText('2 ideias de presente');
-    await list.getByTestId('secret-santa-gifts-toggle').first().click();
     await expect(list.getByTestId('secret-santa-gifts')).toContainText(
       'Chinelo, cor verde, tamanho 37',
     );

@@ -54,6 +54,8 @@ export class SecretSantaParticipantFormComponent {
    * follows the profile everywhere, so it is shown but not typed here.
    */
   public readonly lockName = input(false);
+  /** Under "Opções de presente": "Ideias para quem tirar você." on the person's own entry. */
+  public readonly giftHint = input('Ideias para quem tirar essa pessoa.');
   /**
    * Saves the person and resolves true when it worked. Given, the form waits for it and keeps
    * what was typed when it fails; otherwise `submitted` is emitted and the form clears at once.
@@ -74,6 +76,8 @@ export class SecretSantaParticipantFormComponent {
   /** The ideas already added, in order. */
   protected readonly gifts = signal<readonly string[]>([]);
   private readonly guestId = signal<string | undefined>(undefined);
+  /** The entry comes from a profile that has a phone: shown, not asked. Decided on load. */
+  protected readonly phoneFromProfile = signal(false);
 
   protected readonly showErrors = signal(false);
   protected readonly maskPhone = Phone.mask;
@@ -136,6 +140,7 @@ export class SecretSantaParticipantFormComponent {
     this.gifts.set([...(participant?.giftOptions ?? [])]);
     this.giftsField()?.reset();
     this.guestId.set(participant?.guestId);
+    this.phoneFromProfile.set(this.lockName() && !!participant?.phone?.trim());
     this.showErrors.set(false);
   }
 }

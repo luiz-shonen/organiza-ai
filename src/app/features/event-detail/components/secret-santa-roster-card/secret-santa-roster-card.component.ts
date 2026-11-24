@@ -77,4 +77,9 @@ export class SecretSantaRosterCardComponent {
   protected nameFromProfile(id: string): boolean {
     return id.startsWith('rsvp_') && !id.includes('_c_');
   }
+
+  /** The guest's own entry (`rsvp_{uid}`), not a relative's or a companion's. */
+  protected isOwnSelf(id: string): boolean {
+    return id.startsWith('rsvp_') && !id.includes('_f_') && !id.includes('_c_');
+  }
 }

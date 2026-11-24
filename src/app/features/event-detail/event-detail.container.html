@@ -113,6 +113,17 @@
                 [eventEndDate]="event.endDate ?? null"
                 [eventLocation]="event.location"
               />
+              <!-- The Pix under the share panel, on a computer; on a phone it stays further down. -->
+              @if (event.pixKey) {
+                <app-pix-card
+                  class="event-detail__pix--desktop"
+                  [pixKey]="event.pixKey"
+                  [pixType]="event.pixType"
+                  [purpose]="event.pixPurpose ?? null"
+                  [estimatedBudget]="event.estimatedBudget ?? null"
+                  [guestCount]="guestCount()"
+                />
+              }
               <!--
                 On a computer, adding someone by hand and joining the draw yourself sit here, in a
                 card of their own under the share panel; on a phone they stay in the amigo oculto.
@@ -196,8 +207,10 @@
         />
       }
 
+      <!-- Organizers on a computer have the Pix under the share panel instead. -->
       @if (event.pixKey) {
         <app-pix-card
+          [class.event-detail__pix--phone-only]="canEditEvent()"
           [pixKey]="event.pixKey"
           [pixType]="event.pixType"
           [purpose]="event.pixPurpose ?? null"

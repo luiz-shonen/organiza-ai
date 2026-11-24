@@ -182,6 +182,16 @@ describe('amigo oculto sign-ups from the invite', () => {
       setDoc(doc(owner, path('p2')), { name: 'Ana', phone: '', giftOptions: [], guestId: 'ana' }),
     );
     await assertFails(updateDoc(doc(owner, path('p2')), { name: 'Ana Souza' }));
+    // The organizer's own entry ("Participar também") is theirs to change.
+    await assertSucceeds(
+      setDoc(doc(owner, path('p3')), {
+        name: 'Dona',
+        phone: '',
+        giftOptions: [],
+        guestId: 'owner-uid',
+      }),
+    );
+    await assertSucceeds(updateDoc(doc(owner, path('p3')), { giftOptions: ['Vinho'] }));
     await assertSucceeds(deleteDoc(doc(owner, path('p2'))));
     // The guest herself changes her ideas; someone typed by hand, the organizers do.
     await assertSucceeds(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: ['Vinho'] }));

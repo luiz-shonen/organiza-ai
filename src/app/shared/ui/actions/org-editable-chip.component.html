@@ -12,12 +12,17 @@
     (keydown.escape)="cancel()"
     (removed)="cleared.emit()"
   >
-    <button matChipEdit type="button" [attr.aria-label]="'Editar ' + label()">
+    <button
+      matChipEdit
+      type="button"
+      [attr.aria-label]="'Editar ' + label()"
+      [matTooltip]="'Editar ' + label()"
+    >
       <org-icon name="edit" size="sm" color="currentColor" />
     </button>
     {{ label() }}
     @if (hasValue()) {
-      <button matChipRemove type="button" aria-label="Limpar">
+      <button matChipRemove type="button" aria-label="Limpar" matTooltip="Limpar">
         <org-icon name="cancel" size="sm" color="currentColor" />
       </button>
     }

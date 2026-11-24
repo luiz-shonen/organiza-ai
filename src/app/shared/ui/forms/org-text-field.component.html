@@ -31,6 +31,7 @@
       matSuffix
       type="button"
       [attr.aria-label]="passwordVisible() ? 'Ocultar senha' : 'Mostrar senha'"
+      [matTooltip]="passwordVisible() ? 'Ocultar senha' : 'Mostrar senha'"
       (click)="requestPasswordVisibilityToggle()"
     >
       <mat-icon aria-hidden="true">{{

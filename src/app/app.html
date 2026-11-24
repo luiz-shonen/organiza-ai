@@ -106,6 +106,7 @@
               routerLink="/perfil"
               class="app-toolbar__avatar"
               data-testid="header-profile-link"
+              matTooltip="Meu perfil"
               [attr.aria-label]="'Meu perfil · ' + (displayName() || user()?.email || '')"
               [attr.aria-current]="currentUrl().startsWith('/perfil') ? 'page' : null"
             >

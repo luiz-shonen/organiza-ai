@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -55,6 +56,7 @@ function normalizeType(value: unknown): OrgTextFieldType {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatTooltipModule,
   ],
   providers: [
     {

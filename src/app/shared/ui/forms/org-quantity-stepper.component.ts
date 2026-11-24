@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
 import { OrgIconComponent } from '../actions/org-icon.component';
 
@@ -5,7 +6,7 @@ import { OrgIconComponent } from '../actions/org-icon.component';
 @Component({
   selector: 'org-quantity-stepper',
   standalone: true,
-  imports: [OrgIconComponent],
+  imports: [MatTooltipModule, OrgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-quantity-stepper.component.html',
   styleUrl: './org-quantity-stepper.component.scss',

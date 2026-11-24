@@ -109,6 +109,30 @@ describe('SecretSantaParticipantsComponent', () => {
     expect(removed).toEqual([0]);
   });
 
+  it('changes the gift ideas only of people typed by hand and of the organizer', () => {
+    fixture.componentRef.setInput('giftOptions', true);
+    fixture.componentRef.setInput('self', { uid: 'owner', name: 'Dona', phone: '' });
+    fixture.componentRef.setInput('participants', [
+      { name: 'Maria', phone: '', giftOptions: ['Livro'], joinedBy: 'maria' },
+      { name: 'Dona', phone: '', giftOptions: ['Vinho'], guestId: 'owner' },
+      { name: 'Tio Zé', phone: '', giftOptions: ['Meia'] },
+    ]);
+    fixture.detectChanges();
+    const lists = el().querySelectorAll('app-gift-options-list');
+    lists.forEach((list) =>
+      (
+        list.querySelector(
+          '[data-testid="gift-options-list-toggle"] button, button[data-testid="gift-options-list-toggle"]',
+        ) as HTMLButtonElement
+      ).click(),
+    );
+    fixture.detectChanges();
+    const editable = [...lists].map(
+      (list) => !!list.querySelector('[data-testid="gift-options-list-edit-btn"]'),
+    );
+    expect(editable).toEqual([false, true, true]);
+  });
+
   it('never offers to edit a guest entry: only to take it out', () => {
     fixture.componentRef.setInput('participants', [
       { name: 'Ana', phone: '(11) 98888-1111', giftOptions: ['Livro'], joinedBy: 'ana-uid' },

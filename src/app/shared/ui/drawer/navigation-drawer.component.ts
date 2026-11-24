@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,7 +9,7 @@ import { NavigationDrawerLinkComponent } from './navigation-drawer-link.componen
 @Component({
   selector: 'app-navigation-drawer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, NavigationDrawerLinkComponent],
+  imports: [MatButtonModule, MatIconModule, MatTooltipModule, NavigationDrawerLinkComponent],
   templateUrl: './navigation-drawer.component.html',
   styleUrl: './navigation-drawer.component.scss',
 })

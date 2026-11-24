@@ -40,6 +40,10 @@ export class SecretSantaRosterCardComponent {
   public readonly entries = input.required<readonly SecretSantaRosterEntry[]>();
   /** The event asks each participant for gift ideas, and how many. */
   public readonly giftOptions = input(false);
+  /** One of the guest's own gift ideas changed or taken out, right in the card. */
+  public readonly editGift = output<{ id: string; gift: number; text: string }>();
+  public readonly removeGift = output<{ id: string; gift: number }>();
+  public readonly addGift = output<{ id: string; text: string }>();
   /** The organizer's description: gift value, rules, when gifts are swapped. */
   public readonly rules = input<string | null>(null);
   public readonly maxGiftOptions = input(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);
@@ -76,5 +80,10 @@ export class SecretSantaRosterCardComponent {
    */
   protected nameFromProfile(id: string): boolean {
     return id.startsWith('rsvp_') && !id.includes('_c_');
+  }
+
+  /** The guest's own entry (`rsvp_{uid}`), not a relative's or a companion's. */
+  protected isOwnSelf(id: string): boolean {
+    return id.startsWith('rsvp_') && !id.includes('_f_') && !id.includes('_c_');
   }
 }

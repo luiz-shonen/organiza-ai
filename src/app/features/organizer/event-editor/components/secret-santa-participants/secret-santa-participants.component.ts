@@ -70,9 +70,20 @@ export class SecretSantaParticipantsComponent {
    * their own entry stays theirs to edit, with the name of their profile.
    */
   public readonly self = input<{ uid: string; name: string; phone: string } | null>(null);
+  /**
+   * `extras`: only "Quem não vai entrar pelo convite" and "Você também participa?", for their own
+   * card beside the page on a computer; `list`: only the participants. `all` (default): both.
+   */
+  public readonly show = input<'all' | 'list' | 'extras'>('all');
+  /** Those two blocks show on a phone only: on a computer they sit in their own card. */
+  public readonly extrasPhoneOnly = input(false);
   public readonly add = output<SecretSantaParticipantInput>();
   public readonly update = output<SecretSantaParticipantUpdate>();
   public readonly remove = output<number>();
+  /** One gift idea of a participant changed or taken out, right in the list; the page confirms. */
+  public readonly editGift = output<{ participant: number; gift: number; text: string }>();
+  public readonly removeGift = output<{ participant: number; gift: number }>();
+  public readonly addGift = output<{ participant: number; text: string }>();
 
   protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly editingIndex = signal<number | null>(null);

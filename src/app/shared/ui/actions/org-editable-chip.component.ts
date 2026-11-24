@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,7 +19,7 @@ import { OrgIconComponent } from './org-icon.component';
 @Component({
   selector: 'org-editable-chip',
   standalone: true,
-  imports: [MatChipsModule, OrgIconComponent],
+  imports: [MatChipsModule, MatTooltipModule, OrgIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './org-editable-chip.component.html',
   styleUrl: './org-editable-chip.component.scss',

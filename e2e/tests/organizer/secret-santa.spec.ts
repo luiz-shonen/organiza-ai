@@ -100,14 +100,14 @@ test.describe('Amigo oculto', () => {
     const people = page.getByTestId('secret-santa-people');
 
     // By hand is the exception, behind "Adicionar alguém à mão".
-    await people.getByTestId('secret-santa-manual-btn').click();
-    await people.getByTestId('santa-name-input').fill('gus');
+    await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
+    await page.getByTestId('santa-name-input').fill('gus');
     const option = page.getByTestId('org-text-field-suggestion').filter({ hasText: 'Gustavo' });
     await expect(option).toContainText('(31) 99999-0000');
     await page.screenshot({ path: 'e2e/screenshots/secret-santa-known-people.png' });
     await option.click();
-    await expect(people.getByTestId('santa-name-input')).toHaveValue('Gustavo Pereira');
-    await expect(people.getByTestId('santa-phone-input')).toHaveValue('(31) 99999-0000');
+    await expect(page.getByTestId('santa-name-input')).toHaveValue('Gustavo Pereira');
+    await expect(page.getByTestId('santa-phone-input')).toHaveValue('(31) 99999-0000');
   });
 
   test('the organizer turns it on in the editor, with gift options and how many', async ({
@@ -178,38 +178,40 @@ test.describe('Amigo oculto', () => {
     await expect(people.getByTestId('secret-santa-suggestions')).toHaveCount(0);
     await expect(people).not.toContainText('Confirmados no evento');
 
-    await people
-      .getByTestId('secret-santa-manual')
+    await page
+      .locator('[data-testid="secret-santa-manual"]:visible')
       .screenshot({ path: 'e2e/screenshots/secret-santa-manual-closed.png' });
-    await people.getByTestId('secret-santa-manual-btn').click();
-    await people.getByTestId('santa-name-input').fill('Vó Maria');
-    await people.getByTestId('santa-phone-input').fill('11977772222');
+    await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
+    await page.getByTestId('santa-name-input').fill('Vó Maria');
+    await page.getByTestId('santa-phone-input').fill('11977772222');
     // Gift ideas: each one typed and added with Enter (or +) joins the list above the field.
-    const gift = people.getByTestId('santa-gift-input');
+    const gift = page.getByTestId('santa-gift-input');
     await gift.fill('Chinelo, cor verde, tamanho 36');
     await gift.press('Enter');
-    await expect(people.getByTestId('santa-gift-item')).toHaveCount(1);
+    await expect(page.getByTestId('santa-gift-item')).toHaveCount(1);
     await expect(gift).toHaveValue('');
-    await expect(people.getByTestId('santa-gift-list')).toContainText('1 de 4');
+    await expect(page.getByTestId('santa-gift-list')).toContainText('1 de 4');
     // An idea added can be changed in place: the pencil opens it, Enter keeps it.
-    await people.getByTestId('santa-gift-edit-btn').click();
-    const editing = people.getByTestId('santa-gift-edit-input');
+    await page.getByTestId('santa-gift-edit-btn').click();
+    const editing = page.getByTestId('santa-gift-edit-input');
     await editing.fill('Chinelo, cor verde, tamanho 37');
     await editing.press('Enter');
-    await expect(people.getByTestId('santa-gift-item')).toContainText('tamanho 37');
+    await expect(page.getByTestId('santa-gift-item')).toContainText('tamanho 37');
     // One still typed goes with the participant.
     await gift.fill('Livro de receitas');
-    await people
+    await page
       .getByTestId('santa-gift-list')
       .screenshot({ path: 'e2e/screenshots/secret-santa-gift-options.png' });
-    await people
+    await page
       .locator('app-secret-santa-participant-form')
       .first()
       .screenshot({ path: 'e2e/screenshots/secret-santa-participant-form.png' });
-    await people.getByTestId('santa-submit-btn').click();
+    await page.getByTestId('santa-submit-btn').click();
 
     const list = people.getByTestId('secret-santa-participants');
     await expect(list).toContainText('Vó Maria');
+    // The ideas fold under the name: "Ver 2 ideias de presente" opens them.
+    await list.getByTestId('gift-options-list-toggle').first().click();
     await expect(list.getByTestId('secret-santa-gifts')).toContainText(
       'Chinelo, cor verde, tamanho 37',
     );
@@ -245,7 +247,7 @@ test.describe('Amigo oculto', () => {
     const dialog = page.getByTestId('org-confirm-dialog');
 
     // Luiz's phone, typed by hand before: replace him with what is typed now.
-    await people.getByTestId('secret-santa-manual-btn').click();
+    await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
     await sheet.getByTestId('santa-name-input').fill('Luiz Rodrigues');
     await sheet.getByTestId('santa-phone-input').fill('11977772222');
     await sheet.getByTestId('santa-submit-btn').click();
@@ -259,7 +261,7 @@ test.describe('Amigo oculto', () => {
       .toEqual(['Jéssica Melo', 'Luiz Rodrigues', 'Vó Maria']);
 
     // Jéssica is a confirmed guest: hers to change; adding means another person.
-    await people.getByTestId('secret-santa-manual-btn').click();
+    await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
     await sheet.getByTestId('santa-name-input').fill('Jéssica Melo');
     await sheet.getByTestId('santa-submit-btn').click();
     await expect(dialog).toContainText('entrou pelo convite');
@@ -485,6 +487,7 @@ test.describe('Amigo oculto', () => {
     const roster = page.getByTestId('secret-santa-roster');
     await expect(roster).toContainText('2 pessoas no sorteio');
     await expect(roster.getByTestId('secret-santa-roster-person')).toHaveCount(2);
+    await roster.getByTestId('gift-options-list-toggle').first().click();
     await expect(roster).toContainText('Livro');
     await expect(roster).not.toContainText('(11)');
     // Managing the draw is the organizers' side: none of it here.
@@ -534,6 +537,11 @@ test.describe('Amigo oculto', () => {
     await sheet.screenshot({ path: 'e2e/screenshots/secret-santa-own-edit.png' });
     await sheet.getByTestId('own-santa-submit-btn').click();
 
+    await expect(sheet).toBeHidden();
+    // The gift ideas fold under each name: open them all.
+    for (const toggle of await roster.getByTestId('gift-options-list-toggle').all()) {
+      await toggle.click();
+    }
     await expect(roster).toContainText('Bíblia');
     const store = await readStore(page);
     const saved = store[`events/${EVENT_ID}/secretSantaParticipants`].find((p) => p.id === own.id);

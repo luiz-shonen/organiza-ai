@@ -96,7 +96,7 @@
               @if (showSecretSanta()) {
                 <ng-container
                   [ngTemplateOutlet]="secretSantaCard"
-                  [ngTemplateOutletContext]="{ $implicit: event }"
+                  [ngTemplateOutletContext]="{ $implicit: event, split: true }"
                 />
               }
             }
@@ -113,6 +113,41 @@
                 [eventEndDate]="event.endDate ?? null"
                 [eventLocation]="event.location"
               />
+              <!-- The Pix under the share panel, on a computer; on a phone it stays further down. -->
+              @if (event.pixKey) {
+                <app-pix-card
+                  class="event-detail__pix--desktop"
+                  [pixKey]="event.pixKey"
+                  [pixType]="event.pixType"
+                  [purpose]="event.pixPurpose ?? null"
+                  [estimatedBudget]="event.estimatedBudget ?? null"
+                  [guestCount]="guestCount()"
+                />
+              }
+              <!--
+                On a computer, adding someone by hand and joining the draw yourself sit here, in a
+                card of their own under the share panel; on a phone they stay in the amigo oculto.
+              -->
+              @if (showSecretSanta() && organizerTopRow()) {
+                <org-surface
+                  variant="card"
+                  class="event-detail__santa-extras"
+                  testId="secret-santa-extras-card"
+                >
+                  <org-card-header heading="Amigo oculto" />
+                  <app-secret-santa-participants
+                    show="extras"
+                    [participants]="secretSantaParticipantsView()"
+                    [knownPeople]="secretSantaKnownPeople()"
+                    [giftOptions]="!!event.secretSanta?.giftOptions"
+                    [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+                    [drawn]="!!secretSantaDraw()"
+                    [saveNew]="saveNewSecretSantaParticipant"
+                    [self]="secretSantaSelf()"
+                    (add)="addSecretSantaParticipants([$event])"
+                  />
+                </org-surface>
+              }
             </div>
           }
         </div>
@@ -169,11 +204,16 @@
           (edit)="onEditOwnSecretSanta($event)"
           (leave)="onLeaveOwnSecretSanta($event)"
           (cancelEdit)="editingOwnSecretSanta.set(null)"
+          (editGift)="onEditOwnSecretSantaGift($event)"
+          (removeGift)="onRemoveOwnSecretSantaGift($event)"
+          (addGift)="onAddOwnSecretSantaGift($event)"
         />
       }
 
+      <!-- Organizers on a computer have the Pix under the share panel instead. -->
       @if (event.pixKey) {
         <app-pix-card
+          [class.event-detail__pix--phone-only]="canEditEvent()"
           [pixKey]="event.pixKey"
           [pixType]="event.pixType"
           [purpose]="event.pixPurpose ?? null"
@@ -219,7 +259,7 @@
 </ng-template>
 
 <!-- The amigo oculto for organizers: under "Confirmados" for the owner, in the list otherwise. -->
-<ng-template #secretSantaCard let-event>
+<ng-template #secretSantaCard let-event let-split="split">
   <app-secret-santa-card
     [participants]="secretSantaParticipants()"
     [isOwner]="isOwner()"
@@ -252,9 +292,13 @@
         [drawn]="!!secretSantaDraw()"
         [saveNew]="saveNewSecretSantaParticipant"
         [self]="secretSantaSelf()"
+        [extrasPhoneOnly]="!!split"
         (add)="addSecretSantaParticipants([$event])"
         (update)="updateSecretSantaParticipant($event)"
         (remove)="removeSecretSantaParticipant($event)"
+        (editGift)="onEditSecretSantaGift($event)"
+        (removeGift)="onRemoveSecretSantaGift($event)"
+        (addGift)="onAddSecretSantaGift($event)"
       />
     }
   </app-secret-santa-card>

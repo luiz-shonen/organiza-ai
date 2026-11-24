@@ -19,7 +19,13 @@
     (dateChange)="pick($event.value)"
     (input)="onInputChange($event)"
   />
-  <mat-datepicker-toggle matIconSuffix [disabled]="isDisabled()" [for]="picker" />
+  <mat-datepicker-toggle
+    matIconSuffix
+    matTooltip="Abrir calendário"
+    aria-label="Abrir calendário"
+    [disabled]="isDisabled()"
+    [for]="picker"
+  />
   <mat-datepicker #picker />
   @if (hint() && !error()) {
     <mat-hint>{{ hint() }}</mat-hint>

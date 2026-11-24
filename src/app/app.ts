@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NavigationHistoryService } from './core/services/navigation-history.service';
 import {
   Component,
@@ -70,6 +71,7 @@ const PROFILE_ITEM: OrgNavBarItem = {
     RouterLink,
     MatToolbarModule,
     MatSidenavModule,
+    MatTooltipModule,
     SeasonalOverlayComponent,
     NavigationDrawerComponent,
     OrgIconComponent,

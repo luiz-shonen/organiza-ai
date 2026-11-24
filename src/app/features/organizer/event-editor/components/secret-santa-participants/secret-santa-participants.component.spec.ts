@@ -93,12 +93,44 @@ describe('SecretSantaParticipantsComponent', () => {
     fixture.detectChanges();
     const list = byTestId('secret-santa-participants')!;
     expect(list.textContent).toContain('Ana');
-    // The ideas under the name, as the same cards the form shows, with nothing to press.
-    const cards = list.querySelectorAll('[data-testid="gift-options-list-item"]');
+    // Folded under the name; opened, the same cards the form shows, each with ✏️ and 🗑.
+    expect(list.querySelectorAll('[data-testid="gift-options-list-item"]')).toHaveLength(0);
+    (
+      list.querySelector(
+        '[data-testid="gift-options-list-toggle"] button, button[data-testid="gift-options-list-toggle"]',
+      ) as HTMLButtonElement
+    ).click();
+    fixture.detectChanges();
+    const cards = list.querySelectorAll('[data-testid="gift-options-list-item"] .gift-list__text');
     expect([...cards].map((card) => card.textContent?.trim())).toEqual(['Livro', 'Chinelo']);
-    expect(byTestId('secret-santa-gifts')!.querySelector('button')).toBeNull();
+    expect(list.querySelectorAll('[data-testid="gift-options-list-edit-btn"]')).toHaveLength(2);
+    expect(list.querySelectorAll('[data-testid="gift-options-list-remove-btn"]')).toHaveLength(2);
     (list.querySelector('[aria-label="Remover Ana"]') as HTMLButtonElement).click();
     expect(removed).toEqual([0]);
+  });
+
+  it('changes the gift ideas only of people typed by hand and of the organizer', () => {
+    fixture.componentRef.setInput('giftOptions', true);
+    fixture.componentRef.setInput('self', { uid: 'owner', name: 'Dona', phone: '' });
+    fixture.componentRef.setInput('participants', [
+      { name: 'Maria', phone: '', giftOptions: ['Livro'], joinedBy: 'maria' },
+      { name: 'Dona', phone: '', giftOptions: ['Vinho'], guestId: 'owner' },
+      { name: 'Tio Zé', phone: '', giftOptions: ['Meia'] },
+    ]);
+    fixture.detectChanges();
+    const lists = el().querySelectorAll('app-gift-options-list');
+    lists.forEach((list) =>
+      (
+        list.querySelector(
+          '[data-testid="gift-options-list-toggle"] button, button[data-testid="gift-options-list-toggle"]',
+        ) as HTMLButtonElement
+      ).click(),
+    );
+    fixture.detectChanges();
+    const editable = [...lists].map(
+      (list) => !!list.querySelector('[data-testid="gift-options-list-edit-btn"]'),
+    );
+    expect(editable).toEqual([false, true, true]);
   });
 
   it('never offers to edit a guest entry: only to take it out', () => {

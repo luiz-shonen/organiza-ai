@@ -357,9 +357,11 @@ service cloud.firestore {
 
         // An entry tied to a guest (joined from the invite, or a confirmed guest's) is theirs:
         // organizers may take it out, tell it apart or link it ("Juntar"), never change it.
+        // The organizer's own entry ("Participar também", `guestId` their uid) stays theirs to edit.
         function changesGuestEntry() {
           return resource != null
               && (resource.data.get('joinedBy', '') != '' || resource.data.get('guestId', '') != '')
+              && resource.data.get('guestId', '') != request.auth.uid
               && !changedKeys().hasOnly(['distinctFrom', 'guestId'])
               && !takesPhoneFromMerged();
         }

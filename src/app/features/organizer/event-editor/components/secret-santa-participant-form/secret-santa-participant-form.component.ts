@@ -9,6 +9,7 @@ import {
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import {
@@ -23,6 +24,7 @@ import {
   type OrgTextSuggestion,
 } from '../../../../../shared/ui';
 import { GiftOptionsFieldComponent } from '../../../../../shared/components/gift-options-field/gift-options-field.component';
+import { ParticipantDraftsService } from './participant-drafts.service';
 
 /**
  * Name, phone and (when the event asks for them) gift options of one amigo oculto participant.
@@ -55,6 +57,13 @@ export class SecretSantaParticipantFormComponent {
    */
   public readonly lockName = input(false);
   /**
+   * Keeps what was typed while the drawer is closed, under this key (one per form: "manual",
+   * "own:{id}"…), until it is saved, cancelled or the page reloads. Null: nothing kept.
+   */
+  public readonly draftKey = input<string | null>(null);
+  /** Under "Opções de presente": "Ideias para quem tirar você." on the person's own entry. */
+  public readonly giftHint = input('Ideias para quem tirar essa pessoa.');
+  /**
    * Saves the person and resolves true when it worked. Given, the form waits for it and keeps
    * what was typed when it fails; otherwise `submitted` is emitted and the form clears at once.
    */
@@ -67,6 +76,9 @@ export class SecretSantaParticipantFormComponent {
   protected readonly saving = signal(false);
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly drafts = inject(ParticipantDraftsService);
+  /** The idea typed in "Nova opção" of the gift list, not added yet. */
+  protected readonly pendingGift = signal('');
   private readonly giftsField = viewChild(GiftOptionsFieldComponent);
 
   protected readonly name = signal('');
@@ -74,6 +86,8 @@ export class SecretSantaParticipantFormComponent {
   /** The ideas already added, in order. */
   protected readonly gifts = signal<readonly string[]>([]);
   private readonly guestId = signal<string | undefined>(undefined);
+  /** The entry comes from a profile that has a phone: shown, not asked. Decided on load. */
+  protected readonly phoneFromProfile = signal(false);
 
   protected readonly showErrors = signal(false);
   protected readonly maskPhone = Phone.mask;
@@ -94,6 +108,17 @@ export class SecretSantaParticipantFormComponent {
 
   constructor() {
     effect(() => this.load(this.participant()));
+    // Everything typed goes to the draft as it is typed.
+    effect(() => {
+      const key = this.draftKey();
+      const draft = {
+        name: this.name(),
+        phone: this.phone(),
+        gifts: this.gifts(),
+        pendingGift: this.pendingGift(),
+      };
+      if (key) this.drafts.set(key, draft);
+    });
   }
 
   /** A known person was picked: their phone comes along when the field is still empty. */
@@ -123,11 +148,24 @@ export class SecretSantaParticipantFormComponent {
     if (save) {
       this.saving.set(true);
       const saved = await save(participant).finally(() => this.saving.set(false));
+      if (saved) this.forgetDraft();
       if (saved && !this.participant()) this.load(null);
       return;
     }
+    this.forgetDraft();
     this.submitted.emit(participant);
     if (!this.participant()) this.load(null);
+  }
+
+  /** "Cancelar": what was typed is given up on purpose. */
+  protected cancel(): void {
+    this.forgetDraft();
+    this.cancelled.emit();
+  }
+
+  private forgetDraft(): void {
+    const key = this.draftKey();
+    if (key) this.drafts.clear(key);
   }
 
   private load(participant: SecretSantaParticipantInput | null): void {
@@ -135,7 +173,18 @@ export class SecretSantaParticipantFormComponent {
     this.phone.set(participant?.phone ?? '');
     this.gifts.set([...(participant?.giftOptions ?? [])]);
     this.giftsField()?.reset();
+    this.pendingGift.set('');
     this.guestId.set(participant?.guestId);
+    this.phoneFromProfile.set(this.lockName() && !!participant?.phone?.trim());
+    // Typed before the drawer was closed: brought back.
+    const key = untracked(() => this.draftKey());
+    const draft = key ? this.drafts.get(key) : undefined;
+    if (draft) {
+      if (!this.lockName()) this.name.set(draft.name);
+      if (!this.phoneFromProfile()) this.phone.set(draft.phone);
+      this.gifts.set([...draft.gifts]);
+      this.pendingGift.set(draft.pendingGift);
+    }
     this.showErrors.set(false);
   }
 }

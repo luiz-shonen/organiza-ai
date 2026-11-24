@@ -1,3 +1,4 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -17,7 +18,13 @@ import { OrgDateAdapter, maskDate } from './org-date-adapter';
 @Component({
   selector: 'org-date-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule],
+  imports: [
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatNativeDateModule,
+    MatTooltipModule,
+  ],
   providers: [
     { provide: DateAdapter, useClass: OrgDateAdapter },
     {

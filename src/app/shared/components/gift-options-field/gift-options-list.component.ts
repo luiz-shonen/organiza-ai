@@ -20,6 +20,10 @@ export interface GiftOptionEdit {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   template: `
+    @if (note()) {
+      <!-- The person's own word on what they like, above their ideas, always in view. -->
+      <p class="gift-list__note" data-testid="gift-options-list-note" [textContent]="note()"></p>
+    }
     @if (collapsible() && gifts().length) {
       <org-button
         class="gift-list__toggle"
@@ -172,6 +176,8 @@ export interface GiftOptionEdit {
 export class GiftOptionsListComponent {
   public readonly gifts = input<readonly string[]>([]);
   public readonly label = input('');
+  /** The person's short comment, shown above the ideas ("Adoro cozinhar e tomar café"). */
+  public readonly note = input<string | null | undefined>(null);
   public readonly collapsible = input(false);
   /** The person may change these ideas: a pencil and a trash can on each. */
   public readonly editable = input(false);

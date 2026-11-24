@@ -25,6 +25,8 @@ export interface SecretSantaParticipant {
   readonly name: string;
   readonly phone: string;
   readonly giftOptions: readonly string[];
+  /** A short word from the person above their gift ideas ("Adoro cozinhar e tomar café"). */
+  readonly note?: string;
   /** The confirmed guest this participant was added from, if any. */
   readonly guestId?: string;
   /**
@@ -123,11 +125,15 @@ export interface SecretSantaRosterEntry {
   readonly id: string;
   readonly name: string;
   readonly giftOptions: readonly string[];
+  /** The person's short comment above their gift ideas. */
+  readonly note?: string;
 }
 
 /** Fewer people than this and everyone could guess who drew whom. */
 export const SECRET_SANTA_MIN_PARTICIPANTS = 3;
 /** Gift options per participant. */
 export const SECRET_SANTA_MAX_GIFT_OPTIONS = 10;
+/** Longest comment above a person's gift ideas. */
+export const SECRET_SANTA_NOTE_MAX = 200;
 /** Gift options per person when the organizer has not chosen another number. */
 export const SECRET_SANTA_DEFAULT_GIFT_OPTIONS = 3;

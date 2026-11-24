@@ -64,4 +64,14 @@ describe('GiftOptionsListComponent', () => {
     fixture.detectChanges();
     expect(el.querySelector('[data-testid="gift-options-list-add-btn"]')).toBeNull();
   });
+
+  it("shows the person's comment above the ideas, folded or not", () => {
+    const { fixture, el } = create(false);
+    fixture.componentRef.setInput('collapsible', true);
+    fixture.componentRef.setInput('note', 'Adoro cozinhar\ne tomar café');
+    fixture.detectChanges();
+    const note = el.querySelector('[data-testid="gift-options-list-note"]');
+    expect(note?.textContent).toBe('Adoro cozinhar\ne tomar café');
+    expect(el.querySelectorAll('[data-testid="gift-options-list-item"]')).toHaveLength(0);
+  });
 });

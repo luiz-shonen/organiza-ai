@@ -198,6 +198,10 @@ describe('amigo oculto sign-ups from the invite', () => {
     const typed = { name: 'Tio Zé', phone: '', giftOptions: ['Meia'] };
     await assertSucceeds(setDoc(doc(owner, path('p1')), typed));
     await assertSucceeds(updateDoc(doc(owner, path('p1')), { giftOptions: ['Boné'] }));
+    // A short comment above the ideas: plain text up to 200 characters.
+    await assertSucceeds(updateDoc(doc(owner, path('p1')), { note: 'Adoro café' }));
+    await assertFails(updateDoc(doc(owner, path('p1')), { note: '<b>café</b>' }));
+    await assertFails(updateDoc(doc(owner, path('p1')), { note: 'x'.repeat(201) }));
     await assertSucceeds(
       setDoc(doc(owner, roster('p1')), { name: 'Tio Zé', giftOptions: ['Boné'] }),
     );

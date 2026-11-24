@@ -410,7 +410,8 @@ service cloud.firestore {
 
         function isValidSecretSantaParticipant() {
           let data = request.resource.data;
-          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'guestId', 'joinedBy', 'distinctFrom', 'mergedFrom', 'createdAt'])
+          return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'note', 'guestId', 'joinedBy', 'distinctFrom', 'mergedFrom', 'createdAt'])
+              && (!changes('note') || isPlainText(data.get('note', null), 200))
               && (resource != null || data.keys().hasAll(['name', 'phone', 'giftOptions']))
               && (!changes('name') || isFilledText(data.get('name', null), 120))
               && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
@@ -457,12 +458,14 @@ service cloud.firestore {
         function mirrors(entry) {
           return (entry.get('joinedBy', '') == '' && entry.get('guestId', '') == '')
               || (request.resource.data.get('name', null) == entry.get('name', '')
-                  && request.resource.data.get('giftOptions', null) == entry.get('giftOptions', []));
+                  && request.resource.data.get('giftOptions', null) == entry.get('giftOptions', [])
+                  && request.resource.data.get('note', '') == entry.get('note', ''));
         }
 
         function isValidRosterEntry() {
           let data = request.resource.data;
-          return data.keys().hasOnly(['name', 'giftOptions', 'createdAt'])
+          return data.keys().hasOnly(['name', 'giftOptions', 'note', 'createdAt'])
+              && (!changes('note') || isPlainText(data.get('note', null), 200))
               && isFilledText(data.get('name', null), 120)
               && data.get('giftOptions', null) is list && data.get('giftOptions', null).size() <= 10
               && (!changes('createdAt') || isOptionalString(data.get('createdAt', null), 40));

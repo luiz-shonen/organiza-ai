@@ -53,3 +53,14 @@
   font-size: var(--org-font-size-sm);
   margin: 0;
 }
+
+// The person's comment above their ideas: quiet, in their own words and line breaks.
+.gift-list__note {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  font-style: italic;
+  line-height: var(--org-line-height-normal);
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}

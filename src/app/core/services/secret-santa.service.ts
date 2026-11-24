@@ -40,8 +40,13 @@ export class SecretSantaService {
     return `events/${eventId}/secretSantaRoster`;
   }
 
-  private rosterDoc(input: { name: string; giftOptions: readonly string[] }) {
-    return { name: input.name, giftOptions: [...input.giftOptions] };
+  private rosterDoc(input: { name: string; giftOptions: readonly string[]; note?: string }) {
+    return {
+      name: input.name,
+      giftOptions: [...input.giftOptions],
+      // Only when the form sent it: a change of ideas alone keeps the comment.
+      ...(input.note !== undefined ? { note: input.note } : {}),
+    };
   }
 
   /** Who is in the draw, names and gift options only: what a signed-in guest may read. */
@@ -57,6 +62,7 @@ export class SecretSantaService {
               id: d.id,
               name: d.name ?? '',
               giftOptions: d.giftOptions ?? [],
+              ...(d.note ? { note: d.note } : {}),
               createdAt: d.createdAt ?? '',
             }))
             .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
@@ -117,6 +123,7 @@ export class SecretSantaService {
               name: d.name ?? '',
               phone: d.phone ?? '',
               giftOptions: d.giftOptions ?? [],
+              ...(d.note ? { note: d.note } : {}),
               ...(d.guestId ? { guestId: d.guestId } : {}),
               ...(d.joinedBy ? { joinedBy: d.joinedBy } : {}),
               ...(d.distinctFrom?.length ? { distinctFrom: d.distinctFrom } : {}),
@@ -200,6 +207,7 @@ export class SecretSantaService {
               name: doc.name ?? '',
               phone: doc.phone ?? '',
               giftOptions: doc.giftOptions ?? [],
+              ...(doc.note ? { note: doc.note } : {}),
               ...(doc.guestId ? { guestId: doc.guestId } : {}),
               ...(doc.joinedBy ? { joinedBy: doc.joinedBy } : {}),
             },
@@ -477,6 +485,7 @@ export class SecretSantaService {
       name: input.name,
       phone: input.phone,
       giftOptions: [...input.giftOptions],
+      ...(input.note !== undefined ? { note: input.note } : {}),
       ...(input.guestId ? { guestId: input.guestId } : {}),
     };
   }

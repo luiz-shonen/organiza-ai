@@ -151,8 +151,11 @@
       min-width: var(--org-space-sm);
     }
 
+    // The steps not shown sit beside this one: clipped sideways, or focusing a field scrolled the
+    // whole page left on a phone. Up and down stays open, and a margin keeps the cards' shadows.
     .mat-horizontal-content-container {
-      overflow: visible;
+      overflow-clip-margin: var(--org-space-md);
+      overflow: clip visible;
       padding: 0;
     }
   }

@@ -2,7 +2,8 @@
   <mat-chip-row
     class="org-editable-chip__chip"
     [class.org-editable-chip__chip--selected]="selected()"
-    [editable]="true"
+    [editable]="!disabled()"
+    [disabled]="disabled()"
     [highlighted]="selected()"
     [value]="hasValue() ? value() : ''"
     [attr.data-testid]="testId() || null"
@@ -12,16 +13,18 @@
     (keydown.escape)="cancel()"
     (removed)="cleared.emit()"
   >
-    <button
-      matChipEdit
-      type="button"
-      [attr.aria-label]="'Editar ' + label()"
-      [matTooltip]="'Editar ' + label()"
-    >
-      <org-icon name="edit" size="sm" color="currentColor" />
-    </button>
+    @if (!disabled()) {
+      <button
+        matChipEdit
+        type="button"
+        [attr.aria-label]="'Editar ' + label()"
+        [matTooltip]="'Editar ' + label()"
+      >
+        <org-icon name="edit" size="sm" color="currentColor" />
+      </button>
+    }
     {{ label() }}
-    @if (hasValue()) {
+    @if (hasValue() && !disabled()) {
       <button matChipRemove type="button" aria-label="Limpar" matTooltip="Limpar">
         <org-icon name="cancel" size="sm" color="currentColor" />
       </button>

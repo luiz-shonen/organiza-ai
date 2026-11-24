@@ -43,6 +43,34 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
     });
   });
 
+  test('on a phone, typing right after a step changes never shifts the page sideways', async ({
+    page,
+    eventEditorPage,
+  }) => {
+    await page.setViewportSize({ width: 393, height: 851 });
+    await page.route('https://viacep.com.br/ws/**/json/', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ cep: '35830-000', localidade: 'Jaboticatubas', uf: 'MG' }),
+      }),
+    );
+    await page.goto('/meus-eventos/evento/novo');
+    await eventEditorPage.assertLoaded();
+    await eventEditorPage.fillBasicInfo('Churrasco', nextYearDate('25/12'), 'Na roça.', '12:00');
+    // Straight away, while the next step still slides in.
+    await eventEditorPage.cepInput.fill('35830000');
+    await page
+      .getByTestId('event-map-location-input')
+      .fill('https://maps.app.goo.gl/2QwPwZQzsFamzgfGA?g_st=aw');
+    const shifted = await page.evaluate(() =>
+      [...document.querySelectorAll('mat-sidenav-container, main, org-page-layout')].some(
+        (el) => el.scrollLeft > 0,
+      ),
+    );
+    expect(shifted).toBe(false);
+  });
+
   test('should render dashboard filter chips and new event button', async ({
     page,
     dashboardPage,

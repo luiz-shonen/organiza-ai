@@ -60,6 +60,8 @@ export class SecretSantaCardComponent {
   public readonly participants = input<readonly SecretSantaParticipant[]>([]);
   /** Only the owner draws and sends the links. */
   public readonly isOwner = input(false);
+  /** The organizer's description: gift value, rules, when gifts are swapped. */
+  public readonly rules = input<string | null>(null);
   /** When the latest draw happened (ISO); null before the first one. */
   public readonly drawnAt = input<string | null>(null);
   public readonly links = input<readonly SecretSantaShareLink[]>([]);

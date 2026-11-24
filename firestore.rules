@@ -283,6 +283,7 @@ service cloud.firestore {
             && (!changes('location') || isOptionalString(data.get('location', null), 500))
             && (!changes('pixKey') || isOptionalString(data.get('pixKey', null), 77))
             && (!changes('pixPurpose') || isOptionalString(data.get('pixPurpose', null), 300))
+            && (!changes('secretSantaRules') || isOptionalString(data.get('secretSantaRules', null), 500))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
             && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
             && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)))

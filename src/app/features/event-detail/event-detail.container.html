@@ -164,6 +164,7 @@
         <app-secret-santa-roster-card
           [entries]="secretSantaRosterView()"
           [giftOptions]="!!event.secretSanta?.giftOptions"
+          [rules]="event.secretSantaRules ?? null"
           [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
           [editableIds]="myEditableSecretSantaIds()"
           [notice]="secretSantaRosterNotice()"
@@ -228,6 +229,7 @@
   <app-secret-santa-card
     [participants]="secretSantaParticipants()"
     [isOwner]="isOwner()"
+    [rules]="event?.secretSantaRules ?? null"
     [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
     [links]="secretSantaLinks()"
     [outdated]="secretSantaOutdated()"

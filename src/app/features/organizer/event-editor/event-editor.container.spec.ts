@@ -705,6 +705,37 @@ describe('EventEditorContainer', () => {
       );
     });
 
+    it('saves the amigo oculto rules with their line breaks, none without amigo oculto', async () => {
+      component['basicInfoForm'].patchValue({
+        title: 'Natal',
+        category: 'Outros',
+        description: '',
+        date: new Date(Date.now() + 7 * 86_400_000),
+        time: '20:00',
+      });
+      component['addressForm'].patchValue({
+        cep: '30514-160',
+        address: 'Rua Dom Lara',
+        neighborhood: 'Vista Alegre',
+        city: 'Belo Horizonte/MG',
+        number: '135',
+      });
+      component['secretSantaEnabled'].set(true);
+      component['secretSantaRules'].set('  Presente de R$ 80 a R$ 100.\n\nTroca na ceia. ');
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          secretSantaRules: 'Presente de R$ 80 a R$ 100.\n\nTroca na ceia.',
+        }),
+      );
+
+      component['secretSantaEnabled'].set(false);
+      await component['saveEvent']();
+      expect(mockEventService.createEvent).toHaveBeenLastCalledWith(
+        expect.objectContaining({ secretSantaRules: null }),
+      );
+    });
+
     it('saves tidied text and the CEP formatted', async () => {
       const date = new Date(Date.now() + 7 * 86_400_000);
       component['basicInfoForm'].patchValue({

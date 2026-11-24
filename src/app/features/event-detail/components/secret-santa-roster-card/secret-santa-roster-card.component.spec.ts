@@ -20,6 +20,16 @@ describe('SecretSantaRosterCardComponent', () => {
     fixture.detectChanges();
   });
 
+  it('shows the rules the organizer typed, and nothing without them', () => {
+    const rules = () => fixture.nativeElement.querySelector('[data-testid="secret-santa-rules"]');
+    fixture.detectChanges();
+    expect(rules()).toBeNull();
+
+    fixture.componentRef.setInput('rules', 'Presente de R$ 80 a R$ 100.\n\nTroca na ceia.');
+    fixture.detectChanges();
+    expect(rules().textContent).toBe('Presente de R$ 80 a R$ 100.\n\nTroca na ceia.');
+  });
+
   it('lists everyone with their gift ideas, with no pencil for someone else', () => {
     expect(el().textContent).toContain('Chinelo 39');
     expect(el().textContent).toContain('Sem ideias de presente ainda');

@@ -25,6 +25,8 @@ export const ADDRESS_COMPLEMENT_MAX = 80;
 export const ADDRESS_DIRECTIONS_MAX = 300;
 /** Longest "Para que é o Pix" text. */
 export const PIX_PURPOSE_MAX = 300;
+/** Longest amigo oculto description (value, rules, dates). */
+export const SECRET_SANTA_RULES_MAX = 500;
 
 export type PixType = 'cpf' | 'cnpj' | 'email' | 'phone' | 'random' | string;
 
@@ -112,6 +114,11 @@ export interface PartyEvent {
   pixKey: string | null;
   /** What the Pix is for, in the organizer's words (rachar os custos, doação…). */
   pixPurpose?: string | null;
+  /**
+   * The amigo oculto in the organizer's words: the gift value ("de R$ 80 a R$ 100"), the
+   * rules, when gifts are swapped. Kept beside `secretSanta`, whose keys the rules fix.
+   */
+  secretSantaRules?: string | null;
   pixType?: PixType;
   estimatedBudget?: number | null;
   status?: 'active' | 'cancelled';

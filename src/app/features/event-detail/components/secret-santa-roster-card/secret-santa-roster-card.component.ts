@@ -40,6 +40,9 @@ export class SecretSantaRosterCardComponent {
   public readonly entries = input.required<readonly SecretSantaRosterEntry[]>();
   /** The event asks each participant for gift ideas, and how many. */
   public readonly giftOptions = input(false);
+  /** One of the guest's own gift ideas changed or taken out, right in the card. */
+  public readonly editGift = output<{ id: string; gift: number; text: string }>();
+  public readonly removeGift = output<{ id: string; gift: number }>();
   /** The organizer's description: gift value, rules, when gifts are swapped. */
   public readonly rules = input<string | null>(null);
   public readonly maxGiftOptions = input(SECRET_SANTA_DEFAULT_GIFT_OPTIONS);

@@ -93,7 +93,7 @@ describe('SecretSantaParticipantsComponent', () => {
     fixture.detectChanges();
     const list = byTestId('secret-santa-participants')!;
     expect(list.textContent).toContain('Ana');
-    // Folded under the name; opened, the same cards the form shows, with nothing to press.
+    // Folded under the name; opened, the same cards the form shows, each with ✏️ and 🗑.
     expect(list.querySelectorAll('[data-testid="gift-options-list-item"]')).toHaveLength(0);
     (
       list.querySelector(
@@ -101,9 +101,10 @@ describe('SecretSantaParticipantsComponent', () => {
       ) as HTMLButtonElement
     ).click();
     fixture.detectChanges();
-    const cards = list.querySelectorAll('[data-testid="gift-options-list-item"]');
+    const cards = list.querySelectorAll('[data-testid="gift-options-list-item"] .gift-list__text');
     expect([...cards].map((card) => card.textContent?.trim())).toEqual(['Livro', 'Chinelo']);
-    expect(byTestId('secret-santa-gifts')!.querySelectorAll('.gift-list button')).toHaveLength(0);
+    expect(list.querySelectorAll('[data-testid="gift-options-list-edit-btn"]')).toHaveLength(2);
+    expect(list.querySelectorAll('[data-testid="gift-options-list-remove-btn"]')).toHaveLength(2);
     (list.querySelector('[aria-label="Remover Ana"]') as HTMLButtonElement).click();
     expect(removed).toEqual([0]);
   });

@@ -150,6 +150,24 @@ export class SecretSantaService {
     });
   }
 
+  /** Only the gift ideas of an entry (the organizer changing one right in the list). */
+  async updateGiftOptions(
+    eventId: string,
+    participantId: string,
+    giftOptions: readonly string[],
+  ): Promise<void> {
+    await this.gateway.runBatch((batch) => {
+      batch.update(`${this.participantsPath(eventId)}/${participantId}`, {
+        giftOptions: [...giftOptions],
+      });
+      batch.set(
+        `${this.rosterPath(eventId)}/${participantId}`,
+        { giftOptions: [...giftOptions] },
+        { merge: true },
+      );
+    });
+  }
+
   async removeParticipant(eventId: string, participantId: string): Promise<void> {
     await this.gateway.runBatch((batch) => {
       batch.delete(`${this.participantsPath(eventId)}/${participantId}`);

@@ -27,3 +27,16 @@
   margin-inline-start: calc(-1 * var(--org-space-sm));
   max-inline-size: 100%;
 }
+
+// With a pencil and a trash can at the end, as in the form.
+.gift-list__item--editable {
+  padding-inline-end: var(--org-space-2xs);
+}
+
+.gift-list__editing {
+  list-style: none;
+}
+
+.gift-list__edit-actions {
+  display: flex;
+}

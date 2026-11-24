@@ -1274,6 +1274,105 @@ export class EventDetailContainer implements OnInit {
     }
   }
 
+  /**
+   * A gift idea changed or taken out right in a list: asked first, so a slip of the finger
+   * changes nothing. Null: the person gave up.
+   */
+  private async confirmGiftChange(
+    gifts: readonly string[],
+    gift: number,
+    text: string | null,
+  ): Promise<string[] | null> {
+    const current = gifts[gift];
+    if (current === undefined) return null;
+    const ok = await firstValueFrom(
+      this.dialogs.confirm(
+        text === null
+          ? {
+              title: 'Apagar ideia de presente?',
+              message: `"${current}" sai da lista de ideias.`,
+              confirmLabel: 'Apagar',
+              cancelLabel: 'Cancelar',
+              tone: 'danger',
+            }
+          : {
+              title: 'Salvar alteração?',
+              message: `"${current}" passa a ser "${text}".`,
+              confirmLabel: 'Salvar',
+              cancelLabel: 'Cancelar',
+            },
+      ),
+    );
+    if (!ok) return null;
+    return text === null
+      ? gifts.filter((_, i) => i !== gift)
+      : gifts.map((value, i) => (i === gift ? text : value));
+  }
+
+  /** The organizers change anyone's gift ideas right in the participants list. */
+  protected async onEditSecretSantaGift(change: {
+    participant: number;
+    gift: number;
+    text?: string;
+  }): Promise<void> {
+    const saved = this.secretSantaParticipants()[change.participant];
+    if (!saved) return;
+    const gifts = await this.confirmGiftChange(saved.giftOptions, change.gift, change.text ?? null);
+    if (!gifts) return;
+    try {
+      await this.secretSantaService.updateGiftOptions(this.id(), saved.id, gifts);
+      this.feedback.success(change.text === undefined ? 'Ideia apagada.' : 'Ideia atualizada.');
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível salvar a ideia de presente', error));
+    }
+  }
+
+  protected onRemoveSecretSantaGift(change: { participant: number; gift: number }): Promise<void> {
+    return this.onEditSecretSantaGift(change);
+  }
+
+  /** A guest changes their own gift ideas (theirs, a relative's) right in the amigo oculto card. */
+  protected async onEditOwnSecretSantaGift(change: {
+    id: string;
+    gift: number;
+    text?: string;
+  }): Promise<void> {
+    const uid = this.memberUid();
+    if (!uid) return;
+    try {
+      const [entry] = await this.secretSantaService.getOwnEntries(this.id(), [change.id]);
+      if (!entry) return;
+      const gifts = await this.confirmGiftChange(
+        entry.giftOptions,
+        change.gift,
+        change.text ?? null,
+      );
+      if (!gifts) return;
+      const input: SecretSantaParticipantInput = {
+        name: entry.name,
+        phone: entry.phone,
+        giftOptions: gifts,
+        ...(entry.guestId ? { guestId: entry.guestId } : {}),
+      };
+      await this.secretSantaService.saveOwnEntries(
+        this.id(),
+        uid,
+        [{ id: entry.id, input }],
+        [],
+        [entry.id],
+      );
+      this.mySecretSantaVersion.update((v) => v + 1);
+      this.feedback.success(change.text === undefined ? 'Ideia apagada.' : 'Ideia atualizada.');
+    } catch (err) {
+      console.error(err);
+      this.feedback.error(explainError('Não foi possível salvar a ideia de presente', err));
+    }
+  }
+
+  protected onRemoveOwnSecretSantaGift(change: { id: string; gift: number }): Promise<void> {
+    return this.onEditOwnSecretSantaGift(change);
+  }
+
   protected async removeSecretSantaParticipant(index: number): Promise<void> {
     const saved = this.secretSantaParticipants()[index];
     if (!saved) return;

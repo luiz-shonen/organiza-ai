@@ -6,7 +6,9 @@
     }
   </legend>
   @if (hint()) {
-    <p class="gift-field__hint">{{ hint() }}</p>
+    <p class="gift-field__hint">
+      {{ hint() }} Um presente por campo; use o + para adicionar outro.
+    </p>
   }
 
   @if (gifts().length) {
@@ -75,7 +77,7 @@
       <org-text-field
         class="gift-field__new"
         [label]="gifts().length ? 'Adicionar mais uma opção' : 'Nova opção'"
-        placeholder="Ex: Chinelo, cor verde, tamanho 36"
+        placeholder="Ex.: Chinelo tamanho 39"
         [testId]="testIdPrefix() + '-gift-input'"
         [maxLength]="giftMaxLength"
         [error]="newGiftError()"

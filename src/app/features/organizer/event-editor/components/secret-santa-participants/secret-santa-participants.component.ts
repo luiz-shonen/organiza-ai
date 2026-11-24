@@ -80,6 +80,9 @@ export class SecretSantaParticipantsComponent {
   public readonly add = output<SecretSantaParticipantInput>();
   public readonly update = output<SecretSantaParticipantUpdate>();
   public readonly remove = output<number>();
+  /** One gift idea of a participant changed or taken out, right in the list; the page confirms. */
+  public readonly editGift = output<{ participant: number; gift: number; text: string }>();
+  public readonly removeGift = output<{ participant: number; gift: number }>();
 
   protected readonly minParticipants = SECRET_SANTA_MIN_PARTICIPANTS;
   protected readonly editingIndex = signal<number | null>(null);

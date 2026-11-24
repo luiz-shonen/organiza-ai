@@ -293,4 +293,22 @@ describe('SecretSantaParticipantFormComponent', () => {
     again.destroy();
     expect(open().componentInstance['name']()).toBe('');
   });
+
+  it('sends the comment above the gift ideas, tidied, and loads it to edit', () => {
+    const fixture = TestBed.createComponent(SecretSantaParticipantFormComponent);
+    const sent: SecretSantaParticipantInput[] = [];
+    fixture.componentInstance.submitted.subscribe((p) => sent.push(p));
+    fixture.componentRef.setInput('showGiftOptions', true);
+    fixture.componentRef.setInput('participant', {
+      name: 'Ana',
+      phone: '',
+      giftOptions: ['Livro'],
+      note: 'Gosto de ler',
+    });
+    fixture.detectChanges();
+    expect(fixture.componentInstance['note']()).toBe('Gosto de ler');
+    fixture.componentInstance['note'].set('  Gosto de ler <b>e de café</b> ');
+    void fixture.componentInstance['submit']();
+    expect(sent[0]?.note).toBe('Gosto de ler be de café/b');
+  });
 });

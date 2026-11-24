@@ -298,3 +298,9 @@
   display: flex;
   gap: var(--org-space-xs);
 }
+
+// "Expandir tudo": a quiet text button on the right, above the families.
+.guest-list__fold-all {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -55,6 +55,8 @@ export type OrgIconName =
   | 'shopping_cart'
   | 'person_add'
   | 'expand_more'
+  | 'unfold_more'
+  | 'unfold_less'
   | 'login'
   | 'cloud_off'
   | 'home'
@@ -132,6 +134,8 @@ export const ORG_ICON_MAP: Readonly<Record<OrgIconName, string>> = {
   shopping_cart: 'shopping_cart',
   person_add: 'person_add',
   expand_more: 'expand_more',
+  unfold_more: 'unfold_more',
+  unfold_less: 'unfold_less',
   login: 'login',
   cloud_off: 'cloud_off',
   home: 'home',

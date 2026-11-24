@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { GuestDecline } from '../../../../core/models';
 import {
   householdPeople,
@@ -80,6 +80,12 @@ export class GuestListCardComponent {
   protected hasDetails(household: GuestHousehold): boolean {
     return household.members.length > 1 || household.bring.length > 0 || this.hasItems();
   }
+
+  /** "Expandir tudo" / "Recolher tudo": every family at once. Folded when the page opens. */
+  protected readonly allOpen = signal(false);
+  protected readonly hasAnyDetails = computed(() =>
+    this.households().some((household) => this.hasDetails(household)),
+  );
 
   protected householdSummary(household: GuestHousehold): string {
     // Only what the line does not already say: one person alone needs no "1 pessoa".

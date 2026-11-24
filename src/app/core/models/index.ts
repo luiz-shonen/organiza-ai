@@ -39,6 +39,7 @@ export type {
 export {
   SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
   SECRET_SANTA_MAX_GIFT_OPTIONS,
+  SECRET_SANTA_NOTE_MAX,
   SECRET_SANTA_MIN_PARTICIPANTS,
 } from './secret-santa.model';
 export type { AppNotification, AppNotificationKind } from './app-notification.model';

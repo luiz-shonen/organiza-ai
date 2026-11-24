@@ -14,13 +14,15 @@ import {
 } from '@angular/core';
 import {
   SECRET_SANTA_MAX_GIFT_OPTIONS,
+  SECRET_SANTA_NOTE_MAX,
   type SecretSantaParticipantInput,
 } from '../../../../../core/models';
 import { type KnownPerson } from '../../../../../core/utils/known-people.utils';
-import { PersonName, Phone } from '../../../../../core/value-objects';
+import { PersonName, Phone, normalizePlainText } from '../../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgTextFieldComponent,
+  OrgTextareaFieldComponent,
   type OrgTextSuggestion,
 } from '../../../../../shared/ui';
 import { GiftOptionsFieldComponent } from '../../../../../shared/components/gift-options-field/gift-options-field.component';
@@ -36,7 +38,12 @@ import { ParticipantDraftsService } from './participant-drafts.service';
 @Component({
   selector: 'app-secret-santa-participant-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgButtonComponent, OrgTextFieldComponent, GiftOptionsFieldComponent],
+  imports: [
+    OrgButtonComponent,
+    OrgTextFieldComponent,
+    OrgTextareaFieldComponent,
+    GiftOptionsFieldComponent,
+  ],
   templateUrl: './secret-santa-participant-form.component.html',
   styleUrls: ['../event-step.scss', './secret-santa-participant-form.component.scss'],
 })
@@ -83,6 +90,9 @@ export class SecretSantaParticipantFormComponent {
 
   protected readonly name = signal('');
   protected readonly phone = signal('');
+  /** "Comentário (opcional)": a short word above the gift ideas. */
+  protected readonly note = signal('');
+  protected readonly noteMax = SECRET_SANTA_NOTE_MAX;
   /** The ideas already added, in order. */
   protected readonly gifts = signal<readonly string[]>([]);
   private readonly guestId = signal<string | undefined>(undefined);
@@ -116,6 +126,7 @@ export class SecretSantaParticipantFormComponent {
         phone: this.phone(),
         gifts: this.gifts(),
         pendingGift: this.pendingGift(),
+        note: this.note(),
       };
       if (key) this.drafts.set(key, draft);
     });
@@ -138,10 +149,15 @@ export class SecretSantaParticipantFormComponent {
       revealFirstInvalidSoon(this.host.nativeElement);
       return;
     }
+    const note = normalizePlainText(this.note(), true)
+      .replace(/[<>{}]/g, '')
+      .slice(0, SECRET_SANTA_NOTE_MAX);
     const participant: SecretSantaParticipantInput = {
       name: name.value,
       phone: phone?.formatted ?? '',
       giftOptions: this.showGiftOptions() ? [...this.gifts()] : [],
+      // Line breaks kept, markup out. Sent only when there is one, or to clear an earlier one.
+      ...(this.showGiftOptions() && (note || this.participant()?.note) ? { note } : {}),
       ...(this.guestId() ? { guestId: this.guestId() } : {}),
     };
     const save = this.save();
@@ -172,6 +188,7 @@ export class SecretSantaParticipantFormComponent {
     this.name.set(participant?.name ?? '');
     this.phone.set(participant?.phone ?? '');
     this.gifts.set([...(participant?.giftOptions ?? [])]);
+    this.note.set(participant?.note ?? '');
     this.giftsField()?.reset();
     this.pendingGift.set('');
     this.guestId.set(participant?.guestId);
@@ -184,6 +201,7 @@ export class SecretSantaParticipantFormComponent {
       if (!this.phoneFromProfile()) this.phone.set(draft.phone);
       this.gifts.set([...draft.gifts]);
       this.pendingGift.set(draft.pendingGift);
+      this.note.set(draft.note ?? '');
     }
     this.showErrors.set(false);
   }

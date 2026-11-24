@@ -7,6 +7,8 @@ export interface ParticipantDraft {
   readonly gifts: readonly string[];
   /** An idea typed in "Nova opção" and not added yet. */
   readonly pendingGift: string;
+  /** "Comentário (opcional)"; missing in drafts kept before the field. */
+  readonly note?: string;
 }
 
 /**

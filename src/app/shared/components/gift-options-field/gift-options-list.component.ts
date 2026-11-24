@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  linkedSignal,
+  output,
+  signal,
+} from '@angular/core';
 import { SECRET_SANTA_MAX_GIFT_OPTIONS } from '../../../core/models';
 import { GiftOption } from '../../../core/value-objects';
 import { OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent } from '../../ui';
@@ -20,6 +28,10 @@ export interface GiftOptionEdit {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   template: `
+    @if (note()) {
+      <!-- The person's own word on what they like, above their ideas, always in view. -->
+      <p class="gift-list__note" data-testid="gift-options-list-note" [textContent]="note()"></p>
+    }
     @if (collapsible() && gifts().length) {
       <org-button
         class="gift-list__toggle"
@@ -132,7 +144,7 @@ export interface GiftOptionEdit {
             <org-text-field
               class="gift-list__edit"
               label="Nova ideia de presente"
-              placeholder="Ex.: Chinelo tamanho 39"
+              placeholder="Ex: Chinelo, cor verde, tamanho 36"
               testId="gift-options-list-add-input"
               [maxLength]="giftMaxLength"
               [error]="addError()"
@@ -172,7 +184,11 @@ export interface GiftOptionEdit {
 export class GiftOptionsListComponent {
   public readonly gifts = input<readonly string[]>([]);
   public readonly label = input('');
+  /** The person's short comment, shown above the ideas ("Adoro cozinhar e tomar café"). */
+  public readonly note = input<string | null | undefined>(null);
   public readonly collapsible = input(false);
+  /** "Expandir tudo" / "Recolher tudo" of the card: every list follows it, then each its own way. */
+  public readonly openAll = input(false);
   /** The person may change these ideas: a pencil and a trash can on each. */
   public readonly editable = input(false);
   public readonly edit = output<GiftOptionEdit>();
@@ -182,7 +198,7 @@ export class GiftOptionsListComponent {
   /** A new idea typed in place; the page saves it. */
   public readonly add = output<string>();
 
-  protected readonly open = signal(false);
+  protected readonly open = linkedSignal(() => this.openAll());
   protected readonly editingIndex = signal<number | null>(null);
   protected readonly editText = signal('');
   protected readonly editError = signal('');

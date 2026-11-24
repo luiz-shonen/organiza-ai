@@ -33,6 +33,11 @@
   border-top: 1px solid var(--org-outline-variant);
 }
 
+// Under "Expandir tudo", a line opens the families, as over the amigo oculto list.
+.guest-list__fold-all + .guest-list__households {
+  border-top: 1px solid var(--org-outline-variant);
+}
+
 // A household with nothing to open: the same line as a panel's title.
 .guest-list__row {
   align-items: center;

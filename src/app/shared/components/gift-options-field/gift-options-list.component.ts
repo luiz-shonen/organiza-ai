@@ -144,7 +144,7 @@ export interface GiftOptionEdit {
             <org-text-field
               class="gift-list__edit"
               label="Nova ideia de presente"
-              placeholder="Ex.: Chinelo tamanho 39"
+              placeholder="Ex: Chinelo, cor verde, tamanho 36"
               testId="gift-options-list-add-input"
               [maxLength]="giftMaxLength"
               [error]="addError()"

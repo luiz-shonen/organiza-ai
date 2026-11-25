@@ -149,4 +149,17 @@ describe('amigo oculto roster', () => {
     leave.delete(doc(maria, rosterPath('rsvp_maria')));
     await assertSucceeds(leave.commit());
   });
+
+  it('"Recusar" lets the organizer take a guest’s entry and its roster copy out together', async () => {
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, participantPath('rsvp_maria')), participant('maria'));
+      await setDoc(doc(db, rosterPath('rsvp_maria')), roster('Maria'));
+    });
+    const owner = accountDb('owner-uid');
+    const refuse = writeBatch(owner);
+    refuse.delete(doc(owner, participantPath('rsvp_maria')));
+    refuse.delete(doc(owner, rosterPath('rsvp_maria')));
+    await assertSucceeds(refuse.commit());
+  });
 });

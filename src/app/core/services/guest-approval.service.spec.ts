@@ -43,6 +43,7 @@ describe('Approval and account-only links', () => {
       'events/evt-1/guests/u1',
       'events/evt-1/guests/u1_ana',
       'events/evt-1/secretSantaParticipants/rsvp_u1',
+      'events/evt-1/secretSantaRoster/rsvp_u1',
     ]);
   });
 

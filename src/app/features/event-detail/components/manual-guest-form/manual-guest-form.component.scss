@@ -1,0 +1,75 @@
+:host {
+  display: block;
+}
+
+.manual-guest {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}
+
+// Name, then WhatsApp: one under the other, in the narrow drawer and on a phone alike.
+.manual-guest__fields,
+.manual-guest__companions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-xs);
+}
+
+.manual-guest__title {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.manual-guest__hint {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+.manual-guest__list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.manual-guest__companion {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+
+  & + & {
+    border-top: 1px solid var(--org-outline-variant);
+  }
+}
+
+.manual-guest__companion-name {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-md);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+// The companion's name and "Adicionar" side by side; the button under it on a narrow phone.
+.manual-guest__add {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--org-space-sm);
+}
+
+.manual-guest__add-field {
+  flex: 1 1 12rem;
+  min-inline-size: 0;
+}
+
+.manual-guest__actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}

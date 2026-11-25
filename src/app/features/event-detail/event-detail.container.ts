@@ -49,6 +49,7 @@ import {
   type SecretSantaParticipantInput,
   type SecretSantaRosterEntry,
   type EventInvitation,
+  type ManualGuestInput,
 } from '../../core/models';
 import {
   addClaimEntry,
@@ -64,6 +65,7 @@ import {
   hasStarted,
   splitGuestsByApproval,
   type PendingGuest,
+  type GuestHousehold,
   isSecretSantaDrawOutdated,
   isSecretSantaOpen,
   isSecretSantaSelfJoinOpen,
@@ -1750,6 +1752,58 @@ export class EventDetailContainer implements OnInit {
 
   private waitsForApproval(uid: string): boolean {
     return !!this.event()?.requireApproval && !this.mayJoinSecretSanta(uid);
+  }
+
+  /**
+   * "Adicionar alguém à mão" in "Confirmados": the organizers put someone on the list (`id` null)
+   * or change them. Resolves true when it saved, so the drawer closes.
+   */
+  protected readonly saveManualGuest = async (
+    guest: ManualGuestInput,
+    id: string | null,
+  ): Promise<boolean> => {
+    const uid = this.memberUid();
+    if (!uid) return false;
+    try {
+      if (id) {
+        await this.guestService.updateManualGuest(this.id(), id, guest);
+        this.feedback.success(`${guest.name} foi atualizado(a).`);
+      } else {
+        await this.guestService.addManualGuest(this.id(), guest, uid);
+        this.feedback.success(`${guest.name} entrou na lista.`);
+      }
+      return true;
+    } catch (err) {
+      console.error(err);
+      this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', err));
+      return false;
+    }
+  };
+
+  /** "Remover" someone added by hand, after asking. */
+  protected onRemoveManualGuest(household: GuestHousehold): void {
+    this.dialogs
+      .confirm({
+        title: `Remover ${household.name}?`,
+        message:
+          household.members.length > 1
+            ? 'Sai da lista de confirmados, com quem vinha junto.'
+            : 'Sai da lista de confirmados.',
+        confirmLabel: 'Remover',
+        cancelLabel: 'Voltar',
+        tone: 'danger',
+        icon: 'delete_outline',
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await this.guestService.removeManualGuest(this.id(), household.id);
+          this.feedback.success(`${household.name} saiu da lista.`);
+        } catch (err) {
+          console.error(err);
+          this.feedback.error(explainError('Não foi possível remover. Tente novamente.', err));
+        }
+      });
   }
 
   protected async onApproveGuest(guest: PendingGuest): Promise<void> {

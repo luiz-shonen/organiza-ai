@@ -516,11 +516,22 @@ service cloud.firestore {
       // Guests subcollection: public read, validated anonymous write
       match /guests/{guestId} {
         allow read: if true;
-        allow create: if isAdmin() || (isPrimaryRsvp() && waitsForApproval()) || isLinkedFamilyRsvp();
-        // Only organizers approve: a guest never changes `approved` on their own answer.
-        allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
+        // "Adicionar alguém à mão": the organizers also put people on the list themselves.
+        allow create: if isAdmin()
+                      || (isPrimaryRsvp() && waitsForApproval() && !addedByOrganizer())
+                      || (isLinkedFamilyRsvp() && !addedByOrganizer())
+                      || (managesEvent(eventData(eventId)) && isManualGuest()
+                          && request.resource.data.addedBy == request.auth.uid);
+        // Only organizers approve: a guest never changes `approved` on their own answer. Someone
+        // added by hand stays a valid hand-added entry, with who added them kept.
+        allow update: if isAdmin()
+                      || (managesEvent(eventData(eventId))
+                          && (!('addedBy' in resource.data)
+                              || (isManualGuest() && !changes('addedBy'))))
+                      || (
                         request.auth != null
                         && !changes('approved')
+                        && !changes('addedBy')
                         && ((resource.data.uid == request.auth.uid && isPrimaryRsvp())
                             || (resource.data.primaryGuestId == request.auth.uid && isLinkedFamilyRsvp()))
                       );
@@ -535,6 +546,30 @@ service cloud.firestore {
                         request.auth != null
                         && (resource.data.uid == request.auth.uid || resource.data.primaryGuestId == request.auth.uid)
                       );
+
+        function addedByOrganizer() {
+          return 'addedBy' in request.resource.data;
+        }
+
+        // Someone the organizers typed in: no account (`uid`), a name, an optional WhatsApp and
+        // up to 10 companions, confirmed, and the uid of the organizer who added them.
+        function isManualGuest() {
+          let data = request.resource.data;
+          return data.keys().hasOnly(['name', 'phone', 'companions', 'companionsCount',
+                                      'isConfirmed', 'confirmedAt', 'addedBy', 'createdAt'])
+              && data.keys().hasAll(['name', 'phone', 'companions', 'companionsCount',
+                                     'isConfirmed', 'confirmedAt', 'addedBy'])
+              && isFilledText(data.name, 120)
+              && isPhoneOrEmpty(data.phone)
+              && data.companions is list
+              && data.companionsCount is int
+              && data.companionsCount >= 0
+              && data.companionsCount <= 10
+              && data.companions.size() == data.companionsCount
+              && data.isConfirmed == true
+              && data.confirmedAt is string
+              && data.addedBy is string;
+        }
 
         function isPrimaryRsvp() {
           return isAccountHolder()

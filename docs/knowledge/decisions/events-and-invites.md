@@ -3,7 +3,7 @@ type: decision
 title: Events, invites and guests (product behaviour)
 status: active
 date: 2026-11-03
-updated: 2026-11-23
+updated: 2026-11-24
 enforced_by:
   - e2e/tests/invites/invites-and-guests.spec.ts
   - src/app/features/home/home.container.spec.ts
@@ -19,6 +19,9 @@ enforced_by:
   - src/app/core/services/name-sync.service.spec.ts
   - src/app/shared/ui/navigation/org-stepper.component.spec.ts
   - e2e/tests/organizer/secret-santa.spec.ts
+  - e2e/tests/invites/manual-guests.spec.ts
+  - e2e/rules/manual-guests.rules.test.ts
+  - src/app/features/event-detail/components/manual-guest-form/manual-guest-form.component.spec.ts
 related: [firebase-and-auth.md, household-claims.md, design-system.md]
 ---
 
@@ -218,6 +221,24 @@ How the app behaves for organizers and guests. Data and permissions are in
   iframe, `printHtmlDocument`); **Baixar PDF** builds a designed PDF with jsPDF (`guest-list-pdf.ts`,
   loaded only when tapped): lilac header, zebra rows, a "Chegou" box to tick at the door.
 - "Faltam 5 kg" beside an item is lilac text, not a pill: it informs, "Eu levo" (soft amber) acts.
+
+## Adding someone by hand
+
+- In **Confirmados**, the organizers (owner and collaborators) have **"Adicionar alguém à mão"**:
+  a drawer (`org-bottom-sheet`, as in the amigo oculto) with the name, WhatsApp (optional) and the
+  companions' names (up to 10). For someone who will not answer the invite: the grandmother without
+  a phone, a guest confirmed by a call.
+- Saved as a guest in `events/{id}/guests` (random id) with `addedBy` (the organizer's uid) and no
+  `uid`: no account behind it. Always confirmed and approved, even when the event asks for
+  approval. It counts like any answer: Confirmados, the total, the PDF/print and the Pix split.
+- Organizers see an **"à mão"** tag beside the name, and **Editar** / **Remover** inside the
+  household's panel; removing asks first. Guests see the person like anyone else, without the tag.
+- It is not linked to anyone's invite: it does not stop that person from confirming by the link
+  later (they would show twice, and the organizer removes the hand-added entry), and it does not put
+  them in the amigo oculto (that has its own "Adicionar alguém à mão").
+- Rules: only `managesEvent` creates, edits and deletes these entries; the entry must keep
+  `addedBy`, have no `uid`, a plain name up to 120 characters, an empty or valid phone and
+  `companions` matching `companionsCount` (≤ 10). A guest cannot mark their own answer `addedBy`.
 
 ## Names follow the profile
 

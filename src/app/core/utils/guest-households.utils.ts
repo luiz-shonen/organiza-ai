@@ -32,6 +32,8 @@ export interface GuestHousehold {
   members: GuestPerson[];
   /** How many of the members are pets; missing means none. */
   pets?: number;
+  /** Put on the list by an organizer ("Adicionar alguém à mão"), not by answering the invite. */
+  manual?: boolean;
 }
 
 /** People in a household, pets left out. */
@@ -156,6 +158,7 @@ export function buildGuestHouseholds(
         ...(family.some((person) => person.pet)
           ? { pets: family.filter((person) => person.pet).length }
           : {}),
+        ...(guest.addedBy ? { manual: true } : {}),
       };
     });
 }

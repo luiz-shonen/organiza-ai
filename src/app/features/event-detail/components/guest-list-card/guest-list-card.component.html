@@ -116,6 +116,9 @@
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }
+                  @if (forOrganizer() && household.manual) {
+                    <span class="guest-list__manual" data-testid="guest-manual-tag">à mão</span>
+                  }
                 </span>
                 @if (householdSummary(household); as summary) {
                   <span orgExpansionSummary class="guest-list__count">{{ summary }}</span>
@@ -181,6 +184,30 @@
                     }
                   </ul>
                 }
+
+                @if (canManage(household)) {
+                  <!-- Added by hand: the organizers change or take them off the list here. -->
+                  <div class="guest-list__manual-actions no-print">
+                    <org-button
+                      label="Remover"
+                      icon="delete_outline"
+                      variant="danger-text"
+                      testId="guest-manual-remove-btn"
+                      [compact]="true"
+                      [gradient]="false"
+                      (pressed)="removeManual.emit(household)"
+                    />
+                    <org-button
+                      label="Editar"
+                      icon="edit"
+                      variant="tonal"
+                      testId="guest-manual-edit-btn"
+                      [compact]="true"
+                      [gradient]="false"
+                      (pressed)="manualSheet.set(household)"
+                    />
+                  </div>
+                }
               </org-expansion-panel>
             } @else {
               <!-- Nothing more to show: just the row, nothing to open. -->
@@ -195,6 +222,9 @@
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }
+                  @if (forOrganizer() && household.manual) {
+                    <span class="guest-list__manual" data-testid="guest-manual-tag">à mão</span>
+                  }
                 </span>
                 @if (householdSummary(household); as summary) {
                   <span class="guest-list__count">{{ summary }}</span>
@@ -204,6 +234,19 @@
           </li>
         }
       </ul>
+    }
+
+    @if (forOrganizer() && saveManual()) {
+      <!-- Someone who will not answer the invite: the organizers put them on the list. -->
+      <org-button
+        class="guest-list__manual-add no-print"
+        variant="secondary"
+        icon="person_add"
+        label="Adicionar alguém à mão"
+        testId="guest-manual-add-btn"
+        [fullWidth]="true"
+        (pressed)="manualSheet.set('new')"
+      />
     }
 
     @if (forOrganizer() && declines().length) {
@@ -233,3 +276,29 @@
     }
   </section>
 </org-surface>
+
+<!-- A drawer beside the page on a larger screen, a sheet from the bottom on a phone. -->
+<org-bottom-sheet
+  testId="manual-guest-sheet"
+  placement="side"
+  [ariaLabel]="editingManual() ? 'Editar ' + editingManual()!.name : 'Adicionar alguém à mão'"
+  [open]="!!manualSheet()"
+  (closed)="manualSheet.set(null)"
+>
+  @if (manualSheet()) {
+    <h2 class="guest-list__sheet-title">
+      {{ editingManual() ? 'Editar quem vai' : 'Adicionar alguém à mão' }}
+    </h2>
+    @if (!editingManual()) {
+      <p class="guest-list__sheet-hint">
+        Para quem não vai confirmar pelo convite. Conta em Confirmados, no total e no Pix.
+      </p>
+    }
+    <app-manual-guest-form
+      [guest]="manualDraft()"
+      [submitLabel]="editingManual() ? 'Salvar alterações' : 'Adicionar à lista'"
+      [save]="saveManualAndClose"
+      (cancelled)="manualSheet.set(null)"
+    />
+  }
+</org-bottom-sheet>

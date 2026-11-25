@@ -270,6 +270,50 @@ describe('GuestService', () => {
     });
   });
 
+  describe('guests added by hand', () => {
+    it('adds someone with who added them, their companions and no account', async () => {
+      mockGateway.addDoc.mockResolvedValue('manual-1');
+
+      const id = await service.addManualGuest(
+        'evt-100',
+        { name: 'Tia Cida', phone: '(11) 98888-1111', companions: ['Seu Zé'] },
+        'owner-uid',
+      );
+
+      expect(id).toBe('manual-1');
+      const [path, data] = mockGateway.addDoc.mock.calls[0];
+      expect(path).toBe('events/evt-100/guests');
+      expect(data).toEqual(
+        expect.objectContaining({
+          name: 'Tia Cida',
+          phone: '(11) 98888-1111',
+          companions: [{ name: 'Seu Zé' }],
+          companionsCount: 1,
+          isConfirmed: true,
+          addedBy: 'owner-uid',
+        }),
+      );
+      expect(data).not.toHaveProperty('uid');
+    });
+
+    it('changes and removes them', async () => {
+      await service.updateManualGuest('evt-100', 'manual-1', {
+        name: 'Cida',
+        phone: '',
+        companions: [],
+      });
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-100/guests/manual-1', {
+        name: 'Cida',
+        phone: '',
+        companions: [],
+        companionsCount: 0,
+      });
+
+      await service.removeManualGuest('evt-100', 'manual-1');
+      expect(mockGateway.deleteDoc).toHaveBeenCalledWith('events/evt-100/guests/manual-1');
+    });
+  });
+
   describe('getGuest and getGuestByPhone', () => {
     it('getGuest returns mapped guest when document exists', async () => {
       mockGateway.getDocWithId.mockResolvedValue({

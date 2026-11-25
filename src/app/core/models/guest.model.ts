@@ -24,6 +24,20 @@ export interface Guest {
   companions?: GuestCompanion[];
   companionsCount?: number;
   createdAt?: string;
+  /**
+   * Put on the list by an organizer ("Adicionar alguém à mão"): the uid of who added them. Such a
+   * guest has no account (`uid`), never answers the invite and is edited only by the organizers.
+   */
+  addedBy?: string;
+}
+
+/** What the organizer types in "Adicionar alguém à mão": the person and who comes with them. */
+export interface ManualGuestInput {
+  name: string;
+  /** Formatted WhatsApp, or '' when not given. */
+  phone: string;
+  /** Companions' names, at most `MAX_COMPANIONS`. */
+  companions: string[];
 }
 
 export type GuestCreate = Omit<

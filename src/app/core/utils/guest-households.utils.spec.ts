@@ -112,3 +112,26 @@ describe('kinship and pets', () => {
     ]);
   });
 });
+
+describe('guests added by hand', () => {
+  it('are a household of their own, marked as added by hand, and counted with companions', () => {
+    const guests = [
+      { id: 'u1', uid: 'u1', name: 'Jéssica' },
+      {
+        id: 'm1',
+        name: 'Tia Cida',
+        phone: '',
+        addedBy: 'u1',
+        companions: [{ name: 'Seu Zé' }],
+        companionsCount: 1,
+      },
+    ] as Guest[];
+
+    const [jessica, cida] = buildGuestHouseholds(guests, [], []);
+    expect(jessica.manual).toBeUndefined();
+    expect(cida.manual).toBe(true);
+    expect(cida.members.map((person) => person.name)).toEqual(['Tia Cida', 'Seu Zé']);
+    expect(householdPeople(cida)).toBe(2);
+    expect(countGuests(guests).people).toBe(3);
+  });
+});

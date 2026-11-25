@@ -1,0 +1,84 @@
+<form novalidate class="manual-guest" (submit)="$event.preventDefault(); submit()">
+  <div class="manual-guest__fields">
+    <org-text-field
+      label="Nome"
+      placeholder="Ex: Tia Cida"
+      testId="manual-guest-name-input"
+      [required]="true"
+      [maxLength]="nameMaxLength"
+      [error]="nameError()"
+      [(value)]="name"
+    />
+    <org-text-field
+      label="WhatsApp (opcional)"
+      type="tel"
+      inputMode="numeric"
+      placeholder="(11) 98888-1111"
+      testId="manual-guest-phone-input"
+      [mask]="maskPhone"
+      [error]="phoneError()"
+      [(value)]="phone"
+    />
+  </div>
+
+  <!-- Who comes along: one name at a time, each removable. -->
+  <section class="manual-guest__companions" aria-labelledby="manual-guest-companions-title">
+    <h3 id="manual-guest-companions-title" class="manual-guest__title">Acompanhantes</h3>
+    @if (companions().length) {
+      <ul class="manual-guest__list" data-testid="manual-guest-companions">
+        @for (companion of companions(); track companion) {
+          <li class="manual-guest__companion">
+            <span class="manual-guest__companion-name">{{ companion }}</span>
+            <org-icon-button
+              icon="close"
+              [ariaLabel]="'Tirar ' + companion"
+              (pressed)="removeCompanion($index)"
+            />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="manual-guest__hint">Ninguém vai junto.</p>
+    }
+    @if (full()) {
+      <p class="manual-guest__hint">No máximo {{ maxCompanions }} acompanhantes.</p>
+    } @else {
+      <div class="manual-guest__add">
+        <org-text-field
+          class="manual-guest__add-field"
+          label="Acompanhante"
+          placeholder="Ex: Seu Zé"
+          testId="manual-guest-companion-input"
+          [maxLength]="nameMaxLength"
+          [error]="companionError()"
+          [(value)]="companionName"
+        />
+        <org-button
+          label="Adicionar"
+          icon="person_add"
+          variant="text"
+          testId="manual-guest-companion-add"
+          [gradient]="false"
+          (pressed)="addCompanion()"
+        />
+      </div>
+    }
+  </section>
+
+  <div class="manual-guest__actions">
+    <org-button
+      variant="text"
+      label="Cancelar"
+      testId="manual-guest-cancel-btn"
+      (pressed)="cancelled.emit()"
+    />
+    <org-button
+      type="submit"
+      variant="primary"
+      testId="manual-guest-submit-btn"
+      [gradient]="false"
+      [label]="submitLabel()"
+      [loading]="saving()"
+    />
+  </div>
+</form>

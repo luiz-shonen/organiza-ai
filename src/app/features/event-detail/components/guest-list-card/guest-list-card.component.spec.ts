@@ -189,4 +189,69 @@ describe('GuestListCardComponent', () => {
     expect(organizer).not.toContain('Família');
     expect(show(false)).not.toContain('99267');
   });
+
+  describe('someone added by hand', () => {
+    const cida: GuestHousehold = {
+      id: 'm1',
+      name: 'Tia Cida',
+      phone: '',
+      people: ['Seu Zé'],
+      bring: [],
+      members: [
+        { name: 'Tia Cida', role: 'Convidado(a)', bring: [] },
+        { name: 'Seu Zé', role: 'Acompanhante', bring: [] },
+      ],
+      manual: true,
+    };
+
+    async function renderManual(forOrganizer: boolean) {
+      await TestBed.configureTestingModule({
+        imports: [GuestListCardComponent],
+        providers: [provideNoopAnimations()],
+      }).compileComponents();
+      const fixture = TestBed.createComponent(GuestListCardComponent);
+      const save = vi.fn().mockResolvedValue(true);
+      fixture.componentRef.setInput('households', [...households, cida]);
+      fixture.componentRef.setInput('forOrganizer', forOrganizer);
+      fixture.componentRef.setInput('saveManual', forOrganizer ? save : null);
+      fixture.detectChanges();
+      return { fixture, save, el: fixture.nativeElement as HTMLElement };
+    }
+    const button = (el: HTMLElement, testId: string) =>
+      el.querySelector(
+        `[data-testid="${testId}"] button, button[data-testid="${testId}"]`,
+      ) as HTMLButtonElement | null;
+
+    it('lets organizers add, edit and remove them, tagged "à mão"', async () => {
+      const { fixture, save, el } = await renderManual(true);
+      expect(el.querySelectorAll('[data-testid="guest-manual-tag"]')).toHaveLength(1);
+      expect(button(el, 'guest-manual-add-btn')).not.toBeNull();
+
+      const removed = vi.fn();
+      fixture.componentInstance.removeManual.subscribe(removed);
+      button(el, 'guest-manual-remove-btn')!.click();
+      expect(removed).toHaveBeenCalledWith(cida);
+
+      button(el, 'guest-manual-edit-btn')!.click();
+      fixture.detectChanges();
+      const nameInput = document.querySelector<HTMLInputElement>(
+        'input[data-testid="manual-guest-name-input"]',
+      );
+      expect(nameInput?.value).toBe('Tia Cida');
+      button(document.body, 'manual-guest-submit-btn')!.click();
+      await fixture.whenStable();
+      expect(save).toHaveBeenCalledWith(
+        { name: 'Tia Cida', phone: '', companions: ['Seu Zé'] },
+        'm1',
+      );
+    });
+
+    it('shows guests neither the button, the tag nor the actions', async () => {
+      const { el } = await renderManual(false);
+      expect(button(el, 'guest-manual-add-btn')).toBeNull();
+      expect(el.querySelector('[data-testid="guest-manual-tag"]')).toBeNull();
+      expect(button(el, 'guest-manual-edit-btn')).toBeNull();
+      expect(el.textContent).toContain('Tia Cida');
+    });
+  });
 });

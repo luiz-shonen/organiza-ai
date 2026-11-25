@@ -1,7 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
-import { Guest, GuestCompanion, GuestDecline, FamilyMember } from '../models';
+import {
+  Guest,
+  GuestCompanion,
+  GuestDecline,
+  FamilyMember,
+  type ManualGuestInput,
+} from '../models';
 import { Phone } from '../value-objects';
 
 export interface BatchPrimaryGuestInput {
@@ -71,6 +77,44 @@ export class GuestService {
       confirmedAt: new Date().toISOString(),
       createdAt: this.gateway.serverTimestamp(),
     });
+  }
+
+  /**
+   * "Adicionar alguém à mão": an organizer puts someone on the list without them answering the
+   * invite. No account, so no `uid`; `addedBy` marks the entry as the organizers' to edit.
+   */
+  async addManualGuest(eventId: string, guest: ManualGuestInput, addedBy: string): Promise<string> {
+    return this.gateway.addDoc(this.guestsPath(eventId), {
+      ...this.manualFields(guest),
+      isConfirmed: true,
+      confirmedAt: new Date().toISOString(),
+      addedBy,
+      createdAt: this.gateway.serverTimestamp(),
+    });
+  }
+
+  /** Changes the name, WhatsApp or companions of someone the organizers added by hand. */
+  async updateManualGuest(
+    eventId: string,
+    guestId: string,
+    guest: ManualGuestInput,
+  ): Promise<void> {
+    await this.gateway.updateDoc(this.guestDocPath(eventId, guestId), this.manualFields(guest));
+  }
+
+  /** Takes someone the organizers added by hand off the list. */
+  async removeManualGuest(eventId: string, guestId: string): Promise<void> {
+    await this.gateway.deleteDoc(this.guestDocPath(eventId, guestId));
+  }
+
+  private manualFields(guest: ManualGuestInput) {
+    const companions = guest.companions.map((name) => ({ name }));
+    return {
+      name: guest.name,
+      phone: guest.phone,
+      companions,
+      companionsCount: companions.length,
+    };
   }
 
   async saveVerifiedRsvp(

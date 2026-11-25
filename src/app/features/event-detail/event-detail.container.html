@@ -253,6 +253,8 @@
     [busyGuestId]="approvingGuestId()"
     (approve)="onApproveGuest($event)"
     (refuse)="onRefuseGuest($event)"
+    [saveManual]="canEdit() ? saveManualGuest : null"
+    (removeManual)="onRemoveManualGuest($event)"
     (download)="downloadGuests()"
     (print)="printGuests()"
   />

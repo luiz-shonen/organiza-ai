@@ -26,3 +26,7 @@ export { FormDraftService } from './form-draft.service';
 export type { StoredDraft } from './form-draft.service';
 export { KnownPeopleService } from './known-people.service';
 export { NavigationHistoryService } from './navigation-history.service';
+export { PushService } from './push.service';
+export type { PushState } from './push.service';
+export { PeopleNoticesService } from './people-notices.service';
+export type { PresenceNews } from './people-notices.service';

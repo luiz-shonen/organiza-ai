@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, firstValueFrom, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { InboxService } from './inbox.service';
+import { PushService } from './push.service';
+import { AuthService } from './auth.service';
 import { secretSantaNotificationId } from '../models';
 import type {
   PartyEvent,
@@ -26,6 +28,8 @@ import { drawSecretSanta, generateId } from '../utils';
 export class SecretSantaService {
   private readonly gateway = inject(FirestoreGateway);
   private readonly inbox = inject(InboxService);
+  private readonly push = inject(PushService);
+  private readonly auth = inject(AuthService);
 
   private participantsPath(eventId: string): string {
     return `events/${eventId}/secretSantaParticipants`;
@@ -415,11 +419,12 @@ export class SecretSantaService {
     isNewLink: boolean,
   ): Promise<number> {
     const now = new Date().toISOString();
+    const actorUid = this.auth.currentUser()?.uid;
     const results = await Promise.allSettled(
       links
         .filter((link) => link.uid)
-        .map((link) =>
-          this.inbox.send(link.uid!, {
+        .map(async (link) => {
+          await this.inbox.send(link.uid!, {
             id: secretSantaNotificationId(event.id),
             kind: 'secret-santa',
             eventId: event.id,
@@ -431,8 +436,13 @@ export class SecretSantaService {
             actionLabel: 'Ver quem eu tirei',
             actionUrl: `/amigo-oculto/${link.token}`,
             createdAt: now,
-          }),
-        ),
+            ...(actorUid ? { actorUid } : {}),
+          });
+          // On the phone too: the relay reads the notice as the owner who wrote it.
+          this.push.notify(
+            `users/${link.uid}/notifications/${secretSantaNotificationId(event.id)}`,
+          );
+        }),
     );
     return results.filter((r) => r.status === 'fulfilled').length;
   }

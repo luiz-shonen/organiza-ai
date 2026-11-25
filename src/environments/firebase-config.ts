@@ -6,6 +6,8 @@ interface RuntimeFirebaseConfig {
 
 interface OrganizaAiRuntimeConfig {
   firebase?: RuntimeFirebaseConfig;
+  /** The push relay (push-worker/), e.g. `https://organizaai-push.x.workers.dev`. */
+  push?: { url?: string };
 }
 
 type RuntimeGlobal = typeof globalThis & {
@@ -60,3 +62,12 @@ export const firebaseConfig: FirebaseOptions = {
   messagingSenderId: '901742626768',
   measurementId: 'G-HK4Y44QBTV',
 };
+
+/** The push relay's address; empty while it is not deployed (the push option then hides). */
+export function pushRelayUrl(): string {
+  return (runtimeConfig()?.push?.url ?? '').replace(/\/+$/, '');
+}
+
+/** The relay's VAPID public key (push-worker/wrangler.toml): phones subscribe with it. */
+export const PUSH_VAPID_PUBLIC_KEY =
+  'BCGxsXK81qwaIhFNd4fvDbtix9YM7LBDaVwHxdMqLD9Y36UDl9cOhlX2afcrffBpwOE5dq0-TtWyrn0Cb6hmgDg';

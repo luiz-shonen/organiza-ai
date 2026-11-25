@@ -54,4 +54,22 @@
   } @empty {
     <p class="org-notification-menu__empty">Nenhuma notificação por aqui.</p>
   }
+  @if (footer(); as foot) {
+    <button
+      mat-menu-item
+      type="button"
+      class="org-notification-menu__item org-notification-menu__footer"
+      data-testid="notifications-footer"
+      [disabled]="foot.disabled"
+      (click)="footerSelected.emit()"
+    >
+      <span class="org-notification-menu__icon" aria-hidden="true">
+        <org-icon [name]="foot.icon" size="sm" color="currentColor" />
+      </span>
+      <span class="org-notification-menu__text">
+        <span class="org-notification-menu__title">{{ foot.title }}</span>
+        <span class="org-notification-menu__body">{{ foot.body }}</span>
+      </span>
+    </button>
+  }
 </mat-menu>

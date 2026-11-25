@@ -168,6 +168,30 @@ describe('RsvpDrawerComponent', () => {
       }
     };
 
+    it('shows what the organizer wrote about the amigo oculto, open or closed', () => {
+      fixture.componentRef.setInput('drawerData', {
+        session: { name: 'Maria', phone: '11999998888' },
+        familyMembers: [],
+        userId: 'uid-maria',
+        secretSanta: {
+          open: false,
+          giftOptions: false,
+          maxGiftOptions: 1,
+          joined: {},
+          rules: 'Presente até R$ 100.\nTroca no dia 24.',
+        },
+      });
+      fixture.detectChanges();
+      expect(el().querySelector('[data-testid="rsvp-santa-rules"]')?.textContent).toBe(
+        'Presente até R$ 100.\nTroca no dia 24.',
+      );
+    });
+
+    it('shows no empty box when the organizer wrote nothing', () => {
+      open();
+      expect(el().querySelector('[data-testid="rsvp-santa-rules"]')).toBeNull();
+    });
+
     it('asks for each person going: the guest and the relatives checked above', () => {
       open();
       const labels = [...el().querySelectorAll('[data-testid^="rsvp-santa-person-"]')].map((n) =>

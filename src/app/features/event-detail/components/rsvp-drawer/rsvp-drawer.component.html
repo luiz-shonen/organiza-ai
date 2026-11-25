@@ -65,6 +65,13 @@
           aria-labelledby="rsvp-santa-title"
         >
           <h3 id="rsvp-santa-title" class="rsvp-drawer__santa-title">Amigo oculto</h3>
+          @if (santa.rules) {
+            <p
+              class="rsvp-drawer__santa-rules"
+              data-testid="rsvp-santa-rules"
+              [textContent]="santa.rules"
+            ></p>
+          }
           @if (santa.open) {
             <p class="rsvp-drawer__santa-text">Quem vai participar do sorteio?</p>
             @for (person of santaPeople(); track person.key; let i = $index) {

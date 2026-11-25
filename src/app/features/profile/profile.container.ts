@@ -8,6 +8,7 @@ import {
   FamilyService,
   NameSyncService,
   ThemeService,
+  PushService,
 } from '../../core/services';
 import type { UserProfile, FamilyMember, ThemeMode } from '../../core/models';
 import {
@@ -49,6 +50,7 @@ import {
 })
 export class ProfileContainer implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly push = inject(PushService);
   private readonly userService = inject(UserService);
   private readonly familyService = inject(FamilyService);
   private readonly nameSync = inject(NameSyncService);
@@ -274,6 +276,7 @@ export class ProfileContainer implements OnInit {
   }
 
   protected async logout(): Promise<void> {
+    await this.push.forgetDevice();
     await this.authService.logout();
     await this.router.navigate(['/login']);
   }

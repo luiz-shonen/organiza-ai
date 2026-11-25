@@ -6,7 +6,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest';
 
 const projectId = 'organizaai-notifications-rules';
@@ -111,5 +111,116 @@ describe('in-app notifications Firestore rules contract', () => {
     await assertFails(
       setDoc(doc(accountDb('guest-uid'), own), { ...record, actionUrl: 'https://x.com' }),
     );
+  });
+});
+
+describe('notices between the people of an event', () => {
+  const presence = {
+    kind: 'presence',
+    eventId: 'e',
+    eventTitle: 'Natal 2026',
+    title: 'Ana confirmou presença',
+    body: 'Natal 2026 · com 2 acompanhantes',
+    actionLabel: 'Ver convidados',
+    actionUrl: '/evento/e',
+    createdAt: '2026-11-24T10:00:00.000Z',
+    readAt: null,
+    actorUid: 'guest-uid',
+    actorName: 'Ana',
+  };
+  const toOwner = 'users/owner-uid/notifications/presence_e_guest-uid';
+
+  it('lets a guest tell each organizer they answered, and answer again', async () => {
+    const guest = accountDb('guest-uid');
+    await assertSucceeds(setDoc(doc(guest, toOwner), presence));
+    await assertSucceeds(
+      setDoc(doc(guest, 'users/collab-uid/notifications/presence_e_guest-uid'), presence),
+    );
+    await assertSucceeds(setDoc(doc(guest, toOwner), { ...presence, title: 'Ana não poderá ir' }));
+  });
+
+  it('lets the writer read back only the notice they wrote, for the push relay', async () => {
+    const guest = accountDb('guest-uid');
+    await assertSucceeds(setDoc(doc(guest, toOwner), presence));
+    await assertSucceeds(getDoc(doc(guest, toOwner)));
+    await assertFails(getDoc(doc(accountDb('stranger-uid'), toOwner)));
+    await assertFails(getDocs(collection(guest, 'users/owner-uid/notifications')));
+  });
+
+  it('refuses a notice to someone who does not organize, as someone else, or out of shape', async () => {
+    const guest = accountDb('guest-uid');
+    await assertFails(
+      setDoc(doc(guest, 'users/stranger-uid/notifications/presence_e_guest-uid'), presence),
+    );
+    await assertFails(
+      setDoc(doc(guest, 'users/owner-uid/notifications/presence_e_other'), presence),
+    );
+    await assertFails(setDoc(doc(guest, toOwner), { ...presence, actorUid: 'other' }));
+    await assertFails(setDoc(doc(guest, toOwner), { ...presence, actionUrl: '/evento/x' }));
+    await assertFails(setDoc(doc(guest, toOwner), { ...presence, readAt: 'already' }));
+    await assertFails(setDoc(doc(guest, toOwner), { ...presence, body: '<b>oi</b>' }));
+    await assertFails(
+      setDoc(doc(accountDb('owner-uid'), 'users/owner-uid/notifications/presence_e_owner-uid'), {
+        ...presence,
+        actorUid: 'owner-uid',
+      }),
+    );
+    const anonymous = testEnvironment
+      .authenticatedContext('anon-uid', { firebase: { sign_in_provider: 'anonymous' } })
+      .firestore();
+    await assertFails(
+      setDoc(doc(anonymous, 'users/owner-uid/notifications/presence_e_anon-uid'), {
+        ...presence,
+        actorUid: 'anon-uid',
+      }),
+    );
+  });
+
+  it('lets a collaborator who left tell the owner', async () => {
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), 'events/e'), {
+        title: 'Natal 2026',
+        createdBy: 'owner-uid',
+        collaborators: [],
+      });
+    });
+    await assertSucceeds(
+      setDoc(
+        doc(accountDb('collab-uid'), 'users/owner-uid/notifications/collaboration_e_collab-uid'),
+        {
+          ...presence,
+          kind: 'collaboration',
+          title: 'Bia saiu da colaboração',
+          actorUid: 'collab-uid',
+          actorName: 'Bia',
+        },
+      ),
+    );
+  });
+
+  it('lets an organizer tell a guest who answered that they are in', async () => {
+    const approval = {
+      ...presence,
+      kind: 'approval',
+      title: 'Sua presença foi aprovada',
+      actorUid: 'collab-uid',
+      actorName: 'Bia',
+    };
+    const toGuest = 'users/guest-uid/notifications/approval_e';
+    await assertFails(setDoc(doc(accountDb('collab-uid'), toGuest), approval));
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), 'events/e/guests/guest-uid'), { name: 'Ana' });
+    });
+    await assertSucceeds(setDoc(doc(accountDb('collab-uid'), toGuest), approval));
+    await assertFails(
+      setDoc(doc(accountDb('stranger-uid'), toGuest), { ...approval, actorUid: 'stranger-uid' }),
+    );
+  });
+
+  it('keeps the amigo oculto notice working with who sent it', async () => {
+    const owner = accountDb('owner-uid');
+    await assertSucceeds(setDoc(doc(owner, path), { ...notice, actorUid: 'owner-uid' }));
+    await assertSucceeds(getDoc(doc(owner, path)));
+    await assertFails(setDoc(doc(owner, path), { ...notice, actorUid: 'guest-uid' }));
   });
 });

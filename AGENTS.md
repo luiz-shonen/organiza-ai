@@ -17,6 +17,7 @@ Angular 22 + Angular Material 22 + Firebase app for organising events (pt-BR UI)
 - Mobile first, zero horizontal overflow, touch targets ≥ 48px, WCAG 2.1 AA. Every change must work on desktop (pages take 70% of the width from 1200px) and on a phone.
 - Super admins and open-registration rules: see `docs/knowledge/decisions/firebase-and-auth.md`.
 - How events, invites, filters, tags and "Confirmados" behave: see `docs/knowledge/decisions/events-and-invites.md`; the amigo oculto: `docs/knowledge/decisions/secret-santa.md`.
+- Notices between people (bell + phone push, the `push-worker/` relay, its secrets): see `docs/knowledge/decisions/push-notifications.md`.
 - A person with an account is always shown by their **profile name** (`publicProfiles/{uid}`, or `AuthService.displayName` for the signed-in person), never a stored copy or the Google name.
 - Screens that hold one main thing (the secret link pages) fill the height under the top bar and never scroll on short laptop windows; check at 500–720px high and on a phone.
 

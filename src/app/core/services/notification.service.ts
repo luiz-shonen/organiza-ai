@@ -21,12 +21,8 @@ export class NotificationService {
       return;
     }
 
-    if (Notification.permission === 'granted') {
-      this.hasPermission = true;
-    } else if (Notification.permission !== 'denied') {
-      const permission = await Notification.requestPermission();
-      this.hasPermission = permission === 'granted';
-    }
+    // Never asked here: only "Ativar notificações no celular" in the bell asks (PushService).
+    this.hasPermission = Notification.permission === 'granted';
   }
 
   sendLocalNotification(title: string, body: string, icon?: string): void {

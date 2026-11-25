@@ -84,6 +84,8 @@ export class InboxService {
       actionUrl: d.actionUrl ?? '',
       createdAt: d.createdAt ?? '',
       readAt: d.readAt ?? null,
+      ...(d.actorUid ? { actorUid: d.actorUid } : {}),
+      ...(d.actorName ? { actorName: d.actorName } : {}),
     };
   }
 }

@@ -16,6 +16,7 @@ import {
   EventService,
   ItemService,
   GuestService,
+  PeopleNoticesService,
   AuthService,
   CollaboratorInvitesService,
   UserService,
@@ -154,6 +155,7 @@ export class EventDetailContainer implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly itemService = inject(ItemService);
   private readonly guestService = inject(GuestService);
+  private readonly peopleNotices = inject(PeopleNoticesService);
   private readonly feedback = inject(FeedbackService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
@@ -1466,6 +1468,10 @@ export class EventDetailContainer implements OnInit {
     this.rsvpLoading.set(true);
     try {
       await this.guestService.saveDecline(this.id(), uid, this.declineName(), result.message);
+      void this.peopleNotices.presence(this.id(), this.declineName(), {
+        kind: 'declined',
+        message: result.message,
+      });
       await this.userService.setDeclined(uid, this.id(), true);
       this.declined.set(true);
       this.feedback.success('Tudo bem, avisamos que você não poderá ir.');
@@ -1645,6 +1651,19 @@ export class EventDetailContainer implements OnInit {
               await this.dropSecretSantaNotGoing(user.uid, result, santa.existingIds);
             }
 
+            const who = {
+              companions: result.companions.length,
+              relatives: (result.selectedFamilyMembers ?? []).length,
+            };
+            void this.peopleNotices.presence(this.id(), name, {
+              kind: existing
+                ? 'edited'
+                : this.event()?.requireApproval && !mine
+                  ? 'pending'
+                  : 'confirmed',
+              ...who,
+            });
+
             if (existing) {
               this.feedback.success('Presença atualizada!');
             } else if (this.event()?.requireApproval) {
@@ -1712,6 +1731,7 @@ export class EventDetailContainer implements OnInit {
         canLeave: isSecretSantaOpen(settings),
         giftOptions: settings.giftOptions,
         maxGiftOptions: settings.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+        rules: this.event()?.secretSantaRules?.trim() || null,
         joined: Object.fromEntries(
           entries.map((entry) => [idToKey.get(entry.id) ?? 'self', entry.giftOptions]),
         ),
@@ -1810,6 +1830,8 @@ export class EventDetailContainer implements OnInit {
     this.approvingGuestId.set(guest.id);
     try {
       await this.guestService.approveGuest(this.id(), guest.id);
+      const event = this.event();
+      if (event) void this.peopleNotices.approved(event, guest.id);
       this.feedback.success(`${guest.name} entrou na lista.`);
     } catch (err) {
       console.error(err);
@@ -1923,6 +1945,10 @@ export class EventDetailContainer implements OnInit {
               // Read before the presence goes: the relatives leave the amigo oculto with it.
               const santaOthers = this.ownSecretSantaOthers(targetUid);
               await this.guestService.cancelRsvp(this.id(), targetUid, targetUid, targetUid);
+              void this.peopleNotices.presence(this.id(), this.declineName(), {
+                kind: 'cancelled',
+                message,
+              });
               // Remembered as declined, so Início shows it as "Recusado" and the organizer sees why.
               this.declined.set(true);
               this.userService.setDeclined(targetUid, this.id(), true).catch(console.error);
@@ -2056,6 +2082,7 @@ export class EventDetailContainer implements OnInit {
     if (!confirmed) return;
     try {
       await this.eventService.leaveCollaboration(event.id, uid);
+      void this.peopleNotices.collaboration(event.id, this.declineName(), false);
       this.feedback.success('Você saiu da colaboração deste evento.');
     } catch (err) {
       this.feedback.error(explainError('Não foi possível sair da colaboração', err));

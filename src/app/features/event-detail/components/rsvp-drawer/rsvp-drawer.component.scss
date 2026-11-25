@@ -114,6 +114,20 @@
     margin: 0;
   }
 
+  // What the organizer wrote (value, rules, exchange day): read before choosing who joins.
+  &__santa-rules {
+    background: var(--org-surface-container-low);
+    border: 1px solid var(--org-outline-variant);
+    border-radius: var(--org-radius-sm);
+    color: var(--org-on-surface);
+    font-size: var(--org-font-size-sm);
+    line-height: var(--org-line-height-normal);
+    margin: 0;
+    overflow-wrap: anywhere;
+    padding: var(--org-space-sm) var(--org-space-md);
+    white-space: pre-line;
+  }
+
   &__santa-text {
     color: var(--org-on-surface-variant);
     font-size: var(--org-font-size-sm);

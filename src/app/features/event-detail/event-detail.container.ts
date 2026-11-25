@@ -1729,6 +1729,7 @@ export class EventDetailContainer implements OnInit {
         canLeave: isSecretSantaOpen(settings),
         giftOptions: settings.giftOptions,
         maxGiftOptions: settings.maxGiftOptions ?? SECRET_SANTA_DEFAULT_GIFT_OPTIONS,
+        rules: this.event()?.secretSantaRules?.trim() || null,
         joined: Object.fromEntries(
           entries.map((entry) => [idToKey.get(entry.id) ?? 'self', entry.giftOptions]),
         ),

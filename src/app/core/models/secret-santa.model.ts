@@ -60,6 +60,8 @@ export interface RsvpSecretSantaData {
   readonly waitingApproval?: boolean;
   readonly giftOptions: boolean;
   readonly maxGiftOptions: number;
+  /** What the organizer wrote about it (gift value, rules, when the exchange is); null if none. */
+  readonly rules?: string | null;
   /** Who is in the draw already, with their gift options. */
   readonly joined: Readonly<Record<RsvpSecretSantaKey, readonly string[]>>;
   /** The WhatsApp typed for a relative or companion before (not the guest's own fallback). */

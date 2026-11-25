@@ -34,10 +34,18 @@ jobs:
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
         run: |
+          # The PR's own commit, as GitHub shows it (the checkout is the merge commit).
+          APP_COMMIT=$(echo '${{ github.event.pull_request.head.sha }}' | cut -c1-7)
+          DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           cat <<EOF > public/runtime-config.js
           globalThis.__organizaAiRuntimeConfig = {
             firebase: {
               apiKey: '${FIREBASE_API_KEY}',
+            },
+            app: {
+              version: 'pr-${{ github.event.pull_request.number }}',
+              commit: '${APP_COMMIT}',
+              deployedAt: '${DEPLOYED_AT}',
             },
           };
           EOF

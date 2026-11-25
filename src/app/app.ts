@@ -24,7 +24,8 @@ import {
   CollaboratorInvitesService,
   PushService,
 } from './core/services';
-import { resolveBackRoute, showsBottomNav } from './core/utils';
+import { formatAppVersion, resolveBackRoute, showsBottomNav } from './core/utils';
+import { appVersion } from '../environments/firebase-config';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
 import { OrgIconComponent } from './shared/ui/actions/org-icon.component';
@@ -154,6 +155,11 @@ export class App {
   }
 
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
+  /**
+   * "Versão 42 · 3777074 · 25/11 20:30", bottom right, only for the super admins: tells them
+   * whether a change is already live. Written by the CD in `runtime-config.js`; "local" here.
+   */
+  protected readonly versionLabel = formatAppVersion(appVersion());
   protected readonly user = this.authService.currentUser;
   /** The person's name as their profile has it (not only the Google account's). */
   protected readonly displayName = this.authService.displayName;

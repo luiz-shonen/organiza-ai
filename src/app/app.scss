@@ -202,6 +202,26 @@
   }
 }
 
+.app-version {
+  bottom: var(--org-space-xs);
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-xs);
+  margin: 0;
+  pointer-events: none;
+  position: fixed;
+  right: var(--org-space-sm);
+  z-index: 1000;
+
+  // Phones: above the bottom bar, never over its buttons.
+  &--above-nav {
+    bottom: calc(var(--org-bottom-nav-height) + var(--org-space-xs));
+
+    @include semantic.desktop {
+      bottom: var(--org-space-xs);
+    }
+  }
+}
+
 .app-offline-banner {
   background-color: var(--org-error-container);
   color: var(--org-on-error-container);

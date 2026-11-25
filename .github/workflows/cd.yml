@@ -36,15 +36,43 @@ jobs:
         if: steps.filter.outputs.code == 'true'
         run: npm ci
 
+      # The push relay goes first: the app learns its address (*.workers.dev) from this deploy.
+      # A failure here never stops the app's deploy; the app then hides "Ativar notificações".
+      - name: Deploy Push Relay (Cloudflare Worker)
+        id: push
+        if: steps.filter.outputs.code == 'true'
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_WORKER_TOKEN }}
+          ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VAPID_PRIVATE_KEY: ${{ secrets.PUSH_VAPID_PRIVATE_KEY }}
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+        working-directory: push-worker
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$VAPID_PRIVATE_KEY" ]; then
+            echo "::warning::Push relay not deployed: CLOUDFLARE_WORKER_TOKEN or PUSH_VAPID_PRIVATE_KEY is missing."
+            exit 0
+          fi
+          if [ -n "$ACCOUNT_ID" ]; then export CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID"; fi
+          npm ci
+          npx wrangler deploy | tee deploy.log
+          node -e 'console.log(JSON.stringify({ VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY, FIREBASE_API_KEY: process.env.FIREBASE_API_KEY }))' | npx wrangler secret bulk
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          echo "url=${url}" >> "$GITHUB_OUTPUT"
+
       - name: Generate Runtime Config
         if: steps.filter.outputs.code == 'true'
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          PUSH_URL: ${{ steps.push.outputs.url }}
         run: |
           cat <<EOF > public/runtime-config.js
           globalThis.__organizaAiRuntimeConfig = {
             firebase: {
               apiKey: '${FIREBASE_API_KEY}',
+            },
+            push: {
+              url: '${PUSH_URL}',
             },
           };
           EOF

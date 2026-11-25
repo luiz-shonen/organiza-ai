@@ -3,6 +3,7 @@ export type FamilyRelationship =
   | 'spouse'
   | 'child'
   | 'parent'
+  | 'grandparent'
   | 'sibling'
   | 'relative'
   | 'pet'

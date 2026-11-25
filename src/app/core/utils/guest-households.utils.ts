@@ -1,6 +1,6 @@
 import type { EventClaims, Guest, PartyItem } from '../models';
 import { formatQuantity } from './item-progress.utils';
-import { getRelationshipLabel, isPet } from './relationship.utils';
+import { getRelationshipLabel, isPet, sortByKinship } from './relationship.utils';
 
 /** Who the person is to the guest: themself, their family, or someone they bring along. */
 export type GuestRole = 'Convidado(a)' | 'Família' | 'Acompanhante';
@@ -96,7 +96,8 @@ export function buildGuestHouseholds(
     .filter((guest) => !guest.primaryGuestId)
     .map((guest) => {
       const uid = guest.uid || guest.id;
-      const familyGuests = guests.filter((member) => member.primaryGuestId === uid);
+      // Relatives in kinship order (cônjuge, filhos, pai/mãe…); companions come after them.
+      const familyGuests = sortByKinship(guests.filter((member) => member.primaryGuestId === uid));
       const entries = claims.find((claim) => claim.id === uid)?.entries ?? [];
 
       // memberId null is the account holder; any other id is a relative.

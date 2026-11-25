@@ -78,8 +78,8 @@ describe('kinship and pets', () => {
     const [household] = buildGuestHouseholds(guests, [], []);
     expect(household.members.map((member) => [member.role, member.kinship])).toEqual([
       ['Convidado(a)', undefined],
-      ['Família', 'Pet'],
       ['Família', 'Filho(a)'],
+      ['Família', 'Pet'],
       ['Família', undefined],
       ['Acompanhante', 'Acompanhante'],
     ]);
@@ -89,5 +89,26 @@ describe('kinship and pets', () => {
 
   it('counts pets apart from people', () => {
     expect(countGuests(guests)).toEqual({ people: 4, pets: 1 });
+  });
+
+  it('lists relatives in kinship order, companions last', () => {
+    const mixed = [
+      { id: 'u1', uid: 'u1', name: 'Luiz', companions: [{ name: 'Benjamin' }] },
+      { id: 'u1_a', name: 'Rex', primaryGuestId: 'u1', relationship: 'pet' },
+      { id: 'u1_b', name: 'Vó Maria', primaryGuestId: 'u1', relationship: 'grandparent' },
+      { id: 'u1_c', name: 'Tio', primaryGuestId: 'u1', relationship: 'other' },
+      { id: 'u1_d', name: 'Jéssica', primaryGuestId: 'u1', relationship: 'spouse' },
+      { id: 'u1_e', name: 'Ana', primaryGuestId: 'u1', relationship: 'child' },
+    ] as Guest[];
+    const [household] = buildGuestHouseholds(mixed, [], []);
+    expect(household.members.map((member) => member.name)).toEqual([
+      'Luiz',
+      'Jéssica',
+      'Ana',
+      'Vó Maria',
+      'Rex',
+      'Tio',
+      'Benjamin',
+    ]);
   });
 });

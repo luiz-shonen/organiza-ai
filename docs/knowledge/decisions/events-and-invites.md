@@ -180,6 +180,9 @@ How the app behaves for organizers and guests. Data and permissions are in
   join the amigo oculto with that first answer: the entries are saved, but the organizers' list,
   the draw and the other guests' list leave them out until the approval (only the guest sees
   their own). Relatives follow their guest. Guests from before it was turned on count.
+- Relatives are always listed in kinship order: Cônjuge, Filho(a), Pai/Mãe, Avô/Avó, Irmão(ã),
+  Parente, Pet, Outro; companions come last. The same in "Confirmados", "Levar familiares?" and
+  "Minha família" (`sortByKinship`, the order of `RELATIONSHIP_OPTIONS`).
 - Organizers see "Aguardando aprovação (N)" at the top of "Quem vai", each with **Aprovar**
   (`approved: true`) or **Recusar** (confirm dialog; removes the guest, their relatives and the
   amigo oculto entries they wrote; they may answer again and wait again).

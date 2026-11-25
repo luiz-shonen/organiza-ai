@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { getRelationshipLabel } from '../../../../core/utils';
+import { getRelationshipLabel, sortByKinship } from '../../../../core/utils';
 import {
   FamilyMemberFormComponent,
   type AddFamilyMemberPayload,
@@ -38,6 +38,8 @@ export interface UpdateInlineFamilyMemberPayload extends AddFamilyMemberPayload 
 })
 export class FamilySelectorComponent {
   readonly members = input<FamilyMember[]>([]);
+  /** The family in kinship order: cônjuge, filhos, pai/mãe, avô/avó, irmão, parente, pet, outro. */
+  protected readonly orderedMembers = computed(() => sortByKinship(this.members()));
   readonly selectedIds = input<string[]>([]);
   /** A relative is being saved: the forms wait. */
   readonly isAddingInline = input<boolean>(false);

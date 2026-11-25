@@ -171,9 +171,10 @@ describe('FamilySelectorComponent', () => {
     (
       fixture.nativeElement.querySelectorAll(
         '[data-testid="family-selector-remove-btn"] button, button[data-testid="family-selector-remove-btn"]',
-      )[0] as HTMLButtonElement
+      )[1] as HTMLButtonElement
     ).click();
 
+    // Listed in kinship order: the spouse (fam-2) first, the child (fam-1) second.
     expect(removed).toHaveBeenCalledWith('fam-1');
   });
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { FamilyMember, FamilyRelationship } from '../../../../core/models';
-import { getRelationshipLabel } from '../../../../core/utils';
+import { getRelationshipLabel, sortByKinship } from '../../../../core/utils';
 import { Phone } from '../../../../core/value-objects';
 import {
   OrgAvatarComponent,
@@ -40,6 +40,8 @@ export interface UpdateFamilyMemberPayload extends AddFamilyMemberPayload {
 })
 export class FamilyRosterManagerComponent {
   readonly members = input.required<FamilyMember[]>();
+  /** The family in kinship order: cônjuge, filhos, pai/mãe, avô/avó, irmão, parente, pet, outro. */
+  protected readonly orderedMembers = computed(() => sortByKinship(this.members()));
   /** True while the page saves an add or an edit. */
   readonly saving = input<boolean>(false);
 

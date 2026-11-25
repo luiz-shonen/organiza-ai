@@ -74,10 +74,11 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     await sheet.screenshot({ path: 'e2e/screenshots/manual-guest-sheet.png' });
     await sheet.getByTestId('manual-guest-submit-btn').click();
 
-    // Vó Cida and Seu Zé join Tia Lurdes: 3 people, tagged "à mão".
+    // Vó Cida and Seu Zé join Tia Lurdes: 3 people, shown like anyone else (no "à mão" tag).
     await expect(card.getByTestId('card-header-count')).toHaveText('3');
     const cida = card.getByTestId('guest-household').filter({ hasText: 'Vó Cida' });
-    await expect(cida.getByTestId('guest-manual-tag')).toHaveText('à mão');
+    await expect(cida).toBeVisible();
+    await expect(cida.getByTestId('guest-manual-tag')).toHaveCount(0);
     const added = (await readGuests(page)).find((g) => g['name'] === 'Vó Cida');
     expect(added?.['addedBy']).toBe('owner-uid');
     expect(added?.['uid']).toBeUndefined();

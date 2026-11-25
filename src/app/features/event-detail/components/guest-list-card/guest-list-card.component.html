@@ -116,9 +116,6 @@
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }
-                  @if (forOrganizer() && household.manual) {
-                    <span class="guest-list__manual" data-testid="guest-manual-tag">à mão</span>
-                  }
                 </span>
                 @if (householdSummary(household); as summary) {
                   <span orgExpansionSummary class="guest-list__count">{{ summary }}</span>
@@ -222,9 +219,6 @@
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }
-                  @if (forOrganizer() && household.manual) {
-                    <span class="guest-list__manual" data-testid="guest-manual-tag">à mão</span>
-                  }
                 </span>
                 @if (householdSummary(household); as summary) {
                   <span class="guest-list__count">{{ summary }}</span>
@@ -290,9 +284,7 @@
       {{ editingManual() ? 'Editar quem vai' : 'Adicionar alguém à mão' }}
     </h2>
     @if (!editingManual()) {
-      <p class="guest-list__sheet-hint">
-        Para quem não vai confirmar pelo convite. Conta em Confirmados, no total e no Pix.
-      </p>
+      <p class="guest-list__sheet-hint">Para quem não vai confirmar pelo convite.</p>
     }
     <app-manual-guest-form
       [guest]="manualDraft()"

@@ -3,7 +3,7 @@ type: decision
 title: Events, invites and guests (product behaviour)
 status: active
 date: 2026-11-03
-updated: 2026-11-24
+updated: 2026-11-25
 enforced_by:
   - e2e/tests/invites/invites-and-guests.spec.ts
   - src/app/features/home/home.container.spec.ts
@@ -234,8 +234,8 @@ How the app behaves for organizers and guests. Data and permissions are in
 - Saved as a guest in `events/{id}/guests` (random id) with `addedBy` (the organizer's uid) and no
   `uid`: no account behind it. Always confirmed and approved, even when the event asks for
   approval. It counts like any answer: Confirmados, the total, the PDF/print and the Pix split.
-- Organizers see an **"à mão"** tag beside the name, and **Editar** / **Remover** inside the
-  household's panel; removing asks first. Guests see the person like anyone else, without the tag.
+- The person shows like anyone else, with no "à mão" tag (it was dropped: it crowded the row).
+  Organizers get **Editar** / **Remover** inside the household's panel; removing asks first.
 - It is not linked to anyone's invite: it does not stop that person from confirming by the link
   later (they would show twice, and the organizer removes the hand-added entry), and it does not put
   them in the amigo oculto (that has its own "Adicionar alguém à mão").

@@ -222,9 +222,9 @@ describe('GuestListCardComponent', () => {
         `[data-testid="${testId}"] button, button[data-testid="${testId}"]`,
       ) as HTMLButtonElement | null;
 
-    it('lets organizers add, edit and remove them, tagged "à mão"', async () => {
+    it('lets organizers add, edit and remove them, with no "à mão" tag', async () => {
       const { fixture, save, el } = await renderManual(true);
-      expect(el.querySelectorAll('[data-testid="guest-manual-tag"]')).toHaveLength(1);
+      expect(el.querySelector('[data-testid="guest-manual-tag"]')).toBeNull();
       expect(button(el, 'guest-manual-add-btn')).not.toBeNull();
 
       const removed = vi.fn();

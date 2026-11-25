@@ -1,0 +1,19 @@
+{
+  "name": "organizaai-push-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@block65/webcrypto-web-push": "2.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261124.2",
+    "typescript": "~6.0.0",
+    "vitest": "^4.1.9",
+    "wrangler": "4.168.0"
+  }
+}

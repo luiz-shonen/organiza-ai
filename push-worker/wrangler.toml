@@ -1,0 +1,15 @@
+# Organiza AI push relay: sends the app's notices to people's phones (Web Push).
+# Secrets (set by the CD): VAPID_PRIVATE_KEY, FIREBASE_API_KEY.
+name = "organizaai-push"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[vars]
+APP_ORIGIN = "https://organizaai.web.app"
+FIREBASE_PROJECT_ID = "organiza-ai-3416f"
+VAPID_PUBLIC_KEY = "BCGxsXK81qwaIhFNd4fvDbtix9YM7LBDaVwHxdMqLD9Y36UDl9cOhlX2afcrffBpwOE5dq0-TtWyrn0Cb6hmgDg"
+
+# Each person's phones and computers that turned notifications on.
+[[kv_namespaces]]
+binding = "DEVICES"

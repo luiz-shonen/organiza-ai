@@ -57,22 +57,18 @@ describe('NotificationService', () => {
     );
   });
 
-  it('should request permission when permission is default and enable notifications upon grant', async () => {
+  it('never asks for permission on its own: only the bell asks', async () => {
     setupNotificationMock('default', 'granted');
     const service = createService();
-
-    // Allow promise in constructor checkPermission to resolve
     await Promise.resolve();
 
-    service.sendLocalNotification('Confirmação', 'Sua presença foi confirmada', '/custom/icon.png');
+    service.sendLocalNotification('Confirmação', 'Sua presença foi confirmada');
 
-    expect(notificationConstructorSpy).toHaveBeenCalledWith(
-      'Confirmação',
-      expect.objectContaining({
-        body: 'Sua presença foi confirmada',
-        icon: '/custom/icon.png',
-      }),
-    );
+    expect(
+      (globalThis as unknown as { Notification: { requestPermission: () => void } }).Notification
+        .requestPermission,
+    ).not.toHaveBeenCalled();
+    expect(notificationConstructorSpy).not.toHaveBeenCalled();
   });
 
   it('should not dispatch notification when permission is denied', async () => {

@@ -138,3 +138,14 @@ org-notification-menu {
 ) {
   opacity: 0.75;
 }
+
+// "Ativar notificações no celular": apart from the list, under a line.
+.org-notification-menu__panel .org-notification-menu__footer.mat-mdc-menu-item {
+  border-top: 1px solid var(--org-outline-variant);
+  margin-top: var(--org-space-xs);
+  opacity: 1;
+}
+
+.org-notification-menu__panel .org-notification-menu__footer.mat-mdc-menu-item[disabled] {
+  opacity: 1;
+}

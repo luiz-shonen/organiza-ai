@@ -25,6 +25,15 @@ export interface OrgNotificationItem {
   readonly pinned?: boolean;
 }
 
+/** The line at the bottom of the menu: e.g. "Ativar notificações no celular". */
+export interface OrgNotificationMenuFooter {
+  readonly icon: OrgIconName;
+  readonly title: string;
+  readonly body: string;
+  /** Only says something (blocked, needs installing): nothing happens on a tap. */
+  readonly disabled?: boolean;
+}
+
 /**
  * A bell button with the count of new notifications on its corner, opening a menu that lists
  * them. Presentational: the page says what is in it and what opening one does.
@@ -43,6 +52,9 @@ export class OrgNotificationMenuComponent {
   /** The menu was opened: a chance to refresh what it lists. */
   public readonly opened = output<void>();
   public readonly selected = output<OrgNotificationItem>();
+  /** The bottom line, under the list; none when null. */
+  public readonly footer = input<OrgNotificationMenuFooter | null>(null);
+  public readonly footerSelected = output<void>();
 
   protected readonly count = computed(
     () => this.items().filter((item) => item.unread !== false).length,

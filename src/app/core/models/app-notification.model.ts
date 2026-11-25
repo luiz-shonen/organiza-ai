@@ -1,5 +1,14 @@
-/** What an in-app notification is about. */
-export type AppNotificationKind = 'secret-santa' | 'collaborator';
+/**
+ * What an in-app notification is about: the amigo oculto result, an answered invite to help
+ * organise, and what people of an event tell each other: a guest's answer (`presence`), a
+ * collaborator joining or leaving (`collaboration`), a presence let in (`approval`).
+ */
+export type AppNotificationKind =
+  | 'secret-santa'
+  | 'collaborator'
+  | 'presence'
+  | 'collaboration'
+  | 'approval';
 
 /**
  * A notification in the member's inbox (`users/{uid}/notifications/{id}`), shown at the top of
@@ -19,6 +28,9 @@ export interface AppNotification {
   readonly createdAt: string;
   /** When the member opened or dismissed it; null while it is new. */
   readonly readAt: string | null;
+  /** Who did what it tells (the guest who answered…); missing on older notices. */
+  readonly actorUid?: string;
+  readonly actorName?: string;
 }
 
 /** The record of an answered invite to help organise an event, one per event. */
@@ -29,4 +41,19 @@ export function collaboratorNotificationId(eventId: string): string {
 /** One amigo oculto notice per event: a new draw or a new link replaces the previous one. */
 export function secretSantaNotificationId(eventId: string): string {
   return `secret-santa_${eventId}`;
+}
+
+/** A guest's answer, one per guest and event: a new answer replaces the previous one. */
+export function presenceNotificationId(eventId: string, actorUid: string): string {
+  return `presence_${eventId}_${actorUid}`;
+}
+
+/** A collaborator joined or left, one per collaborator and event. */
+export function collaborationNotificationId(eventId: string, actorUid: string): string {
+  return `collaboration_${eventId}_${actorUid}`;
+}
+
+/** The guest's presence was let in. */
+export function approvalNotificationId(eventId: string): string {
+  return `approval_${eventId}`;
 }

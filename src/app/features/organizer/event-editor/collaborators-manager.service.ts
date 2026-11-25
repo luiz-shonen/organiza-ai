@@ -1,7 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { combineLatest, firstValueFrom, map, type Subscription } from 'rxjs';
 import type { PartyEvent } from '../../../core/models';
-import { AuthService, DrawerService, EventService, UserService } from '../../../core/services';
+import {
+  AuthService,
+  DrawerService,
+  EventService,
+  PeopleNoticesService,
+  UserService,
+} from '../../../core/services';
 import { explainError } from '../../../core/utils/error.utils';
 import { FeedbackService, OrgDialogService } from '../../../shared/ui';
 
@@ -22,6 +28,7 @@ export class CollaboratorsManagerService {
   private readonly eventService = inject(EventService);
   private readonly userService = inject(UserService);
   private readonly authService = inject(AuthService);
+  private readonly peopleNotices = inject(PeopleNoticesService);
   private readonly feedback = inject(FeedbackService);
   private readonly dialogs = inject(OrgDialogService);
 
@@ -84,6 +91,7 @@ export class CollaboratorsManagerService {
               me?.email || '',
               { name: myName || me?.displayName, photo: me?.photoURL },
             );
+            this.peopleNotices.collaboratorInvited(eventId, action.email);
             this.feedback.success(`Convite enviado para ${action.email}`);
           } catch (error) {
             this.feedback.error(explainError('Não foi possível enviar o convite', error));

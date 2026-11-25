@@ -3,6 +3,7 @@ import type { EventInvitation } from '../models';
 import { AuthService } from './auth.service';
 import { EventService } from './event.service';
 import { InboxService } from './inbox.service';
+import { PeopleNoticesService } from './people-notices.service';
 import { collaboratorNotificationId } from '../models';
 
 /**
@@ -15,6 +16,7 @@ export class CollaboratorInvitesService {
   private readonly auth = inject(AuthService);
   private readonly events = inject(EventService);
   private readonly inbox = inject(InboxService);
+  private readonly notices = inject(PeopleNoticesService);
 
   private readonly list = signal<EventInvitation[]>([]);
   readonly invites = this.list.asReadonly();
@@ -98,6 +100,12 @@ export class CollaboratorInvitesService {
     await this.events.acceptInvitation(invite.eventId, invite.invitedEmail, uid);
     this.drop(invite);
     await this.remember(invite, true);
+    const me = this.auth.currentUser();
+    void this.notices.collaboration(
+      invite.eventId,
+      me?.displayName || me?.email?.split('@')[0] || '',
+      true,
+    );
   }
 
   async decline(invite: EventInvitation): Promise<void> {

@@ -225,3 +225,36 @@ describe('push relay', () => {
     expect(await devicesOf(env.DEVICES, 'jessica')).toHaveLength(0);
   });
 });
+
+describe('one account per browser', () => {
+  it('moves a phone to whoever signs in on it, and stops the previous account notices there', async () => {
+    const shared = await subscription('https://fcm.googleapis.com/fcm/send/shared');
+    await call('/devices', 'token-jessica', { subscription: shared });
+    await call('/devices', 'token-ana', { subscription: shared });
+
+    expect(await devicesOf(env.DEVICES, 'jessica')).toHaveLength(0);
+    expect(await devicesOf(env.DEVICES, 'ana')).toHaveLength(1);
+    readable.set(`token-ana ${noticePath}`, presence);
+    expect(await (await call('/notify', 'token-ana', { path: noticePath })).json()).toEqual({
+      sent: 0,
+    });
+  });
+
+  it('refuses a link that leaves the app', async () => {
+    await call('/devices', 'token-jessica', {
+      subscription: await subscription('https://fcm.googleapis.com/fcm/send/phone'),
+    });
+    readable.set(`token-ana ${noticePath}`, { ...presence, actionUrl: '//evil.test' });
+    expect((await call('/notify', 'token-ana', { path: noticePath })).status).toBe(404);
+  });
+});
+
+describe('KV writes', () => {
+  it('writes nothing when the same device is sent again', async () => {
+    const phone = await subscription('https://fcm.googleapis.com/fcm/send/abc');
+    await call('/devices', 'token-jessica', { subscription: phone });
+    const put = vi.spyOn(kv, 'put');
+    await call('/devices', 'token-jessica', { subscription: phone });
+    expect(put).not.toHaveBeenCalled();
+  });
+});

@@ -44,9 +44,11 @@ export class PushService {
   );
 
   readonly state = computed<PushState>(() => {
-    const canPush =
-      !!this.swPush?.isEnabled && !!pushRelayUrl() && typeof Notification !== 'undefined';
-    if (!canPush) return isAppleMobile() && !isInstalled() ? 'install' : 'unsupported';
+    // No relay (not deployed, or a preview site): nothing to offer, not even on an iPhone.
+    if (!pushRelayUrl()) return 'unsupported';
+    if (!this.swPush?.isEnabled || typeof Notification === 'undefined') {
+      return isAppleMobile() && !isInstalled() ? 'install' : 'unsupported';
+    }
     if (this.permission() === 'denied') return 'blocked';
     return this.subscribed() && this.permission() === 'granted' ? 'on' : 'off';
   });
@@ -77,6 +79,16 @@ export class PushService {
       this.permission.set(typeof Notification === 'undefined' ? 'denied' : Notification.permission);
       return false;
     }
+  }
+
+  /**
+   * Before signing out: this browser stops receiving the account's notices. The browser keeps
+   * its subscription, so whoever signs in next takes the device over (if notices are on).
+   */
+  async forgetDevice(): Promise<void> {
+    if (!this.swPush || !pushRelayUrl()) return;
+    const sub = await firstValueFrom(this.swPush.subscription).catch(() => null);
+    if (sub) await this.post('/devices/remove', { endpoint: sub.endpoint });
   }
 
   /** Stops notices on this device. */

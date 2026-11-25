@@ -169,7 +169,20 @@ export class NotificationBellComponent {
     return organizer?.name ? organizer : null;
   }
 
+  /** A tap while the last one still runs does nothing. */
+  private pushBusy = false;
+
   protected async togglePush(): Promise<void> {
+    if (this.pushBusy) return;
+    this.pushBusy = true;
+    try {
+      await this.applyPush();
+    } finally {
+      this.pushBusy = false;
+    }
+  }
+
+  private async applyPush(): Promise<void> {
     if (this.push.state() === 'on') {
       await this.push.disable();
       this.feedback.info('Notificações desativadas neste aparelho.');

@@ -64,7 +64,8 @@ async function noticeFor(
     const doc = await readDocAs(path, idToken, env.FIREBASE_PROJECT_ID, fetcher);
     if (!doc || doc['readAt']) return null;
     const url = text(doc['actionUrl'], 300);
-    if (!url.startsWith('/')) return null;
+    // Only paths inside the app: never another site, not even `//elsewhere`.
+    if (!url.startsWith('/') || url.startsWith('//')) return null;
     return {
       uid,
       notice: { title: text(doc['title'], 200), body: text(doc['body'], 500), url, tag: id },

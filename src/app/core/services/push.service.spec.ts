@@ -110,8 +110,23 @@ describe('PushService', () => {
         }),
       ),
     );
+    await service.forgetDevice();
+    expect(fetchSpy).toHaveBeenLastCalledWith(`${RELAY}/devices/remove`, expect.anything());
+    expect(service.state()).toBe('on');
     await service.disable();
     expect(fetchSpy).toHaveBeenCalledWith(`${RELAY}/devices/remove`, expect.anything());
     expect(service.state()).toBe('off');
+  });
+});
+
+describe('PushService without a relay', () => {
+  it('offers nothing, not even the iPhone hint', () => {
+    vi.stubGlobal('navigator', { userAgent: 'iPhone', maxTouchPoints: 5, platform: 'iPhone' });
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: AuthService, useValue: { currentUser: signal(null) } }],
+    });
+    expect(TestBed.inject(PushService).state()).toBe('unsupported');
+    vi.unstubAllGlobals();
   });
 });

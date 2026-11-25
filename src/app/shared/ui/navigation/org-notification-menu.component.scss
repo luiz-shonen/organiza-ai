@@ -147,5 +147,6 @@ org-notification-menu {
 }
 
 .org-notification-menu__panel .org-notification-menu__footer.mat-mdc-menu-item[disabled] {
+  cursor: default;
   opacity: 1;
 }

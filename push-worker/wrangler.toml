@@ -10,6 +10,7 @@ APP_ORIGIN = "https://organizaai.web.app"
 FIREBASE_PROJECT_ID = "organiza-ai-3416f"
 VAPID_PUBLIC_KEY = "BCGxsXK81qwaIhFNd4fvDbtix9YM7LBDaVwHxdMqLD9Y36UDl9cOhlX2afcrffBpwOE5dq0-TtWyrn0Cb6hmgDg"
 
-# Each person's phones and computers that turned notifications on.
+# Each person's phones and computers that turned notifications on. No `id` on purpose: the first
+# deploy creates the namespace, and later deploys keep the one already bound to the Worker.
 [[kv_namespaces]]
 binding = "DEVICES"

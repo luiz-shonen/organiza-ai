@@ -20,7 +20,7 @@
       </p>
     } @else {
       <ul class="family-roster__list" aria-label="Lista de familiares cadastrados">
-        @for (member of members(); track member.id) {
+        @for (member of orderedMembers(); track member.id) {
           <li
             class="family-roster__item"
             data-testid="family-member-card"

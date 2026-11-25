@@ -62,10 +62,12 @@ describe('FamilyRosterManagerComponent', () => {
 
     const items = (fixture.nativeElement as HTMLElement).querySelectorAll('.family-roster__item');
     expect(items).toHaveLength(2);
-    expect(items[0].textContent).toContain('Lucas Silva');
-    expect(items[0].textContent).toContain('Filho(a)');
-    expect(items[1].textContent).toContain('Cônjuge');
-    expect(items[1].textContent).toContain('(11) 98888-7777');
+    // Kinship order: the spouse before the child, whatever the order they were added in.
+    expect(items[0].textContent).toContain('Mariana Silva');
+    expect(items[0].textContent).toContain('Cônjuge');
+    expect(items[0].textContent).toContain('(11) 98888-7777');
+    expect(items[1].textContent).toContain('Lucas Silva');
+    expect(items[1].textContent).toContain('Filho(a)');
   });
 
   it('should emit addMember from the add form', () => {
@@ -94,7 +96,7 @@ describe('FamilyRosterManagerComponent', () => {
       fixture.nativeElement as HTMLElement
     ).querySelectorAll<HTMLButtonElement>('.family-roster__remove-btn button');
     expect(removeButtons).toHaveLength(2);
-    removeButtons[0].click();
+    removeButtons[1].click();
 
     expect(removeSpy).toHaveBeenCalledWith('fam-1');
   });
@@ -109,7 +111,7 @@ describe('FamilyRosterManagerComponent', () => {
     const compiled = fixture.nativeElement as HTMLElement;
 
     const addName = typeInto('[data-testid="family-member-name-input"]', 'Pedro');
-    compiled.querySelectorAll<HTMLButtonElement>('.family-roster__edit-btn button')[1].click();
+    compiled.querySelectorAll<HTMLButtonElement>('.family-roster__edit-btn button')[0].click();
     fixture.detectChanges();
 
     expect(compiled.querySelector('[data-testid="edit-family-member-sheet"]')).toBeTruthy();

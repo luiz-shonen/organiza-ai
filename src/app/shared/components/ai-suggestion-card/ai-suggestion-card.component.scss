@@ -1,0 +1,82 @@
+.ai-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-sm);
+}
+
+.ai-card__label {
+  align-items: center;
+  color: var(--org-on-primary-container);
+  display: flex;
+  font: var(--org-text-label);
+  gap: var(--org-space-xs);
+  letter-spacing: var(--org-letter-spacing-wide);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ai-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-card__item {
+  align-items: center;
+  border-top: 1px solid var(--org-outline-variant);
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+  padding-block: var(--org-space-sm);
+}
+
+.ai-card__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+  min-inline-size: 0;
+}
+
+.ai-card__name {
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-md);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-card__qty {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  font-weight: var(--org-font-weight-regular);
+  margin-inline-start: var(--org-space-xs);
+}
+
+.ai-card__reason,
+.ai-card__tip,
+.ai-card__working,
+.ai-card__remaining,
+.ai-card__text-only {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+}
+
+.ai-card__added {
+  align-items: center;
+  color: var(--org-success);
+  display: inline-flex;
+  flex: none;
+  font-size: var(--org-font-size-sm);
+  gap: var(--org-space-2xs);
+  min-block-size: var(--org-touch);
+}
+
+.ai-card__footer {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+  justify-content: space-between;
+}

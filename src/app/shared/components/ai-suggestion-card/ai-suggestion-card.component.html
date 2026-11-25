@@ -1,0 +1,82 @@
+<org-surface variant="card" testId="ai-suggestion-card">
+  <section class="ai-card" aria-label="Sugestões do Organiza AI">
+    <p class="ai-card__label">
+      <org-icon name="auto_awesome" size="sm" color="var(--org-primary)" />
+      Organiza AI
+    </p>
+    <org-card-header
+      heading="O que pode faltar?"
+      [subheading]="
+        confirmed() + ' de ' + expected() + ' pessoas confirmadas: veja sugestões para a lista.'
+      "
+    />
+
+    @if (suggestion(); as result) {
+      @if (result.items.length) {
+        <ul class="ai-card__list" data-testid="ai-suggestion-list">
+          @for (item of result.items; track item.name) {
+            <li class="ai-card__item">
+              <div class="ai-card__text">
+                <p class="ai-card__name">
+                  {{ item.name }}
+                  <span class="ai-card__qty">{{ quantity(item) }}</span>
+                </p>
+                @if (item.reason) {
+                  <p class="ai-card__reason">{{ item.reason }}</p>
+                }
+              </div>
+              @if (isAdded(item)) {
+                <span class="ai-card__added" data-testid="ai-suggestion-added">
+                  <org-icon name="check" size="sm" />
+                  Na lista
+                </span>
+              } @else {
+                <org-button
+                  label="Adicionar"
+                  icon="add"
+                  variant="tonal"
+                  testId="ai-suggestion-add"
+                  [compact]="true"
+                  [gradient]="false"
+                  (pressed)="add.emit(item)"
+                />
+              }
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="ai-card__text-only">A lista parece completa para este evento.</p>
+      }
+      @if (result.tip) {
+        <p class="ai-card__tip">{{ result.tip }}</p>
+      }
+    }
+
+    @if (state().status === 'error') {
+      <org-banner variant="error" icon="info" [message]="state().message" />
+    }
+
+    @if (loading()) {
+      <p class="ai-card__working" role="status" data-testid="ai-suggestion-loading">
+        Pensando nas sugestões… Pode continuar usando o app, avisamos quando chegar.
+      </p>
+    }
+
+    <div class="ai-card__footer">
+      <p class="ai-card__remaining" data-testid="ai-suggestion-remaining">{{ remainingText() }}</p>
+      @if (remaining()) {
+        <org-button
+          icon="auto_awesome"
+          testId="ai-suggestion-generate"
+          [label]="suggestion() ? 'Sugerir de novo' : 'Sugerir itens'"
+          [variant]="suggestion() ? 'text' : 'primary'"
+          [gradient]="false"
+          [compact]="true"
+          [loading]="loading()"
+          [disabled]="loading()"
+          (pressed)="generate.emit()"
+        />
+      }
+    </div>
+  </section>
+</org-surface>

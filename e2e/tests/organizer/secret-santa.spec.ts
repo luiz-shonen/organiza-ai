@@ -97,7 +97,6 @@ test.describe('Amigo oculto', () => {
     });
     // Participants are handled on the event page, in the amigo oculto section.
     await page.goto(`/evento/${EVENT_ID}`);
-    const people = page.getByTestId('secret-santa-people');
 
     // By hand is the exception, behind "Adicionar alguém à mão".
     await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
@@ -242,7 +241,6 @@ test.describe('Amigo oculto', () => {
       collections: { [`events/${EVENT_ID}/secretSantaParticipants`]: participants },
     });
     await page.goto(`/evento/${EVENT_ID}`);
-    const people = page.getByTestId('secret-santa-people');
     const sheet = page.getByTestId('add-participant-sheet');
     const dialog = page.getByTestId('org-confirm-dialog');
 

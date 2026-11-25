@@ -23,7 +23,9 @@ import {
   EventService,
   CollaboratorInvitesService,
   PushService,
+  AiSuggestionService,
 } from './core/services';
+import { FeedbackService } from './shared/ui/feedback/feedback.service';
 import { resolveBackRoute, showsBottomNav } from './core/utils';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
@@ -97,6 +99,19 @@ const PROFILE_ITEM: OrgNavBarItem = {
 export class App {
   private readonly authService = inject(AuthService);
   private readonly push = inject(PushService);
+  private readonly aiSuggestions = inject(AiSuggestionService);
+  private readonly feedback = inject(FeedbackService);
+
+  /**
+   * Organiza AI runs in the background: when it finishes, a toast says so wherever the person
+   * is, so "Sugerir itens" never holds the screen.
+   */
+  private readonly announceAiSuggestion = effect(() => {
+    const done = this.aiSuggestions.lastDone();
+    if (!done) return;
+    if (done.ok) this.feedback.success(done.message);
+    else this.feedback.error(done.message);
+  });
   private readonly userService = inject(UserService);
   private readonly eventService = inject(EventService);
   private readonly collaboratorInvites = inject(CollaboratorInvitesService);

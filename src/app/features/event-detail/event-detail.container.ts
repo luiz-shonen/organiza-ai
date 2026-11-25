@@ -96,6 +96,10 @@ import {
   type RsvpSantaJoin,
 } from './components/rsvp-card/rsvp-card.component';
 import { ItemListCardComponent } from './components/item-list-card/item-list-card.component';
+import { AiSuggestionCardComponent } from '../../shared/components/ai-suggestion-card/ai-suggestion-card.component';
+import { AiSuggestionService } from '../../core/services/ai-suggestion.service';
+import { isAiSuggestionDue } from '../../core/utils/ai-suggestion.utils';
+import type { AiSuggestedItem } from '../../core/models';
 import { PixCardComponent } from './components/pix-card/pix-card.component';
 import { FamilyChecklistCardComponent } from './components/family-checklist-card/family-checklist-card.component';
 import { GuestListCardComponent } from './components/guest-list-card/guest-list-card.component';
@@ -135,6 +139,7 @@ import {
     EventCardComponent,
     RsvpCardComponent,
     ItemListCardComponent,
+    AiSuggestionCardComponent,
     PixCardComponent,
     FamilyChecklistCardComponent,
     GuestListCardComponent,
@@ -173,6 +178,7 @@ export class EventDetailContainer implements OnInit {
   private readonly router = inject(Router);
   private readonly secretSantaService = inject(SecretSantaService);
   private readonly inbox = inject(InboxService);
+  private readonly aiSuggestions = inject(AiSuggestionService);
 
   /** "Sorteio do amigo oculto feito!" for this member, when they take part with their account. */
   protected readonly secretSantaNotice = signal<AppNotification | null>(null);
@@ -833,6 +839,49 @@ export class EventDetailContainer implements OnInit {
   protected readonly canEditEvent = computed(
     () => this.canEdit() && !hasStarted(this.event()?.date),
   );
+
+  /**
+   * "Sugestões do Organiza AI": for organizers, once 70% of the people they expect confirmed
+   * (`expectedGuests`), until the event starts.
+   */
+  protected readonly showAiSuggestions = computed(
+    () =>
+      this.canEditEvent() &&
+      this.aiSuggestions.isAvailable() &&
+      isAiSuggestionDue(this.event()?.expectedGuests, this.guestCount()),
+  );
+  protected readonly aiState = computed(() => this.aiSuggestions.stateFor(this.id()));
+  protected readonly itemNames = computed(() => this.items().map((item) => item.name));
+  /** After a reload, the suggestion saved on the event shows again. */
+  private readonly restoreAiSuggestion = effect(() => {
+    const key = this.event()?.aiSuggestionKey;
+    if (this.showAiSuggestions() && key) {
+      untracked(() => void this.aiSuggestions.restore(this.id(), key));
+    }
+  });
+
+  protected onAiGenerate(): void {
+    const event = this.event();
+    if (!event?.expectedGuests) return;
+    this.aiSuggestions.generate(this.id(), {
+      category: event.category || event.title,
+      people: Math.max(event.expectedGuests, this.guestCount()),
+      items: this.itemNames(),
+    });
+  }
+
+  protected async onAiAdd(item: AiSuggestedItem): Promise<void> {
+    try {
+      await this.itemService.addItem(this.id(), {
+        name: item.name,
+        quantity: item.quantity,
+        unit: item.unit,
+      });
+      this.feedback.success(`${item.name} entrou na lista.`);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível adicionar o item.', error));
+    }
+  }
 
   /** People going; pets are counted apart (`petCount`). */
   private readonly confirmedCounts = computed(() => countGuests(this.listedGuests()));

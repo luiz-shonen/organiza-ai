@@ -8,6 +8,8 @@ interface OrganizaAiRuntimeConfig {
   firebase?: RuntimeFirebaseConfig;
   /** The push relay (push-worker/), e.g. `https://organizaai-push.x.workers.dev`. */
   push?: { url?: string };
+  /** The Organiza AI relay (ai-worker/), e.g. `https://organizaai-ai.x.workers.dev`. */
+  ai?: { url?: string };
 }
 
 type RuntimeGlobal = typeof globalThis & {
@@ -66,6 +68,11 @@ export const firebaseConfig: FirebaseOptions = {
 /** The push relay's address; empty while it is not deployed (the push option then hides). */
 export function pushRelayUrl(): string {
   return (runtimeConfig()?.push?.url ?? '').replace(/\/+$/, '');
+}
+
+/** The Organiza AI relay's address; empty while it is not deployed (the assistant then hides). */
+export function aiRelayUrl(): string {
+  return (runtimeConfig()?.ai?.url ?? '').replace(/\/+$/, '');
 }
 
 /** The relay's VAPID public key (push-worker/wrangler.toml): phones subscribe with it. */

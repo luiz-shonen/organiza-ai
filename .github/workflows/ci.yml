@@ -88,9 +88,12 @@ jobs:
       - name: Run Firestore Rules Tests
         run: npm run test:rules
 
-  # The push relay (push-worker/, a Cloudflare Worker): its own package, tested apart.
+  # The Cloudflare Workers (push-worker/ and ai-worker/): their own packages, tested apart.
   push-worker:
-    name: Push Relay Tests
+    name: Worker Tests (${{ matrix.worker }})
+    strategy:
+      matrix:
+        worker: [push-worker, ai-worker]
     needs: quality
     if: needs.quality.outputs.has_code_changes == 'true'
     timeout-minutes: 10
@@ -105,16 +108,16 @@ jobs:
         with:
           node-version: 22
           cache: 'npm'
-          cache-dependency-path: push-worker/package-lock.json
+          cache-dependency-path: ${{ matrix.worker }}/package-lock.json
 
       - name: Install Dependencies
-        run: npm ci --prefix push-worker
+        run: npm ci --prefix ${{ matrix.worker }}
 
       - name: Typecheck
-        run: npm run typecheck --prefix push-worker
+        run: npm run typecheck --prefix ${{ matrix.worker }}
 
       - name: Run Tests
-        run: npm test --prefix push-worker
+        run: npm test --prefix ${{ matrix.worker }}
 
   e2e:
     name: Playwright E2E Tests
@@ -268,7 +271,7 @@ jobs:
 
       - name: Run Gemini Code Review
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_PR_REVIEWS_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}

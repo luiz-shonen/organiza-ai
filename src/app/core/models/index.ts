@@ -13,6 +13,8 @@ export {
   PIX_PURPOSE_MAX,
   SECRET_SANTA_RULES_MAX,
   EVENT_CATEGORIES,
+  EXPECTED_GUESTS_MAX,
+  parseExpectedGuests,
   getCategoryClass,
   getCategoryHue,
 } from './event.model';
@@ -118,3 +120,14 @@ export type {
   SeasonalThemeChoice,
   SeasonalThemeOption,
 } from './design-system-showcase.model';
+export {
+  AI_SUGGESTIONS_PER_EVENT,
+  AI_SUGGESTIONS_PER_HOUR,
+  AI_SUGGESTION_THRESHOLD,
+} from './ai-suggestion.model';
+export type {
+  AiSuggestedItem,
+  AiSuggestion,
+  AiSuggestionInput,
+  AiSuggestionState,
+} from './ai-suggestion.model';

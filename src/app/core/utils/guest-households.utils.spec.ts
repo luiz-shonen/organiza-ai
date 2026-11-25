@@ -47,7 +47,7 @@ describe('buildGuestHouseholds', () => {
             role: 'Convidado(a)',
             bring: ['1 kg de Carne', '2 L de Refrigerante'],
           },
-          { name: 'Pedro', role: 'Família', bring: ['1 kg de Carne'] },
+          { name: 'Pedro', role: 'Família', guestId: 'u1_f1', bring: ['1 kg de Carne'] },
           { name: 'Soraya', role: 'Acompanhante', kinship: 'Acompanhante', bring: [] },
         ],
       },

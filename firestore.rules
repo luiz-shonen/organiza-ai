@@ -652,14 +652,15 @@ service cloud.firestore {
         allow create: if isAdmin()
                       || (isPrimaryRsvp() && waitsForApproval() && !addedByOrganizer())
                       || (isLinkedFamilyRsvp() && !addedByOrganizer())
-                      || (managesEvent(eventData(eventId)) && isManualGuest()
+                      || (managesEvent(eventData(eventId))
+                          && (isManualGuest() || isManualRelative())
                           && request.resource.data.addedBy == request.auth.uid);
         // Only organizers approve: a guest never changes `approved` on their own answer. Someone
         // added by hand stays a valid hand-added entry, with who added them kept.
         allow update: if isAdmin()
                       || (managesEvent(eventData(eventId))
                           && (!('addedBy' in resource.data)
-                              || (isManualGuest() && !changes('addedBy'))))
+                              || ((isManualGuest() || isManualRelative()) && !changes('addedBy'))))
                       || (
                         request.auth != null
                         && !changes('approved')
@@ -698,6 +699,28 @@ service cloud.firestore {
               && data.companionsCount >= 0
               && data.companionsCount <= 10
               && data.companions.size() == data.companionsCount
+              && data.isConfirmed == true
+              && data.confirmedAt is string
+              && data.addedBy is string;
+        }
+
+        // A relative of someone added by hand: no family profile behind them, so they live only
+        // here, tied to that person by `primaryGuestId` and an id starting with theirs.
+        function isManualRelative() {
+          let data = request.resource.data;
+          let primary = getAfter(/databases/$(database)/documents/events/$(eventId)/guests/$(data.get('primaryGuestId', '-')));
+          return data.keys().hasOnly(['name', 'relationship', 'phone', 'primaryGuestId',
+                                      'isConfirmed', 'confirmedAt', 'addedBy', 'createdAt'])
+              && data.keys().hasAll(['name', 'relationship', 'phone', 'primaryGuestId',
+                                     'isConfirmed', 'confirmedAt', 'addedBy'])
+              && isFilledText(data.name, 120)
+              && isRelationship(data.relationship)
+              && isPhoneOrEmpty(data.phone)
+              && data.primaryGuestId is string
+              && guestId.matches(data.primaryGuestId + '_[A-Za-z0-9_]+')
+              && primary != null
+              && primary.data.get('addedBy', null) is string
+              && !('primaryGuestId' in primary.data)
               && data.isConfirmed == true
               && data.confirmedAt is string
               && data.addedBy is string;

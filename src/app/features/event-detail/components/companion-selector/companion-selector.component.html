@@ -23,9 +23,7 @@
         }
       </ul>
     } @else {
-      <p class="companion-selector__empty">
-        Quem você levar fica guardado para os próximos eventos.
-      </p>
+      <p class="companion-selector__empty">{{ emptyText() }}</p>
     }
 
     @if (full()) {

@@ -60,6 +60,8 @@ export type {
   GuestDecline,
   GuestSession,
   ManualGuestInput,
+  ManualGuestRelative,
+  ManualGuestSantaEntry,
 } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';
 export type {

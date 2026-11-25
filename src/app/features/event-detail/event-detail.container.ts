@@ -103,6 +103,7 @@ import type { AiSuggestedItem } from '../../core/models';
 import { PixCardComponent } from './components/pix-card/pix-card.component';
 import { FamilyChecklistCardComponent } from './components/family-checklist-card/family-checklist-card.component';
 import { GuestListCardComponent } from './components/guest-list-card/guest-list-card.component';
+import type { ManualGuestSantaSettings } from './components/manual-guest-form/manual-guest-form.component';
 import {
   ClaimSheetComponent,
   type ClaimPerson,
@@ -1237,6 +1238,7 @@ export class EventDetailContainer implements OnInit {
    */
   protected readonly saveNewSecretSantaParticipant = async (
     participant: SecretSantaParticipantInput,
+    among: readonly SecretSantaParticipant[] = this.secretSantaParticipants(),
   ): Promise<boolean> => {
     // "Participar também": the organizer's own entry, their phone being the profile's.
     const uid = this.memberUid();
@@ -1245,7 +1247,7 @@ export class EventDetailContainer implements OnInit {
       if (added) await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
       return added;
     }
-    const match = this.sameSecretSantaPerson(participant);
+    const match = this.sameSecretSantaPerson(participant, among);
     if (!match) return this.addSecretSantaParticipants([participant]);
     const { same, by } = match;
     const why = by === 'phone' ? `com o telefone ${same.phone}` : 'com esse nome';
@@ -1289,10 +1291,10 @@ export class EventDetailContainer implements OnInit {
   /** Someone already in the draw with the same phone (first) or the same name. */
   private sameSecretSantaPerson(
     participant: SecretSantaParticipantInput,
+    people: readonly SecretSantaParticipant[],
   ): { same: SecretSantaParticipant; by: 'phone' | 'name' } | null {
     const digits = (phone: string) => phone.replace(/\D/g, '');
     const phone = digits(participant.phone);
-    const people = this.secretSantaParticipants();
     const byPhone = phone ? people.find((p) => digits(p.phone) === phone) : undefined;
     if (byPhone) return { same: byPhone, by: 'phone' };
     const name = personKey(participant.name);
@@ -1840,32 +1842,64 @@ export class EventDetailContainer implements OnInit {
   }
 
   /**
+   * "Adicionar alguém à mão": the amigo oculto offered in the same drawer, to organizers who can
+   * still manage its participants, before the draw.
+   */
+  protected readonly manualSecretSanta = computed<ManualGuestSantaSettings | null>(() => {
+    const event = this.event();
+    const santa = event?.secretSanta;
+    if (!santa?.enabled || !this.canEditEvent() || this.secretSantaDraw()) return null;
+    return {
+      giftOptions: !!santa.giftOptions,
+      maxGiftOptions: santa.maxGiftOptions ?? 3,
+      rules: event?.secretSantaRules?.trim() || null,
+    };
+  });
+
+  /**
    * "Adicionar alguém à mão" in "Confirmados": the organizers put someone on the list (`id` null)
-   * or change them. Resolves true when it saved, so the drawer closes.
+   * or change them, with their relatives (kept only on this event). When adding, who they chose
+   * goes into the amigo oculto too. Resolves true when it saved, so the drawer closes.
    */
   protected readonly saveManualGuest = async (
     guest: ManualGuestInput,
-    id: string | null,
+    household: GuestHousehold | null,
   ): Promise<boolean> => {
     const uid = this.memberUid();
     if (!uid) return false;
     try {
-      if (id) {
-        await this.guestService.updateManualGuest(this.id(), id, guest);
+      if (household) {
+        const previous = household.members.flatMap((person) =>
+          person.role === 'Família' && person.guestId ? [person.guestId] : [],
+        );
+        await this.guestService.updateManualGuest(this.id(), household.id, guest, previous, uid);
         this.feedback.success(`${guest.name} foi atualizado(a).`);
       } else {
         await this.guestService.addManualGuest(this.id(), guest, uid);
         this.feedback.success(`${guest.name} entrou na lista.`);
       }
-      return true;
     } catch (err) {
       console.error(err);
       this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', err));
       return false;
     }
+    // On the list already: a person the draw refuses (or the organizer gives up on) stays there.
+    // Compared with the draw as it was: the household shares a phone and is not a repeat.
+    const before = this.secretSantaParticipants();
+    for (const entry of household ? [] : (guest.secretSanta ?? [])) {
+      await this.saveNewSecretSantaParticipant(
+        {
+          name: entry.name,
+          phone: entry.phone,
+          giftOptions: entry.giftOptions,
+        },
+        before,
+      );
+    }
+    return true;
   };
 
-  /** "Remover" someone added by hand, after asking. */
+  /** "Remover" someone added by hand, with their relatives, after asking. */
   protected onRemoveManualGuest(household: GuestHousehold): void {
     this.dialogs
       .confirm({
@@ -1881,8 +1915,11 @@ export class EventDetailContainer implements OnInit {
       })
       .subscribe(async (confirmed) => {
         if (!confirmed) return;
+        const relatives = household.members.flatMap((person) =>
+          person.role === 'Família' && person.guestId ? [person.guestId] : [],
+        );
         try {
-          await this.guestService.removeManualGuest(this.id(), household.id);
+          await this.guestService.removeManualGuest(this.id(), household.id, relatives);
           this.feedback.success(`${household.name} saiu da lista.`);
         } catch (err) {
           console.error(err);

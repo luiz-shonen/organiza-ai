@@ -271,19 +271,37 @@ describe('GuestService', () => {
   });
 
   describe('guests added by hand', () => {
-    it('adds someone with who added them, their companions and no account', async () => {
-      mockGateway.addDoc.mockResolvedValue('manual-1');
+    /** Runs the batch the service builds and returns its operations. */
+    function captureBatch() {
+      const ops: { op: string; path: string; data?: unknown }[] = [];
+      mockGateway.runBatch.mockImplementation(async (fn: (batch: unknown) => void) => {
+        fn({
+          set: (path: string, data: unknown) => ops.push({ op: 'set', path, data }),
+          update: (path: string, data: unknown) => ops.push({ op: 'update', path, data }),
+          delete: (path: string) => ops.push({ op: 'delete', path }),
+        });
+      });
+      return ops;
+    }
+
+    it('adds someone with who added them, their companions, relatives and no account', async () => {
+      const ops = captureBatch();
+      mockGateway.newId = vi.fn().mockReturnValueOnce('manual-1').mockReturnValueOnce('r1');
 
       const id = await service.addManualGuest(
         'evt-100',
-        { name: 'Tia Cida', phone: '(11) 98888-1111', companions: ['Seu Zé'] },
+        {
+          name: 'Tia Cida',
+          phone: '(11) 98888-1111',
+          companions: ['Seu Zé'],
+          relatives: [{ name: 'Lia', relationship: 'child', phone: '' }],
+        },
         'owner-uid',
       );
 
       expect(id).toBe('manual-1');
-      const [path, data] = mockGateway.addDoc.mock.calls[0];
-      expect(path).toBe('events/evt-100/guests');
-      expect(data).toEqual(
+      expect(ops[0].path).toBe('events/evt-100/guests/manual-1');
+      expect(ops[0].data).toEqual(
         expect.objectContaining({
           name: 'Tia Cida',
           phone: '(11) 98888-1111',
@@ -293,24 +311,51 @@ describe('GuestService', () => {
           addedBy: 'owner-uid',
         }),
       );
-      expect(data).not.toHaveProperty('uid');
+      expect(ops[0].data).not.toHaveProperty('uid');
+      expect(ops[1]).toEqual({
+        op: 'set',
+        path: 'events/evt-100/guests/manual-1_r1',
+        data: expect.objectContaining({
+          name: 'Lia',
+          relationship: 'child',
+          primaryGuestId: 'manual-1',
+          addedBy: 'owner-uid',
+        }),
+      });
     });
 
-    it('changes and removes them', async () => {
-      await service.updateManualGuest('evt-100', 'manual-1', {
-        name: 'Cida',
-        phone: '',
-        companions: [],
-      });
-      expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-100/guests/manual-1', {
-        name: 'Cida',
-        phone: '',
-        companions: [],
-        companionsCount: 0,
-      });
+    it('changes them, keeps, adds and drops relatives, and removes them all', async () => {
+      const ops = captureBatch();
+      mockGateway.newId = vi.fn().mockReturnValue('r9');
+      await service.updateManualGuest(
+        'evt-100',
+        'manual-1',
+        {
+          name: 'Cida',
+          phone: '',
+          companions: [],
+          relatives: [
+            { id: 'manual-1_r1', name: 'Lia', relationship: 'child', phone: '' },
+            { name: 'Zeca', relationship: 'spouse', phone: '' },
+          ],
+        },
+        ['manual-1_r1', 'manual-1_r2'],
+        'owner-uid',
+      );
+      expect(ops.map(({ op, path }) => [op, path])).toEqual([
+        ['update', 'events/evt-100/guests/manual-1'],
+        ['update', 'events/evt-100/guests/manual-1_r1'],
+        ['set', 'events/evt-100/guests/manual-1_r9'],
+        ['delete', 'events/evt-100/guests/manual-1_r2'],
+      ]);
+      expect(ops[0].data).toEqual({ name: 'Cida', phone: '', companions: [], companionsCount: 0 });
 
-      await service.removeManualGuest('evt-100', 'manual-1');
-      expect(mockGateway.deleteDoc).toHaveBeenCalledWith('events/evt-100/guests/manual-1');
+      ops.length = 0;
+      await service.removeManualGuest('evt-100', 'manual-1', ['manual-1_r1']);
+      expect(ops.map(({ op, path }) => [op, path])).toEqual([
+        ['delete', 'events/evt-100/guests/manual-1_r1'],
+        ['delete', 'events/evt-100/guests/manual-1'],
+      ]);
     });
   });
 

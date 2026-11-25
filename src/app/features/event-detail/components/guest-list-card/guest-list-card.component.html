@@ -154,7 +154,7 @@
                       <li class="guest-list__person">
                         <org-avatar [name]="person.name" />
                         <div class="guest-list__info">
-                          <!-- The name with the kinship tag beside it; under it, family or companion. -->
+                          <!-- The name with the kinship tag beside it; organizers see the phone under it. -->
                           <div class="guest-list__who-line">
                             <p class="guest-list__name">
                               {{ person.name }}
@@ -162,7 +162,9 @@
                                 <span class="guest-list__kinship">{{ person.kinship }}</span>
                               }
                             </p>
-                            <p class="guest-list__role">{{ person.role }}</p>
+                            @if (forOrganizer() && person.phone) {
+                              <p class="guest-list__sub">{{ displayPhone(person.phone) }}</p>
+                            }
                           </div>
                           @if (person.bring.length) {
                             <p class="guest-list__bring">Leva:</p>

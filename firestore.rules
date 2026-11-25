@@ -65,7 +65,7 @@ service cloud.firestore {
     }
 
     function isRelationship(value) {
-      return value in ['spouse', 'child', 'parent', 'sibling', 'relative', 'pet', 'other'];
+      return value in ['spouse', 'child', 'parent', 'grandparent', 'sibling', 'relative', 'pet', 'other'];
     }
 
     // Amigo oculto: one document per secret link, written by the event owner when drawing.

@@ -1,6 +1,6 @@
 import type { EventClaims, Guest, PartyItem } from '../models';
 import { formatQuantity } from './item-progress.utils';
-import { getRelationshipLabel, isPet } from './relationship.utils';
+import { getRelationshipLabel, isPet, sortByKinship } from './relationship.utils';
 
 /** Who the person is to the guest: themself, their family, or someone they bring along. */
 export type GuestRole = 'Convidado(a)' | 'Família' | 'Acompanhante';
@@ -9,8 +9,13 @@ export type GuestRole = 'Convidado(a)' | 'Família' | 'Acompanhante';
 export interface GuestPerson {
   name: string;
   role: GuestRole;
-  /** A relative's kinship, as the tag beside the name ("Cônjuge", "Pet"); none for others. */
+  /**
+   * The tag beside the name: a relative's kinship ("Cônjuge", "Pet"), or "Acompanhante" for
+   * someone the guest brings; none for the guest, or a relative confirmed before kinships.
+   */
   kinship?: string;
+  /** A relative's WhatsApp, from the family on the guest's profile (organizers see it). */
+  phone?: string;
   /** A pet of the family: listed, but not counted as a person. */
   pet?: boolean;
   /** "2 kg de Carne" or "1 Bolo", one line per item. */
@@ -93,7 +98,8 @@ export function buildGuestHouseholds(
     .filter((guest) => !guest.primaryGuestId)
     .map((guest) => {
       const uid = guest.uid || guest.id;
-      const familyGuests = guests.filter((member) => member.primaryGuestId === uid);
+      // Relatives in kinship order (cônjuge, filhos, pai/mãe…); companions come after them.
+      const familyGuests = sortByKinship(guests.filter((member) => member.primaryGuestId === uid));
       const entries = claims.find((claim) => claim.id === uid)?.entries ?? [];
 
       // memberId null is the account holder; any other id is a relative.
@@ -122,6 +128,7 @@ export function buildGuestHouseholds(
         name: member.name,
         role: 'Família',
         ...(member.relationship ? { kinship: getRelationshipLabel(member.relationship) } : {}),
+        ...(member.phone ? { phone: member.phone } : {}),
         ...(isPet(member.relationship) ? { pet: true } : {}),
         bring: linesFor(byMember.get(familyIds[index]) ?? new Map(), itemsById),
       }));
@@ -140,7 +147,7 @@ export function buildGuestHouseholds(
       const companions: GuestPerson[] = [
         ...named,
         ...(unnamed ? [unnamed === 1 ? '1 acompanhante' : `${unnamed} acompanhantes`] : []),
-      ].map((name) => ({ name, role: 'Acompanhante', bring: [] }));
+      ].map((name) => ({ name, role: 'Acompanhante', kinship: 'Acompanhante', bring: [] }));
 
       const allTotals = new Map<string, number>();
       for (const totals of byMember.values()) {

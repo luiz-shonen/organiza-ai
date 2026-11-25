@@ -28,7 +28,7 @@
       </div>
 
       <ul class="family-selector__list" role="list" aria-label="Lista de familiares para seleção">
-        @for (member of members(); track member.id) {
+        @for (member of orderedMembers(); track member.id) {
           <li class="family-selector__item" role="listitem" data-testid="family-selector-member">
             @if (editingId() === member.id) {
               <app-family-member-form

@@ -277,10 +277,18 @@ describe('Core Utilities', () => {
   });
 
   describe('relationship.utils', () => {
-    it('RELATIONSHIP_OPTIONS contains all 7 family relationship options, Pet included', () => {
-      expect(RELATIONSHIP_OPTIONS).toHaveLength(7);
+    it('RELATIONSHIP_OPTIONS lists the 8 kinships in the order relatives are always shown', () => {
       const values = RELATIONSHIP_OPTIONS.map((opt) => opt.value);
-      expect(values).toEqual(['spouse', 'child', 'parent', 'sibling', 'relative', 'pet', 'other']);
+      expect(values).toEqual([
+        'spouse',
+        'child',
+        'parent',
+        'grandparent',
+        'sibling',
+        'relative',
+        'pet',
+        'other',
+      ]);
     });
 
     it('getRelationshipLabel maps values to Portuguese localized labels', () => {

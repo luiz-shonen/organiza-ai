@@ -176,15 +176,17 @@
         <app-item-list-card [progress]="progress()" (claim)="onClaimItemById($event)" />
       }
 
-      @if (showAiSuggestions() && event.expectedGuests) {
+      @if (showAiSuggestions()) {
         <app-ai-suggestion-card
           [state]="aiState()"
           [used]="event.aiSuggestionsUsed ?? 0"
           [confirmed]="guestCount()"
-          [expected]="event.expectedGuests"
+          [expected]="event.expectedGuests ?? null"
           [existingNames]="itemNames()"
+          [savingExpected]="savingExpected()"
           (generate)="onAiGenerate()"
           (add)="onAiAdd($event)"
+          (expectedSave)="onSaveExpected($event)"
         />
       }
 

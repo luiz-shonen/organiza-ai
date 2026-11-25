@@ -15,12 +15,17 @@ const READY: AiSuggestionState = {
   message: '',
 };
 
-function render(inputs: { state: AiSuggestionState; used?: number; existingNames?: string[] }) {
+function render(inputs: {
+  state: AiSuggestionState;
+  used?: number;
+  existingNames?: string[];
+  expected?: number | null;
+}) {
   const fixture = TestBed.createComponent(AiSuggestionCardComponent);
   fixture.componentRef.setInput('state', inputs.state);
   fixture.componentRef.setInput('used', inputs.used ?? 0);
   fixture.componentRef.setInput('confirmed', 14);
-  fixture.componentRef.setInput('expected', 20);
+  fixture.componentRef.setInput('expected', inputs.expected === undefined ? 20 : inputs.expected);
   fixture.componentRef.setInput('existingNames', inputs.existingNames ?? []);
   fixture.detectChanges();
   const host = fixture.nativeElement as HTMLElement;
@@ -71,5 +76,40 @@ describe('AiSuggestionCardComponent', () => {
       state: { status: 'error', suggestion: null, message: 'Nossos assistentes estão ocupados.' },
     });
     expect(failed.host.textContent).toContain('Nossos assistentes estão ocupados.');
+  });
+
+  describe('with no expected number yet', () => {
+    const IDLE: AiSuggestionState = { status: 'idle', suggestion: null, message: '' };
+
+    function type(host: HTMLElement, text: string) {
+      const input = host.querySelector(
+        '[data-testid="ai-expected-input"] input, input[data-testid="ai-expected-input"]',
+      ) as HTMLInputElement;
+      input.value = text;
+      input.dispatchEvent(new Event('input'));
+    }
+
+    it('asks for it instead of offering suggestions', () => {
+      const { host, byTestId } = render({ state: IDLE, expected: null });
+      expect(host.textContent).toContain('Quer sugestões para a lista?');
+      expect(byTestId('ai-expected-form')).toHaveLength(1);
+      expect(byTestId('ai-suggestion-generate')).toHaveLength(0);
+    });
+
+    it('saves a number from 1 to 999 and refuses anything else', () => {
+      const { fixture, host, byTestId } = render({ state: IDLE, expected: null });
+      const saved = vi.fn();
+      fixture.componentInstance.expectedSave.subscribe(saved);
+
+      type(host, '0');
+      (byTestId('ai-expected-save')[0] as HTMLElement).click();
+      fixture.detectChanges();
+      expect(saved).not.toHaveBeenCalled();
+      expect(host.textContent).toContain('Digite um número de 1 a 999');
+
+      type(host, ' 30 ');
+      (byTestId('ai-expected-save')[0] as HTMLElement).click();
+      expect(saved).toHaveBeenCalledWith(30);
+    });
   });
 });

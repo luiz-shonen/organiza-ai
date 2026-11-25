@@ -80,3 +80,14 @@
   gap: var(--org-space-sm);
   justify-content: space-between;
 }
+
+.ai-card__ask {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--org-space-sm);
+}
+
+.ai-card__ask-field {
+  flex: 1 1 12rem;
+}

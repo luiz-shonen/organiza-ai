@@ -190,14 +190,39 @@ export class EventEditorContainer implements OnInit {
         splitGuestsByApproval(this.guests(), !!this.currentEvent()?.requireApproval).approved,
       ).people,
   );
-  /** "Sugestões do Organiza AI" in the "Itens" step: the same card as on the event page. */
-  protected readonly showAiSuggestions = computed(
-    () =>
-      this.isEditing() &&
-      !hasStarted(this.currentEvent()?.date) &&
-      this.aiSuggestions.isAvailable() &&
-      isAiSuggestionDue(this.currentEvent()?.expectedGuests, this.confirmedPeople()),
-  );
+  /**
+   * "Sugestões do Organiza AI" in the "Itens" step: the same card as on the event page, asking
+   * the owner for the expected number when there is none yet.
+   */
+  protected readonly showAiSuggestions = computed(() => {
+    const event = this.currentEvent();
+    if (!this.isEditing() || hasStarted(event?.date) || !this.aiSuggestions.isAvailable()) {
+      return false;
+    }
+    return event?.expectedGuests
+      ? isAiSuggestionDue(event.expectedGuests, this.confirmedPeople())
+      : this.isOwner() && this.confirmedPeople() >= 1;
+  });
+  protected readonly savingExpected = signal(false);
+
+  /**
+   * The card's "Quantas pessoas você espera?": saved on the event at once and put in the same
+   * field of the first step, so saving the whole event later keeps it.
+   */
+  protected async onSaveExpected(expectedGuests: number): Promise<void> {
+    const eventId = this.id();
+    if (!eventId) return;
+    this.savingExpected.set(true);
+    try {
+      await this.eventService.updateEvent(eventId, { expectedGuests });
+      this.basicInfoForm.controls.expectedGuests.setValue(String(expectedGuests));
+      this.feedback.success(`Pronto: ${expectedGuests} pessoas esperadas.`);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível salvar o número de pessoas.', error));
+    } finally {
+      this.savingExpected.set(false);
+    }
+  }
   protected readonly aiState = computed(() => this.aiSuggestions.stateFor(this.id() ?? ''));
   protected readonly itemNames = computed(() => this.items().map((item) => item.name));
   private readonly restoreAiSuggestion = effect(() => {

@@ -24,6 +24,13 @@ collaborators, on the event page and in the editor's "Itens" step, until the eve
 lists what may be missing, each complete (name, quantity, unit, why) with "Adicionar"; an item
 already on the list reads "Na lista".
 
+With no number yet (left empty, or an event from before the field), the owner sees the same card
+asking "Quantas pessoas você espera?" once at least 1 person confirmed. It saves the very same
+`expectedGuests` the editor's first step shows (the editor re-reads the event, and the card in the
+editor also fills that field), so either place changes it for both. Only the owner: the rules and
+the editor let only the owner change the event's fields; collaborators see the card once the number
+exists.
+
 ## Cost zero, no Blaze, no queue
 
 - `ai-worker/` is a stateless Cloudflare Worker (free plan): `POST /suggest`. No KV, queue or

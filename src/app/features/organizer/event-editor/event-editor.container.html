@@ -115,10 +115,12 @@
                   [state]="aiState()"
                   [used]="event.aiSuggestionsUsed ?? 0"
                   [confirmed]="confirmedPeople()"
-                  [expected]="event.expectedGuests ?? 0"
+                  [expected]="event.expectedGuests ?? null"
                   [existingNames]="itemNames()"
+                  [savingExpected]="savingExpected()"
                   (generate)="onAiGenerate()"
                   (add)="onAiAdd($event)"
+                  (expectedSave)="onSaveExpected($event)"
                 />
               }
             </app-event-items-step>

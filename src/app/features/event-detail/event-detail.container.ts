@@ -842,14 +842,30 @@ export class EventDetailContainer implements OnInit {
 
   /**
    * "Sugestões do Organiza AI": for organizers, once 70% of the people they expect confirmed
-   * (`expectedGuests`), until the event starts.
+   * (`expectedGuests`), until the event starts. With no number yet, the owner (who alone edits
+   * the event) is asked for it there once someone confirmed.
    */
-  protected readonly showAiSuggestions = computed(
-    () =>
-      this.canEditEvent() &&
-      this.aiSuggestions.isAvailable() &&
-      isAiSuggestionDue(this.event()?.expectedGuests, this.guestCount()),
-  );
+  protected readonly showAiSuggestions = computed(() => {
+    if (!this.canEditEvent() || !this.aiSuggestions.isAvailable()) return false;
+    const expected = this.event()?.expectedGuests;
+    return expected
+      ? isAiSuggestionDue(expected, this.guestCount())
+      : this.isOwner() && this.guestCount() >= 1;
+  });
+  protected readonly savingExpected = signal(false);
+
+  /** "Quantas pessoas você espera?" from the card: the same field as in the editor. */
+  protected async onSaveExpected(expectedGuests: number): Promise<void> {
+    this.savingExpected.set(true);
+    try {
+      await this.eventService.updateEvent(this.id(), { expectedGuests });
+      this.feedback.success(`Pronto: ${expectedGuests} pessoas esperadas.`);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível salvar o número de pessoas.', error));
+    } finally {
+      this.savingExpected.set(false);
+    }
+  }
   protected readonly aiState = computed(() => this.aiSuggestions.stateFor(this.id()));
   protected readonly itemNames = computed(() => this.items().map((item) => item.name));
   /** After a reload, the suggestion saved on the event shows again. */

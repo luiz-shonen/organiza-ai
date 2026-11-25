@@ -61,6 +61,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0 var(--org-space-sm);
+
+  // Room for the field's floating label under "Ninguém vai junto." or the last companion.
+  margin-block-start: var(--org-space-sm);
 }
 
 .manual-guest__add-field {

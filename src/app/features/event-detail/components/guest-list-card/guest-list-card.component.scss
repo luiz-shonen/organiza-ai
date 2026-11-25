@@ -347,18 +347,6 @@
   min-inline-size: 0;
 }
 
-// "À mão": someone the organizers added, as a quiet tag beside the name.
-.guest-list__manual {
-  background: var(--org-surface-container-high);
-  border-radius: var(--org-radius-xs);
-  color: var(--org-on-surface-variant);
-  flex: none;
-  font-size: var(--org-font-size-xs);
-  font-weight: var(--org-font-weight-semibold);
-  padding: 1px 6px;
-  text-transform: uppercase;
-}
-
 // Editar / Remover for someone added by hand, at the end of their panel, lined up with the name.
 .guest-list__manual-actions {
   display: flex;

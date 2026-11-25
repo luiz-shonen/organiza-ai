@@ -281,6 +281,8 @@ export class GuestService {
       for (const id of familyGuestIds) batch.delete(this.guestDocPath(eventId, id));
       for (const id of secretSantaEntryIds) {
         batch.delete(`events/${eventId}/secretSantaParticipants/${id}`);
+        // Its copy without phones too, or guests would still see the name and gift ideas.
+        batch.delete(`events/${eventId}/secretSantaRoster/${id}`);
       }
     });
   }

@@ -286,6 +286,48 @@ service cloud.firestore {
     // only the events the account owns or helps organize, never all events of the owner.
     // Any account holder creates events they own; the owner edits, cancels and deletes; an
     // invited account adds itself to the collaborators.
+    // Organiza AI (docs/knowledge/decisions/ai-suggestions.md). Shared answers, keyed by
+    // category, headcount and list: any account reads them; one is written only in the commit
+    // that spends the writer's hour quota, and never changed afterwards.
+    match /ai_cache/{key} {
+      allow get: if isAccountHolder();
+      allow create: if isAccountHolder()
+                    && key.size() <= 120
+                    && request.resource.data.keys().hasOnly(['items', 'tip', 'category', 'people', 'provider', 'createdAt'])
+                    && request.resource.data.items is list
+                    && request.resource.data.items.size() <= 10
+                    && isPlainText(request.resource.data.get('tip', ''), 200)
+                    && isPlainText(request.resource.data.category, 60)
+                    && request.resource.data.people is int
+                    && request.resource.data.createdAt == request.time
+                    && getAfter(/databases/$(database)/documents/ai_usage/$(request.auth.uid)).data.get('lastAt', null) == request.time;
+    }
+
+    // Each person's suggestions this hour: at most 5 from `windowStart`; an hour later a new
+    // window starts at 1. Only goes up; nobody deletes it.
+    match /ai_usage/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if isAccountHolder()
+                            && request.auth.uid == uid
+                            && request.resource.data.keys().hasOnly(['count', 'windowStart', 'lastAt'])
+                            && request.resource.data.lastAt == request.time
+                            && (startsHour() || continuesHour());
+
+      function startsHour() {
+        return request.resource.data.windowStart == request.time
+            && request.resource.data.count == 1
+            && (resource == null || request.time >= resource.data.windowStart + duration.value(1, 'h'));
+      }
+
+      function continuesHour() {
+        return resource != null
+            && request.resource.data.windowStart == resource.data.windowStart
+            && request.time < resource.data.windowStart + duration.value(1, 'h')
+            && request.resource.data.count == resource.data.count + 1
+            && request.resource.data.count <= 5;
+      }
+    }
+
     match /events/{eventId} {
       allow get: if true;
       allow list: if isAdmin() || isSuperAdmin()
@@ -299,7 +341,9 @@ service cloud.firestore {
                     && (isAdmin()
                         || (ownsEvent(resource.data) && !changes('createdBy'))
                         || isJoiningByInvitation()
-                        || isLeavingCollaboration());
+                        || isLeavingCollaboration()
+                        || isUsingAiSuggestion()
+                        || isShowingCachedSuggestion());
       allow delete: if isAdmin() || ownsEvent(resource.data);
 
       // "Sair da colaboração": a collaborator removes only their own uid, nothing else.
@@ -323,10 +367,47 @@ service cloud.firestore {
                  == resource.data.get('collaborators', []).toSet().union([request.auth.uid].toSet());
       }
 
+      // Organiza AI: an organizer spends one of the event's 3 suggestions. Only in the commit
+      // that also counts the person's hour (ai_usage, `lastAt` = now) and saves the answer in
+      // ai_cache: the AI relay (ai-worker/) makes it with the organizer's own token.
+      function isUsingAiSuggestion() {
+        let used = request.resource.data.get('aiSuggestionsUsed', 0);
+        return isAccountHolder()
+            && managesEvent(resource.data)
+            && changedKeys().hasOnly(['aiSuggestionsUsed', 'aiSuggestionKey'])
+            && used == resource.data.get('aiSuggestionsUsed', 0) + 1
+            && getAfter(/databases/$(database)/documents/ai_usage/$(request.auth.uid)).data.get('lastAt', null) == request.time;
+      }
+
+      // A suggestion found in the cache (nothing spent): an organizer shows it on the event.
+      function isShowingCachedSuggestion() {
+        return isAccountHolder()
+            && managesEvent(resource.data)
+            && changedKeys().hasOnly(['aiSuggestionKey']);
+      }
+
+      // The counter never goes back nor past 3, and the shown suggestion exists in the cache,
+      // whoever writes (the owner's ordinary edits included).
+      function isAiFields() {
+        let data = request.resource.data;
+        return (!changes('aiSuggestionsUsed')
+                || (data.get('aiSuggestionsUsed', null) is int
+                    && data.aiSuggestionsUsed == resource.data.get('aiSuggestionsUsed', 0) + 1
+                    && data.aiSuggestionsUsed <= 3
+                    && isUsingAiSuggestion()))
+            && (!changes('aiSuggestionKey')
+                || (data.get('aiSuggestionKey', null) is string
+                    && data.aiSuggestionKey.size() <= 120
+                    && existsAfter(/databases/$(database)/documents/ai_cache/$(data.aiSuggestionKey))))
+            && (!changes('expectedGuests') || data.get('expectedGuests', null) == null
+                || (data.expectedGuests is int && data.expectedGuests >= 1 && data.expectedGuests <= 999));
+      }
+
       // Size limits only: admins write events, and older ones may hold any text.
       function isValidEvent() {
         let data = request.resource.data;
-        return (!changes('title') || isFilledText(data.get('title', null), 200))
+        return isAiFields()
+            && (!changes('title') || isFilledText(data.get('title', null), 200))
             && (!changes('category') || isOptionalString(data.get('category', null), 60))
             && (!changes('description') || isOptionalString(data.get('description', null), 2000))
             && (!changes('endDate') || data.get('endDate', null) == null
@@ -571,14 +652,15 @@ service cloud.firestore {
         allow create: if isAdmin()
                       || (isPrimaryRsvp() && waitsForApproval() && !addedByOrganizer())
                       || (isLinkedFamilyRsvp() && !addedByOrganizer())
-                      || (managesEvent(eventData(eventId)) && isManualGuest()
+                      || (managesEvent(eventData(eventId))
+                          && (isManualGuest() || isManualRelative())
                           && request.resource.data.addedBy == request.auth.uid);
         // Only organizers approve: a guest never changes `approved` on their own answer. Someone
         // added by hand stays a valid hand-added entry, with who added them kept.
         allow update: if isAdmin()
                       || (managesEvent(eventData(eventId))
                           && (!('addedBy' in resource.data)
-                              || (isManualGuest() && !changes('addedBy'))))
+                              || ((isManualGuest() || isManualRelative()) && !changes('addedBy'))))
                       || (
                         request.auth != null
                         && !changes('approved')
@@ -617,6 +699,28 @@ service cloud.firestore {
               && data.companionsCount >= 0
               && data.companionsCount <= 10
               && data.companions.size() == data.companionsCount
+              && data.isConfirmed == true
+              && data.confirmedAt is string
+              && data.addedBy is string;
+        }
+
+        // A relative of someone added by hand: no family profile behind them, so they live only
+        // here, tied to that person by `primaryGuestId` and an id starting with theirs.
+        function isManualRelative() {
+          let data = request.resource.data;
+          let primary = getAfter(/databases/$(database)/documents/events/$(eventId)/guests/$(data.get('primaryGuestId', '-')));
+          return data.keys().hasOnly(['name', 'relationship', 'phone', 'primaryGuestId',
+                                      'isConfirmed', 'confirmedAt', 'addedBy', 'createdAt'])
+              && data.keys().hasAll(['name', 'relationship', 'phone', 'primaryGuestId',
+                                     'isConfirmed', 'confirmedAt', 'addedBy'])
+              && isFilledText(data.name, 120)
+              && isRelationship(data.relationship)
+              && isPhoneOrEmpty(data.phone)
+              && data.primaryGuestId is string
+              && guestId.matches(data.primaryGuestId + '_[A-Za-z0-9_]+')
+              && primary != null
+              && primary.data.get('addedBy', null) is string
+              && !('primaryGuestId' in primary.data)
               && data.isConfirmed == true
               && data.confirmedAt is string
               && data.addedBy is string;

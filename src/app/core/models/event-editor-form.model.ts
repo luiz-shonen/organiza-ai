@@ -8,6 +8,8 @@ export type EventBasicInfoForm = FormGroup<{
   /** "Data de término (opcional)": the last day of an event that runs over several days. */
   endDate: FormControl<Date | null>;
   time: FormControl<string>;
+  /** "Quantas pessoas você espera? (opcional)", typed as text: '' or 1 to 999. */
+  expectedGuests: FormControl<string>;
 }>;
 
 export type EventAddressForm = FormGroup<{

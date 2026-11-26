@@ -468,6 +468,10 @@ export class EventService {
           : data['estimatedBudget'] === null
             ? null
             : undefined,
+      expectedGuests: typeof data['expectedGuests'] === 'number' ? data['expectedGuests'] : null,
+      aiSuggestionsUsed:
+        typeof data['aiSuggestionsUsed'] === 'number' ? data['aiSuggestionsUsed'] : 0,
+      aiSuggestionKey: typeof data['aiSuggestionKey'] === 'string' ? data['aiSuggestionKey'] : null,
       status: (data['status'] as 'active' | 'cancelled') ?? 'active',
       createdBy: (data['createdBy'] as string) ?? '',
       creatorEmail: (data['creatorEmail'] as string) ?? '',

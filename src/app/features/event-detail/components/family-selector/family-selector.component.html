@@ -68,7 +68,9 @@
                   icon="delete_outline"
                   testId="family-selector-remove-btn"
                   [gradient]="false"
-                  [ariaLabel]="'Remover ' + member.name + ' da sua família'"
+                  [ariaLabel]="
+                    'Remover ' + member.name + (owner() === 'self' ? ' da sua família' : '')
+                  "
                   [disabled]="isAddingInline()"
                   (pressed)="onRemove(member.id)"
                 />
@@ -79,7 +81,13 @@
       </ul>
     } @else {
       <div class="family-selector__empty" role="status">
-        <p class="family-selector__empty-text">Nenhum familiar cadastrado no seu perfil.</p>
+        <p class="family-selector__empty-text">
+          {{
+            owner() === 'self'
+              ? 'Nenhum familiar cadastrado no seu perfil.'
+              : 'Nenhum familiar ainda. Fica só neste evento.'
+          }}
+        </p>
       </div>
     }
 

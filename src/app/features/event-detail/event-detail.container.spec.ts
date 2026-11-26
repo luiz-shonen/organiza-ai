@@ -9,6 +9,7 @@ const settle = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
+import type { GuestHousehold } from '../../core/utils';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
 
 // The organizers' share panel draws a QR code on a canvas, which the test DOM does not have.
@@ -475,7 +476,10 @@ describe('EventDetailContainer', () => {
       ['who was added by hand', 'tio ze', []],
       ['who comes along with someone', 'Ana', ['Tia Lu']],
     ])('only warns about someone already on the list (%s)', async (_, name, companions) => {
-      const saved = await component['saveManualGuest']({ name, phone: '', companions }, null);
+      const saved = await component['saveManualGuest'](
+        { name, phone: '', companions, relatives: [] },
+        null,
+      );
       expect(saved).toBe(false);
       expect(mockDialogs.alert).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Já está na lista' }),
@@ -484,9 +488,15 @@ describe('EventDetailContainer', () => {
     });
 
     it('lets a hand-added person be edited without warning about themself', async () => {
-      const ze = { name: 'Tio Zé', phone: '(11) 95555-0000', companions: ['Tia Lu', 'Nina'] };
-      expect(await component['saveManualGuest'](ze, 'm1')).toBe(true);
-      expect(guestService.updateManualGuest).toHaveBeenCalledWith('evt-123', 'm1', ze);
+      const ze = {
+        name: 'Tio Zé',
+        phone: '(11) 95555-0000',
+        companions: ['Tia Lu', 'Nina'],
+        relatives: [],
+      };
+      const household = { id: 'm1', members: [] } as unknown as GuestHousehold;
+      expect(await component['saveManualGuest'](ze, household)).toBe(true);
+      expect(guestService.updateManualGuest).toHaveBeenCalledWith('evt-123', 'm1', ze, [], 'org');
       expect(mockDialogs.alert).not.toHaveBeenCalled();
     });
   });

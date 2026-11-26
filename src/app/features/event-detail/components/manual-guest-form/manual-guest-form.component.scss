@@ -2,6 +2,8 @@
   display: block;
 }
 
+// The same order as "Editar presença": the person, "Levar familiares?", "Levar acompanhantes?"
+// and, when adding, the amigo oculto.
 .manual-guest {
   display: flex;
   flex-direction: column;
@@ -9,8 +11,7 @@
 }
 
 // Name, then WhatsApp: one under the other, in the narrow drawer and on a phone alike.
-.manual-guest__fields,
-.manual-guest__companions {
+.manual-guest__fields {
   display: flex;
   flex-direction: column;
   gap: var(--org-space-xs);
@@ -29,46 +30,46 @@
   margin: 0;
 }
 
-.manual-guest__list {
+// "Amigo oculto": one checkbox per person going, each with their WhatsApp and gift ideas.
+.manual-guest__santa {
+  border-block-start: 1px solid var(--org-outline-variant);
   display: flex;
   flex-direction: column;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  gap: var(--org-space-sm);
+  padding-block-start: var(--org-space-md);
 }
 
-.manual-guest__companion {
-  align-items: center;
+.manual-guest__santa-rules {
+  background: var(--org-surface-container-low);
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-sm);
+  color: var(--org-on-surface);
+  font-size: var(--org-font-size-sm);
+  line-height: var(--org-line-height-normal);
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: var(--org-space-sm) var(--org-space-md);
+  white-space: pre-line;
+}
+
+.manual-guest__santa-person {
   display: flex;
+  flex-direction: column;
   gap: var(--org-space-sm);
-  justify-content: space-between;
 
   & + & {
-    border-top: 1px solid var(--org-outline-variant);
+    border-block-start: 1px dashed var(--org-outline-variant);
+    padding-block-start: var(--org-space-md);
   }
-}
 
-.manual-guest__companion-name {
-  color: var(--org-on-surface);
-  font-size: var(--org-font-size-md);
-  min-inline-size: 0;
-  overflow-wrap: anywhere;
-}
+  > org-text-field,
+  > app-gift-options-field {
+    margin-inline-start: var(--org-space-xl);
+  }
 
-// The companion's name and "Adicionar" side by side; the button under it on a narrow phone.
-.manual-guest__add {
-  align-items: flex-start;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--org-space-sm);
-
-  // Room for the field's floating label under "Ninguém vai junto." or the last companion.
-  margin-block-start: var(--org-space-sm);
-}
-
-.manual-guest__add-field {
-  flex: 1 1 12rem;
-  min-inline-size: 0;
+  > app-gift-options-field {
+    margin-block-end: var(--org-space-sm);
+  }
 }
 
 .manual-guest__actions {

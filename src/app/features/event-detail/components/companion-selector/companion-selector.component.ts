@@ -30,6 +30,8 @@ export const MAX_COMPANIONS = 10;
 export class CompanionSelectorComponent {
   readonly names = input<readonly string[]>([]);
   readonly selected = input<readonly string[]>([]);
+  /** Shown while nobody is on the list yet. */
+  readonly emptyText = input('Quem você levar fica guardado para os próximos eventos.');
 
   readonly toggleCompanion = output<string>();
   readonly add = output<string>();

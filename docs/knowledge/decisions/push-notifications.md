@@ -3,7 +3,7 @@ type: decision
 title: Notices between people and phone push
 status: active
 date: 2026-11-25
-updated: 2026-11-25
+updated: 2026-11-26
 enforced_by:
   - firestore.rules
   - e2e/rules/notifications.rules.test.ts
@@ -77,7 +77,8 @@ the previous notice instead of piling up.
 ## In the app
 
 - Permission is asked only when the person taps "Ativar notificações no celular" in the bell
-  menu footer, never on page load.
+  menu footer, never on page load. A device that already allowed notifications turns itself on
+  at sign-in, unless the person turned it off there (`organizaai.push.off` in localStorage).
 - iPhone/iPad: Web Push works only with the app added to the Home Screen (iOS 16.4+); in Safari
   the footer says how to install instead of offering the switch.
 - Sign-out removes the device from the relay first (`PushService.forgetDevice`).

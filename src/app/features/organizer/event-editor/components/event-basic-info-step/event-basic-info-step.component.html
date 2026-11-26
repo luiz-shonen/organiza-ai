@@ -96,6 +96,21 @@
           testId="event-time-input"
         />
       </div>
+
+      <org-text-field
+        label="Quantas pessoas você espera? (opcional)"
+        placeholder="Ex: 30"
+        inputMode="numeric"
+        [maxLength]="3"
+        hint="Com 70% delas confirmadas, o Organiza AI sugere o que pode faltar na lista de itens."
+        [error]="
+          basicInfoForm.controls.expectedGuests.invalid
+            ? 'Digite um número de 1 a ' + expectedGuestsMax
+            : ''
+        "
+        formControlName="expectedGuests"
+        testId="event-expected-guests-input"
+      />
     </div>
 
     <!-- Who may confirm: anyone with the link (default), or only after the owner approves. -->

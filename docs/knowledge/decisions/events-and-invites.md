@@ -228,26 +228,40 @@ How the app behaves for organizers and guests. Data and permissions are in
 ## Adding someone by hand
 
 - In **Confirmados**, the organizers (owner and collaborators) have **"Adicionar alguém à mão"**:
-  a drawer (`org-bottom-sheet`, as in the amigo oculto) with the name, WhatsApp (optional) and the
-  companions' names (up to 10). For someone who will not answer the invite: the grandmother without
-  a phone, a guest confirmed by a call.
+  a drawer (`org-bottom-sheet`, as in the amigo oculto) laid out like "Editar presença": the name,
+  WhatsApp (optional), **Levar familiares?** (`app-family-selector`, `owner="other"`) and **Levar
+  acompanhantes?** (`app-companion-selector`, up to 10). For someone who will not answer the
+  invite: the grandmother without a phone, a guest confirmed by a call.
 - Saved as a guest in `events/{id}/guests` (random id) with `addedBy` (the organizer's uid) and no
   `uid`: no account behind it. Always confirmed and approved, even when the event asks for
   approval. It counts like any answer: Confirmados, the total, the PDF/print and the Pix split.
+- **Their relatives live only on the event.** The person has no account, so no family profile:
+  each relative is its own guest entry `{guestId}_{random}` with `primaryGuestId`, `relationship`,
+  `phone` and `addedBy`, written in the same batch as the person. They never go to anyone's
+  `families`, and they show and count like any household's relatives. Unticking one on edit
+  deletes it; removing the person removes them too.
+- **Amigo oculto when adding** (not when editing, as with the RSVP): with the draw enabled, before
+  it is drawn and while the organizer can still edit, the drawer asks "Quem vai participar do
+  sorteio?" for the person, the relatives going (no pets) and the companions, each with gift ideas
+  and, for the others, a WhatsApp that falls back to the person's. They become organizer entries
+  (`saveNewSecretSantaParticipant`, compared with the draw as it was before this save, so a
+  household sharing one phone is not a repeat); the guest is saved first and stays if the draw
+  refuses one.
 - **Nobody goes on the list twice.** Someone already confirmed (by the invite or by hand, or
   coming along with someone), found by `findSamePerson` (same name, or same phone and first
   name), only gets the alert "Já está na lista" and nothing is saved; the same goes for each
-  companion typed. Editing someone never warns about themself.
+  relative and companion typed. Editing someone never warns about themself.
 - Typing the name offers the people typed by hand before (no account), in this event and the
   organizer's other events, with their phone (`KnownPeopleService`, as in the amigo oculto).
 - The person shows like anyone else, with no "à mão" tag (it was dropped: it crowded the row).
   Organizers get **Editar** / **Remover** inside the household's panel; removing asks first.
 - It is not linked to anyone's invite: it does not stop that person from confirming by the link
-  later (they would show twice, and the organizer removes the hand-added entry), and it does not put
-  them in the amigo oculto (that has its own "Adicionar alguém à mão").
-- Rules: only `managesEvent` creates, edits and deletes these entries; the entry must keep
+  later (they would show twice, and the organizer removes the hand-added entry).
+- Rules: only `managesEvent` creates, edits and deletes these entries; the person must keep
   `addedBy`, have no `uid`, a plain name up to 120 characters, an empty or valid phone and
-  `companions` matching `companionsCount` (≤ 10). A guest cannot mark their own answer `addedBy`.
+  `companions` matching `companionsCount` (≤ 10). A relative (`isManualRelative`) must hang off
+  such a person (`getAfter`, id prefix) with a valid kinship. A guest cannot mark their own answer
+  `addedBy`.
 
 ## Names follow the profile
 

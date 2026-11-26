@@ -23,49 +23,74 @@
     />
   </div>
 
-  <!-- Who comes along: one name at a time, each removable. -->
-  <section class="manual-guest__companions" aria-labelledby="manual-guest-companions-title">
-    <h3 id="manual-guest-companions-title" class="manual-guest__title">Acompanhantes</h3>
-    @if (companions().length) {
-      <ul class="manual-guest__list" data-testid="manual-guest-companions">
-        @for (companion of companions(); track companion) {
-          <li class="manual-guest__companion">
-            <span class="manual-guest__companion-name">{{ companion }}</span>
-            <org-icon-button
-              icon="close"
-              [ariaLabel]="'Tirar ' + companion"
-              (pressed)="removeCompanion($index)"
+  <!-- The same two panels as "Editar presença"; the relatives stay only on this event. -->
+  <div data-testid="manual-guest-family">
+    <app-family-selector
+      owner="other"
+      [members]="relatives()"
+      [selectedIds]="selectedRelativeIds()"
+      (toggleMember)="onToggleRelative($event)"
+      (selectAll)="onSelectAllRelatives($event)"
+      (addInlineMember)="onAddRelative($event)"
+      (updateMember)="onUpdateRelative($event)"
+      (removeMember)="onRemoveRelative($event)"
+    />
+  </div>
+
+  <app-companion-selector
+    emptyText="Ninguém vai junto ainda."
+    [names]="companionNames()"
+    [selected]="selectedCompanions()"
+    (toggleCompanion)="onToggleCompanion($event)"
+    (add)="onAddCompanion($event)"
+  />
+
+  @if (santa(); as santa) {
+    <section
+      class="manual-guest__santa"
+      data-testid="manual-guest-santa"
+      aria-labelledby="manual-guest-santa-title"
+    >
+      <h3 id="manual-guest-santa-title" class="manual-guest__title">Amigo oculto</h3>
+      @if (santa.rules) {
+        <p class="manual-guest__santa-rules" [textContent]="santa.rules"></p>
+      }
+      <p class="manual-guest__hint">Quem vai participar do sorteio?</p>
+      @for (person of santaPeople(); track person.key; let i = $index) {
+        <div class="manual-guest__santa-person">
+          <org-checkbox
+            [label]="person.label"
+            [testId]="'manual-guest-santa-person-' + i"
+            [checked]="isSantaChecked(person.key)"
+            (checkedChange)="setSantaChecked(person.key, $event)"
+          />
+          @if (person.key !== 'self' && isSantaChecked(person.key)) {
+            <org-text-field
+              type="tel"
+              placeholder="(11) 99999-9999"
+              [hint]="santaPhoneHint()"
+              [label]="'WhatsApp de ' + person.name"
+              [mask]="maskPhone"
+              [testId]="'manual-guest-santa-phone-' + i"
+              [error]="santaPhoneError(person.key)"
+              [value]="santaPhones()[person.key] ?? ''"
+              (valueChange)="setSantaPhone(person.key, $event)"
             />
-          </li>
-        }
-      </ul>
-    } @else {
-      <p class="manual-guest__hint">Ninguém vai junto.</p>
-    }
-    @if (full()) {
-      <p class="manual-guest__hint">No máximo {{ maxCompanions }} acompanhantes.</p>
-    } @else {
-      <div class="manual-guest__add">
-        <org-text-field
-          class="manual-guest__add-field"
-          label="Acompanhante"
-          placeholder="Ex: Seu Zé"
-          testId="manual-guest-companion-input"
-          [maxLength]="nameMaxLength"
-          [error]="companionError()"
-          [(value)]="companionName"
-        />
-        <org-button
-          label="Adicionar"
-          icon="person_add"
-          variant="text"
-          testId="manual-guest-companion-add"
-          [gradient]="false"
-          (pressed)="addCompanion()"
-        />
-      </div>
-    }
-  </section>
+          }
+          @if (santa.giftOptions && isSantaChecked(person.key)) {
+            <app-gift-options-field
+              hint=""
+              [label]="santaGiftLabel(person)"
+              [testIdPrefix]="'manual-guest-santa-' + i"
+              [max]="santa.maxGiftOptions"
+              [gifts]="santaGifts()[person.key] ?? []"
+              (giftsChange)="setSantaGifts(person.key, $event)"
+            />
+          }
+        </div>
+      }
+    </section>
+  }
 
   <div class="manual-guest__actions">
     <org-button

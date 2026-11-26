@@ -97,9 +97,14 @@ import {
   type RsvpSantaJoin,
 } from './components/rsvp-card/rsvp-card.component';
 import { ItemListCardComponent } from './components/item-list-card/item-list-card.component';
+import { AiSuggestionCardComponent } from '../../shared/components/ai-suggestion-card/ai-suggestion-card.component';
+import { AiSuggestionService } from '../../core/services/ai-suggestion.service';
+import { isAiSuggestionDue } from '../../core/utils/ai-suggestion.utils';
+import type { AiSuggestedItem } from '../../core/models';
 import { PixCardComponent } from './components/pix-card/pix-card.component';
 import { FamilyChecklistCardComponent } from './components/family-checklist-card/family-checklist-card.component';
 import { GuestListCardComponent } from './components/guest-list-card/guest-list-card.component';
+import type { ManualGuestSantaSettings } from './components/manual-guest-form/manual-guest-form.component';
 import {
   ClaimSheetComponent,
   type ClaimPerson,
@@ -136,6 +141,7 @@ import {
     EventCardComponent,
     RsvpCardComponent,
     ItemListCardComponent,
+    AiSuggestionCardComponent,
     PixCardComponent,
     FamilyChecklistCardComponent,
     GuestListCardComponent,
@@ -174,6 +180,7 @@ export class EventDetailContainer implements OnInit {
   private readonly router = inject(Router);
   private readonly secretSantaService = inject(SecretSantaService);
   private readonly inbox = inject(InboxService);
+  private readonly aiSuggestions = inject(AiSuggestionService);
 
   /** "Sorteio do amigo oculto feito!" for this member, when they take part with their account. */
   protected readonly secretSantaNotice = signal<AppNotification | null>(null);
@@ -835,6 +842,65 @@ export class EventDetailContainer implements OnInit {
     () => this.canEdit() && !hasStarted(this.event()?.date),
   );
 
+  /**
+   * "Sugestões do Organiza AI": for organizers, once 70% of the people they expect confirmed
+   * (`expectedGuests`), until the event starts. With no number yet, the owner (who alone edits
+   * the event) is asked for it there once someone confirmed.
+   */
+  protected readonly showAiSuggestions = computed(() => {
+    if (!this.canEditEvent() || !this.aiSuggestions.isAvailable()) return false;
+    const expected = this.event()?.expectedGuests;
+    return expected
+      ? isAiSuggestionDue(expected, this.guestCount())
+      : this.isOwner() && this.guestCount() >= 1;
+  });
+  protected readonly savingExpected = signal(false);
+
+  /** "Quantas pessoas você espera?" from the card: the same field as in the editor. */
+  protected async onSaveExpected(expectedGuests: number): Promise<void> {
+    this.savingExpected.set(true);
+    try {
+      await this.eventService.updateEvent(this.id(), { expectedGuests });
+      this.feedback.success(`Pronto: ${expectedGuests} pessoas esperadas.`);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível salvar o número de pessoas.', error));
+    } finally {
+      this.savingExpected.set(false);
+    }
+  }
+  protected readonly aiState = computed(() => this.aiSuggestions.stateFor(this.id()));
+  protected readonly itemNames = computed(() => this.items().map((item) => item.name));
+  /** After a reload, the suggestion saved on the event shows again. */
+  private readonly restoreAiSuggestion = effect(() => {
+    const key = this.event()?.aiSuggestionKey;
+    if (this.showAiSuggestions() && key) {
+      untracked(() => void this.aiSuggestions.restore(this.id(), key));
+    }
+  });
+
+  protected onAiGenerate(): void {
+    const event = this.event();
+    if (!event?.expectedGuests) return;
+    this.aiSuggestions.generate(this.id(), {
+      category: event.category || event.title,
+      people: Math.max(event.expectedGuests, this.guestCount()),
+      items: this.itemNames(),
+    });
+  }
+
+  protected async onAiAdd(item: AiSuggestedItem): Promise<void> {
+    try {
+      await this.itemService.addItem(this.id(), {
+        name: item.name,
+        quantity: item.quantity,
+        unit: item.unit,
+      });
+      this.feedback.success(`${item.name} entrou na lista.`);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível adicionar o item.', error));
+    }
+  }
+
   /** People going; pets are counted apart (`petCount`). */
   private readonly confirmedCounts = computed(() => countGuests(this.listedGuests()));
   protected readonly guestCount = computed(() => this.confirmedCounts().people);
@@ -1153,31 +1219,34 @@ export class EventDetailContainer implements OnInit {
    * Everyone on the confirmed list, one per person: each guest (`manual` when an organizer typed
    * them) and whoever comes along (`with` the guest who brings them).
    */
-  private readonly confirmedPeople = computed(() =>
-    this.guests()
-      .filter((guest) => guest.isConfirmed)
-      .flatMap((guest) => {
-        const manual = !!guest.addedBy && !guest.uid;
-        return [
-          {
-            id: guest.id,
-            guestId: guest.id,
-            name: guest.name,
-            phone: guest.phone ?? '',
-            manual,
-            with: null as string | null,
-          },
-          ...(guest.companions ?? []).map((companion, i) => ({
-            id: `${guest.id}:c${i}`,
-            guestId: guest.id,
-            name: companion.name,
-            phone: '',
-            manual,
-            with: guest.name,
-          })),
-        ];
-      }),
-  );
+  private readonly confirmedPeople = computed(() => {
+    const guests = this.guests();
+    const byId = new Map(guests.map((guest) => [guest.id, guest]));
+    return guests.flatMap((guest) => {
+      // A relative counts with the guest who brought them: that guest's household and answer.
+      const head = guest.primaryGuestId ? byId.get(guest.primaryGuestId) : guest;
+      if (!head?.isConfirmed) return [];
+      const manual = !!guest.addedBy && !guest.uid;
+      return [
+        {
+          id: guest.id,
+          household: head.id,
+          name: guest.name,
+          phone: guest.phone ?? '',
+          manual,
+          with: head === guest ? null : head.name,
+        },
+        ...(guest.companions ?? []).map((companion, i) => ({
+          id: `${guest.id}:c${i}`,
+          household: head.id,
+          name: companion.name,
+          phone: '',
+          manual,
+          with: guest.name,
+        })),
+      ];
+    });
+  });
   /** People typed by hand before, offered in "Confirmados": those not on the list yet. */
   protected readonly guestKnownPeople = computed(() => {
     const listed = this.confirmedPeople();
@@ -1208,6 +1277,7 @@ export class EventDetailContainer implements OnInit {
    */
   protected readonly saveNewSecretSantaParticipant = async (
     participant: SecretSantaParticipantInput,
+    among: readonly SecretSantaParticipant[] = this.allSecretSantaParticipants(),
   ): Promise<boolean> => {
     // "Participar também": the organizer's own entry, their phone being the profile's.
     const uid = this.memberUid();
@@ -1216,9 +1286,7 @@ export class EventDetailContainer implements OnInit {
       if (added) await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
       return added;
     }
-    const same = findSamePerson(this.allSecretSantaParticipants(), participant, (p) =>
-      this.profiledSantaName(p.id, p.name),
-    );
+    const same = findSamePerson(among, participant, (p) => this.profiledSantaName(p.id, p.name));
     if (!same) {
       // Confirmed with an account (or brought by someone who did): they join from the invite.
       const guest = findSamePerson(
@@ -1787,23 +1855,41 @@ export class EventDetailContainer implements OnInit {
   }
 
   /**
+   * "Adicionar alguém à mão": the amigo oculto offered in the same drawer, to organizers who can
+   * still manage its participants, before the draw.
+   */
+  protected readonly manualSecretSanta = computed<ManualGuestSantaSettings | null>(() => {
+    const event = this.event();
+    const santa = event?.secretSanta;
+    if (!santa?.enabled || !this.canEditEvent() || this.secretSantaDraw()) return null;
+    return {
+      giftOptions: !!santa.giftOptions,
+      maxGiftOptions: santa.maxGiftOptions ?? 3,
+      rules: event?.secretSantaRules?.trim() || null,
+    };
+  });
+
+  /**
    * "Adicionar alguém à mão" in "Confirmados": the organizers put someone on the list (`id` null)
-   * or change them. Resolves true when it saved, so the drawer closes.
+   * or change them, with their relatives (kept only on this event). When adding, who they chose
+   * goes into the amigo oculto too. Resolves true when it saved, so the drawer closes.
    */
   protected readonly saveManualGuest = async (
     guest: ManualGuestInput,
-    id: string | null,
+    household: GuestHousehold | null,
   ): Promise<boolean> => {
     const uid = this.memberUid();
     if (!uid) return false;
     // Nobody goes on the list twice: whoever is there (by the invite or by hand, or coming along
     // with someone) is only pointed out, and nothing is saved.
-    const others = this.confirmedPeople().filter((p) => p.guestId !== id);
-    for (const person of [guest.name, ...guest.companions]) {
-      const same = findSamePerson(others, {
-        name: person,
-        phone: person === guest.name ? guest.phone : '',
-      });
+    const others = this.confirmedPeople().filter((p) => p.household !== household?.id);
+    const typed = [
+      { name: guest.name, phone: guest.phone },
+      ...guest.relatives.map((relative) => ({ name: relative.name, phone: relative.phone })),
+      ...guest.companions.map((name) => ({ name, phone: '' })),
+    ];
+    for (const person of typed) {
+      const same = findSamePerson(others, person);
       if (!same) continue;
       await firstValueFrom(
         this.dialogs.alert({
@@ -1816,22 +1902,38 @@ export class EventDetailContainer implements OnInit {
       return false;
     }
     try {
-      if (id) {
-        await this.guestService.updateManualGuest(this.id(), id, guest);
+      if (household) {
+        const previous = household.members.flatMap((person) =>
+          person.role === 'Família' && person.guestId ? [person.guestId] : [],
+        );
+        await this.guestService.updateManualGuest(this.id(), household.id, guest, previous, uid);
         this.feedback.success(`${guest.name} foi atualizado(a).`);
       } else {
         await this.guestService.addManualGuest(this.id(), guest, uid);
         this.feedback.success(`${guest.name} entrou na lista.`);
       }
-      return true;
     } catch (err) {
       console.error(err);
       this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', err));
       return false;
     }
+    // On the list already: a person the draw refuses (or the organizer gives up on) stays there.
+    // Compared with the draw as it was: the household shares a phone and is not a repeat.
+    const before = this.allSecretSantaParticipants();
+    for (const entry of household ? [] : (guest.secretSanta ?? [])) {
+      await this.saveNewSecretSantaParticipant(
+        {
+          name: entry.name,
+          phone: entry.phone,
+          giftOptions: entry.giftOptions,
+        },
+        before,
+      );
+    }
+    return true;
   };
 
-  /** "Remover" someone added by hand, after asking. */
+  /** "Remover" someone added by hand, with their relatives, after asking. */
   protected onRemoveManualGuest(household: GuestHousehold): void {
     this.dialogs
       .confirm({
@@ -1847,8 +1949,11 @@ export class EventDetailContainer implements OnInit {
       })
       .subscribe(async (confirmed) => {
         if (!confirmed) return;
+        const relatives = household.members.flatMap((person) =>
+          person.role === 'Família' && person.guestId ? [person.guestId] : [],
+        );
         try {
-          await this.guestService.removeManualGuest(this.id(), household.id);
+          await this.guestService.removeManualGuest(this.id(), household.id, relatives);
           this.feedback.success(`${household.name} saiu da lista.`);
         } catch (err) {
           console.error(err);

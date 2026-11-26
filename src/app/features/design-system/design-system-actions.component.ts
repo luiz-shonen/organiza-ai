@@ -47,6 +47,12 @@ export class DesignSystemActionsComponent {
   protected readonly saving = signal(false);
   protected readonly locked = signal(true);
   protected readonly demoUrl = 'https://organiza-ai.web.app/convite/arraia-no-jardim';
+  /** The demo save's timer: one at a time, cleared when the page closes. */
+  private saveTimer?: ReturnType<typeof setTimeout>;
+
+  public constructor() {
+    this.destroyRef.onDestroy(() => clearTimeout(this.saveTimer));
+  }
 
   protected pickCategory(name: string): void {
     this.customCategory.set(null);
@@ -60,8 +66,8 @@ export class DesignSystemActionsComponent {
 
   /** Shows the loading state for a moment, as a real save would. */
   protected save(): void {
+    clearTimeout(this.saveTimer);
     this.saving.set(true);
-    const timer = setTimeout(() => this.saving.set(false), 1600);
-    this.destroyRef.onDestroy(() => clearTimeout(timer));
+    this.saveTimer = setTimeout(() => this.saving.set(false), 1600);
   }
 }

@@ -56,6 +56,27 @@ describe('SecretSantaService', () => {
     );
   });
 
+  it('syncs the guests roster one entry at a time: a refused one keeps no one else out', async () => {
+    gateway.collectionSnapshot.mockReturnValue(
+      of([{ id: 'p2', name: 'Luiz', giftOptions: [], createdAt: '2026-11-01' }]),
+    );
+    let calls = 0;
+    gateway.runBatch.mockImplementation(async (fn) => {
+      calls++;
+      if (calls === 1) throw new Error('permission-denied');
+      await fn(gateway.batchOps);
+    });
+
+    await service.syncRoster('evt-1', people);
+
+    expect(gateway.runBatch).toHaveBeenCalledTimes(2);
+    expect(gateway.batchOps.set).toHaveBeenCalledWith(
+      'events/evt-1/secretSantaRoster/p3',
+      { name: 'Ana', giftOptions: ['Livro'], note: '', createdAt: expect.any(String) },
+      { merge: true },
+    );
+  });
+
   it('draws: one secret reveal per participant and the links for the owner', async () => {
     const draw = await service.draw(event, people, null);
 

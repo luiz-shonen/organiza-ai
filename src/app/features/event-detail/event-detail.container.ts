@@ -403,7 +403,9 @@ export class EventDetailContainer implements OnInit {
    */
   private rosterSyncedFor: string | null = null;
   private readonly syncSecretSantaRoster = effect(() => {
-    const participants = this.secretSantaParticipants();
+    // Everyone, also who waits for approval: the guests' view hides those, and dropping their
+    // copies here would leave them out once approved.
+    const participants = this.allSecretSantaParticipants();
     if (!this.canEditEvent() || !participants.length || this.rosterSyncedFor === this.id()) return;
     this.rosterSyncedFor = this.id();
     void this.secretSantaService.syncRoster(this.id(), participants).catch(() => undefined);

@@ -78,6 +78,9 @@ export class SecretSantaService {
   /**
    * Organizers only: brings the roster in line with the participants (entries written before it
    * existed, or by an older version), so the guests see the same people.
+   *
+   * Each entry is written on its own: in a single batch, one entry the rules refuse would keep
+   * every other one out of the guests' list.
    */
   async syncRoster(
     eventId: string,
@@ -90,22 +93,31 @@ export class SecretSantaService {
       return (
         !entry ||
         entry.name !== p.name ||
-        JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions)
+        JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions) ||
+        (entry.note ?? '') !== (p.note ?? '')
       );
     });
     const ids = new Set(participants.map((p) => p.id));
     const gone = roster.filter((entry) => !ids.has(entry.id));
-    if (!stale.length && !gone.length) return;
-    await this.gateway.runBatch((batch) => {
-      for (const p of stale) {
-        batch.set(
-          `${this.rosterPath(eventId)}/${p.id}`,
-          { ...this.rosterDoc(p), createdAt: p.createdAt || new Date().toISOString() },
-          { merge: true },
-        );
-      }
-      for (const entry of gone) batch.delete(`${this.rosterPath(eventId)}/${entry.id}`);
-    });
+    const writes = [
+      ...stale.map((p) =>
+        this.gateway.runBatch((batch) =>
+          batch.set(
+            `${this.rosterPath(eventId)}/${p.id}`,
+            {
+              // The rules want the copy's comment to match the entry's, also when it was cleared.
+              ...this.rosterDoc({ ...p, note: p.note ?? '' }),
+              createdAt: p.createdAt || new Date().toISOString(),
+            },
+            { merge: true },
+          ),
+        ),
+      ),
+      ...gone.map((entry) =>
+        this.gateway.runBatch((batch) => batch.delete(`${this.rosterPath(eventId)}/${entry.id}`)),
+      ),
+    ];
+    await Promise.allSettled(writes);
   }
 
   private drawPath(eventId: string): string {

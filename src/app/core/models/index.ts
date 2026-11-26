@@ -117,11 +117,7 @@ export {
   DESIGN_SYSTEM_NAVIGATION_GROUPS,
   DESIGN_SYSTEM_SECTIONS,
 } from './design-system-navigation.model';
-export type {
-  DesignSystemFoundationExamples,
-  SeasonalThemeChoice,
-  SeasonalThemeOption,
-} from './design-system-showcase.model';
+export type { SeasonalThemeChoice, SeasonalThemeOption } from './design-system-showcase.model';
 export {
   AI_SUGGESTIONS_PER_EVENT,
   AI_SUGGESTIONS_PER_HOUR,

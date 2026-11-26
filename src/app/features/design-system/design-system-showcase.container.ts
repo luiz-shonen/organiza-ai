@@ -7,105 +7,58 @@ import {
   signal,
 } from '@angular/core';
 import {
-  OrgAvatarComponent,
-  OrgBottomSheetComponent,
-  OrgDateBadgeComponent,
-  OrgFilterBarComponent,
-  OrgInsightCardComponent,
-  OrgQuantityStepperComponent,
-  OrgSplitProgressComponent,
-  type OrgFilterOption,
-  type OrgSplitSegment,
-  OrgBannerComponent,
-  OrgBadgeComponent,
-  OrgAutocompleteFieldComponent,
-  OrgButtonComponent,
-  OrgCheckboxComponent,
-  OrgChipComponent,
-  OrgDateFieldComponent,
-  OrgDataTableComponent,
-  OrgDialogService,
-  OrgEmptyStateComponent,
-  OrgIconButtonComponent,
-  OrgMenuComponent,
-  OrgMetricCardComponent,
-  OrgNavigationListComponent,
-  OrgPageHeaderComponent,
-  OrgProgressComponent,
-  OrgRadioGroupComponent,
-  OrgSelectFieldComponent,
-  OrgStepComponent,
-  OrgStepperComponent,
-  OrgSurfaceComponent,
-  OrgTabsComponent,
-  OrgTextFieldComponent,
-  OrgTimeFieldComponent,
-  OrgTextareaFieldComponent,
-  OrgToggleComponent,
-  type OrgMenuAction,
-  type OrgDataColumn,
-  type OrgNavigationItem,
-  type OrgRadioOption,
-  type OrgSelectOption,
-  type OrgTimeOption,
-  type OrgTabItem,
-  FeedbackService,
-} from '../../shared/ui';
-import {
   DESIGN_SYSTEM_SECTIONS,
   type DesignSystemNavigationItem,
-} from '../../core/models/design-system-navigation.model';
-import type { SeasonalThemeChoice, SeasonalThemeOption } from '../../core/models';
-import { DesignSystemCodeExampleComponent } from './design-system-code-example.component';
+  type SeasonalThemeOption,
+} from '../../core/models';
+import { ThemeService } from '../../core/services/theme.service';
+import {
+  FeedbackService,
+  OrgDialogService,
+  OrgPageHeaderComponent,
+  OrgPageLayoutComponent,
+  type FeedbackVariant,
+} from '../../shared/ui';
+import { DesignSystemActionsComponent } from './design-system-actions.component';
+import { DS_LIVE_COLOR_TOKENS } from './design-system-catalog';
+import { DesignSystemDisplayComponent } from './design-system-display.component';
+import {
+  DesignSystemFeedbackComponent,
+  type DesignSystemDialogDemo,
+} from './design-system-feedback.component';
+import { DesignSystemFormsComponent } from './design-system-forms.component';
 import { DesignSystemFoundationsComponent } from './design-system-foundations.component';
+import { DesignSystemNavigationComponent } from './design-system-navigation.component';
 
 export type ShowcaseSection = DesignSystemNavigationItem;
 
+/** Every anchored section of the page, in the order of the navigation drawer. */
 export const SHOWCASE_SECTIONS: readonly ShowcaseSection[] = DESIGN_SYSTEM_SECTIONS;
 
-interface ShowcaseEventRow {
-  readonly event: string;
-  readonly status: string;
-}
+const SEASONAL_CLASSES = ['theme-junina', 'theme-natal', 'theme-pascoa', 'theme-ano-novo'];
 
+const TOASTS: Record<FeedbackVariant, string> = {
+  success: 'Presença confirmada!',
+  info: 'O convite foi reenviado para 3 pessoas.',
+  error: 'Não foi possível salvar. Tente de novo.',
+};
+
+/**
+ * /design-system (super admins): the living catalog of the `Org*` components and `--org-*`
+ * tokens. The page owns what touches the outside world (theme, toasts, dialogs, reading the
+ * live token values); each section component only shows demos.
+ */
 @Component({
   selector: 'app-design-system-showcase',
-  standalone: true,
   imports: [
-    OrgAvatarComponent,
-    OrgBottomSheetComponent,
-    OrgDateBadgeComponent,
-    OrgFilterBarComponent,
-    OrgInsightCardComponent,
-    OrgQuantityStepperComponent,
-    OrgSplitProgressComponent,
-    OrgBannerComponent,
-    OrgBadgeComponent,
-    OrgAutocompleteFieldComponent,
-    OrgButtonComponent,
-    OrgCheckboxComponent,
-    OrgChipComponent,
-    OrgDateFieldComponent,
-    OrgDataTableComponent,
-    OrgEmptyStateComponent,
-    OrgIconButtonComponent,
-    OrgMenuComponent,
-    OrgMetricCardComponent,
-    OrgNavigationListComponent,
-    OrgPageHeaderComponent,
-    OrgProgressComponent,
-    OrgRadioGroupComponent,
-    OrgSelectFieldComponent,
-    OrgStepComponent,
-    OrgStepperComponent,
-    OrgSurfaceComponent,
-    OrgTabsComponent,
-    OrgTextFieldComponent,
-    OrgTimeFieldComponent,
-    OrgTextareaFieldComponent,
-    OrgToggleComponent,
-    DesignSystemCodeExampleComponent,
+    DesignSystemActionsComponent,
+    DesignSystemDisplayComponent,
+    DesignSystemFeedbackComponent,
+    DesignSystemFormsComponent,
     DesignSystemFoundationsComponent,
+    DesignSystemNavigationComponent,
+    OrgPageHeaderComponent,
+    OrgPageLayoutComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './design-system-showcase.container.html',
@@ -115,282 +68,102 @@ export class DesignSystemShowcaseContainer {
   private readonly feedbackService = inject(FeedbackService);
   private readonly dialogService = inject(OrgDialogService);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly theme = inject(ThemeService);
 
   public readonly activeSeasonalTheme = signal<SeasonalThemeOption>('default');
-  protected readonly filterOptions: readonly OrgFilterOption[] = [
-    { id: 'all', label: 'Todos' },
-    { id: 'pending', label: 'Pendentes', count: 1, attention: true },
-    { id: 'confirmed', label: 'Confirmados' },
-  ];
-  protected readonly selectedFilters = signal<readonly string[]>(['all']);
-  protected readonly splitSegments: readonly OrgSplitSegment[] = [
-    { label: 'Ana', value: 4 },
-    { label: 'Marta', value: 2 },
-  ];
-  protected readonly sheetOpen = signal(false);
-  protected readonly sheetQuantity = signal(1);
-  public readonly eventDate = signal<Date | null>(new Date(2026, 5, 24));
-  public readonly eventTitle = signal('Ceia de Natal');
-  public readonly eventFormat = signal<string | null>('presencial');
-  public readonly eventCategory = signal<string | null>('celebrativo');
-  public readonly welcomeMessage = signal('Celebre com quem torna a vida mais bonita.');
-  public readonly eventTime = signal('19:30');
-  public readonly timeOptions: readonly OrgTimeOption[] = [
-    { label: 'Abertura, 19h', value: '19:00' },
-    { label: 'Início, 19h30', value: '19:30' },
-    { label: 'Encerramento, 22h', value: '22:00' },
-  ];
-  public readonly attendanceChannel = signal<'email' | 'whatsapp'>('email');
-  public readonly notificationsEnabled = signal<boolean>(true);
-  public readonly reminderEnabled = signal<boolean>(true);
-  public readonly emailResponsesEnabled = signal<boolean>(true);
-  public readonly companionAllowed = signal<boolean>(false);
-  public readonly notifications = signal<number>(3);
-  public readonly selectedTab = signal<string | null>('summary');
-  public readonly activeNavigationItem = signal<string | null>('guests');
-  public readonly stepperOrientation = signal<'horizontal' | 'vertical'>('horizontal');
-  public readonly formatOptions: readonly OrgSelectOption[] = [
-    { value: 'presencial', label: 'Presencial' },
-    { value: 'hibrido', label: 'Híbrido' },
-    { value: 'online', label: 'Online' },
-  ];
-  public readonly eventCategoryOptions: readonly OrgSelectOption[] = [
-    { value: 'celebrativo', label: 'Celebrativo' },
-    { value: 'familia', label: 'Família' },
-    { value: 'comunidade', label: 'Comunidade' },
-    { value: 'corporativo', label: 'Corporativo' },
-    { value: 'beneficente', label: 'Beneficente' },
-  ];
-  public readonly channelOptions: readonly OrgRadioOption[] = [
-    { value: 'email', label: 'E-mail' },
-    { value: 'whatsapp', label: 'WhatsApp' },
-  ];
-  public readonly tabItems: readonly OrgTabItem[] = [
-    { id: 'summary', label: 'Resumo', content: 'Uma visão geral do convite e da confirmação.' },
-    {
-      id: 'guests',
-      label: 'Convidados',
-      content: '42 convidados confirmados para esta celebração.',
-    },
-    { id: 'details', label: 'Detalhes', content: 'Detalhes de data, local e canais de presença.' },
-  ];
-  public readonly navigationItems: readonly OrgNavigationItem[] = [
-    { id: 'guests', label: 'Convidados confirmados · 42' },
-    { id: 'messages', label: 'Mensagens pendentes · 3' },
-  ];
-  public readonly menuActions: readonly OrgMenuAction[] = [
-    { id: 'duplicate', label: 'Duplicar evento' },
-    { id: 'archive', label: 'Arquivar rascunho' },
-  ];
-  public readonly eventRows: readonly ShowcaseEventRow[] = [
-    { event: 'Arraiá no jardim', status: 'Publicado' },
-    { event: 'Ceia de Natal', status: 'Rascunho' },
-  ];
-  public readonly eventColumns: readonly OrgDataColumn<ShowcaseEventRow>[] = [
-    { id: 'event', label: 'Evento', value: (row) => row.event },
-    { id: 'status', label: 'Status', value: (row) => row.status },
-  ];
-  public readonly componentExamples = {
-    invitationPreview: `import { OrgSurfaceComponent } from '@shared/ui';
+  protected readonly tokenValues = signal<Readonly<Record<string, string>>>({});
+  protected readonly phone = signal(false);
+  protected readonly dialogAnswer = signal<string | null>(null);
 
-<org-surface variant="hero" [atmosphere]="true">
-  <!-- Componha o cabeçalho, metadados e ações do convite -->
-</org-surface>`,
-    tokens: `:root {
-  --org-primary: #ff6b5b;
-  --org-secondary: #ffb648;
-  --org-gradient-border: linear-gradient(135deg, var(--org-primary), var(--org-secondary));
-}`,
-    spacing: `/* Margens, espaçamento interno e gaps de grid/flex */
-.minha-secao {
-  padding: var(--org-space-lg);
-  gap: var(--org-space-md);
-  border-radius: var(--org-radius-md);
-}
-
-.grade-itens {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--org-space-md);
-  margin-bottom: var(--org-space-xl);
-}`,
-    colors: `:root {
-  --org-primary: #7950f2;
-  --org-secondary: #1c9bef;
-  --org-tertiary: #2f9e44;
-  --org-success: #2f9e44;
-  --org-error: #c92a2a;
-}`,
-    iconography: `import { OrgIconComponent } from '@shared/ui';
-
-<org-icon name="event" size="md" />
-<org-icon name="schedule" size="sm" />
-
-<!-- Use apenas nomes do mapa tipado do OrgIcon. -->`,
-    foundations: `:root {
-  --org-space-sm: 0.5rem;
-  --org-space-md: 1rem;
-  --org-space-lg: 1.5rem;
-  --org-radius-md: 1rem;
-  --org-glass-blur: 24px;
-  --org-glass-shadow: 0 16px 48px rgb(36 28 49 / 0.16);
-}`,
-    typography: `:root {
-  --org-font-body: 'Plus Jakarta Sans', sans-serif;
-  --org-font-display: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
-  --org-font-mono: 'JetBrains Mono', monospace;
-  --org-font-size-display: clamp(2.25rem, 5vw, 4.5rem);
-  --org-font-size-md: 1rem;
-  --org-line-height-relaxed: 1.6;
-}
-
-/* Títulos editoriais no catálogo e em chamadas de produto. */
-.org-page-header__title {
-  font-family: var(--org-font-display);
-  font-size: var(--org-font-size-display);
-  line-height: var(--org-line-height-display);
-}
-
-/* Estilos compostos para o atalho font (título de card, corpo, rótulo). */
-.org-card-header__heading {
-  font: var(--org-text-title);
-}
-
-/* Código e tokens. */
-code { font-family: var(--org-font-mono); }`,
-    actions: `import { OrgButtonComponent, OrgIconButtonComponent, OrgChipComponent } from '@shared/ui';
-
-<org-button label="Salvar" icon="check" variant="primary" [gradient]="true" />
-<org-button label="Voltar" icon="arrow_back" variant="secondary" />
-<org-icon-button ariaLabel="Adicionar evento" icon="add" variant="primary" [gradient]="true" />
-<org-icon-button ariaLabel="Compartilhar" icon="share" variant="primary" [gradient]="false" />
-<org-icon-button ariaLabel="Remover" icon="delete" variant="danger" [gradient]="false" />
-<org-chip label="Celebrativo" variant="accent" [selected]="true" />`,
-    fields: `import { OrgAutocompleteFieldComponent, OrgDateFieldComponent, OrgSelectFieldComponent, OrgTextFieldComponent, OrgTimeFieldComponent } from '@shared/ui';
-
-<org-text-field label="Título" [(value)]="title" />
-<!-- Use select para até três opções. -->
-<org-select-field label="Formato" [options]="formatOptions" [(value)]="format" />
-<!-- Use autocomplete a partir de quatro opções. -->
-<org-autocomplete-field label="Categoria" [options]="categoryOptions" [(value)]="category" />
-<org-date-field label="Data" [(value)]="date" />
-<org-time-field label="Horário" [(value)]="time" [minuteStep]="5" [quickOptions]="timeOptions" min="08:00" max="22:00" />`,
-    selection: `import { OrgToggleComponent, OrgCheckboxComponent, OrgRadioGroupComponent } from '@shared/ui';
-
-<org-toggle label="Enviar lembrete" [(checked)]="reminder" />
-<!-- Checkbox é reservado para escolhas independentes e múltiplas. -->
-<org-checkbox label="Permitir acompanhante" [(checked)]="companion" />
-<org-radio-group label="Canal" [options]="channels" [(value)]="channel" />`,
-    navigation: `import { OrgTabsComponent, OrgNavigationListComponent, OrgMenuComponent } from '@shared/ui';
-
-<org-tabs [items]="tabs" [(selectedId)]="activeTab" [gradient]="true" />
-<org-navigation-list [items]="items" (selected)="navigate($event)" />
-<org-menu triggerLabel="Mais ações" [actions]="actions" (actionSelected)="act($event)" />`,
-    stepper: `import { OrgStepComponent, OrgStepperComponent } from '@shared/ui';
-
-<org-stepper [orientation]="orientation()">
-  <org-step label="Informações">...</org-step>
-  <org-step label="Convidados">...</org-step>
-</org-stepper>`,
-    pageLayout: `import { OrgPageHeaderComponent, OrgPageLayoutComponent } from '@shared/ui';
-
-<org-page-layout maxWidth="wide">
-  <org-page-header title="Meus eventos" icon="event" [gradient]="true" />
-</org-page-layout>`,
-    surface: `import { OrgSurfaceComponent } from '@shared/ui';
-
-<org-surface variant="card">
-  <h3>Lista de convidados</h3>
-  <p>Use variantes para superfícies, não CSS local.</p>
-</org-surface>`,
-    feedback: `import { OrgBannerComponent, FeedbackService } from '@shared/ui';
-
-<org-banner variant="info" message="Convites enviados." />
-
-// Para feedback transitório:
-this.feedbackService.success('Evento salvo com sucesso.');`,
-    emptyState: `import { OrgEmptyStateComponent } from '@shared/ui';
-
-<org-empty-state
-  icon="event"
-  title="Nenhum evento por aqui"
-  description="Crie o primeiro evento para começar."
-/>`,
-    metrics: `import { OrgBadgeComponent, OrgDataTableComponent, OrgMetricCardComponent, OrgProgressComponent } from '@shared/ui';
-
-<org-metric-card label="Confirmações" value="42" trend="18% nesta semana" [atmosphere]="true" />
-<org-progress [value]="67" ariaLabel="67% dos itens concluídos" [gradient]="true" />
-<org-badge label="Novo" variant="success" />
-<org-data-table [rows]="events" [columns]="eventColumns" ariaLabel="Eventos recentes" />`,
-    overlays: `import { OrgDialogService, FeedbackService } from '@shared/ui';
-
-this.feedbackService.success('Evento salvo com sucesso.');
-this.dialogService.confirm({
-  title: 'Publicar tema',
-  message: 'Confirme a publicação do tema.',
-});`,
-  } as const;
+  /** The seasonal class the app had before the preview, put back when leaving the page. */
+  private initialSeasonalClass: string | null = null;
 
   public constructor() {
     afterNextRender(() => {
-      if (!window.matchMedia) {
-        return;
+      const root = document.documentElement;
+      this.initialSeasonalClass =
+        SEASONAL_CLASSES.find((name) => root.classList.contains(name)) ?? null;
+      if (this.initialSeasonalClass) {
+        this.activeSeasonalTheme.set(this.initialSeasonalClass as SeasonalThemeOption);
       }
 
-      const mobileQuery = window.matchMedia('(max-width: 599px)');
-      const updateOrientation = () =>
-        this.stepperOrientation.set(mobileQuery.matches ? 'vertical' : 'horizontal');
-      updateOrientation();
-      mobileQuery.addEventListener('change', updateOrientation);
-      this.destroyRef.onDestroy(() => mobileQuery.removeEventListener('change', updateOrientation));
+      this.readTokenValues();
+      // Dark mode and seasonal themes change classes on <html>; read the values again.
+      const observer = new MutationObserver(() => this.readTokenValues());
+      observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+
+      const phoneQuery = window.matchMedia?.('(max-width: 599px)');
+      const updatePhone = () => this.phone.set(!!phoneQuery?.matches);
+      updatePhone();
+      phoneQuery?.addEventListener('change', updatePhone);
+
+      this.destroyRef.onDestroy(() => {
+        observer.disconnect();
+        phoneQuery?.removeEventListener('change', updatePhone);
+        this.applySeasonalClass(this.initialSeasonalClass);
+      });
     });
   }
 
-  public readonly seasonalOptions: readonly SeasonalThemeChoice[] = [
-    { id: 'default', label: 'Organiza', description: 'Rosa, coral e amarelo.' },
-    {
-      id: 'theme-pascoa',
-      label: 'Páscoa da Ressurreição',
-      description: 'Violeta, aurora e oliveira.',
-    },
-    { id: 'theme-junina', label: 'Festa Junina', description: 'Brasa, milho e céu de arraial.' },
-    { id: 'theme-natal', label: 'Natal de Jesus', description: 'Rubi, pinheiro e dourado.' },
-    { id: 'theme-ano-novo', label: 'Ano Novo', description: 'Ouro, prata e céu à meia-noite.' },
-  ];
-
   public setSeasonalTheme(theme: SeasonalThemeOption): void {
-    if (typeof document !== 'undefined') {
-      const root = document.documentElement;
-      root.classList.remove('theme-junina', 'theme-natal', 'theme-pascoa', 'theme-ano-novo');
-      if (theme !== 'default') {
-        root.classList.add(theme);
-      }
-    }
+    this.applySeasonalClass(theme === 'default' ? null : theme);
     this.activeSeasonalTheme.set(theme);
   }
 
-  public scrollToSection(sectionId: string): void {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  protected setDark(dark: boolean): void {
+    this.theme.setMode(dark ? 'dark' : 'light');
   }
 
-  public selectNavigationExample(itemId: string): void {
-    this.activeNavigationItem.set(itemId);
+  public showToast(variant: FeedbackVariant): void {
+    this.feedbackService[variant](TOASTS[variant]);
   }
 
-  public openDialogExample(): void {
-    this.dialogService.confirm({
-      title: 'Publicar tema',
-      message: 'Confirme a publicação do tema para a prévia.',
-      confirmLabel: 'Publicar',
-      cancelLabel: 'Agora não',
-    });
+  public openDialog(kind: DesignSystemDialogDemo): void {
+    if (kind === 'danger') {
+      this.dialogService
+        .confirm({
+          title: 'Cancelar o evento?',
+          message: 'Os convidados serão avisados de que o Arraiá no jardim não vai acontecer.',
+          confirmLabel: 'Cancelar evento',
+          cancelLabel: 'Manter evento',
+          tone: 'danger',
+          icon: 'cancel',
+        })
+        .subscribe((confirmed) =>
+          this.dialogAnswer.set(confirmed ? 'cancelar o evento' : 'manter o evento'),
+        );
+      return;
+    }
+
+    this.dialogService
+      .choose({
+        title: 'Qual telefone fica?',
+        message: 'Ana já tem o (11) 98888-1111. O novo número é (11) 97777-2222.',
+        confirmLabel: 'Usar o novo',
+        extraLabel: 'Manter os dois',
+        cancelLabel: 'Voltar',
+      })
+      .subscribe((choice) =>
+        this.dialogAnswer.set(
+          choice === 'confirm' ? 'usar o novo' : choice === 'extra' ? 'manter os dois' : 'voltar',
+        ),
+      );
   }
 
-  public showSuccessExample(): void {
-    this.feedbackService.success('Tema aplicado à prévia com sucesso.');
+  private applySeasonalClass(name: string | null): void {
+    const root = document.documentElement;
+    root.classList.remove(...SEASONAL_CLASSES);
+    if (name) {
+      root.classList.add(name);
+    }
   }
 
-  public showInfoExample(): void {
-    this.feedbackService.info('A prévia usa tokens sazonais compartilhados.');
+  private readTokenValues(): void {
+    const style = getComputedStyle(document.documentElement);
+    const values: Record<string, string> = {};
+    for (const token of DS_LIVE_COLOR_TOKENS) {
+      values[token] = style.getPropertyValue(token).trim();
+    }
+    this.tokenValues.set(values);
   }
 }

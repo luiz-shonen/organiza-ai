@@ -13,69 +13,26 @@ const superAdmin = {
 };
 
 interface SeasonalTokenExpectation {
-  readonly label: string;
   readonly rootClass: string;
-  readonly primary: string;
-  readonly secondary: string;
-  readonly tertiary: string;
-  readonly gradientFragment: string;
   readonly canvas: string;
-  readonly ringColor: string;
 }
 
+// Seasonal themes only tint the canvas; the action, info and progress palette never changes.
 const seasonalTokenExpectations: readonly SeasonalTokenExpectation[] = [
-  {
-    label: 'Páscoa da Ressurreição',
-    rootClass: 'theme-pascoa',
-    primary: '#7950f2',
-    secondary: '#1c9bef',
-    tertiary: '#2f9e44',
-    gradientFragment: '#7950f2',
-    canvas: '#faf6ff',
-    ringColor: '#ebe6f7',
-  },
-  {
-    label: 'Festa Junina',
-    rootClass: 'theme-junina',
-    primary: '#7950f2',
-    secondary: '#1c9bef',
-    tertiary: '#2f9e44',
-    gradientFragment: '#7950f2',
-    canvas: '#fff6df',
-    ringColor: '#ebe6f7',
-  },
-  {
-    label: 'Natal de Jesus',
-    rootClass: 'theme-natal',
-    primary: '#7950f2',
-    secondary: '#1c9bef',
-    tertiary: '#2f9e44',
-    gradientFragment: '#7950f2',
-    canvas: '#fff5f1',
-    ringColor: '#ebe6f7',
-  },
-  {
-    label: 'Ano Novo',
-    rootClass: 'theme-ano-novo',
-    primary: '#7950f2',
-    secondary: '#1c9bef',
-    tertiary: '#2f9e44',
-    gradientFragment: '#7950f2',
-    canvas: '#fffbed',
-    ringColor: '#ebe6f7',
-  },
+  { rootClass: 'theme-pascoa', canvas: '#faf6ff' },
+  { rootClass: 'theme-junina', canvas: '#fff6df' },
+  { rootClass: 'theme-natal', canvas: '#fff5f1' },
+  { rootClass: 'theme-ano-novo', canvas: '#fffbed' },
 ];
 
 async function openShowcase(page: Page): Promise<void> {
   await setupMockAuthSession(page, superAdmin);
   await page.goto('/design-system');
-  await expect(page.locator('.org-ds-topbar__title')).toBeVisible();
-}
-
-async function selectSeasonalTheme(page: Page, label: string): Promise<void> {
-  const card = page.locator('.org-ds-season-card').filter({ hasText: label });
-  await card.scrollIntoViewIfNeeded();
-  await card.click();
+  await expect(
+    page
+      .getByTestId('design-system-page')
+      .getByRole('heading', { level: 1, name: 'Design system' }),
+  ).toBeVisible();
 }
 
 test.describe('Design System Showcase', () => {
@@ -96,30 +53,25 @@ test.describe('Design System Showcase', () => {
     await expect(page).not.toHaveURL(/\/design-system$/);
   });
 
-  test('renders every public component family as an anchored showcase section', async ({
-    page,
-  }) => {
+  test('renders every foundation and component family as an anchored section', async ({ page }) => {
     await openShowcase(page);
 
-    const sectionIds = [
+    for (const id of [
       'overview',
       'colors',
-      'foundations',
       'typography',
+      'spacing',
       'iconography',
-      'tokens',
-      'components',
+      'seasonal-themes',
+      'layout',
       'buttons',
       'inputs',
       'selection',
       'navigation',
-      'stepper',
       'data-display',
       'feedback',
-      'seasonal-themes',
-    ];
-
-    for (const id of sectionIds) {
+      'brand',
+    ]) {
       await expect(page.locator(`section#${id}`)).toBeAttached();
     }
   });
@@ -130,7 +82,7 @@ test.describe('Design System Showcase', () => {
     await assertNoHorizontalOverflow(page);
   });
 
-  test('documents the shared typography scale and Material Icons source', async ({ page }) => {
+  test('documents the type families and filters the typed Material icons', async ({ page }) => {
     await openShowcase(page);
 
     const typography = page.locator('section#typography');
@@ -140,7 +92,9 @@ test.describe('Design System Showcase', () => {
     await expect(typography).toContainText('JetBrains Mono');
     await expect(typography.getByText('Uso recomendado')).toBeVisible();
     await expect(iconography).toContainText('Material Icons');
-    await expect(iconography.locator('org-icon').first()).toBeVisible();
+
+    await iconography.getByLabel('Nome do ícone').fill('delete');
+    await expect(iconography.locator('.ds-icons__item')).toHaveCount(2);
   });
 
   test('keeps the shared navigation trigger at 48px or larger', async ({ page }) => {
@@ -148,45 +102,43 @@ test.describe('Design System Showcase', () => {
     await assertMinTouchTarget(page.getByRole('button', { name: 'Abrir menu de navegação' }));
   });
 
-  test('groups the catalog and documents each layer with an exact Angular example', async ({
+  test('groups the catalog and documents each component with an exact Angular example', async ({
     page,
   }) => {
     await openShowcase(page);
 
     await page.getByRole('button', { name: 'Abrir menu de navegação' }).click();
     const drawer = page.getByTestId('navigation-drawer');
-    await expect(drawer.getByRole('heading', { name: 'Marca', exact: true })).toBeVisible();
-    await expect(drawer.getByRole('heading', { name: 'Fundações', exact: true })).toBeVisible();
-    await expect(drawer.getByRole('heading', { name: 'Produto', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('heading', { name: 'Fundamentos', exact: true })).toBeVisible();
+    await expect(drawer.getByRole('heading', { name: 'Componentes', exact: true })).toBeVisible();
     await expect(drawer.getByTestId('drawer-design-system-colors')).toHaveAttribute(
       'href',
       '/design-system#colors',
     );
-    await expect(drawer.getByTestId('drawer-design-system-tokens')).toHaveAttribute(
+    await expect(drawer.getByTestId('drawer-design-system-feedback')).toHaveAttribute(
       'href',
-      '/design-system#tokens',
+      '/design-system#feedback',
     );
     await page.getByTestId('navigation-drawer-close').click();
 
-    for (const id of ['colors', 'typography', 'iconography', 'tokens', 'foundations']) {
-      await expect(page.locator(`section#${id} app-design-system-code-example`)).toContainText(
-        'Uso recomendado',
-      );
+    for (const id of ['colors', 'typography', 'spacing', 'buttons', 'inputs', 'feedback']) {
+      await expect(
+        page.locator(`section#${id} app-design-system-code-example`).first(),
+      ).toContainText('Uso recomendado');
     }
 
     const dataDisplay = page.locator('section#data-display');
     await expect(dataDisplay.locator('org-data-table')).toBeVisible();
-    await expect(dataDisplay.locator('app-design-system-code-example')).toContainText(
-      'org-data-table',
-    );
+    await expect(dataDisplay).toContainText('<org-data-table');
   });
 
-  // Seasonal themes only tint the canvas; the action, info and progress palette never changes.
-  test('applies each seasonal theme to the complete shared token contract', async ({ page }) => {
+  test('previews each seasonal theme without touching the shared palette', async ({ page }) => {
     await openShowcase(page);
 
     for (const theme of seasonalTokenExpectations) {
-      await selectSeasonalTheme(page, theme.label);
+      const chip = page.getByTestId(`ds-season-${theme.rootClass}`);
+      await chip.scrollIntoViewIfNeeded();
+      await chip.click();
       await expect(page.locator('html')).toHaveClass(new RegExp(theme.rootClass));
 
       const tokens = await page.locator('html').evaluate((element) => {
@@ -195,54 +147,51 @@ test.describe('Design System Showcase', () => {
           primary: style.getPropertyValue('--org-primary').trim(),
           secondary: style.getPropertyValue('--org-secondary').trim(),
           tertiary: style.getPropertyValue('--org-tertiary').trim(),
-          gradient: style.getPropertyValue('--org-gradient-primary').trim(),
           canvas: style.getPropertyValue('--org-canvas').trim(),
           ringColor: style.getPropertyValue('--org-glass-ring-color').trim(),
         };
       });
 
-      expect(tokens.primary).toBe(theme.primary);
-      expect(tokens.secondary).toBe(theme.secondary);
-      expect(tokens.tertiary).toBe(theme.tertiary);
-      expect(tokens.gradient).toContain(theme.gradientFragment);
-      expect(tokens.canvas).toBe(theme.canvas);
-      expect(tokens.ringColor).toBe(theme.ringColor);
+      expect(tokens).toEqual({
+        primary: '#7950f2',
+        secondary: '#1c9bef',
+        tertiary: '#2f9e44',
+        canvas: theme.canvas,
+        ringColor: '#ebe6f7',
+      });
     }
   });
 
-  test('toggles the shared application color mode without leaving the route', async ({ page }) => {
+  test('shows the live value of each colour token and follows dark mode', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('theme_mode', 'light'));
     await openShowcase(page);
     const html = page.locator('html');
-    await expect(html).not.toHaveClass(/dark/);
+    const colors = page.locator('section#colors');
+    const themes = page.locator('section#seasonal-themes');
+    await expect(colors).toContainText('#7950f2');
 
-    await page.getByRole('button', { name: 'Abrir menu de navegação' }).click();
-    await page.getByTestId('drawer-theme-dark').click();
+    await themes.getByTestId('theme-dark-btn').click();
     await expect(html).toHaveClass(/dark/);
+    await expect(colors).toContainText('#b197fc');
 
-    await page.getByTestId('drawer-theme-light').click();
+    await themes.getByTestId('theme-light-btn').click();
     await expect(html).not.toHaveClass(/dark/);
     await expect(page).toHaveURL(/\/design-system/);
   });
 
-  test('uses flat surfaces and a solid lilac action on showcase surfaces', async ({ page }) => {
+  test('uses flat surfaces and a solid lilac action on showcase cards', async ({ page }) => {
     await openShowcase(page);
 
-    const treatment = await page
-      .locator('.org-ds-hero-card [data-testid="org-surface"]')
-      .evaluate((element) => {
-        const style = getComputedStyle(element);
-        return {
-          backdropFilter: style.backdropFilter,
-          backgroundImage: style.backgroundImage,
-        };
-      });
+    const card = page.locator('section#buttons [data-testid="org-surface"]').first();
+    const backdropFilter = await card.evaluate(
+      (element) => getComputedStyle(element).backdropFilter,
+    );
     const buttonBackground = await page
-      .locator('.org-ds-hero-card .org-button__control--gradient')
+      .locator('section#buttons .org-button__control--gradient')
+      .first()
       .evaluate((element) => getComputedStyle(element).backgroundImage);
 
-    expect(treatment.backdropFilter).toBe('none');
-    expect(treatment.backgroundImage).toContain('radial-gradient');
+    expect(backdropFilter).toBe('none');
     expect(buttonBackground).toContain('linear-gradient');
   });
 
@@ -263,33 +212,25 @@ test.describe('Design System Showcase', () => {
     await expect(fields).toContainText(
       'Até três opções, use Select. A partir de quatro, use Autocomplete.',
     );
-    await input.fill('corpor');
-    await expect(page.getByRole('option', { name: 'Corporativo' })).toBeVisible();
-    await page.getByRole('option', { name: 'Corporativo' }).click();
+    await input.fill('confra');
+    await expect(page.getByRole('option', { name: 'Confraternização' })).toBeVisible();
+    await page.getByRole('option', { name: 'Confraternização' }).click();
 
-    await expect(input).toHaveValue('Corporativo');
+    await expect(input).toHaveValue('Confraternização');
   });
 
-  test('renders standardized radius, shadow tokens, chips and badges showcase', async ({
-    page,
-  }) => {
+  test('opens the confirmation dialog and the bottom sheet from their demos', async ({ page }) => {
     await openShowcase(page);
+    const feedback = page.locator('section#feedback');
 
-    const tokensSection = page.locator('section#spacing');
-    await expect(tokensSection).toContainText('--org-radius-xs');
-    await expect(tokensSection).toContainText('--org-radius-full');
-    await expect(tokensSection).toContainText('--org-shadow-xs');
-    await expect(tokensSection).toContainText('--org-shadow-lg');
+    await feedback.getByRole('button', { name: 'Cancelar evento' }).click();
+    await page.getByRole('button', { name: 'Manter evento' }).click();
+    await expect(feedback).toContainText('Resposta: manter o evento');
 
-    const dataDisplay = page.locator('section#data-display');
-    await expect(dataDisplay.locator('.org-ds-badge-showcase-grid')).toBeVisible();
-    await expect(
-      dataDisplay.locator('org-badge').filter({ hasText: 'Festa Junina' }),
-    ).toBeVisible();
-    await expect(dataDisplay.locator('org-badge').filter({ hasText: 'Aniversário' })).toBeVisible();
-
-    const selection = page.locator('section#selection');
-    await expect(selection.locator('org-chip.cat-aniversario')).toBeVisible();
-    await expect(selection.locator('org-chip.cat-festa')).toBeVisible();
+    await feedback.getByRole('button', { name: 'Eu levo' }).click();
+    const sheet = page.getByRole('dialog', { name: 'Eu levo' });
+    await expect(sheet).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeHidden();
   });
 });

@@ -133,13 +133,10 @@ test.describe('Design system visual baselines', () => {
     await showcasePage.assertLoaded();
 
     // Verify Brand title typography
-    const showcaseTitle = page.locator('.org-ds-topbar__title');
-    await assertFontFamily(showcaseTitle, 'Fredoka');
+    await assertFontFamily(showcasePage.title, 'Fredoka');
 
-    // Verify specimen card glassmorphism and single ring
-    const firstSpecimen = page
-      .locator('.org-ds-hero-card [data-testid="org-surface"], section [data-testid="org-surface"]')
-      .first();
+    // Verify specimen card surface and single ring
+    const firstSpecimen = page.locator('section [data-testid="org-surface"]').first();
     await assertCardSurface(firstSpecimen);
     await assertSingleSurfaceRing(firstSpecimen);
 

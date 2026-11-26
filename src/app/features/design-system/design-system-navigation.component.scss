@@ -1,0 +1,11 @@
+@use 'showcase-base' as base;
+@include base.sections;
+
+// The bottom bar drawn inside a phone-sized frame, so it reads as a phone screen.
+.ds-phone-bar {
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-md);
+  inline-size: 100%;
+  max-inline-size: 26rem;
+  overflow: hidden;
+}

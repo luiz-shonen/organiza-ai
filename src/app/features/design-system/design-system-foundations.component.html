@@ -1,285 +1,409 @@
-<section id="colors" class="org-ds-section" aria-labelledby="colors-title">
-  <div class="org-ds-section__heading">
-    <p class="org-ds-section__eyebrow">02 · cores</p>
-    <h2 id="colors-title">Uma paleta semântica, expressiva e legível em qualquer tema.</h2>
-  </div>
+<!-- ───────────── Visão geral ───────────── -->
+<section id="overview" class="ds-section" aria-label="Visão geral">
+  <org-section title="Visão geral">
+    <p class="ds-lead">
+      Branco Essencial: componentes neutros sobre um fundo calmo, com a cor guardada para o que
+      importa. Toda tela é montada com os componentes <code class="ds-token">Org*</code> de
+      <code class="ds-token">&#64;shared/ui</code> e estilizada só com tokens
+      <code class="ds-token">--org-*</code>.
+    </p>
 
-  <div class="org-ds-token-grid">
-    <article class="org-ds-token-card org-ds-token-card--primary">
-      <span>Primary</span>
-      <strong>Convite e foco</strong>
-      <code>--org-primary</code>
-    </article>
-    <article class="org-ds-token-card org-ds-token-card--secondary">
-      <span>Secondary</span>
-      <strong>Calor e destaque</strong>
-      <code>--org-secondary</code>
-    </article>
-    <article class="org-ds-token-card org-ds-token-card--tertiary">
-      <span>Tertiary</span>
-      <strong>Ar e frescor</strong>
-      <code>--org-tertiary</code>
-    </article>
-    <article class="org-ds-token-card org-ds-token-card--glass">
-      <span>Glass</span>
-      <strong>Vidro discreto</strong>
-      <code>--org-glass-bg</code>
-    </article>
-    <article class="org-ds-token-card org-ds-token-card--success">
-      <span>Success</span>
-      <strong>Confirmação</strong>
-      <code>--org-gradient-confirmation</code>
-    </article>
-    <article class="org-ds-token-card org-ds-token-card--error">
-      <span>Error</span>
-      <strong>Correção</strong>
-      <code>--org-error</code>
-    </article>
-  </div>
-  <app-design-system-code-example label="Uso recomendado" [code]="examples().colors" />
+    <div class="ds-metrics">
+      <org-metric-card
+        label="Componentes"
+        [value]="componentCount"
+        description="Org* em @shared/ui"
+        [gradient]="false"
+      />
+      <org-metric-card
+        label="Ícones"
+        [value]="iconCount"
+        description="nomes tipados em OrgIconName"
+        [gradient]="false"
+      />
+      <org-metric-card
+        label="Cores"
+        [value]="colorTokenCount"
+        description="tokens no claro e no escuro"
+        [gradient]="false"
+      />
+    </div>
+
+    <h3 class="ds-subheading">Princípios</h3>
+    <div class="ds-principles">
+      @for (principle of principles; track principle.title) {
+        <org-surface variant="card" [fill]="true">
+          <org-card-header [heading]="principle.title" [subheading]="principle.description" />
+        </org-surface>
+      }
+    </div>
+
+    <h3 class="ds-subheading">Leis de usabilidade</h3>
+    <org-surface variant="card">
+      <ol class="ds-laws">
+        @for (law of laws; track law.title; let index = $index) {
+          <li class="ds-laws__item">
+            <span class="ds-laws__number" aria-hidden="true">{{ index + 1 }}</span>
+            <span>
+              <strong>{{ law.title }}</strong>
+              <span class="ds-caption">{{ law.description }}</span>
+            </span>
+          </li>
+        }
+      </ol>
+    </org-surface>
+
+    <h3 class="ds-subheading">Regras do jogo</h3>
+    <div class="ds-rules">
+      <org-surface variant="card" [fill]="true">
+        <org-card-header heading="Faça" />
+        <ul class="ds-rules__list">
+          @for (rule of dos; track rule) {
+            <li>
+              <org-icon name="check_circle" size="sm" color="var(--org-success)" />
+              <span>{{ rule }}</span>
+            </li>
+          }
+        </ul>
+      </org-surface>
+      <org-surface variant="card" [fill]="true">
+        <org-card-header heading="Evite" />
+        <ul class="ds-rules__list">
+          @for (rule of donts; track rule) {
+            <li>
+              <org-icon name="block" size="sm" color="var(--org-error)" />
+              <span>{{ rule }}</span>
+            </li>
+          }
+        </ul>
+      </org-surface>
+    </div>
+
+    <h3 class="ds-subheading">Como usar</h3>
+    <app-design-system-code-example label="Importe de @shared/ui" [code]="snippets.importing" />
+  </org-section>
 </section>
 
-<section id="typography" class="org-ds-section" aria-labelledby="typography-title">
-  <div class="org-ds-section__heading">
-    <p class="org-ds-section__eyebrow">03 · tipografia</p>
-    <h2 id="typography-title">
-      Uma voz editorial para títulos, uma interface limpa para o restante.
-    </h2>
-  </div>
+<!-- ───────────── Cores ───────────── -->
+<section id="colors" class="ds-section" aria-label="Cores">
+  <org-section title="Cores">
+    <p class="ds-lead">
+      Cada cor tem uma função. Os valores abaixo são lidos da página agora, então mudam junto com o
+      modo claro ou escuro.
+    </p>
 
-  <div class="org-ds-typography-grid">
-    <article class="org-ds-type-card org-ds-type-card--display">
-      <span class="org-ds-type-card__eyebrow">Display</span>
-      <p class="org-ds-type-card__sample">Celebrações que ficam na memória.</p>
-      <strong>Fredoka</strong>
-      <small>Títulos editoriais, heróis e chamadas de alto impacto.</small>
-      <code>--org-font-display</code>
-    </article>
-
-    <article class="org-ds-type-card">
-      <span class="org-ds-type-card__eyebrow">Interface</span>
-      <p class="org-ds-type-card__sample org-ds-type-card__sample--body">
-        Organize cada detalhe com clareza e ritmo.
-      </p>
-      <strong>Plus Jakarta Sans</strong>
-      <small>Texto, ações, formulários e dados. É a fonte padrão de toda a aplicação.</small>
-      <code>--org-font-body</code>
-    </article>
-
-    <article class="org-ds-type-card">
-      <span class="org-ds-type-card__eyebrow">Código e tokens</span>
-      <p class="org-ds-type-card__sample org-ds-type-card__sample--mono">--org-primary: #ff4d94;</p>
-      <strong>JetBrains Mono</strong>
-      <small>Tokens, exemplos de código e rótulos técnicos no catálogo.</small>
-      <code>--org-font-mono</code>
-    </article>
-  </div>
-
-  <div class="org-ds-type-scale" aria-label="Escala tipográfica">
-    <div><span>Display</span><strong>clamp(36px, 5vw, 72px)</strong><small>600 / 1.03</small></div>
-    <div><span>Heading</span><strong>clamp(26px, 3vw, 40px)</strong><small>600 / 1.12</small></div>
-    <div><span>Body</span><strong>16px</strong><small>400–600 / 1.6</small></div>
-    <div><span>Label</span><strong>12px</strong><small>800 / 0.12em</small></div>
-  </div>
-  <app-design-system-code-example label="Uso recomendado" [code]="examples().typography" />
-</section>
-
-<section id="iconography" class="org-ds-section" aria-labelledby="iconography-title">
-  <div class="org-ds-section__heading">
-    <p class="org-ds-section__eyebrow">04 · iconografia</p>
-    <h2 id="iconography-title">Material Icons, com nomes semânticos e uma API tipada.</h2>
-  </div>
-
-  <div class="org-ds-icon-grid" aria-label="Exemplos de ícones Material">
-    <article><org-icon name="event" size="lg" /><strong>Evento</strong><code>event</code></article>
-    <article>
-      <org-icon name="schedule" size="lg" /><strong>Horário</strong><code>schedule</code>
-    </article>
-    <article>
-      <org-icon name="share" size="lg" /><strong>Compartilhar</strong><code>share</code>
-    </article>
-    <article><org-icon name="info" size="lg" /><strong>Feedback</strong><code>info</code></article>
-  </div>
-  <app-design-system-code-example label="Uso recomendado" [code]="examples().iconography" />
-</section>
-
-<section id="seasonal-themes" class="org-ds-section" aria-labelledby="seasonal-themes-title">
-  <div class="org-ds-section__heading">
-    <p class="org-ds-section__eyebrow">05 · temas sazonais</p>
-    <h2 id="seasonal-themes-title">A mesma biblioteca, quatro celebrações brasileiras.</h2>
-  </div>
-
-  <div class="org-ds-season-grid">
-    @for (theme of seasonalOptions(); track theme.id) {
-      <button
-        type="button"
-        class="org-ds-season-card"
-        [class.org-ds-season-card--active]="activeSeasonalTheme() === theme.id"
-        [attr.aria-pressed]="activeSeasonalTheme() === theme.id"
-        (click)="seasonalThemeChange.emit(theme.id)"
-      >
-        <span
-          class="org-ds-season-card__swatch"
-          [class]="'org-ds-season-card__swatch org-ds-season-card__swatch--' + theme.id"
-        ></span>
-        <strong>{{ theme.label }}</strong>
-        <small>{{ theme.description }}</small>
-      </button>
+    @for (group of colorGroups; track group.id) {
+      <h3 class="ds-subheading">{{ group.title }}</h3>
+      <p class="ds-caption ds-group-caption">{{ group.description }}</p>
+      <div class="ds-swatches" [class.ds-swatches--three]="group.tokens.length % 3 === 0">
+        @for (color of group.tokens; track color.token) {
+          <article class="ds-swatch">
+            <div
+              class="ds-swatch__chip"
+              [style.background]="cssVar(color.token)"
+              [style.color]="color.ink ? cssVar(color.ink) : null"
+            >
+              @if (color.ink) {
+                <span aria-hidden="true">Aa</span>
+              }
+            </div>
+            <div class="ds-swatch__text">
+              <strong>{{ color.label }}</strong>
+              <code class="ds-token">{{ color.token }}</code>
+              <span class="ds-token">{{ tokenValues()[color.token] || '—' }}</span>
+              <span class="ds-caption">{{ color.use }}</span>
+            </div>
+          </article>
+        }
+      </div>
     }
-  </div>
+
+    <h3 class="ds-subheading">Gradientes</h3>
+    <div class="ds-gradients">
+      @for (gradient of gradients; track gradient.token) {
+        <article class="ds-gradient">
+          <div class="ds-gradient__bar" [style.background]="cssVar(gradient.token)"></div>
+          <strong>{{ gradient.label }}</strong>
+          <code class="ds-token">{{ gradient.token }}</code>
+          <span class="ds-caption">{{ gradient.use }}</span>
+        </article>
+      }
+    </div>
+
+    <h3 class="ds-subheading">Categorias de evento</h3>
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Etiqueta de categoria"
+        api="<org-badge [hue]>"
+        summary="Fundo, texto e contorno na cor da própria categoria, mesmo as digitadas pelo organizador."
+        [code]="snippets.categoryBadge"
+      >
+        @for (category of categories; track category.name) {
+          <org-badge
+            [label]="category.name"
+            [hue]="categoryHue(category.name)"
+            [gradient]="false"
+          />
+        }
+        <org-badge
+          label="Bodas de prata"
+          [hue]="categoryHue('Bodas de prata')"
+          [gradient]="false"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Tokens por família"
+        api="--org-cat-*"
+        summary="As famílias fixas, para quem precisa da cor fora de uma etiqueta."
+        [code]="snippets.colors"
+        layout="stack"
+      >
+        <div class="ds-category-tokens">
+          @for (category of categoryTokens; track category.token) {
+            <span
+              class="ds-category-token"
+              [style.background]="cssVar(category.token)"
+              [style.color]="cssVar(category.ink!)"
+            >
+              {{ category.label }}
+            </span>
+          }
+        </div>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
 </section>
 
-<section id="tokens" class="org-ds-section" aria-labelledby="tokens-title">
-  <div class="org-ds-section__heading">
-    <p class="org-ds-section__eyebrow">06 · tokens</p>
-    <h2 id="tokens-title">
-      Valores semânticos que deixam a aplicação personalizável, sem CSS ad hoc.
-    </h2>
-  </div>
+<!-- ───────────── Tipografia ───────────── -->
+<section id="typography" class="ds-section" aria-label="Tipografia">
+  <org-section title="Tipografia">
+    <p class="ds-lead">
+      Fredoka nos títulos, Plus Jakarta Sans no resto. Use os estilos compostos com o atalho
+      <code class="ds-token">font</code>; tamanhos e pesos literais não passam no
+      <code class="ds-token">lint:contracts</code>.
+    </p>
 
-  <div class="org-ds-foundation-grid">
-    <article>
-      <span>Cor</span><strong>Marca e estados</strong><code>--org-primary · --org-success</code>
-    </article>
-    <article>
-      <span>Gradiente</span><strong>Acento opcional</strong><code>--org-gradient-primary</code>
-    </article>
-    <article>
-      <span>Superfície</span><strong>Vidro e contraste</strong><code>--org-glass-bg</code>
-    </article>
-    <article>
-      <span>Tipo</span><strong>Funções tipográficas</strong><code>--org-font-body</code>
-    </article>
-  </div>
-  <app-design-system-code-example label="Uso recomendado" [code]="examples().tokens" />
+    <h3 class="ds-subheading">Famílias</h3>
+    <div class="ds-fonts">
+      @for (font of fonts; track font.token) {
+        <org-surface variant="card" [fill]="true">
+          <article class="ds-font">
+            <p class="ds-font__sample" [style.font-family]="cssVar(font.token)">
+              {{ font.sample }}
+            </p>
+            <strong>{{ font.name }}</strong>
+            <code class="ds-token">{{ font.token }}</code>
+            <span class="ds-caption">{{ font.use }}</span>
+          </article>
+        </org-surface>
+      }
+    </div>
+
+    <h3 class="ds-subheading">Estilos</h3>
+    <org-surface variant="card" [flush]="true">
+      <ul class="ds-type-scale">
+        @for (style of typeStyles; track style.token) {
+          <li class="ds-type-scale__row">
+            <div class="ds-type-scale__meta">
+              <strong>{{ style.label }}</strong>
+              <code class="ds-token">{{ style.token }}</code>
+              <span class="ds-caption">{{ style.use }}</span>
+            </div>
+            <p
+              class="ds-type-scale__sample"
+              [class.ds-type-scale__sample--label]="style.label === 'Label'"
+              [style.font]="cssVar(style.token)"
+            >
+              {{ style.sample }}
+            </p>
+          </li>
+        }
+      </ul>
+    </org-surface>
+    <app-design-system-code-example [code]="snippets.typography" />
+  </org-section>
 </section>
 
-<section id="spacing" class="org-ds-section" aria-labelledby="spacing-title">
-  <div class="org-ds-section__heading">
-    <p class="org-ds-section__eyebrow">07 · espaçamento e dimensões</p>
-    <h2 id="spacing-title">
-      Escala de espaçamento estandardizada e cantos consistentes para toda a aplicação.
-    </h2>
-  </div>
+<!-- ───────────── Espaço e forma ───────────── -->
+<section id="spacing" class="ds-section" aria-label="Espaço e forma">
+  <org-section title="Espaço e forma">
+    <p class="ds-lead">
+      Espaços em múltiplos de 4, cantos arredondados e sombras leves. Nada de pixel solto: tudo
+      passa por um token.
+    </p>
 
-  <org-surface variant="panel" class="org-ds-panel-card">
-    <h3 class="org-ds-subsection-title">Escala de espaçamento (--org-space-*)</h3>
-    <div class="org-ds-spacing-list" aria-label="Escala de espaçamento">
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-2xs</span>
-        <span class="org-ds-spacing-value">2px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--2xs"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-xs</span>
-        <span class="org-ds-spacing-value">4px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--xs"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-sm</span>
-        <span class="org-ds-spacing-value">8px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--sm"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-md</span>
-        <span class="org-ds-spacing-value">16px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--md"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-lg</span>
-        <span class="org-ds-spacing-value">24px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--lg"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-xl</span>
-        <span class="org-ds-spacing-value">32px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--xl"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-2xl</span>
-        <span class="org-ds-spacing-value">48px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--2xl"></div>
-        </div>
-      </div>
-      <div class="org-ds-spacing-row">
-        <span class="org-ds-spacing-token">--org-space-3xl</span>
-        <span class="org-ds-spacing-value">64px</span>
-        <div class="org-ds-spacing-bar-container">
-          <div class="org-ds-spacing-bar org-ds-spacing-bar--3xl"></div>
-        </div>
-      </div>
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Espaçamento"
+        api="--org-space-*"
+        summary="Gaps, margens e preenchimentos."
+        layout="stack"
+      >
+        <ul class="ds-spacing">
+          @for (step of spacing; track step.token) {
+            <li class="ds-spacing__row">
+              <code class="ds-token">{{ step.token }}</code>
+              <span class="ds-spacing__value">{{ step.value }}</span>
+              <span class="ds-spacing__bar" [style.inline-size]="cssVar(step.token)"></span>
+            </li>
+          }
+        </ul>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Cantos"
+        api="--org-radius-*"
+        summary="Cards em 18px, botões e chips em pílula."
+        layout="grid"
+      >
+        @for (radius of radii; track radius.token) {
+          <div class="ds-shape" [style.border-radius]="cssVar(radius.token)">
+            <strong>{{ radius.use }}</strong>
+            <code class="ds-token">{{ radius.token }}</code>
+            <span class="ds-caption">{{ radius.value }}</span>
+          </div>
+        }
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Sombras"
+        api="--org-shadow-*"
+        summary="Superfícies são planas; a sombra só aparece no que flutua."
+        layout="grid"
+      >
+        @for (shadow of shadows; track shadow.token) {
+          <div class="ds-shape ds-shape--raised" [style.box-shadow]="cssVar(shadow.token)">
+            <strong>{{ shadow.use }}</strong>
+            <code class="ds-token">{{ shadow.token }}</code>
+          </div>
+        }
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Medidas e movimento"
+        api="--org-touch · --org-motion-*"
+        summary="Alvos de toque, alturas fixas e durações de animação."
+        layout="stack"
+      >
+        <org-data-table ariaLabel="Medidas e movimento" [rows]="sizes" [columns]="scaleColumns" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Pontos de quebra"
+        api="@include semantic.*"
+        summary="Mixins de _semantic.scss. Comece pelo celular e acrescente."
+        [code]="snippets.spacing"
+        layout="stack"
+        [wide]="true"
+      >
+        <org-data-table
+          ariaLabel="Pontos de quebra"
+          [rows]="breakpoints"
+          [columns]="scaleColumns"
+        />
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>
+
+<!-- ───────────── Ícones ───────────── -->
+<section id="iconography" class="ds-section" aria-label="Ícones">
+  <org-section title="Ícones" [count]="icons().length">
+    <p class="ds-lead">
+      Material Icons por meio do <code class="ds-token">org-icon</code>, com nomes tipados. Faltou
+      um? Acrescente em <code class="ds-token">OrgIconName</code> e no mapa do componente.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Tamanhos e cores"
+        api="<org-icon>"
+        summary="sm 16px, md 20px, lg 24px. A cor segue a função, como no resto do sistema."
+        [code]="snippets.icons"
+      >
+        <org-icon name="event" size="sm" />
+        <org-icon name="event" size="md" />
+        <org-icon name="event" size="lg" />
+        <org-icon name="calendar_today" size="lg" color="var(--org-secondary)" />
+        <org-icon name="check_circle" size="lg" color="var(--org-success)" />
+        <org-icon name="delete_outline" size="lg" color="var(--org-error)" />
+        <org-icon name="add" size="lg" color="var(--org-primary)" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Buscar ícone"
+        summary="Digite parte do nome em inglês, como o Material usa."
+        layout="stack"
+      >
+        <org-text-field
+          label="Nome do ícone"
+          type="search"
+          prefixIcon="search"
+          placeholder="ex.: event, delete, person"
+          [value]="iconQuery()"
+          (valueChange)="iconQuery.set($event)"
+        />
+        <p class="ds-caption" aria-live="polite">{{ icons().length }} ícones</p>
+      </app-design-system-specimen>
     </div>
 
-    <h3 class="org-ds-subsection-title">Raio de borda (--org-radius-*)</h3>
-    <div class="org-ds-radius-grid" aria-label="Amostras de raio de borda">
-      <div class="org-ds-radius-card org-ds-radius-card--xs">
-        <strong>Micro</strong>
-        <code>--org-radius-xs</code>
-        <small>0.375rem (6px)</small>
-      </div>
-      <div class="org-ds-radius-card org-ds-radius-card--sm">
-        <strong>Small</strong>
-        <code>--org-radius-sm</code>
-        <small>0.75rem (12px)</small>
-      </div>
-      <div class="org-ds-radius-card org-ds-radius-card--md">
-        <strong>Medium</strong>
-        <code>--org-radius-md</code>
-        <small>1rem (16px)</small>
-      </div>
-      <div class="org-ds-radius-card org-ds-radius-card--lg">
-        <strong>Large</strong>
-        <code>--org-radius-lg</code>
-        <small>1.25rem (20px)</small>
-      </div>
-      <div class="org-ds-radius-card org-ds-radius-card--xl">
-        <strong>Extra Large</strong>
-        <code>--org-radius-xl</code>
-        <small>1.75rem (28px)</small>
-      </div>
-      <div class="org-ds-radius-card org-ds-radius-card--pill">
-        <strong>Pill</strong>
-        <code>--org-radius-full</code>
-        <small>9999px</small>
-      </div>
-    </div>
+    <ul class="ds-icons" aria-label="Ícones disponíveis">
+      @for (icon of icons(); track icon) {
+        <li class="ds-icons__item">
+          <org-icon [name]="icon" size="lg" color="var(--org-on-surface)" />
+          <code class="ds-token">{{ icon }}</code>
+        </li>
+      } @empty {
+        <li class="ds-caption">Nenhum ícone com esse nome.</li>
+      }
+    </ul>
+  </org-section>
+</section>
 
-    <h3 class="org-ds-subsection-title">Elevações & Sombras (--org-shadow-*)</h3>
-    <div class="org-ds-shadow-grid" aria-label="Amostras de sombras e elevações">
-      <div class="org-ds-shadow-card org-ds-shadow-card--xs">
-        <strong>Micro</strong>
-        <code>--org-shadow-xs</code>
-        <small>Badges & Chips</small>
-      </div>
-      <div class="org-ds-shadow-card org-ds-shadow-card--sm">
-        <strong>Small</strong>
-        <code>--org-shadow-sm</code>
-        <small>Cards Sutis</small>
-      </div>
-      <div class="org-ds-shadow-card org-ds-shadow-card--md">
-        <strong>Medium</strong>
-        <code>--org-shadow-md</code>
-        <small>Hover Lifts & Abas</small>
-      </div>
-      <div class="org-ds-shadow-card org-ds-shadow-card--lg">
-        <strong>Large</strong>
-        <code>--org-shadow-lg</code>
-        <small>Drawers & Modais</small>
-      </div>
+<!-- ───────────── Temas ───────────── -->
+<section id="seasonal-themes" class="ds-section" aria-label="Temas">
+  <org-section title="Temas">
+    <p class="ds-lead">
+      O modo escuro redefine os papéis em <code class="ds-token">html.dark</code>. Os temas sazonais
+      só pintam o fundo da página; ações, datas e progresso nunca mudam de cor.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Claro e escuro"
+        api="<org-theme-toggle>"
+        summary="O mesmo interruptor do topo. Experimente e veja as cores acima mudarem."
+        [code]="snippets.themes"
+      >
+        <org-theme-toggle [dark]="dark()" (darkChange)="darkChange.emit($event)" />
+        <span class="ds-caption">{{ dark() ? 'Modo escuro' : 'Modo claro' }}</span>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Temas sazonais"
+        api="SeasonalThemeService"
+        summary="Escolhido pela data ou pela categoria do evento. Aqui, só para prévia."
+        layout="stack"
+      >
+        <div class="ds-row" role="group" aria-label="Prévia do tema sazonal">
+          @for (theme of seasonalThemes; track theme.id) {
+            <org-chip
+              [label]="theme.label"
+              [selectable]="true"
+              [selected]="activeSeasonalTheme() === theme.id"
+              [gradient]="false"
+              [testId]="'ds-season-' + theme.id"
+              (selectionChange)="seasonalThemeChange.emit(theme.id)"
+            />
+          }
+        </div>
+        <org-data-table
+          ariaLabel="Fundo de cada tema"
+          [rows]="seasonalThemes"
+          [columns]="seasonalColumns"
+        />
+      </app-design-system-specimen>
     </div>
-  </org-surface>
-  <app-design-system-code-example label="Uso recomendado" [code]="examples().spacing" />
+  </org-section>
 </section>

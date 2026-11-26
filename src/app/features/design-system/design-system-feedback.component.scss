@@ -1,0 +1,57 @@
+@use '../../shared/ui/tokens/semantic' as semantic;
+@use 'showcase-base' as base;
+@include base.sections;
+
+.ds-states {
+  align-items: center;
+  display: grid;
+  gap: var(--org-space-lg);
+  grid-template-columns: minmax(0, 1fr);
+
+  @include semantic.desktop {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+// The feature only sizes a skeleton; its pulse and colour belong to org-skeleton.
+.ds-skeleton {
+  align-items: center;
+  display: flex;
+  gap: var(--org-space-md);
+
+  &__avatar {
+    block-size: var(--org-space-2xl);
+    flex: none;
+    inline-size: var(--org-space-2xl);
+  }
+
+  &__lines {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--org-space-sm);
+  }
+
+  &__line {
+    block-size: var(--org-space-md);
+    inline-size: 100%;
+
+    &--short {
+      inline-size: 60%;
+    }
+  }
+}
+
+.ds-ellipsis {
+  color: var(--org-on-surface);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+}

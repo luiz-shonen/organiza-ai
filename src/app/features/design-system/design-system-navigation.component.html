@@ -1,0 +1,125 @@
+<section id="navigation" class="ds-section" aria-label="Navegação">
+  <org-section title="Navegação">
+    <p class="ds-lead">
+      Destinos principais na barra inferior do celular e no topo do desktop, sem menu hambúrguer
+      (Jakob). Dentro da página: abas, filtros, menu de ações e etapas.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Navegação principal"
+        api="<org-nav-bar>"
+        summary="Só o app shell usa. Mesmos destinos e ordem nos dois formatos; o ativo recebe aria-current."
+        [code]="snippets.navBar"
+        layout="stack"
+        [wide]="true"
+      >
+        <p class="ds-demo-label">layout="header" · desktop</p>
+        <div class="ds-row">
+          <org-nav-bar
+            layout="header"
+            ariaLabel="Exemplo de navegação no topo"
+            [items]="headerNavItems"
+            activeRoute="/meus-eventos"
+          />
+        </div>
+        <p class="ds-demo-label">layout="bottom" · celular</p>
+        <div class="ds-phone-bar">
+          <org-nav-bar
+            layout="bottom"
+            ariaLabel="Exemplo de barra inferior"
+            [items]="navItems"
+            activeRoute="/meus-eventos"
+          />
+        </div>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Abas"
+        api="<org-tabs>"
+        summary="Partes de uma mesma coisa, lado a lado. Rolam na horizontal quando não cabem."
+        [code]="snippets.tabs"
+        layout="stack"
+      >
+        <org-tabs [items]="tabs" [(selectedId)]="tab" [gradient]="false" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Filtros"
+        api="<org-filter-bar>"
+        summary="Vários ligados ao mesmo tempo. Todos volta sozinho quando nada mais está ligado."
+        [code]="snippets.filterBar"
+        layout="stack"
+      >
+        <org-filter-bar
+          ariaLabel="Filtrar eventos"
+          [options]="filters"
+          [values]="activeFilters()"
+          (valuesChange)="activeFilters.set($event)"
+        />
+        <p class="ds-caption">Mostrando: {{ filterSummary() }}</p>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Menu de ações"
+        api="<org-menu>"
+        summary="Ações secundárias atrás de um botão. Cada ação tem id tipado."
+        [code]="snippets.menu"
+      >
+        <org-menu
+          triggerLabel="Mais ações"
+          [actions]="menuActions"
+          (actionSelected)="lastAction.set($event)"
+        />
+        <span class="ds-caption">Última ação: {{ lastAction() ?? 'nenhuma' }}</span>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Avisos"
+        api="<org-notification-menu>"
+        summary="O sino do topo. Contador âmbar no canto; quem espera resposta fica fixo em cima."
+        [code]="snippets.notificationMenu"
+      >
+        <org-notification-menu
+          [items]="notifications"
+          (selected)="openedNotification.set($event.title)"
+        />
+        <span class="ds-caption">Aberto: {{ openedNotification() ?? 'nenhum' }}</span>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Lista de seções"
+        api="<org-navigation-list>"
+        summary="Índice dentro de uma tela longa. Itens podem ser links (href) ou só emitir o id."
+        [code]="snippets.navigationList"
+        layout="stack"
+      >
+        <org-navigation-list
+          [items]="sections"
+          [activeId]="activeSection()"
+          (selected)="activeSection.set($event)"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Etapas"
+        api="<org-stepper> <org-step>"
+        summary="Formulários longos em partes. No celular, o modo compacto mostra Etapa 2 de 3 e uma barra por etapa."
+        [code]="snippets.stepper"
+        layout="stack"
+      >
+        <org-stepper ariaLabel="Criar evento" [compact]="phone()" [(selectedIndex)]="stepIndex">
+          <org-step label="O evento">
+            <p class="ds-caption">Nome, data e local.</p>
+          </org-step>
+          <org-step label="Convidados">
+            <p class="ds-caption">Quem vem e como avisar.</p>
+          </org-step>
+          <org-step label="Revisão">
+            <p class="ds-caption">Confira e publique.</p>
+          </org-step>
+        </org-stepper>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>

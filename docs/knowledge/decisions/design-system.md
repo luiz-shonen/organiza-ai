@@ -24,6 +24,18 @@ Features build screens only from `Org*` components exported by `src/app/shared/u
 
 When a screen needs something the DS does not offer, add (or extend) a primitive first, document it in `DESIGN.md` with "Uso recomendado", then use it. Recent examples: `org-card-header`, `org-copy-button`, `org-loading-state`, `org-skeleton`, `org-expansion-panel`.
 
+## The /design-system catalog
+
+`features/design-system` is the living catalog (super admins only). Every `Org*` component has an
+`app-design-system-specimen` card: heading, the tags it documents, one line on when to use it, a
+live demo built only from `Org*` components, and the exact snippet under it ("Uso recomendado",
+copied through `org-copy-button`). Snippets live in `design-system-snippets.ts`, token tables in
+`design-system-catalog.ts`; the colour swatches read each token live, so they follow dark mode.
+Section ids come from `DESIGN_SYSTEM_NAVIGATION_GROUPS` (the drawer index); a new component goes
+into the matching section component, and `design-system-showcase.container.spec.ts` lists the
+selectors that must have a demo. The page owns the side effects (theme, toasts, dialogs); section
+components hold demo state only.
+
 Feature SCSS is limited to layout of that feature (grid, gaps, sizes). Colour, typography, elevation and glass come from DS components and tokens.
 
 Specs (`*.spec.ts`) may import Material to query internals; production code may not.

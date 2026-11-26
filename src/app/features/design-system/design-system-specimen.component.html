@@ -1,0 +1,18 @@
+<org-surface variant="card">
+  <article class="ds-specimen">
+    <div class="ds-specimen__header">
+      <org-card-header [heading]="heading()" [subheading]="summary()" />
+      @if (api(); as api) {
+        <code class="ds-specimen__api">{{ api }}</code>
+      }
+    </div>
+
+    <div class="ds-specimen__demo" [class]="'ds-specimen__demo ds-specimen__demo--' + layout()">
+      <ng-content />
+    </div>
+
+    @if (code(); as code) {
+      <app-design-system-code-example [code]="code" />
+    }
+  </article>
+</org-surface>

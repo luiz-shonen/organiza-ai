@@ -63,6 +63,7 @@ import {
   buildSecretSantaWhatsAppUrl,
   buildRsvpSecretSantaEntries,
   findSecretSantaDuplicates,
+  findSamePerson,
   hasStarted,
   splitGuestsByApproval,
   type PendingGuest,
@@ -120,7 +121,7 @@ import { EventOrnamentComponent } from './components/event-ornament/event-orname
 import { SecretSantaRosterCardComponent } from './components/secret-santa-roster-card/secret-santa-roster-card.component';
 import { SharePanelComponent } from '../organizer/event-editor/components/share-panel/share-panel.component';
 import { KnownPeopleService } from '../../core/services/known-people.service';
-import { personKey, type KnownPerson } from '../../core/utils/known-people.utils';
+import type { KnownPerson } from '../../core/utils/known-people.utils';
 import {
   SecretSantaParticipantsComponent,
   type SecretSantaParticipantUpdate,
@@ -1214,31 +1215,69 @@ export class EventDetailContainer implements OnInit {
   private readonly knownPeopleService = inject(KnownPeopleService);
   private readonly knownPeopleAll = signal<KnownPerson[]>([]);
   private knownPeopleRequested = false;
-  /** People the organizer knows from other events and family, not in this draw yet. */
+  /**
+   * Everyone on the confirmed list, one per person: each guest (`manual` when an organizer typed
+   * them) and whoever comes along (`with` the guest who brings them).
+   */
+  private readonly confirmedPeople = computed(() => {
+    const guests = this.guests();
+    const byId = new Map(guests.map((guest) => [guest.id, guest]));
+    return guests.flatMap((guest) => {
+      // A relative counts with the guest who brought them: that guest's household and answer.
+      const head = guest.primaryGuestId ? byId.get(guest.primaryGuestId) : guest;
+      if (!head?.isConfirmed) return [];
+      const manual = !!guest.addedBy && !guest.uid;
+      return [
+        {
+          id: guest.id,
+          household: head.id,
+          name: guest.name,
+          phone: guest.phone ?? '',
+          manual,
+          with: head === guest ? null : head.name,
+        },
+        ...(guest.companions ?? []).map((companion, i) => ({
+          id: `${guest.id}:c${i}`,
+          household: head.id,
+          name: companion.name,
+          phone: '',
+          manual,
+          with: guest.name,
+        })),
+      ];
+    });
+  });
+  /** People typed by hand before, offered in "Confirmados": those not on the list yet. */
+  protected readonly guestKnownPeople = computed(() => {
+    const listed = this.confirmedPeople();
+    return this.knownPeopleAll().filter((person) => !findSamePerson(listed, person));
+  });
+  /** People the organizer typed by hand before (here or in other events), not in this draw yet. */
   protected readonly secretSantaKnownPeople = computed(() => {
-    const taken = new Set(this.secretSantaParticipants().map((p) => personKey(p.name)));
-    return this.knownPeopleAll().filter((person) => !taken.has(personKey(person.name)));
+    const inDraw = this.allSecretSantaParticipants();
+    const shown = (p: SecretSantaParticipant) => this.profiledSantaName(p.id, p.name);
+    return this.knownPeopleAll().filter((person) => !findSamePerson(inDraw, person, shown));
   });
   private readonly loadKnownPeople = effect(() => {
-    if (this.knownPeopleRequested || !this.canEditEvent() || !this.showSecretSanta()) return;
+    if (this.knownPeopleRequested || !this.canEditEvent()) return;
     const uid = this.authService.currentUser()?.uid;
     if (!uid) return;
     this.knownPeopleRequested = true;
     void this.knownPeopleService
-      .list(uid, this.id())
+      .list(uid)
       .then((people) => this.knownPeopleAll.set(people))
       .catch(() => undefined);
   });
 
   /**
    * Handed to "Adicionar alguém à mão": the form clears only once the person was added. Someone
-   * already in the draw with the same phone or name is pointed out first: typed by hand, the
-   * organizer replaces it with what they typed now or adds another person; joined from the
-   * invite (theirs to change), the organizer adds another person or gives up.
+   * already in the draw (the same name, or the same phone and first name; whoever waits for
+   * approval included) is only pointed out and nothing is saved: their entry, account link and
+   * gift ideas stay as they are. To change a typed entry the organizer uses its pencil.
    */
   protected readonly saveNewSecretSantaParticipant = async (
     participant: SecretSantaParticipantInput,
-    among: readonly SecretSantaParticipant[] = this.secretSantaParticipants(),
+    among: readonly SecretSantaParticipant[] = this.allSecretSantaParticipants(),
   ): Promise<boolean> => {
     // "Participar também": the organizer's own entry, their phone being the profile's.
     const uid = this.memberUid();
@@ -1247,62 +1286,36 @@ export class EventDetailContainer implements OnInit {
       if (added) await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
       return added;
     }
-    const match = this.sameSecretSantaPerson(participant, among);
-    if (!match) return this.addSecretSantaParticipants([participant]);
-    const { same, by } = match;
-    const why = by === 'phone' ? `com o telefone ${same.phone}` : 'com esse nome';
-    const shown = this.profiledSantaName(same.id, same.name);
-    if (same.joinedBy || same.guestId) {
-      const add = await firstValueFrom(
-        this.dialogs.confirm({
-          title: 'Essa pessoa já está no amigo oculto',
-          message:
-            `${shown} já está no sorteio ${why} e entrou pelo convite. Se for a mesma pessoa, ` +
-            'não precisa adicionar de novo. Se for outra pessoa, adicione mesmo assim.',
-          confirmLabel: 'Adicionar mesmo assim',
-          cancelLabel: 'Cancelar',
+    const same = findSamePerson(among, participant, (p) => this.profiledSantaName(p.id, p.name));
+    if (!same) {
+      // Confirmed with an account (or brought by someone who did): they join from the invite.
+      const guest = findSamePerson(
+        this.confirmedPeople().filter((p) => !p.manual),
+        participant,
+      );
+      if (!guest) return this.addSecretSantaParticipants([participant]);
+      await firstValueFrom(
+        this.dialogs.alert({
+          title: 'Já confirmou presença',
+          message: guest.with
+            ? `${guest.name} vem com ${guest.with}, que coloca no amigo oculto pelo convite.`
+            : `${guest.name} confirmou presença com a própria conta e entra no amigo oculto pelo convite.`,
         }),
       );
-      return add ? this.addSecretSantaParticipants([participant]) : false;
-    }
-    const choice = await firstValueFrom(
-      this.dialogs.choose({
-        title: 'Essa pessoa já está no amigo oculto',
-        message:
-          `${shown} já está no sorteio ${why}. É a mesma pessoa? Troque pelos dados que você ` +
-          'digitou agora. É outra pessoa? Adicione as duas.',
-        confirmLabel: 'Trocar pelos novos dados',
-        extraLabel: 'É outra pessoa',
-        cancelLabel: 'Cancelar',
-      }),
-    );
-    if (choice === 'extra') return this.addSecretSantaParticipants([participant]);
-    if (choice !== 'confirm') return false;
-    try {
-      await this.secretSantaService.updateParticipant(this.id(), same.id, participant);
-      this.feedback.success(`${participant.name} atualizado(a) no amigo oculto.`);
-      return true;
-    } catch (error) {
-      this.feedback.error(explainError('Não foi possível atualizar o participante', error));
       return false;
     }
-  };
-
-  /** Someone already in the draw with the same phone (first) or the same name. */
-  private sameSecretSantaPerson(
-    participant: SecretSantaParticipantInput,
-    people: readonly SecretSantaParticipant[],
-  ): { same: SecretSantaParticipant; by: 'phone' | 'name' } | null {
-    const digits = (phone: string) => phone.replace(/\D/g, '');
-    const phone = digits(participant.phone);
-    const byPhone = phone ? people.find((p) => digits(p.phone) === phone) : undefined;
-    if (byPhone) return { same: byPhone, by: 'phone' };
-    const name = personKey(participant.name);
-    const byName = people.find(
-      (p) => personKey(p.name) === name || personKey(this.profiledSantaName(p.id, p.name)) === name,
+    const shown = this.profiledSantaName(same.id, same.name);
+    await firstValueFrom(
+      this.dialogs.alert({
+        title: 'Já está no amigo oculto',
+        message:
+          same.joinedBy || same.guestId
+            ? `${shown} já está no sorteio: entrou pelo convite, com a própria conta.`
+            : `${shown} já está no sorteio. Para mudar os dados, use o lápis na lista.`,
+      }),
     );
-    return byName ? { same: byName, by: 'name' } : null;
-  }
+    return false;
+  };
 
   /** True when every participant was added. */
   protected async addSecretSantaParticipants(
@@ -1867,6 +1880,27 @@ export class EventDetailContainer implements OnInit {
   ): Promise<boolean> => {
     const uid = this.memberUid();
     if (!uid) return false;
+    // Nobody goes on the list twice: whoever is there (by the invite or by hand, or coming along
+    // with someone) is only pointed out, and nothing is saved.
+    const others = this.confirmedPeople().filter((p) => p.household !== household?.id);
+    const typed = [
+      { name: guest.name, phone: guest.phone },
+      ...guest.relatives.map((relative) => ({ name: relative.name, phone: relative.phone })),
+      ...guest.companions.map((name) => ({ name, phone: '' })),
+    ];
+    for (const person of typed) {
+      const same = findSamePerson(others, person);
+      if (!same) continue;
+      await firstValueFrom(
+        this.dialogs.alert({
+          title: 'Já está na lista',
+          message: same.with
+            ? `${same.name} já confirmou presença, junto com ${same.with}.`
+            : `${same.name} já confirmou presença no evento.`,
+        }),
+      );
+      return false;
+    }
     try {
       if (household) {
         const previous = household.members.flatMap((person) =>
@@ -1885,7 +1919,7 @@ export class EventDetailContainer implements OnInit {
     }
     // On the list already: a person the draw refuses (or the organizer gives up on) stays there.
     // Compared with the draw as it was: the household shares a phone and is not a repeat.
-    const before = this.secretSantaParticipants();
+    const before = this.allSecretSantaParticipants();
     for (const entry of household ? [] : (guest.secretSanta ?? [])) {
       await this.saveNewSecretSantaParticipant(
         {

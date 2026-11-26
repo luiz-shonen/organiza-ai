@@ -3,7 +3,7 @@ type: decision
 title: Amigo oculto (secret santa)
 status: active
 date: 2026-11-16
-updated: 2026-11-23
+updated: 2026-11-26
 enforced_by:
   - firestore.rules
   - e2e/rules/secret-santa.rules.test.ts
@@ -15,6 +15,8 @@ enforced_by:
   - src/app/core/utils/secret-santa-rsvp.utils.spec.ts
   - src/app/core/utils/secret-santa.utils.spec.ts
   - src/app/core/services/secret-santa.service.spec.ts
+  - src/app/core/services/known-people.service.spec.ts
+  - src/app/features/event-detail/event-detail.container.spec.ts
   - src/app/features/event-detail/components/secret-santa-card/secret-santa-card.component.spec.ts
   - src/app/features/event-detail/components/secret-santa-roster-card/secret-santa-roster-card.component.spec.ts
   - src/app/features/secret-santa/secret-santa-reveal.container.spec.ts
@@ -56,10 +58,19 @@ everyone, the organizer included.
   screen, from the bottom on a phone) with name, phone and, when the event asks for them, the gift
   ideas (`app-gift-options-field`, one at a time). There is no "Confirmados no evento" shortcut:
   confirmed guests join themselves from the invite.
-- Typing a name offers people from the organizer's other events and family.
-- Adding someone who seems to be there already (`sameSecretSantaPerson`) asks first: someone added
-  by hand can be replaced or kept as another person; someone who joined from the invite can only
-  be added as another person (their entry is theirs).
+- Typing a name offers **only people without an account**: those an organizer typed by hand
+  before, as amigo oculto participants or in "Confirmados" (`addedBy`, with their companions), in
+  this event and the organizer's other events (`KnownPeopleService`). Family, invited guests and
+  anyone who joined from the invite are never offered: account holders join by themselves.
+- **Adding by hand never overwrites anyone.** Someone already in the draw (`findSamePerson`:
+  the same name, accents and case aside, stored or as their profile shows it; or the same phone
+  **and** the same first name; whoever waits for approval included) only gets the alert "Já está
+  no amigo oculto" and nothing is saved, so an account's link and gift ideas stay intact. To
+  change a typed entry the organizer uses its pencil. The phone alone lets the person in (a
+  grandmother may share her daughter's phone).
+- **Nor someone who confirmed the event with an account** (or comes along with such a guest): the
+  alert "Já confirmou presença" says they join from the invite, and nothing is saved. People in
+  "Confirmados" added by hand have no account, so they can be added here.
 - Hand entry stays: many people never open the site.
 
 ## What guests see (`secretSantaRoster`)

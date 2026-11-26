@@ -165,6 +165,52 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     expect(entry['giftOptions']).toEqual(['Chinelo 36']);
   });
 
+  test('someone already confirmed is only pointed out; people added before are offered', async ({
+    page,
+  }) => {
+    const lastYear = {
+      ...party([
+        {
+          id: 'manual-gustavo',
+          name: 'Gustavo Pereira',
+          phone: '(31) 99999-0000',
+          isConfirmed: true,
+          confirmedAt: new Date().toISOString(),
+          addedBy: 'owner-uid',
+        },
+      ]),
+      id: 'natal-2025',
+      date: new Date(Date.now() - 86400000 * 330).toISOString(),
+    };
+    await setupMockAuthSession(page, {
+      uid: 'owner-uid',
+      email: 'owner@organizaai.test',
+      displayName: 'Dona da festa',
+      events: [party(), lastYear],
+    });
+    await page.goto(`/evento/${EVENT_ID}`);
+    const card = page.getByTestId('guest-list-card');
+    await card.getByTestId('guest-manual-add-btn').click();
+    const sheet = page.getByTestId('manual-guest-sheet');
+
+    // Tia Lurdes confirmed with her account: nothing is saved.
+    await sheet.getByTestId('manual-guest-name-input').fill('tia lurdes');
+    await sheet.getByTestId('manual-guest-submit-btn').click();
+    const dialog = page.getByTestId('org-confirm-dialog');
+    await expect(dialog).toContainText('Já está na lista');
+    await expect(dialog).toContainText('Tia Lurdes já confirmou presença no evento.');
+    await dialog.getByTestId('org-confirm-submit').click();
+    expect(await readGuests(page)).toHaveLength(1);
+
+    // Gustavo was added by hand last year: offered, with his phone.
+    await sheet.getByTestId('manual-guest-name-input').fill('gus');
+    await page.getByTestId('org-text-field-suggestion').filter({ hasText: 'Gustavo' }).click();
+    await expect(sheet.getByTestId('manual-guest-name-input')).toHaveValue('Gustavo Pereira');
+    await expect(sheet.getByTestId('manual-guest-phone-input')).toHaveValue('(31) 99999-0000');
+    await sheet.getByTestId('manual-guest-submit-btn').click();
+    await expect(card.getByTestId('card-header-count')).toHaveText('2');
+  });
+
   test('a guest sees who was added by hand, but cannot add, edit or remove', async ({ page }) => {
     const cida: MockDocument = {
       id: 'manual-1',

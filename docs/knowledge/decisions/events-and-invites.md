@@ -3,7 +3,7 @@ type: decision
 title: Events, invites and guests (product behaviour)
 status: active
 date: 2026-11-03
-updated: 2026-11-25
+updated: 2026-11-26
 enforced_by:
   - e2e/tests/invites/invites-and-guests.spec.ts
   - src/app/features/home/home.container.spec.ts
@@ -247,6 +247,12 @@ How the app behaves for organizers and guests. Data and permissions are in
   (`saveNewSecretSantaParticipant`, compared with the draw as it was before this save, so a
   household sharing one phone is not a repeat); the guest is saved first and stays if the draw
   refuses one.
+- **Nobody goes on the list twice.** Someone already confirmed (by the invite or by hand, or
+  coming along with someone), found by `findSamePerson` (same name, or same phone and first
+  name), only gets the alert "Já está na lista" and nothing is saved; the same goes for each
+  relative and companion typed. Editing someone never warns about themself.
+- Typing the name offers the people typed by hand before (no account), in this event and the
+  organizer's other events, with their phone (`KnownPeopleService`, as in the amigo oculto).
 - The person shows like anyone else, with no "à mão" tag (it was dropped: it crowded the row).
   Organizers get **Editar** / **Remover** inside the household's panel; removing asks first.
 - It is not linked to anyone's invite: it does not stop that person from confirming by the link

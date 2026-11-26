@@ -73,19 +73,31 @@ function readStore(page: import('@playwright/test').Page) {
 }
 
 test.describe('Amigo oculto', () => {
-  test('typing a name offers people from my other events, with their phone', async ({ page }) => {
+  test('typing a name offers only people I added by hand before, with their phone', async ({
+    page,
+  }) => {
     const lastYear = {
       ...christmasEvent(),
       id: 'natal-2025',
       title: 'Natal 2025',
       date: new Date(Date.now() - 86400000 * 330).toISOString(),
       guests: [
+        // Typed by the organizer in "Confirmados": no account.
         {
           id: 'guest-gustavo',
           name: 'Gustavo Pereira',
           phone: '(31) 99999-0000',
           isConfirmed: true,
+          addedBy: 'test-user-uid',
           companions: [{ name: 'Bia' }],
+        },
+        // Answered with her own account: she joins by herself, never offered.
+        {
+          id: 'guest-carla',
+          uid: 'guest-carla',
+          name: 'Carla Gomes',
+          phone: '(31) 98888-0000',
+          isConfirmed: true,
         },
       ],
     };
@@ -107,6 +119,9 @@ test.describe('Amigo oculto', () => {
     await option.click();
     await expect(page.getByTestId('santa-name-input')).toHaveValue('Gustavo Pereira');
     await expect(page.getByTestId('santa-phone-input')).toHaveValue('(31) 99999-0000');
+
+    await page.getByTestId('santa-name-input').fill('carla');
+    await expect(page.getByTestId('org-text-field-suggestion')).toHaveCount(0);
   });
 
   test('the organizer turns it on in the editor, with gift options and how many', async ({
@@ -230,7 +245,7 @@ test.describe('Amigo oculto', () => {
     expect(saved[0]['phone']).toBe('(11) 97777-2222');
   });
 
-  test('adding someone already in the draw asks first: replace, another person, or not', async ({
+  test('adding by hand someone already in the draw only warns: nothing is overwritten', async ({
     page,
   }) => {
     await setupMockAuthSession(page, {
@@ -243,30 +258,30 @@ test.describe('Amigo oculto', () => {
     await page.goto(`/evento/${EVENT_ID}`);
     const sheet = page.getByTestId('add-participant-sheet');
     const dialog = page.getByTestId('org-confirm-dialog');
+    const store = async () => (await readStore(page))[`events/${EVENT_ID}/secretSantaParticipants`];
 
-    // Luiz's phone, typed by hand before: replace him with what is typed now.
+    // Luiz, typed by hand before: same phone and first name.
     await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
     await sheet.getByTestId('santa-name-input').fill('Luiz Rodrigues');
     await sheet.getByTestId('santa-phone-input').fill('11977772222');
     await sheet.getByTestId('santa-submit-btn').click();
-    await expect(dialog).toContainText('Essa pessoa já está no amigo oculto');
-    await expect(dialog).toContainText('Luiz já está no sorteio com o telefone (11) 97777-2222');
+    await expect(dialog).toContainText('Já está no amigo oculto');
+    await expect(dialog).toContainText('Luiz já está no sorteio');
+    await expect(dialog.getByTestId('org-confirm-cancel')).toHaveCount(0);
     await dialog.screenshot({ path: 'e2e/screenshots/secret-santa-same-person.png' });
     await dialog.getByTestId('org-confirm-submit').click();
-    const store = async () => (await readStore(page))[`events/${EVENT_ID}/secretSantaParticipants`];
-    await expect
-      .poll(async () => (await store()).map((p) => p['name']))
-      .toEqual(['Jéssica Melo', 'Luiz Rodrigues', 'Vó Maria']);
+    // Nothing saved, nothing changed; what was typed is still there.
+    await expect(sheet.getByTestId('santa-name-input')).toHaveValue('Luiz Rodrigues');
+    const luiz = (await store()).find((p) => p['id'] === 'p2');
+    expect(luiz?.['name']).toBe('Luiz');
+    expect(luiz?.['giftOptions']).toEqual(['Livro']);
 
-    // Jéssica is a confirmed guest: hers to change; adding means another person.
-    await page.locator('[data-testid="secret-santa-manual-btn"]:visible').click();
-    await sheet.getByTestId('santa-name-input').fill('Jéssica Melo');
+    // Jéssica is in with her account: the same warning.
+    await sheet.getByTestId('santa-name-input').fill('jessica melo');
+    await sheet.getByTestId('santa-phone-input').fill('');
     await sheet.getByTestId('santa-submit-btn').click();
     await expect(dialog).toContainText('entrou pelo convite');
-    await expect(dialog.getByTestId('org-confirm-extra')).toHaveCount(0);
-    await dialog.getByTestId('org-confirm-cancel').click();
-    // Cancelled: nothing added, what was typed is still there.
-    await expect(sheet.getByTestId('santa-name-input')).toHaveValue('Jéssica Melo');
+    await dialog.getByTestId('org-confirm-submit').click();
     expect(await store()).toHaveLength(3);
   });
 

@@ -72,6 +72,33 @@ describe('OrgConfirmDialogComponent', () => {
     );
   });
 
+  it('an alert has only the one button that closes it', async () => {
+    await TestBed.configureTestingModule({
+      imports: [OrgConfirmDialogComponent, MatDialogModule],
+      providers: [
+        provideNoopAnimations(),
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {
+            title: 'Já está no amigo oculto',
+            message: 'Vó Maria já está no sorteio.',
+            confirmLabel: 'Entendi',
+            alert: true,
+          } satisfies OrgConfirmDialogData,
+        },
+        { provide: MatDialogRef, useValue: { close: vi.fn() } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(OrgConfirmDialogComponent);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(element.querySelector('[data-testid="org-confirm-cancel"]')).toBeNull();
+    expect(element.querySelector('[data-testid="org-confirm-submit"]')?.textContent).toContain(
+      'Entendi',
+    );
+  });
+
   it('closes with true for confirm and false for cancel', async () => {
     const close = vi.fn();
     await TestBed.configureTestingModule({

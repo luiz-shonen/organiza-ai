@@ -17,6 +17,7 @@ import type {
   RsvpSecretSantaKey,
 } from '../../../../core/models';
 import { isPet } from '../../../../core/utils';
+import type { KnownPerson } from '../../../../core/utils/known-people.utils';
 import { PersonName, Phone } from '../../../../core/value-objects';
 import { GiftOptionsFieldComponent } from '../../../../shared/components/gift-options-field/gift-options-field.component';
 import {
@@ -24,6 +25,7 @@ import {
   OrgCheckboxComponent,
   OrgTextFieldComponent,
   revealFirstInvalidSoon,
+  type OrgTextSuggestion,
 } from '../../../../shared/ui';
 import { CompanionSelectorComponent } from '../companion-selector/companion-selector.component';
 import {
@@ -54,7 +56,8 @@ const NEW_RELATIVE = 'new-';
  * "Adicionar alguém à mão" in "Confirmados", laid out like "Editar presença": the name, an
  * optional WhatsApp, "Levar familiares?" and "Levar acompanhantes?", and (when adding, with an
  * amigo oculto still open) who goes into the draw. The relatives live only on this event: the
- * person has no account, so no family profile. Also edits them.
+ * person has no account, so no family profile. Also edits them. Typing a name offers the
+ * people added by hand before (`knownPeople`), with their phone.
  */
 @Component({
   selector: 'app-manual-guest-form',
@@ -78,6 +81,8 @@ export class ManualGuestFormComponent {
   readonly secretSanta = input<ManualGuestSantaSettings | null>(null);
   /** Saves and resolves true when it worked; the form keeps what was typed when it fails. */
   readonly save = input.required<(guest: ManualGuestInput) => Promise<boolean>>();
+  /** People added by hand before (no account), offered while typing the name. */
+  readonly knownPeople = input<readonly KnownPerson[]>([]);
   readonly cancelled = output<void>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -106,6 +111,10 @@ export class ManualGuestFormComponent {
   });
   protected readonly phoneError = computed(() =>
     this.showErrors() && this.phone().trim() ? (Phone.validate(this.phone()) ?? '') : '',
+  );
+  /** Offered under "Nome" (the field filters them by what is typed). */
+  protected readonly nameSuggestions = computed<OrgTextSuggestion[]>(() =>
+    this.knownPeople().map((person) => ({ label: person.name, detail: person.phone })),
   );
 
   /** Asked only when adding, as at the first confirmation; editing leaves the draw alone. */
@@ -158,6 +167,11 @@ export class ManualGuestFormComponent {
       this.showErrors.set(false);
       this.santaPhonesError.set(false);
     });
+  }
+
+  /** A person added before was picked: their phone comes along when the field is still empty. */
+  protected pickPerson(suggestion: OrgTextSuggestion): void {
+    if (suggestion.detail && !this.phone().trim()) this.phone.set(suggestion.detail);
   }
 
   private newRelativeId(): string {

@@ -5,13 +5,11 @@ import { KnownPeopleService } from './known-people.service';
 import { EventService } from './event.service';
 import { GuestService } from './guest.service';
 import { SecretSantaService } from './secret-santa.service';
-import { FamilyService } from './family.service';
 
 describe('KnownPeopleService', () => {
   const events = { getUserEvents: vi.fn() };
   const guests = { listGuests: vi.fn() };
   const santa = { listParticipants: vi.fn() };
-  const family = { getFamilyMembers: vi.fn() };
   let service: KnownPeopleService;
 
   beforeEach(() => {
@@ -21,13 +19,12 @@ describe('KnownPeopleService', () => {
         { provide: EventService, useValue: events },
         { provide: GuestService, useValue: guests },
         { provide: SecretSantaService, useValue: santa },
-        { provide: FamilyService, useValue: family },
       ],
     });
     service = TestBed.inject(KnownPeopleService);
   });
 
-  it('gathers family, guests, companions and participants of my other events, once each', async () => {
+  it('offers only the people added by hand, in this event and the others, once each', async () => {
     events.getUserEvents.mockReturnValue(
       of([
         { id: 'now', date: '2026-12-24' },
@@ -37,21 +34,37 @@ describe('KnownPeopleService', () => {
     guests.listGuests.mockImplementation((id: string) =>
       of(
         id === 'past'
-          ? [{ name: 'Gustavo', phone: '(31) 99999-0000', companions: [{ name: 'Bia' }] }]
-          : [{ name: 'Not offered', phone: '' }],
+          ? [
+              // Typed by an organizer in "Confirmados": no account.
+              {
+                name: 'Gustavo',
+                phone: '(31) 99999-0000',
+                addedBy: 'u1',
+                companions: [{ name: 'Bia' }],
+              },
+              // Answered the invite with an account: joins by themself.
+              { name: 'Jéssica Melo', phone: '(11) 98888-1111', uid: 'g1', companions: [] },
+            ]
+          : [{ name: 'Tio Zé', phone: '', addedBy: 'u1' }],
       ),
     );
     santa.listParticipants.mockImplementation((id: string) =>
-      id === 'past' ? of([{ name: 'gustavo', phone: '(31) 99999-0000' }]) : throwError(() => 1),
+      id === 'past'
+        ? of([
+            { name: 'gustavo', phone: '(31) 99999-0000' },
+            { name: 'Jéssica Melo', phone: '(11) 98888-1111', joinedBy: 'g1' },
+            { name: 'Lucas', phone: '', guestId: 'g2' },
+            { name: 'Vó Ana', phone: '' },
+          ])
+        : throwError(() => 1),
     );
-    family.getFamilyMembers.mockResolvedValue([{ name: 'Vó Ana', phone: '' }]);
 
-    const people = await service.list('u1', 'now');
+    const people = await service.list('u1');
 
-    expect(guests.listGuests).not.toHaveBeenCalledWith('now');
     expect(people).toEqual([
       { name: 'Bia', phone: '' },
       { name: 'Gustavo', phone: '(31) 99999-0000' },
+      { name: 'Tio Zé', phone: '' },
       { name: 'Vó Ana', phone: '' },
     ]);
   });

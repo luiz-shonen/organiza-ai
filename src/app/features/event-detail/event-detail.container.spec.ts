@@ -9,6 +9,7 @@ const settle = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
 import { BehaviorSubject, of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { EventDetailContainer } from './event-detail.container';
+import type { GuestHousehold } from '../../core/utils';
 import { FeedbackService, OrgDialogService } from '../../shared/ui';
 
 // The organizers' share panel draws a QR code on a canvas, which the test DOM does not have.
@@ -28,8 +29,16 @@ import {
   SeasonalThemeService,
   DrawerService,
   ClaimService,
+  SecretSantaService,
 } from '../../core/services';
-import { PartyEvent, PartyItem, Guest, FamilyMember, EventClaims } from '../../core/models';
+import {
+  PartyEvent,
+  PartyItem,
+  Guest,
+  FamilyMember,
+  EventClaims,
+  SecretSantaParticipant,
+} from '../../core/models';
 
 describe('EventDetailContainer', () => {
   let component: EventDetailContainer;
@@ -89,6 +98,8 @@ describe('EventDetailContainer', () => {
   };
   let mockDialogs: {
     confirm: ReturnType<typeof vi.fn>;
+    choose: ReturnType<typeof vi.fn>;
+    alert: ReturnType<typeof vi.fn>;
   };
   let mockDrawerService: { open: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
   let rsvpResult: {
@@ -213,6 +224,8 @@ describe('EventDetailContainer', () => {
     };
     mockDialogs = {
       confirm: vi.fn().mockReturnValue(of(true)),
+      choose: vi.fn().mockReturnValue(of('confirm')),
+      alert: vi.fn().mockReturnValue(of(true)),
     };
     mockDrawerService = {
       open: vi.fn((request: { onComplete?: (result: typeof rsvpResult) => void }) =>
@@ -329,6 +342,162 @@ describe('EventDetailContainer', () => {
     component['onEditSecretSanta']();
     expect(navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-123'], {
       queryParams: { passo: 'amigo-oculto' },
+    });
+  });
+
+  describe('adding someone to the amigo oculto by hand', () => {
+    const inDraw: SecretSantaParticipant[] = [
+      {
+        id: 'rsvp_g1',
+        name: 'Jéssica Melo',
+        phone: '(11) 98888-1111',
+        giftOptions: ['Livro de receitas'],
+        joinedBy: 'g1',
+      },
+      { id: 'typed', name: 'Vó Maria', phone: '(11) 97777-2222', giftOptions: ['Chinelo'] },
+    ];
+    let santa: SecretSantaService;
+
+    beforeEach(() => {
+      santa = TestBed.inject(SecretSantaService);
+      vi.spyOn(santa, 'addParticipant').mockResolvedValue('new');
+      vi.spyOn(santa, 'updateParticipant').mockResolvedValue(undefined);
+      component['allSecretSantaParticipants'].set(inDraw);
+    });
+
+    it.each([
+      ['who joined with their account', 'jessica melo', ''],
+      ['who was added by hand', 'Vó Maria', ''],
+      ['with the same phone and first name', 'Vó', '11977772222'],
+    ])(
+      'only warns about someone already in the draw (%s): nothing is saved',
+      async (_, name, phone) => {
+        const saved = await component['saveNewSecretSantaParticipant']({
+          name,
+          phone,
+          giftOptions: [],
+        });
+
+        expect(saved).toBe(false);
+        expect(mockDialogs.alert).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Já está no amigo oculto' }),
+        );
+        expect(santa.addParticipant).not.toHaveBeenCalled();
+        expect(santa.updateParticipant).not.toHaveBeenCalled();
+      },
+    );
+
+    it('only warns about someone who confirmed the event with their account', async () => {
+      component['guests'].set([
+        {
+          id: 'g9',
+          uid: 'g9',
+          name: 'Carla Gomes',
+          phone: '(31) 98888-0000',
+          isConfirmed: true,
+          confirmedAt: '',
+          companions: [{ name: 'Beto' }],
+        },
+      ]);
+
+      for (const name of ['carla gomes', 'Beto']) {
+        const saved = await component['saveNewSecretSantaParticipant']({
+          name,
+          phone: '',
+          giftOptions: [],
+        });
+        expect(saved).toBe(false);
+      }
+      expect(mockDialogs.alert).toHaveBeenCalledTimes(2);
+      expect(mockDialogs.alert).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Já confirmou presença' }),
+      );
+      expect(santa.addParticipant).not.toHaveBeenCalled();
+    });
+
+    it('adds someone the organizers put in "Confirmados" by hand: they have no account', async () => {
+      component['guests'].set([
+        {
+          id: 'm1',
+          name: 'Tio Zé',
+          phone: '',
+          isConfirmed: true,
+          confirmedAt: '',
+          addedBy: 'org',
+        },
+      ]);
+      const ze = { name: 'Tio Zé', phone: '', giftOptions: [] };
+      expect(await component['saveNewSecretSantaParticipant'](ze)).toBe(true);
+      expect(santa.addParticipant).toHaveBeenCalledWith('evt-123', ze);
+    });
+
+    it('adds a new person, even one sharing a phone with someone in the draw', async () => {
+      const ana = { name: 'Ana', phone: '(11) 97777-2222', giftOptions: [] };
+      expect(await component['saveNewSecretSantaParticipant'](ana)).toBe(true);
+      expect(santa.addParticipant).toHaveBeenCalledWith('evt-123', ana);
+      expect(mockDialogs.alert).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('adding someone to "Confirmados" by hand', () => {
+    let guestService: {
+      addManualGuest: ReturnType<typeof vi.fn>;
+      updateManualGuest: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      guestService = mockGuestService as unknown as typeof guestService;
+      guestService.addManualGuest = vi.fn().mockResolvedValue('new');
+      guestService.updateManualGuest = vi.fn().mockResolvedValue(undefined);
+      currentUserSignal.set({ uid: 'org', displayName: 'Org', isAnonymous: false });
+      component['guests'].set([
+        {
+          id: 'g9',
+          uid: 'g9',
+          name: 'Carla Gomes',
+          phone: '(31) 98888-0000',
+          isConfirmed: true,
+          confirmedAt: '',
+        },
+        {
+          id: 'm1',
+          name: 'Tio Zé',
+          phone: '(11) 95555-0000',
+          isConfirmed: true,
+          confirmedAt: '',
+          addedBy: 'org',
+          companions: [{ name: 'Tia Lu' }],
+        },
+      ]);
+    });
+
+    it.each([
+      ['who confirmed with their account', 'Carla Gomes', []],
+      ['who was added by hand', 'tio ze', []],
+      ['who comes along with someone', 'Ana', ['Tia Lu']],
+    ])('only warns about someone already on the list (%s)', async (_, name, companions) => {
+      const saved = await component['saveManualGuest'](
+        { name, phone: '', companions, relatives: [] },
+        null,
+      );
+      expect(saved).toBe(false);
+      expect(mockDialogs.alert).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Já está na lista' }),
+      );
+      expect(guestService.addManualGuest).not.toHaveBeenCalled();
+    });
+
+    it('lets a hand-added person be edited without warning about themself', async () => {
+      const ze = {
+        name: 'Tio Zé',
+        phone: '(11) 95555-0000',
+        companions: ['Tia Lu', 'Nina'],
+        relatives: [],
+      };
+      const household = { id: 'm1', members: [] } as unknown as GuestHousehold;
+      expect(await component['saveManualGuest'](ze, household)).toBe(true);
+      expect(guestService.updateManualGuest).toHaveBeenCalledWith('evt-123', 'm1', ze, [], 'org');
+      expect(mockDialogs.alert).not.toHaveBeenCalled();
     });
   });
 

@@ -241,8 +241,8 @@ describe('GuestListCardComponent', () => {
       button(document.body, 'manual-guest-submit-btn')!.click();
       await fixture.whenStable();
       expect(save).toHaveBeenCalledWith(
-        { name: 'Tia Cida', phone: '', companions: ['Seu Zé'] },
-        'm1',
+        { name: 'Tia Cida', phone: '', companions: ['Seu Zé'], relatives: [] },
+        cida,
       );
     });
 

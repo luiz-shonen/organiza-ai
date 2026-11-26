@@ -1,4 +1,4 @@
-import type { EventClaims, Guest, PartyItem } from '../models';
+import type { EventClaims, FamilyRelationship, Guest, PartyItem } from '../models';
 import { formatQuantity } from './item-progress.utils';
 import { getRelationshipLabel, isPet, sortByKinship } from './relationship.utils';
 
@@ -18,6 +18,9 @@ export interface GuestPerson {
   phone?: string;
   /** A pet of the family: listed, but not counted as a person. */
   pet?: boolean;
+  /** A relative's own guest entry and kinship, for editing someone added by hand. */
+  guestId?: string;
+  relationship?: FamilyRelationship;
   /** "2 kg de Carne" or "1 Bolo", one line per item. */
   bring: string[];
 }
@@ -127,7 +130,13 @@ export function buildGuestHouseholds(
       const family: GuestPerson[] = familyGuests.map((member, index) => ({
         name: member.name,
         role: 'Família',
-        ...(member.relationship ? { kinship: getRelationshipLabel(member.relationship) } : {}),
+        guestId: member.id,
+        ...(member.relationship
+          ? {
+              kinship: getRelationshipLabel(member.relationship),
+              relationship: member.relationship,
+            }
+          : {}),
         ...(member.phone ? { phone: member.phone } : {}),
         ...(isPet(member.relationship) ? { pet: true } : {}),
         bring: linesFor(byMember.get(familyIds[index]) ?? new Map(), itemsById),

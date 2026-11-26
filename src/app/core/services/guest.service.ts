@@ -7,6 +7,7 @@ import {
   GuestDecline,
   FamilyMember,
   type ManualGuestInput,
+  type ManualGuestRelative,
 } from '../models';
 import { Phone } from '../value-objects';
 
@@ -81,30 +82,76 @@ export class GuestService {
 
   /**
    * "Adicionar alguém à mão": an organizer puts someone on the list without them answering the
-   * invite. No account, so no `uid`; `addedBy` marks the entry as the organizers' to edit.
+   * invite. No account, so no `uid`; `addedBy` marks the entry as the organizers' to edit. Their
+   * relatives are guest entries tied to them (`primaryGuestId`), written in the same batch: they
+   * have no family profile to live in.
    */
   async addManualGuest(eventId: string, guest: ManualGuestInput, addedBy: string): Promise<string> {
-    return this.gateway.addDoc(this.guestsPath(eventId), {
-      ...this.manualFields(guest),
-      isConfirmed: true,
-      confirmedAt: new Date().toISOString(),
-      addedBy,
-      createdAt: this.gateway.serverTimestamp(),
+    const id = this.gateway.newId(this.guestsPath(eventId));
+    const confirmedAt = new Date().toISOString();
+    await this.gateway.runBatch((batch) => {
+      batch.set(this.guestDocPath(eventId, id), {
+        ...this.manualFields(guest),
+        isConfirmed: true,
+        confirmedAt,
+        addedBy,
+        createdAt: this.gateway.serverTimestamp(),
+      });
+      for (const relative of guest.relatives) {
+        batch.set(
+          this.guestDocPath(eventId, this.manualRelativeId(eventId, id)),
+          this.manualRelativeDoc(id, relative, confirmedAt, addedBy),
+        );
+      }
     });
+    return id;
   }
 
-  /** Changes the name, WhatsApp or companions of someone the organizers added by hand. */
+  /**
+   * Changes the name, WhatsApp, companions or relatives of someone the organizers added by hand.
+   * `previousRelativeIds` are the relatives saved before: those not in `guest.relatives` leave.
+   */
   async updateManualGuest(
     eventId: string,
     guestId: string,
     guest: ManualGuestInput,
+    previousRelativeIds: readonly string[],
+    addedBy: string,
   ): Promise<void> {
-    await this.gateway.updateDoc(this.guestDocPath(eventId, guestId), this.manualFields(guest));
+    const kept = new Set(guest.relatives.map((relative) => relative.id).filter(Boolean));
+    const confirmedAt = new Date().toISOString();
+    await this.gateway.runBatch((batch) => {
+      batch.update(this.guestDocPath(eventId, guestId), this.manualFields(guest));
+      for (const relative of guest.relatives) {
+        const fields = { name: relative.name, relationship: relative.relationship };
+        if (relative.id) {
+          batch.update(this.guestDocPath(eventId, relative.id), {
+            ...fields,
+            phone: relative.phone,
+          });
+        } else {
+          batch.set(
+            this.guestDocPath(eventId, this.manualRelativeId(eventId, guestId)),
+            this.manualRelativeDoc(guestId, relative, confirmedAt, addedBy),
+          );
+        }
+      }
+      for (const id of previousRelativeIds) {
+        if (!kept.has(id)) batch.delete(this.guestDocPath(eventId, id));
+      }
+    });
   }
 
-  /** Takes someone the organizers added by hand off the list. */
-  async removeManualGuest(eventId: string, guestId: string): Promise<void> {
-    await this.gateway.deleteDoc(this.guestDocPath(eventId, guestId));
+  /** Takes someone the organizers added by hand off the list, with their relatives. */
+  async removeManualGuest(
+    eventId: string,
+    guestId: string,
+    relativeIds: readonly string[] = [],
+  ): Promise<void> {
+    await this.gateway.runBatch((batch) => {
+      for (const id of relativeIds) batch.delete(this.guestDocPath(eventId, id));
+      batch.delete(this.guestDocPath(eventId, guestId));
+    });
   }
 
   private manualFields(guest: ManualGuestInput) {
@@ -114,6 +161,29 @@ export class GuestService {
       phone: guest.phone,
       companions,
       companionsCount: companions.length,
+    };
+  }
+
+  /** `{guestId}_{random}`: the rules tie a relative to the hand-added person by this prefix. */
+  private manualRelativeId(eventId: string, guestId: string): string {
+    return `${guestId}_${this.gateway.newId(this.guestsPath(eventId))}`;
+  }
+
+  private manualRelativeDoc(
+    guestId: string,
+    relative: ManualGuestRelative,
+    confirmedAt: string,
+    addedBy: string,
+  ) {
+    return {
+      name: relative.name,
+      relationship: relative.relationship,
+      phone: relative.phone,
+      primaryGuestId: guestId,
+      isConfirmed: true,
+      confirmedAt,
+      addedBy,
+      createdAt: this.gateway.serverTimestamp(),
     };
   }
 

@@ -17,7 +17,11 @@ import {
   END_BEFORE_START_MESSAGE,
   fieldError,
 } from '../../../../../core/value-objects';
-import { EventBasicInfoForm, EventCategoryOption } from '../../../../../core/models';
+import {
+  EventBasicInfoForm,
+  EventCategoryOption,
+  EXPECTED_GUESTS_MAX,
+} from '../../../../../core/models';
 import { joinLabels, revealFirstInvalid } from '../step-validation';
 import {
   OrgBannerComponent,
@@ -71,6 +75,7 @@ export class EventBasicInfoStepComponent {
   protected readonly fieldError = fieldError;
   protected readonly titleMaxLength = EventTitle.RULES.max;
   protected readonly descriptionMaxLength = EventDescription.RULES.max;
+  protected readonly expectedGuestsMax = EXPECTED_GUESTS_MAX;
 
   protected readonly categoryMaxLength = EventCategory.RULES.max;
   /** The category when it is one the organizer typed, not one of the chips. */
@@ -120,7 +125,7 @@ export class EventBasicInfoStepComponent {
     if (!this.attempted()) return '';
     const form = this.form();
     if (!form.invalid) return '';
-    const { title, category, description, date, endDate, time } = form.controls;
+    const { title, category, description, date, endDate, time, expectedGuests } = form.controls;
     const missing: string[] = [];
     if (title.invalid) missing.push('o título');
     if (category.invalid) missing.push('a categoria');
@@ -128,6 +133,7 @@ export class EventBasicInfoStepComponent {
     if (date.invalid) missing.push('a data');
     if (time.invalid) missing.push('a hora');
     if (endDate.invalid) missing.push('a data de término (ou deixe vazia)');
+    if (expectedGuests.invalid) missing.push('quantas pessoas você espera (ou deixe vazio)');
     if (missing.length) return `Para continuar, preencha ${joinLabels(missing)}.`;
     if (form.hasError('pastDateTime')) {
       return 'Para continuar, escolha uma data e hora que ainda não passaram.';

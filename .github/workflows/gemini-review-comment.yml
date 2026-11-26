@@ -8,7 +8,7 @@ jobs:
   comment-review:
     name: On-Demand Gemini Review
     # Only people with write access may trigger it: the job checks out the PR head
-    # and runs it with GEMINI_API_KEY, so a fork author must never be able to start it.
+    # and runs it with GEMINI_PR_REVIEWS_API_KEY, so a fork author must never be able to start it.
     if: >-
       github.event.issue.pull_request &&
       contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association) &&
@@ -64,7 +64,7 @@ jobs:
 
       - name: Run Gemini Code Review
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_PR_REVIEWS_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.issue.number }}
           BASE_SHA: ${{ steps.pr-meta.outputs.base_sha }}

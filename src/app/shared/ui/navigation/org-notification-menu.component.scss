@@ -53,10 +53,14 @@ org-notification-menu {
   min-block-size: var(--org-space-2xl);
   padding-block: var(--org-space-xs);
 
+  // A long message wraps onto more lines instead of running past the panel's edge.
   .mat-mdc-menu-item-text {
     align-items: center;
     display: flex;
+    flex: 1;
     gap: var(--org-space-sm);
+    min-inline-size: 0;
+    white-space: normal;
   }
 }
 
@@ -86,8 +90,10 @@ org-notification-menu {
 
 .org-notification-menu__text {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 
 .org-notification-menu__title {
@@ -98,9 +104,6 @@ org-notification-menu {
 .org-notification-menu__body {
   color: var(--org-on-surface-variant);
   font-size: var(--org-font-size-xs);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .org-notification-menu__empty {

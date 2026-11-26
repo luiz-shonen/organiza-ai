@@ -31,6 +31,27 @@ export interface Guest {
   addedBy?: string;
 }
 
+/**
+ * A relative of someone added by hand. They have no family profile (no account behind them), so
+ * they live only on this event, as guest entries tied to the hand-added person (`primaryGuestId`).
+ */
+export interface ManualGuestRelative {
+  /** The guest entry's id; missing for one added in this form. */
+  id?: string;
+  name: string;
+  relationship: FamilyRelationship;
+  /** Formatted WhatsApp, or '' when not given. */
+  phone: string;
+}
+
+/** One person the organizer puts in the amigo oculto while adding someone by hand. */
+export interface ManualGuestSantaEntry {
+  name: string;
+  /** Formatted WhatsApp, or '' when not given. */
+  phone: string;
+  giftOptions: string[];
+}
+
 /** What the organizer types in "Adicionar alguém à mão": the person and who comes with them. */
 export interface ManualGuestInput {
   name: string;
@@ -38,6 +59,10 @@ export interface ManualGuestInput {
   phone: string;
   /** Companions' names, at most `MAX_COMPANIONS`. */
   companions: string[];
+  /** Relatives going with them, kept only on this event. */
+  relatives: ManualGuestRelative[];
+  /** Who goes into the amigo oculto; asked only when adding, not when editing. */
+  secretSanta?: ManualGuestSantaEntry[];
 }
 
 export type GuestCreate = Omit<

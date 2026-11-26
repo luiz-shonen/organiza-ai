@@ -330,7 +330,7 @@ Uso recomendado: `<org-banner variant="info" message="Convites enviados." />` fo
 
 ### Component-first authoring contract
 
-New work begins with a public `Org*` component. If the API is missing, add a standalone OnPush component in `shared/ui`, its focused unit test, a design-system preview, and this recommended usage before using it in a feature. The `/design-system` route is the live source for all documented APIs.
+New work begins with a public `Org*` component. If the API is missing, add a standalone OnPush component in `shared/ui`, its focused unit test, a design-system preview, and this recommended usage before using it in a feature. The `/design-system` route is the live source for all documented APIs: each component has a card with a live demo and the exact snippet to copy (`app-design-system-specimen`, snippets in `features/design-system/design-system-snippets.ts`). Sections: Fundamentos (visão geral, cores, tipografia, espaço e forma, ícones, temas) and Componentes (página e cards, ações, campos, seleção, navegação, dados, feedback, marca).
 
 ## APIs legadas de compatibilidade
 

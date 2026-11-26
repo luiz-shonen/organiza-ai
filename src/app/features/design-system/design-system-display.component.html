@@ -1,0 +1,161 @@
+<!-- ───────────── Dados ───────────── -->
+<section id="data-display" class="ds-section" aria-label="Dados">
+  <org-section title="Dados">
+    <p class="ds-lead">
+      Pessoas, datas, status e progresso. Azul para data, verde para o que avança, âmbar para o que
+      está pendente.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Etiquetas de status"
+        api="<org-badge>"
+        summary="Status em maiúsculas e cheio: Confirmado verde, Pendente âmbar, Recusado e Cancelado vermelhos. pill vira contador."
+        [code]="snippets.badge"
+        layout="stack"
+      >
+        <div class="ds-row">
+          <org-badge label="Confirmado" variant="success" [gradient]="false" />
+          <org-badge label="Pendente" variant="warning" [gradient]="false" />
+          <org-badge label="Recusado" variant="danger" [gradient]="false" />
+          <org-badge label="Cancelado" variant="danger" [gradient]="false" />
+          <org-badge label="Rascunho" [gradient]="false" />
+        </div>
+        <div class="ds-row">
+          <org-badge label="Faltam 6 un." [pill]="true" [gradient]="false" />
+          <org-badge
+            label="+2 acompanhantes"
+            variant="secondary"
+            [pill]="true"
+            [gradient]="false"
+          />
+        </div>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Pessoas e datas"
+        api="<org-avatar> <org-date-badge>"
+        summary="Foto ou inicial num disco neutro; o link em volta dá o nome acessível. O selo de data fica no canto do card do evento."
+        layout="stack"
+        [code]="snippets.peopleDates"
+      >
+        <div class="ds-row">
+          <org-avatar name="Jéssica" />
+          <org-avatar name="Marta" />
+          <org-avatar name="Luiz" size="lg" [highlighted]="true" />
+        </div>
+        <div class="ds-row">
+          <org-date-badge date="2026-06-24T19:30:00" />
+          <org-date-badge date="2026-12-24T20:00:00" endDate="2026-12-25T02:00:00" />
+        </div>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Progresso"
+        api="<org-progress> <org-split-progress>"
+        summary="A mesma barra em todo o app (gradiente de meta). A dividida mostra quem leva quanto, em quatro verdes."
+        [code]="snippets.progress"
+        layout="stack"
+      >
+        <div class="ds-progress-line">
+          <span class="ds-caption">8 de 12 confirmados</span>
+          <org-progress [value]="67" variant="success" ariaLabel="8 de 12 confirmados" />
+        </div>
+        <div class="ds-progress-line">
+          <span class="ds-caption">Prazo para responder</span>
+          <org-progress [value]="85" variant="warning" ariaLabel="85% do prazo" />
+        </div>
+        <org-split-progress
+          [total]="10"
+          [segments]="splitSegments"
+          ariaLabel="Refrigerante: 7 de 10 garantidos"
+        />
+        <org-split-progress
+          size="md"
+          [total]="10"
+          [segments]="splitSegments"
+          [showLegend]="false"
+          ariaLabel="Itens completos: 7 de 10"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Número em destaque"
+        api="<org-metric-card>"
+        summary="Um número que resume a tela, com uma linha de contexto."
+        [code]="snippets.metricCard"
+        layout="grid"
+      >
+        <org-metric-card
+          label="Confirmados"
+          value="42"
+          description="de 50 convidados"
+          [gradient]="false"
+        />
+        <org-metric-card label="Itens" value="9/12" trend="3 sem responsável" [gradient]="false" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Tabela"
+        api="<org-data-table>"
+        summary="A feature passa linhas, colunas tipadas e o template de ações. Toque na linha para abrir."
+        [code]="snippets.dataTable"
+        layout="stack"
+        [wide]="true"
+      >
+        <org-data-table
+          ariaLabel="Itens do evento"
+          actionLabel="Ações"
+          [rows]="itemRows"
+          [columns]="itemColumns"
+          [actionTemplate]="actions"
+          (rowActivated)="activatedRow.set($event.name)"
+        />
+        <ng-template #actions let-row>
+          <org-icon-button
+            icon="edit"
+            [ariaLabel]="'Editar ' + row.name"
+            (pressed)="activatedRow.set(row.name)"
+          />
+        </ng-template>
+        <p class="ds-caption">Aberto: {{ activatedRow() ?? 'nenhum' }}</p>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>
+
+<!-- ───────────── Marca ───────────── -->
+<section id="brand" class="ds-section" aria-label="Marca">
+  <org-section title="Marca">
+    <p class="ds-lead">
+      O calendário com o check é o mesmo desenho do favicon. Movimento só onde é festa, e parado
+      para quem pede menos movimento.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Logotipo"
+        api="<org-logo>"
+        summary="A cada 6s o calendário pula, o check se desenha e sai confete. O link em volta dá o nome."
+        [code]="snippets.logo"
+      >
+        <org-logo />
+        <org-logo size="lg" />
+        <org-logo [animated]="false" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Fundo festivo"
+        api="<org-party-drift>"
+        summary="Balões e confete sobem devagar atrás do conteúdo. Só no fundo do login; no resto o fundo fica parado."
+        [code]="snippets.partyDrift"
+        layout="stack"
+      >
+        <div class="ds-party">
+          <org-party-drift />
+          <p class="ds-party__text">Bem-vindo à festa</p>
+        </div>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>

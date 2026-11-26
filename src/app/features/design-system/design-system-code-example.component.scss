@@ -1,69 +1,44 @@
 :host {
   display: block;
+  min-inline-size: 0;
 }
 
-.org-ds-code-example {
+.ds-code {
+  background: var(--org-surface-container-low);
+  border: 1px solid var(--org-outline-variant);
   border-radius: var(--org-radius-md);
-  color: var(--org-on-surface);
+  margin: 0;
   overflow: hidden;
-
-  &__summary {
-    align-items: center;
-    color: var(--org-on-surface-variant);
-    cursor: pointer;
-    display: flex;
-    font-family: var(--org-font-mono);
-    font-size: var(--org-font-size-xs);
-    font-weight: var(--org-font-weight-bold);
-    justify-content: space-between;
-    letter-spacing: var(--org-letter-spacing-label);
-    min-height: 48px;
-    padding: 0 14px;
-    text-transform: uppercase;
-
-    &::marker,
-    &::-webkit-details-marker {
-      display: none;
-    }
-
-    mat-icon {
-      transition: transform var(--org-motion-fast) var(--org-motion-ease);
-    }
-  }
-
-  &[open] &__summary {
-    border-bottom: 1px solid rgb(255 255 255 / 0.1);
-
-    mat-icon {
-      transform: rotate(180deg);
-    }
-  }
 
   &__header {
     align-items: center;
-    color: var(--org-on-surface-variant);
+    border-bottom: 1px solid var(--org-outline-variant);
     display: flex;
-    font-family: var(--org-font-mono);
-    font-size: var(--org-font-size-xs);
-    font-weight: var(--org-font-weight-bold);
-    justify-content: flex-end;
-    letter-spacing: var(--org-letter-spacing-label);
-    padding: 8px 10px 8px 14px;
-    text-transform: uppercase;
-
-    button {
-      color: var(--org-primary);
-      min-height: 40px;
-    }
+    gap: var(--org-space-sm);
+    justify-content: space-between;
+    padding-inline: var(--org-space-md) var(--org-space-xs);
   }
 
-  pre {
+  &__label {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-label);
+    letter-spacing: var(--org-letter-spacing-label);
+    text-transform: uppercase;
+  }
+
+  &__body {
+    color: var(--org-on-surface);
     font-family: var(--org-font-mono);
     font-size: var(--org-font-size-xs);
     line-height: var(--org-line-height-relaxed);
     margin: 0;
     overflow-x: auto;
-    padding: 16px;
-    white-space: pre;
+    padding: var(--org-space-md);
+    tab-size: 2;
+
+    &:focus-visible {
+      outline: 2px solid var(--org-primary);
+      outline-offset: -2px;
+    }
   }
 }

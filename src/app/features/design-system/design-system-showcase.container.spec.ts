@@ -1,33 +1,47 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
+import { ThemeService } from '../../core/services/theme.service';
+import { FeedbackService, OrgDialogService } from '../../shared/ui';
 import {
   DesignSystemShowcaseContainer,
   SHOWCASE_SECTIONS,
 } from './design-system-showcase.container';
-import { FeedbackService, OrgDialogService } from '../../shared/ui';
 
 describe('DesignSystemShowcaseContainer', () => {
   let component: DesignSystemShowcaseContainer;
   let fixture: ComponentFixture<DesignSystemShowcaseContainer>;
-  let feedbackService: { success: ReturnType<typeof vi.fn>; info: ReturnType<typeof vi.fn> };
-  let dialogService: { confirm: ReturnType<typeof vi.fn> };
+  let root: HTMLElement;
+  let feedbackService: Record<'success' | 'info' | 'error', ReturnType<typeof vi.fn>>;
+  let dialogService: { confirm: ReturnType<typeof vi.fn>; choose: ReturnType<typeof vi.fn> };
+  let themeService: {
+    isDark: ReturnType<typeof signal<boolean>>;
+    setMode: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(async () => {
-    feedbackService = { success: vi.fn(), info: vi.fn() };
-    dialogService = { confirm: vi.fn() };
+    feedbackService = { success: vi.fn(), info: vi.fn(), error: vi.fn() };
+    dialogService = { confirm: vi.fn(() => of(false)), choose: vi.fn(() => of('extra')) };
+    themeService = { isDark: signal(false), setMode: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [DesignSystemShowcaseContainer],
       providers: [
         provideNoopAnimations(),
+        provideRouter([]),
         { provide: FeedbackService, useValue: feedbackService },
         { provide: OrgDialogService, useValue: dialogService },
+        { provide: ThemeService, useValue: themeService },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DesignSystemShowcaseContainer);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await fixture.whenStable();
+    root = fixture.nativeElement as HTMLElement;
   });
 
   afterEach(() => {
@@ -39,174 +53,158 @@ describe('DesignSystemShowcaseContainer', () => {
     );
   });
 
-  it('renders every new catalog family through its closed Org component API', () => {
-    const root = fixture.nativeElement as HTMLElement;
+  it('gives every entry of the navigation drawer an anchored section', () => {
+    for (const section of SHOWCASE_SECTIONS) {
+      expect(root.querySelector(`section#${section.id}`)).toBeTruthy();
+    }
+  });
 
+  it('shows a live demo of every public Org component', () => {
     for (const selector of [
+      'org-page-header',
+      'org-section',
+      'org-surface',
+      'org-card-header',
+      'org-expansion-panel',
       'org-button',
       'org-icon-button',
+      'org-copy-button',
       'org-chip',
+      'org-editable-chip',
+      'org-theme-toggle',
+      'org-icon',
       'org-text-field',
       'org-textarea-field',
       'org-select-field',
       'org-autocomplete-field',
       'org-date-field',
       'org-time-field',
+      'org-quantity-stepper',
       'org-toggle',
       'org-checkbox',
       'org-radio-group',
+      'org-segmented-control',
+      'org-nav-bar',
       'org-tabs',
-      'org-stepper',
+      'org-filter-bar',
       'org-menu',
+      'org-notification-menu',
       'org-navigation-list',
+      'org-stepper',
+      'org-badge',
+      'org-avatar',
+      'org-date-badge',
       'org-progress',
+      'org-split-progress',
       'org-metric-card',
       'org-data-table',
-      'org-badge',
+      'org-banner',
+      'org-insight-card',
+      'org-empty-state',
+      'org-loading-state',
+      'org-skeleton',
+      'org-tooltip',
+      'org-logo',
+      'org-party-drift',
     ]) {
-      expect(root.querySelector(selector)).toBeTruthy();
+      expect(root.querySelector(selector), selector).toBeTruthy();
     }
   });
 
-  it('uses closed date and time field components instead of local field recipes', () => {
-    const root = fixture.nativeElement as HTMLElement;
+  it('puts a copyable usage snippet under each demo, naming the tag it documents', () => {
+    const examples = Array.from(root.querySelectorAll('app-design-system-code-example'));
 
-    expect(root.querySelector('org-date-field')).toBeTruthy();
-    expect(root.querySelector('org-time-field')).toBeTruthy();
+    expect(examples.length).toBeGreaterThanOrEqual(35);
+    for (const [id, tag] of [
+      ['buttons', '<org-button'],
+      ['inputs', '<org-autocomplete-field'],
+      ['navigation', '<org-filter-bar'],
+      ['data-display', '<org-data-table'],
+      ['feedback', 'OrgDialogService'],
+    ]) {
+      expect(root.querySelector(`section#${id}`)?.textContent, id).toContain(tag);
+    }
   });
 
-  it('documents the select threshold and demonstrates autocomplete with more than three options', () => {
-    const inputs = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>(
-      'section#inputs',
-    );
-    const autocomplete = inputs?.querySelector('org-autocomplete-field');
+  it('documents the select threshold next to an autocomplete with four or more options', () => {
+    const inputs = root.querySelector<HTMLElement>('section#inputs');
 
     expect(inputs?.textContent).toContain(
       'Até três opções, use Select. A partir de quatro, use Autocomplete.',
     );
-    expect(autocomplete).toBeTruthy();
-    expect(component.eventCategoryOptions).toHaveLength(5);
-    expect(inputs?.querySelector('app-design-system-code-example')?.textContent).toContain(
-      'org-autocomplete-field',
-    );
+    expect(inputs?.querySelector('org-autocomplete-field')).toBeTruthy();
   });
 
-  it('documents every new public component family with a collapsed recommended usage example', () => {
-    const root = fixture.nativeElement as HTMLElement;
-    const examples = Array.from(root.querySelectorAll('app-design-system-code-example'));
+  it('lists the type families and the whole spacing scale', () => {
+    const typography = root.querySelector<HTMLElement>('section#typography')?.textContent ?? '';
+    const spacing = root.querySelector<HTMLElement>('section#spacing')?.textContent ?? '';
 
-    expect(examples.length).toBeGreaterThanOrEqual(11);
-    expect(examples.every((example) => example.textContent?.includes('Uso recomendado'))).toBe(
-      true,
-    );
-    expect(
-      root.querySelector('section#data-display app-design-system-code-example')?.textContent,
-    ).toContain('org-data-table');
-  });
-
-  it('gives every showcase section a stable element id', () => {
-    const root = fixture.nativeElement as HTMLElement;
-
-    for (const section of SHOWCASE_SECTIONS) {
-      expect(root.querySelector(`section#${section.id}`)).toBeTruthy();
+    for (const family of ['Fredoka', 'Plus Jakarta Sans', 'JetBrains Mono']) {
+      expect(typography).toContain(family);
     }
-  });
-
-  it('documents the approved typography roles, scale, and Material icon source', () => {
-    const root = fixture.nativeElement as HTMLElement;
-    const typography = root.querySelector<HTMLElement>('section#typography');
-    const iconography = root.querySelector<HTMLElement>('section#iconography');
-
-    expect(typography).toBeTruthy();
-    expect(typography?.textContent).toContain('Plus Jakarta Sans');
-    expect(typography?.textContent).toContain('Fredoka');
-    expect(typography?.querySelector('app-design-system-code-example')).toBeTruthy();
-    expect(iconography?.textContent).toContain('Material Icons');
-    expect(iconography?.querySelector('org-icon')).toBeTruthy();
-  });
-
-  it('separates brand and foundation documentation into anchored code-backed sections', () => {
-    const root = fixture.nativeElement as HTMLElement;
-
-    for (const id of ['colors', 'iconography', 'tokens', 'spacing', 'foundations']) {
-      const section = root.querySelector<HTMLElement>(`section#${id}`);
-      expect(section).toBeTruthy();
-      expect(section?.querySelector('app-design-system-code-example')).toBeTruthy();
+    for (const step of ['2xs', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl']) {
+      expect(spacing).toContain(`--org-space-${step}`);
     }
+    expect(spacing).toContain('--org-radius-card');
+    expect(spacing).toContain('--org-shadow-lg');
   });
 
-  it('renders all 8 spacing scale tokens and border radius preview cards in the spacing section', () => {
-    const root = fixture.nativeElement as HTMLElement;
-    const spacingSection = root.querySelector<HTMLElement>('section#spacing');
-    expect(spacingSection).toBeTruthy();
+  it('filters the typed icons by name', () => {
+    const icons = () => root.querySelectorAll('section#iconography .ds-icons__item').length;
+    const total = icons();
+    const search = root.querySelector<HTMLInputElement>('section#iconography input');
 
-    const spacingTokens = [
-      '--org-space-2xs',
-      '--org-space-xs',
-      '--org-space-sm',
-      '--org-space-md',
-      '--org-space-lg',
-      '--org-space-xl',
-      '--org-space-2xl',
-      '--org-space-3xl',
-    ];
+    search!.value = 'delete';
+    search!.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
 
-    for (const token of spacingTokens) {
-      expect(spacingSection?.textContent).toContain(token);
-    }
-
-    const radiusCards = spacingSection?.querySelectorAll('.org-ds-radius-card');
-    expect(radiusCards?.length).toBe(6);
-    expect(spacingSection?.textContent).toContain('--org-radius-xs');
-    expect(spacingSection?.textContent).toContain('--org-radius-sm');
-    expect(spacingSection?.textContent).toContain('--org-radius-md');
-    expect(spacingSection?.textContent).toContain('--org-radius-lg');
-    expect(spacingSection?.textContent).toContain('--org-radius-xl');
-    expect(spacingSection?.textContent).toContain('--org-radius-full');
-
-    const shadowCards = spacingSection?.querySelectorAll('.org-ds-shadow-card');
-    expect(shadowCards?.length).toBe(4);
-    expect(spacingSection?.textContent).toContain('--org-shadow-xs');
-    expect(spacingSection?.textContent).toContain('--org-shadow-sm');
-    expect(spacingSection?.textContent).toContain('--org-shadow-md');
-    expect(spacingSection?.textContent).toContain('--org-shadow-lg');
+    expect(total).toBeGreaterThan(40);
+    expect(icons()).toBe(2);
   });
 
-  it('applies a single selected seasonal class to the document root', () => {
+  it('previews one seasonal theme at a time', () => {
     component.setSeasonalTheme('theme-pascoa');
-    expect(document.documentElement.classList.contains('theme-pascoa')).toBe(true);
-    expect(component.activeSeasonalTheme()).toBe('theme-pascoa');
-
     component.setSeasonalTheme('theme-natal');
+    fixture.detectChanges();
+
     expect(document.documentElement.classList.contains('theme-pascoa')).toBe(false);
     expect(document.documentElement.classList.contains('theme-natal')).toBe(true);
+    expect(component.activeSeasonalTheme()).toBe('theme-natal');
+    expect(root.querySelector('[data-testid="ds-season-theme-natal"]')).toBeTruthy();
   });
 
-  it('makes the selected seasonal card explicit to assistive technology and visually', () => {
-    const root = fixture.nativeElement as HTMLElement;
-    const cards = root.querySelectorAll<HTMLButtonElement>('.org-ds-season-card');
-
-    expect(cards[0].getAttribute('aria-pressed')).toBe('true');
+  it('puts the app theme back when leaving the page', () => {
     component.setSeasonalTheme('theme-junina');
-    fixture.detectChanges();
-    expect(cards[2].classList.contains('org-ds-season-card--active')).toBe(true);
-    expect(cards[2].getAttribute('aria-pressed')).toBe('true');
+    fixture.destroy();
+
+    expect(document.documentElement.classList.contains('theme-junina')).toBe(false);
   });
 
-  it('uses the feedback and dialog services only for local component demonstrations', () => {
-    component.showSuccessExample();
-    component.showInfoExample();
-    component.openDialogExample();
-
-    expect(feedbackService.success).toHaveBeenCalledWith('Tema aplicado à prévia com sucesso.');
-    expect(feedbackService.info).toHaveBeenCalledWith(
-      'A prévia usa tokens sazonais compartilhados.',
+  it('switches dark mode through the shared ThemeService', () => {
+    const toggle = root.querySelector<HTMLButtonElement>(
+      'section#seasonal-themes [data-testid="theme-dark-btn"]',
     );
-    expect(dialogService.confirm).toHaveBeenCalledWith({
-      title: 'Publicar tema',
-      message: 'Confirme a publicação do tema para a prévia.',
-      confirmLabel: 'Publicar',
-      cancelLabel: 'Agora não',
-    });
+
+    toggle?.click();
+
+    expect(themeService.setMode).toHaveBeenCalledWith('dark');
+  });
+
+  it('opens toasts and dialogs through the services and shows the answer', () => {
+    component.showToast('success');
+    component.openDialog('danger');
+    expect(feedbackService.success).toHaveBeenCalledWith('Presença confirmada!');
+    expect(dialogService.confirm).toHaveBeenCalledWith(
+      expect.objectContaining({ tone: 'danger', cancelLabel: 'Manter evento' }),
+    );
+
+    component.openDialog('choice');
+    fixture.detectChanges();
+    expect(dialogService.choose).toHaveBeenCalledWith(
+      expect.objectContaining({ extraLabel: 'Manter os dois' }),
+    );
+    expect(root.querySelector('section#feedback')?.textContent).toContain(
+      'Resposta: manter os dois',
+    );
   });
 });

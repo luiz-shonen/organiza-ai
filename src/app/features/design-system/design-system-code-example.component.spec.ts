@@ -1,57 +1,47 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, expect, it, vi } from 'vitest';
+import { FeedbackService } from '../../shared/ui';
 import { DesignSystemCodeExampleComponent } from './design-system-code-example.component';
 
 describe('DesignSystemCodeExampleComponent', () => {
-  it('keeps the code collapsed until the person explicitly expands it', async () => {
+  async function render(): Promise<{
+    fixture: ComponentFixture<DesignSystemCodeExampleComponent>;
+    copy: ReturnType<typeof vi.fn>;
+    success: ReturnType<typeof vi.fn>;
+  }> {
+    const copy = vi.fn().mockReturnValue(true);
+    const success = vi.fn();
     await TestBed.configureTestingModule({
       imports: [DesignSystemCodeExampleComponent],
-      providers: [provideNoopAnimations()],
+      providers: [
+        provideNoopAnimations(),
+        { provide: Clipboard, useValue: { copy } },
+        { provide: FeedbackService, useValue: { success, error: vi.fn() } },
+      ],
     }).compileComponents();
 
-    const fixture: ComponentFixture<DesignSystemCodeExampleComponent> = TestBed.createComponent(
-      DesignSystemCodeExampleComponent,
-    );
+    const fixture = TestBed.createComponent(DesignSystemCodeExampleComponent);
     fixture.componentRef.setInput('code', '<org-page-layout />');
     fixture.detectChanges();
+    return { fixture, copy, success };
+  }
 
-    const disclosure = (fixture.nativeElement as HTMLElement).querySelector<HTMLDetailsElement>(
-      'details',
-    );
-    const summary = disclosure?.querySelector<HTMLElement>('summary');
+  it('shows the snippet under its label, without hiding it', async () => {
+    const { fixture } = await render();
+    const root = fixture.nativeElement as HTMLElement;
 
-    expect(disclosure?.open).toBe(false);
-
-    summary?.click();
-    fixture.detectChanges();
-
-    expect(disclosure?.open).toBe(true);
+    expect(root.querySelector('.ds-code__label')?.textContent).toContain('Uso recomendado');
+    expect(root.querySelector('pre code')?.textContent).toBe('<org-page-layout />');
   });
 
-  it('renders and copies the documented Angular example', async () => {
-    const writeText = vi.fn().mockResolvedValue(undefined);
-    Object.assign(navigator, { clipboard: { writeText } });
+  it('copies the snippet through the shared copy button', async () => {
+    const { fixture, copy, success } = await render();
 
-    await TestBed.configureTestingModule({
-      imports: [DesignSystemCodeExampleComponent],
-      providers: [provideNoopAnimations()],
-    }).compileComponents();
+    (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('button')?.click();
 
-    const fixture: ComponentFixture<DesignSystemCodeExampleComponent> = TestBed.createComponent(
-      DesignSystemCodeExampleComponent,
-    );
-    fixture.componentRef.setInput('code', '<org-page-layout />');
-    fixture.detectChanges();
-
-    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-      'button',
-    );
-    button?.click();
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    expect(writeText).toHaveBeenCalledWith('<org-page-layout />');
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Copiado');
+    expect(copy).toHaveBeenCalledWith('<org-page-layout />');
+    expect(success).toHaveBeenCalledWith('Código copiado!', { duration: 2000 });
   });
 });

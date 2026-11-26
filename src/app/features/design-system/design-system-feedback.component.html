@@ -1,0 +1,187 @@
+<section id="feedback" class="ds-section" aria-label="Feedback">
+  <org-section title="Feedback">
+    <p class="ds-lead">
+      Avisos rápidos em toast, avisos que ficam em banner, confirmações em diálogo e edições em
+      folha. Diálogo só para decisões que interrompem, como remover algo.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Toast"
+        api="FeedbackService"
+        summary="Aviso rápido no rodapé, que some sozinho. Nunca colocado no template."
+        [code]="snippets.snackbar"
+      >
+        <org-button
+          label="Sucesso"
+          icon="check_circle"
+          variant="secondary"
+          (pressed)="toastRequested.emit('success')"
+        />
+        <org-button
+          label="Informação"
+          icon="info"
+          variant="secondary"
+          (pressed)="toastRequested.emit('info')"
+        />
+        <org-button
+          label="Erro"
+          icon="error"
+          variant="secondary"
+          (pressed)="toastRequested.emit('error')"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Diálogo de confirmação"
+        api="OrgDialogService"
+        summary="Tudo que remove ou cancela pergunta antes, em vermelho. choose() acrescenta uma terceira saída."
+        [code]="snippets.dialog"
+        layout="stack"
+      >
+        <div class="ds-row">
+          <org-button
+            label="Cancelar evento"
+            variant="danger"
+            (pressed)="dialogRequested.emit('danger')"
+          />
+          <org-button
+            label="Telefone repetido"
+            variant="secondary"
+            (pressed)="dialogRequested.emit('choice')"
+          />
+        </div>
+        <p class="ds-caption" aria-live="polite">Resposta: {{ dialogAnswer() ?? '—' }}</p>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Banner"
+        api="<org-banner>"
+        summary="Aviso que fica na tela até a situação mudar. Pode ter uma ação, como Desfazer."
+        [code]="snippets.banner"
+        layout="stack"
+        [wide]="true"
+      >
+        <org-banner
+          variant="info"
+          icon="cloud_off"
+          message="Você está sem internet. Mostramos a última versão salva."
+        />
+        @if (bannerVisible()) {
+          <org-banner
+            variant="success"
+            [message]="undone() ? 'Pronto, o item voltou para a lista.' : 'Item removido.'"
+            [actionLabel]="undone() ? null : 'Desfazer'"
+            actionIcon="undo"
+            dismissLabel="Fechar aviso"
+            (action)="undone.set(true)"
+            (dismissed)="bannerVisible.set(false)"
+          />
+        } @else {
+          <org-button
+            label="Mostrar o aviso de novo"
+            variant="text"
+            (pressed)="bannerVisible.set(true); undone.set(false)"
+          />
+        }
+        <org-banner variant="error" message="Não foi possível salvar. Tente de novo." />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Dica do Organiza AI"
+        api="<org-insight-card>"
+        summary="Laranja quando o evento está perto e falta algo; azul no resto do tempo."
+        [code]="snippets.insight"
+        layout="stack"
+        [wide]="true"
+      >
+        <org-insight-card tone="warning">
+          Faltam 3 dias! <strong>2 itens</strong> estão sem responsável.
+          <org-button orgInsightAction label="Ver itens" variant="secondary" [compact]="true" />
+        </org-insight-card>
+        <org-insight-card>
+          Com 42 confirmados, sugerimos <strong>8 kg de carne</strong> para o churrasco.
+        </org-insight-card>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Vazio, carregando e esqueleto"
+        api="<org-empty-state> <org-loading-state> <org-skeleton>"
+        summary="Sem dados, mostre o próximo passo. Enquanto carrega, o esqueleto guarda o lugar do conteúdo."
+        [code]="snippets.emptyLoading"
+        layout="stack"
+        [wide]="true"
+      >
+        <div class="ds-states">
+          <org-empty-state
+            icon="event"
+            title="Nenhum evento por aqui"
+            description="Crie o primeiro para começar."
+          />
+          <org-loading-state label="Carregando eventos..." />
+          <div class="ds-skeleton" aria-hidden="true">
+            <org-skeleton shape="circle" class="ds-skeleton__avatar" />
+            <div class="ds-skeleton__lines">
+              <org-skeleton class="ds-skeleton__line" />
+              <org-skeleton class="ds-skeleton__line ds-skeleton__line--short" />
+            </div>
+          </div>
+        </div>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Folha"
+        api="<org-bottom-sheet>"
+        summary="Sobe de baixo no celular. Escolha rápida: card no centro. Edição: gaveta à direita a partir do tablet."
+        [code]="snippets.bottomSheet"
+      >
+        <org-button label="Eu levo" variant="attention" (pressed)="sheet.set('center')" />
+        <org-button
+          label="Editar item"
+          variant="secondary"
+          icon="edit"
+          (pressed)="sheet.set('side')"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Tooltip"
+        api="<org-tooltip>"
+        summary="Mostra o texto inteiro de uma linha cortada. Botões usam o próprio tooltip; nunca o atributo title."
+        [code]="snippets.tooltip"
+        layout="stack"
+      >
+        <org-tooltip [text]="longPlace">
+          <p class="ds-ellipsis">{{ longPlace }}</p>
+        </org-tooltip>
+        <p class="ds-caption">Passe o mouse, foque ou segure o dedo no endereço.</p>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>
+
+<org-bottom-sheet ariaLabel="Eu levo" [open]="sheet() === 'center'" (closed)="closeSheet()">
+  <div class="ds-sheet">
+    <org-card-header heading="Bolo de milho" subheading="Faltam 6 de 10" />
+    <org-quantity-stepper ariaLabel="Quantos você leva" unit="un." [max]="6" [(value)]="quantity" />
+    <org-button
+      [label]="'Levar ' + quantity()"
+      [fullWidth]="true"
+      (pressed)="closeSheet(); toastRequested.emit('success')"
+    />
+  </div>
+</org-bottom-sheet>
+
+<org-bottom-sheet
+  ariaLabel="Editar item"
+  placement="side"
+  [open]="sheet() === 'side'"
+  (closed)="closeSheet()"
+>
+  <div class="ds-sheet">
+    <org-card-header heading="Editar item" />
+    <org-text-field label="Nome do item" [(value)]="itemName" />
+    <org-button label="Salvar" [fullWidth]="true" (pressed)="closeSheet()" />
+    <org-button label="Cancelar" variant="text" [fullWidth]="true" (pressed)="closeSheet()" />
+  </div>
+</org-bottom-sheet>

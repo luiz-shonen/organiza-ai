@@ -4,39 +4,32 @@ import type { DesignSystemNavigationGroup } from './design-system-navigation-gro
 export * from './design-system-navigation-item.model';
 export * from './design-system-navigation-group.model';
 
+/** The /design-system index, shown in the navigation drawer; each id is a section anchor. */
 export const DESIGN_SYSTEM_NAVIGATION_GROUPS: readonly DesignSystemNavigationGroup[] = [
   {
-    id: 'brand',
-    label: 'Marca',
+    id: 'foundations',
+    label: 'Fundamentos',
     items: [
       { id: 'overview', label: 'Visão geral', icon: 'auto_awesome' },
       { id: 'colors', label: 'Cores', icon: 'palette' },
       { id: 'typography', label: 'Tipografia', icon: 'text_fields' },
-      { id: 'iconography', label: 'Iconografia', icon: 'category' },
-      { id: 'seasonal-themes', label: 'Temas sazonais', icon: 'celebration' },
+      { id: 'spacing', label: 'Espaço e forma', icon: 'straighten' },
+      { id: 'iconography', label: 'Ícones', icon: 'category' },
+      { id: 'seasonal-themes', label: 'Temas', icon: 'dark_mode' },
     ],
   },
   {
-    id: 'foundations',
-    label: 'Fundações',
+    id: 'components',
+    label: 'Componentes',
     items: [
-      { id: 'tokens', label: 'Tokens', icon: 'tune' },
-      { id: 'spacing', label: 'Espaçamento e dimensões', icon: 'straighten' },
-      { id: 'foundations', label: 'Fundamentos', icon: 'layers' },
-    ],
-  },
-  {
-    id: 'product',
-    label: 'Produto',
-    items: [
-      { id: 'components', label: 'Componentes', icon: 'widgets' },
-      { id: 'buttons', label: 'Botões e ações', icon: 'ads_click' },
+      { id: 'layout', label: 'Página e cards', icon: 'view_agenda' },
+      { id: 'buttons', label: 'Ações', icon: 'ads_click' },
       { id: 'inputs', label: 'Campos', icon: 'edit_note' },
       { id: 'selection', label: 'Seleção', icon: 'check_circle' },
       { id: 'navigation', label: 'Navegação', icon: 'tab' },
-      { id: 'stepper', label: 'Etapas', icon: 'format_list_numbered' },
-      { id: 'data-display', label: 'Dados e cards', icon: 'view_agenda' },
+      { id: 'data-display', label: 'Dados', icon: 'insights' },
       { id: 'feedback', label: 'Feedback', icon: 'notifications' },
+      { id: 'brand', label: 'Marca', icon: 'celebration' },
     ],
   },
 ] as const;

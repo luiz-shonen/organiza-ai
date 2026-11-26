@@ -8,14 +8,7 @@ export type SeasonalThemeOption =
 export interface SeasonalThemeChoice {
   readonly id: SeasonalThemeOption;
   readonly label: string;
-  readonly description: string;
-}
-
-/** Code snippets rendered by the foundations part of the Design System showcase. */
-export interface DesignSystemFoundationExamples {
-  readonly colors: string;
-  readonly typography: string;
-  readonly iconography: string;
-  readonly tokens: string;
-  readonly spacing: string;
+  /** The page background in the light and the dark mode (`--org-canvas`). */
+  readonly canvasLight: string;
+  readonly canvasDark: string;
 }

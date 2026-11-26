@@ -1,0 +1,137 @@
+<!-- ───────────── Campos ───────────── -->
+<section id="inputs" class="ds-section" aria-label="Campos">
+  <org-section title="Campos">
+    <p class="ds-lead">
+      Todos os campos têm o mesmo desenho, rótulo, dica e mensagem de erro. Use sempre o componente
+      do tipo de dado: nunca <code class="ds-token">type="number"</code> nem
+      <code class="ds-token">type="time"</code> nativos.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Texto"
+        api="<org-text-field> <org-textarea-field>"
+        summary="mask reformata o que se digita, maxLength limita e inputMode abre o teclado numérico."
+        [code]="snippets.textField"
+        layout="stack"
+      >
+        <org-text-field
+          label="Título do evento"
+          hint="Como os convidados verão o evento."
+          [required]="true"
+          [(value)]="eventTitle"
+        />
+        <org-text-field
+          label="WhatsApp"
+          type="tel"
+          inputMode="numeric"
+          prefixIcon="phone"
+          placeholder="(11) 98888-1111"
+          [mask]="maskPhone"
+          [(value)]="phone"
+        />
+        <org-text-field
+          label="E-mail"
+          type="email"
+          value="convidado@"
+          error="Digite um e-mail válido."
+        />
+        <org-textarea-field
+          label="Recado para os convidados"
+          [rows]="2"
+          [maxLength]="160"
+          [(value)]="note"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Escolha numa lista"
+        api="<org-select-field> <org-autocomplete-field>"
+        summary="Até três opções, use Select. A partir de quatro, use Autocomplete."
+        [code]="snippets.choiceFields"
+        layout="stack"
+      >
+        <org-select-field label="Formato" [options]="formatOptions" [(value)]="format" />
+        <org-autocomplete-field
+          label="Categoria do evento"
+          hint="Digite para filtrar; acento e maiúsculas não importam."
+          [options]="categoryOptions"
+          [(value)]="category"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Data e horário"
+        api="<org-date-field> <org-time-field>"
+        summary="Calendário do Material em português e um editor HH:mm com atalhos."
+        [code]="snippets.dateTime"
+        layout="stack"
+      >
+        <org-date-field label="Data" [min]="today" [(value)]="date" />
+        <org-time-field
+          label="Horário"
+          [(value)]="time"
+          [minuteStep]="5"
+          [quickOptions]="timeOptions"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Quantidade"
+        api="<org-quantity-stepper>"
+        summary="− e + com alvos de 48px, para dizer quantos de um item a pessoa leva."
+        [code]="snippets.quantity"
+        layout="stack"
+      >
+        <org-quantity-stepper
+          ariaLabel="Quantos bolos você leva"
+          unit="un."
+          [max]="6"
+          [(value)]="quantity"
+        />
+        <p class="ds-caption">Você leva {{ quantity() }} de 6.</p>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>
+
+<!-- ───────────── Seleção ───────────── -->
+<section id="selection" class="ds-section" aria-label="Seleção">
+  <org-section title="Seleção">
+    <p class="ds-lead">
+      Toggle muda na hora; checkbox marca escolhas independentes; radio e controle segmentado
+      escolhem exatamente uma.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Toggle e checkbox"
+        api="<org-toggle> <org-checkbox>"
+        summary="Toggle para uma preferência que vale na hora. Checkbox para marcar várias coisas."
+        [code]="snippets.toggleCheckbox"
+        layout="stack"
+      >
+        <org-toggle label="Lembrete na véspera" [(checked)]="reminder" />
+        <org-checkbox label="Permitir acompanhante" [(checked)]="companion" />
+        <org-checkbox label="Crianças são bem-vindas" [(checked)]="kids" />
+        <org-checkbox label="Indisponível" [disabled]="true" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Uma entre várias"
+        api="<org-radio-group> <org-segmented-control>"
+        summary="Radio em lista; o controle segmentado põe duas ou três opções lado a lado (Hick)."
+        [code]="snippets.radioSegmented"
+        layout="stack"
+      >
+        <org-radio-group label="Como avisar" [options]="channelOptions" [(value)]="channel" />
+        <org-segmented-control
+          ariaLabel="Tema"
+          [options]="modeOptions"
+          [value]="mode()"
+          (valueChange)="mode.set($event)"
+        />
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>

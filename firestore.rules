@@ -417,6 +417,7 @@ service cloud.firestore {
             && (!changes('pixPurpose') || isOptionalString(data.get('pixPurpose', null), 300))
             && (!changes('secretSantaRules') || isOptionalString(data.get('secretSantaRules', null), 500))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
+            && (!changes('secretSantaRosterVersion') || data.get('secretSantaRosterVersion', null) is int)
             && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
             && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)))
             && (!changes('mapLocation') || isMapLocation(data.get('mapLocation', null)));

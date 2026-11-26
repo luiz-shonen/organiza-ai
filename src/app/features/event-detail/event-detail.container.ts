@@ -28,6 +28,7 @@ import {
   DrawerService,
   ClaimService,
   SecretSantaService,
+  SECRET_SANTA_ROSTER_VERSION,
   InboxService,
 } from '../../core/services';
 import {
@@ -406,15 +407,24 @@ export class EventDetailContainer implements OnInit {
     onCleanup(() => sub.unsubscribe());
   });
   /**
-   * The organizers keep the guests' roster (names and gift ideas) in line with the participants
-   * once per visit: participants added before the roster existed show up for the guests too.
+   * The owner checks the guests' roster (names and gift ideas) against the participants once
+   * per event, not on every visit: each later change keeps both lists in step by itself. Only
+   * the owner may leave the mark on the event, so the collaborators never run it.
    */
   private rosterSyncedFor: string | null = null;
   private readonly syncSecretSantaRoster = effect(() => {
-    const participants = this.secretSantaParticipants();
-    if (!this.canEditEvent() || !participants.length || this.rosterSyncedFor === this.id()) return;
+    const event = this.event();
+    if (
+      !event?.secretSanta?.enabled ||
+      !this.canEditEvent() ||
+      event.createdBy !== this.memberUid() ||
+      (event.secretSantaRosterVersion ?? 0) >= SECRET_SANTA_ROSTER_VERSION ||
+      this.rosterSyncedFor === this.id()
+    ) {
+      return;
+    }
     this.rosterSyncedFor = this.id();
-    void this.secretSantaService.syncRoster(this.id(), participants).catch(() => undefined);
+    void this.secretSantaService.syncRoster(this.id()).catch(() => undefined);
   });
 
   /** A signed-in guest's view of the amigo oculto: who takes part and their gift ideas. */

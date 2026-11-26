@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { InboxService } from './inbox.service';
 import { PushService } from './push.service';
@@ -24,6 +24,12 @@ import { drawSecretSanta, generateId } from '../utils';
  * only), and each pair only in `secretSantaReveals/{token}`, which anyone holding the token
  * reads without signing in, and nobody can list.
  */
+/**
+ * Raised when the guests' list needs checking again on every event (a new field in the copies,
+ * or a past bug that left copies missing). Each event is then checked once more, by its owner.
+ */
+export const SECRET_SANTA_ROSTER_VERSION = 1;
+
 @Injectable({ providedIn: 'root' })
 export class SecretSantaService {
   private readonly gateway = inject(FirestoreGateway);
@@ -76,35 +82,70 @@ export class SecretSantaService {
   }
 
   /**
-   * Organizers only: brings the roster in line with the participants (entries written before it
-   * existed, or by an older version), so the guests see the same people.
+   * The event's owner, once per event (`secretSantaRosterVersion`): brings the roster in line
+   * with the participants (entries written before it existed, or by an older version), so the
+   * guests see the same people. Every later change writes both in the same batch, so the lists
+   * are not read again; the mark is left even when an entry was refused, since the same data
+   * would be refused again on each visit.
+   *
+   * Both lists come from the server, never from a listener: its first answer may be only what
+   * the browser had cached (e.g. the organizer's own entry), and every other copy would read as
+   * "gone" and be deleted. Each entry is written on its own: in a single batch, one entry the
+   * rules refuse would keep every other one out of the guests' list.
    */
-  async syncRoster(
-    eventId: string,
-    participants: readonly SecretSantaParticipant[],
-  ): Promise<void> {
-    const roster = await firstValueFrom(this.listRoster(eventId));
+  async syncRoster(eventId: string): Promise<void> {
+    const [participantDocs, rosterDocs] = await Promise.all([
+      this.gateway.getDocsFromServer<Partial<SecretSantaParticipant>>(
+        this.participantsPath(eventId),
+      ),
+      this.gateway.getDocsFromServer<Partial<SecretSantaRosterEntry>>(this.rosterPath(eventId)),
+    ]);
+    const participants = participantDocs.map((d) => ({
+      id: d.id,
+      name: d.name ?? '',
+      giftOptions: d.giftOptions ?? [],
+      note: d.note ?? '',
+      createdAt: d.createdAt ?? '',
+    }));
+    const roster = rosterDocs.map((d) => ({
+      id: d.id,
+      name: d.name ?? '',
+      giftOptions: d.giftOptions ?? [],
+      note: d.note ?? '',
+    }));
     const byId = new Map(roster.map((entry) => [entry.id, entry]));
     const stale = participants.filter((p) => {
       const entry = byId.get(p.id);
       return (
         !entry ||
         entry.name !== p.name ||
-        JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions)
+        JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions) ||
+        entry.note !== p.note
       );
     });
     const ids = new Set(participants.map((p) => p.id));
     const gone = roster.filter((entry) => !ids.has(entry.id));
-    if (!stale.length && !gone.length) return;
-    await this.gateway.runBatch((batch) => {
-      for (const p of stale) {
-        batch.set(
-          `${this.rosterPath(eventId)}/${p.id}`,
-          { ...this.rosterDoc(p), createdAt: p.createdAt || new Date().toISOString() },
-          { merge: true },
-        );
-      }
-      for (const entry of gone) batch.delete(`${this.rosterPath(eventId)}/${entry.id}`);
+    const writes = [
+      ...stale.map((p) =>
+        this.gateway.runBatch((batch) =>
+          batch.set(
+            `${this.rosterPath(eventId)}/${p.id}`,
+            {
+              // The rules want the copy's comment to match the entry's, also when it was cleared.
+              ...this.rosterDoc(p),
+              createdAt: p.createdAt || new Date().toISOString(),
+            },
+            { merge: true },
+          ),
+        ),
+      ),
+      ...gone.map((entry) =>
+        this.gateway.runBatch((batch) => batch.delete(`${this.rosterPath(eventId)}/${entry.id}`)),
+      ),
+    ];
+    await Promise.allSettled(writes);
+    await this.gateway.updateDoc(`events/${eventId}`, {
+      secretSantaRosterVersion: SECRET_SANTA_ROSTER_VERSION,
     });
   }
 

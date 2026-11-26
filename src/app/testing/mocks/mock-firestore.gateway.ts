@@ -18,6 +18,7 @@ export interface MockFirestoreGateway {
   getDoc: ReturnType<typeof vi.fn>;
   getDocWithId: ReturnType<typeof vi.fn>;
   getDocs: ReturnType<typeof vi.fn>;
+  getDocsFromServer: ReturnType<typeof vi.fn>;
   getCollectionGroupDocs: ReturnType<typeof vi.fn>;
   setDoc: ReturnType<typeof vi.fn>;
   updateDoc: ReturnType<typeof vi.fn>;
@@ -54,6 +55,7 @@ export function createMockFirestoreGateway(): MockFirestoreGateway {
     getDoc: vi.fn().mockResolvedValue(null),
     getDocWithId: vi.fn().mockResolvedValue(null),
     getDocs: vi.fn().mockResolvedValue([]),
+    getDocsFromServer: vi.fn().mockResolvedValue([]),
     getCollectionGroupDocs: vi.fn().mockResolvedValue([]),
     setDoc: vi.fn().mockResolvedValue(undefined),
     updateDoc: vi.fn().mockResolvedValue(undefined),

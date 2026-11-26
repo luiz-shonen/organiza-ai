@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { InboxService } from './inbox.service';
 import { PushService } from './push.service';
@@ -79,14 +79,31 @@ export class SecretSantaService {
    * Organizers only: brings the roster in line with the participants (entries written before it
    * existed, or by an older version), so the guests see the same people.
    *
-   * Each entry is written on its own: in a single batch, one entry the rules refuse would keep
-   * every other one out of the guests' list.
+   * Both lists come from the server, never from a listener: its first answer may be only what
+   * the browser had cached (e.g. the organizer's own entry), and every other copy would read as
+   * "gone" and be deleted. Each entry is written on its own: in a single batch, one entry the
+   * rules refuse would keep every other one out of the guests' list.
    */
-  async syncRoster(
-    eventId: string,
-    participants: readonly SecretSantaParticipant[],
-  ): Promise<void> {
-    const roster = await firstValueFrom(this.listRoster(eventId));
+  async syncRoster(eventId: string): Promise<void> {
+    const [participantDocs, rosterDocs] = await Promise.all([
+      this.gateway.getDocsFromServer<Partial<SecretSantaParticipant>>(
+        this.participantsPath(eventId),
+      ),
+      this.gateway.getDocsFromServer<Partial<SecretSantaRosterEntry>>(this.rosterPath(eventId)),
+    ]);
+    const participants = participantDocs.map((d) => ({
+      id: d.id,
+      name: d.name ?? '',
+      giftOptions: d.giftOptions ?? [],
+      note: d.note ?? '',
+      createdAt: d.createdAt ?? '',
+    }));
+    const roster = rosterDocs.map((d) => ({
+      id: d.id,
+      name: d.name ?? '',
+      giftOptions: d.giftOptions ?? [],
+      note: d.note ?? '',
+    }));
     const byId = new Map(roster.map((entry) => [entry.id, entry]));
     const stale = participants.filter((p) => {
       const entry = byId.get(p.id);
@@ -94,7 +111,7 @@ export class SecretSantaService {
         !entry ||
         entry.name !== p.name ||
         JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions) ||
-        (entry.note ?? '') !== (p.note ?? '')
+        entry.note !== p.note
       );
     });
     const ids = new Set(participants.map((p) => p.id));
@@ -106,7 +123,7 @@ export class SecretSantaService {
             `${this.rosterPath(eventId)}/${p.id}`,
             {
               // The rules want the copy's comment to match the entry's, also when it was cleared.
-              ...this.rosterDoc({ ...p, note: p.note ?? '' }),
+              ...this.rosterDoc(p),
               createdAt: p.createdAt || new Date().toISOString(),
             },
             { merge: true },

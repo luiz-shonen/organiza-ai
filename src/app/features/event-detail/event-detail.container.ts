@@ -403,12 +403,11 @@ export class EventDetailContainer implements OnInit {
    */
   private rosterSyncedFor: string | null = null;
   private readonly syncSecretSantaRoster = effect(() => {
-    // Everyone, also who waits for approval: the guests' view hides those, and dropping their
-    // copies here would leave them out once approved.
+    // The service reads both lists from the server itself: this list may still be the cache.
     const participants = this.allSecretSantaParticipants();
     if (!this.canEditEvent() || !participants.length || this.rosterSyncedFor === this.id()) return;
     this.rosterSyncedFor = this.id();
-    void this.secretSantaService.syncRoster(this.id(), participants).catch(() => undefined);
+    void this.secretSantaService.syncRoster(this.id()).catch(() => undefined);
   });
 
   /** A signed-in guest's view of the amigo oculto: who takes part and their gift ideas. */

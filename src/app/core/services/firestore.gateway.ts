@@ -10,6 +10,7 @@ import {
   deleteDoc,
   getDoc,
   getDocs,
+  getDocsFromServer as fetchDocsFromServer,
   onSnapshot,
   orderBy,
   query,
@@ -140,6 +141,21 @@ export class FirestoreGateway {
     const colRef = collection(this.firestore, path);
     const q = queryConstraints.length > 0 ? query(colRef, ...queryConstraints) : colRef;
     const snap = await getDocs(q);
+    return snap.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as T),
+    }));
+  }
+
+  /**
+   * The whole collection as the server has it, never the browser cache: for writes that act on
+   * what is missing (a cache holding only part of it would read as "everyone else is gone").
+   */
+  async getDocsFromServer<T>(path: string): Promise<(T & { id: string })[]> {
+    if (typeof window !== 'undefined' && window.__MOCK_DOCUMENTS__) {
+      return [...(window.__MOCK_DOCUMENTS__[path] || [])] as (T & { id: string })[];
+    }
+    const snap = await fetchDocsFromServer(collection(this.firestore, path));
     return snap.docs.map((d) => ({
       id: d.id,
       ...(d.data() as T),

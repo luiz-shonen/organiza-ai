@@ -57,8 +57,10 @@ describe('SecretSantaService', () => {
   });
 
   it('syncs the guests roster one entry at a time: a refused one keeps no one else out', async () => {
-    gateway.collectionSnapshot.mockReturnValue(
-      of([{ id: 'p2', name: 'Luiz', giftOptions: [], createdAt: '2026-11-01' }]),
+    gateway.getDocsFromServer.mockImplementation(async (path: string) =>
+      path.endsWith('secretSantaParticipants')
+        ? people
+        : [{ id: 'p2', name: 'Luiz', giftOptions: [], createdAt: '2026-11-01' }],
     );
     let calls = 0;
     gateway.runBatch.mockImplementation(async (fn) => {
@@ -67,7 +69,7 @@ describe('SecretSantaService', () => {
       await fn(gateway.batchOps);
     });
 
-    await service.syncRoster('evt-1', people);
+    await service.syncRoster('evt-1');
 
     expect(gateway.runBatch).toHaveBeenCalledTimes(2);
     expect(gateway.batchOps.set).toHaveBeenCalledWith(
@@ -75,6 +77,34 @@ describe('SecretSantaService', () => {
       { name: 'Ana', giftOptions: ['Livro'], note: '', createdAt: expect.any(String) },
       { merge: true },
     );
+  });
+
+  it('syncs from the server, not the cache: no copy leaves while its entry still exists', async () => {
+    // The listener's first answer may hold only the cached entry; the server has everyone.
+    gateway.collectionSnapshot.mockReturnValue(of([people[1]]));
+    gateway.getDocsFromServer.mockImplementation(async (path: string) =>
+      path.endsWith('secretSantaParticipants')
+        ? people
+        : people.map(({ id, name, giftOptions }) => ({ id, name, giftOptions })),
+    );
+
+    await service.syncRoster('evt-1');
+
+    expect(gateway.batchOps.delete).not.toHaveBeenCalled();
+    expect(gateway.batchOps.set).not.toHaveBeenCalled();
+  });
+
+  it('drops the copy of an entry that left the list', async () => {
+    gateway.getDocsFromServer.mockImplementation(async (path: string) =>
+      path.endsWith('secretSantaParticipants')
+        ? people.slice(0, 2)
+        : people.map(({ id, name, giftOptions }) => ({ id, name, giftOptions })),
+    );
+
+    await service.syncRoster('evt-1');
+
+    expect(gateway.batchOps.delete).toHaveBeenCalledTimes(1);
+    expect(gateway.batchOps.delete).toHaveBeenCalledWith('events/evt-1/secretSantaRoster/p3');
   });
 
   it('draws: one secret reveal per participant and the links for the owner', async () => {

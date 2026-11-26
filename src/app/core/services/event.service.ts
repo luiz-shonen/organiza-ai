@@ -462,6 +462,9 @@ export class EventService {
       pixPurpose: typeof data['pixPurpose'] === 'string' ? data['pixPurpose'] : null,
       secretSantaRules:
         typeof data['secretSantaRules'] === 'string' ? data['secretSantaRules'] : null,
+      ...(typeof data['secretSantaRosterVersion'] === 'number'
+        ? { secretSantaRosterVersion: data['secretSantaRosterVersion'] }
+        : {}),
       estimatedBudget:
         typeof data['estimatedBudget'] === 'number'
           ? (data['estimatedBudget'] as number)

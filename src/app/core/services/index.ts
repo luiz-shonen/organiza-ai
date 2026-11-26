@@ -20,7 +20,7 @@ export * from './header.service';
 export { NotificationService } from './notification.service';
 export { EventNotificationService } from './event-notification.service';
 export { InboxService } from './inbox.service';
-export { SecretSantaService } from './secret-santa.service';
+export { SECRET_SANTA_ROSTER_VERSION, SecretSantaService } from './secret-santa.service';
 export { NameSyncService } from './name-sync.service';
 export { FormDraftService } from './form-draft.service';
 export type { StoredDraft } from './form-draft.service';

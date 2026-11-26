@@ -24,6 +24,12 @@ import { drawSecretSanta, generateId } from '../utils';
  * only), and each pair only in `secretSantaReveals/{token}`, which anyone holding the token
  * reads without signing in, and nobody can list.
  */
+/**
+ * Raised when the guests' list needs checking again on every event (a new field in the copies,
+ * or a past bug that left copies missing). Each event is then checked once more, by its owner.
+ */
+export const SECRET_SANTA_ROSTER_VERSION = 1;
+
 @Injectable({ providedIn: 'root' })
 export class SecretSantaService {
   private readonly gateway = inject(FirestoreGateway);
@@ -76,8 +82,11 @@ export class SecretSantaService {
   }
 
   /**
-   * Organizers only: brings the roster in line with the participants (entries written before it
-   * existed, or by an older version), so the guests see the same people.
+   * The event's owner, once per event (`secretSantaRosterVersion`): brings the roster in line
+   * with the participants (entries written before it existed, or by an older version), so the
+   * guests see the same people. Every later change writes both in the same batch, so the lists
+   * are not read again; the mark is left even when an entry was refused, since the same data
+   * would be refused again on each visit.
    *
    * Both lists come from the server, never from a listener: its first answer may be only what
    * the browser had cached (e.g. the organizer's own entry), and every other copy would read as
@@ -135,6 +144,9 @@ export class SecretSantaService {
       ),
     ];
     await Promise.allSettled(writes);
+    await this.gateway.updateDoc(`events/${eventId}`, {
+      secretSantaRosterVersion: SECRET_SANTA_ROSTER_VERSION,
+    });
   }
 
   private drawPath(eventId: string): string {

@@ -77,6 +77,10 @@ describe('SecretSantaService', () => {
       { name: 'Ana', giftOptions: ['Livro'], note: '', createdAt: expect.any(String) },
       { merge: true },
     );
+    // Marked even so: the same data would be refused again, and the lists are not read again.
+    expect(gateway.updateDoc).toHaveBeenCalledWith('events/evt-1', {
+      secretSantaRosterVersion: 1,
+    });
   });
 
   it('syncs from the server, not the cache: no copy leaves while its entry still exists', async () => {

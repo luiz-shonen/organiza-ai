@@ -119,6 +119,11 @@ export interface PartyEvent {
    * rules, when gifts are swapped. Kept beside `secretSanta`, whose keys the rules fix.
    */
   secretSantaRules?: string | null;
+  /**
+   * The guests' amigo oculto list was checked against the participants once, at this version:
+   * every later change keeps both in step, so it is not read again on each visit.
+   */
+  secretSantaRosterVersion?: number;
   pixType?: PixType;
   estimatedBudget?: number | null;
   status?: 'active' | 'cancelled';

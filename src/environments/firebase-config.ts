@@ -8,6 +8,17 @@ interface OrganizaAiRuntimeConfig {
   firebase?: RuntimeFirebaseConfig;
   /** The push relay (push-worker/), e.g. `https://organizaai-push.x.workers.dev`. */
   push?: { url?: string };
+  /** What was deployed, written by the CD: `version` grows by one each deploy. */
+  app?: AppVersion;
+}
+
+export interface AppVersion {
+  /** "42" on production (the CD run number), "pr-24" on a PR preview. */
+  readonly version?: string;
+  /** The short commit that was built ("3777074"). */
+  readonly commit?: string;
+  /** When it was deployed, ISO 8601. */
+  readonly deployedAt?: string;
 }
 
 type RuntimeGlobal = typeof globalThis & {
@@ -71,3 +82,9 @@ export function pushRelayUrl(): string {
 /** The relay's VAPID public key (push-worker/wrangler.toml): phones subscribe with it. */
 export const PUSH_VAPID_PUBLIC_KEY =
   'BCGxsXK81qwaIhFNd4fvDbtix9YM7LBDaVwHxdMqLD9Y36UDl9cOhlX2afcrffBpwOE5dq0-TtWyrn0Cb6hmgDg';
+
+/** The deployed version, for the super admins' footer; null when running locally. */
+export function appVersion(): AppVersion | null {
+  const app = runtimeConfig()?.app;
+  return app?.version ? app : null;
+}

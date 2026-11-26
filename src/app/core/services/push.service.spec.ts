@@ -56,6 +56,7 @@ describe('PushService', () => {
       push: { url: RELAY },
     };
     setPermission('default');
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -85,6 +86,28 @@ describe('PushService', () => {
     expect(await service.enable()).toBe(false);
     expect(swPush.unsubscribe).toHaveBeenCalled();
     expect(service.state()).toBe('off');
+  });
+
+  it('turns itself on at sign-in when the phone already allowed notifications', async () => {
+    setPermission('granted');
+    const service = create();
+    TestBed.tick();
+    await vi.waitFor(() => expect(service.state()).toBe('on'));
+    expect(swPush.requestSubscription).toHaveBeenCalledTimes(1);
+    expect(fetchSpy).toHaveBeenCalledWith(`${RELAY}/devices`, expect.anything());
+  });
+
+  it('stays off when the person turned it off on this device', async () => {
+    const service = create();
+    await service.enable();
+    await service.disable();
+    swPush.requestSubscription.mockClear();
+
+    const again = create();
+    TestBed.tick();
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(swPush.requestSubscription).not.toHaveBeenCalled();
+    expect(again.state()).toBe('off');
   });
 
   it('says blocked when the browser said no', () => {

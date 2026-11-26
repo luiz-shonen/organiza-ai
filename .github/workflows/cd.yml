@@ -91,7 +91,11 @@ jobs:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           PUSH_URL: ${{ steps.push.outputs.url }}
           AI_URL: ${{ steps.ai.outputs.url }}
+          # Grows by one each run of this workflow: the version the super admins see in the footer.
+          APP_VERSION: ${{ github.run_number }}
         run: |
+          APP_COMMIT=$(git rev-parse --short HEAD)
+          DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           cat <<EOF > public/runtime-config.js
           globalThis.__organizaAiRuntimeConfig = {
             firebase: {
@@ -102,6 +106,11 @@ jobs:
             },
             ai: {
               url: '${AI_URL}',
+            },
+            app: {
+              version: '${APP_VERSION}',
+              commit: '${APP_COMMIT}',
+              deployedAt: '${DEPLOYED_AT}',
             },
           };
           EOF

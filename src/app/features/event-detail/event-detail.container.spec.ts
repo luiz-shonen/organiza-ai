@@ -28,8 +28,16 @@ import {
   SeasonalThemeService,
   DrawerService,
   ClaimService,
+  SecretSantaService,
 } from '../../core/services';
-import { PartyEvent, PartyItem, Guest, FamilyMember, EventClaims } from '../../core/models';
+import {
+  PartyEvent,
+  PartyItem,
+  Guest,
+  FamilyMember,
+  EventClaims,
+  SecretSantaParticipant,
+} from '../../core/models';
 
 describe('EventDetailContainer', () => {
   let component: EventDetailContainer;
@@ -89,6 +97,8 @@ describe('EventDetailContainer', () => {
   };
   let mockDialogs: {
     confirm: ReturnType<typeof vi.fn>;
+    choose: ReturnType<typeof vi.fn>;
+    alert: ReturnType<typeof vi.fn>;
   };
   let mockDrawerService: { open: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };
   let rsvpResult: {
@@ -213,6 +223,8 @@ describe('EventDetailContainer', () => {
     };
     mockDialogs = {
       confirm: vi.fn().mockReturnValue(of(true)),
+      choose: vi.fn().mockReturnValue(of('confirm')),
+      alert: vi.fn().mockReturnValue(of(true)),
     };
     mockDrawerService = {
       open: vi.fn((request: { onComplete?: (result: typeof rsvpResult) => void }) =>
@@ -329,6 +341,56 @@ describe('EventDetailContainer', () => {
     component['onEditSecretSanta']();
     expect(navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-123'], {
       queryParams: { passo: 'amigo-oculto' },
+    });
+  });
+
+  describe('adding someone to the amigo oculto by hand', () => {
+    const inDraw: SecretSantaParticipant[] = [
+      {
+        id: 'rsvp_g1',
+        name: 'Jéssica Melo',
+        phone: '(11) 98888-1111',
+        giftOptions: ['Livro de receitas'],
+        joinedBy: 'g1',
+      },
+      { id: 'typed', name: 'Vó Maria', phone: '(11) 97777-2222', giftOptions: ['Chinelo'] },
+    ];
+    let santa: SecretSantaService;
+
+    beforeEach(() => {
+      santa = TestBed.inject(SecretSantaService);
+      vi.spyOn(santa, 'addParticipant').mockResolvedValue('new');
+      vi.spyOn(santa, 'updateParticipant').mockResolvedValue(undefined);
+      component['allSecretSantaParticipants'].set(inDraw);
+    });
+
+    it.each([
+      ['who joined with their account', 'jessica melo', ''],
+      ['who was added by hand', 'Vó Maria', ''],
+      ['with the same phone and first name', 'Vó', '11977772222'],
+    ])(
+      'only warns about someone already in the draw (%s): nothing is saved',
+      async (_, name, phone) => {
+        const saved = await component['saveNewSecretSantaParticipant']({
+          name,
+          phone,
+          giftOptions: [],
+        });
+
+        expect(saved).toBe(false);
+        expect(mockDialogs.alert).toHaveBeenCalledWith(
+          expect.objectContaining({ title: 'Já está no amigo oculto' }),
+        );
+        expect(santa.addParticipant).not.toHaveBeenCalled();
+        expect(santa.updateParticipant).not.toHaveBeenCalled();
+      },
+    );
+
+    it('adds a new person, even one sharing a phone with someone in the draw', async () => {
+      const ana = { name: 'Ana', phone: '(11) 97777-2222', giftOptions: [] };
+      expect(await component['saveNewSecretSantaParticipant'](ana)).toBe(true);
+      expect(santa.addParticipant).toHaveBeenCalledWith('evt-123', ana);
+      expect(mockDialogs.alert).not.toHaveBeenCalled();
     });
   });
 

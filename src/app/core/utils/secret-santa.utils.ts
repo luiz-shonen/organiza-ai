@@ -185,6 +185,33 @@ export function findSecretSantaDuplicates(
   return found;
 }
 
+/**
+ * Who in the draw is the person being added by hand, if anyone: the same name (accents, case
+ * and spaces aside; the stored one or, for an account, its profile name via `shownName`), or the
+ * same phone **and** the same first name. The phone alone is not enough: a grandmother may share
+ * her daughter's phone.
+ */
+export function findSecretSantaEntry<
+  T extends Pick<SecretSantaParticipant, 'id' | 'name' | 'phone'>,
+>(
+  participants: readonly T[],
+  person: { readonly name: string; readonly phone: string },
+  shownName: (participant: T) => string = (participant) => participant.name,
+): T | null {
+  const name = normalizePersonName(person.name);
+  if (!name) return null;
+  const first = firstName(person.name);
+  const phone = phoneDigits(person.phone);
+  return (
+    participants.find(
+      (p) =>
+        normalizePersonName(p.name) === name ||
+        normalizePersonName(shownName(p)) === name ||
+        (!!phone && phoneDigits(p.phone) === phone && firstName(p.name) === first),
+    ) ?? null
+  );
+}
+
 interface SecretSantaWindow {
   enabled: boolean;
   selfJoin?: boolean;

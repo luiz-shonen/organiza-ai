@@ -63,6 +63,7 @@ import {
   buildSecretSantaWhatsAppUrl,
   buildRsvpSecretSantaEntries,
   findSecretSantaDuplicates,
+  findSecretSantaEntry,
   hasStarted,
   splitGuestsByApproval,
   type PendingGuest,
@@ -115,7 +116,7 @@ import { EventOrnamentComponent } from './components/event-ornament/event-orname
 import { SecretSantaRosterCardComponent } from './components/secret-santa-roster-card/secret-santa-roster-card.component';
 import { SharePanelComponent } from '../organizer/event-editor/components/share-panel/share-panel.component';
 import { KnownPeopleService } from '../../core/services/known-people.service';
-import { personKey, type KnownPerson } from '../../core/utils/known-people.utils';
+import type { KnownPerson } from '../../core/utils/known-people.utils';
 import {
   SecretSantaParticipantsComponent,
   type SecretSantaParticipantUpdate,
@@ -1148,10 +1149,11 @@ export class EventDetailContainer implements OnInit {
   private readonly knownPeopleService = inject(KnownPeopleService);
   private readonly knownPeopleAll = signal<KnownPerson[]>([]);
   private knownPeopleRequested = false;
-  /** People the organizer knows from other events and family, not in this draw yet. */
+  /** People the organizer typed by hand before (here or in other events), not in this draw yet. */
   protected readonly secretSantaKnownPeople = computed(() => {
-    const taken = new Set(this.secretSantaParticipants().map((p) => personKey(p.name)));
-    return this.knownPeopleAll().filter((person) => !taken.has(personKey(person.name)));
+    const inDraw = this.allSecretSantaParticipants();
+    const shown = (p: SecretSantaParticipant) => this.profiledSantaName(p.id, p.name);
+    return this.knownPeopleAll().filter((person) => !findSecretSantaEntry(inDraw, person, shown));
   });
   private readonly loadKnownPeople = effect(() => {
     if (this.knownPeopleRequested || !this.canEditEvent() || !this.showSecretSanta()) return;
@@ -1159,16 +1161,16 @@ export class EventDetailContainer implements OnInit {
     if (!uid) return;
     this.knownPeopleRequested = true;
     void this.knownPeopleService
-      .list(uid, this.id())
+      .list(uid)
       .then((people) => this.knownPeopleAll.set(people))
       .catch(() => undefined);
   });
 
   /**
    * Handed to "Adicionar alguém à mão": the form clears only once the person was added. Someone
-   * already in the draw with the same phone or name is pointed out first: typed by hand, the
-   * organizer replaces it with what they typed now or adds another person; joined from the
-   * invite (theirs to change), the organizer adds another person or gives up.
+   * already in the draw (the same name, or the same phone and first name; whoever waits for
+   * approval included) is only pointed out and nothing is saved: their entry, account link and
+   * gift ideas stay as they are. To change a typed entry the organizer uses its pencil.
    */
   protected readonly saveNewSecretSantaParticipant = async (
     participant: SecretSantaParticipantInput,
@@ -1180,62 +1182,22 @@ export class EventDetailContainer implements OnInit {
       if (added) await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
       return added;
     }
-    const match = this.sameSecretSantaPerson(participant);
-    if (!match) return this.addSecretSantaParticipants([participant]);
-    const { same, by } = match;
-    const why = by === 'phone' ? `com o telefone ${same.phone}` : 'com esse nome';
+    const same = findSecretSantaEntry(this.allSecretSantaParticipants(), participant, (p) =>
+      this.profiledSantaName(p.id, p.name),
+    );
+    if (!same) return this.addSecretSantaParticipants([participant]);
     const shown = this.profiledSantaName(same.id, same.name);
-    if (same.joinedBy || same.guestId) {
-      const add = await firstValueFrom(
-        this.dialogs.confirm({
-          title: 'Essa pessoa já está no amigo oculto',
-          message:
-            `${shown} já está no sorteio ${why} e entrou pelo convite. Se for a mesma pessoa, ` +
-            'não precisa adicionar de novo. Se for outra pessoa, adicione mesmo assim.',
-          confirmLabel: 'Adicionar mesmo assim',
-          cancelLabel: 'Cancelar',
-        }),
-      );
-      return add ? this.addSecretSantaParticipants([participant]) : false;
-    }
-    const choice = await firstValueFrom(
-      this.dialogs.choose({
-        title: 'Essa pessoa já está no amigo oculto',
+    await firstValueFrom(
+      this.dialogs.alert({
+        title: 'Já está no amigo oculto',
         message:
-          `${shown} já está no sorteio ${why}. É a mesma pessoa? Troque pelos dados que você ` +
-          'digitou agora. É outra pessoa? Adicione as duas.',
-        confirmLabel: 'Trocar pelos novos dados',
-        extraLabel: 'É outra pessoa',
-        cancelLabel: 'Cancelar',
+          same.joinedBy || same.guestId
+            ? `${shown} já está no sorteio: entrou pelo convite, com a própria conta.`
+            : `${shown} já está no sorteio. Para mudar os dados, use o lápis na lista.`,
       }),
     );
-    if (choice === 'extra') return this.addSecretSantaParticipants([participant]);
-    if (choice !== 'confirm') return false;
-    try {
-      await this.secretSantaService.updateParticipant(this.id(), same.id, participant);
-      this.feedback.success(`${participant.name} atualizado(a) no amigo oculto.`);
-      return true;
-    } catch (error) {
-      this.feedback.error(explainError('Não foi possível atualizar o participante', error));
-      return false;
-    }
+    return false;
   };
-
-  /** Someone already in the draw with the same phone (first) or the same name. */
-  private sameSecretSantaPerson(
-    participant: SecretSantaParticipantInput,
-  ): { same: SecretSantaParticipant; by: 'phone' | 'name' } | null {
-    const digits = (phone: string) => phone.replace(/\D/g, '');
-    const phone = digits(participant.phone);
-    const people = this.secretSantaParticipants();
-    const byPhone = phone ? people.find((p) => digits(p.phone) === phone) : undefined;
-    if (byPhone) return { same: byPhone, by: 'phone' };
-    const name = personKey(participant.name);
-    const byName = people.find(
-      (p) => personKey(p.name) === name || personKey(this.profiledSantaName(p.id, p.name)) === name,
-    );
-    return byName ? { same: byName, by: 'name' } : null;
-  }
 
   /** True when every participant was added. */
   protected async addSecretSantaParticipants(

@@ -208,7 +208,7 @@ export class EventEditorContainer implements OnInit {
 
   private readonly drafts = inject(FormDraftService);
   private readonly knownPeopleService = inject(KnownPeopleService);
-  /** People the organizer knows from other events and family; read once the amigo oculto is on. */
+  /** People the organizer typed by hand before (no account); read once the amigo oculto is on. */
   private readonly knownPeopleAll = signal<KnownPerson[]>([]);
   private knownPeopleRequested = false;
   /** Those not in this amigo oculto yet. */
@@ -301,7 +301,7 @@ export class EventEditorContainer implements OnInit {
       if (!uid) return;
       this.knownPeopleRequested = true;
       void this.knownPeopleService
-        .list(uid, this.id() === 'novo' ? null : this.id())
+        .list(uid)
         .then((people) => this.knownPeopleAll.set(people))
         .catch(() => undefined);
     });

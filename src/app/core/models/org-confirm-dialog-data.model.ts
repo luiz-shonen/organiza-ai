@@ -24,6 +24,8 @@ export interface OrgConfirmDialogData {
    * shown between "cancel" and the main button; `choose()` tells which was pressed.
    */
   readonly extraLabel?: string;
+  /** Only tells something: one button (`confirmLabel`) that closes it, no cancel. */
+  readonly alert?: boolean;
 }
 
 /** What `choose()` returns: the main button, the extra one, or neither (closed, cancelled). */

@@ -22,6 +22,7 @@ A rule that has `enforced_by` is checked by a script or a test; the check is the
 | [events-and-invites](decisions/events-and-invites.md)     | Invite states, event states, filters, tags, RSVP drawer, Confirmados, names from profile   |
 | [secret-santa](decisions/secret-santa.md)                 | Amigo oculto: whose entry, invite sign-ups, duplicates, draw day, secret link screens      |
 | [push-notifications](decisions/push-notifications.md)     | Notices between people: who is told what, bell history, push relay Worker, secrets, iPhone |
+| [ai-suggestions](decisions/ai-suggestions.md)             | Organiza AI item suggestions: 70% rule, Gemini→Groq relay, 3 per event / 5 per hour, cache |
 | [household-claims](decisions/household-claims.md)         | What each family brings: claims per household, units, fixed quantity, bought               |
 | [routes-and-domains](decisions/routes-and-domains.md)     | `/meus-eventos` vs `/admin`, feature folders                                               |
 | [testing](decisions/testing.md)                           | Vitest, Firestore rules tests, atomic Playwright E2E                                       |

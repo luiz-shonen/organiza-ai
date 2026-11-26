@@ -30,6 +30,7 @@ describe('App', () => {
           provide: AuthService,
           useValue: {
             isAdmin: signal(false),
+            isSuperAdmin: signal(false),
             currentUser: signal(null),
             displayName: signal(''),
             logout: vi.fn(),
@@ -95,6 +96,34 @@ describe('App', () => {
     const avatar = compiled.querySelector('[data-testid="header-profile-link"]');
     expect(avatar?.getAttribute('href')).toBe('/perfil');
     expect(avatar?.getAttribute('aria-label')).toBe('Meu perfil · user@test.com');
+  });
+
+  it('shows the deployed version only to the super admins', () => {
+    (globalThis as { __organizaAiRuntimeConfig?: unknown }).__organizaAiRuntimeConfig = {
+      app: { version: '42', commit: '3777074' },
+    };
+    const auth = TestBed.inject(AuthService);
+    Object.assign(auth, {
+      currentUser: signal({ uid: 'luiz', email: 'luiz.gmr.dev@gmail.com', isAnonymous: false }),
+      isSuperAdmin: signal(true),
+    });
+    const admin = TestBed.createComponent(App);
+    admin.detectChanges();
+    const version = (admin.nativeElement as HTMLElement).querySelector(
+      '[data-testid="app-version"]',
+    );
+    expect(version?.textContent?.trim()).toBe('Versão 42 · 3777074');
+
+    Object.assign(auth, {
+      currentUser: signal({ uid: 'user-1', email: 'user@test.com', isAnonymous: false }),
+      isSuperAdmin: signal(false),
+    });
+    const member = TestBed.createComponent(App);
+    member.detectChanges();
+    expect(
+      (member.nativeElement as HTMLElement).querySelector('[data-testid="app-version"]'),
+    ).toBeNull();
+    delete (globalThis as { __organizaAiRuntimeConfig?: unknown }).__organizaAiRuntimeConfig;
   });
 
   it('shows the bottom bar with the three destinations on the home page', () => {

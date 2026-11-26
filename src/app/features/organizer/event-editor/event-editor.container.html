@@ -108,7 +108,22 @@
               (remove)="removeItem($event)"
               (back)="stepper.previous()"
               (next)="stepper.next()"
-            />
+            >
+              @if (showAiSuggestions() && currentEvent(); as event) {
+                <app-ai-suggestion-card
+                  itemsAi
+                  [state]="aiState()"
+                  [used]="event.aiSuggestionsUsed ?? 0"
+                  [confirmed]="confirmedPeople()"
+                  [expected]="event.expectedGuests ?? null"
+                  [existingNames]="itemNames()"
+                  [savingExpected]="savingExpected()"
+                  (generate)="onAiGenerate()"
+                  (add)="onAiAdd($event)"
+                  (expectedSave)="onSaveExpected($event)"
+                />
+              }
+            </app-event-items-step>
           </org-step>
 
           <org-step [label]="stepLabels[3]">

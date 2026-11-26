@@ -14,3 +14,5 @@ export * from './error.utils';
 export * from './known-people.utils';
 export * from './guest-list-document.utils';
 export * from './print.utils';
+export * from './ai-suggestion.utils';
+export * from './app-version.utils';

@@ -30,3 +30,5 @@ export { PushService } from './push.service';
 export type { PushState } from './push.service';
 export { PeopleNoticesService } from './people-notices.service';
 export type { PresenceNews } from './people-notices.service';
+export { AiSuggestionService, AI_BUSY_MESSAGE } from './ai-suggestion.service';
+export type { AiSuggestionDone } from './ai-suggestion.service';

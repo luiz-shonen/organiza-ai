@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { handle, type Env } from '../src/index';
 import { devicesOf } from '../src/subscriptions';
+import { ngswPayload } from '../src/push';
 
 class MemoryKv {
   readonly data = new Map<string, string>();
@@ -256,5 +257,16 @@ describe('KV writes', () => {
     const put = vi.spyOn(kv, 'put');
     await call('/devices', 'token-jessica', { subscription: phone });
     expect(put).not.toHaveBeenCalled();
+  });
+});
+
+describe('what the phone shows', () => {
+  it('uses a white silhouette in the status bar and the app icon in the notice', () => {
+    const { notification } = ngswPayload(
+      { title: 'Ana confirmou presença', body: 'Natal', url: '/evento/e1', tag: 't' },
+      'https://organizaai.web.app',
+    );
+    expect(notification.badge).toBe('https://organizaai.web.app/icons/notification-badge.png');
+    expect(notification.icon).toBe('https://organizaai.web.app/icons/android-chrome-192x192.png');
   });
 });

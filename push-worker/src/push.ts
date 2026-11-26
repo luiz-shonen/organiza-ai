@@ -17,7 +17,8 @@ export function ngswPayload(notice: PhoneNotice, appOrigin: string) {
       title: notice.title,
       body: notice.body,
       icon: `${appOrigin}/icons/android-chrome-192x192.png`,
-      badge: `${appOrigin}/icons/android-chrome-192x192.png`,
+      // Android paints only the alpha of the status-bar icon: a white silhouette, not the app icon.
+      badge: `${appOrigin}/icons/notification-badge.png`,
       tag: notice.tag,
       renotify: true,
       lang: 'pt-BR',

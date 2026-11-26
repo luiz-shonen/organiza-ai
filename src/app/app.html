@@ -147,5 +147,15 @@
         [activeRoute]="currentUrl()"
       />
     }
+
+    @if (isSuperAdmin()) {
+      <p
+        class="app-version"
+        data-testid="app-version"
+        [class.app-version--above-nav]="showBottomNav()"
+      >
+        {{ versionLabel }}
+      </p>
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

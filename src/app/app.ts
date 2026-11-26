@@ -23,8 +23,11 @@ import {
   EventService,
   CollaboratorInvitesService,
   PushService,
+  AiSuggestionService,
 } from './core/services';
-import { resolveBackRoute, showsBottomNav } from './core/utils';
+import { FeedbackService } from './shared/ui/feedback/feedback.service';
+import { formatAppVersion, resolveBackRoute, showsBottomNav } from './core/utils';
+import { appVersion } from '../environments/firebase-config';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
 import { OrgIconComponent } from './shared/ui/actions/org-icon.component';
@@ -97,6 +100,19 @@ const PROFILE_ITEM: OrgNavBarItem = {
 export class App {
   private readonly authService = inject(AuthService);
   private readonly push = inject(PushService);
+  private readonly aiSuggestions = inject(AiSuggestionService);
+  private readonly feedback = inject(FeedbackService);
+
+  /**
+   * Organiza AI runs in the background: when it finishes, a toast says so wherever the person
+   * is, so "Sugerir itens" never holds the screen.
+   */
+  private readonly announceAiSuggestion = effect(() => {
+    const done = this.aiSuggestions.lastDone();
+    if (!done) return;
+    if (done.ok) this.feedback.success(done.message);
+    else this.feedback.error(done.message);
+  });
   private readonly userService = inject(UserService);
   private readonly eventService = inject(EventService);
   private readonly collaboratorInvites = inject(CollaboratorInvitesService);
@@ -154,6 +170,11 @@ export class App {
   }
 
   protected readonly isSuperAdmin = this.authService.isSuperAdmin;
+  /**
+   * "Versão 42 · 3777074 · 25/11 20:30", bottom right, only for the super admins: tells them
+   * whether a change is already live. Written by the CD in `runtime-config.js`; "local" here.
+   */
+  protected readonly versionLabel = formatAppVersion(appVersion());
   protected readonly user = this.authService.currentUser;
   /** The person's name as their profile has it (not only the Google account's). */
   protected readonly displayName = this.authService.displayName;

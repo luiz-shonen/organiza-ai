@@ -5,7 +5,7 @@ import {
   buildSecretSantaRevealUrl,
   buildSecretSantaWhatsAppUrl,
   drawSecretSanta,
-  findSecretSantaEntry,
+  findSamePerson,
   isSecretSantaDrawOutdated,
   secureRandomInt,
 } from './secret-santa.utils';
@@ -140,7 +140,7 @@ describe('secret santa sharing', () => {
   });
 });
 
-describe('findSecretSantaEntry (adding someone by hand)', () => {
+describe('findSamePerson (adding someone by hand)', () => {
   const people = [
     {
       id: 'a',
@@ -153,24 +153,22 @@ describe('findSecretSantaEntry (adding someone by hand)', () => {
   ];
 
   it('finds the same name, accents, case and spaces aside', () => {
-    expect(findSecretSantaEntry(people, { name: '  jessica   MELO ', phone: '' })?.id).toBe('a');
-    expect(findSecretSantaEntry(people, { name: 'Vó Maria', phone: '(21) 90000-0000' })?.id).toBe(
-      'b',
-    );
+    expect(findSamePerson(people, { name: '  jessica   MELO ', phone: '' })?.id).toBe('a');
+    expect(findSamePerson(people, { name: 'Vó Maria', phone: '(21) 90000-0000' })?.id).toBe('b');
   });
 
   it('finds the name the account shows on its profile', () => {
     const profiled = (p: { id: string; name: string }) => (p.id === 'a' ? 'Jéssica M.' : p.name);
-    expect(findSecretSantaEntry(people, { name: 'Jéssica M.', phone: '' }, profiled)?.id).toBe('a');
+    expect(findSamePerson(people, { name: 'Jéssica M.', phone: '' }, profiled)?.id).toBe('a');
   });
 
   it('finds the same phone with the same first name', () => {
-    expect(findSecretSantaEntry(people, { name: 'Jessica', phone: '11988881111' })?.id).toBe('a');
+    expect(findSamePerson(people, { name: 'Jessica', phone: '11988881111' })?.id).toBe('a');
   });
 
   it('lets another person share a phone, and lets new people in', () => {
-    expect(findSecretSantaEntry(people, { name: 'Ana', phone: '(11) 97777-2222' })).toBeNull();
-    expect(findSecretSantaEntry(people, { name: 'Jéssica Souza', phone: '' })).toBeNull();
-    expect(findSecretSantaEntry(people, { name: ' ', phone: '' })).toBeNull();
+    expect(findSamePerson(people, { name: 'Ana', phone: '(11) 97777-2222' })).toBeNull();
+    expect(findSamePerson(people, { name: 'Jéssica Souza', phone: '' })).toBeNull();
+    expect(findSamePerson(people, { name: ' ', phone: '' })).toBeNull();
   });
 });

@@ -10,18 +10,21 @@ import {
   signal,
 } from '@angular/core';
 import type { ManualGuestInput } from '../../../../core/models';
+import type { KnownPerson } from '../../../../core/utils/known-people.utils';
 import { PersonName, Phone } from '../../../../core/value-objects';
 import {
   OrgButtonComponent,
   OrgIconButtonComponent,
   OrgTextFieldComponent,
   revealFirstInvalidSoon,
+  type OrgTextSuggestion,
 } from '../../../../shared/ui';
 import { MAX_COMPANIONS } from '../companion-selector/companion-selector.component';
 
 /**
  * "Adicionar alguém à mão" in "Confirmados": the name, an optional WhatsApp and who comes along,
  * for someone the organizers put on the list without them answering the invite. Also edits them.
+ * Typing a name offers the people added by hand before (`knownPeople`), with their phone.
  */
 @Component({
   selector: 'app-manual-guest-form',
@@ -36,6 +39,8 @@ export class ManualGuestFormComponent {
   readonly submitLabel = input('Adicionar à lista');
   /** Saves and resolves true when it worked; the form keeps what was typed when it fails. */
   readonly save = input.required<(guest: ManualGuestInput) => Promise<boolean>>();
+  /** People added by hand before (no account), offered while typing the name. */
+  readonly knownPeople = input<readonly KnownPerson[]>([]);
   readonly cancelled = output<void>();
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -62,6 +67,10 @@ export class ManualGuestFormComponent {
   protected readonly phoneError = computed(() =>
     this.showErrors() && this.phone().trim() ? (Phone.validate(this.phone()) ?? '') : '',
   );
+  /** Offered under "Nome" (the field filters them by what is typed). */
+  protected readonly nameSuggestions = computed<OrgTextSuggestion[]>(() =>
+    this.knownPeople().map((person) => ({ label: person.name, detail: person.phone })),
+  );
   protected readonly companionError = computed(() => {
     const typed = this.companionName().trim();
     if (!this.companionTried() || !typed) return '';
@@ -81,6 +90,11 @@ export class ManualGuestFormComponent {
       this.showErrors.set(false);
       this.companionTried.set(false);
     });
+  }
+
+  /** A person added before was picked: their phone comes along when the field is still empty. */
+  protected pickPerson(suggestion: OrgTextSuggestion): void {
+    if (suggestion.detail && !this.phone().trim()) this.phone.set(suggestion.detail);
   }
 
   /** "Adicionar" beside the companion's name; true when nothing is left typed and invalid. */

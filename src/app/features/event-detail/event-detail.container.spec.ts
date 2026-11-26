@@ -386,10 +386,107 @@ describe('EventDetailContainer', () => {
       },
     );
 
+    it('only warns about someone who confirmed the event with their account', async () => {
+      component['guests'].set([
+        {
+          id: 'g9',
+          uid: 'g9',
+          name: 'Carla Gomes',
+          phone: '(31) 98888-0000',
+          isConfirmed: true,
+          confirmedAt: '',
+          companions: [{ name: 'Beto' }],
+        },
+      ]);
+
+      for (const name of ['carla gomes', 'Beto']) {
+        const saved = await component['saveNewSecretSantaParticipant']({
+          name,
+          phone: '',
+          giftOptions: [],
+        });
+        expect(saved).toBe(false);
+      }
+      expect(mockDialogs.alert).toHaveBeenCalledTimes(2);
+      expect(mockDialogs.alert).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Já confirmou presença' }),
+      );
+      expect(santa.addParticipant).not.toHaveBeenCalled();
+    });
+
+    it('adds someone the organizers put in "Confirmados" by hand: they have no account', async () => {
+      component['guests'].set([
+        {
+          id: 'm1',
+          name: 'Tio Zé',
+          phone: '',
+          isConfirmed: true,
+          confirmedAt: '',
+          addedBy: 'org',
+        },
+      ]);
+      const ze = { name: 'Tio Zé', phone: '', giftOptions: [] };
+      expect(await component['saveNewSecretSantaParticipant'](ze)).toBe(true);
+      expect(santa.addParticipant).toHaveBeenCalledWith('evt-123', ze);
+    });
+
     it('adds a new person, even one sharing a phone with someone in the draw', async () => {
       const ana = { name: 'Ana', phone: '(11) 97777-2222', giftOptions: [] };
       expect(await component['saveNewSecretSantaParticipant'](ana)).toBe(true);
       expect(santa.addParticipant).toHaveBeenCalledWith('evt-123', ana);
+      expect(mockDialogs.alert).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('adding someone to "Confirmados" by hand', () => {
+    let guestService: {
+      addManualGuest: ReturnType<typeof vi.fn>;
+      updateManualGuest: ReturnType<typeof vi.fn>;
+    };
+
+    beforeEach(() => {
+      guestService = mockGuestService as unknown as typeof guestService;
+      guestService.addManualGuest = vi.fn().mockResolvedValue('new');
+      guestService.updateManualGuest = vi.fn().mockResolvedValue(undefined);
+      currentUserSignal.set({ uid: 'org', displayName: 'Org', isAnonymous: false });
+      component['guests'].set([
+        {
+          id: 'g9',
+          uid: 'g9',
+          name: 'Carla Gomes',
+          phone: '(31) 98888-0000',
+          isConfirmed: true,
+          confirmedAt: '',
+        },
+        {
+          id: 'm1',
+          name: 'Tio Zé',
+          phone: '(11) 95555-0000',
+          isConfirmed: true,
+          confirmedAt: '',
+          addedBy: 'org',
+          companions: [{ name: 'Tia Lu' }],
+        },
+      ]);
+    });
+
+    it.each([
+      ['who confirmed with their account', 'Carla Gomes', []],
+      ['who was added by hand', 'tio ze', []],
+      ['who comes along with someone', 'Ana', ['Tia Lu']],
+    ])('only warns about someone already on the list (%s)', async (_, name, companions) => {
+      const saved = await component['saveManualGuest']({ name, phone: '', companions }, null);
+      expect(saved).toBe(false);
+      expect(mockDialogs.alert).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Já está na lista' }),
+      );
+      expect(guestService.addManualGuest).not.toHaveBeenCalled();
+    });
+
+    it('lets a hand-added person be edited without warning about themself', async () => {
+      const ze = { name: 'Tio Zé', phone: '(11) 95555-0000', companions: ['Tia Lu', 'Nina'] };
+      expect(await component['saveManualGuest'](ze, 'm1')).toBe(true);
+      expect(guestService.updateManualGuest).toHaveBeenCalledWith('evt-123', 'm1', ze);
       expect(mockDialogs.alert).not.toHaveBeenCalled();
     });
   });

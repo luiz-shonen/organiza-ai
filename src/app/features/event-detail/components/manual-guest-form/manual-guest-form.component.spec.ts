@@ -29,10 +29,33 @@ async function render(guest: ManualGuestInput | null = null) {
     await fixture.whenStable();
     fixture.detectChanges();
   };
-  return { element, save, type, press };
+  return { element, save, type, press, fixture };
 }
 
 describe('ManualGuestFormComponent', () => {
+  it('offers people added by hand before, and their phone comes along', async () => {
+    const { element, type, fixture } = await render();
+    fixture.componentRef.setInput('knownPeople', [
+      { name: 'Gustavo Lima', phone: '(31) 99999-0000' },
+      { name: 'Ana Souza', phone: '' },
+    ]);
+    type('manual-guest-name-input', 'gus');
+    const component = fixture.componentInstance as unknown as {
+      nameSuggestions: () => { label: string; detail?: string }[];
+      pickPerson: (s: { label: string; detail?: string }) => void;
+    };
+    expect(component.nameSuggestions()).toContainEqual({
+      label: 'Gustavo Lima',
+      detail: '(31) 99999-0000',
+    });
+    component.pickPerson({ label: 'Gustavo Lima', detail: '(31) 99999-0000' });
+    fixture.detectChanges();
+    const phone =
+      element.querySelector<HTMLInputElement>('[data-testid="manual-guest-phone-input"] input') ??
+      element.querySelector<HTMLInputElement>('input[data-testid="manual-guest-phone-input"]');
+    expect(phone!.value).toBe('(31) 99999-0000');
+  });
+
   it('asks for a name before saving', async () => {
     const { element, save, press } = await render();
     await press('manual-guest-submit-btn');

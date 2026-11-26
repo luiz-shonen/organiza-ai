@@ -62,12 +62,15 @@ everyone, the organizer included.
   before, as amigo oculto participants or in "Confirmados" (`addedBy`, with their companions), in
   this event and the organizer's other events (`KnownPeopleService`). Family, invited guests and
   anyone who joined from the invite are never offered: account holders join by themselves.
-- **Adding by hand never overwrites anyone.** Someone already in the draw (`findSecretSantaEntry`:
+- **Adding by hand never overwrites anyone.** Someone already in the draw (`findSamePerson`:
   the same name, accents and case aside, stored or as their profile shows it; or the same phone
   **and** the same first name; whoever waits for approval included) only gets the alert "Já está
   no amigo oculto" and nothing is saved, so an account's link and gift ideas stay intact. To
   change a typed entry the organizer uses its pencil. The phone alone lets the person in (a
   grandmother may share her daughter's phone).
+- **Nor someone who confirmed the event with an account** (or comes along with such a guest): the
+  alert "Já confirmou presença" says they join from the invite, and nothing is saved. People in
+  "Confirmados" added by hand have no account, so they can be added here.
 - Hand entry stays: many people never open the site.
 
 ## What guests see (`secretSantaRoster`)

@@ -7,7 +7,9 @@
       [required]="true"
       [maxLength]="nameMaxLength"
       [error]="nameError()"
+      [suggestions]="nameSuggestions()"
       [(value)]="name"
+      (suggestionPicked)="pickPerson($event)"
     />
     <org-text-field
       label="WhatsApp (opcional)"

@@ -63,7 +63,7 @@ import {
   buildSecretSantaWhatsAppUrl,
   buildRsvpSecretSantaEntries,
   findSecretSantaDuplicates,
-  findSecretSantaEntry,
+  findSamePerson,
   hasStarted,
   splitGuestsByApproval,
   type PendingGuest,
@@ -1149,14 +1149,48 @@ export class EventDetailContainer implements OnInit {
   private readonly knownPeopleService = inject(KnownPeopleService);
   private readonly knownPeopleAll = signal<KnownPerson[]>([]);
   private knownPeopleRequested = false;
+  /**
+   * Everyone on the confirmed list, one per person: each guest (`manual` when an organizer typed
+   * them) and whoever comes along (`with` the guest who brings them).
+   */
+  private readonly confirmedPeople = computed(() =>
+    this.guests()
+      .filter((guest) => guest.isConfirmed)
+      .flatMap((guest) => {
+        const manual = !!guest.addedBy && !guest.uid;
+        return [
+          {
+            id: guest.id,
+            guestId: guest.id,
+            name: guest.name,
+            phone: guest.phone ?? '',
+            manual,
+            with: null as string | null,
+          },
+          ...(guest.companions ?? []).map((companion, i) => ({
+            id: `${guest.id}:c${i}`,
+            guestId: guest.id,
+            name: companion.name,
+            phone: '',
+            manual,
+            with: guest.name,
+          })),
+        ];
+      }),
+  );
+  /** People typed by hand before, offered in "Confirmados": those not on the list yet. */
+  protected readonly guestKnownPeople = computed(() => {
+    const listed = this.confirmedPeople();
+    return this.knownPeopleAll().filter((person) => !findSamePerson(listed, person));
+  });
   /** People the organizer typed by hand before (here or in other events), not in this draw yet. */
   protected readonly secretSantaKnownPeople = computed(() => {
     const inDraw = this.allSecretSantaParticipants();
     const shown = (p: SecretSantaParticipant) => this.profiledSantaName(p.id, p.name);
-    return this.knownPeopleAll().filter((person) => !findSecretSantaEntry(inDraw, person, shown));
+    return this.knownPeopleAll().filter((person) => !findSamePerson(inDraw, person, shown));
   });
   private readonly loadKnownPeople = effect(() => {
-    if (this.knownPeopleRequested || !this.canEditEvent() || !this.showSecretSanta()) return;
+    if (this.knownPeopleRequested || !this.canEditEvent()) return;
     const uid = this.authService.currentUser()?.uid;
     if (!uid) return;
     this.knownPeopleRequested = true;
@@ -1182,10 +1216,26 @@ export class EventDetailContainer implements OnInit {
       if (added) await this.syncSantaPhoneToProfile(uid, uid, participant.phone);
       return added;
     }
-    const same = findSecretSantaEntry(this.allSecretSantaParticipants(), participant, (p) =>
+    const same = findSamePerson(this.allSecretSantaParticipants(), participant, (p) =>
       this.profiledSantaName(p.id, p.name),
     );
-    if (!same) return this.addSecretSantaParticipants([participant]);
+    if (!same) {
+      // Confirmed with an account (or brought by someone who did): they join from the invite.
+      const guest = findSamePerson(
+        this.confirmedPeople().filter((p) => !p.manual),
+        participant,
+      );
+      if (!guest) return this.addSecretSantaParticipants([participant]);
+      await firstValueFrom(
+        this.dialogs.alert({
+          title: 'Já confirmou presença',
+          message: guest.with
+            ? `${guest.name} vem com ${guest.with}, que coloca no amigo oculto pelo convite.`
+            : `${guest.name} confirmou presença com a própria conta e entra no amigo oculto pelo convite.`,
+        }),
+      );
+      return false;
+    }
     const shown = this.profiledSantaName(same.id, same.name);
     await firstValueFrom(
       this.dialogs.alert({
@@ -1746,6 +1796,25 @@ export class EventDetailContainer implements OnInit {
   ): Promise<boolean> => {
     const uid = this.memberUid();
     if (!uid) return false;
+    // Nobody goes on the list twice: whoever is there (by the invite or by hand, or coming along
+    // with someone) is only pointed out, and nothing is saved.
+    const others = this.confirmedPeople().filter((p) => p.guestId !== id);
+    for (const person of [guest.name, ...guest.companions]) {
+      const same = findSamePerson(others, {
+        name: person,
+        phone: person === guest.name ? guest.phone : '',
+      });
+      if (!same) continue;
+      await firstValueFrom(
+        this.dialogs.alert({
+          title: 'Já está na lista',
+          message: same.with
+            ? `${same.name} já confirmou presença, junto com ${same.with}.`
+            : `${same.name} já confirmou presença no evento.`,
+        }),
+      );
+      return false;
+    }
     try {
       if (id) {
         await this.guestService.updateManualGuest(this.id(), id, guest);

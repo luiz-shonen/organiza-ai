@@ -254,6 +254,7 @@
     (approve)="onApproveGuest($event)"
     (refuse)="onRefuseGuest($event)"
     [saveManual]="canEdit() ? saveManualGuest : null"
+    [knownPeople]="guestKnownPeople()"
     (removeManual)="onRemoveManualGuest($event)"
     (download)="downloadGuests()"
     (print)="printGuests()"

@@ -186,14 +186,12 @@ export function findSecretSantaDuplicates(
 }
 
 /**
- * Who in the draw is the person being added by hand, if anyone: the same name (accents, case
- * and spaces aside; the stored one or, for an account, its profile name via `shownName`), or the
- * same phone **and** the same first name. The phone alone is not enough: a grandmother may share
- * her daughter's phone.
+ * Who in a list (the draw, the confirmed guests) is the person being added by hand, if anyone:
+ * the same name (accents, case and spaces aside; the stored one or, for an account, its profile
+ * name via `shownName`), or the same phone **and** the same first name. The phone alone is not
+ * enough: a grandmother may share her daughter's phone.
  */
-export function findSecretSantaEntry<
-  T extends Pick<SecretSantaParticipant, 'id' | 'name' | 'phone'>,
->(
+export function findSamePerson<T extends Pick<SecretSantaParticipant, 'id' | 'name' | 'phone'>>(
   participants: readonly T[],
   person: { readonly name: string; readonly phone: string },
   shownName: (participant: T) => string = (participant) => participant.name,

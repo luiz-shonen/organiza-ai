@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { GuestDecline, ManualGuestInput } from '../../../../core/models';
+import type { KnownPerson } from '../../../../core/utils/known-people.utils';
 import {
   householdPeople,
   petsLabel,
@@ -66,6 +67,8 @@ export class GuestListCardComponent {
    * Organizers only: saves someone added by hand (`id` null) or changes them, and resolves true
    * when it worked; the drawer then closes.
    */
+  /** People added by hand before (no account), offered in "Adicionar alguém à mão". */
+  readonly knownPeople = input<readonly KnownPerson[]>([]);
   readonly saveManual = input<
     ((guest: ManualGuestInput, id: string | null) => Promise<boolean>) | null
   >(null);

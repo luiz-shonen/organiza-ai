@@ -387,15 +387,17 @@ test.describe('Amigo oculto', () => {
       })
       .toBe(true);
 
+    // The links before drawing again, read before it starts: on a slow run the new draw may
+    // already be saved by the time a read after the click happens.
+    const oldTokens = new Set(
+      (await readStore(page))['secretSantaReveals'].map((r) => r.id).concat(luizToken),
+    );
     await card.getByTestId('secret-santa-redraw-btn').click();
     await expect(page.getByRole('dialog')).toContainText(
       'Os links enviados antes deixam de funcionar',
     );
     await page.getByRole('dialog').getByRole('button', { name: 'Sortear de novo' }).click();
     // The old links stop working: every token is new, and there are still three.
-    const oldTokens = new Set(
-      (await readStore(page))['secretSantaReveals'].map((r) => r.id).concat(luizToken),
-    );
     await expect
       .poll(async () => {
         const tokens = (await readStore(page))['secretSantaReveals'].map((r) => r.id);

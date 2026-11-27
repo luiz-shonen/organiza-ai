@@ -230,6 +230,8 @@ function iconOf(notification: AppNotification): OrgIconName {
     case 'presence':
     case 'approval':
       return 'how_to_reg';
+    case 'event-status':
+      return 'event';
     default:
       return 'notifications';
   }

@@ -1,14 +1,16 @@
 /**
  * What an in-app notification is about: the amigo oculto result, an answered invite to help
  * organise, and what people of an event tell each other: a guest's answer (`presence`), a
- * collaborator joining or leaving (`collaboration`), a presence let in (`approval`).
+ * collaborator joining or leaving (`collaboration`), a presence let in (`approval`), the event
+ * cancelled or reopened by its owner (`event-status`).
  */
 export type AppNotificationKind =
   | 'secret-santa'
   | 'collaborator'
   | 'presence'
   | 'collaboration'
-  | 'approval';
+  | 'approval'
+  | 'event-status';
 
 /**
  * A notification in the member's inbox (`users/{uid}/notifications/{id}`), shown at the top of
@@ -56,4 +58,9 @@ export function collaborationNotificationId(eventId: string, actorUid: string): 
 /** The guest's presence was let in. */
 export function approvalNotificationId(eventId: string): string {
   return `approval_${eventId}`;
+}
+
+/** The owner cancelled or reopened the event: one per event, the latest replaces the previous. */
+export function eventStatusNotificationId(eventId: string): string {
+  return `event-status_${eventId}`;
 }

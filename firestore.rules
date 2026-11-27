@@ -80,6 +80,8 @@ service cloud.firestore {
                  || isRevealHolder()
                  || ownsEvent(eventData(resource.data.get('eventId', '')));
       allow list: if false;
+      // Opening a link of someone without an account spends it: the stamp, and whom they drew is
+      // erased (a forwarded link shows nothing). Once only.
       allow update: if isRevealHolder()
                     && resource.data.get('openedAt', null) == null
                     && request.resource.data.diff(resource.data).affectedKeys()
@@ -88,10 +90,86 @@ service cloud.firestore {
                     && request.resource.data.openedAt.size() <= 40
                     && request.resource.data.get('receiverName', null) == ''
                     && request.resource.data.get('receiverGiftOptions', null) == [];
+      // A link of an account opens only in it, so it keeps the result: opening only stamps when.
+      allow update: if request.auth != null
+                    && resource.data.get('giverUid', '') == request.auth.uid
+                    && resource.data.get('openedAt', null) == null
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['openedAt'])
+                    && request.resource.data.get('openedAt', null) is string
+                    && request.resource.data.openedAt.size() <= 40;
+      // "Gerar novo link" on a spent link without an account: it points, once, to the new link
+      // created in the same batch.
+      allow update: if !('giverUid' in resource.data)
+                    && resource.data.get('openedAt', null) != null
+                    && !('replacedBy' in resource.data)
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replacedBy'])
+                    && request.resource.data.replacedBy is string
+                    && getAfter(/databases/$(database)/documents/secretSantaReveals/$(request.resource.data.replacedBy))
+                         .data.get('replaces', '') == token;
       allow create: if request.resource.data.get('eventId', '') is string
+                    && !('replaces' in request.resource.data)
                     && ownsEvent(eventData(request.resource.data.get('eventId', '')))
                     && isValidSecretSantaReveal();
+      allow create: if isRenewedLink() && isValidSecretSantaReveal();
       allow delete: if ownsEvent(eventData(resource.data.eventId));
+
+      // A new link for someone added by hand, made from their spent link (whoever holds it, no
+      // sign-in: elderly participants open links from WhatsApp): the same giver and person drawn,
+      // taken from the kept result, unopened; once per opened link.
+      function isRenewedLink() {
+        let data = request.resource.data;
+        let old = data.get('replaces', '');
+        let oldPath = /databases/$(database)/documents/secretSantaReveals/$(old);
+        let kept = /databases/$(database)/documents/secretSantaReveals/$(old)/private/result;
+        return old is string && old != '' && old != token
+            && !('giverUid' in data)
+            && !('openedAt' in data)
+            && exists(oldPath)
+            && !('giverUid' in get(oldPath).data)
+            && get(oldPath).data.get('openedAt', null) != null
+            && !('replacedBy' in get(oldPath).data)
+            && getAfter(oldPath).data.get('replacedBy', '') == token
+            && get(oldPath).data.get('eventId', '') == data.get('eventId', '')
+            && get(oldPath).data.get('giverName', '') == data.get('giverName', '')
+            && exists(kept)
+            && get(kept).data.get('receiverName', '') == data.get('receiverName', '')
+            && get(kept).data.get('receiverGiftOptions', []) == data.get('receiverGiftOptions', []);
+      }
+
+      // The result kept for a link without an account, to make a new one with the same person
+      // ("Gerar novo link"): readable only once the link was spent and until it is renewed. The
+      // event owner writes it with the draw and never reads it; a renewal writes the new link's.
+      match /private/{docId} {
+        function parentReveal() {
+          return get(/databases/$(database)/documents/secretSantaReveals/$(token)).data;
+        }
+        function newReveal() {
+          return getAfter(/databases/$(database)/documents/secretSantaReveals/$(token)).data;
+        }
+        allow get: if exists(/databases/$(database)/documents/secretSantaReveals/$(token))
+                   && !('giverUid' in parentReveal())
+                   && parentReveal().get('openedAt', null) != null
+                   && !('replacedBy' in parentReveal())
+                   // The organizer knows every link: never let them read who drew whom.
+                   && !ownsEvent(eventData(parentReveal().get('eventId', '')));
+        allow create: if docId == 'result'
+                      && request.resource.data.keys().hasOnly(['eventId', 'receiverName', 'receiverGiftOptions'])
+                      && request.resource.data.get('eventId', '') is string
+                      && ownsEvent(eventData(request.resource.data.get('eventId', '')))
+                      && newReveal().get('eventId', '') == request.resource.data.get('eventId', '')
+                      && isFilledText(request.resource.data.get('receiverName', null), 120)
+                      && request.resource.data.get('receiverGiftOptions', []) is list
+                      && request.resource.data.get('receiverGiftOptions', []).size() <= 10;
+        allow create: if docId == 'result'
+                      && request.resource.data.keys().hasOnly(['eventId', 'receiverName', 'receiverGiftOptions'])
+                      && !('giverUid' in newReveal())
+                      && newReveal().get('replaces', '') != ''
+                      && newReveal().get('openedAt', null) == null
+                      && newReveal().get('eventId', '') == request.resource.data.get('eventId', '')
+                      && newReveal().get('receiverName', '') == request.resource.data.get('receiverName', '')
+                      && newReveal().get('receiverGiftOptions', []) == request.resource.data.get('receiverGiftOptions', []);
+        allow delete: if resource == null || ownsEvent(eventData(resource.data.get('eventId', '')));
+      }
 
       function isRevealHolder() {
         let owner = resource.data.get('giverUid', null);
@@ -101,7 +179,7 @@ service cloud.firestore {
       function isValidSecretSantaReveal() {
         let data = request.resource.data;
         return data.keys().hasOnly(['eventId', 'eventTitle', 'eventDate', 'giverName', 'giverUid',
-                                    'receiverName', 'receiverGiftOptions', 'createdAt'])
+                                    'receiverName', 'receiverGiftOptions', 'createdAt', 'replaces'])
             && isOptionalString(data.get('giverUid', null), 128)
             && isOptionalString(data.get('eventTitle', null), 200)
             && isOptionalString(data.get('eventDate', null), 40)
@@ -161,7 +239,8 @@ service cloud.firestore {
       // which reads the notice as the person who wrote it):
       // - `presence_{eventId}_{actor}` / `collaboration_{eventId}_{actor}`: a guest answered, or a
       //   collaborator joined or left, told to each person who organizes the event;
-      // - `approval_{eventId}`: an organizer let the guest in.
+      // - `approval_{eventId}`: an organizer let the guest in;
+      // - `event-status_{eventId}`: the owner cancelled or reopened the event.
       match /notifications/{notificationId} {
         allow read, delete: if request.auth != null && request.auth.uid == uid;
         allow get: if request.auth != null && resource.data.get('actorUid', '') == request.auth.uid;
@@ -170,9 +249,11 @@ service cloud.firestore {
                       || isSecretSantaNotice()
                       || isOwnCollaboratorRecord()
                       || isNoticeToOrganizer()
-                      || isApprovalNotice();
+                      || isApprovalNotice()
+                      || isEventStatusNotice();
         allow create: if isSecretSantaNotice() || isOwnCollaboratorRecord()
-                      || isNoticeToOrganizer() || isApprovalNotice();
+                      || isNoticeToOrganizer() || isApprovalNotice()
+                      || isEventStatusNotice();
 
         // The fields every notice from someone else has: who wrote it and a new, unread state.
         function isNoticeFrom(kind) {
@@ -211,6 +292,20 @@ service cloud.firestore {
               && notificationId == 'approval_' + data.get('eventId', '')
               && managesEvent(eventData(data.get('eventId', '')))
               && exists(/databases/$(database)/documents/events/$(data.get('eventId', ''))/guests/$(uid));
+        }
+
+        // `event-status_{eventId}`: the owner cancelled or reopened the event, told to each
+        // collaborator and each guest who answered with an account.
+        function isEventStatusNotice() {
+          let data = request.resource.data;
+          let eventId = data.get('eventId', '');
+          let event = eventData(eventId);
+          return isNoticeFrom('event-status')
+              && request.auth.uid != uid
+              && notificationId == 'event-status_' + eventId
+              && ownsEvent(event)
+              && (uid in event.get('collaborators', [])
+                  || exists(/databases/$(database)/documents/events/$(eventId)/guests/$(uid)));
         }
 
         // The member's own line in their history: an invite to help organise they answered.
@@ -297,10 +392,23 @@ service cloud.firestore {
                         || (isAccountHolder() && request.resource.data.get('createdBy', '') == request.auth.uid));
       allow update: if isValidEvent()
                     && (isAdmin()
-                        || (ownsEvent(resource.data) && !changes('createdBy'))
+                        || (ownsEvent(resource.data) && !changes('createdBy') && isOpenOrReopening())
                         || isJoiningByInvitation()
                         || isLeavingCollaboration());
       allow delete: if isAdmin() || ownsEvent(resource.data);
+
+      // A cancelled event is locked: the owner may only reopen it ("Reabrir evento").
+      function isOpenOrReopening() {
+        return resource.data.get('status', 'active') != 'cancelled'
+            || changedKeys().hasOnly(['status', 'updatedAt']);
+      }
+
+      // Nothing about a cancelled event changes (presences, items, the amigo oculto) until the
+      // owner reopens it. A missing event passes: the other checks decide.
+      function isEventOpen() {
+        let path = /databases/$(database)/documents/events/$(eventId);
+        return !exists(path) || get(path).data.get('status', 'active') != 'cancelled';
+      }
 
       // "Sair da colaboração": a collaborator removes only their own uid, nothing else.
       function isLeavingCollaboration() {
@@ -338,6 +446,7 @@ service cloud.firestore {
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
             && (!changes('secretSantaRosterVersion') || data.get('secretSantaRosterVersion', null) is int)
             && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
+            && (!changes('status') || data.get('status', null) in ['active', 'cancelled'])
             && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)))
             && (!changes('mapLocation') || isMapLocation(data.get('mapLocation', null)));
       }
@@ -396,12 +505,13 @@ service cloud.firestore {
       // leaving at any time until the draw (or the day set for it).
       match /secretSantaParticipants/{participantId} {
         allow read, delete: if isAdmin() || managesEvent(eventData(eventId));
-        allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
+        allow create, update: if (isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen()))
                               && isValidSecretSantaParticipant()
                               && !changesGuestEntry();
         allow get: if isOwnRsvpEntry();
         allow delete: if isOwnRsvpEntry() && isBeforeDraw();
         allow create, update: if isOwnRsvpEntry()
+                              && isEventOpen()
                               && isSelfJoinOpen()
                               && isValidSecretSantaParticipant()
                               && request.resource.data.get('joinedBy', '') == request.auth.uid
@@ -483,11 +593,11 @@ service cloud.firestore {
       // a guest writes only their own (`rsvp_{uid}…`), in the same batch as the participant entry.
       match /secretSantaRoster/{participantId} {
         allow read: if isAdmin() || isAccountHolder();
-        allow create, update: if (isAdmin() || managesEvent(eventData(eventId)))
+        allow create, update: if (isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen()))
                               && isValidRosterEntry()
                               && mirrorsGuestEntry();
         allow delete: if isAdmin() || managesEvent(eventData(eventId));
-        allow create, update: if isOwnRosterEntry(true) && isValidRosterEntry();
+        allow create, update: if isOwnRosterEntry(true) && isEventOpen() && isValidRosterEntry();
         allow delete: if isOwnRosterEntry(false);
 
         // Writing: the participant entry exists after the batch and is this account's. Deleting:
@@ -542,6 +652,7 @@ service cloud.firestore {
 
         allow read, delete: if ownsEvent(eventData(eventId));
         allow create, update: if ownsEvent(eventData(eventId))
+                              && isEventOpen()
                               && (!drawsNow() || isDrawDayReached());
       }
 
@@ -570,18 +681,20 @@ service cloud.firestore {
         allow read: if true;
         // "Adicionar alguém à mão": the organizers also put people on the list themselves.
         allow create: if isAdmin()
-                      || (isPrimaryRsvp() && waitsForApproval() && !addedByOrganizer())
-                      || (isLinkedFamilyRsvp() && !addedByOrganizer())
-                      || (managesEvent(eventData(eventId)) && isManualGuest()
-                          && request.resource.data.addedBy == request.auth.uid);
+                      || (isEventOpen()
+                          && ((isPrimaryRsvp() && waitsForApproval() && !addedByOrganizer())
+                              || (isLinkedFamilyRsvp() && !addedByOrganizer())
+                              || (managesEvent(eventData(eventId)) && isManualGuest()
+                                  && request.resource.data.addedBy == request.auth.uid)));
         // Only organizers approve: a guest never changes `approved` on their own answer. Someone
         // added by hand stays a valid hand-added entry, with who added them kept.
         allow update: if isAdmin()
-                      || (managesEvent(eventData(eventId))
+                      || (isEventOpen() && managesEvent(eventData(eventId))
                           && (!('addedBy' in resource.data)
                               || (isManualGuest() && !changes('addedBy'))))
                       || (
                         request.auth != null
+                        && isEventOpen()
                         && !changes('approved')
                         && !changes('addedBy')
                         && ((resource.data.uid == request.auth.uid && isPrimaryRsvp())
@@ -669,6 +782,7 @@ service cloud.firestore {
         allow read: if true;
         allow create, update: if request.auth != null
                               && request.auth.uid == uid
+                              && isEventOpen()
                               && request.resource.data.keys().hasOnly(['name', 'entries', 'updatedAt'])
                               && isPlainText(request.resource.data.name, 120)
                               && request.resource.data.entries is list
@@ -679,9 +793,11 @@ service cloud.firestore {
       // Items subcollection: public read, the owner and collaborators manage, anyone claims
       match /items/{itemId} {
         allow read: if true;
-        allow create, delete: if isAdmin() || managesEvent(eventData(eventId));
-        allow update: if isAdmin() || managesEvent(eventData(eventId)) || (
+        allow delete: if isAdmin() || managesEvent(eventData(eventId));
+        allow create: if isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen());
+        allow update: if isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen()) || (
                         request.auth != null
+                        && isEventOpen()
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedBy'])
                         && (
                           // Claiming

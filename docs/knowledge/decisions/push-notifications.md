@@ -30,6 +30,7 @@ history. Both always get the notice; a failed push never fails the action.
 | Confirms, asks approval, edits, declines, cancels presence | `presence`      | Owner and collaborators, not the actor | `presence_{eventId}_{actorUid}`        |
 | Accepts an invite to help organise / leaves it             | `collaboration` | Owner and collaborators, not the actor | `collaboration_{eventId}_{actorUid}`   |
 | Approves a pending presence                                | `approval`      | The guest                              | `approval_{eventId}`                   |
+| Cancels or reopens the event (owner)                       | `event-status`  | Collaborators and guests with account  | `event-status_{eventId}`               |
 | Draws the amigo oculto                                     | `secret-santa`  | Each participant with an account       | `secret-santa_{eventId}`               |
 | Invites someone to help organise                           | (invitation)    | The invited e-mail, if it has a device | `events/{eventId}/invitations/{email}` |
 
@@ -53,6 +54,9 @@ the previous notice instead of piling up.
   `POST /devices/remove` drops it (sign-out, turning off); `POST /notify {path}` reads the
   notice from Firestore over REST **with the caller's ID token**, so the security rules decide
   who may notify whom. Each notice version is pushed once (`sent:` key in KV, 30 days).
+- `POST /preview {url}` (signed-in callers only) reads a gift idea's link for "Prévia do link" and
+  checks Google Safe Browsing (secret `SAFE_BROWSING_API_KEY`, optional); answers are kept a day
+  in the same KV (`preview:{sha256(url)}`). See [secret-santa](secret-santa.md).
 - Devices live in KV (`DEVICES`). Gone subscriptions (404/410) are removed on send.
 - **One device, one account:** a browser receives only the notices of the last account that
   turned notifications on in it (`owner:{sha256(endpoint)}`); signing in with another account
@@ -68,7 +72,8 @@ the previous notice instead of piling up.
   reuse the one bound to the Worker.
 - GitHub secrets (set by hand, once): `CLOUDFLARE_WORKER_TOKEN` (API token with Workers Scripts
   Edit and Workers KV Storage Edit), `PUSH_VAPID_PRIVATE_KEY`, and the existing
-  `FIREBASE_API_KEY`. Optional: `CLOUDFLARE_ACCOUNT_ID`, only if the token sees more than one
+  `FIREBASE_API_KEY`. Optional: `SAFE_BROWSING_API_KEY` (Google Cloud key with the Safe Browsing
+  API on), `CLOUDFLARE_ACCOUNT_ID`, only if the token sees more than one
   account. Missing token or key → the step warns and skips.
 - The VAPID **public** key is in code (`push-worker/wrangler.toml` and
   `PUSH_VAPID_PUBLIC_KEY` in `src/environments/firebase-config.ts`); both must match the

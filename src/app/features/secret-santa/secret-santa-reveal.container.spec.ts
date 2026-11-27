@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SecretSantaRevealContainer } from './secret-santa-reveal.container';
 import {
@@ -15,6 +15,7 @@ describe('SecretSantaRevealContainer', () => {
   let fixture: ComponentFixture<SecretSantaRevealContainer>;
   const getReveal = vi.fn();
   const openReveal = vi.fn();
+  const renewLink = vi.fn();
   const markRead = vi.fn();
   const publicName = vi.fn();
   const currentUser = vi.fn();
@@ -44,6 +45,7 @@ describe('SecretSantaRevealContainer', () => {
   beforeEach(async () => {
     getReveal.mockReset();
     openReveal.mockReset().mockResolvedValue(undefined);
+    renewLink.mockReset();
     markRead.mockReset().mockResolvedValue(undefined);
     publicName.mockReset().mockResolvedValue('');
     currentUser.mockReset().mockReturnValue(null);
@@ -52,7 +54,7 @@ describe('SecretSantaRevealContainer', () => {
       imports: [SecretSantaRevealContainer],
       providers: [
         provideRouter([]),
-        { provide: SecretSantaService, useValue: { getReveal, openReveal } },
+        { provide: SecretSantaService, useValue: { getReveal, openReveal, renewLink } },
         { provide: ConfettiService, useValue: confetti },
         { provide: AuthService, useValue: { currentUser, loading: () => false } },
         { provide: InboxService, useValue: { markRead } },
@@ -126,7 +128,10 @@ describe('SecretSantaRevealContainer', () => {
         '[data-testid="secret-santa-gift-search"]',
       ),
     );
-    expect(searches.map((link) => link.textContent?.trim())).toEqual(['Mercado Livre', 'Amazon']);
+    expect(searches.map((link) => link.getAttribute('aria-label'))).toEqual([
+      'Buscar Chinelo, cor verde, tamanho 36 na Mercado Livre',
+      'Buscar Chinelo, cor verde, tamanho 36 na Amazon',
+    ]);
     expect(searches[0].href).toContain('lista.mercadolivre.com.br/Chinelo');
     expect(searches[1].href).toContain('amazon.com.br/s?k=Chinelo');
     expect(searches[1].target).toBe('_blank');
@@ -155,7 +160,7 @@ describe('SecretSantaRevealContainer', () => {
   it('spends the link on the first visit and warns to write the name down', async () => {
     getReveal.mockResolvedValue(reveal);
     await openAsGiver('tok-1');
-    expect(openReveal).toHaveBeenCalledWith('tok-1');
+    expect(openReveal).toHaveBeenCalledWith('tok-1', false);
     expect(byTestId('secret-santa-once-warning')?.textContent).toContain(
       'Este link só abre uma vez.',
     );
@@ -180,13 +185,57 @@ describe('SecretSantaRevealContainer', () => {
     await open('tok-1');
     expect(openReveal).not.toHaveBeenCalled();
     expect(byTestId('secret-santa-expired')?.textContent).toContain('Este link já foi aberto');
-    expect(byTestId('secret-santa-expired')?.textContent).toContain('peça um novo link');
+    expect(byTestId('secret-santa-expired')?.textContent).toContain('Gere um novo link');
     expect(byTestId('secret-santa-not-me')?.textContent).toContain(
       'o sorteio precisa ser feito de novo',
     );
     expect(byTestId('secret-santa-greeting')?.textContent).toContain('Olá, Jéssica!');
     expect(byTestId('secret-santa-receiver')).toBeNull();
     expect(confetti.fireCelebration).not.toHaveBeenCalled();
+  });
+
+  it('opens a link of the account again in it, as often as they like', async () => {
+    currentUser.mockReturnValue({ uid: 'jessica-uid', isAnonymous: false });
+    getReveal.mockResolvedValue({
+      ...reveal,
+      giverUid: 'jessica-uid',
+      openedAt: '2026-11-16T23:49:00.000Z',
+    });
+    await open('tok-1');
+    expect(byTestId('secret-santa-expired')).toBeNull();
+    expect(byTestId('secret-santa-receiver')?.textContent).toContain('Luiz');
+    expect(openReveal).not.toHaveBeenCalled();
+    expect(byTestId('secret-santa-once-warning')?.textContent).toContain('Este link é só seu');
+  });
+
+  it('makes a new link with the same person from a spent link without an account', async () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    renewLink.mockResolvedValue('tok-2');
+    getReveal.mockResolvedValue({
+      ...reveal,
+      receiverName: '',
+      receiverGiftOptions: [],
+      openedAt: '2026-11-16T23:49:00.000Z',
+    });
+    await open('tok-1');
+    press('secret-santa-renew-btn');
+    await fixture.whenStable();
+    expect(renewLink).toHaveBeenCalledWith('tok-1');
+    expect(navigate).toHaveBeenCalledWith(['/amigo-oculto', 'tok-2']);
+  });
+
+  it('offers no new link for an account link spent before (its result was erased)', async () => {
+    currentUser.mockReturnValue({ uid: 'jessica-uid', isAnonymous: false });
+    getReveal.mockResolvedValue({
+      ...reveal,
+      giverUid: 'jessica-uid',
+      receiverName: '',
+      receiverGiftOptions: [],
+      openedAt: '2026-11-16T23:49:00.000Z',
+    });
+    await open('tok-1');
+    expect(byTestId('secret-santa-expired')?.textContent).toContain('peça um novo link');
+    expect(byTestId('secret-santa-renew-btn')).toBeNull();
   });
 
   it('says the link expired when it was opened elsewhere a moment ago', async () => {

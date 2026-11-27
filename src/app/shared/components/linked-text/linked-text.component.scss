@@ -1,0 +1,6 @@
+// Long store addresses break anywhere instead of pushing the card wider than the screen.
+.linked-text__link {
+  color: var(--org-primary);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+}

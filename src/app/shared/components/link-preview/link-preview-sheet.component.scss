@@ -1,0 +1,182 @@
+// The link's card, like a message preview: picture on top, the product and the site under it.
+.link-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-md);
+  padding: var(--org-space-md) var(--org-space-lg) var(--org-space-lg);
+}
+
+.link-preview__title {
+  font-size: var(--org-font-size-lg);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.link-preview__card {
+  background: var(--org-surface-container);
+  border: 1px solid var(--org-outline-variant);
+  border-radius: var(--org-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-xs);
+  overflow: hidden;
+}
+
+.link-preview__image {
+  aspect-ratio: 16 / 9;
+  background: var(--org-surface-container-high);
+  inline-size: 100%;
+  max-block-size: 220px;
+  object-fit: contain;
+}
+
+.link-preview__image-skeleton {
+  block-size: 140px;
+  inline-size: 100%;
+}
+
+.link-preview__line-skeleton {
+  block-size: var(--org-space-md);
+  margin-inline: var(--org-space-md);
+}
+
+.link-preview__line-skeleton--short {
+  inline-size: 40%;
+}
+
+.link-preview__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-2xs);
+  padding: var(--org-space-sm) var(--org-space-md) var(--org-space-md);
+}
+
+.link-preview__name {
+  display: -webkit-box;
+  font-weight: var(--org-font-weight-semibold);
+  -webkit-line-clamp: 3;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+.link-preview__price {
+  color: var(--org-primary);
+  font-weight: var(--org-font-weight-semibold);
+  margin: 0;
+}
+
+.link-preview__host,
+.link-preview__status,
+.link-preview__note {
+  color: var(--org-on-surface-variant);
+  font-size: var(--org-font-size-sm);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.link-preview__status {
+  padding: 0 var(--org-space-md) var(--org-space-md);
+}
+
+.link-preview__text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.link-preview__actions {
+  display: flex;
+  gap: var(--org-space-sm);
+  justify-content: flex-end;
+}
+
+// "Pare! Link perigoso": a raised hand on a red disc, swaying like someone saying stop, and a
+// ring pulsing around it. Still for reduced motion.
+.link-preview__stop {
+  align-self: center;
+  block-size: auto;
+  inline-size: 88px;
+  overflow: visible;
+}
+
+.link-preview__stop-disc {
+  fill: var(--org-danger-fill);
+}
+
+.link-preview__stop-ring {
+  animation: link-preview-ring 1.6s ease-out infinite;
+  fill: none;
+  stroke: var(--org-danger-fill);
+  stroke-width: 3;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.link-preview__stop-hand {
+  animation:
+    link-preview-hand-in 0.5s var(--org-motion-ease-emphasized) both,
+    link-preview-hand-sway 1.6s ease-in-out 0.5s infinite;
+  fill: var(--org-on-danger-fill);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.link-preview__title--danger {
+  align-self: center;
+  color: var(--org-error);
+  text-align: center;
+}
+
+@keyframes link-preview-ring {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.92);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes link-preview-hand-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes link-preview-hand-sway {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+
+  20% {
+    transform: rotate(-9deg);
+  }
+
+  40% {
+    transform: rotate(7deg);
+  }
+
+  60% {
+    transform: rotate(-4deg);
+  }
+
+  80% {
+    transform: rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-preview__stop-ring,
+  .link-preview__stop-hand {
+    animation: none;
+  }
+}

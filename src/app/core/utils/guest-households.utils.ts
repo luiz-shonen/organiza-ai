@@ -39,6 +39,8 @@ export interface GuestHousehold {
   pets?: number;
   /** Put on the list by an organizer ("Adicionar alguém à mão"), not by answering the invite. */
   manual?: boolean;
+  /** The event's owner: always going, listed first with "Organizador(a)", never an answer. */
+  host?: boolean;
 }
 
 /** People in a household, pets left out. */

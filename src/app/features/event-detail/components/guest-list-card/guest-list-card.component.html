@@ -112,7 +112,14 @@
                   [photoUrl]="household.photoUrl ?? null"
                 />
                 <span orgExpansionTitleMeta class="guest-list__who">
-                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  <span class="guest-list__row-name"
+                    >{{ household.name }}
+                    @if (household.host) {
+                      <span class="guest-list__kinship" data-testid="guest-host-tag"
+                        >Organizador(a)</span
+                      >
+                    }
+                  </span>
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }
@@ -215,7 +222,14 @@
                   [photoUrl]="household.photoUrl ?? null"
                 />
                 <span class="guest-list__who">
-                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  <span class="guest-list__row-name"
+                    >{{ household.name }}
+                    @if (household.host) {
+                      <span class="guest-list__kinship" data-testid="guest-host-tag"
+                        >Organizador(a)</span
+                      >
+                    }
+                  </span>
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }

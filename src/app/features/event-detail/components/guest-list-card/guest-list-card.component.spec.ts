@@ -56,6 +56,31 @@ describe('GuestListCardComponent', () => {
     );
   });
 
+  it('lists the host first as "Organizador(a)", counted as going but not as an answer', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    const host: GuestHousehold = {
+      id: 'owner',
+      name: 'Luiz Rodrigues',
+      phone: '',
+      people: [],
+      bring: [],
+      members: [{ name: 'Luiz Rodrigues', role: 'Convidado(a)', bring: [] }],
+      host: true,
+    };
+    fixture.componentRef.setInput('households', [host]);
+    fixture.componentRef.setInput('hasItems', false);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('[data-testid="guest-host-tag"]')?.textContent).toContain(
+      'Organizador(a)',
+    );
+    expect(element.textContent).toContain('Ninguém respondeu ainda');
+  });
+
   it('shows each person and what they bring, without phones', async () => {
     const element = await render(false);
     const text = element.textContent ?? '';

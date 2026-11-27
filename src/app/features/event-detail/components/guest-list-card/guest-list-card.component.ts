@@ -111,8 +111,14 @@ export class GuestListCardComponent {
   );
   /** Under the heading: how many answered (and the pets), the count of people in the pill. */
   protected readonly summary = computed(() => {
-    const families = this.households().length;
-    const answered = families === 1 ? '1 família respondeu' : `${families} famílias responderam`;
+    // The host is listed, but did not answer.
+    const families = this.households().filter((household) => !household.host).length;
+    const answered =
+      families === 0
+        ? 'Ninguém respondeu ainda'
+        : families === 1
+          ? '1 família respondeu'
+          : `${families} famílias responderam`;
     return this.pets() ? `${answered} · ${petsLabel(this.pets())}` : answered;
   });
 

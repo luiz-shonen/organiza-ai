@@ -2,12 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import {
   approvalNotificationId,
   collaborationNotificationId,
+  eventStatusNotificationId,
   presenceNotificationId,
   type AppNotification,
   type PartyEvent,
 } from '../models';
 import { AuthService } from './auth.service';
 import { EventService } from './event.service';
+import { GuestService } from './guest.service';
+import { firstValueFrom } from 'rxjs';
 import { InboxService } from './inbox.service';
 import { PushService } from './push.service';
 
@@ -50,6 +53,7 @@ function clean(text: string, max: number): string {
 export class PeopleNoticesService {
   private readonly auth = inject(AuthService);
   private readonly events = inject(EventService);
+  private readonly guests = inject(GuestService);
   private readonly inbox = inject(InboxService);
   private readonly push = inject(PushService);
 
@@ -127,6 +131,45 @@ export class PeopleNoticesService {
       actorUid: actor,
       ...(name ? { actorName: name } : {}),
     });
+  }
+
+  /**
+   * The owner cancelled or reopened the event: each collaborator and each guest who answered
+   * with an account hears it (relatives and people added by hand have no account of their own).
+   */
+  async eventStatus(
+    event: Pick<PartyEvent, 'id' | 'title' | 'collaborators'>,
+    cancelled: boolean,
+  ): Promise<void> {
+    const actor = this.auth.currentUser()?.uid;
+    if (!actor) return;
+    const guests = await firstValueFrom(this.guests.listGuests(event.id)).catch(() => []);
+    const recipients = [
+      ...(event.collaborators ?? []),
+      ...guests.filter((g) => g.uid && !g.primaryGuestId && !g.addedBy).map((g) => g.uid!),
+    ].filter((uid, i, all) => !!uid && uid !== actor && all.indexOf(uid) === i);
+    const title = clean(event.title, 120) || 'O evento';
+    const name = await this.myName();
+    const createdAt = new Date().toISOString();
+    await Promise.allSettled(
+      recipients.map((uid) =>
+        this.send(uid, {
+          id: eventStatusNotificationId(event.id),
+          kind: 'event-status',
+          eventId: event.id,
+          eventTitle: clean(event.title, 200),
+          title: cancelled ? 'Evento cancelado' : 'Evento reaberto',
+          body: cancelled
+            ? `${title} foi cancelado por quem organiza.`
+            : `${title} está de pé de novo. Confira os detalhes.`,
+          actionLabel: 'Ver evento',
+          actionUrl: `/evento/${event.id}`,
+          createdAt,
+          actorUid: actor,
+          ...(name ? { actorName: name } : {}),
+        }),
+      ),
+    );
   }
 
   /** An invite to help organise was sent: the invited person's phones hear it too. */

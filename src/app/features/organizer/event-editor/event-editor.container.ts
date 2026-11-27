@@ -28,6 +28,7 @@ import {
   AuthService,
   UserService,
   GuestService,
+  PeopleNoticesService,
   SecretSantaService,
 } from '../../../core/services';
 import { LocationService } from '../../../core/services/location.service';
@@ -98,6 +99,7 @@ import {
   OrgStepComponent,
   OrgStepperComponent,
   OrgSurfaceComponent,
+  OrgEmptyStateComponent,
 } from '../../../shared/ui';
 import { DrawerService } from '../../../core/services/drawer.service';
 
@@ -123,6 +125,7 @@ export type EditorStepSlug = (typeof EDITOR_STEP_SLUGS)[number];
     EventSecretSantaStepComponent,
     OrgBannerComponent,
     OrgButtonComponent,
+    OrgEmptyStateComponent,
     OrgPageHeaderComponent,
     OrgPageLayoutComponent,
     OrgSkeletonComponent,
@@ -155,6 +158,7 @@ export class EventEditorContainer implements OnInit {
   private readonly userService = inject(UserService);
   private readonly guestService = inject(GuestService);
   private readonly secretSantaService = inject(SecretSantaService);
+  private readonly peopleNotices = inject(PeopleNoticesService);
 
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -164,6 +168,8 @@ export class EventEditorContainer implements OnInit {
   protected readonly saving = signal(false);
   protected readonly minDate = new Date();
   protected readonly currentEvent = signal<PartyEvent | null>(null);
+  /** A cancelled event is locked until its owner reopens it. */
+  protected readonly isCancelled = computed(() => this.currentEvent()?.status === 'cancelled');
   protected readonly items = signal<PartyItem[]>([]);
   protected readonly eventUrl = signal('');
   protected readonly activeStepIndex = signal(0);
@@ -956,7 +962,7 @@ export class EventEditorContainer implements OnInit {
     this.dialogs
       .confirm({
         title: 'Cancelar evento',
-        message: `Tem certeza que deseja cancelar o evento "${event.title}"? O link público vai avisar os convidados sobre o cancelamento.`,
+        message: `Tem certeza que deseja cancelar o evento "${event.title}"? Ele fica travado (ninguém edita, confirma presença ou sorteia o amigo oculto) e os convidados recebem um aviso. Você pode reabrir depois.`,
         confirmLabel: 'Cancelar evento',
         cancelLabel: 'Manter evento',
         tone: 'danger',
@@ -966,10 +972,38 @@ export class EventEditorContainer implements OnInit {
         if (!confirmed) return;
         try {
           await this.eventService.cancelEvent(eventId);
-          this.feedback.success('Evento cancelado com sucesso!');
-          await this.router.navigate(['/meus-eventos']);
+          void this.peopleNotices.eventStatus(event, true);
+          this.feedback.success('Evento cancelado. Você pode reabrir quando quiser.');
+          // On its page the event shows locked, with "Reabrir evento" at hand.
+          await this.router.navigate(['/evento', eventId]);
         } catch (error) {
           this.feedback.error(explainError('Não foi possível cancelar o evento', error));
+        }
+      });
+  }
+
+  /** "Reabrir evento": the event opens again as it was, and its people hear it. */
+  protected reopenEvent(): void {
+    const eventId = this.id();
+    const event = this.currentEvent();
+    if (!eventId || !event || !this.isOwner()) return;
+    this.dialogs
+      .confirm({
+        title: 'Reabrir evento',
+        message: `Reabrir "${event.title}"? Ele volta a funcionar como antes e os convidados recebem um aviso.`,
+        confirmLabel: 'Reabrir evento',
+        cancelLabel: 'Voltar',
+        icon: 'info',
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        try {
+          await this.eventService.reopenEvent(eventId);
+          this.currentEvent.set({ ...event, status: 'active' });
+          void this.peopleNotices.eventStatus(event, false);
+          this.feedback.success('Evento reaberto!');
+        } catch (error) {
+          this.feedback.error(explainError('Não foi possível reabrir o evento', error));
         }
       });
   }

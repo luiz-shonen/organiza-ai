@@ -47,6 +47,8 @@ jobs:
           ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           VAPID_PRIVATE_KEY: ${{ secrets.PUSH_VAPID_PRIVATE_KEY }}
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          # Optional: link previews check Google Safe Browsing with it ("Prévia do link").
+          SAFE_BROWSING_API_KEY: ${{ secrets.SAFE_BROWSING_API_KEY }}
         working-directory: push-worker
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$VAPID_PRIVATE_KEY" ]; then
@@ -56,7 +58,7 @@ jobs:
           if [ -n "$ACCOUNT_ID" ]; then export CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID"; fi
           npm ci
           npx wrangler deploy | tee deploy.log
-          node -e 'console.log(JSON.stringify({ VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY, FIREBASE_API_KEY: process.env.FIREBASE_API_KEY }))' | npx wrangler secret bulk
+          node -e 'const s = { VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY, FIREBASE_API_KEY: process.env.FIREBASE_API_KEY }; if (process.env.SAFE_BROWSING_API_KEY) s.SAFE_BROWSING_API_KEY = process.env.SAFE_BROWSING_API_KEY; console.log(JSON.stringify(s))' | npx wrangler secret bulk
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
           echo "url=${url}" >> "$GITHUB_OUTPUT"
 

@@ -46,6 +46,22 @@
           </div>
         </org-surface>
       }
+      <!-- Cancelled: everything stays visible but locked, until the owner reopens it. -->
+      @if (isCancelled()) {
+        <org-banner
+          variant="error"
+          icon="cancel"
+          data-testid="event-cancelled-banner"
+          [message]="
+            isOwner()
+              ? 'Evento cancelado. Ele fica travado: ninguém confirma presença, escolhe itens ou sorteia o amigo oculto até você reabrir.'
+              : 'Este evento foi cancelado por quem organiza. Nada pode ser alterado por enquanto.'
+          "
+          [actionLabel]="isOwner() ? 'Reabrir evento' : null"
+          actionIcon="event_available"
+          (action)="reopenEvent()"
+        />
+      }
       <app-event-card
         [event]="event"
         [guestCount]="guestCount()"
@@ -57,7 +73,7 @@
         (leaveCollaboration)="onLeaveCollaboration()"
       />
 
-      @if (!isOwner() || canEditEvent()) {
+      @if ((!isOwner() && !isCancelled()) || canEditEvent()) {
         <div class="event-detail__top" [class.event-detail__top--pair]="canEditEvent()">
           <!--
             The guest's answer with the festive scene under it; the owner hosts the event and has
@@ -156,7 +172,6 @@
       @if (secretSantaNotice(); as notice) {
         <app-notification-card
           data-testid="event-secret-santa-notice"
-          readNote="Você já abriu seu resultado do amigo oculto. Se não anotou o nome, peça um novo link para quem organiza o evento."
           [notification]="notice"
           [dismissible]="false"
           (opened)="openSecretSantaNotice($event)"
@@ -195,9 +210,9 @@
           [giftOptions]="!!event.secretSanta?.giftOptions"
           [rules]="event.secretSantaRules ?? null"
           [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
-          [editableIds]="myEditableSecretSantaIds()"
+          [editableIds]="isCancelled() ? [] : myEditableSecretSantaIds()"
           [notice]="secretSantaRosterNotice()"
-          [canJoin]="canJoinSecretSanta()"
+          [canJoin]="!isCancelled() && canJoinSecretSanta()"
           [editing]="editingOwnSecretSanta()"
           [save]="saveOwnSecretSantaEntry"
           (join)="onJoinSecretSanta()"
@@ -253,7 +268,7 @@
     [busyGuestId]="approvingGuestId()"
     (approve)="onApproveGuest($event)"
     (refuse)="onRefuseGuest($event)"
-    [saveManual]="canEdit() ? saveManualGuest : null"
+    [saveManual]="canEdit() && !isCancelled() ? saveManualGuest : null"
     (removeManual)="onRemoveManualGuest($event)"
     (download)="downloadGuests()"
     (print)="printGuests()"
@@ -265,6 +280,7 @@
   <app-secret-santa-card
     [participants]="secretSantaParticipants()"
     [isOwner]="isOwner()"
+    [locked]="isCancelled()"
     [rules]="event?.secretSantaRules ?? null"
     [drawnAt]="secretSantaDraw()?.drawnAt ?? null"
     [links]="secretSantaLinks()"
@@ -281,6 +297,7 @@
     (distinct)="onDistinctSecretSanta($event)"
     (draw)="onDrawSecretSanta()"
     (send)="onSendSecretSanta($event)"
+    (openOwn)="onOpenOwnSecretSanta($event)"
     (resend)="onResendSecretSanta($event)"
     (editParticipants)="onEditSecretSanta()"
   >

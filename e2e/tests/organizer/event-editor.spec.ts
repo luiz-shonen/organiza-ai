@@ -568,7 +568,8 @@ test.describe('Organizer Event Lifecycle and ViaCEP Integration', () => {
         '[data-testid="feedback-snackbar"], .mdc-snackbar, .mat-mdc-snack-bar-container, [role="status"]',
       )
       .first();
-    await expect(snackBar).toContainText(/Evento cancelado com sucesso/i);
+    await expect(snackBar).toContainText(/Evento cancelado/i);
+    await expect(page.getByTestId('event-cancelled-banner')).toBeVisible();
   });
 
   test('should render every category chip and keep a single selection in editor', async ({

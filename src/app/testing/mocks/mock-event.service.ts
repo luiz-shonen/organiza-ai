@@ -18,5 +18,6 @@ export class MockEventService {
     (_eventId: string, _data: PartyEventUpdate): Promise<void> => Promise.resolve(),
   );
   readonly cancelEvent = vi.fn((_eventId: string): Promise<void> => Promise.resolve());
+  readonly reopenEvent = vi.fn((_eventId: string): Promise<void> => Promise.resolve());
   readonly deleteEvent = vi.fn((_eventId: string): Promise<void> => Promise.resolve());
 }

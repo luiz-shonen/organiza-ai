@@ -115,8 +115,12 @@ describe('SecretSantaService', () => {
     const draw = await service.draw(event, people, null);
 
     const sets = gateway.batchOps.set.mock.calls;
-    const reveals = sets.filter(([path]) => path.startsWith('secretSantaReveals/'));
+    const reveals = sets.filter(
+      ([path]) => path.startsWith('secretSantaReveals/') && !path.includes('/private/'),
+    );
     expect(reveals).toHaveLength(3);
+    // Without an account, each link keeps its result apart, for "Gerar novo link".
+    expect(sets.filter(([path]) => path.endsWith('/private/result'))).toHaveLength(3);
     const pairs = reveals.map(([, data]) => data as SecretSantaReveal);
     expect(pairs.every((r) => r.giverName !== r.receiverName)).toBe(true);
     expect(new Set(pairs.map((r) => r.receiverName)).size).toBe(3);
@@ -183,7 +187,10 @@ describe('SecretSantaService', () => {
     gateway.batchOps.delete.mockClear();
     const second = await service.draw(event, people, first);
     expect(gateway.batchOps.delete.mock.calls.map(([path]) => path)).toEqual(
-      first.links.map((l) => `secretSantaReveals/${l.token}`),
+      first.links.flatMap((l) => [
+        `secretSantaReveals/${l.token}`,
+        `secretSantaReveals/${l.token}/private/result`,
+      ]),
     );
     expect(second.links.map((l) => l.token)).not.toEqual(first.links.map((l) => l.token));
   });
@@ -231,5 +238,60 @@ describe('SecretSantaService', () => {
         actionUrl: `/amigo-oculto/${fresh.token}`,
       }),
     );
+  });
+
+  it('makes one new link with the same person after the newest one was spent', async () => {
+    const docs: Record<string, unknown> = {
+      'secretSantaReveals/t1': {
+        eventId: 'evt-1',
+        eventTitle: 'Natal 2026',
+        eventDate: event.date,
+        giverName: 'Ana',
+        receiverName: '',
+        receiverGiftOptions: [],
+        createdAt: '1',
+        openedAt: '2',
+        replacedBy: 't2',
+      },
+      'secretSantaReveals/t2': {
+        eventId: 'evt-1',
+        eventTitle: 'Natal 2026',
+        eventDate: event.date,
+        giverName: 'Ana',
+        receiverName: '',
+        receiverGiftOptions: [],
+        createdAt: '3',
+        openedAt: '4',
+        replaces: 't1',
+      },
+      'secretSantaReveals/t2/private/result': {
+        eventId: 'evt-1',
+        receiverName: 'Bruno',
+        receiverGiftOptions: ['Livro'],
+      },
+    };
+    gateway.getDoc.mockImplementation(async (path: string) => docs[path] ?? null);
+    gateway.runBatch.mockImplementation(async (fn) => {
+      await fn(gateway.batchOps);
+    });
+
+    const fresh = await service.renewLink('t1');
+
+    expect(fresh).not.toBe('t2');
+    expect(gateway.batchOps.set).toHaveBeenCalledWith(
+      `secretSantaReveals/${fresh}`,
+      expect.objectContaining({ receiverName: 'Bruno', giverName: 'Ana', replaces: 't2' }),
+    );
+    expect(gateway.batchOps.update).toHaveBeenCalledWith('secretSantaReveals/t2', {
+      replacedBy: fresh,
+    });
+  });
+
+  it('just opens the newest link when it was not opened yet', async () => {
+    gateway.getDoc.mockImplementation(async (path: string) =>
+      path === 'secretSantaReveals/t1' ? { receiverName: 'Bruno' } : null,
+    );
+    expect(await service.renewLink('t1')).toBe('t1');
+    expect(gateway.runBatch).not.toHaveBeenCalled();
   });
 });

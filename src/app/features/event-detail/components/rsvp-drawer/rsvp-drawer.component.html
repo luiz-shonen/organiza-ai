@@ -76,7 +76,7 @@
             <p class="rsvp-drawer__santa-text">Quem vai participar do sorteio?</p>
             @for (person of santaPeople(); track person.key; let i = $index) {
               <div class="rsvp-drawer__santa-person">
-                <org-checkbox
+                <org-toggle
                   [label]="person.label"
                   [testId]="'rsvp-santa-person-' + i"
                   [checked]="isSantaChecked(person.key)"

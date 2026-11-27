@@ -33,6 +33,7 @@ export type {
   SecretSantaParticipant,
   SecretSantaParticipantInput,
   SecretSantaReveal,
+  SecretSantaRevealCopy,
   SecretSantaRosterEntry,
   SecretSantaSettings,
 } from './secret-santa.model';
@@ -47,6 +48,7 @@ export {
   approvalNotificationId,
   collaborationNotificationId,
   collaboratorNotificationId,
+  eventStatusNotificationId,
   presenceNotificationId,
   secretSantaNotificationId,
 } from './app-notification.model';
@@ -118,3 +120,4 @@ export type {
   SeasonalThemeChoice,
   SeasonalThemeOption,
 } from './design-system-showcase.model';
+export type { LinkPreview } from './link-preview.model';

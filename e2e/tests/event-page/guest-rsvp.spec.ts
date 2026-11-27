@@ -104,7 +104,7 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
     await expect(eventDetailPage.pixCard).toBeVisible();
     await expect(eventDetailPage.pixCard.getByRole('heading', { level: 2 })).toContainText(/pix/i);
 
-    // 600 / 2 confirmed guests = R$ 300,00 per person.
+    // 600 / 3 people going (2 confirmed guests and the host) = R$ 200,00 per person.
     const splitContainer = eventDetailPage.pixCard.locator('.pix-card__split-container');
     await expect(splitContainer).toHaveAttribute('role', 'status');
     await expect(splitContainer).toHaveAttribute(
@@ -112,7 +112,7 @@ test.describe('Event page: RSVP drawer, Pix split and "Eu levo" claims', () => {
       'Sugestão de contribuição por pessoa',
     );
     await expect(eventDetailPage.pixCard.locator('.pix-card__split-amount')).toContainText(
-      /R\$\s?300,00 por pessoa/,
+      /R\$\s?200,00 por pessoa/,
     );
 
     await expect(eventDetailPage.pixCard.locator('.pix-card__key')).toHaveAttribute(

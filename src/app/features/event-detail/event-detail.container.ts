@@ -361,12 +361,17 @@ export class EventDetailContainer implements OnInit {
   /** "Quem vai": the host, then every confirmed household, who comes and what they bring. */
   protected readonly households = computed(() => {
     const host = this.hostGuest();
+    const collaborators = new Set(this.event()?.collaborators ?? []);
     return buildGuestHouseholds(
       host ? [host, ...this.listedGuests()] : this.listedGuests(),
       this.items(),
       this.profiledClaims(),
     ).map((household) =>
-      host && household.id === host.id ? { ...household, host: true } : household,
+      host && household.id === host.id
+        ? { ...household, host: true }
+        : collaborators.has(household.id)
+          ? { ...household, collaborator: true }
+          : household,
     );
   });
 

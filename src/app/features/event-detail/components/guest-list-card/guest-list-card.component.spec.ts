@@ -56,6 +56,47 @@ describe('GuestListCardComponent', () => {
     );
   });
 
+  it('marks the host with a crown and a helper with a handshake, both with a tooltip', async () => {
+    await TestBed.configureTestingModule({
+      imports: [GuestListCardComponent],
+      providers: [provideNoopAnimations()],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(GuestListCardComponent);
+    const host: GuestHousehold = {
+      id: 'owner',
+      name: 'Luiz Rodrigues',
+      phone: '',
+      people: [],
+      bring: [],
+      members: [{ name: 'Luiz Rodrigues', role: 'Convidado(a)', bring: [] }],
+      host: true,
+    };
+    fixture.componentRef.setInput('households', [
+      host,
+      {
+        ...host,
+        id: 'bia',
+        name: 'Bia',
+        host: false,
+        collaborator: true,
+        members: [{ name: 'Bia', role: 'Convidado(a)', bring: [] }],
+      },
+    ]);
+    fixture.componentRef.setInput('hasItems', false);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    // A crown on the avatar, not a tag beside the name.
+    const badge = element.querySelector('[data-testid="guest-role-badge"]');
+    expect(badge?.getAttribute('aria-label')).toBe('Organizador(a) do evento');
+    expect(badge?.querySelector('[data-testid="guest-host-crown"]')).not.toBeNull();
+    expect(element.textContent).not.toContain('Organizador(a)');
+    const helper = element.querySelectorAll('[data-testid="guest-role-badge"]')[1];
+    expect(helper?.getAttribute('aria-label')).toBe('Ajuda a organizar o evento');
+    expect(helper?.textContent).toContain('handshake');
+    // Bia answered; the host did not.
+    expect(element.textContent).toContain('1 família respondeu');
+  });
+
   it('shows each person and what they bring, without phones', async () => {
     const element = await render(false);
     const text = element.textContent ?? '';

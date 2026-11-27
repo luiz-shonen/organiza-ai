@@ -29,7 +29,7 @@ import {
 import type { RsvpDrawerRequestData, RsvpDrawerResult } from '../../../../core/models';
 import {
   OrgButtonComponent,
-  OrgCheckboxComponent,
+  OrgToggleComponent,
   OrgIconButtonComponent,
   OrgTextFieldComponent,
   revealFirstInvalidSoon,
@@ -52,7 +52,7 @@ export type RsvpDrawerData = RsvpDrawerRequestData;
     CompanionSelectorComponent,
     FamilySelectorComponent,
     OrgButtonComponent,
-    OrgCheckboxComponent,
+    OrgToggleComponent,
     OrgIconButtonComponent,
     OrgTextFieldComponent,
     GiftOptionsFieldComponent,

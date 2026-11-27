@@ -120,6 +120,20 @@ export interface SecretSantaReveal {
   readonly createdAt: string;
   /** Set the first time the link is opened; from then on the link is spent. */
   readonly openedAt?: string;
+  /** "Gerar novo link": the spent link this one was made from (links without an account). */
+  readonly replaces?: string;
+  /** The new link made after this one was spent (one per opened link). */
+  readonly replacedBy?: string;
+}
+
+/**
+ * Whom the person drew, kept apart for a link without an account (`secretSantaReveals/{token}/
+ * private/result`): readable once the link was spent and until it is renewed ("Gerar novo link").
+ */
+export interface SecretSantaRevealCopy {
+  readonly eventId: string;
+  readonly receiverName: string;
+  readonly receiverGiftOptions: readonly string[];
 }
 
 /** One person in the amigo oculto as the guests see it: no phone, only the name and the ideas. */

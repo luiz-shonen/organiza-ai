@@ -1,0 +1,124 @@
+<org-bottom-sheet
+  ariaLabel="Abrir link externo"
+  testId="link-preview-sheet"
+  [open]="!!state()"
+  (closed)="close()"
+>
+  @if (state(); as state) {
+    <div class="link-preview">
+      @if (dangerous()) {
+        <!-- A stop sign: a hand raised on red, swaying "pare!", with a ring pulsing around it. -->
+        <svg
+          class="link-preview__stop"
+          viewBox="0 0 96 96"
+          aria-hidden="true"
+          data-testid="link-preview-stop"
+        >
+          <circle class="link-preview__stop-ring" cx="48" cy="48" r="44" />
+          <circle class="link-preview__stop-disc" cx="48" cy="48" r="40" />
+          <g class="link-preview__stop-hand">
+            <rect x="31" y="24" width="8" height="30" rx="4" />
+            <rect x="40" y="17" width="8" height="35" rx="4" />
+            <rect x="49" y="19" width="8" height="33" rx="4" />
+            <rect x="58" y="26" width="7.5" height="27" rx="3.75" />
+            <rect x="30" y="42" width="35.5" height="31" rx="13" />
+            <rect x="21" y="45" width="8" height="22" rx="4" transform="rotate(-34 25 56)" />
+          </g>
+        </svg>
+        <h2 class="link-preview__title link-preview__title--danger">Pare! Link perigoso</h2>
+      } @else {
+        <h2 class="link-preview__title">Abrir link externo?</h2>
+      }
+
+      @if (dangerous()) {
+        <org-banner
+          variant="error"
+          icon="block"
+          data-testid="link-preview-danger"
+          message="O Google marca este site como perigoso (golpe ou vírus). Não abra este link."
+        />
+      }
+
+      @if (state.loading) {
+        <div class="link-preview__card" aria-busy="true" data-testid="link-preview-loading">
+          <org-skeleton class="link-preview__image-skeleton" />
+          <org-skeleton class="link-preview__line-skeleton" />
+          <org-skeleton class="link-preview__line-skeleton link-preview__line-skeleton--short" />
+          <p class="link-preview__status">Verificando o link…</p>
+        </div>
+      } @else if (preview(); as preview) {
+        <article class="link-preview__card" data-testid="link-preview-card">
+          @if (preview.image) {
+            <img
+              class="link-preview__image"
+              alt=""
+              referrerpolicy="no-referrer"
+              loading="lazy"
+              [src]="preview.image"
+              (error)="hideImage($event)"
+            />
+          }
+          <div class="link-preview__body">
+            @if (preview.title) {
+              <p class="link-preview__name">{{ preview.title }}</p>
+            }
+            @if (preview.price) {
+              <p class="link-preview__price" data-testid="link-preview-price">
+                {{ preview.price }}
+              </p>
+            }
+            <p class="link-preview__host" data-testid="link-preview-host">
+              {{ preview.siteName ? preview.siteName + ' · ' : '' }}{{ host() }}
+            </p>
+          </div>
+        </article>
+      }
+
+      <p class="link-preview__text">
+        @if (redirected()) {
+          Este link leva para <strong>{{ host() }}</strong
+          >, fora do Organiza AI.
+        } @else {
+          Este link abre o site <strong>{{ host() }}</strong
+          >, fora do Organiza AI.
+        }
+        @if (hidden()) {
+          É um link encurtado: não dá para saber o site final antes de abrir.
+        }
+        Só abra se você reconhece o site e confia em quem colocou o link.
+      </p>
+      @if (unchecked()) {
+        <p class="link-preview__note" data-testid="link-preview-unchecked">
+          Não foi possível verificar a segurança deste link.
+        </p>
+      }
+
+      <div class="link-preview__actions">
+        <org-button
+          variant="text"
+          label="Voltar"
+          testId="link-preview-cancel"
+          [gradient]="false"
+          (pressed)="close()"
+        />
+        @if (dangerous()) {
+          <org-button
+            variant="danger-text"
+            label="Abrir mesmo assim"
+            testId="link-preview-open"
+            [gradient]="false"
+            (pressed)="openLink()"
+          />
+        } @else {
+          <org-button
+            label="Abrir link"
+            testId="link-preview-open"
+            [gradient]="false"
+            [disabled]="state.loading"
+            (pressed)="openLink()"
+          />
+        }
+      </div>
+    </div>
+  }
+</org-bottom-sheet>

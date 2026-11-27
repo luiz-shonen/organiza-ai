@@ -51,7 +51,7 @@ test.describe('Amigo oculto pelo convite', () => {
     const drawer = page.getByTestId('rsvp-drawer');
     const santa = drawer.getByTestId('rsvp-santa');
     await expect(santa).toContainText('Quem vai participar do sorteio?');
-    await santa.getByTestId('rsvp-santa-person-0').locator('input').check();
+    await santa.getByTestId('rsvp-santa-person-0').locator('button').click();
     // One idea at a time: "+" adds it and the field is ready for the next.
     await santa.getByTestId('rsvp-santa-0-gift-input').fill('Livro');
     await santa.getByTestId('rsvp-santa-0-add-gift-btn').click();
@@ -95,7 +95,7 @@ test.describe('Amigo oculto pelo convite', () => {
     await page.goto(`/evento/${EVENT_ID}`);
 
     await page.getByTestId('rsvp-decline-btn').locator('button').click();
-    await page.getByTestId('rsvp-decline-santa').locator('input').check();
+    await page.getByTestId('rsvp-decline-santa').locator('button').click();
     await expect(page.locator('input[data-testid="rsvp-santa-phone"]')).toHaveValue(
       '(11) 99999-9999',
     );
@@ -187,8 +187,8 @@ test.describe('Amigo oculto pelo convite', () => {
     await expect
       .poll(async () => (await readStore(page))[PARTICIPANTS].map((p) => p.id))
       .toEqual(['m3', 'rsvp_jess', 'rsvp_ana', 'rsvp_maria']);
-    await expect(card).toContainText('4 pessoas no sorteio');
-    await expect(card.getByTestId('secret-santa-joined-tag')).toHaveText('3 pelo convite');
+    await expect(card).toContainText('3 entraram pelo convite');
+    await expect(card.getByTestId('secret-santa-count-tag')).toHaveText('4 no sorteio');
 
     // The owner closes the sign-ups, keeping the other settings.
     await card.getByTestId('secret-santa-self-join').locator('button').click();
@@ -301,8 +301,8 @@ test.describe('Amigo oculto pelo convite', () => {
     const santa = drawer.getByTestId('rsvp-santa');
     await expect(santa.getByTestId('rsvp-santa-person-1')).toContainText('Vó Ana');
     await expect(santa.getByTestId('rsvp-santa-person-2')).toContainText('Bia (acompanhante)');
-    await santa.getByTestId('rsvp-santa-person-1').locator('input').check();
-    await santa.getByTestId('rsvp-santa-person-2').locator('input').check();
+    await santa.getByTestId('rsvp-santa-person-1').locator('button').click();
+    await santa.getByTestId('rsvp-santa-person-2').locator('button').click();
     await drawer.getByTestId('rsvp-confirm-btn').locator('button').click();
     await expect(page.getByTestId('rsvp-drawer')).toHaveCount(0);
 
@@ -390,8 +390,8 @@ test.describe('Amigo oculto pelo convite', () => {
         };
       })
       .toEqual({ ids: ['m1', 'rsvp_ana'], marked: [expect.any(String)] });
-    await expect(card).toContainText('2 pessoas no sorteio');
-    await expect(card.getByTestId('secret-santa-joined-tag')).toHaveText('1 pelo convite');
+    await expect(card).toContainText('1 entrou pelo convite');
+    await expect(card.getByTestId('secret-santa-count-tag')).toHaveText('2 no sorteio');
   });
 
   test('a guest waiting for approval joins the draw only after being approved', async ({
@@ -417,7 +417,7 @@ test.describe('Amigo oculto pelo convite', () => {
     // The first confirmation asks the amigo oculto, approval or not.
     const santa = drawer.getByTestId('rsvp-santa');
     await expect(santa).toContainText('Quem vai participar do sorteio?');
-    await santa.getByTestId('rsvp-santa-person-0').locator('input').check();
+    await santa.getByTestId('rsvp-santa-person-0').locator('button').click();
     await drawer.getByTestId('rsvp-confirm-btn').locator('button').click();
 
     // Saved, and it counts once the presence is approved: the card says so.

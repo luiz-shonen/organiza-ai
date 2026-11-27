@@ -75,6 +75,7 @@ import {
   secretSantaDrawDeadline,
   rsvpSecretSantaEntryId,
   secretSantaRsvpId,
+  sortByName,
   removeClaimEntry,
   toggleBought,
   buildGuestListDocument,
@@ -82,6 +83,7 @@ import {
 } from '../../core/utils';
 import {
   OrgSkeletonComponent,
+  OrgBannerComponent,
   OrgButtonComponent,
   OrgCardHeaderComponent,
   OrgSurfaceComponent,
@@ -134,6 +136,7 @@ import {
   imports: [
     NgTemplateOutlet,
     OrgSkeletonComponent,
+    OrgBannerComponent,
     OrgButtonComponent,
     OrgCardHeaderComponent,
     OrgSurfaceComponent,
@@ -270,8 +273,9 @@ export class EventDetailContainer implements OnInit {
       // Added by the organizers from a guest with an account, and the links of the draw.
       ...Object.values(this.secretSantaAccounts()),
       ...(this.secretSantaDraw()?.links ?? []).map((link) => link.uid ?? ''),
-      // The member themself (their own RSVP card greets them by name).
+      // The member themself (their own RSVP card greets them by name), and the host.
       this.memberUid() ?? '',
+      this.event()?.createdBy ?? '',
       // Who said "Não poderei ir" (by account) and who brings something (the household's uid).
       ...this.declines().map((decline) => decline.id),
       ...this.claims().map((claims) => claims.id),
@@ -331,7 +335,7 @@ export class EventDetailContainer implements OnInit {
   });
   private readonly listedGuests = computed(() => this.guestSplit().approved);
   protected readonly pendingGuests = computed<PendingGuest[]>(() =>
-    this.canEdit() ? this.guestSplit().pending : [],
+    this.canEdit() && !this.isCancelled() ? this.guestSplit().pending : [],
   );
   protected readonly approvingGuestId = signal<string | null>(null);
   /** The member confirmed, and the owner has not approved it yet. */
@@ -344,10 +348,42 @@ export class EventDetailContainer implements OnInit {
     );
   });
 
-  /** "Quem vai": every confirmed household, who comes with them and what they bring. */
-  protected readonly households = computed(() =>
-    buildGuestHouseholds(this.listedGuests(), this.items(), this.profiledClaims()),
-  );
+  /**
+   * The owner hosts the event and never answers the invite, but goes: they head "Quem vai",
+   * named as their profile is now (and bring what they took from the list, like anyone).
+   */
+  private readonly hostGuest = computed<Guest | null>(() => {
+    const event = this.event();
+    const uid = event?.createdBy;
+    if (!event || !uid || this.guests().some((g) => g.id === uid || g.uid === uid)) return null;
+    const profile = this.publicProfiles()[uid];
+    return {
+      id: uid,
+      uid,
+      name: profile?.name || event.creatorName?.trim() || 'Quem organiza',
+      ...(profile?.photoURL ? { photoUrl: profile.photoURL } : {}),
+      isConfirmed: true,
+      confirmedAt: event.createdAt ?? '',
+    };
+  });
+
+  /** "Quem vai": every confirmed household and the host, in alphabetical order. */
+  protected readonly households = computed(() => {
+    const host = this.hostGuest();
+    const collaborators = new Set(this.event()?.collaborators ?? []);
+    const households = buildGuestHouseholds(
+      host ? [host, ...this.listedGuests()] : this.listedGuests(),
+      this.items(),
+      this.profiledClaims(),
+    ).map((household) =>
+      host && household.id === host.id
+        ? { ...household, host: true }
+        : collaborators.has(household.id)
+          ? { ...household, collaborator: true }
+          : household,
+    );
+    return sortByName(households);
+  });
 
   /** Who said "Não poderei ir"; only the organizers may read it, so it loads for them only. */
   protected readonly declines = signal<GuestDecline[]>([]);
@@ -429,24 +465,28 @@ export class EventDetailContainer implements OnInit {
 
   /** A signed-in guest's view of the amigo oculto: who takes part and their gift ideas. */
   protected readonly secretSantaRoster = signal<SecretSantaRosterEntry[]>([]);
-  /** The roster as shown: the account's own entries named as its profile is now. */
+  /** The roster as shown: the account's own entries named as its profile is now, A to Z. */
   protected readonly secretSantaRosterView = computed(() => {
     // Who still waits for approval is not in the draw yet: only they see their own entries.
     const pending = this.pendingSantaUids();
     const me = this.memberUid();
-    return this.secretSantaRoster()
-      .filter((entry) => {
-        const uid = /^rsvp_([^_]+)/.exec(entry.id)?.[1];
-        return !uid || uid === me || !pending.has(uid);
-      })
-      .map((entry) => ({ ...entry, name: this.profiledSantaName(entry.id, entry.name) }));
+    return sortByName(
+      this.secretSantaRoster()
+        .filter((entry) => {
+          const uid = /^rsvp_([^_]+)/.exec(entry.id)?.[1];
+          return !uid || uid === me || !pending.has(uid);
+        })
+        .map((entry) => ({ ...entry, name: this.profiledSantaName(entry.id, entry.name) })),
+    );
   });
-  /** The organizers' list, named the same way. */
+  /** The organizers' list, named the same way, A to Z. */
   protected readonly secretSantaParticipantsView = computed(() =>
-    this.secretSantaParticipants().map((p) => ({
-      ...p,
-      name: this.profiledSantaName(p.id, p.name),
-    })),
+    sortByName(
+      this.secretSantaParticipants().map((p) => ({
+        ...p,
+        name: this.profiledSantaName(p.id, p.name),
+      })),
+    ),
   );
   /**
    * The guest's "Amigo oculto" card, at the bottom of the invite: who is in, with their ideas;
@@ -687,7 +727,7 @@ export class EventDetailContainer implements OnInit {
    * visit; another organizer's page may have merged it already.
    */
   private readonly autoMergeSecretSanta = effect(() => {
-    if (!this.canEdit()) return;
+    if (!this.canEdit() || this.isCancelled()) return;
     for (const pair of this.secretSantaDuplicates()) {
       if (!pair.sure || this.mergingSecretSanta.has(pair.drop.id)) continue;
       this.mergingSecretSanta.add(pair.drop.id);
@@ -739,14 +779,28 @@ export class EventDetailContainer implements OnInit {
     const opened = this.secretSantaOpenedAt();
     const profiles = this.publicProfiles();
     const accounts = this.secretSantaAccounts();
-    return (this.secretSantaDraw()?.links ?? []).map((link) => ({
-      participantId: link.participantId,
-      name: profiles[link.uid ?? accounts[link.participantId] ?? '']?.name || link.name,
-      phone: link.phone,
-      url: buildSecretSantaRevealUrl(origin, link.token),
-      openedAt: opened[link.token] ?? null,
-      notifiedInApp: !!link.uid,
-    }));
+    const me = this.memberUid();
+    const mine = new Set(
+      this.secretSantaParticipants()
+        .filter(
+          (p) => me && (p.guestId === me || p.joinedBy === me) && p.id === secretSantaRsvpId(me),
+        )
+        .map((p) => p.id),
+    );
+    // The links after the draw, A to Z like the lists before it.
+    return sortByName(
+      (this.secretSantaDraw()?.links ?? []).map((link) => ({
+        participantId: link.participantId,
+        name: profiles[link.uid ?? accounts[link.participantId] ?? '']?.name || link.name,
+        phone: link.phone,
+        url: buildSecretSantaRevealUrl(origin, link.token),
+        openedAt: opened[link.token] ?? null,
+        notifiedInApp: !!link.uid,
+        self:
+          !!me &&
+          (link.uid === me || accounts[link.participantId] === me || mine.has(link.participantId)),
+      })),
+    );
   });
   protected readonly secretSantaOutdated = computed(() =>
     isSecretSantaDrawOutdated(
@@ -847,10 +901,50 @@ export class EventDetailContainer implements OnInit {
   protected readonly organizerTopRow = computed(() => this.canEditEvent());
   protected readonly ownerTopRow = computed(() => this.isOwner() && this.canEditEvent());
 
-  /** Organizers edit the event only until it starts; afterwards it is history. */
+  /** Organizers edit the event only until it starts, and never while it is cancelled. */
   protected readonly canEditEvent = computed(
-    () => this.canEdit() && !hasStarted(this.event()?.date),
+    () => this.canEdit() && !this.isCancelled() && !hasStarted(this.event()?.date),
   );
+
+  /** A cancelled event is locked (presences, items, the amigo oculto) until the owner reopens it. */
+  protected readonly isCancelled = computed(() => this.event()?.status === 'cancelled');
+
+  /** True, after telling the person why, when the event is cancelled and nothing may change. */
+  private lockedNotice(): boolean {
+    if (!this.isCancelled()) return false;
+    this.feedback.info('Este evento foi cancelado. Nada pode ser alterado até ele ser reaberto.');
+    return true;
+  }
+
+  protected readonly reopening = signal(false);
+
+  /** "Reabrir evento": the owner opens the event again, as it was, and its people hear it. */
+  protected reopenEvent(): void {
+    const event = this.event();
+    if (!event || !this.isOwner() || this.reopening()) return;
+    this.dialogs
+      .confirm({
+        title: 'Reabrir evento',
+        message: `Reabrir "${event.title}"? Ele volta a funcionar como antes e os convidados recebem um aviso.`,
+        confirmLabel: 'Reabrir evento',
+        cancelLabel: 'Voltar',
+        icon: 'info',
+      })
+      .subscribe(async (confirmed) => {
+        if (!confirmed) return;
+        this.reopening.set(true);
+        try {
+          await this.eventService.reopenEvent(event.id);
+          this.event.set({ ...event, status: 'active' });
+          void this.peopleNotices.eventStatus(event, false);
+          this.feedback.success('Evento reaberto!');
+        } catch (error) {
+          this.feedback.error(explainError('Não foi possível reabrir o evento', error));
+        } finally {
+          this.reopening.set(false);
+        }
+      });
+  }
 
   /**
    * "Sugestões do Organiza AI": for organizers, once 70% of the people they expect confirmed
@@ -912,7 +1006,11 @@ export class EventDetailContainer implements OnInit {
   }
 
   /** People going; pets are counted apart (`petCount`). */
-  private readonly confirmedCounts = computed(() => countGuests(this.listedGuests()));
+  private readonly confirmedCounts = computed(() => {
+    const counts = countGuests(this.listedGuests());
+    // The host goes too.
+    return this.hostGuest() ? { ...counts, people: counts.people + 1 } : counts;
+  });
   protected readonly guestCount = computed(() => this.confirmedCounts().people);
   protected readonly petCount = computed(() => this.confirmedCounts().pets);
 
@@ -969,7 +1067,7 @@ export class EventDetailContainer implements OnInit {
 
   protected async onDrawSecretSanta(): Promise<void> {
     const event = this.event();
-    if (!event || !this.isOwner() || this.secretSantaDrawing()) return;
+    if (!event || !this.isOwner() || this.secretSantaDrawing() || this.lockedNotice()) return;
     // The draw waits for the day chosen for it (the button says so; the rules hold it too).
     const opens = secretSantaDrawDeadline(event.secretSanta?.drawDate);
     if (opens && Date.now() < opens.getTime()) return;
@@ -1021,10 +1119,16 @@ export class EventDetailContainer implements OnInit {
   }
 
   /** A new link for one person, with the same person drawn; the old link stops working. */
+  /** The organizer's own link opens here, in the app: nothing to send to themself. */
+  protected onOpenOwnSecretSanta(link: SecretSantaShareLink): void {
+    void this.router.navigateByUrl(new URL(link.url).pathname);
+  }
+
   protected async onResendSecretSanta(link: SecretSantaShareLink): Promise<void> {
     const event = this.event();
     const draw = this.secretSantaDraw();
-    if (!event || !draw || !this.isOwner() || this.secretSantaResendingId()) return;
+    if (!event || !draw || !this.isOwner() || this.secretSantaResendingId() || this.lockedNotice())
+      return;
     const confirmed = await firstValueFrom(
       this.dialogs.confirm({
         title: `Novo link para ${link.name}?`,
@@ -1104,7 +1208,7 @@ export class EventDetailContainer implements OnInit {
 
   protected async onSecretSantaSelfJoin(open: boolean): Promise<void> {
     const event = this.event();
-    if (!event?.secretSanta || !this.isOwner()) return;
+    if (!event?.secretSanta || !this.isOwner() || this.lockedNotice()) return;
     try {
       await this.secretSantaService.setSelfJoin(event.id, event.secretSanta, open);
       this.feedback.success(
@@ -1591,6 +1695,7 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected async onConfirmRsvp(event?: Event, editing = false): Promise<void> {
+    if (this.lockedNotice()) return;
     this.rsvpLoading.set(true);
     try {
       let user = this.authService.currentUser();
@@ -2116,6 +2221,7 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected async onClaimItemById(itemId: string): Promise<void> {
+    if (this.lockedNotice()) return;
     if (!this.isUserConfirmed() || !this.memberUid()) {
       this.feedback.info('Por favor, confirme sua presença primeiro.');
       return;
@@ -2159,6 +2265,7 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected async onToggleBought(row: FamilyChecklistRow): Promise<void> {
+    if (this.lockedNotice()) return;
     try {
       await this.saveMyClaims(
         toggleBought(this.myClaims()?.entries ?? [], row.itemId, row.memberId),
@@ -2169,6 +2276,7 @@ export class EventDetailContainer implements OnInit {
   }
 
   protected async onRemoveClaim(row: FamilyChecklistRow): Promise<void> {
+    if (this.lockedNotice()) return;
     try {
       await this.saveMyClaims(
         removeClaimEntry(this.myClaims()?.entries ?? [], row.itemId, row.memberId),

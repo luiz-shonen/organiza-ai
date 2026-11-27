@@ -5,6 +5,7 @@ status: active
 date: 2026-11-03
 updated: 2026-11-26
 enforced_by:
+  - e2e/rules/cancelled-event.rules.test.ts
   - e2e/tests/invites/invites-and-guests.spec.ts
   - src/app/features/home/home.container.spec.ts
   - src/app/features/organizer/dashboard/dashboard.container.spec.ts
@@ -49,6 +50,30 @@ How the app behaves for organizers and guests. Data and permissions are in
 - Meus eventos tags each card: **Em breve** (starts within `SOON_DAYS` = 5 days), **Agendado**
   (further ahead), **Realizado** (started), **Cancelado** (`summaryStatus`).
 - Início tags each invite: **Pendente**, **Confirmado**, **Recusado**, or **Realizado** once it started.
+
+## The host on "Quem vai"
+
+- The owner never answers the invite but always goes: "Confirmados" lists them too, named as
+  their profile is (`GuestHousehold.host`). They count as a person (the header count, the Pix
+  split per person), not as a family that answered ("2 famílias responderam").
+- Who organizes is marked on the avatar, never with a tag beside the name (it does not fit on a
+  phone): a crown for the owner ("Organizador(a) do evento", drawn in SVG: the icon font has none), a handshake for a collaborator who
+  answered ("Ajuda a organizar o evento"), each with a tooltip and an `aria-label`.
+
+- **Alphabetical order** (`sortByName`, pt-BR: accents and capitals aside): "Confirmados" with the
+  host among them, and every amigo oculto list (the organizers' participants, the links after the
+  draw, the guests' roster).
+
+## Cancelling and reopening
+
+- "Cancelar evento" (editor, owner only) asks first in the danger dialog, then opens the event page.
+- **A cancelled event is locked**, in the app and in `firestore.rules` (`isEventOpen`,
+  `isOpenOrReopening`): nobody confirms, edits presences, picks items, joins or draws the amigo
+  oculto; the owner's only change to the event is `status` back to `active`. Deleting still works.
+- The event page shows a red banner for everyone; the owner's has **Reabrir evento** (confirm
+  dialog). The editor shows "Evento cancelado" with the same button instead of the steps.
+- Cancelling and reopening tell each collaborator and each guest who answered with an account
+  (`event-status_{eventId}`, see [push-notifications](push-notifications.md)).
 
 ## Filter chips
 

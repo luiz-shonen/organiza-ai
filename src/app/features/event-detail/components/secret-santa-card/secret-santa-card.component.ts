@@ -25,6 +25,8 @@ export interface SecretSantaShareLink {
   readonly openedAt: string | null;
   /** The person has an account and was also told in the app. */
   readonly notifiedInApp?: boolean;
+  /** The organizer's own link: they open it here, with no need to send it to themself. */
+  readonly self?: boolean;
 }
 
 /** "Abriu em 16/11, às 20:49" or "Ainda não abriu". */
@@ -60,6 +62,8 @@ export class SecretSantaCardComponent {
   public readonly participants = input<readonly SecretSantaParticipant[]>([]);
   /** Only the owner draws and sends the links. */
   public readonly isOwner = input(false);
+  /** The event is cancelled: the card only shows where things stand, with no action. */
+  public readonly locked = input(false);
   /** The organizer's description: gift value, rules, when gifts are swapped. */
   public readonly rules = input<string | null>(null);
   /** When the latest draw happened (ISO); null before the first one. */
@@ -72,6 +76,8 @@ export class SecretSantaCardComponent {
   public readonly drawDate = input<string | null>(null);
   public readonly draw = output<void>();
   public readonly send = output<SecretSantaShareLink>();
+  /** The organizer opens their own link (it opens once, like anyone's). */
+  public readonly openOwn = output<SecretSantaShareLink>();
   /** A new link for one person (the old one stops working), e.g. after they opened it. */
   public readonly resend = output<SecretSantaShareLink>();
   /** Participant whose new link is being created. */
@@ -117,14 +123,19 @@ export class SecretSantaCardComponent {
     );
   }
 
-  /** Everyone in the draw: who joined from the invitation plus who was added by hand. */
-  protected readonly subheading = computed(() => {
+  /** Everyone in the draw (who joined from the invitation plus who was added by hand): the tag. */
+  protected readonly countLabel = computed(() => {
     const count = this.participants().length;
-    return count === 1 ? '1 pessoa no sorteio' : `${count} pessoas no sorteio`;
+    return count === 1 ? '1 no sorteio' : `${count} no sorteio`;
   });
-  protected readonly joinedCount = computed(
-    () => this.participants().filter((p) => p.joinedBy).length,
-  );
+  /** Under the title: how many of them joined from the invite themselves. */
+  protected readonly subheading = computed(() => {
+    if (!this.participants().length) return 'Ninguém no sorteio ainda';
+    const joined = this.participants().filter((p) => p.joinedBy).length;
+    if (!joined) return 'Ninguém entrou pelo convite ainda';
+    return joined === 1 ? '1 entrou pelo convite' : `${joined} entraram pelo convite`;
+  });
+  protected readonly joinedCount = computed(() => this.participants().length);
   protected readonly drawnLabel = computed(() => {
     const iso = this.drawnAt();
     const date = new Date(iso ?? '');

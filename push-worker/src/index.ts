@@ -2,6 +2,7 @@ import type { VapidKeys } from '@block65/webcrypto-web-push';
 import { lookupAccount, readDocAs } from './firebase';
 import { pushToPerson, type PhoneNotice } from './push';
 import { firstTime, isSubscription, removeDevices, saveDevice, uidByEmail } from './subscriptions';
+import { PREVIEW_CACHE_SECONDS, previewLink, type LinkPreview } from './preview';
 
 export interface Env {
   readonly DEVICES: KVNamespace;
@@ -11,6 +12,13 @@ export interface Env {
   readonly APP_ORIGIN: string;
   readonly VAPID_PUBLIC_KEY: string;
   readonly VAPID_PRIVATE_KEY: string;
+  /** Google Safe Browsing API key; without it previews say "could not check" (`dangerous: null`). */
+  readonly SAFE_BROWSING_API_KEY?: string;
+}
+
+async function sha256(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /** `users/{uid}/notifications/{id}`: a notice someone wrote in another person's bell. */
@@ -127,6 +135,25 @@ export async function handle(
     if (!isSubscription(body['subscription'])) return reply(request, env, 400);
     await saveDevice(env.DEVICES, account.uid, account.email, body['subscription']);
     return reply(request, env, 200, { ok: true });
+  }
+
+  // "Prévia do link": signed-in people only, so the Worker is not an open proxy; a day of cache.
+  if (route === '/preview') {
+    const raw = typeof body['url'] === 'string' ? body['url'].slice(0, 2000) : '';
+    const account = await lookupAccount(idToken, env.FIREBASE_API_KEY, fetcher);
+    if (!account) return reply(request, env, 401);
+    const key = `preview:${await sha256(raw)}`;
+    const cached = (await env.DEVICES.get(key, 'json')) as LinkPreview | null;
+    if (cached) return reply(request, env, 200, cached);
+    const preview = await previewLink(raw, env.SAFE_BROWSING_API_KEY, fetcher);
+    if (!preview) return reply(request, env, 400);
+    // A check that failed is not kept: the next person tries again.
+    if (preview.dangerous !== null || !env.SAFE_BROWSING_API_KEY) {
+      await env.DEVICES.put(key, JSON.stringify(preview), {
+        expirationTtl: PREVIEW_CACHE_SECONDS,
+      });
+    }
+    return reply(request, env, 200, preview);
   }
 
   if (route === '/notify') {

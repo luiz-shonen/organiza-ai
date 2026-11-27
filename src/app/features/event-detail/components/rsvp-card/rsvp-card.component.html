@@ -32,7 +32,7 @@
           [(value)]="message"
         />
         @if (santaOpen()) {
-          <org-checkbox
+          <org-toggle
             label="Mesmo sem ir, quero participar do amigo oculto"
             testId="rsvp-decline-santa"
             [checked]="santaWanted()"

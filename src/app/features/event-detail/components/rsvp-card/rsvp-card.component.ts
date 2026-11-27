@@ -14,7 +14,7 @@ import { DeclineMessage, Phone } from '../../../../core/value-objects';
 import { GiftOptionsFieldComponent } from '../../../../shared/components/gift-options-field/gift-options-field.component';
 import {
   OrgButtonComponent,
-  OrgCheckboxComponent,
+  OrgToggleComponent,
   OrgSurfaceComponent,
   OrgCardHeaderComponent,
   OrgTextFieldComponent,
@@ -40,7 +40,7 @@ export interface RsvpDeclineResult {
   imports: [
     NgTemplateOutlet,
     OrgButtonComponent,
-    OrgCheckboxComponent,
+    OrgToggleComponent,
     OrgSurfaceComponent,
     OrgCardHeaderComponent,
     OrgTextFieldComponent,

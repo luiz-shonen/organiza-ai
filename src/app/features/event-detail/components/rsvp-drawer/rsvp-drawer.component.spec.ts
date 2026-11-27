@@ -202,8 +202,12 @@ describe('RsvpDrawerComponent', () => {
 
     it('returns who takes part, each with their own gift options', () => {
       open();
-      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
-      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      (
+        el().querySelector('[data-testid="rsvp-santa-person-0"] button') as HTMLButtonElement
+      ).click();
+      (
+        el().querySelector('[data-testid="rsvp-santa-person-1"] button') as HTMLButtonElement
+      ).click();
       fixture.detectChanges();
       typeGifts(1, 'Manta', 'Chinelo 37', 'Terceira passa do limite');
       typeGifts(0, 'Livro');
@@ -218,7 +222,9 @@ describe('RsvpDrawerComponent', () => {
 
     it('asks every person in the draw for at least one gift option', () => {
       open();
-      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
+      (
+        el().querySelector('[data-testid="rsvp-santa-person-0"] button') as HTMLButtonElement
+      ).click();
       fixture.detectChanges();
       confirm();
       fixture.detectChanges();
@@ -230,8 +236,12 @@ describe('RsvpDrawerComponent', () => {
     it('asks the WhatsApp of a relative in the draw, filled from the profile, optional', () => {
       open();
       expect(el().querySelector('[data-testid="rsvp-santa-phone-1"]')).toBeNull();
-      (el().querySelector('[data-testid="rsvp-santa-person-0"] input') as HTMLInputElement).click();
-      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      (
+        el().querySelector('[data-testid="rsvp-santa-person-0"] button') as HTMLButtonElement
+      ).click();
+      (
+        el().querySelector('[data-testid="rsvp-santa-person-1"] button') as HTMLButtonElement
+      ).click();
       fixture.detectChanges();
       // Not for the guest: their own number is the field above.
       expect(el().querySelector('[data-testid="rsvp-santa-phone-0"]')).toBeNull();
@@ -252,7 +262,9 @@ describe('RsvpDrawerComponent', () => {
 
     it('refuses a WhatsApp typed for a relative that is not a phone', () => {
       open();
-      (el().querySelector('[data-testid="rsvp-santa-person-1"] input') as HTMLInputElement).click();
+      (
+        el().querySelector('[data-testid="rsvp-santa-person-1"] button') as HTMLButtonElement
+      ).click();
       fixture.detectChanges();
       const phone = el().querySelector(
         'input[data-testid="rsvp-santa-phone-1"]',

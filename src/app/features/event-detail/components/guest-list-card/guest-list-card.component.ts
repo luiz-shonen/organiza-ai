@@ -15,7 +15,9 @@ import {
   OrgCardHeaderComponent,
   OrgExpansionPanelComponent,
   OrgIconButtonComponent,
+  OrgIconComponent,
   OrgSurfaceComponent,
+  OrgTooltipComponent,
 } from '../../../../shared/ui';
 import {
   ManualGuestFormComponent,
@@ -38,7 +40,9 @@ import {
     OrgCardHeaderComponent,
     OrgExpansionPanelComponent,
     OrgIconButtonComponent,
+    OrgIconComponent,
     OrgSurfaceComponent,
+    OrgTooltipComponent,
     ManualGuestFormComponent,
   ],
   templateUrl: './guest-list-card.component.html',
@@ -124,8 +128,14 @@ export class GuestListCardComponent {
   );
   /** Under the heading: how many answered (and the pets), the count of people in the pill. */
   protected readonly summary = computed(() => {
-    const families = this.households().length;
-    const answered = families === 1 ? '1 família respondeu' : `${families} famílias responderam`;
+    // The host is listed, but did not answer.
+    const families = this.households().filter((household) => !household.host).length;
+    const answered =
+      families === 0
+        ? 'Ninguém respondeu ainda'
+        : families === 1
+          ? '1 família respondeu'
+          : `${families} famílias responderam`;
     return this.pets() ? `${answered} · ${petsLabel(this.pets())}` : answered;
   });
 
@@ -138,6 +148,13 @@ export class GuestListCardComponent {
       this.hasItems() ||
       this.canManage(household)
     );
+  }
+
+  /** The mark on the avatar of who organizes: a crown for the owner, a handshake for a helper. */
+  protected roleOf(household: GuestHousehold): { label: string; host: boolean } | null {
+    if (household.host) return { label: 'Organizador(a) do evento', host: true };
+    if (household.collaborator) return { label: 'Ajuda a organizar o evento', host: false };
+    return null;
   }
 
   /** Someone added by hand: the organizers edit and remove them from their panel. */

@@ -140,10 +140,31 @@ A person typed by hand may later join from the invite. Pairs are always an entry
   duplicates. "Sorteio feito em 23 de novembro, às 16:56. 0 de 5 já abriram o link." and three tips
   (send each their link; lost it → "Novo link", same result; opened but not by them → draw again),
   then one row per person: name (profile name), phone, "Ainda não abriu" / "Abriu em…",
-  "Avisado(a) no app", **Novo link**, **Copiar**, **Enviar no WhatsApp**.
+  "Avisado(a) no app", **Novo link**, **Copiar**, **Enviar no WhatsApp**. The owner's own row has
+  only **Abrir link** (opens it in the app) and **Novo link**: nothing to send to themself.
+- Header: the tag counts everyone ("4 no sorteio"); under the title, who joined from the invite
+  ("2 entraram pelo convite").
+- While the event is cancelled the card only shows where things stand ("o amigo oculto fica
+  pausado"), with no action; the rules refuse the draw and every entry change.
 - "Novo link" asks: "Com o novo link, Jéssica pode ver de novo quem tirou (a mesma pessoa). O link
   antigo para de funcionar." "Sortear de novo" asks in a danger dialog; old reveals are deleted.
 - WhatsApp stays the main way to send links.
+
+## Links in gift ideas ("Prévia do link")
+
+- Gift ideas are free text; `http(s)://` and `www.` addresses in them are clickable
+  (`app-linked-text`, `splitLinks`). A tap never opens the site at once: it opens the app-wide
+  sheet `app-link-preview-sheet` (in `app.html`, state in `LinkPreviewService`).
+- The sheet asks the relay Worker (`POST /preview`, signed-in only, cached a day in KV) like
+  WhatsApp would: picture, title, price, site name and the **real site after redirects** (a
+  bit.ly shows the store). Google Safe Browsing checks the typed and the final address: listed
+  → red banner "O Google marca este site como perigoso" and only "Abrir mesmo assim" (danger
+  text). The Worker never fetches IP literals, localhost or odd ports, at any redirect hop.
+- Without a preview (signed out, relay off, store blocks reading) the sheet still names the host,
+  warns about short links and says "Não foi possível verificar a segurança deste link".
+- Without the `SAFE_BROWSING_API_KEY` secret previews still work, with `dangerous: null`.
+- Choosing who takes part (confirming, or "Mesmo sem ir, quero participar") is a switch
+  (`org-toggle`), like "Exigir aprovação".
 
 ## Told in the app too (participants with an account)
 
@@ -172,8 +193,9 @@ never scrolling** when there is nothing more to read (only gift ideas, below the
   no file; timed to the name, `CELEBRATION_SOUND_DELAY_MS`; silent where the browser does not allow
   sound). "Guardai segredo até a troca de presentes.", then, on the paper, the note "**Este link só
   abre uma vez.** Anote o nome antes de fechar a tela." between two fine gold rules (not an amber
-  box), and **Esconder** / **Ver o evento**. Gift ideas, with Mercado Livre and Amazon searches,
-  follow below the paper.
+  box), and **Esconder** / **Ver o evento**. Gift ideas sit on the paper, above "Guardai segredo", under "O que Leonardo quer ganhar" (the paper's serif),
+  in the note's size, one per line between fine gold rules, each with round Mercado Livre and
+  Amazon marks (48px targets) that open the store's search in a new tab (`window.open`).
 - **Em segredo** (after Esconder): the same paper with **Mostrar de novo** and the same note.
 - **Este link já foi aberto**: "Olá, Jéssica!", a purple wax seal with a lock, when it was opened,
   "peça um novo link para quem organiza o evento" and "Não foi você que abriu? Então alguém viu o
@@ -194,6 +216,20 @@ never scrolling** when there is nothing more to read (only gift ideas, below the
 - **Links of an account open only in it** (`giverUid`): anyone else sees "Este link é pessoal".
 - **A link opens once.** Opening stamps `openedAt` and erases the receiver's name and ideas
   (`openReveal`); the rules allow that change once. A second visit shows "Este link já foi aberto".
+- **A link of an account opens in it as often as they like.** It already opens only in that account
+  (`giverUid`), so opening only stamps `openedAt` (`openReveal(token, true)`) and keeps the result;
+  the next visit shows it again ("Este link é só seu. Ele abre apenas na sua conta, quantas vezes
+  você quiser."). No "Gerar novo link" for these. Links spent before this change had the result
+  erased: they say to ask the organizer for a new link.
+- **"Gerar novo link" (links without an account, people added by hand):** on "Este link já foi
+  aberto", whoever holds the link (no sign-in: they open it from WhatsApp) makes a new link with
+  the same person. The draw (and "Novo link") keeps the result apart in
+  `secretSantaReveals/{token}/private/result`, readable only once the link is spent and until it
+  is renewed, never by the event owner. The new link (`replaces`) is created in one batch with its
+  own kept result and the old link's `replacedBy`; the rules check it is the same giver and
+  person, unopened, and one per spent link. `renewLink` follows the chain from the WhatsApp link to
+  the newest: unopened → it just opens; spent → a new one. Drawing again or "Novo link" deletes the
+  whole chain. The owner's "Abriu em…" shows the first opening only.
   If saving fails for another reason (no connection), the name still shows.
 - **A leak shows, and the answer is a new draw**: the real person sees "already opened"; "Novo
   link" keeps the same pair, so it does not fix a leak.

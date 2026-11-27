@@ -71,6 +71,45 @@
   flex: none;
 }
 
+// Who organizes: a small round mark on the avatar's corner (a crown for the owner, a handshake
+// for a helper), with a tooltip saying so. Same on a computer and a phone.
+.guest-list__avatar-wrap {
+  display: inline-flex;
+  flex: none;
+  position: relative;
+}
+
+.guest-list__role {
+  align-items: center;
+  background: var(--org-secondary-container);
+  block-size: 22px;
+  border: 2px solid var(--org-surface);
+  border-radius: var(--org-radius-circle);
+  color: var(--org-on-secondary-container);
+  display: flex;
+  inline-size: 22px;
+  inset-block-end: -4px;
+  inset-inline-end: -4px;
+  justify-content: center;
+  position: absolute;
+
+  &:focus-visible {
+    outline: 2px solid var(--org-primary);
+    outline-offset: 2px;
+  }
+}
+
+.guest-list__crown {
+  block-size: 14px;
+  fill: currentcolor;
+  inline-size: 14px;
+}
+
+.guest-list__role--host {
+  background: var(--org-warning);
+  color: var(--org-on-warning);
+}
+
 // How many go, as a green pill on the right.
 // Name and phone side by side; on a phone the phone goes under the name, never cutting it.
 .guest-list__who {

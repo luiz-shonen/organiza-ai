@@ -1,3 +1,4 @@
+import { LinkedTextComponent } from '../../shared/components/linked-text/linked-text.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,12 +19,13 @@ import {
 } from '../../core/services';
 import { secretSantaNotificationId, type SecretSantaReveal } from '../../core/models';
 import { giftSearchLinks } from '../../core/utils/secret-santa.utils';
+import { explainError } from '../../core/utils';
 import {
+  FeedbackService,
   OrgButtonComponent,
   OrgIconComponent,
   OrgLoadingStateComponent,
   OrgPageLayoutComponent,
-  OrgSurfaceComponent,
 } from '../../shared/ui';
 import {
   InviteDividerComponent,
@@ -52,13 +54,13 @@ function isPermissionError(error: unknown): boolean {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     InviteDividerComponent,
+    LinkedTextComponent,
     InvitePaperComponent,
     NgTemplateOutlet,
     OrgButtonComponent,
     OrgIconComponent,
     OrgLoadingStateComponent,
     OrgPageLayoutComponent,
-    OrgSurfaceComponent,
   ],
   templateUrl: './secret-santa-reveal.container.html',
   styleUrl: './secret-santa-reveal.container.scss',
@@ -85,6 +87,7 @@ export class SecretSantaRevealContainer {
   private readonly auth = inject(AuthService);
   private readonly inbox = inject(InboxService);
   private readonly users = inject(UserService);
+  private readonly feedback = inject(FeedbackService);
 
   protected readonly loading = signal(true);
   protected readonly reveal = signal<SecretSantaReveal | null>(null);
@@ -105,6 +108,24 @@ export class SecretSantaRevealContainer {
     const name = this.reveal()?.giverName.trim() ?? '';
     return name.split(/\s+/)[0] || name;
   });
+
+  /** A link of the account signed in here: it opens in it as often as they like. */
+  protected readonly ownAccountLink = computed(() => {
+    const giverUid = this.reveal()?.giverUid;
+    return !!giverUid && this.signedIn() && this.auth.currentUser()?.uid === giverUid;
+  });
+
+  /** "O que Leonardo quer ganhar": the first name of who they drew. */
+  protected readonly receiverFirstName = computed(() => {
+    const name = this.reveal()?.receiverName.trim() ?? '';
+    return name.split(/\s+/)[0] || name;
+  });
+
+  /** A store's search opens in a new tab, keeping the result on this one. */
+  protected openStore(event: MouseEvent, url: string): void {
+    event.preventDefault();
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
 
   /** "16 de novembro, às 20:49", when the link was opened; '' when unknown. */
   protected readonly openedLabel = computed(() => {
@@ -146,12 +167,18 @@ export class SecretSantaRevealContainer {
     }
     this.reveal.set(reveal);
     if (!reveal) return;
+    const own = !!reveal.giverUid && reveal.giverUid === uid;
+    // A link of an account opens in it as often as they like (it keeps the result).
+    if (reveal.openedAt && own && reveal.receiverName) {
+      this.show();
+      return;
+    }
     if (reveal.openedAt) {
       this.expired.set(true);
       return;
     }
     // Signed in to the giver's own account: it is them, no need to ask.
-    if (reveal.giverUid && reveal.giverUid === uid) {
+    if (own) {
       await this.spend(token, reveal);
       return;
     }
@@ -177,7 +204,7 @@ export class SecretSantaRevealContainer {
    */
   private async spend(token: string, reveal: SecretSantaReveal): Promise<void> {
     try {
-      await this.secretSantaService.openReveal(token);
+      await this.secretSantaService.openReveal(token, !!reveal.giverUid);
       this.markNoticeRead(reveal.eventId);
     } catch (error) {
       // Opened elsewhere a moment ago. Any other failure (no connection) still shows the name.
@@ -187,6 +214,23 @@ export class SecretSantaRevealContainer {
       }
     }
     this.show();
+  }
+
+  /** A spent link of someone without an account: "Gerar novo link" makes one, same person. */
+  protected readonly canRenew = computed(() => this.expired() && !this.reveal()?.giverUid);
+  protected readonly renewing = signal(false);
+
+  protected async renew(): Promise<void> {
+    if (!this.canRenew() || this.renewing()) return;
+    this.renewing.set(true);
+    try {
+      const fresh = await this.secretSantaService.renewLink(this.token());
+      void this.router.navigate(['/amigo-oculto', fresh]);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível gerar um novo link', error));
+    } finally {
+      this.renewing.set(false);
+    }
   }
 
   protected signIn(): void {

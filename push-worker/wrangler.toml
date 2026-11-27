@@ -1,5 +1,6 @@
 # Organiza AI push relay: sends the app's notices to people's phones (Web Push).
-# Secrets (set by the CD): VAPID_PRIVATE_KEY, FIREBASE_API_KEY.
+# Also "Prévia do link" (POST /preview): reads a gift idea's link and checks Google Safe Browsing.
+# Secrets (set by the CD): VAPID_PRIVATE_KEY, FIREBASE_API_KEY, SAFE_BROWSING_API_KEY (optional).
 name = "organizaai-push"
 main = "src/index.ts"
 compatibility_date = "2026-11-01"

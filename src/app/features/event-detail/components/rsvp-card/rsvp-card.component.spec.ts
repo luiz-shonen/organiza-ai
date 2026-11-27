@@ -216,7 +216,9 @@ describe('RsvpCardComponent', () => {
 
       click('rsvp-decline-btn');
       fixture.detectChanges();
-      (el().querySelector('[data-testid="rsvp-decline-santa"] input') as HTMLInputElement).click();
+      (
+        el().querySelector('[data-testid="rsvp-decline-santa"] button') as HTMLButtonElement
+      ).click();
       fixture.detectChanges();
       expect(
         (el().querySelector('input[data-testid="rsvp-santa-phone"]') as HTMLInputElement).value,

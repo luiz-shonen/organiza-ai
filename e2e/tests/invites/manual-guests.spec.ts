@@ -68,7 +68,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     await page.goto(`/evento/${EVENT_ID}`);
 
     const card = page.getByTestId('guest-list-card');
-    await expect(card.getByTestId('card-header-count')).toHaveText('1');
+    // Tia Lurdes and the host, who always goes.
+    await expect(card.getByTestId('card-header-count')).toHaveText('2');
 
     await card.getByTestId('guest-manual-add-btn').click();
     const sheet = page.getByTestId('manual-guest-sheet');
@@ -94,8 +95,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     });
     await sheet.getByTestId('manual-guest-submit-btn').click();
 
-    // Vó Cida, Lia and Seu Zé join Tia Lurdes: 4 people, shown like anyone else.
-    await expect(card.getByTestId('card-header-count')).toHaveText('4');
+    // Vó Cida, Lia and Seu Zé join Tia Lurdes and the host: 5 people, shown like anyone else.
+    await expect(card.getByTestId('card-header-count')).toHaveText('5');
     const cida = card.getByTestId('guest-household').filter({ hasText: 'Vó Cida' });
     await expect(cida).toBeVisible();
     await expect(cida.getByTestId('guest-manual-tag')).toHaveCount(0);
@@ -116,7 +117,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     await sheet.getByText('Levar familiares?').click();
     await sheet.getByRole('checkbox', { name: 'Lia' }).uncheck();
     await sheet.getByTestId('manual-guest-submit-btn').click();
-    await expect(card.getByTestId('card-header-count')).toHaveText('2');
+    // Cida, Tia Lurdes and the host.
+    await expect(card.getByTestId('card-header-count')).toHaveText('3');
     expect((await readGuests(page)).some((g) => g['name'] === 'Lia')).toBe(false);
 
     // Remove, after confirming.
@@ -124,7 +126,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     const dialog = page.getByTestId('org-confirm-dialog');
     await expect(dialog).toContainText('Remover Vó Cida?');
     await dialog.getByRole('button', { name: 'Remover' }).click();
-    await expect(card.getByTestId('guest-household')).toHaveCount(1);
+    // Tia Lurdes and the host stay.
+    await expect(card.getByTestId('guest-household')).toHaveCount(2);
     expect((await readGuests(page)).map((g) => g.id)).toEqual(['tia-uid']);
   });
 
@@ -156,7 +159,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     });
     await sheet.getByTestId('manual-guest-submit-btn').click();
 
-    await expect(card.getByTestId('card-header-count')).toHaveText('2');
+    // The one added by hand, Tia Lurdes and the host.
+    await expect(card.getByTestId('card-header-count')).toHaveText('3');
     await expect
       .poll(async () => (await readDocs(page, 'secretSantaParticipants')).map((p) => p['name']))
       .toEqual(['Vó Cida']);
@@ -208,7 +212,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
     await expect(sheet.getByTestId('manual-guest-name-input')).toHaveValue('Gustavo Pereira');
     await expect(sheet.getByTestId('manual-guest-phone-input')).toHaveValue('(31) 99999-0000');
     await sheet.getByTestId('manual-guest-submit-btn').click();
-    await expect(card.getByTestId('card-header-count')).toHaveText('2');
+    // Gustavo, Tia Lurdes and the host.
+    await expect(card.getByTestId('card-header-count')).toHaveText('3');
   });
 
   test('a guest sees who was added by hand, but cannot add, edit or remove', async ({ page }) => {
@@ -232,7 +237,8 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
 
     const card = page.getByTestId('guest-list-card');
     await expect(card).toContainText('Vó Cida');
-    await expect(card.getByTestId('card-header-count')).toHaveText('2');
+    // Tia Lurdes, Vó Cida and the host.
+    await expect(card.getByTestId('card-header-count')).toHaveText('3');
     await expect(card.getByTestId('guest-manual-add-btn')).toHaveCount(0);
     await expect(card.getByTestId('guest-manual-tag')).toHaveCount(0);
     await expect(card.getByTestId('guest-manual-edit-btn')).toHaveCount(0);

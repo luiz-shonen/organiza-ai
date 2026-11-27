@@ -35,6 +35,7 @@ export type {
   SecretSantaParticipant,
   SecretSantaParticipantInput,
   SecretSantaReveal,
+  SecretSantaRevealCopy,
   SecretSantaRosterEntry,
   SecretSantaSettings,
 } from './secret-santa.model';
@@ -49,6 +50,7 @@ export {
   approvalNotificationId,
   collaborationNotificationId,
   collaboratorNotificationId,
+  eventStatusNotificationId,
   presenceNotificationId,
   secretSantaNotificationId,
 } from './app-notification.model';
@@ -129,3 +131,4 @@ export type {
   AiSuggestionInput,
   AiSuggestionState,
 } from './ai-suggestion.model';
+export type { LinkPreview } from './link-preview.model';

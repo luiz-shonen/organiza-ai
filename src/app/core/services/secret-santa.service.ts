@@ -13,6 +13,7 @@ import type {
   SecretSantaParticipantInput,
   SecretSantaDuplicate,
   SecretSantaReveal,
+  SecretSantaRevealCopy,
   SecretSantaRosterEntry,
   SecretSantaSettings,
 } from '../models';
@@ -386,15 +387,28 @@ export class SecretSantaService {
       links,
     };
 
+    // New links made from spent ones ("Gerar novo link") go with the old draw too.
+    const renewed = (
+      await Promise.all(
+        (previous?.links ?? []).filter((l) => !l.uid).map((l) => this.renewedTokens(l.token)),
+      )
+    ).flat();
     await this.gateway.runBatch((batch) => {
       for (const link of previous?.links ?? []) {
         batch.delete(this.revealPath(link.token));
+        batch.delete(this.copyPath(link.token));
+      }
+      for (const token of renewed) {
+        batch.delete(this.revealPath(token));
+        batch.delete(this.copyPath(token));
       }
       pairs.forEach(({ giver, receiver }, i) => {
         batch.set(
           this.revealPath(links[i].token),
           this.toReveal(event, giver, receiver, now, links[i].uid),
         );
+        // Kept for "Gerar novo link" on links without an account (an account's keeps its result).
+        if (!links[i].uid) batch.set(this.copyPath(links[i].token), this.toCopy(event, receiver));
       });
       batch.set(this.drawPath(event.id), draw);
       // Guests read it on the event: from now on they no longer join or leave on their own.
@@ -437,12 +451,19 @@ export class SecretSantaService {
       ...draw,
       links: draw.links.map((l) => (l.participantId === participantId ? fresh : l)),
     };
+    const renewed = link.uid ? [] : await this.renewedTokens(link.token);
     await this.gateway.runBatch((batch) => {
       batch.delete(this.revealPath(link.token));
+      batch.delete(this.copyPath(link.token));
+      for (const token of renewed) {
+        batch.delete(this.revealPath(token));
+        batch.delete(this.copyPath(token));
+      }
       batch.set(
         this.revealPath(fresh.token),
         this.toReveal(event, giver, receiver, new Date().toISOString(), fresh.uid),
       );
+      if (!fresh.uid) batch.set(this.copyPath(fresh.token), this.toCopy(event, receiver));
       batch.set(this.drawPath(event.id), next);
     });
     await this.notify(event, [fresh], true);
@@ -494,15 +515,76 @@ export class SecretSantaService {
   }
 
   /**
-   * Spends the link: stamps when it was opened and erases whom the person drew, so opening it
-   * again only says it expired. The rules allow this once, to anyone holding the link.
+   * Opens the link. Without an account it is spent: the stamp, and whom the person drew is erased,
+   * so opening it again only says it expired. A link of an account (`keepResult`) opens only in
+   * it, so it keeps the result and is only stamped, the first time. The rules allow each once.
    */
-  async openReveal(token: string): Promise<void> {
-    await this.gateway.updateDoc(this.revealPath(token), {
-      openedAt: new Date().toISOString(),
-      receiverName: '',
-      receiverGiftOptions: [],
+  async openReveal(token: string, keepResult = false): Promise<void> {
+    const openedAt = new Date().toISOString();
+    await this.gateway.updateDoc(
+      this.revealPath(token),
+      keepResult ? { openedAt } : { openedAt, receiverName: '', receiverGiftOptions: [] },
+    );
+  }
+
+  /**
+   * The result kept for a link without an account, for "Gerar novo link": the rules let it be read
+   * only once the link was spent and until it is renewed. Null when there is none (drawn before
+   * this existed).
+   */
+  async getRevealCopy(token: string): Promise<SecretSantaRevealCopy | null> {
+    return this.gateway.getDoc<SecretSantaRevealCopy>(this.copyPath(token));
+  }
+
+  /**
+   * "Gerar novo link" on a spent link of someone without an account (added by hand): the newest
+   * link of the chain that starts at `token` (the one sent by WhatsApp). Not opened yet → that
+   * one, nothing new; opened → a new link with the same person (the rules check it is the same
+   * result and that each opened link is renewed once). Returns the link to open.
+   */
+  async renewLink(token: string): Promise<string> {
+    let current = token;
+    let reveal = await this.getReveal(current);
+    for (let hop = 0; reveal?.replacedBy && hop < 50; hop++) {
+      current = reveal.replacedBy;
+      reveal = await this.getReveal(current);
+    }
+    if (!reveal) throw new Error('Este link não existe mais: peça um novo para quem organiza.');
+    if (!reveal.openedAt) return current;
+    const kept = await this.getRevealCopy(current);
+    if (!kept) throw new Error('Não foi possível gerar um novo link: peça um para quem organiza.');
+    const fresh = generateId();
+    const next: SecretSantaReveal = {
+      eventId: reveal.eventId,
+      eventTitle: reveal.eventTitle,
+      eventDate: reveal.eventDate,
+      giverName: reveal.giverName,
+      receiverName: kept.receiverName,
+      receiverGiftOptions: [...kept.receiverGiftOptions],
+      createdAt: new Date().toISOString(),
+      replaces: current,
+    };
+    await this.gateway.runBatch((batch) => {
+      batch.set(this.revealPath(fresh), next);
+      batch.set(this.copyPath(fresh), {
+        eventId: reveal.eventId,
+        receiverName: kept.receiverName,
+        receiverGiftOptions: [...kept.receiverGiftOptions],
+      });
+      batch.update(this.revealPath(current), { replacedBy: fresh });
     });
+    return fresh;
+  }
+
+  /** The links made from `token` by "Gerar novo link", newest last (the owner reads them all). */
+  private async renewedTokens(token: string): Promise<string[]> {
+    const tokens: string[] = [];
+    let reveal = await this.getReveal(token).catch(() => null);
+    while (reveal?.replacedBy && tokens.length < 50) {
+      tokens.push(reveal.replacedBy);
+      reveal = await this.getReveal(reveal.replacedBy).catch(() => null);
+    }
+    return tokens;
   }
 
   /** When a link was opened (null: not yet, or it no longer exists), for the owner's list. */
@@ -510,6 +592,21 @@ export class SecretSantaService {
     return this.gateway
       .docSnapshot<SecretSantaReveal>(this.revealPath(token))
       .pipe(map((doc) => doc?.openedAt ?? null));
+  }
+
+  private copyPath(token: string): string {
+    return `${this.revealPath(token)}/private/result`;
+  }
+
+  private toCopy(
+    event: Pick<PartyEvent, 'id'>,
+    receiver: SecretSantaParticipant,
+  ): SecretSantaRevealCopy {
+    return {
+      eventId: event.id,
+      receiverName: receiver.name,
+      receiverGiftOptions: [...receiver.giftOptions],
+    };
   }
 
   private toReveal(

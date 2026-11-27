@@ -140,9 +140,9 @@ describe('SecretSantaCardComponent', () => {
       { id: 'rsvp_u1', name: 'Maria', phone: '', giftOptions: [], joinedBy: 'u1' },
     ]);
     fixture.detectChanges();
-    expect(el().textContent).toContain('4 pessoas no sorteio');
-    expect(el().querySelector('[data-testid="secret-santa-joined-tag"]')?.textContent).toContain(
-      '1 pelo convite',
+    expect(el().textContent).toContain('1 entrou pelo convite');
+    expect(el().querySelector('[data-testid="secret-santa-count-tag"]')?.textContent).toContain(
+      '4 no sorteio',
     );
   });
 
@@ -184,5 +184,30 @@ describe('SecretSantaCardComponent', () => {
     fixture.componentRef.setInput('selfJoinOpen', false);
     fixture.detectChanges();
     expect(el().textContent).toContain('Fechado: ninguém novo entra pelo convite');
+  });
+
+  it("gives the organizer's own link only 'Abrir link' and 'Novo link'", () => {
+    const opened: SecretSantaShareLink[] = [];
+    fixture.componentInstance.openOwn.subscribe((link) => opened.push(link));
+    fixture.componentRef.setInput('isOwner', true);
+    fixture.componentRef.setInput('drawnAt', '2026-11-16T20:00:00.000Z');
+    fixture.componentRef.setInput('links', [{ ...links[0], self: true }]);
+    fixture.detectChanges();
+
+    const item = el().querySelector('[data-testid="secret-santa-links"] li')!;
+    expect(item.textContent).toContain('Novo link');
+    expect(item.textContent).not.toContain('WhatsApp');
+    expect(item.textContent).not.toContain('Copiar');
+    button('secret-santa-open-own-btn')!.click();
+    expect(opened).toEqual([{ ...links[0], self: true }]);
+  });
+
+  it('only shows where things stand while the event is cancelled', () => {
+    fixture.componentRef.setInput('isOwner', true);
+    fixture.componentRef.setInput('locked', true);
+    fixture.detectChanges();
+    expect(el().querySelector('[data-testid="secret-santa-locked"]')).not.toBeNull();
+    expect(button('secret-santa-draw-btn')).toBeNull();
+    expect(el().querySelector('[data-testid="secret-santa-self-join"]')).toBeNull();
   });
 });

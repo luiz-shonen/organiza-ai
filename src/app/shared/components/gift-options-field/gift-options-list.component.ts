@@ -10,6 +10,7 @@ import {
 import { SECRET_SANTA_MAX_GIFT_OPTIONS } from '../../../core/models';
 import { GiftOption } from '../../../core/value-objects';
 import { OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent } from '../../ui';
+import { LinkedTextComponent } from '../linked-text/linked-text.component';
 
 /** A gift idea changed in the list: which one, and its new text. */
 export interface GiftOptionEdit {
@@ -26,7 +27,7 @@ export interface GiftOptionEdit {
 @Component({
   selector: 'app-gift-options-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
+  imports: [LinkedTextComponent, OrgButtonComponent, OrgIconButtonComponent, OrgTextFieldComponent],
   template: `
     @if (note()) {
       <!-- The person's own word on what they like, above their ideas, always in view. -->
@@ -105,7 +106,7 @@ export interface GiftOptionEdit {
               [class.gift-list__item--editable]="editable()"
               data-testid="gift-options-list-item"
             >
-              <span class="gift-list__text">{{ gift }}</span>
+              <app-linked-text class="gift-list__text" [text]="gift" />
               @if (editable()) {
                 @if (!full() && !adding()) {
                   <org-icon-button

@@ -105,14 +105,42 @@
                 [ariaLabel]="'Quem vai com ' + household.name"
                 [expanded]="allOpen()"
               >
-                <org-avatar
-                  orgExpansionTitleLead
-                  class="guest-list__avatar"
-                  [name]="household.name"
-                  [photoUrl]="household.photoUrl ?? null"
-                />
+                <span orgExpansionTitleLead class="guest-list__avatar-wrap">
+                  <org-avatar
+                    class="guest-list__avatar"
+                    [name]="household.name"
+                    [photoUrl]="household.photoUrl ?? null"
+                  />
+                  @if (roleOf(household); as role) {
+                    <org-tooltip
+                      class="guest-list__role"
+                      [class.guest-list__role--host]="role.host"
+                      data-testid="guest-role-badge"
+                      tabindex="0"
+                      role="img"
+                      [text]="role.label"
+                      [attr.aria-label]="role.label"
+                    >
+                      @if (role.host) {
+                        <!-- A crown: the icon font has none, so it is drawn here. -->
+                        <svg
+                          class="guest-list__crown"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          data-testid="guest-host-crown"
+                        >
+                          <path
+                            d="M3 8.5l4.5 3.5L12 5l4.5 7L21 8.5 19 18H5L3 8.5zM5 19.5h14V21H5z"
+                          />
+                        </svg>
+                      } @else {
+                        <org-icon name="handshake" size="sm" color="currentColor" />
+                      }
+                    </org-tooltip>
+                  }
+                </span>
                 <span orgExpansionTitleMeta class="guest-list__who">
-                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  <span class="guest-list__row-name">{{ household.name }} </span>
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }
@@ -209,13 +237,42 @@
             } @else {
               <!-- Nothing more to show: just the row, nothing to open. -->
               <div class="guest-list__row">
-                <org-avatar
-                  class="guest-list__avatar"
-                  [name]="household.name"
-                  [photoUrl]="household.photoUrl ?? null"
-                />
+                <span class="guest-list__avatar-wrap">
+                  <org-avatar
+                    class="guest-list__avatar"
+                    [name]="household.name"
+                    [photoUrl]="household.photoUrl ?? null"
+                  />
+                  @if (roleOf(household); as role) {
+                    <org-tooltip
+                      class="guest-list__role"
+                      [class.guest-list__role--host]="role.host"
+                      data-testid="guest-role-badge"
+                      tabindex="0"
+                      role="img"
+                      [text]="role.label"
+                      [attr.aria-label]="role.label"
+                    >
+                      @if (role.host) {
+                        <!-- A crown: the icon font has none, so it is drawn here. -->
+                        <svg
+                          class="guest-list__crown"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          data-testid="guest-host-crown"
+                        >
+                          <path
+                            d="M3 8.5l4.5 3.5L12 5l4.5 7L21 8.5 19 18H5L3 8.5zM5 19.5h14V21H5z"
+                          />
+                        </svg>
+                      } @else {
+                        <org-icon name="handshake" size="sm" color="currentColor" />
+                      }
+                    </org-tooltip>
+                  }
+                </span>
                 <span class="guest-list__who">
-                  <span class="guest-list__row-name">{{ household.name }}</span>
+                  <span class="guest-list__row-name">{{ household.name }} </span>
                   @if (forOrganizer() && household.phone) {
                     <span class="guest-list__phone">{{ displayPhone(household.phone) }}</span>
                   }

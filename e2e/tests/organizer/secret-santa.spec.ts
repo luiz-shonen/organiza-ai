@@ -298,7 +298,7 @@ test.describe('Amigo oculto', () => {
     await page.goto(`/evento/${EVENT_ID}`);
 
     const card = page.getByTestId('secret-santa-card');
-    await expect(card).toContainText('3 pessoas no sorteio');
+    await expect(card.getByTestId('secret-santa-count-tag')).toHaveText('3 no sorteio');
     await card.getByTestId('secret-santa-draw-btn').click();
 
     const links = card.getByTestId('secret-santa-links');
@@ -387,15 +387,17 @@ test.describe('Amigo oculto', () => {
       })
       .toBe(true);
 
+    // The links before drawing again, read before it starts: on a slow run the new draw may
+    // already be saved by the time a read after the click happens.
+    const oldTokens = new Set(
+      (await readStore(page))['secretSantaReveals'].map((r) => r.id).concat(luizToken),
+    );
     await card.getByTestId('secret-santa-redraw-btn').click();
     await expect(page.getByRole('dialog')).toContainText(
       'Os links enviados antes deixam de funcionar',
     );
     await page.getByRole('dialog').getByRole('button', { name: 'Sortear de novo' }).click();
     // The old links stop working: every token is new, and there are still three.
-    const oldTokens = new Set(
-      (await readStore(page))['secretSantaReveals'].map((r) => r.id).concat(luizToken),
-    );
     await expect
       .poll(async () => {
         const tokens = (await readStore(page))['secretSantaReveals'].map((r) => r.id);
@@ -669,7 +671,9 @@ test.describe('Amigo oculto', () => {
     const expired = page.getByTestId('secret-santa-expired');
     await expect(expired).toContainText('Este link já foi aberto');
     await expect(expired).toContainText('Ele só podia ser aberto uma vez');
-    await expect(expired).toContainText('peça um novo link para quem organiza o evento');
+    // Someone without an account makes a new link with the same person right here.
+    await expect(expired).toContainText('Gere um novo link');
+    await expect(page.getByTestId('secret-santa-renew-btn')).toBeVisible();
     await expect(page.getByTestId('secret-santa-receiver')).toHaveCount(0);
     // A forwarded link someone else opened first: the giver learns to ask for a new draw.
     await expect(page.getByTestId('secret-santa-not-me')).toContainText(

@@ -225,6 +225,14 @@ export class EventService {
     }
   }
 
+  /** "Reabrir evento": a cancelled event is open again, as it was. */
+  async reopenEvent(eventId: string): Promise<void> {
+    await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
+      status: 'active',
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
   async deleteEvent(eventId: string): Promise<void> {
     await this.gateway.deleteDoc(`${this.collectionName}/${eventId}`);
   }

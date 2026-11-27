@@ -29,6 +29,7 @@ import { FeedbackService } from './shared/ui/feedback/feedback.service';
 import { formatAppVersion, resolveBackRoute, showsBottomNav } from './core/utils';
 import { appVersion } from '../environments/firebase-config';
 import { SeasonalOverlayComponent } from './shared/components/seasonal-overlay/seasonal-overlay.component';
+import { LinkPreviewSheetComponent } from './shared/components/link-preview/link-preview-sheet.component';
 import { NavigationDrawerComponent } from './shared/ui/drawer/navigation-drawer.component';
 import { OrgIconComponent } from './shared/ui/actions/org-icon.component';
 import { OrgIconButtonComponent } from './shared/ui/actions/org-icon-button.component';
@@ -89,6 +90,7 @@ const PROFILE_ITEM: OrgNavBarItem = {
     OrgNavBarComponent,
     RsvpDrawerComponent,
     CollaboratorDrawerComponent,
+    LinkPreviewSheetComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

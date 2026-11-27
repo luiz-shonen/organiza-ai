@@ -6,7 +6,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, setDoc, updateDoc, writeBatch } from 'firebase/firestore';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest';
 
 /**
@@ -142,6 +142,12 @@ describe('guest approval', () => {
   });
 });
 
+const opening = {
+  openedAt: '2026-11-17T12:00:00.000Z',
+  receiverName: '',
+  receiverGiftOptions: [],
+};
+
 describe('amigo oculto link of an account', () => {
   beforeEach(async () => {
     await testEnvironment.withSecurityRulesDisabled(async (context) => {
@@ -185,5 +191,72 @@ describe('amigo oculto link of an account', () => {
         reveal({ giverUid: 'joao' }),
       ),
     );
+  });
+
+  it('lets the account open its link again, keeping the result (only the stamp changes)', async () => {
+    const maria = accountDb('maria');
+    await assertFails(
+      updateDoc(doc(accountDb('primo'), 'secretSantaReveals/tok-maria'), {
+        openedAt: '2026-11-17T12:00:00.000Z',
+      }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(maria, 'secretSantaReveals/tok-maria'), {
+        openedAt: '2026-11-17T12:00:00.000Z',
+      }),
+    );
+    // Stamped once; the account keeps reading it, whom it drew included.
+    await assertFails(updateDoc(doc(maria, 'secretSantaReveals/tok-maria'), { openedAt: 'later' }));
+    await assertSucceeds(getDoc(doc(maria, 'secretSantaReveals/tok-maria')));
+  });
+
+  it('makes one new link per spent link without an account, with the same person', async () => {
+    const copy = { eventId: 'e', receiverName: 'Luiz', receiverGiftOptions: [] };
+    const path = 'secretSantaReveals/tok-open/private/result';
+    await assertFails(setDoc(doc(visitorDb(), path), copy));
+    await assertSucceeds(setDoc(doc(accountDb('owner-uid'), path), copy));
+    // Not readable before the link is spent; the owner never reads it.
+    await assertFails(getDoc(doc(visitorDb(), path)));
+
+    const renew = (db: ReturnType<typeof visitorDb>, from: string, to: string, extra = {}) => {
+      const batch = writeBatch(db);
+      batch.set(doc(db, `secretSantaReveals/${to}`), reveal({ replaces: from, ...extra }));
+      batch.set(doc(db, `secretSantaReveals/${to}/private/result`), { ...copy, ...extra });
+      batch.update(doc(db, `secretSantaReveals/${from}`), { replacedBy: to });
+      return batch.commit();
+    };
+    const visitor = visitorDb();
+
+    // Not before the link was opened.
+    await assertFails(renew(visitor, 'tok-open', 'tok-new'));
+    await updateDoc(doc(visitor, 'secretSantaReveals/tok-open'), opening);
+    await assertSucceeds(getDoc(doc(visitor, path)));
+    await assertFails(getDoc(doc(accountDb('owner-uid'), path)));
+    // Never another person drawn, nor a link of an account.
+    await assertFails(renew(visitor, 'tok-open', 'tok-new', { receiverName: 'Bia' }));
+    await assertFails(renew(visitor, 'tok-open', 'tok-new', { giverUid: 'primo' }));
+
+    await assertSucceeds(renew(visitor, 'tok-open', 'tok-new'));
+    // Once per spent link: the old one points to the new one, and its result is no longer read.
+    await assertFails(renew(visitor, 'tok-open', 'tok-other'));
+    await assertFails(getDoc(doc(visitor, path)));
+    // The new one opens once, then can be renewed in its turn.
+    await assertFails(renew(visitor, 'tok-new', 'tok-third'));
+    await updateDoc(doc(visitor, 'secretSantaReveals/tok-new'), opening);
+    await assertSucceeds(renew(visitor, 'tok-new', 'tok-third'));
+    // The owner still clears them when drawing again.
+    await assertSucceeds(deleteDoc(doc(accountDb('owner-uid'), 'secretSantaReveals/tok-third')));
+  });
+
+  it('never renews a link of an account (it already reopens in it)', async () => {
+    const maria = accountDb('maria');
+    await updateDoc(doc(maria, 'secretSantaReveals/tok-maria'), opening);
+    const batch = writeBatch(maria);
+    batch.set(
+      doc(maria, 'secretSantaReveals/tok-x'),
+      reveal({ giverUid: 'maria', replaces: 'tok-maria' }),
+    );
+    batch.update(doc(maria, 'secretSantaReveals/tok-maria'), { replacedBy: 'tok-x' });
+    await assertFails(batch.commit());
   });
 });

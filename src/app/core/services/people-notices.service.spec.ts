@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PeopleNoticesService } from './people-notices.service';
 import { AuthService } from './auth.service';
 import { EventService } from './event.service';
+import { GuestService } from './guest.service';
+import { of } from 'rxjs';
 import { InboxService } from './inbox.service';
 import { PushService } from './push.service';
 
@@ -24,6 +26,17 @@ describe('PeopleNoticesService', () => {
     }),
   };
 
+  const guests = {
+    listGuests: vi.fn(() =>
+      of([
+        { id: 'carla', uid: 'carla', name: 'Carla' },
+        { id: 'carla_mae', uid: 'carla', primaryGuestId: 'carla', name: 'Mãe' },
+        { id: 'manual', name: 'Tio', addedBy: 'jessica' },
+        { id: 'bia', uid: 'bia', name: 'Bia' },
+      ]),
+    ),
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     me.set({ uid: 'ana', displayName: 'Ana Souza' });
@@ -33,6 +46,7 @@ describe('PeopleNoticesService', () => {
         { provide: InboxService, useValue: inbox },
         { provide: PushService, useValue: push },
         { provide: EventService, useValue: events },
+        { provide: GuestService, useValue: guests },
       ],
     });
     service = TestBed.inject(PeopleNoticesService);
@@ -101,6 +115,28 @@ describe('PeopleNoticesService', () => {
       }),
     );
     expect(push.notify).toHaveBeenCalledWith('users/ana/notifications/approval_e1');
+  });
+
+  it('tells collaborators and guests with an account that the event was cancelled', async () => {
+    me.set({ uid: 'jessica', displayName: 'Jéssica' });
+    await service.eventStatus({ id: 'e1', title: 'Natal 2026', collaborators: ['bia'] }, true);
+    expect(inbox.send.mock.calls.map(([uid]) => uid)).toEqual(['bia', 'carla']);
+    expect(inbox.send).toHaveBeenCalledWith(
+      'carla',
+      expect.objectContaining({
+        id: 'event-status_e1',
+        kind: 'event-status',
+        title: 'Evento cancelado',
+        actionUrl: '/evento/e1',
+      }),
+    );
+    expect(push.notify).toHaveBeenCalledWith('users/carla/notifications/event-status_e1');
+
+    await service.eventStatus({ id: 'e1', title: 'Natal 2026', collaborators: [] }, false);
+    expect(inbox.send).toHaveBeenLastCalledWith(
+      'bia',
+      expect.objectContaining({ title: 'Evento reaberto' }),
+    );
   });
 
   it('pushes an invite to help organise by the invited e-mail', () => {

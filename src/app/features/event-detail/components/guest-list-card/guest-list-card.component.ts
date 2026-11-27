@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { GuestDecline, ManualGuestInput } from '../../../../core/models';
+import type { KnownPerson } from '../../../../core/utils/known-people.utils';
 import {
   householdPeople,
   petsLabel,
@@ -18,7 +19,10 @@ import {
   OrgSurfaceComponent,
   OrgTooltipComponent,
 } from '../../../../shared/ui';
-import { ManualGuestFormComponent } from '../manual-guest-form/manual-guest-form.component';
+import {
+  ManualGuestFormComponent,
+  type ManualGuestSantaSettings,
+} from '../manual-guest-form/manual-guest-form.component';
 
 /**
  * "Quem vai" on the event page: one panel per confirmed household, like "Levar familiares?",
@@ -70,11 +74,15 @@ export class GuestListCardComponent {
    * Organizers only: saves someone added by hand (`id` null) or changes them, and resolves true
    * when it worked; the drawer then closes.
    */
+  /** People added by hand before (no account), offered in "Adicionar alguém à mão". */
+  readonly knownPeople = input<readonly KnownPerson[]>([]);
   readonly saveManual = input<
-    ((guest: ManualGuestInput, id: string | null) => Promise<boolean>) | null
+    ((guest: ManualGuestInput, household: GuestHousehold | null) => Promise<boolean>) | null
   >(null);
   /** "Remover" on someone added by hand; the page asks before taking them off the list. */
   readonly removeManual = output<GuestHousehold>();
+  /** The amigo oculto offered when adding someone by hand; null when there is none to join. */
+  readonly manualSecretSanta = input<ManualGuestSantaSettings | null>(null);
 
   /** The drawer: 'new' to add someone, or the hand-added household being edited. */
   protected readonly manualSheet = signal<'new' | GuestHousehold | null>(null);
@@ -92,12 +100,17 @@ export class GuestListCardComponent {
       companions: household.members
         .filter((person) => person.role === 'Acompanhante')
         .map((person) => person.name),
+      relatives: household.members.flatMap(({ role, guestId, name, relationship, phone }) =>
+        role === 'Família' && guestId && relationship
+          ? [{ id: guestId, name, relationship, phone: phone ?? '' }]
+          : [],
+      ),
     };
   });
   protected readonly saveManualAndClose = async (guest: ManualGuestInput): Promise<boolean> => {
     const save = this.saveManual();
     if (!save) return false;
-    const saved = await save(guest, this.editingManual()?.id ?? null);
+    const saved = await save(guest, this.editingManual());
     if (saved) this.manualSheet.set(null);
     return saved;
   };

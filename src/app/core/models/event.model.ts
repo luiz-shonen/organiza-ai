@@ -25,6 +25,15 @@ export const ADDRESS_COMPLEMENT_MAX = 80;
 export const ADDRESS_DIRECTIONS_MAX = 300;
 /** Longest "Para que é o Pix" text. */
 export const PIX_PURPOSE_MAX = 300;
+/** Most people an organizer can say they expect ("Quantas pessoas você espera?"). */
+export const EXPECTED_GUESTS_MAX = 999;
+
+/** "20" → 20; empty, zero or anything else → null (the field is optional). */
+export function parseExpectedGuests(text: string | null | undefined): number | null {
+  const value = Number((text ?? '').trim());
+  return Number.isInteger(value) && value >= 1 && value <= EXPECTED_GUESTS_MAX ? value : null;
+}
+
 /** Longest amigo oculto description (value, rules, dates). */
 export const SECRET_SANTA_RULES_MAX = 500;
 
@@ -126,6 +135,15 @@ export interface PartyEvent {
   secretSantaRosterVersion?: number;
   pixType?: PixType;
   estimatedBudget?: number | null;
+  /**
+   * "Quantas pessoas você espera?": how many people the organizer expects. Optional; once 70%
+   * of it confirmed, organizers get item suggestions from the assistant (see `ai-suggestions.md`).
+   */
+  expectedGuests?: number | null;
+  /** How many assistant suggestions this event used (at most `AI_SUGGESTIONS_PER_EVENT`). */
+  aiSuggestionsUsed?: number;
+  /** The latest suggestion shown for this event: a document id in `ai_cache`. */
+  aiSuggestionKey?: string | null;
   status?: 'active' | 'cancelled';
   createdBy?: string;
   creatorEmail?: string;

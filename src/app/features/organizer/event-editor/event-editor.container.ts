@@ -44,7 +44,13 @@ import {
   toDayString,
   fromDrawDate,
   toDrawDate,
+  countGuests,
+  splitGuestsByApproval,
+  isAiSuggestionDue,
 } from '../../../core/utils';
+import { AiSuggestionService } from '../../../core/services/ai-suggestion.service';
+import { AiSuggestionCardComponent } from '../../../shared/components/ai-suggestion-card/ai-suggestion-card.component';
+import type { AiSuggestedItem } from '../../../core/models';
 import {
   AddressNumber,
   Cep,
@@ -69,6 +75,7 @@ import {
   NewPartyItem,
   PartyEvent,
   PartyItem,
+  parseExpectedGuests,
   PIX_PURPOSE_MAX,
   SECRET_SANTA_RULES_MAX,
   SecretSantaParticipant,
@@ -121,6 +128,7 @@ export type EditorStepSlug = (typeof EDITOR_STEP_SLUGS)[number];
     EventAddressStepComponent,
     EventBasicInfoStepComponent,
     EventItemsStepComponent,
+    AiSuggestionCardComponent,
     EventPixStepComponent,
     EventSecretSantaStepComponent,
     OrgBannerComponent,
@@ -157,6 +165,7 @@ export class EventEditorContainer implements OnInit {
   protected readonly authService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly guestService = inject(GuestService);
+  private readonly aiSuggestions = inject(AiSuggestionService);
   private readonly secretSantaService = inject(SecretSantaService);
   private readonly peopleNotices = inject(PeopleNoticesService);
 
@@ -180,6 +189,71 @@ export class EventEditorContainer implements OnInit {
     'Amigo oculto',
     'Pix',
   ] as const;
+  /** People confirmed (approved, when the event asks for approval), pets aside. */
+  protected readonly confirmedPeople = computed(
+    () =>
+      countGuests(
+        splitGuestsByApproval(this.guests(), !!this.currentEvent()?.requireApproval).approved,
+      ).people,
+  );
+  /**
+   * "Sugestões do Organiza AI" in the "Itens" step: the same card as on the event page, asking
+   * the owner for the expected number when there is none yet.
+   */
+  protected readonly showAiSuggestions = computed(() => {
+    const event = this.currentEvent();
+    if (!this.isEditing() || hasStarted(event?.date) || !this.aiSuggestions.isAvailable()) {
+      return false;
+    }
+    return event?.expectedGuests
+      ? isAiSuggestionDue(event.expectedGuests, this.confirmedPeople())
+      : this.isOwner() && this.confirmedPeople() >= 1;
+  });
+  protected readonly savingExpected = signal(false);
+
+  /**
+   * The card's "Quantas pessoas você espera?": saved on the event at once and put in the same
+   * field of the first step, so saving the whole event later keeps it.
+   */
+  protected async onSaveExpected(expectedGuests: number): Promise<void> {
+    const eventId = this.id();
+    if (!eventId) return;
+    this.savingExpected.set(true);
+    try {
+      await this.eventService.updateEvent(eventId, { expectedGuests });
+      this.basicInfoForm.controls.expectedGuests.setValue(String(expectedGuests));
+      this.feedback.success(`Pronto: ${expectedGuests} pessoas esperadas.`);
+    } catch (error) {
+      this.feedback.error(explainError('Não foi possível salvar o número de pessoas.', error));
+    } finally {
+      this.savingExpected.set(false);
+    }
+  }
+  protected readonly aiState = computed(() => this.aiSuggestions.stateFor(this.id() ?? ''));
+  protected readonly itemNames = computed(() => this.items().map((item) => item.name));
+  private readonly restoreAiSuggestion = effect(() => {
+    const key = this.currentEvent()?.aiSuggestionKey;
+    const eventId = this.id();
+    if (this.showAiSuggestions() && key && eventId) {
+      untracked(() => void this.aiSuggestions.restore(eventId, key));
+    }
+  });
+
+  protected onAiGenerate(): void {
+    const event = this.currentEvent();
+    const eventId = this.id();
+    if (!event?.expectedGuests || !eventId) return;
+    this.aiSuggestions.generate(eventId, {
+      category: event.category || event.title,
+      people: Math.max(event.expectedGuests, this.confirmedPeople()),
+      items: this.itemNames(),
+    });
+  }
+
+  protected onAiAdd(item: AiSuggestedItem): void {
+    void this.addItem({ name: item.name, quantity: item.quantity, unit: item.unit });
+  }
+
   /** Items typed while creating the event; saved right after the event exists. */
   protected readonly draftItems = signal<NewPartyItem[]>([]);
   protected readonly stepItems = computed<readonly NewPartyItem[]>(() =>
@@ -214,7 +288,7 @@ export class EventEditorContainer implements OnInit {
 
   private readonly drafts = inject(FormDraftService);
   private readonly knownPeopleService = inject(KnownPeopleService);
-  /** People the organizer knows from other events and family; read once the amigo oculto is on. */
+  /** People the organizer typed by hand before (no account); read once the amigo oculto is on. */
   private readonly knownPeopleAll = signal<KnownPerson[]>([]);
   private knownPeopleRequested = false;
   /** Those not in this amigo oculto yet. */
@@ -259,6 +333,8 @@ export class EventEditorContainer implements OnInit {
       // Optional: empty is a one-day event.
       endDate: [null as Date | null, [validDate]],
       time: ['', [Validators.required]],
+      // Optional: '' or a whole number from 1 to 999.
+      expectedGuests: ['', [Validators.pattern(/^\s*([1-9][0-9]{0,2})?\s*$/)]],
     },
     { validators: [notInPast(), endNotBeforeStart] },
   );
@@ -307,7 +383,7 @@ export class EventEditorContainer implements OnInit {
       if (!uid) return;
       this.knownPeopleRequested = true;
       void this.knownPeopleService
-        .list(uid, this.id() === 'novo' ? null : this.id())
+        .list(uid)
         .then((people) => this.knownPeopleAll.set(people))
         .catch(() => undefined);
     });
@@ -363,6 +439,7 @@ export class EventEditorContainer implements OnInit {
               date: d,
               endDate: parseDay(event.endDate),
               time: timeStr,
+              expectedGuests: event.expectedGuests ? String(event.expectedGuests) : '',
             });
 
             // Older events only have the one-line location; split it into the fields.
@@ -555,6 +632,7 @@ export class EventEditorContainer implements OnInit {
       description,
       date: dateStr,
       endDate: endDateStr,
+      expectedGuests: parseExpectedGuests(raw.expectedGuests),
       location,
       addressDetails,
       mapLocation: MapLocation.create(rawAddress.mapLocation)?.data ?? null,
@@ -1067,6 +1145,8 @@ interface EventEditorDraft {
     date: string | null;
     endDate: string | null;
     time: string;
+    /** Missing in drafts saved before the field. */
+    expectedGuests?: string;
   };
   address: {
     cep: string;

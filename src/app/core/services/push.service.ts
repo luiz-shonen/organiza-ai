@@ -26,9 +26,30 @@ function isInstalled(): boolean {
   return !!nav?.standalone || !!globalThis.matchMedia?.('(display-mode: standalone)').matches;
 }
 
+/** Set when the person turns notices off on this device: they are not turned back on alone. */
+const TURNED_OFF_KEY = 'organizaai.push.off';
+
+function turnedOffHere(): boolean {
+  try {
+    return globalThis.localStorage?.getItem(TURNED_OFF_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function rememberTurnedOff(off: boolean): void {
+  try {
+    if (off) globalThis.localStorage?.setItem(TURNED_OFF_KEY, '1');
+    else globalThis.localStorage?.removeItem(TURNED_OFF_KEY);
+  } catch {
+    // Private mode or blocked storage: only the automatic turning on is lost.
+  }
+}
+
 /**
- * Notices on the phone (Web Push through the relay in `push-worker/`). Turned on only when the
- * person taps "Ativar notificações no celular", never by surprise. Each notice is written in the
+ * Notices on the phone (Web Push through the relay in `push-worker/`). The browser is asked only
+ * when the person taps "Ativar notificações no celular", never by surprise; a device that already
+ * allowed notifications is turned on alone at sign-in, unless the person turned it off. Each notice is written in the
  * person's bell first (`users/{uid}/notifications`), then the relay is asked to push it: the
  * relay reads it as whoever wrote it, so Firestore's rules decide who may tell whom.
  */
@@ -71,7 +92,10 @@ export class PushService {
     try {
       const sub = await swPush.requestSubscription({ serverPublicKey: PUSH_VAPID_PUBLIC_KEY });
       this.permission.set(Notification.permission);
-      if (await this.post('/devices', { subscription: sub.toJSON() })) return true;
+      if (await this.post('/devices', { subscription: sub.toJSON() })) {
+        rememberTurnedOff(false);
+        return true;
+      }
       // The relay did not keep it: the device would look on and never receive anything.
       await swPush.unsubscribe().catch(() => undefined);
       return false;
@@ -95,6 +119,7 @@ export class PushService {
   async disable(): Promise<void> {
     const swPush = this.swPush;
     if (!swPush) return;
+    rememberTurnedOff(true);
     const sub = await firstValueFrom(swPush.subscription).catch(() => null);
     if (!sub) return;
     await this.post('/devices/remove', { endpoint: sub.endpoint });
@@ -116,6 +141,9 @@ export class PushService {
     if (!this.swPush) return;
     const sub = await firstValueFrom(this.swPush.subscription).catch(() => null);
     if (sub) await this.post('/devices', { subscription: sub.toJSON() });
+    // Notifications already allowed on this phone (asked before, by the app or the browser): no
+    // need to tap "Ativar" again. The browser does not ask a second time.
+    else if (!turnedOffHere()) await this.enable();
   }
 
   private async post(route: string, body: unknown): Promise<boolean> {

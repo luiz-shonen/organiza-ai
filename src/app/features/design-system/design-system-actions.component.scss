@@ -1,0 +1,27 @@
+@use 'showcase-base' as base;
+@include base.sections;
+
+.ds-card-body {
+  margin-top: var(--org-space-sm);
+}
+
+.ds-flush-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-2xs);
+    padding: var(--org-space-md) var(--org-space-lg);
+
+    & + li {
+      border-top: 1px solid var(--org-outline-variant);
+    }
+  }
+
+  strong {
+    color: var(--org-on-surface);
+  }
+}

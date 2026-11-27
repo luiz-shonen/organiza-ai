@@ -1,19 +1,14 @@
-<details class="org-ds-code-example" [attr.aria-label]="label()">
-  <summary class="org-ds-code-example__summary">
-    <span>{{ label() }}</span>
-    <org-icon name="expand_more" aria-hidden="true" />
-  </summary>
-  <div class="org-ds-code-example__content">
-    <header class="org-ds-code-example__header">
-      <org-button
-        type="button"
-        variant="text"
-        [label]="copied() ? 'Copiado' : 'Copiar'"
-        [icon]="copied() ? 'check_circle' : 'content_copy'"
-        (pressed)="copy()"
-        [attr.aria-label]="copied() ? 'Código copiado' : 'Copiar código'"
-      />
-    </header>
-    <pre><code>{{ code() }}</code></pre>
-  </div>
-</details>
+<figure class="ds-code">
+  <figcaption class="ds-code__header">
+    <span class="ds-code__label">{{ label() }}</span>
+    <org-copy-button
+      label="Copiar"
+      copiedMessage="Código copiado!"
+      variant="text"
+      [compact]="true"
+      [gradient]="false"
+      [value]="code()"
+    />
+  </figcaption>
+  <pre class="ds-code__body" tabindex="0"><code>{{ code() }}</code></pre>
+</figure>

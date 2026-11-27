@@ -1,0 +1,27 @@
+@use 'showcase-base' as base;
+@include base.sections;
+
+.ds-progress-line {
+  display: flex;
+  flex-direction: column;
+  gap: var(--org-space-xs);
+}
+
+// A positioned, clipped layer, as the app shell gives the drift on the login page.
+.ds-party {
+  align-items: center;
+  background: var(--org-surface-container-low);
+  block-size: calc(var(--org-space-3xl) * 3);
+  border-radius: var(--org-radius-md);
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+
+  &__text {
+    color: var(--org-on-surface);
+    font: var(--org-text-title);
+    margin: 0;
+    position: relative;
+  }
+}

@@ -1,133 +1,82 @@
 @use '../../shared/ui/tokens/semantic' as semantic;
 
-// Shared by the showcase page and its section components: emulated encapsulation
-// keeps each component's copy scoped, so both include these mixins.
-@mixin typography() {
-  :is(h1, h2, h3, h4) {
-    font-family: var(--org-font-display);
-    font-weight: var(--org-font-weight-semibold);
-  }
-
-  :not(mat-icon, .material-icons, .material-symbols-outlined) {
-    font-family: var(--org-font-body);
-  }
-
-  :is(h1, h2, h3, h4, .org-ds-topbar__title) {
-    font-family: var(--org-font-display);
-  }
-
-  :is(code, .org-ds-topbar__eyebrow, .org-ds-section__eyebrow, .org-ds-hero-card__eyebrow) {
-    font-family: var(--org-font-mono);
-  }
-}
-
+// Shared by every section component of /design-system: emulated encapsulation keeps
+// each copy scoped, so each component includes these mixins.
 @mixin sections() {
-  .org-ds-section {
-    margin-bottom: 72px;
-    scroll-margin-top: 24px;
+  :host {
+    display: flex;
+    flex-direction: column;
+    gap: var(--org-space-3xl);
+  }
+
+  .ds-section {
+    scroll-margin-top: calc(var(--org-header-height) + var(--org-space-md));
+  }
+
+  .ds-lead {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-body);
+    margin: 0 0 var(--org-space-lg);
+    max-inline-size: 68ch;
+  }
+
+  .ds-subheading {
+    color: var(--org-on-surface);
+    font: var(--org-text-title);
+    margin: var(--org-space-xl) 0 var(--org-space-md);
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  // Specimens: one column, two side by side from desktop up; `ds-specimen--wide` spans both.
+  .ds-grid {
+    align-items: start;
+    display: grid;
+    gap: var(--org-space-md);
+    grid-template-columns: minmax(0, 1fr);
 
     @include semantic.desktop {
-      scroll-margin-top: 40px;
-    }
-
-    &__heading {
-      margin-bottom: 24px;
-    }
-
-    &__eyebrow {
-      color: var(--org-primary);
-      font-family: var(--org-font-mono);
-      font-size: var(--org-font-size-xs);
-      font-weight: var(--org-font-weight-extrabold);
-      letter-spacing: var(--org-letter-spacing-label);
-      margin: 0 0 6px;
-      text-transform: uppercase;
-    }
-  }
-
-  .org-ds-section > app-design-system-code-example {
-    display: block;
-    margin-top: 20px;
-  }
-
-  .org-ds-token-grid,
-  .org-ds-data-grid,
-  .org-ds-season-grid {
-    display: grid;
-    gap: 14px;
-    grid-template-columns: 1fr;
-
-    @include semantic.tablet {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @include semantic.wide {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-
-  .org-ds-icon-grid,
-  .org-ds-foundation-grid {
-    display: grid;
-    gap: 14px;
-    grid-template-columns: 1fr;
-
-    @include semantic.tablet {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    @include semantic.wide {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    article {
-      background:
-        linear-gradient(var(--org-glass-bg), var(--org-glass-bg)) padding-box,
-        var(--org-gradient-border) border-box;
-      border: 1px solid transparent;
-      border-radius: var(--org-radius-lg);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 156px;
-      padding: 20px;
-    }
-
-    span,
-    code {
-      color: var(--org-primary);
-      font-family: var(--org-font-mono);
-      font-size: var(--org-font-size-xs);
-      font-weight: var(--org-font-weight-extrabold);
-      letter-spacing: var(--org-letter-spacing-label);
-      text-transform: uppercase;
-    }
-
-    strong {
-      font-size: var(--org-font-size-md);
-      margin-top: auto;
-    }
-
-    code {
-      color: var(--org-on-surface-muted);
-      font-size: var(--org-font-size-xs);
-      letter-spacing: normal;
-      text-transform: none;
+    > .ds-specimen--wide {
+      grid-column: 1 / -1;
     }
   }
 
-  .org-ds-panel-card {
-    border-radius: var(--org-radius-xl);
-    box-shadow: var(--org-shadow-md);
+  .ds-caption {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-body-sm);
+    margin: 0;
   }
 
-  .org-ds-subsection-title {
-    font-size: var(--org-font-size-lg);
-    margin: 0 0 16px;
-    font-family: var(--org-font-display);
+  .ds-token {
+    color: var(--org-on-surface-variant);
+    font-family: var(--org-font-mono);
+    font-size: var(--org-font-size-xs);
+    overflow-wrap: anywhere;
+  }
 
-    &:not(:first-child) {
-      margin-top: 32px;
-    }
+  // A small label over a group of controls inside a demo.
+  .ds-demo-label {
+    color: var(--org-on-surface-variant);
+    font: var(--org-text-label);
+    letter-spacing: var(--org-letter-spacing-label);
+    margin: 0;
+    text-transform: uppercase;
+    width: 100%;
+  }
+
+  .ds-row {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--org-space-sm);
+  }
+
+  .ds-fill {
+    inline-size: 100%;
   }
 }

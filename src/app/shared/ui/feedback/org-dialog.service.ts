@@ -19,6 +19,13 @@ export class OrgDialogService {
     );
   }
 
+  /** Tells something and waits for "Entendi" (or the label given): no choice to make. */
+  public alert(
+    data: Omit<OrgConfirmDialogData, 'alert' | 'extraLabel' | 'cancelLabel'>,
+  ): Observable<void> {
+    return this.open({ confirmLabel: 'Entendi', ...data, alert: true }).pipe(map(() => undefined));
+  }
+
   private open(data: OrgConfirmDialogData): Observable<unknown> {
     return this.dialog
       .open(OrgConfirmDialogComponent, {

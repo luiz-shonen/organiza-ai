@@ -345,7 +345,9 @@
     }
     <app-manual-guest-form
       [guest]="manualDraft()"
+      [secretSanta]="manualSecretSanta()"
       [submitLabel]="editingManual() ? 'Salvar alterações' : 'Adicionar à lista'"
+      [knownPeople]="editingManual() ? [] : knownPeople()"
       [save]="saveManualAndClose"
       (cancelled)="manualSheet.set(null)"
     />

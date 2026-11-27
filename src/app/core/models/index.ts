@@ -13,6 +13,8 @@ export {
   PIX_PURPOSE_MAX,
   SECRET_SANTA_RULES_MAX,
   EVENT_CATEGORIES,
+  EXPECTED_GUESTS_MAX,
+  parseExpectedGuests,
   getCategoryClass,
   getCategoryHue,
 } from './event.model';
@@ -60,6 +62,8 @@ export type {
   GuestDecline,
   GuestSession,
   ManualGuestInput,
+  ManualGuestRelative,
+  ManualGuestSantaEntry,
 } from './guest.model';
 export type { PartyItem, PartyItemCreate, ClaimedBy } from './item.model';
 export type {
@@ -115,9 +119,16 @@ export {
   DESIGN_SYSTEM_NAVIGATION_GROUPS,
   DESIGN_SYSTEM_SECTIONS,
 } from './design-system-navigation.model';
+export type { SeasonalThemeChoice, SeasonalThemeOption } from './design-system-showcase.model';
+export {
+  AI_SUGGESTIONS_PER_EVENT,
+  AI_SUGGESTIONS_PER_HOUR,
+  AI_SUGGESTION_THRESHOLD,
+} from './ai-suggestion.model';
 export type {
-  DesignSystemFoundationExamples,
-  SeasonalThemeChoice,
-  SeasonalThemeOption,
-} from './design-system-showcase.model';
+  AiSuggestedItem,
+  AiSuggestion,
+  AiSuggestionInput,
+  AiSuggestionState,
+} from './ai-suggestion.model';
 export type { LinkPreview } from './link-preview.model';

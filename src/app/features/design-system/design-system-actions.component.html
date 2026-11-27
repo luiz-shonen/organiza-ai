@@ -1,0 +1,213 @@
+<!-- ───────────── Página e cards ───────────── -->
+<section id="layout" class="ds-section" aria-label="Página e cards">
+  <org-section title="Página e cards">
+    <p class="ds-lead">
+      Toda página é um <code class="ds-token">org-page-layout</code> com um
+      <code class="ds-token">org-page-header</code>; cada bloco é um card com
+      <code class="ds-token">org-card-header</code>. Largura, fundo, borda e sombra vêm deles.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Cabeçalho da página"
+        api="<org-page-layout> <org-page-header> <org-section>"
+        summary="Título em Fredoka com a palavra final no verde do destaque e a ação principal à direita (embaixo, no celular). A página ocupa 70% da tela a partir de 1200px."
+        [code]="snippets.pageLayout"
+        layout="stack"
+        [wide]="true"
+      >
+        <org-page-header
+          title="Olá, "
+          highlight="Jéssica"
+          subtitle="2 convites esperam sua resposta."
+        >
+          <org-button orgPageHeaderActions label="Novo evento" icon="add" />
+        </org-page-header>
+        <org-section title="Próximos eventos" [count]="3">
+          <p class="ds-caption">O conteúdo da seção entra aqui.</p>
+        </org-section>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Card"
+        api="<org-surface> <org-card-header>"
+        summary="Branco, linha fina e cantos de 18px. O título carrega o card: sem ícone decorativo ao lado."
+        [code]="snippets.surface"
+        layout="stack"
+      >
+        <org-surface variant="card">
+          <org-card-header heading="Rachadinha via Pix" subheading="Contribua com o evento!">
+            <org-icon-button orgCardHeaderAction icon="edit" ariaLabel="Editar rachadinha" />
+          </org-card-header>
+          <p class="ds-caption ds-card-body">R$ 40 por família, até sexta.</p>
+        </org-surface>
+        <org-surface variant="card" [flush]="true">
+          <ul class="ds-flush-list">
+            <li>
+              <strong>Sábado, 24 de junho</strong>
+              <span class="ds-caption">19h30 às 23h</span>
+            </li>
+            <li>
+              <strong>Chácara Santa Rita</strong>
+              <span class="ds-caption">Estrada do Sol, 120</span>
+            </li>
+          </ul>
+        </org-surface>
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Painel expansível"
+        api="<org-expansion-panel>"
+        summary="Detalhes a um toque (Miller). Resumo curto à direita; títulos longos terminam em reticências."
+        [code]="snippets.expansion"
+        layout="stack"
+      >
+        <org-expansion-panel
+          heading="Família leva 2 itens"
+          icon="assignment"
+          [(expanded)]="familyOpen"
+        >
+          <span orgExpansionSummary>1/2 comprados</span>
+          <org-split-progress
+            [total]="2"
+            [segments]="[{ label: 'Ana', value: 1 }]"
+            ariaLabel="1 de 2 itens comprados"
+          />
+        </org-expansion-panel>
+        <org-expansion-panel heading="Convidados à mão" icon="group">
+          <span orgExpansionSummary>Nenhum</span>
+          <p class="ds-caption">Ninguém foi adicionado à mão ainda.</p>
+        </org-expansion-panel>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>
+
+<!-- ───────────── Ações ───────────── -->
+<section id="buttons" class="ds-section" aria-label="Ações">
+  <org-section title="Ações">
+    <p class="ds-lead">
+      Lilás quer dizer "toque aqui". Uma ação em destaque por tela (Von Restorff); as outras ficam
+      em contorno, tonal ou texto. Todo alvo tem 48px, mesmo o botão compacto.
+    </p>
+
+    <div class="ds-grid">
+      <app-design-system-specimen
+        heading="Botão"
+        api="<org-button>"
+        summary="Sete variantes, cada uma com uma função. Use loading e disabled do próprio botão, nunca CSS local."
+        [code]="snippets.button"
+        layout="stack"
+        [wide]="true"
+      >
+        <p class="ds-demo-label">Variantes</p>
+        <div class="ds-row">
+          <org-button label="Confirmar presença" icon="how_to_reg" />
+          <org-button label="Ver convidados" variant="secondary" />
+          <org-button label="Responder convite" variant="tonal" />
+          <org-button label="Eu levo" variant="attention" />
+          <org-button label="Mais detalhes" variant="text" />
+          <org-button label="Cancelar evento" variant="danger" />
+          <org-button label="Sair da conta" variant="danger-text" icon="logout" />
+        </div>
+        <p class="ds-demo-label">Estados e tamanhos</p>
+        <div class="ds-row">
+          <org-button
+            [label]="saving() ? 'Salvando' : 'Salvar'"
+            icon="save"
+            [loading]="saving()"
+            (pressed)="save()"
+          />
+          <org-button label="Indisponível" [disabled]="true" />
+          <org-button label="Eu levo" variant="attention" [compact]="true" />
+          <org-button
+            [label]="locked() ? 'Fixa' : 'Dividir'"
+            [icon]="locked() ? 'lock' : 'lock_open'"
+            [variant]="locked() ? 'tonal' : 'text'"
+            [compact]="true"
+            [ariaPressed]="locked()"
+            (pressed)="locked.set(!locked())"
+          />
+          <org-button label="Rascunho" variant="secondary" tooltip="Salva sem publicar" />
+        </div>
+        <p class="ds-demo-label">Largura total (rodapé de folha, celular)</p>
+        <org-button label="Confirmar presença" [fullWidth]="true" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Botão de ícone"
+        api="<org-icon-button>"
+        summary="O rótulo é obrigatório e vira tooltip. A lixeira é sempre vermelha."
+        [code]="snippets.iconButton"
+      >
+        <org-icon-button icon="add" ariaLabel="Novo evento" variant="primary" />
+        <org-icon-button icon="edit" ariaLabel="Editar item" />
+        <org-icon-button icon="share" ariaLabel="Compartilhar" />
+        <org-icon-button icon="delete_outline" ariaLabel="Remover item" />
+        <org-icon-button icon="close" ariaLabel="Fechar" variant="chip" />
+        <org-icon-button icon="print" ariaLabel="Imprimir" [disabled]="true" />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Copiar"
+        api="<org-copy-button>"
+        summary="Copia e confirma com um aviso. Se o navegador bloquear, mostra o erro."
+        [code]="snippets.copyButton"
+      >
+        <org-copy-button
+          label="Copiar link"
+          copiedMessage="Link copiado!"
+          variant="secondary"
+          [gradient]="false"
+          [value]="demoUrl"
+        />
+        <org-copy-button
+          label="Copiar convite"
+          copiedMessage="Convite copiado!"
+          [value]="demoUrl"
+        />
+      </app-design-system-specimen>
+
+      <app-design-system-specimen
+        heading="Chips"
+        api="<org-chip> <org-editable-chip>"
+        summary="Escolhas compactas, como a categoria do evento. O chip editável guarda um valor digitado na hora."
+        [code]="snippets.chip"
+        layout="stack"
+        [wide]="true"
+      >
+        <div class="ds-row" role="group" aria-label="Categoria do evento">
+          @for (name of categories; track name) {
+            <org-chip
+              [label]="name"
+              [selectable]="true"
+              [selected]="category() === name"
+              [gradient]="false"
+              (selectionChange)="pickCategory(name)"
+            />
+          }
+          <org-editable-chip
+            placeholder="Personalizar"
+            [value]="customCategory()"
+            [selected]="!!customCategory()"
+            [maxLength]="30"
+            (valueChange)="setCustomCategory($event)"
+            (cleared)="customCategory.set(null)"
+          />
+        </div>
+        <p class="ds-caption">
+          Escolhida: <strong>{{ customCategory() ?? category() ?? 'nenhuma' }}</strong>
+        </p>
+        <p class="ds-demo-label">Variantes</p>
+        <div class="ds-row">
+          <org-chip label="Default" [selected]="true" [gradient]="false" />
+          <org-chip label="Primary" variant="primary" [selected]="true" [gradient]="false" />
+          <org-chip label="Success" variant="success" [selected]="true" [gradient]="false" />
+          <org-chip label="Warning" variant="warning" [selected]="true" [gradient]="false" />
+          <org-chip label="Accent" variant="accent" [selected]="true" [gradient]="false" />
+          <org-chip label="Desativado" [disabled]="true" [gradient]="false" />
+        </div>
+      </app-design-system-specimen>
+    </div>
+  </org-section>
+</section>

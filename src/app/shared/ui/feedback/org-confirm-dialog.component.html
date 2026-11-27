@@ -10,14 +10,16 @@
   <h2 id="org-confirm-dialog-title" class="org-confirm-dialog__title">{{ data.title }}</h2>
   <p id="org-confirm-dialog-message" class="org-confirm-dialog__message">{{ data.message }}</p>
   <div class="org-confirm-dialog__actions">
-    <org-button
-      variant="text"
-      testId="org-confirm-cancel"
-      [label]="data.cancelLabel ?? 'Voltar'"
-      [compact]="true"
-      [gradient]="false"
-      (pressed)="cancel()"
-    />
+    @if (!data.alert) {
+      <org-button
+        variant="text"
+        testId="org-confirm-cancel"
+        [label]="data.cancelLabel ?? 'Voltar'"
+        [compact]="true"
+        [gradient]="false"
+        (pressed)="cancel()"
+      />
+    }
     @if (data.extraLabel; as extraLabel) {
       <org-button
         variant="secondary"

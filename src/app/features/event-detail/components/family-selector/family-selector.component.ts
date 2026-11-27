@@ -41,6 +41,11 @@ export class FamilySelectorComponent {
   /** The family in kinship order: cônjuge, filhos, pai/mãe, avô/avó, irmão, parente, pet, outro. */
   protected readonly orderedMembers = computed(() => sortByKinship(this.members()));
   readonly selectedIds = input<string[]>([]);
+  /**
+   * Whose family this is: the signed-in guest's (saved to their profile), or that of someone an
+   * organizer adds by hand (kept only on the event). Only the wording changes.
+   */
+  readonly owner = input<'self' | 'other'>('self');
   /** A relative is being saved: the forms wait. */
   readonly isAddingInline = input<boolean>(false);
 

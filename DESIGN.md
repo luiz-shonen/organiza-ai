@@ -290,7 +290,7 @@ Uso recomendado: `<org-badge label="Novo" variant="success" icon="check" />`. Va
 
 ### OrgConfirmDialogComponent
 
-Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top. For a third way out, `choose({ ..., extraLabel })` adds a middle button (`org-confirm-extra`) and returns `'confirm' | 'extra' | 'cancel'` (`OrgDialogChoice`), e.g. "Qual telefone fica?" or "Substituir / Adicionar como outra pessoa".
+Uso recomendado: inject `OrgDialogService` and call `confirm({ title, message, confirmLabel, cancelLabel })`; do not open a feature-local Material dialog for confirmations. Anything that deletes, removes or cancels passes `tone: 'danger'` (red top edge, red badge, red confirm button) and asks first: cancelling an event or an RSVP, and removing an item, a family member, a collaborator or an admin. `icon` picks the badge (`delete_outline` by default, `cancel`, `block`); `cancelLabel` names what staying means ("Manter evento", "Continuo indo"), defaulting to "Voltar" so it never reads like the cancel action itself. On phones the buttons stack full width with the confirm on top. For a third way out, `choose({ ..., extraLabel })` adds a middle button (`org-confirm-extra`) and returns `'confirm' | 'extra' | 'cancel'` (`OrgDialogChoice`), e.g. "Qual telefone fica?" or "Substituir / Adicionar como outra pessoa". When there is nothing to choose, only something to tell, `alert({ title, message })` shows one button ("Entendi" by default) and no cancel, e.g. "Já está no amigo oculto".
 
 ### OrgEmptyStateComponent
 
@@ -330,7 +330,7 @@ Uso recomendado: `<org-banner variant="info" message="Convites enviados." />` fo
 
 ### Component-first authoring contract
 
-New work begins with a public `Org*` component. If the API is missing, add a standalone OnPush component in `shared/ui`, its focused unit test, a design-system preview, and this recommended usage before using it in a feature. The `/design-system` route is the live source for all documented APIs.
+New work begins with a public `Org*` component. If the API is missing, add a standalone OnPush component in `shared/ui`, its focused unit test, a design-system preview, and this recommended usage before using it in a feature. The `/design-system` route is the live source for all documented APIs: each component has a card with a live demo and the exact snippet to copy (`app-design-system-specimen`, snippets in `features/design-system/design-system-snippets.ts`). Sections: Fundamentos (visão geral, cores, tipografia, espaço e forma, ícones, temas) and Componentes (página e cards, ações, campos, seleção, navegação, dados, feedback, marca).
 
 ## APIs legadas de compatibilidade
 

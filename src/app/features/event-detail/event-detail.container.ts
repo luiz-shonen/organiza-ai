@@ -75,6 +75,7 @@ import {
   secretSantaDrawDeadline,
   rsvpSecretSantaEntryId,
   secretSantaRsvpId,
+  sortByName,
   removeClaimEntry,
   toggleBought,
   buildGuestListDocument,
@@ -366,11 +367,11 @@ export class EventDetailContainer implements OnInit {
     };
   });
 
-  /** "Quem vai": the host, then every confirmed household, who comes and what they bring. */
+  /** "Quem vai": every confirmed household and the host, in alphabetical order. */
   protected readonly households = computed(() => {
     const host = this.hostGuest();
     const collaborators = new Set(this.event()?.collaborators ?? []);
-    return buildGuestHouseholds(
+    const households = buildGuestHouseholds(
       host ? [host, ...this.listedGuests()] : this.listedGuests(),
       this.items(),
       this.profiledClaims(),
@@ -381,6 +382,7 @@ export class EventDetailContainer implements OnInit {
           ? { ...household, collaborator: true }
           : household,
     );
+    return sortByName(households);
   });
 
   /** Who said "Não poderei ir"; only the organizers may read it, so it loads for them only. */
@@ -463,24 +465,28 @@ export class EventDetailContainer implements OnInit {
 
   /** A signed-in guest's view of the amigo oculto: who takes part and their gift ideas. */
   protected readonly secretSantaRoster = signal<SecretSantaRosterEntry[]>([]);
-  /** The roster as shown: the account's own entries named as its profile is now. */
+  /** The roster as shown: the account's own entries named as its profile is now, A to Z. */
   protected readonly secretSantaRosterView = computed(() => {
     // Who still waits for approval is not in the draw yet: only they see their own entries.
     const pending = this.pendingSantaUids();
     const me = this.memberUid();
-    return this.secretSantaRoster()
-      .filter((entry) => {
-        const uid = /^rsvp_([^_]+)/.exec(entry.id)?.[1];
-        return !uid || uid === me || !pending.has(uid);
-      })
-      .map((entry) => ({ ...entry, name: this.profiledSantaName(entry.id, entry.name) }));
+    return sortByName(
+      this.secretSantaRoster()
+        .filter((entry) => {
+          const uid = /^rsvp_([^_]+)/.exec(entry.id)?.[1];
+          return !uid || uid === me || !pending.has(uid);
+        })
+        .map((entry) => ({ ...entry, name: this.profiledSantaName(entry.id, entry.name) })),
+    );
   });
-  /** The organizers' list, named the same way. */
+  /** The organizers' list, named the same way, A to Z. */
   protected readonly secretSantaParticipantsView = computed(() =>
-    this.secretSantaParticipants().map((p) => ({
-      ...p,
-      name: this.profiledSantaName(p.id, p.name),
-    })),
+    sortByName(
+      this.secretSantaParticipants().map((p) => ({
+        ...p,
+        name: this.profiledSantaName(p.id, p.name),
+      })),
+    ),
   );
   /**
    * The guest's "Amigo oculto" card, at the bottom of the invite: who is in, with their ideas;
@@ -781,17 +787,20 @@ export class EventDetailContainer implements OnInit {
         )
         .map((p) => p.id),
     );
-    return (this.secretSantaDraw()?.links ?? []).map((link) => ({
-      participantId: link.participantId,
-      name: profiles[link.uid ?? accounts[link.participantId] ?? '']?.name || link.name,
-      phone: link.phone,
-      url: buildSecretSantaRevealUrl(origin, link.token),
-      openedAt: opened[link.token] ?? null,
-      notifiedInApp: !!link.uid,
-      self:
-        !!me &&
-        (link.uid === me || accounts[link.participantId] === me || mine.has(link.participantId)),
-    }));
+    // The links after the draw, A to Z like the lists before it.
+    return sortByName(
+      (this.secretSantaDraw()?.links ?? []).map((link) => ({
+        participantId: link.participantId,
+        name: profiles[link.uid ?? accounts[link.participantId] ?? '']?.name || link.name,
+        phone: link.phone,
+        url: buildSecretSantaRevealUrl(origin, link.token),
+        openedAt: opened[link.token] ?? null,
+        notifiedInApp: !!link.uid,
+        self:
+          !!me &&
+          (link.uid === me || accounts[link.participantId] === me || mine.has(link.participantId)),
+      })),
+    );
   });
   protected readonly secretSantaOutdated = computed(() =>
     isSecretSantaDrawOutdated(

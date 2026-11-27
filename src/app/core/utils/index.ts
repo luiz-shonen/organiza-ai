@@ -17,3 +17,4 @@ export * from './print.utils';
 export * from './ai-suggestion.utils';
 export * from './app-version.utils';
 export * from './links.utils';
+export * from './sort.utils';

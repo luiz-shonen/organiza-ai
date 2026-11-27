@@ -53,12 +53,16 @@ How the app behaves for organizers and guests. Data and permissions are in
 
 ## The host on "Quem vai"
 
-- The owner never answers the invite but always goes: "Confirmados" lists them first, named as
+- The owner never answers the invite but always goes: "Confirmados" lists them too, named as
   their profile is (`GuestHousehold.host`). They count as a person (the header count, the Pix
   split per person), not as a family that answered ("2 famílias responderam").
 - Who organizes is marked on the avatar, never with a tag beside the name (it does not fit on a
   phone): a crown for the owner ("Organizador(a) do evento", drawn in SVG: the icon font has none), a handshake for a collaborator who
   answered ("Ajuda a organizar o evento"), each with a tooltip and an `aria-label`.
+
+- **Alphabetical order** (`sortByName`, pt-BR: accents and capitals aside): "Confirmados" with the
+  host among them, and every amigo oculto list (the organizers' participants, the links after the
+  draw, the guests' roster).
 
 ## Cancelling and reopening
 

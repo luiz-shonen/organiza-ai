@@ -49,6 +49,16 @@ jobs:
             },
           };
           EOF
+          # The same version baked into the code, so the footer names the code that runs.
+          cat <<EOF > src/environments/build-info.ts
+          import type { AppVersion } from './firebase-config';
+
+          export const BUILD_INFO: AppVersion = {
+            version: 'pr-${{ github.event.pull_request.number }}',
+            commit: '${APP_COMMIT}',
+            deployedAt: '${DEPLOYED_AT}',
+          };
+          EOF
 
       - name: Build Application
         run: npm run build

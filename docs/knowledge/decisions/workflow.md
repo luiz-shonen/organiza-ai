@@ -9,6 +9,7 @@ enforced_by:
   - .husky/commit-msg
   - .github/workflows/ci.yml
   - .github/workflows/cd.yml
+  - src/app/core/services/app-update.service.spec.ts
   - .github/workflows/gemini-review-comment.yml
 related: [testing.md]
 ---
@@ -35,5 +36,6 @@ Spec-Driven Development (spec.md → design.md → tasks.md → validation.md pe
 - A `/review` runs only the Gemini review, not CI. `issue_comment` runs are not listed in the PR checks, so the workflow reacts 👀 to the comment and sets a `Gemini Review (/review)` commit status (pending, then success or failure, linking to the run). If it still fails, it comments the log link on the PR. The automatic review fails its `gemini-review` job too, so a review that never ran shows red instead of green.
 - CD (`cd.yml`) deploys hosting and Firestore rules/indexes after CI passes on `main`; `cd-preview.yml` deploys PR previews (hosting only, so a preview runs against the rules already in production).
 - Both workflows write `public/runtime-config.js` from the `FIREBASE_API_KEY` secret; locally it is a gitignored copy of `runtime-config.example.js` (see [missing-static-file-returns-index](../gotchas/missing-static-file-returns-index.md)).
-- They also write `app` there (`version`, `commit`, `deployedAt`): production's `version` is the CD run number (one more each run), a preview's is `pr-<number>`. Only the super admins see it, bottom right ("Versão 42 · 3777074 · 25/11 20:30"; "Versão local" without it), to check a change is live (`app.spec.ts`).
+- They also write the version (`version`, `commit`, `deployedAt`) into `src/environments/build-info.ts` before `npm run build`: production's `version` is the CD run number (one more each run), a preview's is `pr-<number>`. Only the super admins see it, bottom right ("Versão 42 · 3777074 · 25/11 20:30"; "Versão local" without it), to check a change is live (`app.spec.ts`). It is read from the build, never from `runtime-config.js`: that file is always fetched fresh (outside the service worker), so it named the new version while the service worker still ran the old code.
+- **New deploys reach people by themselves** (`AppUpdateService`, `app-update.service.spec.ts`). The service worker runs the copy it kept until a new one is downloaded, and then only after a reload, so people needed several refreshes. The app asks for a new version when it opens, when it comes back to the screen and every 15 minutes, and switches at the first safe moment, with no button: at once if the person has not tapped or typed since the page loaded, otherwise on their next change of page or when they come back to the app, so nothing being typed is lost. A broken kept copy (`unrecoverable`) reloads at once.
 - Queued fixes are tested and committed locally phase by phase, and pushed once at the end.

@@ -1,3 +1,4 @@
+import { BUILD_INFO } from './build-info';
 import type { FirebaseOptions } from 'firebase/app';
 
 interface RuntimeFirebaseConfig {
@@ -90,8 +91,11 @@ export function aiRelayUrl(): string {
 export const PUSH_VAPID_PUBLIC_KEY =
   'BCGxsXK81qwaIhFNd4fvDbtix9YM7LBDaVwHxdMqLD9Y36UDl9cOhlX2afcrffBpwOE5dq0-TtWyrn0Cb6hmgDg';
 
-/** The deployed version, for the super admins' footer; null when running locally. */
+/**
+ * The version of the code that is running, for the super admins' footer; null when built
+ * locally. Read from the build (`BUILD_INFO`), never from `runtime-config.js`: that file is always
+ * fresh, so it would name a new version while the service worker still runs the previous one.
+ */
 export function appVersion(): AppVersion | null {
-  const app = runtimeConfig()?.app;
-  return app?.version ? app : null;
+  return BUILD_INFO.version ? BUILD_INFO : null;
 }

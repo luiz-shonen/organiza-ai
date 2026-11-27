@@ -1,3 +1,4 @@
+import { BUILD_INFO } from '../environments/build-info';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -98,10 +99,12 @@ describe('App', () => {
     expect(avatar?.getAttribute('aria-label')).toBe('Meu perfil · user@test.com');
   });
 
-  it('shows the deployed version only to the super admins', () => {
+  it('shows the version of the running code (the build), only to the super admins', () => {
+    // runtime-config.js is always fresh, so it may name a newer deploy than the code running.
     (globalThis as { __organizaAiRuntimeConfig?: unknown }).__organizaAiRuntimeConfig = {
-      app: { version: '42', commit: '3777074' },
+      app: { version: '43', commit: 'newer00' },
     };
+    Object.assign(BUILD_INFO, { version: '42', commit: '3777074' });
     const auth = TestBed.inject(AuthService);
     Object.assign(auth, {
       currentUser: signal({ uid: 'luiz', email: 'luiz.gmr.dev@gmail.com', isAnonymous: false }),
@@ -124,6 +127,7 @@ describe('App', () => {
       (member.nativeElement as HTMLElement).querySelector('[data-testid="app-version"]'),
     ).toBeNull();
     delete (globalThis as { __organizaAiRuntimeConfig?: unknown }).__organizaAiRuntimeConfig;
+    for (const key of Object.keys(BUILD_INFO)) delete (BUILD_INFO as Record<string, unknown>)[key];
   });
 
   it('shows the bottom bar with the three destinations on the home page', () => {

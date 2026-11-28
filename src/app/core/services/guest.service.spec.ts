@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { GuestService } from './guest.service';
 import { FirestoreGateway } from './firestore.gateway';
 import { FamilyMember, Guest } from '../models';
@@ -28,6 +28,16 @@ describe('GuestService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('lists an answer saved by account alone with an empty name, for the profile to fill', async () => {
+    mockGateway.collectionSnapshot.mockReturnValue(
+      of([{ id: 'u1', uid: 'u1', phone: '11999998888', isConfirmed: true, confirmedAt: '' }]),
+    );
+
+    const [guest] = await firstValueFrom(service.listGuests('evt-1'));
+
+    expect(guest.name).toBe('');
   });
 
   describe('batchConfirmRsvp', () => {

@@ -354,6 +354,8 @@ export class GuestService {
   private toGuest(guest: Guest): Guest {
     return {
       ...guest,
+      // An answer by account keeps no name: the screens read it from the profile (by `uid`).
+      name: guest.name ?? '',
       companionsCount: guest.companions?.length ?? guest.companionsCount ?? 0,
     };
   }

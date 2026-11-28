@@ -28,7 +28,6 @@ import {
   DrawerService,
   ClaimService,
   SecretSantaService,
-  SECRET_SANTA_ROSTER_VERSION,
   InboxService,
   PublicProfileService,
   ContactService,
@@ -331,9 +330,13 @@ export class EventDetailContainer implements OnInit {
   private guestPhonesLoadedFor = '';
   private readonly loadGuestPhones = effect(() => {
     if (!this.canEdit()) return;
-    const uids = this.guests()
-      .filter((guest) => !guest.primaryGuestId && !guest.addedBy && guest.uid)
-      .map((guest) => guest.uid as string);
+    const uids = [
+      ...this.guests()
+        .filter((guest) => !guest.primaryGuestId && !guest.addedBy && guest.uid)
+        .map((guest) => guest.uid as string),
+      // Who takes part with an account: the secret links go to their phone.
+      ...Object.values(this.secretSantaAccounts()),
+    ];
     const unique = [...new Set(uids)].sort();
     const key = unique.join(',');
     if (!key || key === this.guestPhonesLoadedFor) return;
@@ -499,7 +502,17 @@ export class EventDetailContainer implements OnInit {
    */
   protected readonly secretSantaParticipants = computed(() => {
     const pending = this.pendingSantaUids();
-    return this.allSecretSantaParticipants().filter((p) => !p.joinedBy || !pending.has(p.joinedBy));
+    const accounts = this.secretSantaAccounts();
+    const phones = this.guestPhones();
+    // An account's entry keeps no name or phone: its profile names it, its contacts give the phone.
+    return this.allSecretSantaParticipants()
+      .filter((p) => !p.joinedBy || !pending.has(p.joinedBy))
+      .map((p) => {
+        const uid = accounts[p.id];
+        const name = this.profiledSantaName(p.id, p.name);
+        const phone = p.phone || (uid ? phones[uid] : '') || '';
+        return name === p.name && phone === p.phone ? p : { ...p, name, phone };
+      });
   });
   protected readonly secretSantaDraw = signal<SecretSantaDraw | null>(null);
   protected readonly secretSantaDrawing = signal(false);
@@ -514,27 +527,6 @@ export class EventDetailContainer implements OnInit {
     });
     onCleanup(() => sub.unsubscribe());
   });
-  /**
-   * The owner checks the guests' roster (names and gift ideas) against the participants once
-   * per event, not on every visit: each later change keeps both lists in step by itself. Only
-   * the owner may leave the mark on the event, so the collaborators never run it.
-   */
-  private rosterSyncedFor: string | null = null;
-  private readonly syncSecretSantaRoster = effect(() => {
-    const event = this.event();
-    if (
-      !event?.secretSanta?.enabled ||
-      !this.canEditEvent() ||
-      event.createdBy !== this.memberUid() ||
-      (event.secretSantaRosterVersion ?? 0) >= SECRET_SANTA_ROSTER_VERSION ||
-      this.rosterSyncedFor === this.id()
-    ) {
-      return;
-    }
-    this.rosterSyncedFor = this.id();
-    void this.secretSantaService.syncRoster(this.id()).catch(() => undefined);
-  });
-
   /** A signed-in guest's view of the amigo oculto: who takes part and their gift ideas. */
   protected readonly secretSantaRoster = signal<SecretSantaRosterEntry[]>([]);
   /** The roster as shown: the account's own entries named as its profile is now, A to Z. */
@@ -732,7 +724,7 @@ export class EventDetailContainer implements OnInit {
       this.secretSantaRoster.set([]);
       return;
     }
-    const sub = this.secretSantaService.listRoster(this.id()).subscribe({
+    const sub = this.secretSantaService.listForGuests(this.id()).subscribe({
       next: (entries) => this.secretSantaRoster.set(entries),
       error: () => this.secretSantaRoster.set([]),
     });
@@ -779,7 +771,8 @@ export class EventDetailContainer implements OnInit {
     const organizers = new Set([event?.createdBy ?? '', ...(event?.collaborators ?? [])]);
     organizers.delete('');
     const accounts: Record<string, string> = {};
-    for (const participant of this.secretSantaParticipants()) {
+    // Organizers read the whole list; guests the one without phones: both carry who is whose.
+    for (const participant of [...this.allSecretSantaParticipants(), ...this.secretSantaRoster()]) {
       const own =
         participant.joinedBy && participant.id === secretSantaRsvpId(participant.joinedBy)
           ? participant.joinedBy
@@ -877,12 +870,18 @@ export class EventDetailContainer implements OnInit {
         .filter((p) => me && (p.guestId === me || p.joinedBy === me))
         .map((p) => p.id),
     );
-    // The links after the draw, A to Z like the lists before it.
+    const byId = new Map(this.secretSantaParticipants().map((p) => [p.id, p]));
+    // The links after the draw, A to Z like the lists before it. A link keeps only ids: the
+    // name and phone are the participant's now (older draws wrote them in, the fallback).
     return sortByName(
       (this.secretSantaDraw()?.links ?? []).map((link) => ({
         participantId: link.participantId,
-        name: profiles[link.uid ?? accounts[link.participantId] ?? '']?.name || link.name,
-        phone: link.phone,
+        name:
+          profiles[link.uid ?? accounts[link.participantId] ?? '']?.name ||
+          byId.get(link.participantId)?.name ||
+          link.name ||
+          '',
+        phone: byId.get(link.participantId)?.phone || link.phone || '',
         url: buildSecretSantaRevealUrl(origin, link.token),
         openedAt: opened[link.token] ?? null,
         notifiedInApp: !!link.uid,

@@ -85,11 +85,12 @@ service cloud.firestore {
       allow update: if isRevealHolder()
                     && resource.data.get('openedAt', null) == null
                     && request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['openedAt', 'receiverName', 'receiverGiftOptions'])
+                         .hasOnly(['openedAt', 'receiverName', 'receiverGiftOptions', 'receiverId'])
                     && request.resource.data.get('openedAt', null) is string
                     && request.resource.data.openedAt.size() <= 40
-                    && request.resource.data.get('receiverName', null) == ''
-                    && request.resource.data.get('receiverGiftOptions', null) == [];
+                    && request.resource.data.get('receiverName', '') == ''
+                    && request.resource.data.get('receiverGiftOptions', []) == []
+                    && request.resource.data.get('receiverId', '') == '';
       // A link of an account opens only in it, so it keeps the result: opening only stamps when.
       allow update: if request.auth != null
                     && resource.data.get('giverUid', '') == request.auth.uid
@@ -131,9 +132,11 @@ service cloud.firestore {
             && getAfter(oldPath).data.get('replacedBy', '') == token
             && get(oldPath).data.get('eventId', '') == data.get('eventId', '')
             && get(oldPath).data.get('giverName', '') == data.get('giverName', '')
+            && get(oldPath).data.get('giverId', '') == data.get('giverId', '')
             && exists(kept)
             && get(kept).data.get('receiverName', '') == data.get('receiverName', '')
-            && get(kept).data.get('receiverGiftOptions', []) == data.get('receiverGiftOptions', []);
+            && get(kept).data.get('receiverGiftOptions', []) == data.get('receiverGiftOptions', [])
+            && get(kept).data.get('receiverId', '') == data.get('receiverId', '');
       }
 
       // The result kept for a link without an account, to make a new one with the same person
@@ -152,16 +155,19 @@ service cloud.firestore {
                    && !('replacedBy' in parentReveal())
                    // The organizer knows every link: never let them read who drew whom.
                    && !ownsEvent(eventData(parentReveal().get('eventId', '')));
+        // Kept by id (the name and ideas are read when shown); older draws kept the name.
         allow create: if docId == 'result'
-                      && request.resource.data.keys().hasOnly(['eventId', 'receiverName', 'receiverGiftOptions'])
+                      && request.resource.data.keys().hasOnly(['eventId', 'receiverId', 'receiverName', 'receiverGiftOptions'])
                       && request.resource.data.get('eventId', '') is string
                       && ownsEvent(eventData(request.resource.data.get('eventId', '')))
                       && newReveal().get('eventId', '') == request.resource.data.get('eventId', '')
-                      && isFilledText(request.resource.data.get('receiverName', null), 120)
+                      && (isFilledText(request.resource.data.get('receiverId', null), 200)
+                          || isFilledText(request.resource.data.get('receiverName', null), 120))
                       && request.resource.data.get('receiverGiftOptions', []) is list
                       && request.resource.data.get('receiverGiftOptions', []).size() <= 10;
         allow create: if docId == 'result'
-                      && request.resource.data.keys().hasOnly(['eventId', 'receiverName', 'receiverGiftOptions'])
+                      && request.resource.data.keys().hasOnly(['eventId', 'receiverId', 'receiverName', 'receiverGiftOptions'])
+                      && newReveal().get('receiverId', '') == request.resource.data.get('receiverId', '')
                       && !('giverUid' in newReveal())
                       && newReveal().get('replaces', '') != ''
                       && newReveal().get('openedAt', null) == null
@@ -178,13 +184,18 @@ service cloud.firestore {
 
       function isValidSecretSantaReveal() {
         let data = request.resource.data;
+        // By id (giverId, receiverId: entries of the event's list), with the name and ideas read
+        // when shown; links of older draws carry them written in (giverName, receiverName...).
         return data.keys().hasOnly(['eventId', 'eventTitle', 'eventDate', 'giverName', 'giverUid',
+                                    'giverId', 'receiverId',
                                     'receiverName', 'receiverGiftOptions', 'createdAt', 'replaces'])
             && isOptionalString(data.get('giverUid', null), 128)
             && isOptionalString(data.get('eventTitle', null), 200)
             && isOptionalString(data.get('eventDate', null), 40)
-            && isFilledText(data.get('giverName', null), 120)
-            && isFilledText(data.get('receiverName', null), 120)
+            && ((isFilledText(data.get('giverId', null), 200)
+                   && isFilledText(data.get('receiverId', null), 200))
+                || (isFilledText(data.get('giverName', null), 120)
+                   && isFilledText(data.get('receiverName', null), 120)))
             && data.get('receiverGiftOptions', []) is list
             && data.get('receiverGiftOptions', []).size() <= 10;
       }
@@ -607,6 +618,11 @@ service cloud.firestore {
             && (!changes('secretSantaRules') || isOptionalString(data.get('secretSantaRules', null), 500))
             && (!changes('secretSanta') || isSecretSantaSettings(data.get('secretSanta', null)))
             && (!changes('secretSantaRosterVersion') || data.get('secretSantaRosterVersion', null) is int)
+            // One amigo oculto list with no phones in it (phones apart): set when the event is
+            // created, or by the migration script once the phones moved. Never turned on later by
+            // the app, so a list that still holds phones is never opened to guests.
+            && (!changes('secretSantaFormat')
+                  || (resource == null && data.get('secretSantaFormat', null) == 2))
             && (!changes('requireApproval') || data.get('requireApproval', null) is bool)
             && (!changes('status') || data.get('status', null) in ['active', 'cancelled'])
             && (!changes('addressDetails') || isAddressDetails(data.get('addressDetails', null)))
@@ -670,6 +686,12 @@ service cloud.firestore {
         // edits an entry, organizers included; only drawing again is left. Before it, sign-ups
         // closed stop only joining: a guest still edits their ideas and leaves.
         allow read: if isAdmin() || managesEvent(eventData(eventId));
+        // The one list everyone shares: names and gift ideas, never a phone (phones live in
+        // secretSantaPhones). A single entry for anyone (the secret link page opens signed out)
+        // once it holds no phone; the whole list for any account once the event keeps phones apart.
+        allow get: if resource == null || !('phone' in resource.data);
+        allow list: if isAccountHolder()
+                    && eventData(eventId).get('secretSantaFormat', 1) == 2;
         allow delete: if isAdmin() || (managesEvent(eventData(eventId)) && isBeforeDraw());
         allow create, update: if (isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen() && isBeforeDraw()))
                               && isValidSecretSantaParticipant()
@@ -713,6 +735,14 @@ service cloud.firestore {
               && get(typed).data.get('phone', '') == request.resource.data.get('phone', null);
         }
 
+        // The entry of an account itself: a guest's own (`rsvp_{uid}`), or an organizer's own
+        // "Participar também" (their uid in `guestId`).
+        function isAccountEntry() {
+          return request.auth != null
+              && (participantId == 'rsvp_' + request.auth.uid
+                  || request.resource.data.get('guestId', '') == request.auth.uid);
+        }
+
         // A missing document passes, so the guest can check whether they joined.
         function isOwnRsvpEntry() {
           return isAccountHolder()
@@ -746,9 +776,13 @@ service cloud.firestore {
           let data = request.resource.data;
           return data.keys().hasOnly(['name', 'phone', 'giftOptions', 'note', 'guestId', 'joinedBy', 'distinctFrom', 'mergedFrom', 'createdAt'])
               && (!changes('note') || isPlainText(data.get('note', null), 200))
-              && (resource != null || data.keys().hasAll(['name', 'phone', 'giftOptions']))
+              && (resource != null || data.keys().hasAll(['giftOptions']))
+              // Someone with an account is named by their profile; anyone else by this entry.
+              && (resource != null || isAccountEntry() || data.keys().hasAll(['name']))
               && (!changes('name') || isFilledText(data.get('name', null), 120))
               && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
+              // Phones live apart (secretSantaPhones) once the event keeps the list without them.
+              && (!changes('phone') || eventData(eventId).get('secretSantaFormat', 1) != 2)
               && (!changes('giftOptions')
                     || (data.get('giftOptions', null) is list && data.get('giftOptions', null).size() <= 10))
               && (!changes('guestId') || isOptionalString(data.get('guestId', null), 200))
@@ -758,6 +792,20 @@ service cloud.firestore {
                     || (data.get('distinctFrom', null) is list && data.get('distinctFrom', null).size() <= 50))
               && (!changes('createdAt') || isOptionalString(data.get('createdAt', null), 40));
         }
+      }
+
+      // The phone of a participant without an account of their own (a relative, a companion,
+      // someone added by hand), apart from the list everyone reads: the same id as the entry.
+      // Organizers read and write them (the secret links go by WhatsApp); a guest only those of
+      // their own entries (`rsvp_{uid}...`).
+      match /secretSantaPhones/{participantId} {
+        function isOwnPhone() {
+          return isAccountHolder() && participantId.matches('rsvp_' + request.auth.uid + '(_.+)?');
+        }
+        allow read, delete: if isAdmin() || managesEvent(eventData(eventId)) || isOwnPhone();
+        allow create, update: if (isAdmin() || managesEvent(eventData(eventId)) || isOwnPhone())
+                              && request.resource.data.keys().hasOnly(['phone'])
+                              && isPhoneOrEmpty(request.resource.data.get('phone', null));
       }
 
       // The amigo oculto as guests see it: the same ids as the participants, only the name and

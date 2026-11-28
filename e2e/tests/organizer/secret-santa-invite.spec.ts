@@ -7,6 +7,8 @@ import { setupMockAuthSession, type MockDocument } from '../../helpers/auth-mock
  */
 const EVENT_ID = 'natal-2026';
 const PARTICIPANTS = `events/${EVENT_ID}/secretSantaParticipants`;
+/** Phones live apart from the list everyone reads, by the same id. */
+const PHONES = `events/${EVENT_ID}/secretSantaPhones`;
 
 function christmasEvent(secretSanta: Record<string, unknown>, guests: MockDocument[] = []) {
   return {
@@ -66,12 +68,13 @@ test.describe('Amigo oculto pelo convite', () => {
     await expect(page.getByTestId('rsvp-santa-status')).toHaveText('Você está no amigo oculto.');
     const entry = (await readStore(page))[PARTICIPANTS].find((p) => p.id === 'rsvp_maria-uid');
     expect(entry).toMatchObject({
-      name: 'Maria Souza',
-      phone: '(11) 99999-9999',
       giftOptions: ['Livro', 'Meia de lã'],
       guestId: 'maria-uid',
       joinedBy: 'maria-uid',
     });
+    // Her own entry is named by her profile and her phone is her account's: neither is copied.
+    expect(entry).not.toHaveProperty('name');
+    expect(entry).not.toHaveProperty('phone');
 
     // "Editar presença" no longer asks the amigo oculto (its card does), and keeps her in it once.
     await page.getByTestId('rsvp-edit-btn').locator('button').click();
@@ -249,8 +252,10 @@ test.describe('Amigo oculto pelo convite', () => {
     const store = async () => (await readStore(page))[PARTICIPANTS];
     await expect.poll(async () => (await store()).map((p) => p.id)).not.toContain('m1');
     const kept = (await store()).find((p) => p.id === 'rsvp_bia');
-    expect(kept?.['phone']).toBe('(11) 95555-1111');
     expect(kept?.['name']).toBe('Bia Lima');
+    // The phone the organizer kept, apart from the list.
+    const phones = (await readStore(page))[PHONES];
+    expect(phones.find((p) => p.id === 'rsvp_bia')?.['phone']).toBe('(11) 95555-1111');
 
     // "São pessoas diferentes": the notice goes away and both stay.
     await doubtful.getByTestId('secret-santa-distinct-btn').click();
@@ -312,15 +317,17 @@ test.describe('Amigo oculto pelo convite', () => {
     const store = (await readStore(page))[PARTICIPANTS];
     expect(store.find((p) => p.id === 'rsvp_maria-uid_f_vo')).toMatchObject({
       name: 'Vó Ana',
-      phone: '(11) 99999-9999',
       guestId: 'maria-uid_vo',
       joinedBy: 'maria-uid',
     });
     expect(store.find((p) => p.id === 'rsvp_maria-uid_c_bia')).toMatchObject({
       name: 'Bia',
-      phone: '(11) 99999-9999',
       joinedBy: 'maria-uid',
     });
+    // Without a phone of their own, their links go to the guest's, kept apart from the list.
+    const phones = (await readStore(page))[PHONES];
+    expect(phones.find((p) => p.id === 'rsvp_maria-uid_f_vo')?.['phone']).toBe('(11) 99999-9999');
+    expect(phones.find((p) => p.id === 'rsvp_maria-uid_c_bia')?.['phone']).toBe('(11) 99999-9999');
   });
 
   test('someone who declined joins only the amigo oculto later', async ({ page }) => {

@@ -108,6 +108,8 @@ export class EventService {
       ...data,
       collaborators: data.collaborators ?? [],
       status: 'active',
+      // The amigo oculto list never holds phones (they live apart): guests may read it.
+      secretSantaFormat: 2,
       createdAt: now,
       updatedAt: now,
     });

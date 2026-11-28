@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, combineLatest, map, of } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { InboxService } from './inbox.service';
 import { PushService } from './push.service';
 import { AuthService } from './auth.service';
-import { secretSantaNotificationId } from '../models';
+import { PublicProfileService } from './public-profile.service';
+import { secretSantaNotificationId, type FirestoreBatchOperations } from '../models';
 import type {
   PartyEvent,
   SecretSantaDraw,
@@ -37,9 +38,31 @@ export class SecretSantaService {
   private readonly inbox = inject(InboxService);
   private readonly push = inject(PushService);
   private readonly auth = inject(AuthService);
+  private readonly profiles = inject(PublicProfileService);
 
   private participantsPath(eventId: string): string {
     return `events/${eventId}/secretSantaParticipants`;
+  }
+
+  /**
+   * The phone of a participant without an account of their own, apart from the list everyone
+   * reads (same id): only organizers, and the guest for their own entries, read it.
+   */
+  private phonesPath(eventId: string): string {
+    return `events/${eventId}/secretSantaPhones`;
+  }
+
+  /** Writes (or clears) the phone kept apart for one entry, in the same batch. */
+  private writePhone(
+    batch: FirestoreBatchOperations,
+    eventId: string,
+    id: string,
+    phone: string | undefined,
+  ): void {
+    if (phone === undefined) return;
+    const path = `${this.phonesPath(eventId)}/${id}`;
+    if (phone.trim()) batch.set(path, { phone });
+    else batch.delete(path);
   }
 
   /**
@@ -49,15 +72,6 @@ export class SecretSantaService {
    */
   private rosterPath(eventId: string): string {
     return `events/${eventId}/secretSantaRoster`;
-  }
-
-  private rosterDoc(input: { name: string; giftOptions: readonly string[]; note?: string }) {
-    return {
-      name: input.name,
-      giftOptions: [...input.giftOptions],
-      // Only when the form sent it: a change of ideas alone keeps the comment.
-      ...(input.note !== undefined ? { note: input.note } : {}),
-    };
   }
 
   /** Who is in the draw, names and gift options only: what a signed-in guest may read. */
@@ -83,71 +97,30 @@ export class SecretSantaService {
   }
 
   /**
-   * The event's owner, once per event (`secretSantaRosterVersion`): brings the roster in line
-   * with the participants (entries written before it existed, or by an older version), so the
-   * guests see the same people. Every later change writes both in the same batch, so the lists
-   * are not read again; the mark is left even when an entry was refused, since the same data
-   * would be refused again on each visit.
-   *
-   * Both lists come from the server, never from a listener: its first answer may be only what
-   * the browser had cached (e.g. the organizer's own entry), and every other copy would read as
-   * "gone" and be deleted. Each entry is written on its own: in a single batch, one entry the
-   * rules refuse would keep every other one out of the guests' list.
+   * The list as everyone reads it (the one list: names and gift ideas, no phones), for guests.
+   * An event whose phones were not moved apart yet (`secretSantaFormat` 1) refuses it: then the
+   * older guests' copy (`secretSantaRoster`) is read instead, until the migration script runs.
    */
-  async syncRoster(eventId: string): Promise<void> {
-    const [participantDocs, rosterDocs] = await Promise.all([
-      this.gateway.getDocsFromServer<Partial<SecretSantaParticipant>>(
-        this.participantsPath(eventId),
-      ),
-      this.gateway.getDocsFromServer<Partial<SecretSantaRosterEntry>>(this.rosterPath(eventId)),
-    ]);
-    const participants = participantDocs.map((d) => ({
-      id: d.id,
-      name: d.name ?? '',
-      giftOptions: d.giftOptions ?? [],
-      note: d.note ?? '',
-      createdAt: d.createdAt ?? '',
-    }));
-    const roster = rosterDocs.map((d) => ({
-      id: d.id,
-      name: d.name ?? '',
-      giftOptions: d.giftOptions ?? [],
-      note: d.note ?? '',
-    }));
-    const byId = new Map(roster.map((entry) => [entry.id, entry]));
-    const stale = participants.filter((p) => {
-      const entry = byId.get(p.id);
-      return (
-        !entry ||
-        entry.name !== p.name ||
-        JSON.stringify(entry.giftOptions) !== JSON.stringify(p.giftOptions) ||
-        entry.note !== p.note
-      );
-    });
-    const ids = new Set(participants.map((p) => p.id));
-    const gone = roster.filter((entry) => !ids.has(entry.id));
-    const writes = [
-      ...stale.map((p) =>
-        this.gateway.runBatch((batch) =>
-          batch.set(
-            `${this.rosterPath(eventId)}/${p.id}`,
-            {
-              // The rules want the copy's comment to match the entry's, also when it was cleared.
-              ...this.rosterDoc(p),
-              createdAt: p.createdAt || new Date().toISOString(),
-            },
-            { merge: true },
-          ),
+  listForGuests(eventId: string): Observable<SecretSantaRosterEntry[]> {
+    return this.gateway
+      .collectionSnapshot<Omit<SecretSantaParticipant, 'id'>>(this.participantsPath(eventId))
+      .pipe(
+        map((docs) =>
+          docs
+            .map((d) => ({
+              id: d.id,
+              name: d.name ?? '',
+              giftOptions: d.giftOptions ?? [],
+              ...(d.note ? { note: d.note } : {}),
+              ...(d.joinedBy ? { joinedBy: d.joinedBy } : {}),
+              ...(d.guestId ? { guestId: d.guestId } : {}),
+              createdAt: d.createdAt ?? '',
+            }))
+            .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+            .map(({ createdAt: _createdAt, ...entry }) => entry),
         ),
-      ),
-      ...gone.map((entry) =>
-        this.gateway.runBatch((batch) => batch.delete(`${this.rosterPath(eventId)}/${entry.id}`)),
-      ),
-    ];
-    await Promise.allSettled(writes);
-    await this.gateway.updateDoc(`events/${eventId}`, {
-      secretSantaRosterVersion: SECRET_SANTA_ROSTER_VERSION,
-    });
+        catchError(() => this.listRoster(eventId)),
+      );
   }
 
   private drawPath(eventId: string): string {
@@ -158,26 +131,33 @@ export class SecretSantaService {
     return `secretSantaReveals/${token}`;
   }
 
+  /** The list with each phone (organizers): the phones kept apart, or an older entry's own. */
   listParticipants(eventId: string): Observable<SecretSantaParticipant[]> {
-    return this.gateway
-      .collectionSnapshot<Omit<SecretSantaParticipant, 'id'>>(this.participantsPath(eventId))
-      .pipe(
-        map((docs) =>
-          docs
-            .map((d) => ({
-              id: d.id,
-              name: d.name ?? '',
-              phone: d.phone ?? '',
-              giftOptions: d.giftOptions ?? [],
-              ...(d.note ? { note: d.note } : {}),
-              ...(d.guestId ? { guestId: d.guestId } : {}),
-              ...(d.joinedBy ? { joinedBy: d.joinedBy } : {}),
-              ...(d.distinctFrom?.length ? { distinctFrom: d.distinctFrom } : {}),
-              createdAt: d.createdAt ?? '',
-            }))
-            .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
-        ),
-      );
+    return combineLatest([
+      this.gateway.collectionSnapshot<Omit<SecretSantaParticipant, 'id'>>(
+        this.participantsPath(eventId),
+      ),
+      this.gateway
+        .collectionSnapshot<{ phone?: string }>(this.phonesPath(eventId))
+        .pipe(catchError(() => of([] as { id: string; phone?: string }[]))),
+    ]).pipe(
+      map(([docs, phones]) => {
+        const phoneOf = new Map(phones.map((p) => [p.id, p.phone ?? '']));
+        return docs
+          .map((d) => ({
+            id: d.id,
+            name: d.name ?? '',
+            phone: phoneOf.get(d.id) ?? d.phone ?? '',
+            giftOptions: d.giftOptions ?? [],
+            ...(d.note ? { note: d.note } : {}),
+            ...(d.guestId ? { guestId: d.guestId } : {}),
+            ...(d.joinedBy ? { joinedBy: d.joinedBy } : {}),
+            ...(d.distinctFrom?.length ? { distinctFrom: d.distinctFrom } : {}),
+            createdAt: d.createdAt ?? '',
+          }))
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      }),
+    );
   }
 
   async addParticipant(eventId: string, input: SecretSantaParticipantInput): Promise<string> {
@@ -185,7 +165,7 @@ export class SecretSantaService {
     const createdAt = new Date().toISOString();
     await this.gateway.runBatch((batch) => {
       batch.set(`${this.participantsPath(eventId)}/${id}`, { ...this.toDoc(input), createdAt });
-      batch.set(`${this.rosterPath(eventId)}/${id}`, { ...this.rosterDoc(input), createdAt });
+      this.writePhone(batch, eventId, id, input.phone);
     });
     return id;
   }
@@ -197,36 +177,26 @@ export class SecretSantaService {
   ): Promise<void> {
     await this.gateway.runBatch((batch) => {
       batch.update(`${this.participantsPath(eventId)}/${participantId}`, this.toDoc(input));
-      batch.set(`${this.rosterPath(eventId)}/${participantId}`, this.rosterDoc(input), {
-        merge: true,
-      });
+      this.writePhone(batch, eventId, participantId, input.phone);
     });
   }
 
-  /**
-   * Only the gift ideas of an entry (the organizer changing one right in the list). The guests'
-   * copy gets the name too: an older entry may have none yet, and the rules want a named copy.
-   */
+  /** Only the gift ideas of an entry (the organizer changing one right in the list). */
   async updateGiftOptions(
     eventId: string,
     participant: Pick<SecretSantaParticipant, 'id' | 'name'>,
     giftOptions: readonly string[],
   ): Promise<void> {
-    await this.gateway.runBatch((batch) => {
-      batch.update(`${this.participantsPath(eventId)}/${participant.id}`, {
-        giftOptions: [...giftOptions],
-      });
-      batch.set(
-        `${this.rosterPath(eventId)}/${participant.id}`,
-        { name: participant.name, giftOptions: [...giftOptions] },
-        { merge: true },
-      );
+    await this.gateway.updateDoc(`${this.participantsPath(eventId)}/${participant.id}`, {
+      giftOptions: [...giftOptions],
     });
   }
 
   async removeParticipant(eventId: string, participantId: string): Promise<void> {
     await this.gateway.runBatch((batch) => {
       batch.delete(`${this.participantsPath(eventId)}/${participantId}`);
+      batch.delete(`${this.phonesPath(eventId)}/${participantId}`);
+      // The older guests' copy, when the event still has one.
       batch.delete(`${this.rosterPath(eventId)}/${participantId}`);
     });
   }
@@ -237,13 +207,19 @@ export class SecretSantaService {
    */
   async getOwnEntries(eventId: string, ids: readonly string[]): Promise<SecretSantaParticipant[]> {
     const found = await Promise.all(
-      ids.map((id) =>
-        this.gateway
-          .getDocWithId<
-            Omit<SecretSantaParticipant, 'id'>
-          >(`${this.participantsPath(eventId)}/${id}`)
-          .catch(() => null),
-      ),
+      ids.map(async (id) => {
+        const [doc, kept] = await Promise.all([
+          this.gateway
+            .getDocWithId<
+              Omit<SecretSantaParticipant, 'id'>
+            >(`${this.participantsPath(eventId)}/${id}`)
+            .catch(() => null),
+          this.gateway
+            .getDoc<{ phone?: string }>(`${this.phonesPath(eventId)}/${id}`)
+            .catch(() => null),
+        ]);
+        return doc ? { ...doc, phone: kept?.phone ?? doc.phone ?? '' } : null;
+      }),
     );
     return found.flatMap((doc) =>
       doc
@@ -251,7 +227,7 @@ export class SecretSantaService {
             {
               id: doc.id,
               name: doc.name ?? '',
-              phone: doc.phone ?? '',
+              phone: doc.phone,
               giftOptions: doc.giftOptions ?? [],
               ...(doc.note ? { note: doc.note } : {}),
               ...(doc.guestId ? { guestId: doc.guestId } : {}),
@@ -282,20 +258,18 @@ export class SecretSantaService {
         batch.set(
           `${this.participantsPath(eventId)}/${id}`,
           {
-            ...this.toDoc(input),
+            ...this.toDoc(input, id === `rsvp_${uid}`),
             joinedBy: uid,
             ...(existing.includes(id) ? {} : { createdAt: now }),
           },
           { merge: true },
         );
-        batch.set(
-          `${this.rosterPath(eventId)}/${id}`,
-          { ...this.rosterDoc(input), ...(existing.includes(id) ? {} : { createdAt: now }) },
-          { merge: true },
-        );
+        // The guest's own phone is their account's (contacts); a relative's is kept apart.
+        if (id !== `rsvp_${uid}`) this.writePhone(batch, eventId, id, input.phone);
       }
       for (const id of remove) {
         batch.delete(`${this.participantsPath(eventId)}/${id}`);
+        batch.delete(`${this.phonesPath(eventId)}/${id}`);
         batch.delete(`${this.rosterPath(eventId)}/${id}`);
       }
     });
@@ -316,16 +290,13 @@ export class SecretSantaService {
     const { keep, drop } = duplicate;
     // Only the typed entry's phone can replace the guest's, and only as it leaves the list.
     const takesTypedPhone = phone !== keep.phone && phone === drop.phone;
-    const changes = {
-      ...(!keep.guestId && drop.guestId ? { guestId: drop.guestId } : {}),
-      ...(takesTypedPhone ? { phone, mergedFrom: drop.id } : {}),
-    };
+    const changes = !keep.guestId && drop.guestId ? { guestId: drop.guestId } : null;
     await this.gateway.runBatch((batch) => {
-      if (Object.keys(changes).length) {
-        batch.update(`${this.participantsPath(eventId)}/${keep.id}`, changes);
-      }
+      if (changes) batch.update(`${this.participantsPath(eventId)}/${keep.id}`, changes);
+      // The phone the links go to, kept apart like every other one.
+      if (takesTypedPhone) batch.set(`${this.phonesPath(eventId)}/${keep.id}`, { phone });
       batch.delete(`${this.participantsPath(eventId)}/${drop.id}`);
-      batch.set(`${this.rosterPath(eventId)}/${keep.id}`, this.rosterDoc(keep), { merge: true });
+      batch.delete(`${this.phonesPath(eventId)}/${drop.id}`);
       batch.delete(`${this.rosterPath(eventId)}/${drop.id}`);
     });
   }
@@ -373,10 +344,9 @@ export class SecretSantaService {
   ): Promise<SecretSantaDraw> {
     const pairs = drawSecretSanta(participants);
     const now = new Date().toISOString();
+    // By id only: the card names each person and finds their phone when it shows them.
     const links: SecretSantaLink[] = pairs.map(({ giver, receiver }) => ({
       participantId: giver.id,
-      name: giver.name,
-      phone: giver.phone,
       token: generateId(),
       receiverId: receiver.id,
       ...(uids[giver.id] ? { uid: uids[giver.id] } : {}),
@@ -440,10 +410,9 @@ export class SecretSantaService {
     if (!link || !giver || !receiver) {
       throw new Error('Esta pessoa ou quem ela tirou saiu do amigo oculto: sorteie de novo.');
     }
+    const { name: _name, phone: _phone, ...byId } = link;
     const fresh: SecretSantaLink = {
-      ...link,
-      name: giver.name,
-      phone: giver.phone,
+      ...byId,
       token: generateId(),
       ...(uids[participantId] || link.uid ? { uid: uids[participantId] || link.uid } : {}),
     };
@@ -516,12 +485,52 @@ export class SecretSantaService {
    * so opening it again only says it expired. A link of an account (`keepResult`) opens only in
    * it, so it keeps the result and is only stamped, the first time. The rules allow each once.
    */
-  async openReveal(token: string, keepResult = false): Promise<void> {
+  async openReveal(token: string, keepResult = false, byId = true): Promise<void> {
     const openedAt = new Date().toISOString();
+    const spent = byId ? { receiverId: '' } : { receiverName: '', receiverGiftOptions: [] };
     await this.gateway.updateDoc(
       this.revealPath(token),
-      keepResult ? { openedAt } : { openedAt, receiverName: '', receiverGiftOptions: [] },
+      keepResult ? { openedAt } : { openedAt, ...spent },
     );
+  }
+
+  /**
+   * The link as the page shows it: a link by id (newer draws) gets the event's title and date,
+   * the giver's name and whom they drew, with the ideas, read now from the event and its list
+   * (an account named by its profile). A link of an older draw already carries them.
+   */
+  async describeReveal(reveal: SecretSantaReveal): Promise<SecretSantaReveal> {
+    if (!reveal.giverId && !reveal.receiverId) return reveal;
+    const entry = (id: string | undefined) =>
+      id
+        ? this.gateway
+            .getDocWithId<
+              Partial<SecretSantaParticipant>
+            >(`${this.participantsPath(reveal.eventId)}/${id}`)
+            .catch(() => null)
+        : Promise.resolve(null);
+    const [event, giver, receiver] = await Promise.all([
+      this.gateway
+        .getDoc<{ title?: string; date?: string }>(`events/${reveal.eventId}`)
+        .catch(() => null),
+      entry(reveal.giverId),
+      entry(reveal.receiverId),
+    ]);
+    const accountOf = (doc: (Partial<SecretSantaParticipant> & { id: string }) | null) =>
+      doc?.joinedBy && doc.id === `rsvp_${doc.joinedBy}` ? doc.joinedBy : doc?.guestId;
+    const giverUid = reveal.giverUid || accountOf(giver);
+    const receiverUid = accountOf(receiver);
+    const named = await this.profiles.lookup([giverUid, receiverUid]);
+    return {
+      ...reveal,
+      eventTitle: event?.title ?? reveal.eventTitle ?? '',
+      eventDate: event?.date ?? reveal.eventDate ?? '',
+      giverName: (giverUid && named[giverUid]?.name) || giver?.name || reveal.giverName || '',
+      receiverName: receiver
+        ? (receiverUid && named[receiverUid]?.name) || receiver.name || ''
+        : '',
+      receiverGiftOptions: receiver?.giftOptions ?? [],
+    };
   }
 
   /**
@@ -551,23 +560,38 @@ export class SecretSantaService {
     const kept = await this.getRevealCopy(current);
     if (!kept) throw new Error('Não foi possível gerar um novo link: peça um para quem organiza.');
     const fresh = generateId();
-    const next: SecretSantaReveal = {
-      eventId: reveal.eventId,
-      eventTitle: reveal.eventTitle,
-      eventDate: reveal.eventDate,
-      giverName: reveal.giverName,
-      receiverName: kept.receiverName,
-      receiverGiftOptions: [...kept.receiverGiftOptions],
-      createdAt: new Date().toISOString(),
-      replaces: current,
-    };
+    const createdAt = new Date().toISOString();
+    // Same giver and person drawn: by id for newer draws, written in for older ones.
+    const next: SecretSantaReveal = kept.receiverId
+      ? {
+          eventId: reveal.eventId,
+          giverId: reveal.giverId ?? '',
+          receiverId: kept.receiverId,
+          createdAt,
+          replaces: current,
+        }
+      : {
+          eventId: reveal.eventId,
+          eventTitle: reveal.eventTitle,
+          eventDate: reveal.eventDate,
+          giverName: reveal.giverName,
+          receiverName: kept.receiverName,
+          receiverGiftOptions: [...(kept.receiverGiftOptions ?? [])],
+          createdAt,
+          replaces: current,
+        };
     await this.gateway.runBatch((batch) => {
       batch.set(this.revealPath(fresh), next);
-      batch.set(this.copyPath(fresh), {
-        eventId: reveal.eventId,
-        receiverName: kept.receiverName,
-        receiverGiftOptions: [...kept.receiverGiftOptions],
-      });
+      batch.set(
+        this.copyPath(fresh),
+        (kept.receiverId
+          ? { eventId: reveal.eventId, receiverId: kept.receiverId }
+          : {
+              eventId: reveal.eventId,
+              receiverName: kept.receiverName ?? '',
+              receiverGiftOptions: [...(kept.receiverGiftOptions ?? [])],
+            }) as Record<string, unknown>,
+      );
       batch.update(this.revealPath(current), { replacedBy: fresh });
     });
     return fresh;
@@ -595,15 +619,12 @@ export class SecretSantaService {
     return `${this.revealPath(token)}/private/result`;
   }
 
+  /** Whom the person drew, by id: the name and ideas are read when the new link is shown. */
   private toCopy(
     event: Pick<PartyEvent, 'id'>,
     receiver: SecretSantaParticipant,
   ): SecretSantaRevealCopy {
-    return {
-      eventId: event.id,
-      receiverName: receiver.name,
-      receiverGiftOptions: [...receiver.giftOptions],
-    };
+    return { eventId: event.id, receiverId: receiver.id };
   }
 
   private toReveal(
@@ -613,22 +634,25 @@ export class SecretSantaService {
     now: string,
     giverUid?: string,
   ): SecretSantaReveal {
+    // By id: the page reads the names, the ideas and the event when it shows the link.
     return {
       eventId: event.id,
-      eventTitle: event.title,
-      eventDate: event.date,
-      giverName: giver.name,
+      giverId: giver.id,
       ...(giverUid ? { giverUid } : {}),
-      receiverName: receiver.name,
-      receiverGiftOptions: [...receiver.giftOptions],
+      receiverId: receiver.id,
       createdAt: now,
     };
   }
 
-  private toDoc(input: SecretSantaParticipantInput): Record<string, unknown> {
+  /**
+   * The entry as everyone reads it: never a phone (kept apart), and no name for an account's own
+   * entry (named by its profile). An organizer's "Participar também" has their uid in `guestId`.
+   */
+  private toDoc(input: SecretSantaParticipantInput, ownAccount = false): Record<string, unknown> {
+    const account =
+      ownAccount || (!!input.guestId && input.guestId === this.auth.currentUser()?.uid);
     return {
-      name: input.name,
-      phone: input.phone,
+      ...(account ? {} : { name: input.name }),
       giftOptions: [...input.giftOptions],
       ...(input.note !== undefined ? { note: input.note } : {}),
       ...(input.guestId ? { guestId: input.guestId } : {}),

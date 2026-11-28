@@ -165,7 +165,10 @@ test.describe('Adicionar alguém à mão em Confirmados', () => {
       .poll(async () => (await readDocs(page, 'secretSantaParticipants')).map((p) => p['name']))
       .toEqual(['Vó Cida']);
     const [entry] = await readDocs(page, 'secretSantaParticipants');
-    expect(entry['phone']).toBe('(11) 97777-1111');
+    // The phone is kept apart from the list everyone reads, by the same id.
+    expect(entry).not.toHaveProperty('phone');
+    const [kept] = await readDocs(page, 'secretSantaPhones');
+    expect(kept).toMatchObject({ id: entry.id, phone: '(11) 97777-1111' });
     expect(entry['giftOptions']).toEqual(['Chinelo 36']);
   });
 

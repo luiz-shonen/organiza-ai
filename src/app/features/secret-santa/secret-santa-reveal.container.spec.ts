@@ -54,7 +54,16 @@ describe('SecretSantaRevealContainer', () => {
       imports: [SecretSantaRevealContainer],
       providers: [
         provideRouter([]),
-        { provide: SecretSantaService, useValue: { getReveal, openReveal, renewLink } },
+        {
+          provide: SecretSantaService,
+          // Older links carry names already: described as they are.
+          useValue: {
+            getReveal,
+            openReveal,
+            renewLink,
+            describeReveal: (r: unknown) => Promise.resolve(r),
+          },
+        },
         { provide: ConfettiService, useValue: confetti },
         { provide: AuthService, useValue: { currentUser, loading: () => false } },
         { provide: InboxService, useValue: { markRead } },
@@ -160,7 +169,7 @@ describe('SecretSantaRevealContainer', () => {
   it('spends the link on the first visit and warns to write the name down', async () => {
     getReveal.mockResolvedValue(reveal);
     await openAsGiver('tok-1');
-    expect(openReveal).toHaveBeenCalledWith('tok-1', false);
+    expect(openReveal).toHaveBeenCalledWith('tok-1', false, false);
     expect(byTestId('secret-santa-once-warning')?.textContent).toContain(
       'Este link só abre uma vez.',
     );

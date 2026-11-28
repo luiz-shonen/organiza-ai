@@ -1837,6 +1837,7 @@ export class EventDetailContainer implements OnInit {
               this.id(),
               {
                 uid: user.uid,
+                name,
                 phone: newPhone,
                 companions: result.companions,
                 pendingApproval: !!this.event()?.requireApproval && !mine,
@@ -2384,7 +2385,7 @@ export class EventDetailContainer implements OnInit {
   private async saveMyClaims(entries: EventClaims['entries']): Promise<void> {
     const uid = this.memberUid();
     if (!uid) return;
-    await this.claimService.saveClaims(this.id(), uid, entries);
+    await this.claimService.saveClaims(this.id(), uid, this.currentGuestName() || '', entries);
   }
 
   /**

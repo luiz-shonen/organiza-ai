@@ -566,10 +566,10 @@ describe('EventDetailContainer', () => {
         [],
         [],
       );
-      // Named by the account's profile: the answer carries no copied name or e-mail.
+      // Named by the account's profile: the answer carries no copied e-mail or photo.
       const [, primary] = mockGuestService.batchConfirmRsvp.mock.calls[0];
-      expect(primary).not.toHaveProperty('name');
       expect(primary).not.toHaveProperty('email');
+      expect(primary).not.toHaveProperty('photoUrl');
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
     });
 
@@ -732,7 +732,7 @@ describe('EventDetailContainer', () => {
         who: 'Marta',
       });
 
-      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', [
+      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', 'Lucas Dev', [
         { itemId: 'item-1', memberId: 'f1', who: 'Marta', quantity: 2, bought: false },
       ]);
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
@@ -761,7 +761,7 @@ describe('EventDetailContainer', () => {
         bought: false,
       });
 
-      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', []);
+      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', 'Lucas Dev', []);
       expect(mockFeedback.success).toHaveBeenCalledWith('Item liberado.');
     });
 

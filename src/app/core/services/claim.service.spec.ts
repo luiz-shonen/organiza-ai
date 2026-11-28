@@ -25,20 +25,16 @@ describe('ClaimService', () => {
 
   it("stores the household's entries under the account holder's uid", async () => {
     const entry = { itemId: 'i1', memberId: null, who: 'Ana', quantity: 2, bought: false };
-    await service.saveClaims('evt-1', 'uid-1', [entry]);
+    await service.saveClaims('evt-1', 'uid-1', 'Ana', [entry]);
 
     expect(gateway.setDoc).toHaveBeenCalledWith(
       'events/evt-1/claims/uid-1',
-      expect.not.objectContaining({ name: expect.anything() }),
-    );
-    expect(gateway.setDoc).toHaveBeenCalledWith(
-      'events/evt-1/claims/uid-1',
-      expect.objectContaining({ entries: [entry] }),
+      expect.objectContaining({ name: 'Ana', entries: [entry] }),
     );
   });
 
   it('removes the document when nothing is left', async () => {
-    await service.saveClaims('evt-1', 'uid-1', []);
+    await service.saveClaims('evt-1', 'uid-1', 'Ana', []);
     expect(gateway.deleteDoc).toHaveBeenCalledWith('events/evt-1/claims/uid-1');
     expect(gateway.setDoc).not.toHaveBeenCalled();
   });

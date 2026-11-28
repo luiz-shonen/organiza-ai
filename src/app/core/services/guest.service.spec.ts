@@ -62,6 +62,7 @@ describe('GuestService', () => {
         'evt-100',
         {
           uid: 'user-123',
+          name: 'Carlos Silva',
           companions: [{ name: 'Ana' }, { name: 'Bia' }],
         },
         familyMembers,
@@ -77,15 +78,14 @@ describe('GuestService', () => {
         }),
         { merge: true },
       );
-      // Named by the account's profile: the answer keeps no copy of name, e-mail or photo.
+      // Named by the account's profile: the answer keeps no copy of e-mail or photo.
       const [, primary] = mockGateway.batchOps.set.mock.calls[0];
-      expect(primary).not.toHaveProperty('name');
       expect(primary).not.toHaveProperty('email');
       expect(primary).not.toHaveProperty('photoUrl');
     });
 
     it('formats family phones and drops one that is not a phone', async () => {
-      await service.batchConfirmRsvp('evt-100', { uid: 'user-123' }, [
+      await service.batchConfirmRsvp('evt-100', { uid: 'user-123', name: 'Carlos Silva' }, [
         {
           id: 'fam-1',
           name: 'Mariana',
@@ -117,6 +117,7 @@ describe('GuestService', () => {
     it('works when family members list is empty', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
+        name: 'Carlos Silva',
       });
 
       expect(mockGateway.batchOps.set).toHaveBeenCalledTimes(1);
@@ -125,6 +126,7 @@ describe('GuestService', () => {
     it('preserves a legacy count without fabricating companion names during the UI transition', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
+        name: 'Carlos Silva',
         companionsCount: 2,
       });
 

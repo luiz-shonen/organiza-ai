@@ -13,10 +13,15 @@ import { Phone } from '../value-objects';
 
 /**
  * The guest's own answer. They are named and pictured by their account (`publicProfiles/{uid}`),
- * so the answer keeps no name, e-mail or photo.
+ * so the answer keeps no e-mail or photo.
  */
 export interface BatchPrimaryGuestInput {
   uid: string;
+  /**
+   * Still written until the cleanup (plan item 6): older app versions sort and compare guests by
+   * it before the profile arrives, and break on an answer without it. The screens read the profile.
+   */
+  name: string;
   phone?: string;
   companions?: GuestCompanion[];
   companionsCount?: number;
@@ -204,8 +209,9 @@ export class GuestService {
         this.guestDocPath(eventId, primaryGuest.uid),
         {
           uid: primaryGuest.uid,
-          // Still kept here until the cleanup (plan item 6): older app versions show it to the
-          // organizers. The phone itself lives in `contacts/{uid}` (ContactService).
+          // Name and phone still kept here until the cleanup (plan item 6), for older app
+          // versions. The screens read the profile, and the phone from `contacts/{uid}`.
+          name: primaryGuest.name,
           phone: primaryGuest.phone ?? '',
           isConfirmed: true,
           confirmedAt: now,

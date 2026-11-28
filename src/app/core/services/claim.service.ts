@@ -27,6 +27,11 @@ export class ClaimService {
   async saveClaims(
     eventId: string,
     uid: string,
+    /**
+     * The household's name, still written until the cleanup (plan item 6): older app versions
+     * send it back when ticking "comprado". The screens name the household by its account.
+     */
+    name: string,
     entries: readonly ItemClaimEntry[],
   ): Promise<void> {
     const path = `${this.claimsPath(eventId)}/${uid}`;
@@ -34,8 +39,8 @@ export class ClaimService {
       await this.gateway.deleteDoc(path);
       return;
     }
-    // The household is named by its account (the document id), from the profile.
     await this.gateway.setDoc(path, {
+      name,
       entries: entries.map((entry) => ({ ...entry })),
       updatedAt: new Date().toISOString(),
     });

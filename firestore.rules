@@ -649,18 +649,28 @@ service cloud.firestore {
       // (`rsvp_{uid}…`: themself, relatives and companions): joining while sign-ups are open,
       // leaving at any time until the draw (or the day set for it).
       match /secretSantaParticipants/{participantId} {
-        allow read, delete: if isAdmin() || managesEvent(eventData(eventId));
-        allow create, update: if (isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen()))
+        // Locked at the draw, for everyone: from the draw (or its day) nobody adds, removes or
+        // edits an entry, organizers included; only drawing again is left. Before it, sign-ups
+        // closed stop only joining: a guest still edits their ideas and leaves.
+        allow read: if isAdmin() || managesEvent(eventData(eventId));
+        allow delete: if isAdmin() || (managesEvent(eventData(eventId)) && isBeforeDraw());
+        allow create, update: if (isAdmin() || (managesEvent(eventData(eventId)) && isEventOpen() && isBeforeDraw()))
                               && isValidSecretSantaParticipant()
                               && !changesGuestEntry();
         allow get: if isOwnRsvpEntry();
         allow delete: if isOwnRsvpEntry() && isBeforeDraw();
-        allow create, update: if isOwnRsvpEntry()
-                              && isEventOpen()
-                              && isSelfJoinOpen()
-                              && isValidSecretSantaParticipant()
-                              && request.resource.data.get('joinedBy', '') == request.auth.uid
-                              && !changes('distinctFrom');
+        allow create: if isOwnRsvpEntry()
+                      && isEventOpen()
+                      && isSelfJoinOpen()
+                      && isValidSecretSantaParticipant()
+                      && request.resource.data.get('joinedBy', '') == request.auth.uid
+                      && !changes('distinctFrom');
+        allow update: if isOwnRsvpEntry()
+                      && isEventOpen()
+                      && isBeforeDraw()
+                      && isValidSecretSantaParticipant()
+                      && request.resource.data.get('joinedBy', '') == request.auth.uid
+                      && !changes('distinctFrom');
 
         // An entry tied to a guest (joined from the invite, or a confirmed guest's) is theirs:
         // organizers may take it out, tell it apart or link it ("Juntar"), never change it.

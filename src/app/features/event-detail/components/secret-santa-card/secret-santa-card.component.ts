@@ -21,7 +21,7 @@ export interface SecretSantaShareLink {
   readonly name: string;
   readonly phone: string;
   readonly url: string;
-  /** When the person opened the link (it opens once); null while not opened yet. */
+  /** When the person first opened the link; null while not opened yet. */
   readonly openedAt: string | null;
   /** The person has an account and was also told in the app. */
   readonly notifiedInApp?: boolean;

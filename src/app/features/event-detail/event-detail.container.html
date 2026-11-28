@@ -220,13 +220,13 @@
 
       @if (showSecretSantaRoster()) {
         <app-secret-santa-roster-card
-          [entries]="secretSantaRosterView()"
+          [entries]="secretSantaReaderList()"
           [giftOptions]="!!event.secretSanta?.giftOptions"
           [rules]="event.secretSantaRules ?? null"
           [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
-          [editableIds]="isCancelled() ? [] : myEditableSecretSantaIds()"
-          [notice]="secretSantaRosterNotice()"
-          [canJoin]="!isCancelled() && canJoinSecretSanta()"
+          [editableIds]="isCancelled() || canEdit() ? [] : myEditableSecretSantaIds()"
+          [notice]="canEdit() ? '' : secretSantaRosterNotice()"
+          [canJoin]="!isCancelled() && !canEdit() && canJoinSecretSanta()"
           [editing]="editingOwnSecretSanta()"
           [save]="saveOwnSecretSantaEntry"
           (join)="onJoinSecretSanta()"
@@ -317,8 +317,8 @@
     (resend)="onResendSecretSanta($event)"
     (editParticipants)="onEditSecretSanta()"
   >
-    <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
-    @if (canEditEvent()) {
+    <!-- Organizers manage who is in the draw right here until it is locked (drawn or draw day). -->
+    @if (canEditEvent() && secretSantaListOpen()) {
       <app-secret-santa-participants
         [participants]="secretSantaParticipantsView()"
         [knownPeople]="secretSantaKnownPeople()"

@@ -16,7 +16,7 @@
     @if (notification().readAt && readNote()) {
       <p class="notice__body" data-testid="notification-read-note">{{ readNote() }}</p>
     } @else {
-      <p class="notice__body">{{ notification().body }}</p>
+      <p class="notice__body">{{ body() }}</p>
       <org-button
         icon="visibility"
         testId="notification-action-btn"

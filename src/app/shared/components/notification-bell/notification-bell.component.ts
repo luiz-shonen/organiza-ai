@@ -18,6 +18,7 @@ import {
   PushService,
 } from '../../../core/services';
 import type { AppNotification, EventInvitation } from '../../../core/models';
+import { noticeBodyNow } from '../../../core/utils';
 import {
   FeedbackService,
   OrgNotificationMenuComponent,
@@ -166,7 +167,7 @@ export class NotificationBellComponent {
           body:
             notification.kind === 'collaborator' || fromPerson(notification)
               ? notification.body
-              : [eventTitle || notification.body, organizer && `por ${organizer.name}`]
+              : [eventTitle || noticeBodyNow(notification), organizer && `por ${organizer.name}`]
                   .filter(Boolean)
                   .join(' · '),
           url: notification.actionUrl,

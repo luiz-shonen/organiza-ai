@@ -100,13 +100,22 @@ everyone, the organizer included.
 - "Não poderei ir" offers to take part anyway; cancelling a presence takes the relatives and
   companions out with it.
 - The owner closes sign-ups on the event page ("Convidados podem entrar pelo convite",
-  `secretSanta.selfJoin: false`); then nobody joins or leaves alone. The draw closes them too.
+  `secretSanta.selfJoin: false`); then nobody joins alone, but a guest still edits their ideas and
+  leaves.
+- **Locked at the draw, for everyone.** From the draw (or its day, without a draw) nobody adds,
+  removes or edits an entry: not guests, not organizers. Only drawing again is left. The rules
+  enforce it (`isBeforeDraw` on every write); refusing a waiting guest after it leaves their
+  entries (they were out of the draw already).
+- **Who organizes never sees less than a guest.** Once the event started, or the list is locked,
+  organizers read the participants and their ideas in the same "Amigo oculto" card guests have
+  (read-only). The draw notice "Ver quem eu tirei" shows on the event page for the owner and
+  collaborators who take part too.
 - With approval on (see [events-and-invites](events-and-invites.md)), a guest waiting for it may
   join at the first confirmation; the organizers' list, the draw and others' roster leave those
   entries out (`pendingSantaUids`) until the approval, and a refusal deletes them.
 - Rules: an account writes, reads and deletes only ids `rsvp_{its uid}…` whose `joinedBy` is its
-  uid, only while amigo oculto is on, sign-ups are open, the draw day has not come and there is no
-  draw, and never sets `distinctFrom`. Nobody changes `joinedBy` afterwards.
+  uid, only while amigo oculto is on, the draw day has not come and there is no draw; joining (a
+  new entry) also needs sign-ups open. It never sets `distinctFrom`. Nobody changes `joinedBy` afterwards.
 
 ## The same person twice (`findSecretSantaDuplicates`)
 
@@ -174,8 +183,11 @@ A person typed by hand may later join from the invite. Pairs are always an entry
 - It shows at the top of **Início**, in the bell and on the event page. In the bell it carries the
   organizer's photo and name ("Natal · por Jéssica"), read live from their profile. The notice
   card's icon takes its box's colour (white on purple, dark on lilac in the dark theme).
-- Opening the result (from the notice, or the WhatsApp link while signed in) marks it read; it is
-  the same one-time link.
+- Opening the result (from the notice, or the WhatsApp link while signed in) marks it read. The
+  notice says the link opens only in the person's account, as often as they like; older notices
+  that said "abre uma vez só" are shown with that sentence instead (`noticeBodyNow`).
+- The WhatsApp message says the same for a link of an account, and "o link só abre uma vez" only
+  for someone added by hand (`withAccount`). The organizer's tips say both.
 
 ## The secret link (`/amigo-oculto/:token`)
 

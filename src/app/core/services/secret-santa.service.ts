@@ -17,7 +17,7 @@ import type {
   SecretSantaRosterEntry,
   SecretSantaSettings,
 } from '../models';
-import { drawSecretSanta, generateId } from '../utils';
+import { drawSecretSanta, generateId, secretSantaNoticeBody } from '../utils';
 
 /**
  * Amigo oculto. Participants live in `events/{id}/secretSantaParticipants` (owner and
@@ -491,9 +491,7 @@ export class SecretSantaService {
             kind: 'secret-santa',
             eventId: event.id,
             title: isNewLink ? 'Seu novo link do amigo oculto' : 'Sorteio do amigo oculto feito!',
-            body: isNewLink
-              ? `Quem organiza ${event.title} enviou um novo link para você ver quem tirou no amigo oculto. Ele abre uma vez só: anote o nome.`
-              : `O sorteio do amigo oculto de ${event.title} foi feito. Confira quem você tirou: o resultado abre uma vez só, anote o nome.`,
+            body: secretSantaNoticeBody(event.title, isNewLink),
             actionLabel: 'Ver quem eu tirei',
             actionUrl: `/amigo-oculto/${link.token}`,
             createdAt: now,

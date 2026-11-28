@@ -242,7 +242,10 @@ test.describe('Amigo oculto', () => {
       'Chinelo, cor verde, tamanho 37',
       'Livro de receitas',
     ]);
-    expect(saved[0]['phone']).toBe('(11) 97777-2222');
+    // Never in the list everyone reads: the phone is kept apart, by the same id.
+    expect(saved[0]).not.toHaveProperty('phone');
+    const phones = store[`events/${EVENT_ID}/secretSantaPhones`];
+    expect(phones.find((p) => p.id === saved[0].id)?.['phone']).toBe('(11) 97777-2222');
   });
 
   test('adding by hand someone already in the draw only warns: nothing is overwritten', async ({
@@ -333,7 +336,9 @@ test.describe('Amigo oculto', () => {
     const store = await readStore(page);
     const reveals = store['secretSantaReveals'];
     expect(reveals).toHaveLength(3);
-    expect(reveals.every((r) => r['giverName'] !== r['receiverName'])).toBe(true);
+    // By id: names, ideas and the event are read when a link is shown.
+    expect(reveals.every((r) => r['giverId'] !== r['receiverId'])).toBe(true);
+    expect(reveals.some((r) => 'receiverName' in r || 'giverName' in r)).toBe(false);
 
     await page.evaluate(() => {
       const opened: string[] = [];
@@ -379,12 +384,13 @@ test.describe('Amigo oculto', () => {
     await expect
       .poll(async () => {
         const all = (await readStore(page))['secretSantaReveals'];
-        const fresh = all.find((r) => r['giverName'] === 'Luiz');
+        // By id: the same giver's entry and the same person drawn.
+        const fresh = all.find((r) => r['giverId'] === luizReveal['giverId']);
         return (
           all.length === 3 &&
           !!fresh &&
           fresh.id !== luizToken &&
-          fresh['receiverName'] === luizReveal['receiverName']
+          fresh['receiverId'] === luizReveal['receiverId']
         );
       })
       .toBe(true);
@@ -493,7 +499,8 @@ test.describe('Amigo oculto', () => {
       displayName: 'Jéssica Melo',
       events: [christmasEvent({ enabled: true, giftOptions: true })],
       collections: {
-        [`events/${EVENT_ID}/secretSantaRoster`]: [
+        // The one list: guests read it directly (no phones in it).
+        [`events/${EVENT_ID}/secretSantaParticipants`]: [
           { id: 'p1', name: 'Jéssica Melo', giftOptions: [], createdAt: '1' },
           { id: 'p2', name: 'Luiz', giftOptions: ['Livro'], createdAt: '2' },
         ],

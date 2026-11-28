@@ -45,70 +45,42 @@ describe('SecretSantaService', () => {
       giftOptions: ['Livro'],
       guestId: 'g1',
     });
-    expect(gateway.batchOps.set).toHaveBeenCalledWith(
-      'events/evt-1/secretSantaParticipants/mock-new-doc-id',
-      expect.objectContaining({ name: 'Ana', phone: '', giftOptions: ['Livro'], guestId: 'g1' }),
+    const [path, entry] = gateway.batchOps.set.mock.calls[0];
+    expect(path).toBe('events/evt-1/secretSantaParticipants/mock-new-doc-id');
+    expect(entry).toEqual(
+      expect.objectContaining({ name: 'Ana', giftOptions: ['Livro'], guestId: 'g1' }),
     );
-    // The guests' roster gets the same person, without the phone, in the same batch.
-    expect(gateway.batchOps.set).toHaveBeenCalledWith(
-      'events/evt-1/secretSantaRoster/mock-new-doc-id',
-      { name: 'Ana', giftOptions: ['Livro'], createdAt: expect.any(String) },
+    // The one list everyone reads never holds a phone, and there is no second list to keep.
+    expect(entry).not.toHaveProperty('phone');
+    expect(gateway.batchOps.set).not.toHaveBeenCalledWith(
+      expect.stringContaining('secretSantaRoster'),
+      expect.anything(),
     );
   });
 
-  it('syncs the guests roster one entry at a time: a refused one keeps no one else out', async () => {
-    gateway.getDocsFromServer.mockImplementation(async (path: string) =>
-      path.endsWith('secretSantaParticipants')
-        ? people
-        : [{ id: 'p2', name: 'Luiz', giftOptions: [], createdAt: '2026-11-01' }],
-    );
-    let calls = 0;
-    gateway.runBatch.mockImplementation(async (fn) => {
-      calls++;
-      if (calls === 1) throw new Error('permission-denied');
-      await fn(gateway.batchOps);
+  it('keeps a phone apart from the list, by the same id', async () => {
+    await service.addParticipant('evt-1', {
+      name: 'Vó',
+      phone: '(11) 97777-0000',
+      giftOptions: [],
     });
-
-    await service.syncRoster('evt-1');
-
-    expect(gateway.runBatch).toHaveBeenCalledTimes(2);
     expect(gateway.batchOps.set).toHaveBeenCalledWith(
-      'events/evt-1/secretSantaRoster/p3',
-      { name: 'Ana', giftOptions: ['Livro'], note: '', createdAt: expect.any(String) },
-      { merge: true },
+      'events/evt-1/secretSantaPhones/mock-new-doc-id',
+      { phone: '(11) 97777-0000' },
     );
-    // Marked even so: the same data would be refused again, and the lists are not read again.
-    expect(gateway.updateDoc).toHaveBeenCalledWith('events/evt-1', {
-      secretSantaRosterVersion: 1,
-    });
   });
 
-  it('syncs from the server, not the cache: no copy leaves while its entry still exists', async () => {
-    // The listener's first answer may hold only the cached entry; the server has everyone.
-    gateway.collectionSnapshot.mockReturnValue(of([people[1]]));
-    gateway.getDocsFromServer.mockImplementation(async (path: string) =>
-      path.endsWith('secretSantaParticipants')
-        ? people
-        : people.map(({ id, name, giftOptions }) => ({ id, name, giftOptions })),
+  it('lists participants with the phones kept apart', () => {
+    gateway.collectionSnapshot.mockImplementation((path: string) =>
+      of(
+        path.endsWith('secretSantaPhones')
+          ? [{ id: 'a', phone: '(11) 97777-0000' }]
+          : [{ id: 'a', name: 'A', giftOptions: [], createdAt: '1' }],
+      ),
     );
-
-    await service.syncRoster('evt-1');
-
-    expect(gateway.batchOps.delete).not.toHaveBeenCalled();
-    expect(gateway.batchOps.set).not.toHaveBeenCalled();
-  });
-
-  it('drops the copy of an entry that left the list', async () => {
-    gateway.getDocsFromServer.mockImplementation(async (path: string) =>
-      path.endsWith('secretSantaParticipants')
-        ? people.slice(0, 2)
-        : people.map(({ id, name, giftOptions }) => ({ id, name, giftOptions })),
-    );
-
-    await service.syncRoster('evt-1');
-
-    expect(gateway.batchOps.delete).toHaveBeenCalledTimes(1);
-    expect(gateway.batchOps.delete).toHaveBeenCalledWith('events/evt-1/secretSantaRoster/p3');
+    let phones: string[] = [];
+    service.listParticipants('evt-1').subscribe((list) => (phones = list.map((p) => p.phone)));
+    expect(phones).toEqual(['(11) 97777-0000']);
   });
 
   it('draws: one secret reveal per participant and the links for the owner', async () => {
@@ -122,12 +94,11 @@ describe('SecretSantaService', () => {
     // Without an account, each link keeps its result apart, for "Gerar novo link".
     expect(sets.filter(([path]) => path.endsWith('/private/result'))).toHaveLength(3);
     const pairs = reveals.map(([, data]) => data as SecretSantaReveal);
-    expect(pairs.every((r) => r.giverName !== r.receiverName)).toBe(true);
-    expect(new Set(pairs.map((r) => r.receiverName)).size).toBe(3);
-    expect(pairs.find((r) => r.receiverName === 'Jéssica')?.receiverGiftOptions).toEqual([
-      'Chinelo verde, 36',
-    ]);
-    expect(pairs.every((r) => r.eventId === 'evt-1' && r.eventTitle === 'Natal 2026')).toBe(true);
+    // By id only: names, ideas and the event are read when the link is shown.
+    expect(pairs.every((r) => r.giverId !== r.receiverId)).toBe(true);
+    expect(new Set(pairs.map((r) => r.receiverId)).size).toBe(3);
+    expect(pairs.every((r) => r.eventId === 'evt-1' && !('receiverName' in r))).toBe(true);
+    expect(pairs.every((r) => !('eventTitle' in r) && !('giverName' in r))).toBe(true);
 
     expect(sets).toContainEqual(['events/evt-1/secretSanta/draw', draw]);
     expect(draw.participantIds).toEqual(['p1', 'p2', 'p3']);
@@ -135,8 +106,9 @@ describe('SecretSantaService', () => {
     // The draw the owner reads holds links, never who drew whom.
     // The draw the owner reads holds links and receiver ids, never the receivers' names.
     for (const link of draw.links) {
-      const others = people.filter((p) => p.id !== link.participantId).map((p) => p.name);
-      expect(others.some((name) => JSON.stringify(link).includes(name))).toBe(false);
+      // No name or phone written in: the card reads them from the list.
+      expect(people.some((p) => JSON.stringify(link).includes(p.name))).toBe(false);
+      expect(link).not.toHaveProperty('phone');
       expect(link.receiverId).not.toBe(link.participantId);
       expect(link.token).toMatch(/^[0-9a-f-]{36}$/);
     }
@@ -157,7 +129,7 @@ describe('SecretSantaService', () => {
     expect(gateway.batchOps.delete).toHaveBeenCalledWith(`secretSantaReveals/${old.token}`);
     expect(gateway.batchOps.set).toHaveBeenCalledWith(
       `secretSantaReveals/${fresh.token}`,
-      expect.objectContaining({ giverName: 'Luiz', receiverName: drawnByLuiz.name }),
+      expect.objectContaining({ giverId: 'p2', receiverId: drawnByLuiz.id }),
     );
     expect(gateway.batchOps.set).toHaveBeenCalledWith('events/evt-1/secretSanta/draw', next);
     // Everyone else keeps their link.
@@ -177,9 +149,42 @@ describe('SecretSantaService', () => {
     await service.openReveal('tok');
     expect(gateway.updateDoc).toHaveBeenCalledWith('secretSantaReveals/tok', {
       openedAt: expect.any(String),
+      receiverId: '',
+    });
+    // A link of an older draw had the name written in: that is what is erased.
+    await service.openReveal('old', false, false);
+    expect(gateway.updateDoc).toHaveBeenCalledWith('secretSantaReveals/old', {
+      openedAt: expect.any(String),
       receiverName: '',
       receiverGiftOptions: [],
     });
+  });
+
+  it('shows a link by id with the names, ideas and event read now', async () => {
+    gateway.getDocWithId.mockImplementation(async (path: string) =>
+      path.endsWith('/p1')
+        ? { id: 'p1', name: 'Vó Lurdes', giftOptions: [] }
+        : { id: 'rsvp_u2', joinedBy: 'u2', giftOptions: ['Livro'] },
+    );
+    gateway.getDoc.mockResolvedValue({ title: 'Natal 2026', date: '2026-12-24' });
+    gateway.collectionSnapshot.mockReturnValue(of([{ id: 'u2', name: 'Jéssica Lima' }]));
+
+    const shown = await service.describeReveal({
+      eventId: 'evt-1',
+      giverId: 'p1',
+      receiverId: 'rsvp_u2',
+      createdAt: '1',
+    });
+
+    expect(shown).toEqual(
+      expect.objectContaining({
+        eventTitle: 'Natal 2026',
+        giverName: 'Vó Lurdes',
+        // An account is named by its profile now, not by what the list once had.
+        receiverName: 'Jéssica Lima',
+        receiverGiftOptions: ['Livro'],
+      }),
+    );
   });
 
   it('drawing again removes the old links', async () => {

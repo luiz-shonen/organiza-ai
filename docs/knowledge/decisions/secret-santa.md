@@ -73,15 +73,18 @@ everyone, the organizer included.
   "Confirmados" added by hand have no account, so they can be added here.
 - Hand entry stays: many people never open the site.
 
-## What guests see (`secretSantaRoster`)
+## One list, phones apart
 
-- The participants hold phones, so only organizers read them. Guests read a roster beside them,
-  `events/{id}/secretSantaRoster/{same id}`: only `name`, `giftOptions` and `createdAt`. Any
-  signed-in account reads it; organizers write any entry (mirroring the participant,
-  `mirrorsGuestEntry`); a guest writes only `rsvp_{uid}…` entries, in the same batch as their
-  participant entry (the rules check it with `getAfter`).
-- Every write to a participant writes its roster entry in the same batch; `syncRoster` fixes drift
-  when an organizer opens the page.
+- Everyone reads the same list, `events/{id}/secretSantaParticipants`: who is in and their gift
+  ideas, **never a phone**. Any account lists it; anyone reads one entry (the secret link page
+  opens signed out). The rules open it only on events with `secretSantaFormat: 2` (set when an
+  event is created, or by `scripts/migrate-referencia.mjs` once the phones moved), so a list that
+  still holds phones is never shown to guests; until then guests read the older copy
+  (`secretSantaRoster`, no longer written, removed in the cleanup).
+- **Phones live apart**: `events/{id}/secretSantaPhones/{same id}` = `{ phone }` for people with
+  no account of their own (relatives, companions, people added by hand). Organizers read and
+  write them; a guest only those of their own entries (`rsvp_{uid}...`). An account's own entry
+  keeps no phone and no name: the profile names it and `contacts/{uid}` gives the phone.
 - The guest's invite has an **"Amigo oculto"** card at the bottom: who is in, with their ideas, no
   phones. On their own entries a pencil opens the same form the organizer uses (in a sheet), with
   **Sair do amigo oculto**. A confirmed guest not in yet gets **Participar do amigo oculto** there.
@@ -142,9 +145,11 @@ A person typed by hand may later join from the invite. Pairs are always an entry
   creating the draw, or changing its `drawnAt`, before that day (03:00 UTC); "Novo link" for one
   person (same `drawnAt`) still works. Without a date, any time.
 - `drawSecretSanta` shuffles with Web Crypto into one cycle. One batch writes each pair to
-  `secretSantaReveals/{token}` (random UUID) and the list of links (name, phone, token, the
-  receiver's id, the account `uid` when there is one) to `events/{id}/secretSanta/draw`, owner only.
-  The names written are the **profile** names (`secretSantaParticipantsView`).
+  `secretSantaReveals/{token}` (random UUID) and the list of links to
+  `events/{id}/secretSanta/draw`, owner only. **Only ids**: a link holds the participant's id, the
+  token, the receiver's id and the account `uid` when there is one; a reveal holds `giverId` and
+  `receiverId`. Names, ideas, phones and the event's title are read when shown
+  (`describeReveal`, the card's links); draws made before keep the names they wrote.
 - **After the draw the card shows only what matters now**: no sign-up switch, no list, no
   duplicates. "Sorteio feito em 23 de novembro, às 16:56. 0 de 5 já abriram o link." and three tips
   (send each their link; lost it → "Novo link", same result; opened but not by them → draw again),

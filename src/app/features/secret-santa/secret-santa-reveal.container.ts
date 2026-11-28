@@ -105,7 +105,7 @@ export class SecretSantaRevealContainer {
   });
 
   protected readonly firstName = computed(() => {
-    const name = this.reveal()?.giverName.trim() ?? '';
+    const name = this.reveal()?.giverName?.trim() ?? '';
     return name.split(/\s+/)[0] || name;
   });
 
@@ -117,7 +117,7 @@ export class SecretSantaRevealContainer {
 
   /** "O que Leonardo quer ganhar": the first name of who they drew. */
   protected readonly receiverFirstName = computed(() => {
-    const name = this.reveal()?.receiverName.trim() ?? '';
+    const name = this.reveal()?.receiverName?.trim() ?? '';
     return name.split(/\s+/)[0] || name;
   });
 
@@ -159,6 +159,10 @@ export class SecretSantaRevealContainer {
       this.reveal.set(null);
       this.locked.set(isPermissionError(error));
       return;
+    }
+    if (reveal) {
+      // Names, ideas and the event read now: a newer link keeps only ids.
+      reveal = await this.secretSantaService.describeReveal(reveal).catch(() => reveal);
     }
     if (reveal?.giverUid) {
       // Named as the account's profile is now, not as it was when the draw was made.
@@ -204,7 +208,7 @@ export class SecretSantaRevealContainer {
    */
   private async spend(token: string, reveal: SecretSantaReveal): Promise<void> {
     try {
-      await this.secretSantaService.openReveal(token, !!reveal.giverUid);
+      await this.secretSantaService.openReveal(token, !!reveal.giverUid, !!reveal.giverId);
       this.markNoticeRead(reveal.eventId);
     } catch (error) {
       // Opened elsewhere a moment ago. Any other failure (no connection) still shows the name.

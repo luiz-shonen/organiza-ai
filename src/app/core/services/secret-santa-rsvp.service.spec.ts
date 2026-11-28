@@ -43,24 +43,18 @@ describe('SecretSantaService (invite sign-ups)', () => {
       ['rsvp_u1'],
     );
     const sets = gateway.batchOps.set.mock.calls;
+    // The guest's own entry: no name (their profile names them), never a phone.
     expect(sets[0]).toEqual([
       `${path}/rsvp_u1`,
-      { name: 'Maria', phone: '', giftOptions: [], guestId: 'u1', joinedBy: 'u1' },
+      { giftOptions: [], guestId: 'u1', joinedBy: 'u1' },
       { merge: true },
     ]);
-    // Each entry and its roster copy (name and gift options only) go in the same batch.
-    expect(sets[1]).toEqual([
-      'events/evt-1/secretSantaRoster/rsvp_u1',
-      { name: 'Maria', giftOptions: [] },
-      { merge: true },
-    ]);
-    expect(sets[2][1]).toEqual(
-      expect.objectContaining({ joinedBy: 'u1', createdAt: expect.any(String) }),
+    // A relative is named by the entry; there is no second list to keep in step.
+    expect(sets[1][1]).toEqual(
+      expect.objectContaining({ name: 'Ana', joinedBy: 'u1', createdAt: expect.any(String) }),
     );
+    expect(sets.some(([p]) => String(p).includes('secretSantaRoster'))).toBe(false);
     expect(gateway.batchOps.delete).toHaveBeenCalledWith(`${path}/rsvp_u1_c_bia`);
-    expect(gateway.batchOps.delete).toHaveBeenCalledWith(
-      'events/evt-1/secretSantaRoster/rsvp_u1_c_bia',
-    );
   });
 
   it('merges a duplicate into the entry from the invite, keeping the guest own entry', async () => {

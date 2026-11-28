@@ -84,8 +84,9 @@ export interface SecretSantaDuplicate {
 /** One secret link per participant: only the event owner can read these. */
 export interface SecretSantaLink {
   readonly participantId: string;
-  readonly name: string;
-  readonly phone: string;
+  /** Older draws only: the card names the person and finds their phone by `participantId`. */
+  readonly name?: string;
+  readonly phone?: string;
   /** Random UUID: the link cannot be guessed from a name. */
   readonly token: string;
   /**
@@ -107,16 +108,23 @@ export interface SecretSantaDraw {
 /** What one link reveals (`secretSantaReveals/{token}`), readable by whoever has the token. */
 export interface SecretSantaReveal {
   readonly eventId: string;
-  readonly eventTitle: string;
-  readonly eventDate: string;
-  readonly giverName: string;
+  /**
+   * Newer draws keep only ids: the giver's and the drawn person's entries in the event's list.
+   * Opening a link without an account erases `receiverId` (it opens once).
+   */
+  readonly giverId?: string;
+  readonly receiverId?: string;
+  /** Read from the event and its list when shown (`describeReveal`); older links carry them. */
+  readonly eventTitle?: string;
+  readonly eventDate?: string;
+  readonly giverName?: string;
   /**
    * The giver's account, when they have one: the link then opens only signed in to it, so a
    * forwarded link shows nothing. Missing for people without an account (opened by anyone).
    */
   readonly giverUid?: string;
-  readonly receiverName: string;
-  readonly receiverGiftOptions: readonly string[];
+  readonly receiverName?: string;
+  readonly receiverGiftOptions?: readonly string[];
   readonly createdAt: string;
   /** Set the first time the link is opened; from then on the link is spent. */
   readonly openedAt?: string;
@@ -132,14 +140,19 @@ export interface SecretSantaReveal {
  */
 export interface SecretSantaRevealCopy {
   readonly eventId: string;
-  readonly receiverName: string;
-  readonly receiverGiftOptions: readonly string[];
+  /** Newer draws: the drawn person's entry; older ones kept the name and ideas. */
+  readonly receiverId?: string;
+  readonly receiverName?: string;
+  readonly receiverGiftOptions?: readonly string[];
 }
 
 /** One person in the amigo oculto as the guests see it: no phone, only the name and the ideas. */
 export interface SecretSantaRosterEntry {
   readonly id: string;
+  /** Empty for an account's own entry: it is named by the profile (`joinedBy` / `guestId`). */
   readonly name: string;
+  readonly joinedBy?: string;
+  readonly guestId?: string;
   readonly giftOptions: readonly string[];
   /** The person's short comment above their gift ideas. */
   readonly note?: string;

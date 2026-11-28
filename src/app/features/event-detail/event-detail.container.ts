@@ -581,7 +581,6 @@ export class EventDetailContainer implements OnInit {
       guestId: uid,
     });
   }
-  /** The guest's own entries in the roster (`rsvp_{uid}…`), while they may still change them. */
   /**
    * The guest's own entries they may still change: until the draw (or its day), even with
    * sign-ups closed (they may edit their ideas and leave, never join).

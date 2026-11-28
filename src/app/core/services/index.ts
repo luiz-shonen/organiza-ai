@@ -35,3 +35,4 @@ export type { PresenceNews } from './people-notices.service';
 export { LinkPreviewService, type LinkPreviewState } from './link-preview.service';
 export { AiSuggestionService, AI_BUSY_MESSAGE } from './ai-suggestion.service';
 export type { AiSuggestionDone } from './ai-suggestion.service';
+export { AppUpdateService, APP_UPDATE_CHECK_MS } from './app-update.service';

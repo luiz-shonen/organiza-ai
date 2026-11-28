@@ -130,9 +130,8 @@ export class ProfileContainer implements OnInit {
       this.updating.set(true);
       await this.userService.updateProfile(current.uid, { displayName, phone });
       if (displayName && displayName !== (current.name ?? current.displayName)) {
+        // Every event shows this person by their profile (by uid): nothing to rewrite there.
         this.authService.setProfileName(displayName);
-        // The events this person answered take the new name too (in the background).
-        void this.nameSync.syncOwnName(current.uid, displayName).catch(() => undefined);
       }
       this.userProfile.set({
         ...current,

@@ -23,13 +23,13 @@ describe('Approval and account-only links', () => {
 
   it('saves a first answer to an event that asks for approval as waiting', async () => {
     const guests = TestBed.inject(GuestService);
-    await guests.batchConfirmRsvp('evt-1', { uid: 'u1', name: 'Maria', pendingApproval: true });
+    await guests.batchConfirmRsvp('evt-1', { uid: 'u1', pendingApproval: true });
     expect(gateway.batchOps.set.mock.calls[0][1]).toEqual(
       expect.objectContaining({ uid: 'u1', approved: false }),
     );
 
     gateway.batchOps.set.mockClear();
-    await guests.batchConfirmRsvp('evt-1', { uid: 'u1', name: 'Maria' });
+    await guests.batchConfirmRsvp('evt-1', { uid: 'u1' });
     expect(gateway.batchOps.set.mock.calls[0][1]).not.toHaveProperty('approved');
   });
 

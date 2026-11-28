@@ -2,12 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, combineLatest, from, map, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventService } from './event.service';
+import { PublicProfileService, type PublicProfile } from './public-profile.service';
+import { ContactService } from './contact.service';
 import type { UserProfile, PartyEvent, ThemeMode } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly gateway = inject(FirestoreGateway);
   private readonly eventService = inject(EventService);
+  private readonly profiles = inject(PublicProfileService);
+  private readonly contacts = inject(ContactService);
 
   private userPath(uid: string) {
     return `users/${uid}`;
@@ -16,7 +20,10 @@ export class UserService {
   async getProfile(uid: string): Promise<UserProfile | null> {
     if (!uid) return null;
     try {
-      const data = await this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid));
+      const [data, contactPhone] = await Promise.all([
+        this.gateway.getDoc<Record<string, unknown>>(this.userPath(uid)),
+        this.contacts.ownPhone(uid),
+      ]);
       if (!data) return null;
 
       const createdAtDate = this.gateway.timestampToDate(data['createdAt']);
@@ -29,7 +36,8 @@ export class UserService {
           (data['displayName'] as string | null) ?? (data['name'] as string | null) ?? null,
         photoURL: (data['photoURL'] as string | null) ?? null,
         name: (data['name'] as string | undefined) ?? (data['displayName'] as string | undefined),
-        phone: data['phone'] as string | undefined,
+        // The phone lives in `contacts/{uid}`; the profile's older copy is the fallback.
+        phone: contactPhone || (data['phone'] as string | undefined),
         savedCompanions: (data['savedCompanions'] as string[] | undefined) ?? [],
         themePref: data['themePref'] as ThemeMode | undefined,
         createdAt: createdAtDate
@@ -60,6 +68,11 @@ export class UserService {
       if (newName) {
         // Guests read the organizer's name from the public profile, never this private one.
         this.publishName(uid, newName).catch(console.error);
+      }
+      if (data.phone !== undefined) {
+        // The phone others may read (organizers of events the person confirmed) lives apart.
+        // Still saved on the profile too, for older app versions, until the cleanup.
+        await this.contacts.savePhone(uid, data.phone ?? '');
       }
       if (existing) {
         await this.gateway.updateDoc(this.userPath(uid), updateData);
@@ -93,34 +106,24 @@ export class UserService {
       ...(photo ? { photoURL: photo.slice(0, 2048) } : {}),
       updatedAt: new Date().toISOString(),
     });
+    // Every screen showing this person follows the new name at once.
+    this.profiles.setOwn(uid, { name: clean, photoURL: photo ? photo.slice(0, 2048) : null });
   }
 
   /** The name an account shows to others; empty when it has none. */
   async publicName(uid: string): Promise<string> {
     if (!uid) return '';
-    const profile = await this.gateway
-      .getDoc<{ name?: string }>(`publicProfiles/${uid}`)
-      .catch(() => null);
-    return profile?.name?.trim() ?? '';
+    const found = await this.profiles.lookup([uid]);
+    return found[uid]?.name ?? '';
   }
 
   /**
    * The public name and photo of several accounts, by uid (missing ones left out): lists show
    * people as their profile names them now, not as they were typed when they answered.
+   * Read in batches and kept live by `PublicProfileService`.
    */
-  async publicProfiles(
-    uids: readonly string[],
-  ): Promise<Record<string, { name: string; photoURL: string | null }>> {
-    const found = await Promise.all(
-      [...new Set(uids.filter(Boolean))].map(async (uid) => {
-        const doc = await this.gateway
-          .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
-          .catch(() => null);
-        const name = doc?.name?.trim();
-        return name ? ([uid, { name, photoURL: doc?.photoURL ?? null }] as const) : null;
-      }),
-    );
-    return Object.fromEntries(found.filter((entry) => entry !== null));
+  async publicProfiles(uids: readonly string[]): Promise<Record<string, PublicProfile>> {
+    return this.profiles.lookup(uids);
   }
 
   /** Once per sign-in: the public name matches the profile's (or the Google account's). */

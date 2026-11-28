@@ -30,6 +30,8 @@ import {
   SecretSantaService,
   SECRET_SANTA_ROSTER_VERSION,
   InboxService,
+  PublicProfileService,
+  ContactService,
 } from '../../core/services';
 import {
   PartyEvent,
@@ -255,11 +257,11 @@ export class EventDetailContainer implements OnInit {
    * and who joined the amigo oculto. A guest is shown as their profile names them now, not as
    * they were named when they answered.
    */
-  private readonly publicProfiles = signal<
-    Readonly<Record<string, { name: string; photoURL: string | null }>>
-  >({});
-  private publicProfilesLoadedFor = '';
-  private readonly loadPublicProfiles = effect(() => {
+  private readonly profileService = inject(PublicProfileService);
+  private readonly contacts = inject(ContactService);
+  /** Live: a guest who renames themself is renamed here at once (one listener per person). */
+  private readonly publicProfiles = this.profileService.profiles;
+  private readonly watchPublicProfiles = effect(() => {
     const uids = [
       ...this.guests()
         .filter((guest) => !guest.primaryGuestId && guest.uid)
@@ -279,23 +281,43 @@ export class EventDetailContainer implements OnInit {
       // Who said "Não poderei ir" (by account) and who brings something (the household's uid).
       ...this.declines().map((decline) => decline.id),
       ...this.claims().map((claims) => claims.id),
-    ].filter(Boolean);
+      ...this.items().map((item) => item.claimedBy?.uid),
+    ];
+    this.profileService.watch(uids);
+  });
+  /**
+   * The phones of the guests with an account, for who organizes: read from `contacts/{uid}`,
+   * which lets them in once the guest confirmed. What the answer stored is the fallback.
+   */
+  private readonly guestPhones = signal<Readonly<Record<string, string>>>({});
+  private guestPhonesLoadedFor = '';
+  private readonly loadGuestPhones = effect(() => {
+    if (!this.canEdit()) return;
+    const uids = this.guests()
+      .filter((guest) => !guest.primaryGuestId && !guest.addedBy && guest.uid)
+      .map((guest) => guest.uid as string);
     const key = [...new Set(uids)].sort().join(',');
-    if (!key || key === this.publicProfilesLoadedFor) return;
-    this.publicProfilesLoadedFor = key;
-    this.userService
-      .publicProfiles(key.split(','))
-      .then((profiles) => this.publicProfiles.set(profiles))
+    if (!key || key === this.guestPhonesLoadedFor) return;
+    this.guestPhonesLoadedFor = key;
+    this.contacts
+      .phonesOf(uids)
+      .then((phones) => this.guestPhones.set(phones))
       .catch(console.error);
   });
   /** The guests, each named (and pictured) as their account's profile is now. */
   private readonly profiledGuests = computed(() => {
     const profiles = this.publicProfiles();
+    const phones = this.guestPhones();
     return this.guests().map((guest) => {
-      const profile = !guest.primaryGuestId && guest.uid ? profiles[guest.uid] : undefined;
-      return profile
-        ? { ...guest, name: profile.name, photoUrl: profile.photoURL || guest.photoUrl }
-        : guest;
+      const uid = !guest.primaryGuestId && guest.uid ? guest.uid : undefined;
+      const profile = uid ? profiles[uid] : undefined;
+      const phone = uid ? phones[uid] : undefined;
+      if (!profile && !phone) return guest;
+      return {
+        ...guest,
+        ...(profile ? { name: profile.name, photoUrl: profile.photoURL || guest.photoUrl } : {}),
+        ...(phone ? { phone } : {}),
+      };
     });
   });
   /**
@@ -331,6 +353,14 @@ export class EventDetailContainer implements OnInit {
             ),
           }
         : claims;
+    });
+  });
+  /** Items claimed the old way (`claimedBy`, before households): named by the account too. */
+  private readonly profiledItems = computed(() => {
+    const profiles = this.publicProfiles();
+    return this.items().map((item) => {
+      const name = item.claimedBy?.uid ? profiles[item.claimedBy.uid]?.name : undefined;
+      return name && item.claimedBy ? { ...item, claimedBy: { ...item.claimedBy, name } } : item;
     });
   });
   private readonly listedGuests = computed(() => this.guestSplit().approved);
@@ -841,7 +871,7 @@ export class EventDetailContainer implements OnInit {
   });
 
   protected readonly progress = computed(() =>
-    buildItemProgress(this.items(), this.profiledClaims(), this.memberUid()),
+    buildItemProgress(this.profiledItems(), this.profiledClaims(), this.memberUid()),
   );
 
   private readonly myClaims = computed(() => {
@@ -1334,7 +1364,7 @@ export class EventDetailContainer implements OnInit {
    * them) and whoever comes along (`with` the guest who brings them).
    */
   private readonly confirmedPeople = computed(() => {
-    const guests = this.guests();
+    const guests = this.profiledGuests();
     const byId = new Map(guests.map((guest) => [guest.id, guest]));
     return guests.flatMap((guest) => {
       // A relative counts with the guest who brought them: that guest's household and answer.
@@ -1661,7 +1691,7 @@ export class EventDetailContainer implements OnInit {
     if (!uid) return;
     this.rsvpLoading.set(true);
     try {
-      await this.guestService.saveDecline(this.id(), uid, this.declineName(), result.message);
+      await this.guestService.saveDecline(this.id(), uid, result.message);
       void this.peopleNotices.presence(this.id(), this.declineName(), {
         kind: 'declined',
         message: result.message,
@@ -1710,8 +1740,6 @@ export class EventDetailContainer implements OnInit {
       const profile = await this.userService.getProfile(user.uid);
       const name =
         profile?.name?.trim() || user.displayName || user.email?.split('@')[0] || 'Convidado';
-      const email = user.email ?? '';
-      const photoUrl = user.photoURL ?? '';
       const phone = profile?.phone || user.phoneNumber || '';
 
       const familyMembers = await this.familyService.getFamilyMembers(user.uid);
@@ -1809,10 +1837,7 @@ export class EventDetailContainer implements OnInit {
               this.id(),
               {
                 uid: user.uid,
-                name,
-                email,
                 phone: newPhone,
-                photoUrl,
                 companions: result.companions,
                 pendingApproval: !!this.event()?.requireApproval && !mine,
               },
@@ -1822,6 +1847,11 @@ export class EventDetailContainer implements OnInit {
               ),
             );
             this.userService.setAttending(user.uid, this.id(), true).catch(console.error);
+            // Who organizes the event may now read the guest's phone (`contacts/{uid}`).
+            const answered = this.event();
+            if (answered) {
+              this.contacts.shareWithOrganizers(user.uid, answered, newPhone).catch(console.error);
+            }
             this.userService
               .rememberCompanions(
                 user.uid,
@@ -2204,9 +2234,7 @@ export class EventDetailContainer implements OnInit {
               this.declined.set(true);
               this.userService.setDeclined(targetUid, this.id(), true).catch(console.error);
               this.userService.setAttending(targetUid, this.id(), false).catch(console.error);
-              this.guestService
-                .saveDecline(this.id(), targetUid, this.declineName(), message)
-                .catch(console.error);
+              this.guestService.saveDecline(this.id(), targetUid, message).catch(console.error);
               await this.afterDeclineSecretSanta(targetUid, answer, santaOthers);
             }
 
@@ -2356,7 +2384,7 @@ export class EventDetailContainer implements OnInit {
   private async saveMyClaims(entries: EventClaims['entries']): Promise<void> {
     const uid = this.memberUid();
     if (!uid) return;
-    await this.claimService.saveClaims(this.id(), uid, this.currentGuestName() || '', entries);
+    await this.claimService.saveClaims(this.id(), uid, entries);
   }
 
   /**

@@ -11,12 +11,13 @@ import {
 } from '../models';
 import { Phone } from '../value-objects';
 
+/**
+ * The guest's own answer. They are named and pictured by their account (`publicProfiles/{uid}`),
+ * so the answer keeps no name, e-mail or photo.
+ */
 export interface BatchPrimaryGuestInput {
   uid: string;
-  name: string;
-  email?: string;
   phone?: string;
-  photoUrl?: string;
   companions?: GuestCompanion[];
   companionsCount?: number;
   /** The event asks for approval and this is the guest's first answer. */
@@ -51,6 +52,7 @@ export class GuestService {
         map((docs) =>
           docs.map((d) => ({
             id: d.id,
+            // Older answers stored the name; screens show the profile's, by the id (the uid).
             name: d.name ?? '',
             message: d.message ?? '',
             declinedAt: d.declinedAt ?? '',
@@ -59,9 +61,9 @@ export class GuestService {
       );
   }
 
-  async saveDecline(eventId: string, uid: string, name: string, message: string): Promise<void> {
+  /** "Não poderei ir": the document id is the account; the name comes from its profile. */
+  async saveDecline(eventId: string, uid: string, message: string): Promise<void> {
     await this.gateway.setDoc(`events/${eventId}/declines/${uid}`, {
-      name,
       message,
       declinedAt: new Date().toISOString(),
     });
@@ -187,33 +189,6 @@ export class GuestService {
     };
   }
 
-  async saveVerifiedRsvp(
-    eventId: string,
-    guestData: {
-      uid: string;
-      name: string;
-      email?: string;
-      phone?: string;
-      photoUrl?: string;
-    },
-  ): Promise<void> {
-    await this.gateway.setDoc(
-      this.guestDocPath(eventId, guestData.uid),
-      {
-        uid: guestData.uid,
-        name: guestData.name,
-        email: guestData.email ?? '',
-        phone: guestData.phone ?? '',
-        photoUrl: guestData.photoUrl ?? '',
-        companions: [],
-        companionsCount: 0,
-        isConfirmed: true,
-        confirmedAt: new Date().toISOString(),
-      },
-      { merge: true },
-    );
-  }
-
   async batchConfirmRsvp(
     eventId: string,
     primaryGuest: BatchPrimaryGuestInput,
@@ -229,10 +204,9 @@ export class GuestService {
         this.guestDocPath(eventId, primaryGuest.uid),
         {
           uid: primaryGuest.uid,
-          name: primaryGuest.name,
-          email: primaryGuest.email ?? '',
+          // Still kept here until the cleanup (plan item 6): older app versions show it to the
+          // organizers. The phone itself lives in `contacts/{uid}` (ContactService).
           phone: primaryGuest.phone ?? '',
-          photoUrl: primaryGuest.photoUrl ?? '',
           isConfirmed: true,
           confirmedAt: now,
           companionsCount,

@@ -354,7 +354,7 @@ export class HomeContainer {
     };
     this.households.update((all) => ({ ...all, [eventId]: { ...household, claims } }));
     try {
-      await this.claimService.saveClaims(eventId, user.uid, claims.name, claims.entries);
+      await this.claimService.saveClaims(eventId, user.uid, claims.entries);
     } catch (error) {
       this.households.update((all) => ({ ...all, [eventId]: household }));
       this.feedback.error(explainError('Não foi possível salvar. Tente novamente.', error));

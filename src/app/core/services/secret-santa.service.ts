@@ -490,7 +490,6 @@ export class SecretSantaService {
             id: secretSantaNotificationId(event.id),
             kind: 'secret-santa',
             eventId: event.id,
-            eventTitle: event.title,
             title: isNewLink ? 'Seu novo link do amigo oculto' : 'Sorteio do amigo oculto feito!',
             body: isNewLink
               ? `Quem organiza ${event.title} enviou um novo link para você ver quem tirou no amigo oculto. Ele abre uma vez só: anote o nome.`

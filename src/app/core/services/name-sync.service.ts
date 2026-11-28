@@ -5,11 +5,11 @@ import { FirestoreGateway } from './firestore.gateway';
 import { SecretSantaService } from './secret-santa.service';
 
 /**
- * A name changed on the profile reaches every event the household answered (`rsvpEvents`):
- * the guest's own answer and their relatives', what each of them brings, and their amigo oculto
- * entries while the draw is still open. The screens already show an account by its profile
- * name; this keeps what is stored in line too (a relative has no account to look up, so their
- * new name only reaches the events this way).
+ * A relative renamed on the profile reaches every event the household answered (`rsvpEvents`):
+ * their answer, what they bring and their amigo oculto entry while the draw is still open. A
+ * relative has no account to look up, so their new name only reaches the events this way.
+ * An account holder is never rewritten here: every screen reads them by uid from their profile.
+ * (This whole service goes with the cleanup, plan item 6.)
  *
  * Best effort and quiet: an event that is closed or gone keeps its old copy.
  */
@@ -17,19 +17,6 @@ import { SecretSantaService } from './secret-santa.service';
 export class NameSyncService {
   private readonly gateway = inject(FirestoreGateway);
   private readonly secretSanta = inject(SecretSantaService);
-
-  /** The account holder renamed themself. */
-  async syncOwnName(uid: string, name: string): Promise<void> {
-    const clean = name.trim();
-    if (!uid || !clean) return;
-    await this.eachEvent(uid, (eventId) =>
-      Promise.all([
-        this.renameGuest(`events/${eventId}/guests/${uid}`, clean),
-        this.renameClaims(eventId, uid, null, clean),
-        this.renameSantaEntry(eventId, uid, secretSantaRsvpId(uid), clean),
-      ]),
-    );
-  }
 
   /** A relative on the profile was renamed. */
   async syncFamilyMemberName(

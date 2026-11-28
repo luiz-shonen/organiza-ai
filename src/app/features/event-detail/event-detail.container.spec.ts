@@ -47,15 +47,14 @@ describe('EventDetailContainer', () => {
 
   let mockEventService: {
     getEvent: ReturnType<typeof vi.fn>;
+    getEventById: ReturnType<typeof vi.fn>;
   };
   let mockItemService: {
     listItems: ReturnType<typeof vi.fn>;
-    claimItem: ReturnType<typeof vi.fn>;
     unclaimItem: ReturnType<typeof vi.fn>;
   };
   let mockGuestService: {
     listGuests: ReturnType<typeof vi.fn>;
-    saveVerifiedRsvp: ReturnType<typeof vi.fn>;
     batchConfirmRsvp: ReturnType<typeof vi.fn>;
     cancelRsvp: ReturnType<typeof vi.fn>;
     getGuestByPhone: ReturnType<typeof vi.fn>;
@@ -160,10 +159,11 @@ describe('EventDetailContainer', () => {
 
     mockEventService = {
       getEvent: vi.fn().mockReturnValue(of(mockEvent)),
+      // The notices to who organizes read the event once.
+      getEventById: vi.fn().mockResolvedValue(mockEvent),
     };
     mockItemService = {
       listItems: vi.fn().mockReturnValue(of(mockItems)),
-      claimItem: vi.fn().mockResolvedValue(undefined),
       unclaimItem: vi.fn().mockResolvedValue(undefined),
     };
     mockGuestService = {
@@ -171,7 +171,6 @@ describe('EventDetailContainer', () => {
       saveDecline: vi.fn().mockResolvedValue(undefined),
       listDeclines: vi.fn().mockReturnValue(of([])),
       removeDecline: vi.fn().mockResolvedValue(undefined),
-      saveVerifiedRsvp: vi.fn().mockResolvedValue(undefined),
       batchConfirmRsvp: vi.fn().mockResolvedValue(undefined),
       cancelRsvp: vi.fn().mockResolvedValue(undefined),
       getGuestByPhone: vi.fn().mockResolvedValue(null),
@@ -562,13 +561,15 @@ describe('EventDetailContainer', () => {
         'evt-123',
         expect.objectContaining({
           uid: 'usr-google-99',
-          name: 'Mariana Souza',
-          email: 'mariana@gmail.com',
           companions: [],
         }),
         [],
         [],
       );
+      // Named by the account's profile: the answer carries no copied name or e-mail.
+      const [, primary] = mockGuestService.batchConfirmRsvp.mock.calls[0];
+      expect(primary).not.toHaveProperty('name');
+      expect(primary).not.toHaveProperty('email');
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
     });
 
@@ -634,10 +635,7 @@ describe('EventDetailContainer', () => {
       expect(mockDrawerService.open).toHaveBeenCalled();
       expect(mockGuestService.batchConfirmRsvp).toHaveBeenCalledWith(
         'evt-123',
-        expect.objectContaining({
-          uid: 'usr-1',
-          name: 'Lucas Dev',
-        }),
+        expect.objectContaining({ uid: 'usr-1' }),
         mockFamily,
         [],
       );
@@ -734,7 +732,7 @@ describe('EventDetailContainer', () => {
         who: 'Marta',
       });
 
-      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', 'Lucas Dev', [
+      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', [
         { itemId: 'item-1', memberId: 'f1', who: 'Marta', quantity: 2, bought: false },
       ]);
       expect(mockConfettiService.fireSuccessConfetti).toHaveBeenCalled();
@@ -763,7 +761,7 @@ describe('EventDetailContainer', () => {
         bought: false,
       });
 
-      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', 'Lucas Dev', []);
+      expect(mockClaimService.saveClaims).toHaveBeenCalledWith('evt-123', 'usr-1', []);
       expect(mockFeedback.success).toHaveBeenCalledWith('Item liberado.');
     });
 

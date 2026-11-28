@@ -219,7 +219,7 @@ describe('HomeContainer', () => {
       (element().querySelector('[data-testid="bought-i1"] input') as HTMLInputElement).click();
       await fixture.whenStable();
 
-      expect(claimService.saveClaims).toHaveBeenCalledWith('evt-1', 'u1', 'Jéssica', [
+      expect(claimService.saveClaims).toHaveBeenCalledWith('evt-1', 'u1', [
         { ...household.entries[0], bought: true },
       ]);
     });

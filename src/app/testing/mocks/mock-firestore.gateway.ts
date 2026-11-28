@@ -9,6 +9,7 @@ export type MockFirestoreBatchOps = {
 
 export interface MockFirestoreGateway {
   where: ReturnType<typeof vi.fn>;
+  whereIdIn: ReturnType<typeof vi.fn>;
   orderBy: ReturnType<typeof vi.fn>;
   limit: ReturnType<typeof vi.fn>;
   arrayUnion: ReturnType<typeof vi.fn>;
@@ -40,6 +41,7 @@ export function createMockFirestoreGateway(): MockFirestoreGateway {
 
   const mock: MockFirestoreGateway = {
     where: vi.fn((field, op, val) => ({ type: 'where', field, op, val })),
+    whereIdIn: vi.fn((ids: readonly string[]) => ({ type: 'whereIdIn', ids })),
     orderBy: vi.fn((field, dir) => ({ type: 'orderBy', field, dir })),
     limit: vi.fn((n) => ({ type: 'limit', n })),
     arrayUnion: vi.fn((...elements) => ({ type: 'arrayUnion', elements })),

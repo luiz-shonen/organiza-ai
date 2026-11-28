@@ -30,33 +30,6 @@ describe('GuestService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('saveVerifiedRsvp', () => {
-    it('sets guest document in Firestore with verified fields and merge true', async () => {
-      await service.saveVerifiedRsvp('evt-100', {
-        uid: 'user-123',
-        name: 'Carlos Silva',
-        email: 'carlos@example.com',
-        phone: '11999999999',
-        photoUrl: 'https://photo.jpg',
-      });
-
-      expect(mockGateway.setDoc).toHaveBeenCalledWith(
-        'events/evt-100/guests/user-123',
-        expect.objectContaining({
-          uid: 'user-123',
-          name: 'Carlos Silva',
-          email: 'carlos@example.com',
-          phone: '11999999999',
-          photoUrl: 'https://photo.jpg',
-          companions: [],
-          companionsCount: 0,
-          isConfirmed: true,
-        }),
-        { merge: true },
-      );
-    });
-  });
-
   describe('batchConfirmRsvp', () => {
     it('atomically creates primary guest and linked family member guest records', async () => {
       const familyMembers: FamilyMember[] = [
@@ -79,8 +52,6 @@ describe('GuestService', () => {
         'evt-100',
         {
           uid: 'user-123',
-          name: 'Carlos Silva',
-          email: 'carlos@example.com',
           companions: [{ name: 'Ana' }, { name: 'Bia' }],
         },
         familyMembers,
@@ -96,10 +67,15 @@ describe('GuestService', () => {
         }),
         { merge: true },
       );
+      // Named by the account's profile: the answer keeps no copy of name, e-mail or photo.
+      const [, primary] = mockGateway.batchOps.set.mock.calls[0];
+      expect(primary).not.toHaveProperty('name');
+      expect(primary).not.toHaveProperty('email');
+      expect(primary).not.toHaveProperty('photoUrl');
     });
 
     it('formats family phones and drops one that is not a phone', async () => {
-      await service.batchConfirmRsvp('evt-100', { uid: 'user-123', name: 'Carlos Silva' }, [
+      await service.batchConfirmRsvp('evt-100', { uid: 'user-123' }, [
         {
           id: 'fam-1',
           name: 'Mariana',
@@ -131,7 +107,6 @@ describe('GuestService', () => {
     it('works when family members list is empty', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
-        name: 'Carlos Solo',
       });
 
       expect(mockGateway.batchOps.set).toHaveBeenCalledTimes(1);
@@ -140,7 +115,6 @@ describe('GuestService', () => {
     it('preserves a legacy count without fabricating companion names during the UI transition', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
-        name: 'Carlos Solo',
         companionsCount: 2,
       });
 

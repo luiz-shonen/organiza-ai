@@ -65,9 +65,12 @@ describe('PeopleNoticesService', () => {
         body: 'Natal 2026 · com 1 familiar e 2 acompanhantes',
         actionUrl: '/evento/e1',
         actorUid: 'ana',
-        actorName: 'Ana Souza',
       }),
     );
+    // Who and which event go by id: the bell reads the name and the title when it shows them.
+    const [, notice] = inbox.send.mock.calls[0];
+    expect(notice).not.toHaveProperty('actorName');
+    expect(notice).not.toHaveProperty('eventTitle');
     expect(push.notify).toHaveBeenCalledWith('users/jessica/notifications/presence_e1_ana');
     expect(push.notify).toHaveBeenCalledWith('users/bia/notifications/presence_e1_ana');
   });

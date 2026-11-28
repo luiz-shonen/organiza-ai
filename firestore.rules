@@ -207,6 +207,70 @@ service cloud.firestore {
                             && isOptionalString(request.resource.data.get('updatedAt', null), 40);
     }
 
+    // The phone of an account, in one place: never copied into the events. The owner reads and
+    // writes it; the organizers of an event the person confirmed read it, because their uids are
+    // in `phoneVisibleTo` (who may read, never data). Someone else changes only that list:
+    // - an organizer of the event named in `grantedVia`, where the person answered, adds only
+    //   themself (a collaborator who joined) and removes only who no longer organizes it (a
+    //   collaborator removed by the owner);
+    // - anyone takes only themself out (a collaborator leaving).
+    match /contacts/{uid} {
+      allow get: if request.auth != null
+                 && (request.auth.uid == uid
+                     || request.auth.uid in resource.data.get('phoneVisibleTo', []));
+      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid && isValidContact();
+      allow update: if (request.auth != null && request.auth.uid == uid && isValidContact())
+                    || isGrantFromOrganizer()
+                    || isLeavingPhoneList();
+
+      function isValidContact() {
+        let data = request.resource.data;
+        return data.keys().hasOnly(['phone', 'phoneVisibleTo', 'grantedVia', 'updatedAt'])
+            && (!changes('phone') || isPhoneOrEmpty(data.get('phone', null)))
+            && (!changes('phoneVisibleTo')
+                  || (data.get('phoneVisibleTo', null) is list && data.get('phoneVisibleTo', null).size() <= 500))
+            && (!changes('grantedVia') || isOptionalString(data.get('grantedVia', null), 128))
+            && (!changes('updatedAt') || isOptionalString(data.get('updatedAt', null), 40));
+      }
+
+      function visibleBefore() {
+        return resource.data.get('phoneVisibleTo', []).toSet();
+      }
+
+      function visibleAfter() {
+        return request.resource.data.get('phoneVisibleTo', []).toSet();
+      }
+
+      function organizersOf(event) {
+        return [event.get('createdBy', '')].toSet().union(event.get('collaborators', []).toSet());
+      }
+
+      function isGrantFromOrganizer() {
+        let eventId = request.resource.data.get('grantedVia', '');
+        return isAccountHolder()
+            && request.auth.uid != uid
+            && changedKeys().hasOnly(['phoneVisibleTo', 'grantedVia', 'updatedAt'])
+            && eventId is string && eventId.matches('[A-Za-z0-9_-]{1,128}')
+            && exists(/databases/$(database)/documents/events/$(eventId)/guests/$(uid))
+            && request.auth.uid in organizersOf(eventData(eventId))
+            && visibleAfter().difference(visibleBefore()).hasOnly([request.auth.uid])
+            && visibleBefore().difference(visibleAfter()).intersection(organizersOf(eventData(eventId))).size() == 0
+            && visibleAfter().size() <= 500
+            && isOptionalString(request.resource.data.get('updatedAt', null), 40);
+      }
+
+      function isLeavingPhoneList() {
+        return request.auth != null
+            && request.auth.uid != uid
+            && changedKeys().hasOnly(['phoneVisibleTo', 'grantedVia', 'updatedAt'])
+            && visibleBefore().difference(visibleAfter()) == [request.auth.uid].toSet()
+            && visibleAfter().difference(visibleBefore()).size() == 0
+            && isOptionalString(request.resource.data.get('grantedVia', null), 128)
+            && isOptionalString(request.resource.data.get('updatedAt', null), 40);
+      }
+    }
+
     match /users/{uid} {
       allow read, delete: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid && isValidUser();
@@ -840,11 +904,13 @@ service cloud.firestore {
               && data.addedBy is string;
         }
 
+        // The guest's own answer, by account: named by `publicProfiles/{uid}`. Older answers
+        // (and older app versions) still store a name; when there, it must be valid text.
         function isPrimaryRsvp() {
           return isAccountHolder()
-              && request.resource.data.keys().hasAll(['name', 'phone', 'companionsCount', 'uid'])
+              && request.resource.data.keys().hasAll(['phone', 'companionsCount', 'uid'])
               && request.resource.data.uid == request.auth.uid
-              && isFilledText(request.resource.data.name, 120)
+              && (!('name' in request.resource.data) || isFilledText(request.resource.data.name, 120))
               && isPhoneOrEmpty(request.resource.data.phone)
               && request.resource.data.phone.size() >= 10
               && request.resource.data.companionsCount is int
@@ -869,13 +935,14 @@ service cloud.firestore {
       }
 
       // Declines: "Não poderei ir", one per account, with an optional message for the organizer.
+      // Named by the account's profile; `name` is only on older answers (and older app versions).
       match /declines/{uid} {
         allow read: if isAdmin() || managesEvent(eventData(eventId))
                     || (request.auth != null && request.auth.uid == uid);
         allow create, update: if request.auth != null
                               && request.auth.uid == uid
                               && request.resource.data.keys().hasOnly(['name', 'message', 'declinedAt'])
-                              && isFilledText(request.resource.data.name, 120)
+                              && (!('name' in request.resource.data) || isFilledText(request.resource.data.name, 120))
                               && isPlainText(request.resource.data.message, 300)
                               && request.resource.data.declinedAt is string;
         allow delete: if isAdmin() || (request.auth != null && request.auth.uid == uid);
@@ -888,7 +955,7 @@ service cloud.firestore {
                               && request.auth.uid == uid
                               && isEventOpen()
                               && request.resource.data.keys().hasOnly(['name', 'entries', 'updatedAt'])
-                              && isPlainText(request.resource.data.name, 120)
+                              && isPlainText(request.resource.data.get('name', ''), 120)
                               && request.resource.data.entries is list
                               && request.resource.data.entries.size() <= 100;
         allow delete: if isAdmin() || managesEvent(eventData(eventId)) || (request.auth != null && request.auth.uid == uid);

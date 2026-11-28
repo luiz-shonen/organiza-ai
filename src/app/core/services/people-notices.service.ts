@@ -117,19 +117,16 @@ export class PeopleNoticesService {
   async approved(event: Pick<PartyEvent, 'id' | 'title'>, guestUid: string): Promise<void> {
     const actor = this.auth.currentUser()?.uid;
     if (!actor || !guestUid || guestUid === actor) return;
-    const name = await this.myName();
     await this.send(guestUid, {
       id: approvalNotificationId(event.id),
       kind: 'approval',
       eventId: event.id,
-      eventTitle: clean(event.title, 200),
       title: 'Sua presença foi aprovada',
       body: `Você está na lista de ${clean(event.title, 120) || 'convidados'}.`,
       actionLabel: 'Ver evento',
       actionUrl: `/evento/${event.id}`,
       createdAt: new Date().toISOString(),
       actorUid: actor,
-      ...(name ? { actorName: name } : {}),
     });
   }
 
@@ -149,7 +146,6 @@ export class PeopleNoticesService {
       ...guests.filter((g) => g.uid && !g.primaryGuestId && !g.addedBy).map((g) => g.uid!),
     ].filter((uid, i, all) => !!uid && uid !== actor && all.indexOf(uid) === i);
     const title = clean(event.title, 120) || 'O evento';
-    const name = await this.myName();
     const createdAt = new Date().toISOString();
     await Promise.allSettled(
       recipients.map((uid) =>
@@ -157,7 +153,6 @@ export class PeopleNoticesService {
           id: eventStatusNotificationId(event.id),
           kind: 'event-status',
           eventId: event.id,
-          eventTitle: clean(event.title, 200),
           title: cancelled ? 'Evento cancelado' : 'Evento reaberto',
           body: cancelled
             ? `${title} foi cancelado por quem organiza.`
@@ -166,7 +161,6 @@ export class PeopleNoticesService {
           actionUrl: `/evento/${event.id}`,
           createdAt,
           actorUid: actor,
-          ...(name ? { actorName: name } : {}),
         }),
       ),
     );
@@ -194,7 +188,6 @@ export class PeopleNoticesService {
     const organizers = [event.createdBy, ...(event.collaborators ?? [])].filter(
       (uid, i, all): uid is string => !!uid && uid !== actor && all.indexOf(uid) === i,
     );
-    const name = await this.myName();
     const createdAt = new Date().toISOString();
     await Promise.allSettled(
       organizers.map((uid) =>
@@ -202,14 +195,12 @@ export class PeopleNoticesService {
           id,
           kind,
           eventId,
-          eventTitle: clean(event.title ?? '', 200),
           title: clean(text.title, 200),
           body: clean(`${event.title ? `${event.title} · ` : ''}${text.body}`, 500),
           actionLabel: text.actionLabel,
           actionUrl: `/evento/${eventId}`,
           createdAt,
           actorUid: actor,
-          ...(name ? { actorName: name } : {}),
         }),
       ),
     );
@@ -222,10 +213,5 @@ export class PeopleNoticesService {
     } catch (err) {
       console.warn('Aviso não enviado', err);
     }
-  }
-
-  private async myName(): Promise<string> {
-    const user = this.auth.currentUser();
-    return clean(user?.displayName ?? '', 120);
   }
 }

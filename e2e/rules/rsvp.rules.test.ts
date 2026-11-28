@@ -97,6 +97,16 @@ describe('verified RSVP Firestore rules contract', () => {
     await assertSucceeds(batch.commit());
   });
 
+  it('accepts an answer by account with no copied name, but refuses an empty one', async () => {
+    const db = testEnvironment.authenticatedContext('verified-user').firestore();
+    const { name: _copied, ...byAccount } = primaryGuest('verified-user');
+
+    await assertSucceeds(setDoc(doc(db, 'events/event-1/guests/verified-user'), byAccount));
+    await assertFails(
+      setDoc(doc(db, 'events/event-1/guests/verified-user'), { ...byAccount, name: '' }),
+    );
+  });
+
   it('denies a linked family record for another verified primary', async () => {
     const db = testEnvironment.authenticatedContext('verified-user').firestore();
 

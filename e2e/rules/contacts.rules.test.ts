@@ -155,6 +155,26 @@ describe('contacts/{uid} Firestore rules contract', () => {
     );
   });
 
+  it('never lets a collaborator take someone else out of the list', async () => {
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await updateDoc(doc(context.firestore(), 'contacts/guest'), {
+        phoneVisibleTo: ['owner', 'collab', 'former'],
+      });
+    });
+    await assertFails(
+      updateDoc(doc(accountDb('collab'), 'contacts/guest'), {
+        phoneVisibleTo: arrayRemove('former'),
+        grantedVia: 'e',
+      }),
+    );
+    await assertSucceeds(
+      updateDoc(doc(accountDb('owner'), 'contacts/guest'), {
+        phoneVisibleTo: arrayRemove('former'),
+        grantedVia: 'e',
+      }),
+    );
+  });
+
   it('lets anyone take only themself out of the list', async () => {
     await assertSucceeds(
       updateDoc(doc(accountDb('collab'), 'contacts/guest'), {

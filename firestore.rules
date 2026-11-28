@@ -209,10 +209,10 @@ service cloud.firestore {
 
     // The phone of an account, in one place: never copied into the events. The owner reads and
     // writes it; the organizers of an event the person confirmed read it, because their uids are
-    // in `phoneVisibleTo` (who may read, never data). Someone else changes only that list:
-    // - an organizer of the event named in `grantedVia`, where the person answered, adds only
-    //   themself (a collaborator who joined) and removes only who no longer organizes it (a
-    //   collaborator removed by the owner);
+    // in `phoneVisibleTo` (who may read, never data). Someone else changes only that list,
+    // through the event named in `grantedVia`, which the person answered:
+    // - a collaborator who joined it adds only themself;
+    // - its owner removes only who no longer organizes it (a collaborator taken out);
     // - anyone takes only themself out (a collaborator leaving).
     match /contacts/{uid} {
       allow get: if request.auth != null
@@ -221,7 +221,8 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == uid;
       allow create: if request.auth != null && request.auth.uid == uid && isValidContact();
       allow update: if (request.auth != null && request.auth.uid == uid && isValidContact())
-                    || isGrantFromOrganizer()
+                    || isJoiningPhoneList()
+                    || isRevokedByOwner()
                     || isLeavingPhoneList();
 
       function isValidContact() {
@@ -246,18 +247,34 @@ service cloud.firestore {
         return [event.get('createdBy', '')].toSet().union(event.get('collaborators', []).toSet());
       }
 
-      function isGrantFromOrganizer() {
+      // Someone else's change through the event named in `grantedVia`: the person answered it.
+      function isThroughEvent() {
         let eventId = request.resource.data.get('grantedVia', '');
         return isAccountHolder()
             && request.auth.uid != uid
             && changedKeys().hasOnly(['phoneVisibleTo', 'grantedVia', 'updatedAt'])
             && eventId is string && eventId.matches('[A-Za-z0-9_-]{1,128}')
             && exists(/databases/$(database)/documents/events/$(eventId)/guests/$(uid))
-            && request.auth.uid in organizersOf(eventData(eventId))
-            && visibleAfter().difference(visibleBefore()).hasOnly([request.auth.uid])
-            && visibleBefore().difference(visibleAfter()).intersection(organizersOf(eventData(eventId))).size() == 0
             && visibleAfter().size() <= 500
             && isOptionalString(request.resource.data.get('updatedAt', null), 40);
+      }
+
+      // A collaborator who joined adds only themself, and removes nobody.
+      function isJoiningPhoneList() {
+        return isThroughEvent()
+            && request.auth.uid in organizersOf(eventData(request.resource.data.get('grantedVia', '')))
+            && visibleAfter().difference(visibleBefore()) == [request.auth.uid].toSet()
+            && visibleBefore().difference(visibleAfter()).size() == 0;
+      }
+
+      // The owner took a collaborator out of the event: removes only people who no longer
+      // organize it, and adds nobody.
+      function isRevokedByOwner() {
+        let event = eventData(request.resource.data.get('grantedVia', ''));
+        return isThroughEvent()
+            && event.get('createdBy', '') == request.auth.uid
+            && visibleAfter().difference(visibleBefore()).size() == 0
+            && visibleBefore().difference(visibleAfter()).intersection(organizersOf(event)).size() == 0;
       }
 
       function isLeavingPhoneList() {

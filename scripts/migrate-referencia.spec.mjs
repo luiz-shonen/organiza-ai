@@ -6,6 +6,7 @@ import {
   isAccountGuest,
   planEvent,
   planNotifications,
+  planSecretSanta,
   summarize,
 } from './migrate-referencia.mjs';
 
@@ -195,4 +196,72 @@ test('migrate-referencia: --backup needs an existing file, never falls back to p
   assert.throws(() => backupArg(['--backup=tudo.json']));
   assert.throws(() => backupArg(['--backup', 'nao-existe.json']));
   assert.equal(backupArg(['--backup', 'package.json']), 'package.json');
+});
+
+test('migrate-referencia: amigo oculto moves phones apart, links to ids, format last', () => {
+  const event = { id: 'e1', data: { createdBy: 'owner', collaborators: [] } };
+  const writes = planSecretSanta(event, {
+    participants: [
+      { id: 'rsvp_ana', joinedBy: 'ana', name: 'Ana', phone: '(11) 9', giftOptions: [] },
+      { id: 'rsvp_ana_f_vo', joinedBy: 'ana', name: 'Vó', phone: '(11) 8', giftOptions: [] },
+      { id: 'own', guestId: 'owner', name: 'Jéssica', phone: '(11) 7', giftOptions: [] },
+    ],
+    draw: {
+      links: [
+        {
+          participantId: 'rsvp_ana_f_vo',
+          name: 'Vó',
+          phone: '(11) 8',
+          token: 't1',
+          receiverId: 'own',
+        },
+      ],
+    },
+    reveals: [
+      {
+        token: 't1',
+        data: { eventId: 'e1', giverName: 'Vó', receiverName: 'Jéssica', receiverGiftOptions: [] },
+        result: { eventId: 'e1', receiverName: 'Jéssica', receiverGiftOptions: [] },
+      },
+      {
+        token: 't2',
+        data: { eventId: 'e1', giverName: 'Vó', receiverName: '', openedAt: 'x', replaces: 't1' },
+        result: null,
+      },
+    ],
+  });
+  const paths = writes.map((w) => w.path);
+  // Only the relative's phone moves; the accounts' own come from their contacts.
+  assert.deepEqual(
+    writes.filter((w) => w.path.includes('secretSantaPhones')),
+    [{ path: 'events/e1/secretSantaPhones/rsvp_ana_f_vo', onlyIfMissing: { phone: '(11) 8' } }],
+  );
+  assert.ok(paths.includes('events/e1/secretSantaParticipants/rsvp_ana'));
+  assert.deepEqual(writes.find((w) => w.path === 'events/e1/secretSanta/draw').set, {
+    links: [{ participantId: 'rsvp_ana_f_vo', token: 't1', receiverId: 'own' }],
+  });
+  assert.deepEqual(writes.find((w) => w.path === 'secretSantaReveals/t1').set, {
+    giverId: 'rsvp_ana_f_vo',
+    receiverId: 'own',
+  });
+  // A renewed link already opened, without an account: no longer says whom they drew.
+  assert.equal(writes.find((w) => w.path === 'secretSantaReveals/t2').set.receiverId, '');
+  assert.deepEqual(writes.find((w) => w.path.endsWith('t1/private/result')).set, {
+    receiverId: 'own',
+  });
+  assert.deepEqual(writes.at(-1), { path: 'events/e1', set: { secretSantaFormat: 2 } });
+});
+
+test('migrate-referencia: an amigo oculto already in the new format plans nothing', () => {
+  const writes = planSecretSanta(
+    { id: 'e1', data: { createdBy: 'owner', secretSantaFormat: 2 } },
+    {
+      participants: [{ id: 'p', name: 'Vó', giftOptions: [] }],
+      draw: { links: [{ participantId: 'p', token: 't', receiverId: 'q' }] },
+      reveals: [
+        { token: 't', data: { eventId: 'e1', giverId: 'p', receiverId: 'q' }, result: null },
+      ],
+    },
+  );
+  assert.deepEqual(writes, []);
 });

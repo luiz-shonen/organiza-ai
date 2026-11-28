@@ -21,7 +21,15 @@
  *   `invitedByName` e `invitedByPhoto`.
  * - `users/{uid}/notifications`: apaga `actorName` e `eventTitle`.
  *
- * Fica para o item 4 (amigo oculto): ligar entradas do sorteio ao uid e a lista única.
+ * Com `--amigo-oculto` (só depois do deploy da lista única, PR #38), por evento:
+ * - `secretSantaParticipants`: o telefone de quem não tem conta própria vai para
+ *   `secretSantaPhones/{mesmo id}`; sai o campo `phone` (e `mergedFrom`) da lista. A entrada da
+ *   própria conta não guarda telefone (vem de `contacts`); com `--drop-names`, nem nome.
+ * - `secretSanta/draw`: os links ficam só com ids (sem nome e telefone).
+ * - `secretSantaReveals`: os links já enviados passam a guardar `giverId` e `receiverId` no lugar de
+ *   nomes, ideias e dados do evento (um link sem conta já aberto fica sem `receiverId`); o resultado
+ *   guardado para "Gerar novo link" também passa a ser por id.
+ * - por último, `secretSantaFormat: 2` no evento: a lista abre para quem tem conta.
  *
  * Autenticação: o token do Firebase CLI (`npx firebase login`), como em cleanup-anonymous-users.
  */
@@ -117,6 +125,77 @@ export function planEvent(event, contacts = {}, { dropNames = false } = {}) {
   return writes;
 }
 
+/** The fields an older secret link carried written in; newer links keep only ids. */
+const WRITTEN_IN = ['eventTitle', 'eventDate', 'giverName', 'receiverName', 'receiverGiftOptions'];
+
+/**
+ * The amigo oculto of one event in the new format (one list, phones apart, links by id). Pure.
+ *
+ * `santa` = `{ participants: [{id, ...}], draw: {links} | null, reveals: [{token, data, result}] }`
+ * (`result`: the private copy kept for "Gerar novo link", or null).
+ */
+export function planSecretSanta(event, santa, { dropNames = false } = {}) {
+  const writes = [];
+  const base = `events/${event.id}`;
+  const organizers = new Set(organizersOf(event.data ?? {}));
+  const ownAccount = (p) =>
+    (p.joinedBy && p.id === `rsvp_${p.joinedBy}`) || (!!p.guestId && organizers.has(p.guestId));
+
+  for (const p of santa.participants ?? []) {
+    const own = ownAccount(p);
+    const remove = present(p, ['phone', 'mergedFrom', ...(own && dropNames ? ['name'] : [])]);
+    const phone = typeof p.phone === 'string' ? p.phone.trim() : '';
+    // The account's own phone lives in its contacts; anyone else's is kept apart.
+    if (phone && !own) {
+      writes.push({ path: `${base}/secretSantaPhones/${p.id}`, onlyIfMissing: { phone } });
+    }
+    if (remove.length) writes.push({ path: `${base}/secretSantaParticipants/${p.id}`, remove });
+  }
+
+  const links = santa.draw?.links ?? [];
+  if (links.some((l) => 'name' in l || 'phone' in l)) {
+    const byId = links.map(({ name: _n, phone: _p, ...link }) => link);
+    writes.push({ path: `${base}/secretSanta/draw`, set: { links: byId } });
+  }
+
+  const byToken = new Map((santa.reveals ?? []).map((r) => [r.token, r]));
+  const linkOf = new Map(links.map((l) => [l.token, l]));
+  const rootLink = (token) => {
+    let current = token;
+    for (let hop = 0; hop < 50 && !linkOf.has(current); hop++) {
+      const replaces = byToken.get(current)?.data?.replaces;
+      if (!replaces) return null;
+      current = replaces;
+    }
+    return linkOf.get(current) ?? null;
+  };
+  for (const reveal of santa.reveals ?? []) {
+    const data = reveal.data ?? {};
+    const link = rootLink(reveal.token);
+    if (!link || data.giverId) continue;
+    // A link without an account, already opened, no longer says whom they drew.
+    const spent = !!data.openedAt && !data.giverUid;
+    writes.push({
+      path: `secretSantaReveals/${reveal.token}`,
+      remove: present(data, WRITTEN_IN),
+      set: { giverId: link.participantId, receiverId: spent ? '' : link.receiverId },
+    });
+    if (reveal.result && !reveal.result.receiverId) {
+      writes.push({
+        path: `secretSantaReveals/${reveal.token}/private/result`,
+        remove: present(reveal.result, ['receiverName', 'receiverGiftOptions']),
+        set: { receiverId: link.receiverId },
+      });
+    }
+  }
+
+  if ((event.data ?? {}).secretSantaFormat !== 2) {
+    // Last: only now, with no phone left in the list, may guests read it.
+    writes.push({ path: base, set: { secretSantaFormat: 2 } });
+  }
+  return writes;
+}
+
 /** Notices that still carry a copied name or title. */
 export function planNotifications(notices) {
   return notices
@@ -169,6 +248,14 @@ function encode(value) {
   if (typeof value === 'string') return { stringValue: value };
   if (typeof value === 'boolean') return { booleanValue: value };
   if (value === null) return { nullValue: null };
+  if (Number.isInteger(value)) return { integerValue: String(value) };
+  if (value && typeof value === 'object') {
+    return {
+      mapValue: {
+        fields: Object.fromEntries(Object.entries(value).map(([k, v]) => [k, encode(v)])),
+      },
+    };
+  }
   throw new Error(`Tipo não esperado ao gravar: ${typeof value}`);
 }
 
@@ -235,7 +322,7 @@ async function notifications(accessToken) {
     }));
 }
 
-async function loadFromProduction(accessToken) {
+async function loadFromProduction(accessToken, santa = false) {
   const events = await list(accessToken, 'events');
   const contacts = Object.fromEntries((await list(accessToken, 'contacts')).map((c) => [c.id, c]));
   const full = [];
@@ -250,9 +337,36 @@ async function loadFromProduction(accessToken) {
       declines: await sub('declines'),
       claims: await sub('claims'),
       invitations: await sub('invitations'),
+      santa: santa ? await loadSecretSanta(accessToken, id) : null,
     });
   }
   return { events: full, contacts, notices: await notifications(accessToken) };
+}
+
+/** The list, the draw and the links already sent of one event (admin reads all of them). */
+async function loadSecretSanta(accessToken, eventId) {
+  const participants = await list(accessToken, `events/${eventId}/secretSantaParticipants`);
+  let draw = null;
+  try {
+    const doc = await call(accessToken, `${BASE}/events/${eventId}/secretSanta/draw`);
+    draw = decodeFields(doc.fields ?? {});
+  } catch (err) {
+    if (err.status !== 404) throw err;
+  }
+  const reveals = [];
+  for (const doc of await list(accessToken, 'secretSantaReveals')) {
+    if (doc.eventId !== eventId) continue;
+    const { id: token, path: _path, ...data } = doc;
+    let result = null;
+    try {
+      const kept = await call(accessToken, `${BASE}/secretSantaReveals/${token}/private/result`);
+      result = decodeFields(kept.fields ?? {});
+    } catch (err) {
+      if (err.status !== 404) throw err;
+    }
+    reveals.push({ token, data, result });
+  }
+  return { participants, draw, reveals };
 }
 
 function loadFromBackup(file) {
@@ -266,6 +380,13 @@ function loadFromBackup(file) {
       declines: flat(event.collections?.declines),
       claims: flat(event.collections?.claims),
       invitations: flat(event.collections?.invitations),
+      santa: {
+        participants: flat(event.collections?.secretSantaParticipants),
+        draw: null,
+        reveals: (dump.secretSantaReveals ?? [])
+          .filter((r) => r.data?.eventId === event.id)
+          .map((r) => ({ token: r.token, data: r.data, result: r.private?.result ?? null })),
+      },
     })),
     contacts: {},
     notices: [],
@@ -308,7 +429,7 @@ export async function apply(accessToken, write) {
       updateMask: { fieldPaths: mask },
       ...(fieldTransforms.length ? { updateTransforms: fieldTransforms } : {}),
       // A contact may be new; everything else must already be there.
-      ...(write.path.startsWith('contacts/') ? {} : { currentDocument: { exists: true } }),
+      ...(createsDoc(write.path) ? {} : { currentDocument: { exists: true } }),
     };
   } else if (fieldTransforms.length) {
     commit = { transform: { document: name, fieldTransforms } };
@@ -317,6 +438,11 @@ export async function apply(accessToken, write) {
   const body = { writes: [commit] };
   await call(accessToken, `${BASE}:commit`, { method: 'POST', body: JSON.stringify(body) });
   return body;
+}
+
+/** Documents this script may create (a contact, a phone kept apart); others must exist. */
+function createsDoc(path) {
+  return path.startsWith('contacts/') || path.includes('/secretSantaPhones/');
 }
 
 /** `--backup <file>`: the file must follow and exist; anything else stops before reading. */
@@ -344,6 +470,7 @@ async function main() {
   }
   const applying = args.includes('--apply');
   const dropNames = args.includes('--drop-names');
+  const withSanta = args.includes('--amigo-oculto');
   if (applying && (backup || !args.includes('--sim-producao'))) {
     console.error(
       '❌ Gravar exige --apply --sim-producao, sem --backup, e o ok de quem cuida do app.',
@@ -355,6 +482,7 @@ async function main() {
   let accessToken = null;
   if (backup) {
     source = loadFromBackup(backup);
+    if (!withSanta) source.events.forEach((event) => delete event.santa);
     console.log(`📦 Ensaio a partir da cópia ${backup} (nada é lido nem gravado em produção).`);
   } else {
     accessToken = token();
@@ -362,14 +490,17 @@ async function main() {
       console.error('❌ Token do Firebase CLI não encontrado. Rode "npx firebase login".');
       process.exit(1);
     }
-    source = await loadFromProduction(accessToken);
+    source = await loadFromProduction(accessToken, withSanta);
     console.log(applying ? '✍️  Gravando em produção.' : '🔎 Ensaio em produção: só leitura.');
   }
 
   const plans = source.events.map((event) => ({
     id: event.id,
     title: event.data.title,
-    writes: planEvent(event, source.contacts, { dropNames }),
+    writes: [
+      ...planEvent(event, source.contacts, { dropNames }),
+      ...(event.santa ? planSecretSanta(event, event.santa, { dropNames }) : []),
+    ],
   }));
   const noticeWrites = planNotifications(source.notices);
   const report = summarize([

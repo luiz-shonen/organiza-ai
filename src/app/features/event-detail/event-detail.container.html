@@ -169,7 +169,7 @@
         </div>
       }
 
-      @if (secretSantaNotice(); as notice) {
+      @if (secretSantaNoticeShown(); as notice) {
         <app-notification-card
           data-testid="event-secret-santa-notice"
           [notification]="notice"
@@ -220,13 +220,13 @@
 
       @if (showSecretSantaRoster()) {
         <app-secret-santa-roster-card
-          [entries]="secretSantaReaderList()"
+          [entries]="secretSantaRosterView()"
           [giftOptions]="!!event.secretSanta?.giftOptions"
           [rules]="event.secretSantaRules ?? null"
           [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
-          [editableIds]="isCancelled() || canEdit() ? [] : myEditableSecretSantaIds()"
-          [notice]="canEdit() ? '' : secretSantaRosterNotice()"
-          [canJoin]="!isCancelled() && !canEdit() && canJoinSecretSanta()"
+          [editableIds]="isCancelled() ? [] : myEditableSecretSantaIds()"
+          [notice]="secretSantaRosterNotice()"
+          [canJoin]="!isCancelled() && canJoinSecretSanta()"
           [editing]="editingOwnSecretSanta()"
           [save]="saveOwnSecretSantaEntry"
           (join)="onJoinSecretSanta()"
@@ -334,6 +334,16 @@
         (editGift)="onEditSecretSantaGift($event)"
         (removeGift)="onRemoveSecretSantaGift($event)"
         (addGift)="onAddSecretSantaGift($event)"
+      />
+    } @else if (secretSantaParticipantsView().length) {
+      <app-secret-santa-participants
+        santaLockedList
+        show="list"
+        [readOnly]="true"
+        [participants]="secretSantaParticipantsView()"
+        [giftOptions]="!!event.secretSanta?.giftOptions"
+        [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+        [self]="secretSantaSelf()"
       />
     }
   </app-secret-santa-card>

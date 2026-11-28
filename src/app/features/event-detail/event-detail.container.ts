@@ -296,12 +296,16 @@ export class EventDetailContainer implements OnInit {
     const uids = this.guests()
       .filter((guest) => !guest.primaryGuestId && !guest.addedBy && guest.uid)
       .map((guest) => guest.uid as string);
-    const key = [...new Set(uids)].sort().join(',');
+    const unique = [...new Set(uids)].sort();
+    const key = unique.join(',');
     if (!key || key === this.guestPhonesLoadedFor) return;
     this.guestPhonesLoadedFor = key;
     this.contacts
-      .phonesOf(uids)
-      .then((phones) => this.guestPhones.set(phones))
+      .phonesOf(unique)
+      // A slower answer for an older list never replaces the newer one.
+      .then((phones) => {
+        if (this.guestPhonesLoadedFor === key) this.guestPhones.set(phones);
+      })
       .catch(console.error);
   });
   /** The guests, each named (and pictured) as their account's profile is now. */

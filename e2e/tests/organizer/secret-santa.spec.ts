@@ -307,10 +307,12 @@ test.describe('Amigo oculto', () => {
     await expect(card.getByTestId('secret-santa-leak-hint')).toContainText(
       'Um link aparece aberto e a pessoa diz que não abriu? Sorteie de novo.',
     );
-    // Once drawn, the sign-ups and the list give way to the links; the card moves under
-    // "Confirmados" (beside it on a wide screen), where the links have room.
+    // Once drawn, the sign-ups give way to the links, and the list stays below them only to read
+    // (locked for everyone); the card moves under "Confirmados" (beside it on a wide screen).
     await expect(card.getByTestId('secret-santa-self-join')).toHaveCount(0);
-    await expect(card.getByTestId('secret-santa-people')).toHaveCount(0);
+    const lockedList = card.getByTestId('secret-santa-people');
+    await expect(lockedList).toHaveCount(1);
+    await expect(lockedList.getByRole('button', { name: /^Remover / })).toHaveCount(0);
     await expect(page.locator('.event-detail__lead app-secret-santa-card')).toHaveCount(1);
     // The owner sees whom to send each link to, never who drew whom: one name per row.
     const luizRow = links.locator('li').filter({ hasText: 'Luiz' });

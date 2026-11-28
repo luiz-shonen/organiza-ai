@@ -77,6 +77,7 @@ import {
   secretSantaDrawDeadline,
   rsvpSecretSantaEntryId,
   secretSantaRsvpId,
+  secretSantaNoticeBody,
   sortByName,
   removeClaimEntry,
   toggleBought,
@@ -131,6 +132,9 @@ import {
   SecretSantaParticipantsComponent,
   type SecretSantaParticipantUpdate,
 } from '../organizer/event-editor/components/secret-santa-participants/secret-santa-participants.component';
+
+/** The owner's draw card made from their link (not an inbox notice: nothing to mark read). */
+const OWN_DRAW_NOTICE_ID = 'own-draw';
 
 @Component({
   selector: 'app-event-detail',
@@ -188,11 +192,14 @@ export class EventDetailContainer implements OnInit {
   private readonly inbox = inject(InboxService);
   private readonly aiSuggestions = inject(AiSuggestionService);
 
-  /** "Sorteio do amigo oculto feito!" for this member, when they take part with their account. */
+  /**
+   * "Sorteio do amigo oculto feito!" for this member, when they take part with their account: the
+   * same card for a guest, a collaborator and the owner (who organizes never sees less).
+   */
   protected readonly secretSantaNotice = signal<AppNotification | null>(null);
   private readonly loadSecretSantaNotice = effect((onCleanup) => {
     const uid = this.memberUid();
-    if (!uid || this.isOwner()) {
+    if (!uid) {
       this.secretSantaNotice.set(null);
       return;
     }
@@ -203,9 +210,40 @@ export class EventDetailContainer implements OnInit {
     onCleanup(() => sub.unsubscribe());
   });
 
+  /**
+   * The owner who takes part and has no notice of their own (a draw made before their entry was
+   * tied to their account): the same card, made from their link in the draw.
+   */
+  private readonly ownDrawNotice = computed<AppNotification | null>(() => {
+    const link = this.secretSantaLinks().find((l) => l.self);
+    const draw = this.secretSantaDraw();
+    if (!link || !draw) return null;
+    const title = this.event()?.title ?? '';
+    return {
+      id: OWN_DRAW_NOTICE_ID,
+      kind: 'secret-santa',
+      eventId: this.id(),
+      title: 'Sorteio do amigo oculto feito!',
+      body: link.notifiedInApp
+        ? secretSantaNoticeBody(title, false)
+        : `O sorteio do amigo oculto de ${title || 'o evento'} foi feito. Confira quem você ` +
+          'tirou: este link abre uma vez só, anote o nome (ou toque em "Novo link").',
+      actionLabel: 'Ver quem eu tirei',
+      actionUrl: new URL(link.url).pathname,
+      createdAt: draw.drawnAt,
+      readAt: null,
+    };
+  });
+  /** The draw card on the event page: the member's notice, or the owner's own link. */
+  protected readonly secretSantaNoticeShown = computed(
+    () => this.secretSantaNotice() ?? this.ownDrawNotice(),
+  );
+
   protected openSecretSantaNotice(notice: AppNotification): void {
     const uid = this.memberUid();
-    if (uid) this.inbox.markRead(uid, notice.id).catch(console.error);
+    if (uid && notice.id !== OWN_DRAW_NOTICE_ID) {
+      this.inbox.markRead(uid, notice.id).catch(console.error);
+    }
     void this.router.navigateByUrl(notice.actionUrl);
   }
 
@@ -526,13 +564,12 @@ export class EventDetailContainer implements OnInit {
    * The guest's "Amigo oculto" card, at the bottom of the invite: who is in, with their ideas;
    * also for a guest who confirmed (or waits for approval) and is not in yet, to join from there.
    */
-  protected readonly showSecretSantaRoster = computed(
-    () =>
-      !!this.event()?.secretSanta?.enabled &&
-      !this.canEdit() &&
-      !!this.memberUid() &&
-      (this.secretSantaRoster().length > 0 || this.isUserConfirmed()),
-  );
+  protected readonly showSecretSantaRoster = computed(() => {
+    if (!this.event()?.secretSanta?.enabled || !this.memberUid()) return false;
+    // Organizers read the list inside their own amigo oculto card, once it is locked.
+    if (this.canEdit()) return false;
+    return this.secretSantaRoster().length > 0 || this.isUserConfirmed();
+  });
   /** Shown in the card while the guest's presence waits for the owner's approval. */
   protected readonly secretSantaRosterNotice = computed(() =>
     this.isUserPending()
@@ -572,10 +609,13 @@ export class EventDetailContainer implements OnInit {
       guestId: uid,
     });
   }
-  /** The guest's own entries in the roster (`rsvp_{uid}…`), while they may still change them. */
+  /**
+   * The guest's own entries they may still change: until the draw (or its day), even with
+   * sign-ups closed (they may edit their ideas and leave, never join).
+   */
   protected readonly myEditableSecretSantaIds = computed(() => {
     const uid = this.memberUid();
-    if (!uid || !this.mySecretSanta()?.open) return [];
+    if (!uid || !this.mySecretSanta()?.canLeave) return [];
     const own = secretSantaRsvpId(uid);
     return this.secretSantaRoster()
       .map((entry) => entry.id)
@@ -735,13 +775,23 @@ export class EventDetailContainer implements OnInit {
         .filter((guest) => guest.uid)
         .map((guest) => [guest.id, guest.uid!] as const),
     );
+    const event = this.event();
+    const organizers = new Set([event?.createdBy ?? '', ...(event?.collaborators ?? [])]);
+    organizers.delete('');
     const accounts: Record<string, string> = {};
     for (const participant of this.secretSantaParticipants()) {
       const own =
         participant.joinedBy && participant.id === secretSantaRsvpId(participant.joinedBy)
           ? participant.joinedBy
           : undefined;
-      const uid = own ?? (participant.guestId ? uidByGuest.get(participant.guestId) : undefined);
+      const uid =
+        own ??
+        (participant.guestId
+          ? (uidByGuest.get(participant.guestId) ??
+            // "Participar também": an organizer's own entry keeps their uid in `guestId`
+            // (they never answer their own invite, so they are not in the guest list).
+            (organizers.has(participant.guestId) ? participant.guestId : undefined))
+          : undefined);
       if (uid) accounts[participant.id] = uid;
     }
     return accounts;
@@ -770,6 +820,13 @@ export class EventDetailContainer implements OnInit {
   });
   protected readonly secretSantaSelfJoinOpen = computed(() =>
     isSecretSantaSelfJoinOpen(this.event()?.secretSanta),
+  );
+  /**
+   * The list may still change: not drawn and the draw day not come. From then on it is locked
+   * for everyone, organizers included; only drawing again is left.
+   */
+  protected readonly secretSantaListOpen = computed(() =>
+    isSecretSantaOpen(this.event()?.secretSanta),
   );
 
   /**
@@ -816,9 +873,8 @@ export class EventDetailContainer implements OnInit {
     const me = this.memberUid();
     const mine = new Set(
       this.secretSantaParticipants()
-        .filter(
-          (p) => me && (p.guestId === me || p.joinedBy === me) && p.id === secretSantaRsvpId(me),
-        )
+        // Their own entry: from the invite, or "Participar também" (any id, their uid in guestId).
+        .filter((p) => me && (p.guestId === me || p.joinedBy === me))
         .map((p) => p.id),
     );
     // The links after the draw, A to Z like the lists before it.
@@ -1148,6 +1204,7 @@ export class EventDetailContainer implements OnInit {
       eventTitle: this.event()?.title ?? '',
       url: link.url,
       organizerName: this.event()?.creatorName ?? '',
+      withAccount: !!link.notifiedInApp,
     });
     window.open(url, '_blank', 'noopener,noreferrer');
   }
@@ -2143,9 +2200,12 @@ export class EventDetailContainer implements OnInit {
         this.approvingGuestId.set(guest.id);
         try {
           const uid = this.guests().find((g) => g.id === guest.id)?.uid ?? guest.id;
-          const santaIds = this.allSecretSantaParticipants()
-            .filter((p) => p.joinedBy === uid)
-            .map((p) => p.id);
+          // Locked at the draw: their entries stay (left out of it already, as still waiting).
+          const santaIds = this.secretSantaListOpen()
+            ? this.allSecretSantaParticipants()
+                .filter((p) => p.joinedBy === uid)
+                .map((p) => p.id)
+            : [];
           await this.guestService.refuseGuest(this.id(), guest.id, guest.familyGuestIds, santaIds);
           this.feedback.success(`A confirmação de ${guest.name} foi recusada.`);
         } catch (err) {

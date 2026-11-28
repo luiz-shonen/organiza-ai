@@ -128,15 +128,54 @@ describe('amigo oculto sign-ups from the invite', () => {
     await assertFails(updateDoc(doc(accountDb('maria'), path('rsvp_maria')), { phone: '' }));
   });
 
-  it('closing the sign-ups stops joining and changes, not leaving; no amigo oculto closes all', async () => {
+  it('closing the sign-ups stops joining only: the guest still edits their ideas and leaves', async () => {
     const maria = accountDb('maria');
     await assertSucceeds(setDoc(doc(maria, path('rsvp_maria')), entry('maria')));
     await setSettings({ enabled: true, giftOptions: true, selfJoin: false });
-    await assertFails(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: [] }));
+    await assertSucceeds(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: ['Caneca'] }));
     await assertFails(setDoc(doc(maria, path('rsvp_maria_c_bia')), entry('maria')));
     await assertSucceeds(deleteDoc(doc(maria, path('rsvp_maria'))));
     await setSettings({ enabled: false, giftOptions: false });
     await assertFails(setDoc(doc(maria, path('rsvp_maria_c_bia')), entry('maria')));
+  });
+
+  it('locks the list at the draw for everyone, organizers included', async () => {
+    const maria = accountDb('maria');
+    const owner = accountDb('owner-uid');
+    await assertSucceeds(setDoc(doc(maria, path('rsvp_maria')), entry('maria')));
+    await assertSucceeds(
+      setDoc(doc(owner, path('typed')), {
+        name: 'Vó Lurdes',
+        phone: '',
+        giftOptions: [],
+        createdAt: '2026-11-17T10:00:00.000Z',
+      }),
+    );
+    await testEnvironment.withSecurityRulesDisabled(async (context) => {
+      await setDoc(doc(context.firestore(), 'events/e/secretSanta/draw'), {
+        drawnAt: '2026-11-20T10:00:00.000Z',
+        participantIds: [],
+        links: [],
+      });
+    });
+    await assertFails(updateDoc(doc(maria, path('rsvp_maria')), { giftOptions: ['Caneca'] }));
+    await assertFails(deleteDoc(doc(maria, path('rsvp_maria'))));
+    await assertFails(updateDoc(doc(owner, path('typed')), { giftOptions: ['Caneca'] }));
+    await assertFails(deleteDoc(doc(owner, path('typed'))));
+    await assertFails(setDoc(doc(owner, path('late')), entry('late', { joinedBy: '' })));
+  });
+
+  it('locks it from the draw day too, before anyone draws', async () => {
+    const owner = accountDb('owner-uid');
+    await setSettings({ enabled: true, giftOptions: true, drawDate: '2026-01-01' });
+    await assertFails(
+      setDoc(doc(owner, path('typed')), {
+        name: 'Vó Lurdes',
+        phone: '',
+        giftOptions: [],
+        createdAt: '2026-11-17T10:00:00.000Z',
+      }),
+    );
   });
 
   it('lets the owner close the sign-ups, and the organizers merge or tell apart', async () => {

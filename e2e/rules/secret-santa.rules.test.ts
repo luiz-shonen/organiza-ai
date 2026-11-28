@@ -62,6 +62,8 @@ beforeEach(async () => {
       title: 'Natal 2026',
       createdBy: 'owner-uid',
       collaborators: ['collab-uid'],
+      // Participants change only while the amigo oculto is on and not drawn.
+      secretSanta: { enabled: true, giftOptions: true, maxGiftOptions: 3 },
     });
     await setDoc(doc(context.firestore(), 'secretSantaReveals/tok-1'), reveal);
   });

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   giftSearchLinks,
   buildSecretSantaMessage,
+  noticeBodyNow,
+  secretSantaNoticeBody,
   buildSecretSantaRevealUrl,
   buildSecretSantaWhatsAppUrl,
   drawSecretSanta,
@@ -105,6 +107,12 @@ describe('secret santa sharing', () => {
     expect(message).not.toMatch(/\p{Extended_Pictographic}/u);
   });
 
+  it('tells someone with an account that the link opens only in it, as often as they like', () => {
+    const message = buildSecretSantaMessage({ ...share, withAccount: true });
+    expect(message).toContain('abre só na sua conta do Organiza AI, quantas vezes você quiser');
+    expect(message).not.toContain('só abre uma vez');
+  });
+
   it('names the organizer to ask for a new link', () => {
     const message = buildSecretSantaMessage({ ...share, organizerName: 'Luiz Rodrigues' });
     expect(message).toContain(
@@ -170,5 +178,29 @@ describe('findSamePerson (adding someone by hand)', () => {
     expect(findSamePerson(people, { name: 'Ana', phone: '(11) 97777-2222' })).toBeNull();
     expect(findSamePerson(people, { name: 'Jéssica Souza', phone: '' })).toBeNull();
     expect(findSamePerson(people, { name: ' ', phone: '' })).toBeNull();
+  });
+});
+
+describe('amigo oculto notice text', () => {
+  it('says the link opens only in the account, as often as they like', () => {
+    expect(secretSantaNoticeBody('Natal', false)).toBe(
+      'O sorteio do amigo oculto de Natal foi feito. Confira quem você tirou. ' +
+        'O link abre só na sua conta, quantas vezes você quiser.',
+    );
+    expect(secretSantaNoticeBody('Natal', true)).toContain('novo link');
+  });
+
+  it('reads older notices that said the link opens once with the right sentence', () => {
+    const drawn = noticeBodyNow({
+      kind: 'secret-santa',
+      body: 'O sorteio do amigo oculto de Natal foi feito. Confira quem você tirou: o resultado abre uma vez só, anote o nome.',
+    });
+    expect(drawn).toBe(secretSantaNoticeBody('Natal', false));
+    const renewed = noticeBodyNow({
+      kind: 'secret-santa',
+      body: 'Quem organiza Natal enviou um novo link para você ver quem tirou no amigo oculto. Ele abre uma vez só: anote o nome.',
+    });
+    expect(renewed).toBe(secretSantaNoticeBody('Natal', true));
+    expect(noticeBodyNow({ kind: 'presence', body: 'abre uma vez só' })).toBe('abre uma vez só');
   });
 });

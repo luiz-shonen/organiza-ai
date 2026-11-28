@@ -169,7 +169,7 @@
         </div>
       }
 
-      @if (secretSantaNotice(); as notice) {
+      @if (secretSantaNoticeShown(); as notice) {
         <app-notification-card
           data-testid="event-secret-santa-notice"
           [notification]="notice"
@@ -317,8 +317,8 @@
     (resend)="onResendSecretSanta($event)"
     (editParticipants)="onEditSecretSanta()"
   >
-    <!-- Organizers manage who is in the draw right here: the list, and anyone by hand. -->
-    @if (canEditEvent()) {
+    <!-- Organizers manage who is in the draw right here until it is locked (drawn or draw day). -->
+    @if (canEditEvent() && secretSantaListOpen()) {
       <app-secret-santa-participants
         [participants]="secretSantaParticipantsView()"
         [knownPeople]="secretSantaKnownPeople()"
@@ -334,6 +334,16 @@
         (editGift)="onEditSecretSantaGift($event)"
         (removeGift)="onRemoveSecretSantaGift($event)"
         (addGift)="onAddSecretSantaGift($event)"
+      />
+    } @else if (secretSantaParticipantsView().length) {
+      <app-secret-santa-participants
+        santaLockedList
+        show="list"
+        [readOnly]="true"
+        [participants]="secretSantaParticipantsView()"
+        [giftOptions]="!!event.secretSanta?.giftOptions"
+        [maxGiftOptions]="event.secretSanta?.maxGiftOptions ?? 3"
+        [self]="secretSantaSelf()"
       />
     }
   </app-secret-santa-card>

@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { noticeBodyNow } from '../../../core/utils';
 import type { AppNotification } from '../../../core/models';
 import { OrgButtonComponent, OrgIconButtonComponent, OrgIconComponent } from '../../ui';
 
 /**
  * An in-app notification, e.g. "Sorteio do amigo oculto feito! … Ver quem eu tirei": at the
- * top of Início while it is new, and on the event page it belongs to. Once read, it says so
- * instead of offering the action again (the amigo oculto link opens once).
+ * top of Início while it is new, and on the event page it belongs to. With `readNote`, once read
+ * it says so instead of offering the action again.
  */
 @Component({
   selector: 'app-notification-card',
@@ -22,4 +23,6 @@ export class NotificationCardComponent {
   public readonly readNote = input('');
   public readonly opened = output<AppNotification>();
   public readonly dismissed = output<AppNotification>();
+  /** The notice's text, with older amigo oculto notices read as they should say now. */
+  protected readonly body = computed(() => noticeBodyNow(this.notification()));
 }

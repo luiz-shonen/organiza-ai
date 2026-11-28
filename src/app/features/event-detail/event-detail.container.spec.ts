@@ -30,6 +30,7 @@ import {
   DrawerService,
   ClaimService,
   SecretSantaService,
+  InboxService,
 } from '../../core/services';
 import {
   PartyEvent,
@@ -38,6 +39,7 @@ import {
   FamilyMember,
   EventClaims,
   SecretSantaParticipant,
+  type AppNotification,
 } from '../../core/models';
 
 describe('EventDetailContainer', () => {
@@ -341,6 +343,115 @@ describe('EventDetailContainer', () => {
     component['onEditSecretSanta']();
     expect(navigate).toHaveBeenCalledWith(['/meus-eventos/evento', 'evt-123'], {
       queryParams: { passo: 'amigo-oculto' },
+    });
+  });
+
+  describe('the amigo oculto for who organizes', () => {
+    const santaEvent: PartyEvent = {
+      ...mockEvent,
+      createdBy: 'owner-1',
+      secretSanta: { enabled: true, giftOptions: true, maxGiftOptions: 3 },
+    };
+    const participant = (id: string, name: string): SecretSantaParticipant => ({
+      id,
+      name,
+      phone: '',
+      giftOptions: ['Livro'],
+    });
+
+    beforeEach(() => {
+      currentUserSignal.set({ uid: 'owner-1', displayName: 'Ana', isAnonymous: false });
+    });
+
+    it('shows the owner the same "Ver quem eu tirei" card a guest gets', () => {
+      const notice: AppNotification = {
+        id: 'secret-santa_evt-123',
+        kind: 'secret-santa',
+        eventId: 'evt-123',
+        title: 'Sorteio do amigo oculto feito!',
+        body: 'O sorteio do amigo oculto de Natal foi feito.',
+        actionLabel: 'Ver quem eu tirei',
+        actionUrl: '/amigo-oculto/tok',
+        createdAt: '2026-11-28T10:00:00.000Z',
+        readAt: null,
+      };
+      vi.spyOn(TestBed.inject(InboxService), 'watch').mockReturnValue(of(notice));
+      mockEventService.getEvent.mockReturnValue(of(santaEvent));
+      fixture.detectChanges();
+
+      expect(
+        (fixture.nativeElement as HTMLElement).querySelector(
+          '[data-testid="event-secret-santa-notice"]',
+        ),
+      ).toBeTruthy();
+    });
+
+    it('keeps the list in sight, read-only, in the one amigo oculto card once it is locked', () => {
+      mockEventService.getEvent.mockReturnValue(of(santaEvent));
+      fixture.detectChanges();
+      component['allSecretSantaParticipants'].set([
+        participant('p1', 'Bia'),
+        participant('p2', 'Caio'),
+      ]);
+      component['event'].set({
+        ...santaEvent,
+        secretSanta: { ...santaEvent.secretSanta!, drawnAt: '2026-11-28T10:00:00.000Z' },
+      });
+      fixture.detectChanges();
+
+      const page = fixture.nativeElement as HTMLElement;
+      expect(component['secretSantaListOpen']()).toBe(false);
+      expect(page.querySelectorAll('[data-testid="secret-santa-card"]').length).toBe(1);
+      expect(page.querySelector('[data-testid="secret-santa-roster"]')).toBeNull();
+      const list = page.querySelector('[data-testid="secret-santa-people"]');
+      expect(list?.textContent).toContain('Bia');
+      expect(list?.querySelector('[aria-label="Remover Bia"]')).toBeNull();
+    });
+
+    it("ties the owner's own entry to their account and shows them their link", () => {
+      mockEventService.getEvent.mockReturnValue(of(santaEvent));
+      fixture.detectChanges();
+      component['allSecretSantaParticipants'].set([
+        { ...participant('random-id', 'Jéssica Melo'), guestId: 'owner-1' },
+        participant('p2', 'Caio'),
+      ]);
+      component['secretSantaDraw'].set({
+        drawnAt: '2026-11-28T10:00:00.000Z',
+        participantIds: ['random-id', 'p2'],
+        links: [
+          {
+            participantId: 'random-id',
+            name: 'Jéssica Melo',
+            phone: '',
+            token: 'tok-own',
+            receiverId: 'p2',
+          },
+          { participantId: 'p2', name: 'Caio', phone: '', token: 'tok-2', receiverId: 'random-id' },
+        ],
+      });
+
+      expect(component['secretSantaAccounts']()['random-id']).toBe('owner-1');
+      expect(component['secretSantaLinks']().find((l) => l.self)?.participantId).toBe('random-id');
+      expect(component['secretSantaNoticeShown']()?.actionUrl).toBe('/amigo-oculto/tok-own');
+    });
+
+    it('sends a link of an account by WhatsApp saying it opens in the account', () => {
+      mockEventService.getEvent.mockReturnValue(of(santaEvent));
+      fixture.detectChanges();
+      const open = vi.spyOn(window, 'open').mockReturnValue(null);
+      const link = {
+        participantId: 'p1',
+        name: 'Bia',
+        phone: '',
+        url: 'https://x/amigo-oculto/tok',
+        openedAt: null,
+      };
+
+      component['onSendSecretSanta']({ ...link, notifiedInApp: true });
+      expect(decodeURIComponent(String(open.mock.calls[0][0]))).toContain('abre só na sua conta');
+
+      component['onSendSecretSanta'](link);
+      expect(decodeURIComponent(String(open.mock.calls[1][0]))).toContain('só abre uma vez');
     });
   });
 

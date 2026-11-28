@@ -69,11 +69,16 @@ export interface SecretSantaShare {
   readonly url: string;
   /** Who organizes the event ("Luiz Rodrigues"): the person to ask for a new link. */
   readonly organizerName?: string;
+  /**
+   * The link belongs to an account: it opens only in it, as often as the person likes. Without
+   * one (someone added by hand) it opens once.
+   */
+  readonly withAccount?: boolean;
 }
 
 /**
- * "Olá, Jéssica! ... toque no link". It says the link opens once and that whoever organizes
- * can make a new one (same person drawn). The link goes alone on the last line, and there is
+ * "Olá, Jéssica! ... toque no link". It says how the link opens (once, or only in the person's
+ * account as often as they like) and that whoever organizes can make a new one (same person). The link goes alone on the last line, and there is
  * no emoji, for the same reasons as the event invitation (see `buildShareMessage`).
  */
 export function buildSecretSantaMessage({
@@ -81,6 +86,7 @@ export function buildSecretSantaMessage({
   eventTitle,
   url,
   organizerName,
+  withAccount = false,
 }: SecretSantaShare): string {
   const firstName = name.trim().split(/\s+/)[0] || name.trim();
   const organizer = organizerName?.trim().split(/\s+/)[0];
@@ -90,7 +96,9 @@ export function buildSecretSantaMessage({
     `O sorteio do amigo oculto de *${eventTitle.trim() || 'nosso evento'}* foi feito.`,
     '',
     'Toque no link para descobrir quem você tirou. É segredo, não conte para ninguém!',
-    '*Atenção:* o link só abre uma vez. Tenha papel e caneta para anotar o nome.',
+    withAccount
+      ? '*Atenção:* o link abre só na sua conta do Organiza AI, quantas vezes você quiser.'
+      : '*Atenção:* o link só abre uma vez. Tenha papel e caneta para anotar o nome.',
     `Se precisar, peça um novo link ${askWhom}. Você continua com a mesma pessoa.`,
     url,
   ].join('\n');
@@ -343,4 +351,29 @@ export function giftSearchLinks(idea: string): GiftSearchLink[] {
       url: `https://www.amazon.com.br/s?k=${encodeURIComponent(text)}`,
     },
   ];
+}
+
+/** How a participant's own link opens: it belongs to their account. */
+const OWN_LINK_OPENS = 'O link abre só na sua conta, quantas vezes você quiser.';
+
+/**
+ * The text of the in-app notice of a draw (or of a new link) for someone with an account: their
+ * link opens only in their account, as often as they like.
+ */
+export function secretSantaNoticeBody(eventTitle: string, isNewLink: boolean): string {
+  const title = eventTitle.trim() || 'o evento';
+  return isNewLink
+    ? `Quem organiza ${title} enviou um novo link para você ver quem tirou no amigo oculto. ${OWN_LINK_OPENS}`
+    : `O sorteio do amigo oculto de ${title} foi feito. Confira quem você tirou. ${OWN_LINK_OPENS}`;
+}
+
+/**
+ * A notice's text as shown: amigo oculto notices sent before links of an account opened more than
+ * once said "abre uma vez só"; they are read with the right sentence instead.
+ */
+export function noticeBodyNow(notification: { kind: string; body: string }): string {
+  if (notification.kind !== 'secret-santa') return notification.body;
+  return notification.body
+    .replace('Ele abre uma vez só: anote o nome.', OWN_LINK_OPENS)
+    .replace(': o resultado abre uma vez só, anote o nome.', `. ${OWN_LINK_OPENS}`);
 }

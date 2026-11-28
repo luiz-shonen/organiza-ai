@@ -77,6 +77,11 @@ export class SecretSantaParticipantsComponent {
   public readonly show = input<'all' | 'list' | 'extras'>('all');
   /** Those two blocks show on a phone only: on a computer they sit in their own card. */
   public readonly extrasPhoneOnly = input(false);
+  /**
+   * Only to read: the list is locked (drawn, or the draw day came) or the event started. No
+   * pencil, no bin, no adding: the organizer sees what a guest sees.
+   */
+  public readonly readOnly = input(false);
   public readonly add = output<SecretSantaParticipantInput>();
   public readonly update = output<SecretSantaParticipantUpdate>();
   public readonly remove = output<number>();

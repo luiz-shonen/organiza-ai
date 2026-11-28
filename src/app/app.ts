@@ -24,6 +24,7 @@ import {
   CollaboratorInvitesService,
   PushService,
   AiSuggestionService,
+  AppUpdateService,
 } from './core/services';
 import { FeedbackService } from './shared/ui/feedback/feedback.service';
 import { formatAppVersion, resolveBackRoute, showsBottomNav } from './core/utils';
@@ -104,6 +105,7 @@ export class App {
   private readonly push = inject(PushService);
   private readonly aiSuggestions = inject(AiSuggestionService);
   private readonly feedback = inject(FeedbackService);
+  private readonly appUpdate = inject(AppUpdateService);
 
   /**
    * Organiza AI runs in the background: when it finishes, a toast says so wherever the person
@@ -155,6 +157,7 @@ export class App {
   });
 
   constructor() {
+    this.appUpdate.start();
     effect(() => {
       const activeTheme = this.seasonalService.config().activeTheme;
       const htmlElement = document.documentElement;

@@ -1,6 +1,37 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { planEvent, planNotifications, summarize, isAccountGuest } from './migrate-referencia.mjs';
+import {
+  apply,
+  backupArg,
+  isAccountGuest,
+  planEvent,
+  planNotifications,
+  summarize,
+} from './migrate-referencia.mjs';
+
+/** Replaces fetch: `answers` by method + url fragment; records every call. */
+function stubFetch(answers) {
+  const calls = [];
+  const original = globalThis.fetch;
+  globalThis.fetch = async (url, init = {}) => {
+    calls.push({
+      url,
+      method: init.method ?? 'GET',
+      body: init.body ? JSON.parse(init.body) : null,
+    });
+    const answer = answers.find(
+      (a) => (init.method ?? 'GET') === a.method && url.includes(a.match),
+    );
+    const status = answer?.status ?? 200;
+    return {
+      ok: status < 300,
+      status,
+      json: async () => answer?.json ?? {},
+      text: async () => answer?.text ?? '',
+    };
+  };
+  return { calls, restore: () => (globalThis.fetch = original) };
+}
 
 const event = {
   id: 'e1',
@@ -88,4 +119,80 @@ test('migrate-referencia: notices lose the copied name and title; the report cou
   const report = summarize([{ id: 'e1', title: 'Natal', writes: planEvent(event) }]);
   assert.equal(report.pending, 5);
   assert.match(report.lines[0], /Natal \(e1\)/);
+});
+
+test('migrate-referencia: a new contact gets the phone and the list in one write', async () => {
+  const net = stubFetch([
+    { method: 'GET', match: '/contacts/ana', status: 404 },
+    { method: 'POST', match: ':commit' },
+  ]);
+  try {
+    const body = await apply('t', {
+      path: 'contacts/ana',
+      onlyIfMissing: { phone: '(11) 9' },
+      union: { phoneVisibleTo: ['owner'] },
+    });
+    assert.equal(body.writes.length, 1);
+    const [write] = body.writes;
+    assert.deepEqual(write.updateMask.fieldPaths, ['phone']);
+    assert.equal(write.updateTransforms[0].fieldPath, 'phoneVisibleTo');
+    assert.equal(write.currentDocument, undefined);
+  } finally {
+    net.restore();
+  }
+});
+
+test('migrate-referencia: a failed read never overwrites a saved phone', async () => {
+  const net = stubFetch([{ method: 'GET', match: '/contacts/ana', status: 503 }]);
+  try {
+    await assert.rejects(apply('t', { path: 'contacts/ana', onlyIfMissing: { phone: '(11) 9' } }));
+    assert.ok(!net.calls.some((c) => c.method === 'POST'));
+  } finally {
+    net.restore();
+  }
+});
+
+test('migrate-referencia: a saved phone stays; only the list is added', async () => {
+  const net = stubFetch([
+    {
+      method: 'GET',
+      match: '/contacts/ana',
+      json: { fields: { phone: { stringValue: '(11) 1' } } },
+    },
+    { method: 'POST', match: ':commit' },
+  ]);
+  try {
+    const body = await apply('t', {
+      path: 'contacts/ana',
+      onlyIfMissing: { phone: '(11) 9' },
+      union: { phoneVisibleTo: ['owner'] },
+    });
+    assert.deepEqual(Object.keys(body.writes[0]), ['transform']);
+  } finally {
+    net.restore();
+  }
+});
+
+test('migrate-referencia: field deletes need the document to exist; ids are URL-safe', async () => {
+  const net = stubFetch([{ method: 'POST', match: ':commit' }]);
+  try {
+    const body = await apply('t', {
+      path: 'events/e1/invitations/b+1@x.com',
+      remove: ['invitedByName'],
+      set: { invitedBy: 'owner' },
+    });
+    assert.deepEqual(body.writes[0].currentDocument, { exists: true });
+    assert.deepEqual(body.writes[0].updateMask.fieldPaths, ['invitedByName', 'invitedBy']);
+  } finally {
+    net.restore();
+  }
+});
+
+test('migrate-referencia: --backup needs an existing file, never falls back to production', () => {
+  assert.equal(backupArg(['--apply']), null);
+  assert.throws(() => backupArg(['--backup']));
+  assert.throws(() => backupArg(['--backup', '--apply']));
+  assert.throws(() => backupArg(['--backup=tudo.json']));
+  assert.throws(() => backupArg(['--backup', 'nao-existe.json']));
+  assert.equal(backupArg(['--backup', 'package.json']), 'package.json');
 });

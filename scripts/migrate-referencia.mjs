@@ -132,8 +132,7 @@ export function summarize(plans) {
   for (const { title, id, writes } of plans) {
     const counts = {};
     for (const write of writes) {
-      const kind =
-        write.path.split('/').at(-2) === 'events' ? 'events' : write.path.split('/').at(-2);
+      const kind = write.path.split('/').at(-2);
       counts[kind] = (counts[kind] ?? 0) + 1;
       totals[kind] = (totals[kind] ?? 0) + 1;
     }
@@ -170,7 +169,12 @@ function encode(value) {
   if (typeof value === 'string') return { stringValue: value };
   if (typeof value === 'boolean') return { booleanValue: value };
   if (value === null) return { nullValue: null };
-  return { stringValue: String(value) };
+  throw new Error(`Tipo não esperado ao gravar: ${typeof value}`);
+}
+
+/** A document path for a URL: each segment encoded (invite ids are e-mails). */
+function urlPath(path) {
+  return path.split('/').map(encodeURIComponent).join('/');
 }
 
 function token() {
@@ -188,7 +192,11 @@ async function call(accessToken, url, init = {}) {
     ...init,
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
   });
-  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  if (!res.ok) {
+    const err = new Error(`${res.status} ${await res.text()}`);
+    err.status = res.status;
+    throw err;
+  }
   return res.json();
 }
 
@@ -198,7 +206,7 @@ async function list(accessToken, path) {
   do {
     const page = await call(
       accessToken,
-      `${BASE}/${path}?pageSize=300${pageToken ? `&pageToken=${pageToken}` : ''}`,
+      `${BASE}/${urlPath(path)}?pageSize=300${pageToken ? `&pageToken=${encodeURIComponent(pageToken)}` : ''}`,
     );
     for (const doc of page.documents ?? []) {
       docs.push({
@@ -229,13 +237,12 @@ async function notifications(accessToken) {
 
 async function loadFromProduction(accessToken) {
   const events = await list(accessToken, 'events');
-  const contacts = Object.fromEntries(
-    (await list(accessToken, 'contacts').catch(() => [])).map((c) => [c.id, c]),
-  );
+  const contacts = Object.fromEntries((await list(accessToken, 'contacts')).map((c) => [c.id, c]));
   const full = [];
   for (const event of events) {
     const { id, path: _path, ...data } = event;
-    const sub = async (name) => list(accessToken, `events/${id}/${name}`).catch(() => []);
+    // An empty subcollection answers 200 with nothing: any error stops the run.
+    const sub = async (name) => list(accessToken, `events/${id}/${name}`);
     full.push({
       id,
       data,
@@ -265,47 +272,76 @@ function loadFromBackup(file) {
   };
 }
 
-/** One commit per write: a field delete is an update whose mask names the field. */
-async function apply(accessToken, write) {
+/**
+ * One commit per document: a field delete is an update whose mask names the field, and adding to
+ * `phoneVisibleTo` rides the same write (`updateTransforms`): Firestore refuses two writes to one
+ * document in a commit. `onlyIfMissing` reads the document first; only "not found" counts as
+ * missing, any other error stops the run (never overwrite a phone on a failed read).
+ */
+export async function apply(accessToken, write) {
   const name = `projects/${PROJECT_ID}/databases/(default)/documents/${write.path}`;
   const set = { ...(write.set ?? {}) };
   if (write.onlyIfMissing) {
-    const current = await call(accessToken, `${BASE}/${write.path}`).catch(() => null);
+    let current = null;
+    try {
+      current = await call(accessToken, `${BASE}/${urlPath(write.path)}`);
+    } catch (err) {
+      if (err.status !== 404) throw err;
+    }
     const fields = current?.fields ? decodeFields(current.fields) : {};
-    for (const [key, value] of Object.entries(write.onlyIfMissing))
+    for (const [key, value] of Object.entries(write.onlyIfMissing)) {
       if (!fields[key]) set[key] = value;
+    }
   }
   const mask = [...(write.remove ?? []), ...Object.keys(set)];
-  const writes = [];
+  const fieldTransforms = Object.entries(write.union ?? {}).map(([fieldPath, values]) => ({
+    fieldPath,
+    appendMissingElements: { values: values.map(encode) },
+  }));
+  let commit = null;
   if (mask.length) {
-    writes.push({
+    commit = {
       update: {
         name,
         fields: Object.fromEntries(Object.entries(set).map(([k, v]) => [k, encode(v)])),
       },
       updateMask: { fieldPaths: mask },
+      ...(fieldTransforms.length ? { updateTransforms: fieldTransforms } : {}),
+      // A contact may be new; everything else must already be there.
       ...(write.path.startsWith('contacts/') ? {} : { currentDocument: { exists: true } }),
-    });
+    };
+  } else if (fieldTransforms.length) {
+    commit = { transform: { document: name, fieldTransforms } };
   }
-  if (write.union) {
-    writes.push({
-      transform: {
-        document: name,
-        fieldTransforms: Object.entries(write.union).map(([fieldPath, values]) => ({
-          fieldPath,
-          appendMissingElements: { values: values.map(encode) },
-        })),
-      },
-    });
+  if (!commit) return null;
+  const body = { writes: [commit] };
+  await call(accessToken, `${BASE}:commit`, { method: 'POST', body: JSON.stringify(body) });
+  return body;
+}
+
+/** `--backup <file>`: the file must follow and exist; anything else stops before reading. */
+export function backupArg(args) {
+  if (args.some((arg) => arg.startsWith('--backup='))) {
+    throw new Error('Use --backup <arquivo> (com espaço), não --backup=<arquivo>.');
   }
-  if (!writes.length) return;
-  await call(accessToken, `${BASE}:commit`, { method: 'POST', body: JSON.stringify({ writes }) });
+  const at = args.indexOf('--backup');
+  if (at < 0) return null;
+  const file = args[at + 1];
+  if (!file || file.startsWith('--') || !existsSync(file)) {
+    throw new Error(`--backup precisa de um arquivo que exista${file ? `: ${file}` : ''}.`);
+  }
+  return file;
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  const backupAt = args.indexOf('--backup');
-  const backup = backupAt >= 0 ? args[backupAt + 1] : null;
+  let backup;
+  try {
+    backup = backupArg(args);
+  } catch (err) {
+    console.error(`❌ ${err.message}`);
+    process.exit(1);
+  }
   const applying = args.includes('--apply');
   const dropNames = args.includes('--drop-names');
   if (applying && (backup || !args.includes('--sim-producao'))) {

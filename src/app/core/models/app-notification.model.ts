@@ -21,7 +21,8 @@ export interface AppNotification {
   readonly id: string;
   readonly kind: AppNotificationKind;
   readonly eventId: string;
-  readonly eventTitle: string;
+  /** Older notices only: the bell reads the event's title from the event, by `eventId`. */
+  readonly eventTitle?: string;
   readonly title: string;
   readonly body: string;
   readonly actionLabel: string;
@@ -30,8 +31,9 @@ export interface AppNotification {
   readonly createdAt: string;
   /** When the member opened or dismissed it; null while it is new. */
   readonly readAt: string | null;
-  /** Who did what it tells (the guest who answered…); missing on older notices. */
+  /** Who did what it tells (the guest who answered…), shown by their profile; missing on older notices. */
   readonly actorUid?: string;
+  /** Older notices only: the bell names the actor by `actorUid`. */
   readonly actorName?: string;
 }
 

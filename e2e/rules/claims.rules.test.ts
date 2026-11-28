@@ -55,6 +55,12 @@ describe('household claims Firestore rules contract', () => {
     await assertFails(setDoc(doc(ownDb, 'events/event-1/claims/user-2'), claimsDoc));
   });
 
+  it('accepts a household document with no copied name', async () => {
+    const ownDb = testEnvironment.authenticatedContext('user-1').firestore();
+    const { name: _copied, ...byAccount } = claimsDoc;
+    await assertSucceeds(setDoc(doc(ownDb, 'events/event-1/claims/user-1'), byAccount));
+  });
+
   it('rejects anonymous writes and unexpected fields', async () => {
     const unauthDb = testEnvironment.unauthenticatedContext().firestore();
     await assertFails(setDoc(doc(unauthDb, 'events/event-1/claims/user-1'), claimsDoc));

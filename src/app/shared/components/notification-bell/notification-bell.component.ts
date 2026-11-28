@@ -14,6 +14,7 @@ import {
   CollaboratorInvitesService,
   EventService,
   InboxService,
+  PublicProfileService,
   PushService,
 } from '../../../core/services';
 import type { AppNotification, EventInvitation } from '../../../core/models';
@@ -57,6 +58,7 @@ export class NotificationBellComponent {
   private readonly events = inject(EventService);
   private readonly push = inject(PushService);
   private readonly feedback = inject(FeedbackService);
+  private readonly profiles = inject(PublicProfileService);
 
   /** "Ativar notificações no celular", under the list: only ever asked from here. */
   protected readonly pushFooter = computed<OrgNotificationMenuFooter | null>(() => {
@@ -99,14 +101,14 @@ export class NotificationBellComponent {
   );
 
   /**
-   * Who organizes each event the notices are about, by event id: the face and name beside a
-   * notice ("Natal · por Jéssica"), as on an invite to help organise. Their profile's, now.
+   * Each event the notices are about, by event id: its title now and who owns it (`createdBy`).
+   * The notice keeps only the event id; the title and the organizer's name are read here.
    */
-  private readonly organizers = signal<
-    Readonly<Record<string, { readonly name: string; readonly photo: string | null }>>
+  private readonly eventsById = signal<
+    Readonly<Record<string, { readonly title: string; readonly owner: string }>>
   >({});
-  private readonly loadOrganizers = effect(() => {
-    const known = this.organizers();
+  private readonly loadEvents = effect(() => {
+    const known = this.eventsById();
     const missing = [...new Set(this.history().map((n) => n.eventId))].filter(
       (id) => id && !(id in known),
     );
@@ -114,45 +116,57 @@ export class NotificationBellComponent {
     void Promise.all(
       missing.map(async (eventId) => {
         const event = await this.events.getEventById(eventId).catch(() => null);
-        const [named] = event ? await this.events.withOrganizerNames([event]) : [];
-        const name = named?.creatorName?.trim() ?? '';
-        return [eventId, { name, photo: named?.creatorPhoto ?? null }] as const;
+        return [eventId, { title: event?.title ?? '', owner: event?.createdBy ?? '' }] as const;
       }),
-    ).then((found) => this.organizers.update((all) => ({ ...all, ...Object.fromEntries(found) })));
+    ).then((found) => this.eventsById.update((all) => ({ ...all, ...Object.fromEntries(found) })));
+  });
+  /** The people the bell shows (who wrote each notice, who owns each event, who invites). */
+  private readonly watchPeople = effect(() => {
+    this.profiles.watch([
+      ...this.history().map((n) => n.actorUid),
+      ...Object.values(this.eventsById()).map((event) => event.owner),
+      ...this.invites.invites().map((invite) => invite.invitedBy),
+    ]);
   });
 
   protected readonly items = computed<BellItem[]>(() =>
     [
-      ...this.invites.invites().map((invite) => ({
-        key: `invite_${invite.eventId}`,
-        icon: 'handshake' as const,
-        person: invite.invitedByName
-          ? { name: invite.invitedByName, photo: invite.invitedByPhoto ?? null }
-          : null,
-        title: 'Convite para colaborar',
-        body: [
-          invite.eventTitle || 'Um evento',
-          invite.invitedByName && `por ${invite.invitedByName}`,
-        ]
-          .filter(Boolean)
-          .join(' · '),
-        url: `/evento/${invite.eventId}`,
-        inboxId: null,
-        invite,
-        unread: !this.invites.isSeen(invite),
-        pinned: true,
-      })),
+      ...this.invites.invites().map((invite) => {
+        const inviter = this.personOf(
+          invite.invitedBy,
+          invite.invitedByName,
+          invite.invitedByPhoto,
+        );
+        return {
+          key: `invite_${invite.eventId}`,
+          icon: 'handshake' as const,
+          person: inviter,
+          title: 'Convite para colaborar',
+          body: [invite.eventTitle || 'Um evento', inviter && `por ${inviter.name}`]
+            .filter(Boolean)
+            .join(' · '),
+          url: `/evento/${invite.eventId}`,
+          inboxId: null,
+          invite,
+          unread: !this.invites.isSeen(invite),
+          pinned: true,
+        };
+      }),
       ...this.history().map((notification) => {
-        const organizer = this.organizerOf(notification.eventId);
+        const event = this.eventsById()[notification.eventId];
+        const organizer = this.personOf(event?.owner);
+        const eventTitle = event?.title || notification.eventTitle;
         return {
           key: notification.id,
           icon: iconOf(notification),
-          person: fromPerson(notification) ? actorOf(notification) : organizer,
+          person: fromPerson(notification)
+            ? this.personOf(notification.actorUid, notification.actorName)
+            : organizer,
           title: notification.title,
           body:
             notification.kind === 'collaborator' || fromPerson(notification)
               ? notification.body
-              : [notification.eventTitle || notification.body, organizer && `por ${organizer.name}`]
+              : [eventTitle || notification.body, organizer && `por ${organizer.name}`]
                   .filter(Boolean)
                   .join(' · '),
           url: notification.actionUrl,
@@ -164,9 +178,15 @@ export class NotificationBellComponent {
     ].sort((a, b) => Number(b.unread) - Number(a.unread)),
   );
 
-  private organizerOf(eventId: string): { name: string; photo: string | null } | null {
-    const organizer = this.organizers()[eventId];
-    return organizer?.name ? organizer : null;
+  /** A person by account, as their profile shows them now; what older data stored otherwise. */
+  private personOf(
+    uid: string | undefined,
+    storedName?: string,
+    storedPhoto?: string | null,
+  ): { name: string; photo: string | null } | null {
+    const profile = uid ? this.profiles.profiles()[uid] : undefined;
+    if (profile) return { name: profile.name, photo: profile.photoURL };
+    return storedName ? { name: storedName, photo: storedPhoto ?? null } : null;
   }
 
   /** A tap while the last one still runs does nothing. */
@@ -214,10 +234,6 @@ export class NotificationBellComponent {
 /** A notice about something a person did (answered, joined, left, let in): their face shows. */
 function fromPerson(notification: AppNotification): boolean {
   return ['presence', 'collaboration', 'approval'].includes(notification.kind);
-}
-
-function actorOf(notification: AppNotification): { name: string; photo: null } | null {
-  return notification.actorName ? { name: notification.actorName, photo: null } : null;
 }
 
 function iconOf(notification: AppNotification): OrgIconName {

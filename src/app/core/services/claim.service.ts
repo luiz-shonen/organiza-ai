@@ -27,6 +27,10 @@ export class ClaimService {
   async saveClaims(
     eventId: string,
     uid: string,
+    /**
+     * The household's name, still written until the cleanup (plan item 6): older app versions
+     * send it back when ticking "comprado". The screens name the household by its account.
+     */
     name: string,
     entries: readonly ItemClaimEntry[],
   ): Promise<void> {

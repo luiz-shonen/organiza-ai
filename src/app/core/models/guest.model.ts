@@ -80,7 +80,9 @@ export interface GuestSession {
 
 /** "Não poderei ir": who declined, with an optional message the organizer reads. */
 export interface GuestDecline {
+  /** The account that declined: named by its profile. */
   id: string;
+  /** Older answers only (fallback). */
   name: string;
   message: string;
   declinedAt: string;

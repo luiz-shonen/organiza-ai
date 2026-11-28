@@ -5,6 +5,8 @@ export { EventService } from './event.service';
 export { ThemeService } from './theme.service';
 export type { ThemeMode } from './theme.service';
 export { UserService } from './user.service';
+export { PublicProfileService, type PublicProfile } from './public-profile.service';
+export { ContactService } from './contact.service';
 export { GuestService } from './guest.service';
 export { FamilyService } from './family.service';
 export { ItemService } from './item.service';

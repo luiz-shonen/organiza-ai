@@ -124,7 +124,6 @@ describe('ProfileContainer', () => {
         {
           provide: NameSyncService,
           useValue: {
-            syncOwnName: vi.fn().mockResolvedValue(undefined),
             syncFamilyMemberName: vi.fn().mockResolvedValue(undefined),
           },
         },

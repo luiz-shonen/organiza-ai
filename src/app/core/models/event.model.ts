@@ -146,8 +146,12 @@ export interface PartyEvent {
   aiSuggestionKey?: string | null;
   status?: 'active' | 'cancelled';
   createdBy?: string;
+  /** Older events only (no longer written): admin reads the e-mail from `users/{createdBy}`. */
   creatorEmail?: string;
-  /** The organizer's display name, saved with the event so guests see who invites them. */
+  /**
+   * The organizer's name, read from `publicProfiles/{createdBy}` when the event is loaded.
+   * Older events also stored it; that copy is only the fallback and is no longer written.
+   */
   creatorName?: string;
   /** The organizer's account photo, from their public profile (not saved on the event). */
   creatorPhoto?: string | null;

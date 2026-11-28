@@ -295,17 +295,22 @@ when they answered: the top bar and menu, Início, "Organizado por" (on the even
 lists), the RSVP card, Confirmados, "Aguardando aprovação", "Não poderão ir", who brings each
 item, the amigo oculto list and links, and the secret link's "Este link é de". The screens look
 the name up by account (`publicProfiles/{uid}`); the copies saved before are only a fallback.
+Nothing about an account is copied into an event any more: a new answer, decline, claim, invite
+or notice keeps the uid only (see [firebase-and-auth](firebase-and-auth.md)). Names update live:
+`PublicProfileService` keeps one listener per person, shared by every screen.
 
 - A new draw writes the profile names into the links; a draw made before keeps its names until
   it is drawn again.
-- Renaming yourself or a relative on the profile also rewrites the copies in every event the
-  household answered (`rsvpEvents`): the guest entries, what each one brings, and the amigo oculto
-  entries while that draw is still open. Relatives have no account to look up, so this is how
-  their new name reaches the events. Best effort: an event that refuses the write keeps the old copy.
+- Renaming yourself rewrites nothing: every screen reads you by uid. Renaming a relative on the
+  profile still rewrites their copies in every event the household answered (`rsvpEvents`): the
+  guest entries, what each one brings, and the amigo oculto entries while that draw is still open.
+  Relatives have no account to look up, so this is how their new name reaches the events (until
+  the cleanup, plan item 6). Best effort: an event that refuses the write keeps the old copy.
 - Companions typed on an answer have no account and keep the name they were given.
 
 ## Organizer
 
 - Saving an edited event goes back to Meus eventos.
-- "Organizado por" shows the owner's profile name (`creatorName`), kept in step when the profile
-  name changes; the owner sees "Você".
+- "Organizado por" shows the owner's profile name, read by `createdBy` when the event loads
+  (`creatorName` on the loaded event; older events also stored it, now only a fallback); the owner
+  sees "Você".

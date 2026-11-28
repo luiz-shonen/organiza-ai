@@ -79,30 +79,4 @@ describe('NameSyncService', () => {
       expect.anything(),
     );
   });
-
-  it("renames the account holder's own answer and the name on what they bring", async () => {
-    docs['users/u1'] = { rsvpEvents: ['e1'] };
-    docs['events/e1/guests/u1'] = { name: 'Jéssica Melo' };
-    docs['events/e1/claims/u1'] = { name: 'Jéssica Melo', entries: [] };
-
-    await service.syncOwnName('u1', 'Jéssica Araújo');
-
-    expect(gateway.updateDoc).toHaveBeenCalledWith('events/e1/guests/u1', {
-      name: 'Jéssica Araújo',
-    });
-    expect(gateway.updateDoc).toHaveBeenCalledWith(
-      'events/e1/claims/u1',
-      expect.objectContaining({ name: 'Jéssica Araújo' }),
-    );
-  });
-
-  it('writes nothing when the name did not change', async () => {
-    docs['users/u1'] = { rsvpEvents: ['e1'] };
-    docs['events/e1/guests/u1'] = { name: 'Jéssica Araújo' };
-    docs['events/e1/claims/u1'] = { name: 'Jéssica Araújo', entries: [] };
-
-    await service.syncOwnName('u1', 'Jéssica Araújo');
-
-    expect(gateway.updateDoc).not.toHaveBeenCalled();
-  });
 });

@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, combineLatest, from, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, combineLatest, map, of, switchMap } from 'rxjs';
 import { FirestoreGateway } from './firestore.gateway';
 import { EventNotificationService } from './event-notification.service';
+import { PublicProfileService, type PublicProfile } from './public-profile.service';
+import { ContactService } from './contact.service';
 import { MapLocation } from '../value-objects';
 import {
   PartyEvent,
@@ -17,6 +19,8 @@ import {
 export class EventService {
   private readonly gateway = inject(FirestoreGateway);
   private readonly notificationService = inject(EventNotificationService);
+  private readonly profiles = inject(PublicProfileService);
+  private readonly contacts = inject(ContactService);
   private readonly collectionName = 'events';
 
   listEvents(): Observable<PartyEvent[]> {
@@ -54,7 +58,11 @@ export class EventService {
           (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
         );
       }),
-      switchMap((events) => from(this.withOrganizerNames(events))),
+      switchMap((events) =>
+        this.profiles
+          .profilesOf$(events.map((event) => event.createdBy))
+          .pipe(map((profiles) => events.map((event) => named(event, profiles)))),
+      ),
     );
   }
 
@@ -70,17 +78,9 @@ export class EventService {
         map((doc) => (doc ? this.mapEventData(doc) : null)),
         switchMap((event) => {
           if (!event?.createdBy) return of(event);
-          return this.organizerProfile(event.createdBy).pipe(
-            map((profile) =>
-              profile
-                ? {
-                    ...event,
-                    creatorName: profile.name || event.creatorName,
-                    creatorPhoto: profile.photo,
-                  }
-                : event,
-            ),
-          );
+          return this.profiles
+            .profilesOf$([event.createdBy])
+            .pipe(map((profiles) => named(event, profiles)));
         }),
       );
   }
@@ -98,38 +98,8 @@ export class EventService {
   }
 
   private async namedByOrganizers(events: readonly PartyEvent[]): Promise<PartyEvent[]> {
-    const owners = [
-      ...new Set(events.map((event) => event.createdBy).filter((uid): uid is string => !!uid)),
-    ];
-    const profiles = new Map(
-      await Promise.all(
-        owners.map(async (uid) => {
-          const profile = await this.gateway
-            .getDoc<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
-            .catch(() => null);
-          return [uid, profile] as const;
-        }),
-      ),
-    );
-    return events.map((event) => {
-      const profile = event.createdBy ? profiles.get(event.createdBy) : undefined;
-      const name = profile?.name?.trim();
-      return name
-        ? { ...event, creatorName: name, creatorPhoto: profile?.photoURL || event.creatorPhoto }
-        : event;
-    });
-  }
-
-  /** The public name and photo of an account, live; null when it has none yet. */
-  private organizerProfile(uid: string): Observable<{ name: string; photo: string | null } | null> {
-    return this.gateway
-      .docSnapshot<{ name?: string; photoURL?: string | null }>(`publicProfiles/${uid}`)
-      .pipe(
-        map((profile) =>
-          profile ? { name: profile.name?.trim() ?? '', photo: profile.photoURL || null } : null,
-        ),
-        catchError(() => of(null)),
-      );
+    const profiles = await this.profiles.lookup(events.map((event) => event.createdBy));
+    return events.map((event) => named(event, profiles));
   }
 
   async createEvent(data: PartyEventCreate): Promise<string> {
@@ -242,7 +212,6 @@ export class EventService {
     email: string,
     eventTitle?: string,
     invitedBy?: string,
-    inviter?: { name?: string | null; photo?: string | null },
   ): Promise<void> {
     const normalizedEmail = email.toLowerCase().trim();
     await this.gateway.setDoc(`${this.collectionName}/${eventId}/invitations/${normalizedEmail}`, {
@@ -250,10 +219,8 @@ export class EventService {
       eventId,
       eventTitle: eventTitle ?? '',
       invitedEmail: normalizedEmail,
+      // The bell shows who invites by this uid, from their profile.
       invitedBy: invitedBy ?? '',
-      // The bell shows who invites: their name and photo.
-      invitedByName: inviter?.name?.trim() || '',
-      invitedByPhoto: inviter?.photo || null,
       createdAt: new Date().toISOString(),
     });
   }
@@ -269,26 +236,20 @@ export class EventService {
       creatorName?: string;
       collaborators?: string[];
     }>(this.collectionName, this.gateway.where('collaborators', 'array-contains', uid));
-    return Promise.all(
-      events
-        .filter((event) => (event.collaborators ?? []).includes(uid))
-        .map(async (event) => {
-          const profile = event.createdBy
-            ? await this.gateway
-                .getDoc<{ name?: string }>(`publicProfiles/${event.createdBy}`)
-                .catch(() => null)
-            : null;
-          return {
-            id: event.id,
-            title: event.title ?? '',
-            organizerName: profile?.name || event.creatorName || '',
-          };
-        }),
-    );
+    const mine = events.filter((event) => (event.collaborators ?? []).includes(uid));
+    const profiles = await this.profiles.lookup(mine.map((event) => event.createdBy));
+    return mine.map((event) => ({
+      id: event.id,
+      title: event.title ?? '',
+      organizerName:
+        (event.createdBy && profiles[event.createdBy]?.name) || event.creatorName || '',
+    }));
   }
 
   /** "Sair da colaboração": the collaborator takes their own account out of the event. */
   async leaveCollaboration(eventId: string, uid: string): Promise<void> {
+    // First, while still an organizer: they stop reading the guests' phones.
+    await this.contacts.revokeFromCollaborator(eventId, uid).catch(() => undefined);
     await this.gateway.updateDoc(`${this.collectionName}/${eventId}`, {
       collaborators: this.gateway.arrayRemove(uid),
       updatedAt: new Date().toISOString(),
@@ -305,6 +266,8 @@ export class EventService {
     await this.gateway
       .deleteDoc(this.collaboratorPath(eventId, collaboratorUid))
       .catch(() => undefined);
+    // And the guests' phones: no longer an organizer here, so no longer on their lists.
+    await this.contacts.revokeFromCollaborator(eventId, collaboratorUid).catch(() => undefined);
   }
 
   listPendingInvitations(eventId: string): Observable<EventInvitation[]> {
@@ -344,24 +307,33 @@ export class EventService {
         invitedByPhoto: d.invitedByPhoto ?? null,
         createdAt: d.createdAt ?? '',
       }));
-    // Invites saved before the inviter's name was kept: the event's organizer, by account.
-    return Promise.all(
+    // Who invites, by account: their profile now. Invites saved without the inviter's uid name
+    // the event's organizer; the name an older invite stored is the last fallback.
+    const owners = await Promise.all(
       invites.map(async (invite) => {
-        if (invite.invitedByName) return invite;
-        const event = await this.gateway
+        if (isUid(invite.invitedBy)) return null;
+        return this.gateway
           .getDoc<{
             createdBy?: string;
             creatorName?: string;
           }>(`${this.collectionName}/${invite.eventId}`)
           .catch(() => null);
-        const profile = event?.createdBy
-          ? await this.gateway
-              .getDoc<{ name?: string }>(`publicProfiles/${event.createdBy}`)
-              .catch(() => null)
-          : null;
-        return { ...invite, invitedByName: profile?.name || event?.creatorName || '' };
       }),
     );
+    const inviters = invites.map(
+      (invite, i) => (isUid(invite.invitedBy) ? invite.invitedBy : owners[i]?.createdBy) || '',
+    );
+    const profiles = await this.profiles.lookup(inviters);
+    return invites.map((invite, i) => {
+      const inviter = inviters[i];
+      const profile = inviter ? profiles[inviter] : undefined;
+      return {
+        ...invite,
+        invitedBy: inviter,
+        invitedByName: profile?.name || invite.invitedByName || owners[i]?.creatorName || '',
+        invitedByPhoto: profile ? profile.photoURL : invite.invitedByPhoto,
+      };
+    });
   }
 
   /** "Aceitar": the invited account joins the event as a collaborator; the invite goes. */
@@ -381,6 +353,8 @@ export class EventService {
         updatedAt: new Date().toISOString(),
       })
       .catch(() => undefined);
+    // Now an organizer: they may read the phones of the guests who confirmed.
+    await this.contacts.grantToCollaborator(eventId, uid).catch(() => undefined);
   }
 
   /** "Recusar": the invite is gone and nothing changes on the event. */
@@ -494,4 +468,20 @@ export class EventService {
       updatedAt: (data['updatedAt'] as string) ?? '',
     };
   }
+}
+
+/** Older invites kept the inviter's e-mail in `invitedBy`; newer ones keep their uid. */
+function isUid(value: string | undefined): value is string {
+  return !!value && !value.includes('@');
+}
+
+/**
+ * The event named by its organizer's profile now (`publicProfiles/{createdBy}`); the
+ * `creatorName` an older event stored is only the fallback.
+ */
+function named(event: PartyEvent, profiles: Readonly<Record<string, PublicProfile>>): PartyEvent {
+  const profile = event.createdBy ? profiles[event.createdBy] : undefined;
+  return profile
+    ? { ...event, creatorName: profile.name, creatorPhoto: profile.photoURL || event.creatorPhoto }
+    : event;
 }

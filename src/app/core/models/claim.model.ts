@@ -12,7 +12,8 @@ export interface ItemClaimEntry {
 export interface EventClaims {
   /** The account holder's uid. */
   id: string;
-  name: string;
+  /** Older documents only: the household is named by its account's profile. */
+  name?: string;
   entries: ItemClaimEntry[];
   updatedAt: string;
 }

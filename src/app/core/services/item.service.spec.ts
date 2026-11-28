@@ -64,38 +64,6 @@ describe('ItemService', () => {
     expect(id).toBe('new-item-id');
   });
 
-  it('claimItem updates item document with claimedBy and current user uid', async () => {
-    await service.claimItem('evt-100', 'item-1', {
-      name: 'Mariana',
-      phone: '11988887777',
-    });
-
-    expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-100/items/item-1', {
-      claimedBy: {
-        name: 'Mariana',
-        phone: '11988887777',
-        uid: 'user-123',
-      },
-    });
-  });
-
-  it('claimItem sets empty uid if no current user is logged in', async () => {
-    mockAuthService.currentUser.mockReturnValue(null);
-
-    await service.claimItem('evt-100', 'item-1', {
-      name: 'Guest User',
-      phone: '11900000000',
-    });
-
-    expect(mockGateway.updateDoc).toHaveBeenCalledWith('events/evt-100/items/item-1', {
-      claimedBy: {
-        name: 'Guest User',
-        phone: '11900000000',
-        uid: '',
-      },
-    });
-  });
-
   it('unclaimItem sets claimedBy to null', async () => {
     await service.unclaimItem('evt-100', 'item-1');
 

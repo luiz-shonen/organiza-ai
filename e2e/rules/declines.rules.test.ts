@@ -60,6 +60,12 @@ describe('declines Firestore rules contract', () => {
     await assertSucceeds(deleteDoc(doc(guest, 'events/e/declines/guest-uid')));
   });
 
+  it('accepts a decline by account alone, named by the profile', async () => {
+    const guest = accountDb('guest-uid');
+    const { name: _copied, ...byAccount } = decline;
+    await assertSucceeds(setDoc(doc(guest, 'events/e/declines/guest-uid'), byAccount));
+  });
+
   it("refuses a decline in someone else's name, extra fields or markup", async () => {
     const guest = accountDb('guest-uid');
     await assertFails(setDoc(doc(guest, 'events/e/declines/other-uid'), decline));

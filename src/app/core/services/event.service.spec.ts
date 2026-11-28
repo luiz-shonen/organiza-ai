@@ -109,11 +109,17 @@ describe('EventService', () => {
         ]),
       );
       mockGateway.collectionSnapshot.mockReturnValueOnce(of([]));
-      mockGateway.getDoc = vi.fn().mockResolvedValue({ name: 'Jéssica Araújo' });
+      // The organizers' public profiles, read in one batch by document id.
+      mockGateway.collectionSnapshot.mockReturnValueOnce(
+        of([{ id: 'org-1', name: 'Jéssica Araújo' }]),
+      );
 
       const [event] = await firstValueFrom(service.getUserEvents('org-1'));
 
-      expect(mockGateway.getDoc).toHaveBeenCalledWith('publicProfiles/org-1');
+      expect(mockGateway.collectionSnapshot).toHaveBeenCalledWith('publicProfiles', {
+        type: 'whereIdIn',
+        ids: ['org-1'],
+      });
       expect(event.creatorName).toBe('Jéssica Araújo');
     });
   });
@@ -329,16 +335,15 @@ describe('EventService', () => {
 
   describe('collaborator management', () => {
     it('inviteCollaborator creates invitation document', async () => {
-      await service.inviteCollaborator('evt-1', 'Collab@Test.com', 'My Party', 'Host');
+      await service.inviteCollaborator('evt-1', 'Collab@Test.com', 'My Party', 'host-uid');
 
+      // Who invites by account only: the bell names them from their profile.
       expect(mockGateway.setDoc).toHaveBeenCalledWith('events/evt-1/invitations/collab@test.com', {
         id: 'collab@test.com',
         eventId: 'evt-1',
         eventTitle: 'My Party',
         invitedEmail: 'collab@test.com',
-        invitedBy: 'Host',
-        invitedByName: '',
-        invitedByPhoto: null,
+        invitedBy: 'host-uid',
         createdAt: expect.any(String),
       });
     });

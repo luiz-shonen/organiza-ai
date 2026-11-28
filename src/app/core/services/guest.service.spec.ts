@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { of } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { GuestService } from './guest.service';
 import { FirestoreGateway } from './firestore.gateway';
 import { FamilyMember, Guest } from '../models';
@@ -30,31 +30,14 @@ describe('GuestService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('saveVerifiedRsvp', () => {
-    it('sets guest document in Firestore with verified fields and merge true', async () => {
-      await service.saveVerifiedRsvp('evt-100', {
-        uid: 'user-123',
-        name: 'Carlos Silva',
-        email: 'carlos@example.com',
-        phone: '11999999999',
-        photoUrl: 'https://photo.jpg',
-      });
+  it('lists an answer saved by account alone with an empty name, for the profile to fill', async () => {
+    mockGateway.collectionSnapshot.mockReturnValue(
+      of([{ id: 'u1', uid: 'u1', phone: '11999998888', isConfirmed: true, confirmedAt: '' }]),
+    );
 
-      expect(mockGateway.setDoc).toHaveBeenCalledWith(
-        'events/evt-100/guests/user-123',
-        expect.objectContaining({
-          uid: 'user-123',
-          name: 'Carlos Silva',
-          email: 'carlos@example.com',
-          phone: '11999999999',
-          photoUrl: 'https://photo.jpg',
-          companions: [],
-          companionsCount: 0,
-          isConfirmed: true,
-        }),
-        { merge: true },
-      );
-    });
+    const [guest] = await firstValueFrom(service.listGuests('evt-1'));
+
+    expect(guest.name).toBe('');
   });
 
   describe('batchConfirmRsvp', () => {
@@ -80,7 +63,6 @@ describe('GuestService', () => {
         {
           uid: 'user-123',
           name: 'Carlos Silva',
-          email: 'carlos@example.com',
           companions: [{ name: 'Ana' }, { name: 'Bia' }],
         },
         familyMembers,
@@ -96,6 +78,10 @@ describe('GuestService', () => {
         }),
         { merge: true },
       );
+      // Named by the account's profile: the answer keeps no copy of e-mail or photo.
+      const [, primary] = mockGateway.batchOps.set.mock.calls[0];
+      expect(primary).not.toHaveProperty('email');
+      expect(primary).not.toHaveProperty('photoUrl');
     });
 
     it('formats family phones and drops one that is not a phone', async () => {
@@ -131,7 +117,7 @@ describe('GuestService', () => {
     it('works when family members list is empty', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
-        name: 'Carlos Solo',
+        name: 'Carlos Silva',
       });
 
       expect(mockGateway.batchOps.set).toHaveBeenCalledTimes(1);
@@ -140,7 +126,7 @@ describe('GuestService', () => {
     it('preserves a legacy count without fabricating companion names during the UI transition', async () => {
       await service.batchConfirmRsvp('evt-100', {
         uid: 'user-123',
-        name: 'Carlos Solo',
+        name: 'Carlos Silva',
         companionsCount: 2,
       });
 

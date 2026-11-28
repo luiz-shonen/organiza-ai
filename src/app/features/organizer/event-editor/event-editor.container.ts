@@ -639,7 +639,6 @@ export class EventEditorContainer implements OnInit {
       pixKey: pixKey || null,
       pixPurpose: pixPurpose || null,
       createdBy: user?.uid ?? '',
-      creatorEmail: user?.email ?? '',
       collaborators: this.currentEvent()?.collaborators ?? [],
       requireApproval: this.requireApproval(),
       secretSanta: {

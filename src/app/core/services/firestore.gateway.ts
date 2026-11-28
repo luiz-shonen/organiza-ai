@@ -4,6 +4,7 @@ import {
   collection,
   collectionGroup,
   doc,
+  documentId,
   addDoc,
   setDoc,
   updateDoc,
@@ -38,6 +39,11 @@ export class FirestoreGateway {
 
   where(fieldPath: string, opStr: WhereFilterOp, value: unknown): QueryConstraint {
     return where(fieldPath, opStr, value);
+  }
+
+  /** Documents whose id is one of `ids` (Firestore takes at most 30 per query). */
+  whereIdIn(ids: readonly string[]): QueryConstraint {
+    return where(documentId(), 'in', [...ids]);
   }
 
   orderBy(fieldPath: string, directionStr?: OrderByDirection): QueryConstraint {

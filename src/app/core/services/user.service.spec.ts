@@ -143,6 +143,23 @@ describe('UserService', () => {
       );
     });
 
+    it('saves the profile even when the phone cannot be written to contacts', async () => {
+      mockGateway.getDoc.mockResolvedValue({ uid: 'user-123' });
+      mockGateway.setDoc.mockImplementation((path: string) =>
+        path.startsWith('contacts/')
+          ? Promise.reject(new Error('Missing or insufficient permissions.'))
+          : Promise.resolve(),
+      );
+
+      await expect(
+        service.updateProfile('user-123', { displayName: 'Novo Nome', phone: '11988888888' }),
+      ).resolves.toBeUndefined();
+      expect(mockGateway.updateDoc).toHaveBeenCalledWith(
+        'users/user-123',
+        expect.objectContaining({ name: 'Novo Nome', phone: '11988888888' }),
+      );
+    });
+
     it('creates a new user document when document does not exist yet', async () => {
       mockGateway.getDoc.mockResolvedValue(null);
 

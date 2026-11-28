@@ -69,11 +69,6 @@ export class UserService {
         // Guests read the organizer's name from the public profile, never this private one.
         this.publishName(uid, newName).catch(console.error);
       }
-      if (data.phone !== undefined) {
-        // The phone others may read (organizers of events the person confirmed) lives apart.
-        // Still saved on the profile too, for older app versions, until the cleanup.
-        await this.contacts.savePhone(uid, data.phone ?? '');
-      }
       if (existing) {
         await this.gateway.updateDoc(this.userPath(uid), updateData);
       } else {
@@ -81,6 +76,14 @@ export class UserService {
           uid,
           ...updateData,
           createdAt: now,
+        });
+      }
+      if (data.phone !== undefined) {
+        // The phone others may read (organizers of events the person confirmed) lives apart.
+        // After the profile and never failing it: where the rules do not know `contacts` yet
+        // (a preview, or before the rules deploy) the profile still saves; the phone stays on it.
+        await this.contacts.savePhone(uid, data.phone ?? '').catch((err: unknown) => {
+          console.warn('Telefone não salvo em contacts', err);
         });
       }
     } catch (err) {
